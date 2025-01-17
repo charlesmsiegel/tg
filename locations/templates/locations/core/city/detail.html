@@ -1,8 +1,9 @@
 {% extends "locations/core/location/detail.html" %}
+{% load humanize %}
 {% block other %}
     <div class="row">
         <div class="col-sm">Population</div>
-        <div class="col-sm">{{ object.population }}</div>
+        <div class="col-sm">{{ object.population|intcomma }}</div>
     </div>
     <div class="row">
         <div class="col-sm">Mood</div>
