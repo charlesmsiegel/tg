@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "locations",
     "polymorphic",
     "core",
+    "django.contrib.humanize",
 ]
 
 MIDDLEWARE = [
