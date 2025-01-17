@@ -70,6 +70,9 @@ class Node(LocationModel):
         self.points = 3 * self.rank
         return True
 
+    def get_mf_and_rating_list(self):
+        return [(x, self.mf_rating(x)) for x in self.merits_and_flaws.all()]
+
     def add_mf(self, mf, rating):
         node = ObjectType.objects.get_or_create(
             name="node", type="loc", gameline="mta"
