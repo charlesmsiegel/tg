@@ -35,16 +35,7 @@
         <div class="col-sm">{{ object.tass_per_week }}</div>
         <div class="col-sm">{{ object.tass_form }}</div>
     </div>
-    {% if merits_and_flaws.count != 0 %}
-        <div class="col-sm {{ object.get_heading }}">
-            <h2>Merits and Flaws</h2>
-        </div>
-        <div class="row">
-            {% for mf in merits_and_flaws %}
-                <a class="col-sm" href={{ mf.mf.get_absolute_url }}>{{ mf.mf }} {{ mf.rating }}</a>
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% include "characters/core/human/mf_display_block.html" %}
     <div class="col-sm {{ object.get_heading }}">
         <h2>Resonance</h2>
     </div>
