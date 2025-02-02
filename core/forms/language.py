@@ -12,7 +12,7 @@ class HumanLanguageForm(forms.Form):
 
         # Dynamically create fields
         for i in range(num_languages):
-            self.fields[f"language_{i}"] = forms.CharField(
+            self.fields[f"language_{i+1}"] = forms.CharField(
                 widget=AutocompleteTextInput(
                     suggestions=[
                         x.name
