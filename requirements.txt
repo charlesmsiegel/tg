@@ -1,4 +1,4 @@
-Django==5.1.4
+Django==5.1.5
 django-polymorphic==3.1.0
 django-smart-selects==1.6.0
 django-tinymce4-lite==1.8.0
