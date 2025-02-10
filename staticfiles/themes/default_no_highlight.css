@@ -80,3 +80,15 @@ footer {
 .quote {
     color: #000000;
 }
+
+.dots {
+    /* Ensure consistent sizing for dots */
+    font-size: 1rem;
+    /* Other sizing properties */
+}
+
+.colored-dots {
+    /* Add your desired color styling */
+    color: #f39c12;
+    /* Example: a gold/orange color */
+}
