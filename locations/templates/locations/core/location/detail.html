@@ -1,62 +1,29 @@
 {% extends "core/object.html" %}
 {% load sanitize_text %}
 {% block contents %}
-    {% block name %}
-        <div class="row {{ object.get_heading }}">
-            <h1 class="col-sm">{{ object.name }}</h1>
-        </div>
-    {% endblock name %}
-    {% block parent %}
-        {% if object.parent != None %}
-            <div class="row">
-                <div class="col-sm">Parent</div>
-                <a class="col-sm" href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-            </div>
-        {% endif %}
-    {% endblock parent %}
+    {% block name_and_parent %}
+        {% include "locations/core/location/title_and_parent_include.html" %}
+    {% endblock name_and_parent %}
+    {% block status %}
+    <div class="row mb-2">
+        {% include "locations/core/location/status_include.html" %}
+    {% endblock status %}
+    {% block gauntlets %}
+        {% include "locations/core/location/boundaries_include.html" %}
+    </div>
     {% block prominents %}
     {% endblock prominents %}
-    {% block gauntlets %}
-        <div class="row">
-            <div class="col-sm">Gauntlet</div>
-            <div class="col-sm">{{ object.gauntlet }}</div>
-            <div class="col-sm">Shroud</div>
-            <div class="col-sm">{{ object.shroud }}</div>
-            <div class="col-sm">Dimension Barrier</div>
-            <div class="col-sm">{{ object.dimension_barrier }}</div>
-        </div>
     {% endblock gauntlets %}
     {% block other %}
     {% endblock other %}
     {% block reality_zone %}
     {% endblock reality_zone %}
     {% block description %}
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ object.description|sanitize_html|linebreaks }}</div>
-        </div>
+        {% include "locations/core/location/description_include.html" %}
     {% endblock description %}
     {% block post_description %}
     {% endblock post_description %}
     {% block scenes %}
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Scenes</h3>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">
-                <b>Title</b>
-            </div>
-            <div class="col-sm border">
-                <b>Date of Scene</b>
-            </div>
-        </div>
-        {% for scene in object.get_scenes %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ scene.get_absolute_url }}">{{ scene.name }}
-                    {% if not scene.finished %}- <b>Ongoing</b>{% endif %}
-                </a>
-                <div class="col-sm">{{ scene.date_of_scene }}</div>
-            </div>
-        {% endfor %}
+        {% include "locations/core/location/scenes_include.html" %}
     {% endblock scenes %}
 {% endblock contents %}

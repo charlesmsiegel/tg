@@ -1,23 +1,5 @@
 {% extends "locations/core/location/detail.html" %}
-{% block parent %}
-    {% if object.parent != None %}
-        <div class="row">
-            <div class="col-sm">Parent</div>
-            <a class="col-sm" href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-        </div>
-    {% endif %}
-    {% if object.mage_set.count != 0 %}
-        <div class="row">
-            {% for mage in object.mage_set.all %}
-                <div class="col-sm">Owner</div>
-                <a class="col-sm" href="{{ mage.get_absolute_url }}">{{ mage.name }}</a>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endblock parent %}
-{% block reality_zone %}
-    {% include "locations/mage/reality_zone/reality_zone_block.html" %}
-{% endblock reality_zone %}
+{% load sanitize_text dots %}
 {% block other %}
     <div class="row">
         <div class="col-sm">Rank</div>
@@ -45,3 +27,6 @@
         {% endfor %}
     </div>
 {% endblock other %}
+{% block reality_zone %}
+    {% include "locations/mage/reality_zone/reality_zone_block.html" %}
+{% endblock reality_zone %}

@@ -1,0 +1,20 @@
+<div class="row centertext mb-2">
+    <div class="col">
+        <p class="mb-0">
+            <strong>Faction:</strong>
+            {% if object.faction %}
+                {% if object.faction.parent %}
+                    {% if object.faction.parent.parent %}
+                        <a href="{{ object.faction.parent.parent.get_absolute_url }}"
+                           class="text-primary">{{ object.faction.parent.parent }}</a> &rarr;
+                    {% endif %}
+                    <a href="{{ object.faction.parent.get_absolute_url }}"
+                       class="text-primary">{{ object.faction.parent }}</a> &rarr;
+                {% endif %}
+                <a href="{{ object.faction.get_absolute_url }}" class="text-primary">{{ object.faction }}</a>
+            {% else %}
+                <span class="text-muted">N/A</span>
+            {% endif %}
+        </p>
+    </div>
+</div>

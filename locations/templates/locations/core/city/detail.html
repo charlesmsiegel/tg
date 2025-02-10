@@ -1,30 +1,8 @@
 {% extends "locations/core/location/detail.html" %}
-{% load humanize %}
+{% load sanitize_text dots %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Population</div>
-        <div class="col-sm">{{ object.population|intcomma }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Mood</div>
-        <div class="col-sm">{{ object.mood }}</div>
-        <div class="col-sm">Theme</div>
-        <div class="col-sm">{{ object.theme }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Media</div>
-        <div class="col-sm">{{ object.media }}</div>
-        <div class="col-sm">Politicians</div>
-        <div class="col-sm">{{ object.politicians }}</div>
-    </div>
+    {% include "locations/core/city/city_basics_include.html" %}
 {% endblock other %}
 {% block post_description %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Characters</h2>
-    </div>
-    {% for character in object.characters.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ character.get_absolute_url }}">{{ character }}</a>
-        </div>
-    {% endfor %}
+    {% include "locations/core/city/population_include.html" %}
 {% endblock post_description %}

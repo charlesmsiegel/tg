@@ -1,5 +1,7 @@
-<h3 class="row {{ object.get_heading }}">
-    <div class="col-sm">Points</div>
-    <div class="col-sm">{{ object.points }}/{{ object.total_points }}</div>
-</h3>
+{% if object.points != 0 %}
+    <h3 class="row {{ object.get_heading }}">
+        <div class="col-sm">Points</div>
+        <div class="col-sm">{{ object.points }}/{{ object.total_points }}</div>
+    </h3>
+{% endif %}
 {% include "characters/core/background_block/detail.html" %}

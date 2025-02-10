@@ -1,0 +1,16 @@
+{% load sanitize_text dots %}
+<div class="row mb-2">
+    <div class="col">
+        <h1 class="mb-1 {{ object.get_heading }}">
+            {{ object.name }}
+            <small>
+                <span class="dots colored-dots">{{ object.rank|dots }}</span>
+            </small>
+        </h1>
+        {% if object.parent %}
+            <small>
+                Parent: <a href="{{ object.parent.get_absolute_url }}" class="text-secondary">{{ object.parent.name }}</a>
+            </small>
+        {% endif %}
+    </div>
+</div>

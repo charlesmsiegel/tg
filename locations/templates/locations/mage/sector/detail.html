@@ -1,9 +1,12 @@
 {% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+
+{% block prominents %}
+{% endblock prominents %}
 {% block other %}
-    <div class="row">
-        <div class="col-sm">Sector Class</div>
-        <div class="col-sm">{{ object.get_sector_class_display }}</div>
-        <div class="col-sm">Constraints</div>
-        <div class="col-sm">{{ object.constraints }}</div>
-    </div>
+    {% include "locations/mage/sector/sector_basics_include.html" %}
 {% endblock other %}
+{% block reality_zone %}
+{% endblock reality_zone %}
+{% block post_description %}
+{% endblock post_description %}

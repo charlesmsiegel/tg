@@ -1,0 +1,33 @@
+<div class="col-md-6">
+    <div class="card">
+        <div class="card-body py-2">
+            <p class="mb-1">
+                <strong>Status:</strong> {{ object.get_status_display }}
+            </p>
+            <p class="mb-1">
+                <strong>Owner:</strong>
+                {% if object.owner %}
+                    <a href="{% url 'profile' object.owner.id %}">{{ object.owner.username }}</a>
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </p>
+            <p class="mb-1">
+                <strong>Owned By:</strong>
+                {% if object.owned_by %}
+                    <a href="{{ object.owned_by.get_absolute_url }}">{{ object.owned_by }}</a>
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </p>
+            <p class="mb-0">
+                <strong>Chronicle:</strong>
+                {% if object.chronicle %}
+                    <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>

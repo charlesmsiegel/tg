@@ -1,0 +1,8 @@
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Characters</h2>
+</div>
+{% for character in object.characters.all %}
+    <div class="row">
+        <a class="col-sm" href="{{ character.get_absolute_url }}">{{ character }}</a>
+    </div>
+{% endfor %}

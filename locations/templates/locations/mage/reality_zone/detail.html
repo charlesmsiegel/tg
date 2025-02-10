@@ -1,30 +1,5 @@
-{% extends "core/object.html" %}
-{% load dots %}
-{% load reverse %}
-{% block content %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ object.name }}</div>
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ object.description }}</div>
-        </div>
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Practices</h3>
-        </div>
-        {% for pr in positive_practices %}
-            <div class="row">
-                <a class="col-sm-5" href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>
-                <div class="col-sm-1"></div>
-                <div class="col-sm-1 dots">{{ pr.rating|dots }}</div>
-            </div>
-        {% endfor %}
-        {% for pr in negative_practices %}
-            <div class="row">
-                <a class="col-sm-5" href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>
-                <div class="col-sm-1 dots">{{ pr.rating|dots|reverse }}</div>
-                <div class="col-sm-1"></div>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+{% block reality_zone %}
+    {% include "locations/mage/reality_zone/reality_zone_block.html" %}
+{% endblock reality_zone %}
