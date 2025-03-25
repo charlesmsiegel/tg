@@ -6,6 +6,21 @@
 {% block title %}
     {{ gameline }} Locations
 {% endblock title %}
+
+{% block styling %}
+{{ block.super }}
+<style>
+    .btn-link i {
+        transform: rotate(-90deg);
+        transition: transform 0.2s;
+    }
+    .btn-link.collapsed i {
+        transform: rotate(0deg);
+        transition: transform 0.2s;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
     <div class="container py-4">
         <!-- Page Header -->
@@ -47,26 +62,13 @@
                              id="chron-{{ chron.id|default:'no-chronicle' }}" 
                              role="tabpanel">
                             
-                            <!-- Location Table -->
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th class="table_head_font_color {{ header }}">Location</th>
-                                            <th class="table_head_font_color {{ header }}">Owner</th>
-                                            <th class="table_head_font_color {{ header }}">Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for loc in chrondict|field:chron %}
-                                            {% include "locations/location_recursive.html" with location=loc indent_level=0 %}
-                                        {% empty %}
-                                            <tr>
-                                                <td colspan="3" class="text-center py-3 text-muted">No locations found for this chronicle.</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                            <!-- Location List -->
+                            <div class="list-group">
+                                {% for loc in chrondict|field:chron %}
+                                    {% include "locations/location_recursive.html" with location=loc indent_level=0 %}
+                                {% empty %}
+                                    <div class="text-center py-3 text-muted">No locations found for this chronicle.</div>
+                                {% endfor %}
                             </div>
                         </div>
                     {% endfor %}
