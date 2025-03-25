@@ -1,7 +1,24 @@
 {% extends "locations/core/location/detail.html" %}
-{% block other %}
-    <div class="row">
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ object.get_type_display }}</div>
+{% load sanitize_text dots %}
+
+{% block model_specific %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-card">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Caern Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <strong class="mr-3">Type:</strong>
+                    {% if object.caern_type %}
+                        <span class="badge badge-pill badge-secondary">{{ object.get_caern_type_display }}</span>
+                    {% else %}
+                        <span class="text-muted">Not specified</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-{% endblock other %}
+</div>
+{% endblock model_specific %}

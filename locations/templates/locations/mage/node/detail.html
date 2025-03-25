@@ -1,32 +1,117 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
-{% block other %}
-    <div class="row">
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ object.rank }}</div>
-        <div class="col-sm">Size</div>
-        <div class="col-sm">{{ object.get_size_display }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
+{% block model_specific %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card location-card h-100">
+                <div class="card-header {{ object.get_heading }}">
+                    <h5 class="mb-0 heading-text">Node Properties</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <h6 class="{{ object.get_heading }} heading-text">Size</h6>
+                        </div>
+                        <div class="col-6">
+                            <p>{{ object.get_size_display }}</p>
+                        </div>
+                    </div>
+                    <h6 class="border-bottom pb-2 {{ object.get_heading }} heading-text">Energy Output</h6>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <span class="badge badge-pill badge-quintessence px-3 py-2">{{ object.quintessence_per_week }}</span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 {{ object.get_heading }} heading-text">Quintessence/week</h6>
+                                    <small class="text-muted">{{ object.quintessence_form }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="mr-3">
+                                    <span class="badge badge-pill badge-tass px-3 py-2">{{ object.tass_per_week }}</span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 {{ object.get_heading }} heading-text">Tass/week</h6>
+                                    <small class="text-muted">{{ object.tass_form }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card location-card h-100">
+                <div class="card-header {{ object.get_heading }}">
+                    <h5 class="mb-0 heading-text">Merits & Flaws</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table node-table mb-0">
+                            <tbody>
+                                {% for mf, rating in object.get_mf_and_rating_list %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ mf.get_absolute_url }}" class="node-link">{{ mf.name }}</a>
+                                        </td>
+                                        <td class="text-right" width="40">
+                                            <span class="badge badge-pill {% if rating > 0 %}badge-success{% else %}badge-danger{% endif %}">{{ rating }}</span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="centertext text-muted py-3">No merits or flaws.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Quintessence per week</div>
-        <div class="col-sm">{{ object.quintessence_per_week }}</div>
-        <div class="col-sm">{{ object.quintessence_form }}</div>
-        <div class="col-sm">Tass per week</div>
-        <div class="col-sm">{{ object.tass_per_week }}</div>
-        <div class="col-sm">{{ object.tass_form }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card location-card">
+                <div class="card-header {{ object.get_heading }}">
+                    <h5 class="mb-0 heading-text">Resonance</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table node-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="table_head_font_color {{ object.get_heading }}">Resonance Type</th>
+                                    <th class="text-center table_head_font_color {{ object.get_heading }}">Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for res in resonance %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ res.resonance.get_absolute_url }}" class="node-link">{{ res.resonance }}</a>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="dots colored-dots">{{ res.rating|dots }}</span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="centertext text-muted py-3">No resonance traits.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    {% include "characters/core/human/mf_display_block.html" %}
-    <div class="col-sm {{ object.get_heading }}">
-        <h2>Resonance</h2>
-    </div>
-    <div class="row">
-        {% for res in resonance %}
-            <a class="col-sm" href={{ res.resonance.get_absolute_url }}>{{ res.resonance }}: {{ res.rating }}</a>
-        {% endfor %}
-    </div>
-{% endblock other %}
+{% endblock model_specific %}
 {% block reality_zone %}
     {% include "locations/mage/reality_zone/reality_zone_block.html" %}
 {% endblock reality_zone %}

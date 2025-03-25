@@ -228,3 +228,180 @@ p.post {
     padding-left: 1em;
     text-indent: -1em;
 }
+
+/* 
+* Location style extensions - to be included in the static/style.css file
+* These styles enhance the location templates and maintain theme compatibility
+*/
+
+/* Card styling for location templates */
+.location-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.location-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.location-card .card-header {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+
+.location-header-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+/* Heading colors - maintain consistency in light and dark themes */
+.heading-color {
+    color: #1e7e34; /* Default green for light theme */
+}
+
+/* Special badges and indicators */
+.badge-quintessence {
+    background-color: #3498db;
+    color: white;
+}
+
+.badge-tass {
+    background-color: #9b59b6;
+    color: white;
+}
+
+/* Practice ratings styling */
+.practice-positive {
+    border-left: 3px solid #28a745;
+}
+
+.practice-negative {
+    border-left: 3px solid #dc3545;
+}
+
+.practice-enhanced {
+    color: #28a745;
+}
+
+.practice-hindered {
+    color: #dc3545;
+}
+
+/* Enhanced dots styling */
+.dots.colored-dots {
+    letter-spacing: 0.1em;
+    font-size: 1.1em;
+}
+
+.dots.reversed {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+}
+
+/* Table styling for resonance, merits and flaws */
+.location-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.location-table th {
+    border-top: none;
+    color: inherit;
+}
+
+.location-table td {
+    vertical-align: middle;
+}
+
+.location-table a {
+    color: #1e7e34; /* Green color that works in both themes */
+}
+
+.location-table .badge {
+    font-weight: normal;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-header h5 {
+        font-size: 1rem;
+    }
+    
+    .location-header-card h1 {
+        font-size: 1.75rem;
+    }
+}
+
+/* Dark theme specific overrides */
+@media (prefers-color-scheme: dark) {
+    .heading-color {
+        color: #2ecc71; /* Brighter green for dark theme */
+    }
+    
+    .location-card {
+        background-color: #343a40;
+        border-color: #495057;
+    }
+    
+    .location-card {
+        background-color: #2d3338;
+        border-color: #495057;
+    }
+    
+    .location-table a {
+        color: #2ecc71; /* Brighter green for dark theme */
+    }
+    
+    .practice-enhanced {
+        color: #2ecc71; /* Brighter green for dark theme */
+    }
+    
+    .practice-hindered {
+        color: #e74c3c; /* Brighter red for dark theme */
+    }
+}
+
+/* Badge styling */
+.badge-pill {
+    padding: 0.4em 0.8em;
+    font-weight: normal;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Headings for specific sections */
+.section-heading {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Dark theme override for section headings */
+@media (prefers-color-scheme: dark) {
+    .section-heading {
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+}

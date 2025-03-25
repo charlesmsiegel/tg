@@ -92,3 +92,11 @@ footer {
     color: #f39c12;
     /* Example: a gold/orange color */
 }
+.table_head_font_color {
+    color: black;
+}
+
+.card-header {
+    background-color: lightgray;
+    border-color: #495057;
+}

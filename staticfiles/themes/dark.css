@@ -97,3 +97,12 @@ footer {
     color: #f39c12;
     /* Example: a gold/orange color */
 }
+
+.table_head_font_color {
+    color: #f8f9fa;
+}
+
+.card-header {
+    background-color: #2d3338;
+    border-color: #495057;
+}

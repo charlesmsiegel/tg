@@ -1,5 +1,30 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
+{% block model_specific %}
+    <div class="card mb-4">
+        <div class="card-header {{ object.get_heading }}">
+            <h4 class="mb-0">Sanctum Information</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <strong class="mr-3">Rank:</strong>
+                        <span class="dots colored-dots">{{ object.rank|dots }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {% if object.owned_by %}
+                        <div class="d-flex align-items-center">
+                            <strong class="mr-3">Owner:</strong>
+                            <a href="{{ object.owned_by.get_absolute_url }}">{{ object.owned_by }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}
 {% block reality_zone %}
     {% include "locations/mage/reality_zone/reality_zone_block.html" %}
 {% endblock reality_zone %}

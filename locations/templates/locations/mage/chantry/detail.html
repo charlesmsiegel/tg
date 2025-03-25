@@ -1,10 +1,250 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
-{% block prominents %}
-    {% include "locations/mage/chantry/basics_block_display.html" %}
-{% endblock prominents %}
-{% block other %}
-    {% include "locations/mage/chantry/point_spend_display.html" %}
-    {% include "locations/mage/chantry/effects_display.html" %}
-    {% include "locations/mage/chantry/personnel_display.html" %}
-{% endblock other %}
+{% block model_specific %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card location-card">
+                <div class="card-header {{ object.get_heading }}">
+                    <h5 class="mb-0">Chantry Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <strong>Faction:</strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if object.faction %}
+                                <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
+                            {% else %}
+                                <span class="text-muted">None</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <strong>Season:</strong>
+                        </div>
+                        <div class="col-sm-8">{{ object.get_season_display|default:"Not specified" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <strong>Type:</strong>
+                        </div>
+                        <div class="col-sm-8">{{ object.get_chantry_type_display|default:"Not specified" }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <strong>Leadership:</strong>
+                        </div>
+                        <div class="col-sm-8">{{ object.get_leadership_type_display|default:"Not specified" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.creation_status == 1 %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card location-card">
+                    <div class="card-header {{ object.get_heading }}">
+                        <h5 class="mb-0">Resources</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-8">
+                                <strong>Available Points:</strong>
+                            </div>
+                            <div class="col-sm-4">{{ object.points }}/{{ object.total_points }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-8">
+                                <strong>Integrated Effects Points:</strong>
+                            </div>
+                            <div class="col-sm-4">{{ object.current_ie_points }}/{{ object.integrated_effects_number }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="card mb-4">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0">Backgrounds</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for background in object.backgrounds.all %}
+                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title {{ object.get_heading }}">
+                                    <a href="{{ background.bg.get_absolute_url }}">
+                                        {% if background.display_alt_name %}
+                                            {{ background.bg.alternate_name }}
+                                        {% else %}
+                                            {{ background.bg.name }}
+                                        {% endif %}
+                                    </a>
+                                </h5>
+                                <p class="card-text">
+                                    <strong>Rating:</strong>
+                                    <span class="dots colored-dots">{{ background.rating|dots }}</span>
+                                </p>
+                                {% if background.note %}
+                                    <p class="card-text">
+                                        <small>
+                                            {% if background.url %}
+                                                <a href="{{ background.url }}">{{ background.note }}</a>
+                                            {% else %}
+                                                {{ background.note }}
+                                            {% endif %}
+                                        </small>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col">
+                        <p class="text-muted mb-0">No backgrounds defined.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% if object.integrated_effects.all %}
+        <div class="card mb-4">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Integrated Effects</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for effect in object.integrated_effects.all %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title {{ object.get_heading }}">
+                                        <a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a>
+                                    </h5>
+                                    <p class="card-text">{{ effect.spheres }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col">
+                            <p class="text-muted mb-0">No integrated effects available.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock model_specific %}
+{% block additional_content %}
+    <div class="card mb-4">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0">Personnel</h5>
+        </div>
+        <div class="card-body">
+            {% if object.leaders.exists %}
+                <h5 class="mb-2 {{ object.get_heading }}">Leaders</h5>
+                <div class="row mb-3">
+                    {% for leader in object.leaders.all %}
+                        <div class="col-sm-6 col-md-4 mb-2">
+                            <a href="{{ leader.get_absolute_url }}">{{ leader.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="row mb-3">
+                {% if object.ambassador %}
+                    <div class="col-md-6 mb-2">
+                        <strong>Ambassador:</strong>
+                        <a href="{{ object.ambassador.get_absolute_url }}">{{ object.ambassador.name }}</a>
+                    </div>
+                {% endif %}
+                {% if object.node_tender %}
+                    <div class="col-md-6 mb-2">
+                        <strong>Node Tender:</strong>
+                        <a href="{{ object.node_tender.get_absolute_url }}">{{ object.node_tender.name }}</a>
+                    </div>
+                {% endif %}
+            </div>
+            {% if object.investigator.exists %}
+                <h5 class="mb-2 {{ object.get_heading }}">Investigators</h5>
+                <div class="row mb-3">
+                    {% for character in object.investigator.all %}
+                        <div class="col-sm-6 col-md-4 mb-2">
+                            <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if object.guardian.exists %}
+                <h5 class="mb-2 {{ object.get_heading }}">Guardians</h5>
+                <div class="row mb-3">
+                    {% for character in object.guardian.all %}
+                        <div class="col-sm-6 col-md-4 mb-2">
+                            <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if object.teacher.exists %}
+                <h5 class="mb-2 {{ object.get_heading }}">Teachers</h5>
+                <div class="row mb-3">
+                    {% for character in object.teacher.all %}
+                        <div class="col-sm-6 col-md-4 mb-2">
+                            <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if object.cabals.exists %}
+        <div class="card mb-4">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Cabals</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="cabalAccordion">
+                    {% for cabal in object.cabals.all %}
+                        <div class="card mb-2">
+                            <div class="card-header" id="heading{{ cabal.id }}">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link {{ object.get_heading }}"
+                                            type="button"
+                                            data-toggle="collapse"
+                                            data-target="#collapse{{ cabal.id }}"
+                                            aria-expanded="true"
+                                            aria-controls="collapse{{ cabal.id }}">
+                                        <a href="{{ cabal.get_absolute_url }}">{{ cabal.name }}</a>
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse{{ cabal.id }}"
+                                 class="collapse show"
+                                 aria-labelledby="heading{{ cabal.id }}"
+                                 data-parent="#cabalAccordion">
+                                <div class="card-body">
+                                    <div class="row">
+                                        {% for member in cabal.members.all %}
+                                            <div class="col-sm-6 col-md-4 mb-2">
+                                                <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                            </div>
+                                        {% empty %}
+                                            <div class="col">
+                                                <p class="text-muted mb-0">No members in this cabal.</p>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock additional_content %}

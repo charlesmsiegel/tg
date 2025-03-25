@@ -1,12 +1,8 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
-
-{% block prominents %}
-{% endblock prominents %}
-{% block other %}
+{% block model_specific %}
     {% include "locations/mage/sector/sector_basics_include.html" %}
-{% endblock other %}
+{% endblock model_specific %}
 {% block reality_zone %}
+    {% include "locations/mage/reality_zone/reality_zone_block.html" %}
 {% endblock reality_zone %}
-{% block post_description %}
-{% endblock post_description %}
