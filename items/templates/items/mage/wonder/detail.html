@@ -57,33 +57,7 @@
             {% block resonance %}
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card location-card">
-                            <div class="card-header {{ object.get_heading }}">
-                                <h5 class="mb-0 heading-text">Resonance</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    {% for res in resonance %}
-                                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">
-                                                        <a href="{{ res.resonance.get_absolute_url }}" class="node-link">{{ res.resonance }}</a>
-                                                    </h6>
-                                                    <div class="card-text">
-                                                        <div class="dots mb-2">{{ res.rating }}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% empty %}
-                                        <div class="col-12">
-                                            <div class="alert alert-info mb-0">No resonance available.</div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
+                        {% include "characters/mage/resonance/resonance_include.html" %}
                     </div>
                 </div>
             {% endblock resonance %}
