@@ -1,11 +1,39 @@
 {% extends "core/base.html" %}
+
+{% block styling %}
+{{ block.super }}
+<style>
+    .btn-link {
+        color: inherit;
+    }
+    .btn-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    .location-link {
+        color: inherit;
+    }
+    .location-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    .list-group-item {
+        background-color: inherit;
+        border-color: inherit;
+    }
+    .list-group {
+        background-color: inherit;
+    }
+</style>
+{% endblock %}
+
 {% block title %}
     {{ object.name }}
 {% endblock title %}
 {% block content %}
     {% load sanitize_text %}
     {% load location_tags %}
-    <div class="container centertext">
+    <div class="container py-4">
         <div class="row">
             <h2 class="col-sm {{ object.headings }} centertext">{{ object.name }}</h2>
         </div>
@@ -57,11 +85,13 @@
             </h4>
         </div>
         <div class="row">
-            <h3 class="col-sm {{ object.headings }} centertext">Locations</h3>
+            <h3 class="col-12 {{ object.headings }} mb-4">Locations</h3>
         </div>
-        {% for loc in top_locations %}
-            {% show_location loc indent_level=0 %}
-        {% endfor %}
+        <div class="list-group mb-4">
+            {% for loc in top_locations %}
+                {% show_location loc indent_level=0 %}
+            {% endfor %}
+        </div>
         <div class="row centertext">
             <h3 class="col-sm {{ object.headings }}">Items</h3>
         </div>
