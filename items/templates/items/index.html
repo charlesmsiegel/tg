@@ -1,52 +1,111 @@
 {% extends "core/base.html" %}
+{% load field %}
+
 {% block title %}
     {{ gameline }} Items
 {% endblock title %}
+
+{% block styling %}
+{{ block.super }}
+<style>
+    .btn-link {
+        color: inherit;
+    }
+    .btn-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    .list-group-item {
+        background-color: inherit;
+        border-color: inherit;
+    }
+    .list-group {
+        background-color: inherit;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h2 class="col-sm border {{ header }}">Items</h2>
-        </div>
-        {% for chron in chron_dict.keys %}
-            <div class="row border">
-                {% if chron == None %}
-                    <h3 class="col-sm border centertext {{ header }} pointer"
-                        data-toggle="collapse"
-                        data-target="#chron-{{ chron.id }}Section"
-                        aria-expanded="true"
-                        aria-controls="chron-{{ chron.id }}Section">No Chronicle</h3>
-                {% else %}
-                    <h3 class="col-sm border centertext {{ header }} pointer"
-                        data-toggle="collapse"
-                        data-target="#chron-{{ chron.id }}Section"
-                        aria-expanded="true"
-                        aria-controls="chron-{{ chron.id }}Section">
-                        <a href="{{ chron.get_absolute_url }}">{{ chron.name }}</a>
-                    </h3>
-                {% endif %}
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header {{ header }}">
+                        <h1 class="mb-0">{{ gameline }} Items</h1>
+                    </div>
+                </div>
             </div>
-            <div id="chron-{{ chron.id }}Section" class="collapse show">
-                {% for item in chron_dict|field:chron %}
-                    {% if item.display %}
-                        <div class="row border">
-                            <a class="col-sm border" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
-                            <a class="col-sm border"
-                               href="{{ item.owner.profile.get_absolute_url }}">{{ item.owner.username }}</a>
-                            <div class="col-sm border">{{ item.type.title }}</div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="itemTabs" role="tablist">
+                    {% for chron in chron_dict.keys %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                               id="tab-{{ chron.id|default:'no-chronicle' }}" 
+                               data-toggle="tab" 
+                               href="#chron-{{ chron.id|default:'no-chronicle' }}" 
+                               role="tab">
+                                {% if chron %}
+                                    {{ chron.name }}
+                                {% else %}
+                                    No Chronicle
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="itemTabsContent">
+                    {% for chron in chron_dict.keys %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                             id="chron-{{ chron.id|default:'no-chronicle' }}" 
+                             role="tabpanel">
+                            
+                            <!-- Item List -->
+                            <div class="list-group">
+                                {% for item in chron_dict|field:chron %}
+                                    {% if item.display %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <a href="{{ item.get_absolute_url }}" class="flex-grow-1">{{ item.name }}</a>
+                                                <div class="ml-3">
+                                                    <a href="{{ item.owner.profile.get_absolute_url }}" class="text-muted">{{ item.owner.username }}</a>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <span class="badge badge-secondary">{{ item.type.title }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% empty %}
+                                    <div class="text-center py-3 text-muted">No items found for this chronicle.</div>
+                                {% endfor %}
+                            </div>
                         </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </div>
-    <form id="itemForm" class="centertext container" method="post" novalidate>
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm">
-                {{ form.item_type }}
-                <button type="submit" name="action" value="create">Create</button>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </form>
+
+        <!-- Create New Item Form -->
+        <div class="card">
+            <div class="card-header {{ header }}">
+                <h5 class="mb-0">Create New Item</h5>
+            </div>
+            <div class="card-body">
+                <form id="itemForm" class="form-inline justify-content-center" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group mr-2">
+                        {{ form.item_type }}
+                    </div>
+                    <button type="submit" name="action" value="create" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
