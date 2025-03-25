@@ -1,29 +1,94 @@
 {% extends "items/core/item/detail.html" %}
-{% block additional_stats %}
-    {% block basics %}
-        <div class="row">
-            <div class="col-sm">Rank</div>
-            <div class="col-sm">{{ object.rank }}</div>
-            <div class="col-sm">Background Cost</div>
-            <div class="col-sm">{{ object.background_cost }}</div>
+{% load dots %}
+{% block contents %}
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card location-header-card">
+                    <div class="card-body">
+                        <h1 class="{{ object.get_heading }}">
+                            {{ object.name }}
+                            {% if object.rank %}
+                                <small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>
+                            {% endif %}
+                        </h1>
+                        {% if object.parent %}
+                            <p class="card-subtitle mb-0 text-muted">
+                                Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-sm">Maximum Quintessence</div>
-            <div class="col-sm">{{ object.quintessence_max }}</div>
-        </div>
-    {% endblock basics %}
-    {% block creation %}
-    {% endblock creation %}
-    {% block resonance %}
-        <div class="col-sm {{ object.get_heading }}">
-            <h2>Resonance</h2>
-        </div>
-        <div class="row">
-            {% for res in resonance %}
-                <a class="col-sm" href={{ res.resonance.get_absolute_url }}>{{ res.resonance }}: {{ res.rating }}</a>
-            {% endfor %}
-        </div>
-    {% endblock resonance %}
-    {% block powers %}
-    {% endblock powers %}
-{% endblock additional_stats %}
+
+        {% block additional_stats %}
+            {% block basics %}
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="card location-card h-100">
+                            <div class="card-header {{ object.get_heading }}">
+                                <h5 class="mb-0 heading-text">Basic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <h6 class="{{ object.get_heading }} heading-text">Background Cost</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        {{ object.background_cost }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <h6 class="{{ object.get_heading }} heading-text">Maximum Quintessence</h6>
+                                    </div>
+                                    <div class="col-6">
+                                        {{ object.quintessence_max }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock basics %}
+            {% block creation %}
+            {% endblock creation %}
+            {% block resonance %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card location-card">
+                            <div class="card-header {{ object.get_heading }}">
+                                <h5 class="mb-0 heading-text">Resonance</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for res in resonance %}
+                                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">
+                                                        <a href="{{ res.resonance.get_absolute_url }}" class="node-link">{{ res.resonance }}</a>
+                                                    </h6>
+                                                    <div class="card-text">
+                                                        <div class="dots mb-2">{{ res.rating }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <div class="col-12">
+                                            <div class="alert alert-info mb-0">No resonance available.</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock resonance %}
+            {% block powers %}
+            {% endblock powers %}
+        {% endblock additional_stats %}
+    </div>
+{% endblock contents %}
