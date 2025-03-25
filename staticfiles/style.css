@@ -457,3 +457,8 @@ p.post {
         background-color: rgba(255, 255, 255, 0.03);
     }
 }
+
+.theme-card td,
+.theme-card code {
+    color: inherit;
+}

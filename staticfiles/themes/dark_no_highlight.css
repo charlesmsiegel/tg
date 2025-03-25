@@ -105,3 +105,8 @@ footer {
     background-color: #2d3338;
     border-color: #495057;
 }
+
+
+.theme-card td, th {
+    color: #f8f9fa;
+}

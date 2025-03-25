@@ -100,3 +100,7 @@ footer {
     background-color: lightgray;
     border-color: #495057;
 }
+
+.theme-card td, th {
+    color: black;
+}

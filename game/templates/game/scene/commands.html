@@ -3,90 +3,80 @@
     Command List
 {% endblock title %}
 {% block content %}
-    <div class="centertext container">
-        <div class="row">
-            <div class="col-sm">The following commands can be used on this site</div>
-        </div>
-        <div class="row border">
-            <h4 class="col-sm border">Command</h4>
-            <h4 class="col-sm border">Example</h4>
-            <h4 class="col-sm border">Syntax</h4>
-            <h4 class="col-sm border">Explanation</h4>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">/roll</div>
-            <div class="col-sm border">/roll 5 difficulty 6 True</div>
-            <div class="col-sm border">/roll &ltnum_dice&gt difficulty &ltdiff&gt &ltspecialty&gt</div>
-            <div class="col-sm border">
-                Mostly self explanatory, noting that &ltspecialty&gt is True or False. Specialty and difficulty can be left off and default to False and "difficulty 6." Can be used at the end of a post.
+    <div class="container mt-3">
+        <div class="card theme-card mb-3">
+            <div class="card-header">
+                <h3 class="card-title text-center mb-0">Available Commands</h3>
             </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">/rolls</div>
-            <div class="col-sm border">/rolls 3 rolls @ 5 difficulty 6 True</div>
-            <div class="col-sm border">/roll &ltnum_rolls&gt rolls @ &ltnum_dice&gt difficulty &ltdiff&gt &ltspecialty&gt</div>
-            <div class="col-sm border">
-                Runs the /roll command num_rolls times. Can be used at the end of a post.
-                <br>
-                <b>Warning</b>: this will roll until botching or finished and increases difficulty on failures automatically.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">Tags</div>
-            <div class="col-sm border">&ltb&gt&lt/b&gt etc</div>
-            <div class="col-sm border">As HTML</div>
-            <div class="col-sm border">
-                This applies the permitted tags to your text. The allowed tags are b, i, em, strong, p, br, strike, ul, li. Please don't overuse line breaks, they can make scenes harder to read.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">@storyteller</div>
-            <div class="col-sm border">@storyteller I botched with 10 paradox.</div>
-            <div class="col-sm border">@storyteller &ltmessage&gt</div>
-            <div class="col-sm border">
-                This flags the scene as needing ST attention. It does not appear as a post. Capitalization of storyteller doesn't matter.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">#WP</div>
-            <div class="col-sm border">"I resist the mental attack #WP"</div>
-            <div class="col-sm border">#WP</div>
-            <div class="col-sm border">
-                If you include #WP in a post, it will spend a willpower point. If used on a /roll command roll, it will add a success. This does not work with /rolls.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">#WP</div>
-            <div class="col-sm border">"Rested for two nights #WP-2"</div>
-            <div class="col-sm border">#WP&ltnumber&gt</div>
-            <div class="col-sm border">
-                If you include #WP in a post, it will spend Willpower points. Positive numbers <b>remove</b> Willpower and negative numbers <b>regain</b> Willpower. This version <i>does not</i> impact /roll!
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">#Q</div>
-            <div class="col-sm border">"I'm doing some magick #Q2", "I meditate at the node #Q-3"</div>
-            <div class="col-sm border">#Q&ltnumber&gt</div>
-            <div class="col-sm border">
-                If you include #Q&ltnumber&gt in a post, it will spend quintessence. Positive numbers <b>remove</b> quintessence and negative numbers <b>regain</b> quintessence.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">#P</div>
-            <div class="col-sm border">
-                "I'm botched my coincidental effect #P1", "I spent a week without gaining paradox #P-1"
-            </div>
-            <div class="col-sm border">#P&ltnumber&gt</div>
-            <div class="col-sm border">
-                If you include #P&ltnumber&gt in a post, it will gain paradox. Positive numbers <b>add</b> paradox and negative numbers <b>remove</b> paradox.
-            </div>
-        </div>
-        <div class="row border">
-            <div class="col-sm border">#B/#L/#A</div>
-            <div class="col-sm border">"I've been hit for #3L"</div>
-            <div class="col-sm border">#B&ltnumber&gt/#L&ltnumber&gt/#A&ltnumber&gt</div>
-            <div class="col-sm border">
-                These tags cause the character to take Bashing, Lethal, or Aggravated damage respectively. (Healing coming soon)
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="theme-header">
+                            <tr>
+                                <th>Command</th>
+                                <th>Example</th>
+                                <th>Syntax</th>
+                                <th>Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>/roll</code></td>
+                                <td><code>/roll 5 difficulty 6 True</code></td>
+                                <td><code>/roll &lt;num_dice&gt; difficulty &lt;diff&gt; &lt;specialty&gt;</code></td>
+                                <td>Mostly self explanatory, noting that &lt;specialty&gt; is True or False. Specialty and difficulty can be left off and default to False and "difficulty 6." Can be used at the end of a post.</td>
+                            </tr>
+                            <tr>
+                                <td><code>/rolls</code></td>
+                                <td><code>/rolls 3 rolls @ 5 difficulty 6 True</code></td>
+                                <td><code>/roll &lt;num_rolls&gt; rolls @ &lt;num_dice&gt; difficulty &lt;diff&gt; &lt;specialty&gt;</code></td>
+                                <td>Runs the /roll command num_rolls times. Can be used at the end of a post.<br><strong>Warning</strong>: this will roll until botching or finished and increases difficulty on failures automatically.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Tags</code></td>
+                                <td><code>&lt;b&gt&lt;/b&gt etc</code></td>
+                                <td><code>As HTML</code></td>
+                                <td>This applies the permitted tags to your text. The allowed tags are b, i, em, strong, p, br, strike, ul, li. Please don't overuse line breaks, they can make scenes harder to read.</td>
+                            </tr>
+                            <tr>
+                                <td><code>@storyteller</code></td>
+                                <td><code>@storyteller I botched with 10 paradox.</code></td>
+                                <td><code>@storyteller &lt;message&gt;</code></td>
+                                <td>This flags the scene as needing ST attention. It does not appear as a post. Capitalization of storyteller doesn't matter.</td>
+                            </tr>
+                            <tr>
+                                <td><code>#WP</code></td>
+                                <td><code>"I resist the mental attack #WP"</code></td>
+                                <td><code>#WP</code></td>
+                                <td>If you include #WP in a post, it will spend a willpower point. If used on a /roll command roll, it will add a success. This does not work with /rolls.</td>
+                            </tr>
+                            <tr>
+                                <td><code>#WP</code></td>
+                                <td><code>"Rested for two nights #WP-2"</code></td>
+                                <td><code>#WP&lt;number&gt;</code></td>
+                                <td>If you include #WP in a post, it will spend Willpower points. Positive numbers <strong>remove</strong> Willpower and negative numbers <strong>regain</strong> Willpower. This version <i>does not</i> impact /roll!</td>
+                            </tr>
+                            <tr>
+                                <td><code>#Q</code></td>
+                                <td><code>"I'm doing some magick #Q2", "I meditate at the node #Q-3"</code></td>
+                                <td><code>#Q&lt;number&gt;</code></td>
+                                <td>If you include #Q&lt;number&gt; in a post, it will spend quintessence. Positive numbers <strong>remove</strong> quintessence and negative numbers <strong>regain</strong> quintessence.</td>
+                            </tr>
+                            <tr>
+                                <td><code>#P</code></td>
+                                <td><code>"I'm botched my coincidental effect #P1", "I spent a week without gaining paradox #P-1"</code></td>
+                                <td><code>#P&lt;number&gt;</code></td>
+                                <td>If you include #P&lt;number&gt; in a post, it will gain paradox. Positive numbers <strong>add</strong> paradox and negative numbers <strong>remove</strong> paradox.</td>
+                            </tr>
+                            <tr>
+                                <td><code>#B/#L/#A</code></td>
+                                <td><code>"I've been hit for #3L"</code></td>
+                                <td><code>#B&lt;number&gt;/#L&lt;number&gt;/#A&lt;number&gt;</code></td>
+                                <td>These tags cause the character to take Bashing, Lethal, or Aggravated damage respectively. (Healing coming soon)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
