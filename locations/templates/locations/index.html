@@ -1,47 +1,93 @@
 {% extends "core/base.html" %}
+{% load field %}
+{% load sanitize_text %}
+{% load location_tags %}
+
 {% block title %}
     {{ gameline }} Locations
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    {% load sanitize_text %}
-    {% load location_tags %}
-    <div class="container">
-        <div class="row border">
-            <h2 class="col-sm border centertext {{ header }}">Location</h2>
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header {{ header }}">
+                        <h1 class="mb-0">{{ gameline }} Locations</h1>
+                    </div>
+                </div>
+            </div>
         </div>
-        {% for chron in chrondict.keys %}
-            <div class="row border">
-                {% if chron == None %}
-                    <h3 class="col-sm border centertext {{ header }} pointer"
-                        data-toggle="collapse"
-                        data-target="#chron-{{ chron.id }}Section"
-                        aria-expanded="true"
-                        aria-controls="chron-{{ chron.id }}Section">No Chronicle</h3>
-                {% else %}
-                    <h3 class="col-sm border centertext {{ header }} pointer"
-                        data-toggle="collapse"
-                        data-target="#chron-{{ chron.id }}Section"
-                        aria-expanded="true"
-                        aria-controls="chron-{{ chron.id }}Section">
-                        <a href="{{ chron.get_absolute_url }}">{{ chron.name }}</a>
-                    </h3>
-                {% endif %}
+
+        <!-- Tabs Navigation -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="locationTabs" role="tablist">
+                    {% for chron in chrondict.keys %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                               id="tab-{{ chron.id|default:'no-chronicle' }}" 
+                               data-toggle="tab" 
+                               href="#chron-{{ chron.id|default:'no-chronicle' }}" 
+                               role="tab">
+                                {% if chron %}
+                                    {{ chron.name }}
+                                {% else %}
+                                    No Chronicle
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
-            <div id="chron-{{ chron.id }}Section" class="collapse show">
-                {% for loc in chrondict|field:chron %}
-                    {% show_location loc indent_level=0 %}
-                {% endfor %}
+            <div class="card-body">
+                <div class="tab-content" id="locationTabsContent">
+                    {% for chron in chrondict.keys %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                             id="chron-{{ chron.id|default:'no-chronicle' }}" 
+                             role="tabpanel">
+                            
+                            <!-- Location Table -->
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="table_head_font_color {{ header }}">Location</th>
+                                            <th class="table_head_font_color {{ header }}">Owner</th>
+                                            <th class="table_head_font_color {{ header }}">Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for loc in chrondict|field:chron %}
+                                            {% include "locations/location_recursive.html" with location=loc indent_level=0 %}
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center py-3 text-muted">No locations found for this chronicle.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Create New Location Form -->
+        <div class="card">
+            <div class="card-header {{ header }}">
+                <h5 class="mb-0">Create New Location</h5>
+            </div>
+            <div class="card-body">
+                <form id="locForm" class="form-inline justify-content-center" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group mr-2">
+                        {{ form.loc_type }}
+                    </div>
+                    <button type="submit" name="action" value="create" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <form id="locForm" class="centertext container" method="post" novalidate>
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm">
-                {{ form.loc_type }}
-                <button type="submit" name="action" value="create">Create</button>
-            </div>
-        </div>
-    </form>
 {% endblock content %}

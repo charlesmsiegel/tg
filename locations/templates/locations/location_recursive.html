@@ -1,26 +1,33 @@
 {% load sanitize_text %}
 {% load location_tags %}
-<div class="row border pointer"
-     data-toggle="collapse"
-     data-target="#loc-{{ location.id }}-Section"
-     aria-expanded="true"
-     aria-controls="loc-{{ location.id }}-Section">
-    <div class="col-sm border lefttext">
-        <a href="{{ location.get_absolute_url }}"
-           style="padding-left: {{ indent_level }}px">{{ location.name|sanitize_html }}</a>
-    </div>
-    {% if location.owner %}
-        <a class="col-sm border centertext"
-           href="{{ location.owner.profile.get_absolute_url }}">{{ location.owner.username }}</a>
-    {% else %}
-        <div class="col-sm border centertext"></div>
-    {% endif %}
-    <div class="col-sm border centertext">{{ location.type.title }}</div>
-</div>
-{% if location.children.all %}
-    <div id="loc-{{ location.id }}-Section" class="collapse show">
+
+<!-- Parent row -->
+<tr class="{% if location.children.exists %}parent-row{% endif %}">
+    <td>
+        <div style="padding-left: {{ indent_level }}px">
+            {% if location.children.exists %}
+                <a href="#" class="mr-2" data-toggle="collapse" data-target="#loc-{{ location.id }}-children" aria-expanded="true">
+                    <i class="fa fa-caret-down"></i>
+                </a>
+            {% endif %}
+            <a href="{{ location.get_absolute_url }}">{{ location.name|sanitize_html }}</a>
+        </div>
+    </td>
+    <td>
+        {% if location.owner %}
+            <a href="{% url 'profile' location.owner.id %}">{{ location.owner.username }}</a>
+        {% endif %}
+    </td>
+    <td>
+        <span class="badge badge-secondary">{{ location.type|title }}</span>
+    </td>
+</tr>
+
+<!-- Child rows (if any) -->
+{% if location.children.exists %}
+    <tbody id="loc-{{ location.id }}-children" class="collapse show">
         {% for child in location.children.all %}
-            {% show_location child indent_level=indent_level|add:"20" %}
+            {% include "locations/location_recursive.html" with location=child indent_level=indent_level|add:"20" %}
         {% endfor %}
-    </div>
+    </tbody>
 {% endif %}

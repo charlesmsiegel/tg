@@ -405,3 +405,55 @@ p.post {
         border-bottom-color: rgba(255,255,255,0.1);
     }
 }
+
+/* Location index styling */
+.parent-row {
+    transition: background-color 0.2s ease;
+}
+
+.parent-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tab styling enhancements */
+.nav-tabs .nav-link {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.nav-tabs .nav-link:not(.active) {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.nav-tabs .nav-link.active {
+    font-weight: 500;
+}
+
+/* Location table styling */
+.table th {
+    border-top: none;
+}
+
+/* Bootstrap 4 badge consistency */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    font-size: 80%;
+    font-weight: normal;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+    .parent-row:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .nav-tabs .nav-link:not(.active) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+}
