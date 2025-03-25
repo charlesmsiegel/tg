@@ -10,13 +10,35 @@
 {% block styling %}
 {{ block.super }}
 <style>
+    .btn-link {
+        color: inherit;
+    }
+    .btn-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
     .btn-link i {
         transform: rotate(-90deg);
         transition: transform 0.2s;
+        color: inherit;
     }
     .btn-link.collapsed i {
         transform: rotate(0deg);
         transition: transform 0.2s;
+    }
+    .location-link {
+        color: inherit;
+    }
+    .location-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    .list-group-item {
+        background-color: inherit;
+        border-color: inherit;
+    }
+    .list-group {
+        background-color: inherit;
     }
 </style>
 {% endblock %}
