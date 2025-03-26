@@ -1,37 +1,46 @@
+<!-- accounts/templates/accounts/includes/settings.html (updated) -->
 <form method="post" action="">
     {% csrf_token %}
     {% if user == object.user %}
-        <div class="row">
-            <div class="col-sm">Heading</div>
-            <div class="col-sm">{{ object.get_preferred_heading_display }}</div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Heading</div>
+            <div class="col-sm-9">{{ object.get_preferred_heading_display }}</div>
         </div>
-        <div class="row">
-            <div class="col-sm">Theme</div>
-            <div class="col-sm">{{ object.get_theme_display }}</div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Theme</div>
+            <div class="col-sm-9">{{ object.get_theme_display }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Highlight Text</div>
+            <div class="col-sm-9">{% if object.highlight_text %}Yes{% else %}No{% endif %}</div>
         </div>
     {% endif %}
+    
     {% if user == object.user or user.profile.is_st or object.discord_toggle %}
-        <div class="row">
-            <div class="col-sm">Discord</div>
-            <div class="col-sm">{{ object.discord_id }}</div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Discord</div>
+            <div class="col-sm-9">{{ object.discord_id }}</div>
         </div>
     {% endif %}
+    
     {% if user == object.user or user.profile.is_st or object.veils_toggle %}
-        <div class="row">
-            <div class="col-sm">Veils (Prefer not to have on screen)</div>
-            <div class="col-sm">{{ object.veils }}</div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Veils</div>
+            <div class="col-sm-9">{{ object.veils }}</div>
         </div>
     {% endif %}
+    
     {% if user == object.user or user.profile.is_st or object.lines_toggle %}
-        <div class="row">
-            <div class="col-sm">Lines (Prefer not to interact with at all)</div>
-            <div class="col-sm">{{ object.lines }}</div>
+        <div class="row mb-2">
+            <div class="col-sm-3 font-weight-bold">Lines</div>
+            <div class="col-sm-9">{{ object.lines }}</div>
         </div>
     {% endif %}
+    
     {% if user == object.user %}
         <div class="row">
             <div class="col-sm">
-                <input type="submit" value="Edit Preferences" name="Edit Preferences" />
+                <button type="submit" class="btn btn-primary" name="Edit Preferences">Edit Preferences</button>
             </div>
         </div>
     {% endif %}

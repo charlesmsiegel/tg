@@ -21,7 +21,7 @@ from locations.models.core.location import LocationModel
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, help_text="The user this profile belongs to")
 
     preferred_heading = models.CharField(
         max_length=30,
@@ -44,37 +44,72 @@ class Profile(models.Model):
             ],
         ),
         default="wod_heading",
+        help_text="Choose the game system font style for headings"
     )
+    
+    theme_list = ['light', 'dark']
+    
     theme = models.CharField(
         max_length=100,
         choices=zip(
+            theme_list,
             [
-                "themes/default.css",
-                "themes/dark.css",
-                "themes/default_no_highlight.css",
-                "themes/dark_no_highlight.css",
-            ],
-            [
-                "Default",
-                "Dark",
-                "Default Without Highlights",
-                "Dark Without Highlights",
+                x.capitalize() for x in theme_list
             ],
         ),
-        default="themes/default.css",
+        default="light",
+        help_text="Choose a color scheme"
+    )
+    
+    highlight_text = models.BooleanField(
+        default=True, 
+        help_text="When enabled, quotes and special text will be highlighted in theme colors"
+    )
+    
+    discord_id = models.CharField(
+        max_length=100, 
+        default="", 
+        blank=True,
+        help_text="Your Discord username for communication outside the game"
+    )
+    
+    lines = models.TextField(
+        default="", 
+        blank=True, 
+        null=True,
+        help_text="Topics you prefer not to interact with at all during gameplay"
+    )
+    
+    veils = models.TextField(
+        default="", 
+        blank=True, 
+        null=True,
+        help_text="Content you prefer not to have shown on screen, but can be referenced indirectly"
     )
 
-    discord_id = models.CharField(max_length=100, default="")
-    lines = models.TextField(default="", blank=True, null=True)
-    veils = models.TextField(default="", blank=True, null=True)
-
-    discord_toggle = models.BooleanField(default=False)
-    lines_toggle = models.BooleanField(default=False)
-    veils_toggle = models.BooleanField(default=False)
+    discord_toggle = models.BooleanField(
+        default=False,
+        help_text="Show your Discord ID to other players"
+    )
+    
+    lines_toggle = models.BooleanField(
+        default=False,
+        help_text="Show your lines to other players"
+    )
+    
+    veils_toggle = models.BooleanField(
+        default=False,
+        help_text="Show your veils to other players"
+    )
 
     class Meta:
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
+        
+    def get_theme_css_path(self):
+        """Returns the appropriate CSS path based on theme selections."""
+        base = f"themes/{self.theme}.css"
+        return base
 
     def is_st(self):
         num_st = STRelationship.objects.filter(user=self.user).count()

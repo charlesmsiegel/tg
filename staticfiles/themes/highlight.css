@@ -1,0 +1,22 @@
+/* staticfiles/themes/highlight.css */
+/* This CSS adds highlight effects independent of theme */
+
+.quote {
+    color: #0056b3;
+}
+
+/* In dark mode, override quote color */
+@media (prefers-color-scheme: dark) {
+    .quote {
+        color: #17a2b8;
+    }
+}
+
+.highlight {
+    color: #9b59b6;
+}
+
+.st {
+    color: #b8860b;
+    font-weight: bold;
+}

@@ -1,72 +1,50 @@
+/* staticfiles/themes/light.css */
 body {
     color: #000000;
-    /* Black text */
     background-color: #ffffff;
-    /* White background */
 }
 
 a {
     color: #007bff;
-    /* Blue links */
 }
 
 a:hover {
     color: #0056b3;
-    /* Darker blue on hover */
 }
 
 a:visited {
     color: #551A8B;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
     color: #000000;
-    /* Black headings */
 }
 
 button {
     background-color: #007bff;
-    /* Blue button background */
     color: #ffffff;
-    /* White button text */
 }
 
 button:hover {
     background-color: #0056b3;
-    /* Darker blue button on hover */
 }
 
-input,
-textarea {
+input, textarea {
     background-color: #ffffff;
-    /* White input background */
     color: #000000;
-    /* Black input text */
     border: 1px solid #ced4da;
-    /* Light gray border */
 }
 
 .card {
     background-color: #f8f9fa;
-    /* Light gray card background */
     color: #000000;
-    /* Black card text */
     border: 1px solid #dee2e6;
-    /* Light gray card border */
 }
 
 footer {
     background-color: #f1f1f1;
-    /* Light gray footer background */
     color: #000000;
-    /* Black footer text */
 }
-
 
 .st {
     color: #b8860b;
@@ -77,21 +55,14 @@ footer {
     font-size: 30px;
 }
 
-.quote {
-    color: #000000;
-}
-
 .dots {
-    /* Ensure consistent sizing for dots */
     font-size: 1rem;
-    /* Other sizing properties */
 }
 
 .colored-dots {
-    /* Add your desired color styling */
     color: #f39c12;
-    /* Example: a gold/orange color */
 }
+
 .table_head_font_color {
     color: black;
 }

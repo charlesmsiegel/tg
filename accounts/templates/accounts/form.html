@@ -1,34 +1,67 @@
+<!-- accounts/templates/accounts/form.html (updated to show help_text) -->
 {% extends "core/form.html" %}
 {% block title %}
     {{ object.user.username }}
 {% endblock title %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm">Heading</div>
-        <div class="col-sm">{{ form.preferred_heading }}</div>
+    <div class="row mb-3">
+        <div class="col-sm-4">Heading</div>
+        <div class="col-sm-5">{{ form.preferred_heading }}</div>
+        <div class="col-sm-3 text-muted small">{{ form.preferred_heading.help_text }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">Theme</div>
-        <div class="col-sm">{{ form.theme }}</div>
+    <div class="row mb-3">
+        <div class="col-sm-4">Theme</div>
+        <div class="col-sm-5">{{ form.theme }}</div>
+        <div class="col-sm-3 text-muted small">{{ form.theme.help_text }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-        <div class="col-sm">Visible?</div>
+    <div class="row mb-3">
+        <div class="col-sm-4">Highlight Text</div>
+        <div class="col-sm-5">{{ form.highlight_text }}</div>
+        <div class="col-sm-3 text-muted small">{{ form.highlight_text.help_text }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">Discord</div>
-        <div class="col-sm">{{ form.discord_id }}</div>
-        <div class="col-sm">{{ form.discord_toggle }}</div>
+    
+    <h4 class="mt-4 mb-3 {{ object.preferred_heading }}">Privacy Settings</h4>
+    
+    <div class="row mb-3">
+        <div class="col-sm-3">Discord ID</div>
+        <div class="col-sm-4">{{ form.discord_id }}</div>
+        <div class="col-sm-2">
+            <label class="d-flex align-items-center">
+                {{ form.discord_toggle }}
+                <span class="ml-2">Visible?</span>
+            </label>
+        </div>
+        <div class="col-sm-3 text-muted small">{{ form.discord_id.help_text }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">Veils (Prefer not to have on screen)</div>
-        <div class="col-sm">{{ form.veils }}</div>
-        <div class="col-sm">{{ form.veils_toggle }}</div>
+    
+    <div class="row mb-3">
+        <div class="col-sm-3">Veils</div>
+        <div class="col-sm-4">{{ form.veils }}</div>
+        <div class="col-sm-2">
+            <label class="d-flex align-items-center">
+                {{ form.veils_toggle }}
+                <span class="ml-2">Visible?</span>
+            </label>
+        </div>
+        <div class="col-sm-3 text-muted small">{{ form.veils.help_text }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">Lines (Prefer not to interact with at all)</div>
-        <div class="col-sm">{{ form.lines }}</div>
-        <div class="col-sm">{{ form.lines_toggle }}</div>
+    
+    <div class="row mb-3">
+        <div class="col-sm-3">Lines</div>
+        <div class="col-sm-4">{{ form.lines }}</div>
+        <div class="col-sm-2">
+            <label class="d-flex align-items-center">
+                {{ form.lines_toggle }}
+                <span class="ml-2">Visible?</span>
+            </label>
+        </div>
+        <div class="col-sm-3 text-muted small">{{ form.lines.help_text }}</div>
     </div>
 {% endblock contents %}
+{% block buttons %}
+<div class="row">
+    <div class="col-sm">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</div>
+{% endblock buttons %}

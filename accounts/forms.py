@@ -32,6 +32,7 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = [
             "preferred_heading",
             "theme",
+            "highlight_text",
             "discord_id",
             "lines",
             "veils",
