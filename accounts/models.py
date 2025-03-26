@@ -54,7 +54,7 @@ class Profile(models.Model):
         choices=zip(
             theme_list,
             [
-                x.capitalize() for x in theme_list
+                x.replace("_", " ").title() for x in theme_list
             ],
         ),
         default="light",
