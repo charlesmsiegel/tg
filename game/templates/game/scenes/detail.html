@@ -3,58 +3,72 @@
     {{ chronicle.name }} Scenes
 {% endblock title %}
 {% block content %}
-    <div class="centertext container">
-        <div class="row">
-            <h2 class="col-sm {{ chronicle.headings }}">
-                <a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a>
-            </h2>
-        </div>
-        <div class="row">
-            <h3 class="col-sm {{ chronicle.headings }}">Scenes</h3>
-        </div>
-        {% for date, scenes in scenes_grouped %}
-            <div class="row border">
-                <h2 class="col-sm border {{ chronicle.headings }} pointer"
-                    data-toggle="collapse"
-                    data-target="#date-{{ date.year }}-{{ date.month }}-Section"
-                    aria-expanded="true"
-                    aria-controls="date-{{ date.year }}-{{ date.month }}-Section">{{ date|date:"Y F" }}</h2>
+    <div class="container mt-4">
+        <!-- Chronicle Header -->
+        <!-- Chronicle Header -->
+        <div class="card shadow-sm mb">
+            <div class="card-header text-center">
+                <h2 class="mb-0">
+                    <a href="{{ chronicle.get_absolute_url }}"
+                       class="{{ chronicle.headings }}">{{ chronicle.name }}</a>
+                </h2>
             </div>
-            <div id="date-{{ date.year }}-{{ date.month }}-Section"
-                 class="collapse show">
-                <div class="row border">
-                    <div class="col-sm border">
-                        <b>Title</b>
-                    </div>
-                    <div class="col-sm border">
-                        <b>Location</b>
-                    </div>
-                    <div class="col-sm border">
-                        <b>Date of Scene</b>
-                    </div>
-                    <div class="col-sm border">
-                        <b>Last Post Character</b>
-                    </div>
-                    <div class="col-sm border">
-                        <b>Last Post Date</b>
-                    </div>
+            <div class="card-body text-center">
+                <h3 class="{{ chronicle.headings }}">Scenes</h3>
+            </div>
+        </div>
+        <!-- Grouped Scenes by Date -->
+        {% for date, scenes in scenes_grouped %}
+            <div class="card shadow-sm mb-4">
+                <!-- Centered Month-Year Header -->
+                <div class="card-header text-center {{ chronicle.headings }} pointer"
+                     data-toggle="collapse"
+                     data-target="#date-{{ date.year }}-{{ date.month }}-Section"
+                     aria-expanded="true"
+                     aria-controls="date-{{ date.year }}-{{ date.month }}-Section">
+                    <h5 class="mb-0">{{ date|date:"Y F" }}</h5>
                 </div>
-                {% for scene in scenes %}
-                    <div class="row border">
-                        <a class="col-sm border" href="{{ scene.get_absolute_url }}">{{ scene.name }}
-                            {% if not scene.finished %}- <b>Ongoing</b>{% endif %}
-                        </a>
-                        <a class="col-sm border" href="{{ scene.location.get_absolute_url }}">{{ scene.location }}</a>
-                        <div class="col-sm border">{{ scene.date_of_scene|date:"F d, Y" }}</div>
-                        {% if not scene.finished %}
-                            <div class="col-sm border">{{ scene.most_recent_post.display_name }}</div>
-                            <div class="col-sm border">{{ scene.most_recent_post.datetime_created }}</div>
-                        {% else %}
-                            <div class="col-sm border"></div>
-                            <div class="col-sm border"></div>
-                        {% endif %}
+                <div id="date-{{ date.year }}-{{ date.month }}-Section"
+                     class="collapse show">
+                    <!-- Table Header -->
+                    <div class="row border-bottom py-2 mx-0">
+                        <div class="col-sm-3">
+                            <strong>Title</strong>
+                        </div>
+                        <div class="col-sm-2">
+                            <strong>Location</strong>
+                        </div>
+                        <div class="col-sm-2">
+                            <strong>Date of Scene</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            <strong>Last Post Character</strong>
+                        </div>
+                        <div class="col-sm-2">
+                            <strong>Last Post Date</strong>
+                        </div>
                     </div>
-                {% endfor %}
+                    <!-- Scene Rows -->
+                    {% for scene in scenes %}
+                        <div class="row py-2 border-bottom mx-0">
+                            <div class="col-sm-3">
+                                <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
+                                {% if not scene.finished %}<span class="badge bg-warning text-dark">Ongoing</span>{% endif %}
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ scene.location.get_absolute_url }}">{{ scene.location }}</a>
+                            </div>
+                            <div class="col-sm-2">{{ scene.date_of_scene|date:"F d, Y" }}</div>
+                            {% if not scene.finished %}
+                                <div class="col-sm-3">{{ scene.most_recent_post.display_name }}</div>
+                                <div class="col-sm-2">{{ scene.most_recent_post.datetime_created }}</div>
+                            {% else %}
+                                <div class="col-sm-3 text-muted">N/A</div>
+                                <div class="col-sm-2 text-muted">N/A</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         {% endfor %}
     </div>
