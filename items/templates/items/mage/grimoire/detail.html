@@ -29,7 +29,7 @@
                         <div class="card-header {{ object.get_heading }}">
                             <h5 class="mb-0 heading-text">Creation Details</h5>
                         </div>
-                        {% include "characters/mage/faction/faction_badges.html" %}
+                        {% include "characters/mage/faction/faction_include.html" %}
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-6">
@@ -213,39 +213,7 @@
                 </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card location-card">
-                        <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 heading-text">Rotes</h5>
-                            <span class="badge badge-light">{{ object.rotes.count }} Rotes</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                {% for rote in object.rotes.all %}
-                                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                                        <div class="card h-100">
-                                            <div class="card-body">
-                                                <h6 class="card-title">
-                                                    <a href="{{ rote.get_absolute_url }}" class="node-link">{{ rote.name }}</a>
-                                                </h6>
-                                                <div class="card-text">
-                                                    <div class="dots mb-2">{{ rote.effect.spheres }}</div>
-                                                    <a href="{{ rote.practice.get_absolute_url }}" class="text-muted">{{ rote.practice }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <div class="col-12">
-                                        <div class="alert alert-info mb-0">No rotes available.</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% include "characters/mage/rote/rotes_include.html" %}
         {% endblock powers %}
     </div>
 {% endblock contents %}

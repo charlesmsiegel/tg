@@ -9,9 +9,7 @@
                     <div class="card-body">
                         <h1 class="{{ object.get_heading }}">
                             {{ object.name }}
-                            {% if object.rank %}
-                                <small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>
-                            {% endif %}
+                            {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
                         </h1>
                         {% if object.parent %}
                             <p class="card-subtitle mb-0 text-muted">
@@ -22,7 +20,6 @@
                 </div>
             </div>
         </div>
-        
         {# Status and boundaries section #}
         <div class="row mb-4">
             {# Status information #}
@@ -62,7 +59,6 @@
                     </div>
                 </div>
             </div>
-            
             {# Boundaries information #}
             <div class="col-md-6 mb-3">
                 <div class="card location-card h-100">
@@ -94,11 +90,9 @@
                 </div>
             </div>
         </div>
-        
         {# Model-specific details section #}
         {% block model_specific %}
         {% endblock model_specific %}
-        
         {# Description section #}
         <div class="row mb-4">
             <div class="col-12">
@@ -106,64 +100,17 @@
                     <div class="card-header">
                         <h5 class="mb-0 {{ object.get_heading }}">Description</h5>
                     </div>
-                    <div class="card-body">
-                        {{ object.description|sanitize_html|linebreaks }}
-                    </div>
+                    <div class="card-body">{{ object.description|sanitize_html|linebreaks }}</div>
                 </div>
             </div>
         </div>
-        
         {# Reality zone section, if applicable #}
         {% block reality_zone %}
         {% endblock reality_zone %}
-        
         {# Additional content section #}
         {% block additional_content %}
         {% endblock additional_content %}
-        
         {# Scenes section #}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card location-card">
-                    <div class="card-header">
-                        <h5 class="mb-0 {{ object.get_heading }}">Scenes</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if object.get_scenes %}
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for scene in object.get_scenes %}
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
-                                                </td>
-                                                <td>{{ scene.date_of_scene }}</td>
-                                                <td>
-                                                    {% if not scene.finished %}
-                                                        <span class="badge badge-success">Ongoing</span>
-                                                    {% else %}
-                                                        <span class="badge badge-secondary">Completed</span>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <p class="text-muted mb-0">No scenes available for this location.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "locations/core/location/scenes_include.html" %}
     </div>
 {% endblock contents %}
