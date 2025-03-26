@@ -13,11 +13,7 @@
                             <strong>Faction:</strong>
                         </div>
                         <div class="col-sm-8">
-                            {% if object.faction %}
-                                <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
-                            {% else %}
-                                <span class="text-muted">None</span>
-                            {% endif %}
+                            {% include "characters/mage/faction/faction_include.html" %}
                         </div>
                     </div>
                     <div class="row mb-2">
@@ -67,51 +63,7 @@
             </div>
         </div>
     {% endif %}
-    <div class="card mb-4">
-        <div class="card-header {{ object.get_heading }}">
-            <h5 class="mb-0">Backgrounds</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                {% for background in object.backgrounds.all %}
-                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title {{ object.get_heading }}">
-                                    <a href="{{ background.bg.get_absolute_url }}">
-                                        {% if background.display_alt_name %}
-                                            {{ background.bg.alternate_name }}
-                                        {% else %}
-                                            {{ background.bg.name }}
-                                        {% endif %}
-                                    </a>
-                                </h5>
-                                <p class="card-text">
-                                    <strong>Rating:</strong>
-                                    <span class="dots colored-dots">{{ background.rating|dots }}</span>
-                                </p>
-                                {% if background.note %}
-                                    <p class="card-text">
-                                        <small>
-                                            {% if background.url %}
-                                                <a href="{{ background.url }}">{{ background.note }}</a>
-                                            {% else %}
-                                                {{ background.note }}
-                                            {% endif %}
-                                        </small>
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="col">
-                        <p class="text-muted mb-0">No backgrounds defined.</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+    {% include "characters/core/background_block/detail.html" %}
     {% if object.integrated_effects.all %}
         <div class="card mb-4">
             <div class="card-header {{ object.get_heading }}">

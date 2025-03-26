@@ -1,52 +1,112 @@
 {% extends "core/object.html" %}
 {% block contents %}
     {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Effect</div>
-        <a class="col-sm" href={{ object.effect.get_absolute_url }}>{{ object.effect }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Practice</div>
-        <div class="col-sm">{{ object.practice }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Dicepool</div>
-        <div class="col-sm">{{ object.attribute.name }} + {{ object.ability.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Correspondence</div>
-        <div class="col-sm dots">{{ object.effect.correspondence|dots }}</div>
-        <div class="col-sm">Life</div>
-        <div class="col-sm dots">{{ object.effect.life|dots }}</div>
-        <div class="col-sm">Prime</div>
-        <div class="col-sm dots">{{ object.effect.prime|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Entropy</div>
-        <div class="col-sm dots">{{ object.effect.entropy|dots }}</div>
-        <div class="col-sm">Matter</div>
-        <div class="col-sm dots">{{ object.effect.matter|dots }}</div>
-        <div class="col-sm">Spirit</div>
-        <div class="col-sm dots">{{ object.effect.spirit|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Forces</div>
-        <div class="col-sm dots">{{ object.effect.forces|dots }}</div>
-        <div class="col-sm">Mind</div>
-        <div class="col-sm dots">{{ object.effect.mind|dots }}</div>
-        <div class="col-sm">Time</div>
-        <div class="col-sm dots">{{ object.effect.time|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Cost</div>
-        <div class="col-sm">{{ object.effect.rote_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
+    <div class="container mt-4">
+        <!-- Card for the Rote Name -->
+        <div class="card shadow-sm mb-4">
+            <div class="location-header-card">
+                <h5 class="mb-0">{{ object.name }}</h5>
+            </div>
+        </div>
+        <!-- Combined Card for Effect, Practice, Dicepool, and Cost -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+                <span class="badge bg-secondary">Cost: {{ object.effect.rote_cost }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Effect -->
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Effect</h6>
+                        <a href="{{ object.effect.get_absolute_url }}">{{ object.effect.name }}</a>
+                    </div>
+                    <!-- Practice -->
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted">Practice</h6>
+                        <a href="{{ object.practice.get_absolute_url }}"
+                           class="badge bg-info text-dark">{{ object.practice }}</a>
+                    </div>
+                </div>
+                <!-- Centered Dicepool -->
+                <div class="col-md mb">
+                    <h6 class="text-muted">Dicepool</h6>
+                    <div>{{ object.attribute.name }} + {{ object.ability.name }}</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card for Spheres -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Spheres</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-center">
+                    {% if object.effect.correspondence > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Correspondence:</strong>
+                            <span class="dots">{{ object.effect.correspondence|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.entropy > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Entropy:</strong>
+                            <span class="dots">{{ object.effect.entropy|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.forces > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Forces:</strong>
+                            <span class="dots">{{ object.effect.forces|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.life > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Life:</strong>
+                            <span class="dots">{{ object.effect.life|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.matter > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Matter:</strong>
+                            <span class="dots">{{ object.effect.matter|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.mind > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Mind:</strong>
+                            <span class="dots">{{ object.effect.mind|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.prime > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Prime:</strong>
+                            <span class="dots">{{ object.effect.prime|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.spirit > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Spirit:</strong>
+                            <span class="dots">{{ object.effect.spirit|dots }}</span>
+                        </div>
+                    {% endif %}
+                    {% if object.effect.time > 0 %}
+                        <div class="col-md text-center mb">
+                            <strong>Time:</strong>
+                            <span class="dots">{{ object.effect.time|dots }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Card for Description -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Description</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ object.description }}</p>
+            </div>
+        </div>
     </div>
 {% endblock contents %}
