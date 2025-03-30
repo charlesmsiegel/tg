@@ -827,4 +827,6 @@ class PracticeRating(models.Model):
     rating = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.mage.name}: {self.practice}: {self.rating}"
+        mage_name = self.mage.name if self.mage else "No Mage"
+        practice_name = str(self.practice) if self.practice else "No Practice"
+        return f"{mage_name}: {practice_name}: {self.rating}"
