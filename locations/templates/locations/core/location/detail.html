@@ -1,116 +1,23 @@
 {% extends "core/object.html" %}
 {% load sanitize_text dots %}
+{% block objectname %}
+    {% include "locations/core/location/title_and_parent_include.html" %}
+{% endblock objectname %}
 {% block contents %}
-    <div class="container py-4">
-        {# Common header section for all location models #}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card location-header-card">
-                    <div class="card-body">
-                        <h1 class="{{ object.get_heading }}">
-                            {{ object.name }}
-                            {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
-                        </h1>
-                        {% if object.parent %}
-                            <p class="card-subtitle mb-0 text-muted">
-                                Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {# Status and boundaries section #}
-        <div class="row mb-4">
-            {# Status information #}
-            <div class="col-md-6 mb-3">
-                <div class="card location-card h-100">
-                    <div class="card-header">
-                        <h5 class="mb-0 {{ object.get_heading }}">Status Information</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-2">
-                            <strong>Status:</strong> {{ object.get_status_display }}
-                        </p>
-                        <p class="mb-2">
-                            <strong>Owner:</strong>
-                            {% if object.owner %}
-                                <a href="{% url 'profile' object.owner.id %}">{{ object.owner.username }}</a>
-                            {% else %}
-                                <span class="text-muted">None</span>
-                            {% endif %}
-                        </p>
-                        <p class="mb-2">
-                            <strong>Owned By:</strong>
-                            {% if object.owned_by %}
-                                <a href="{{ object.owned_by.get_absolute_url }}">{{ object.owned_by }}</a>
-                            {% else %}
-                                <span class="text-muted">None</span>
-                            {% endif %}
-                        </p>
-                        <p class="mb-0">
-                            <strong>Chronicle:</strong>
-                            {% if object.chronicle %}
-                                <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>
-                            {% else %}
-                                <span class="text-muted">None</span>
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {# Boundaries information #}
-            <div class="col-md-6 mb-3">
-                <div class="card location-card h-100">
-                    <div class="card-header">
-                        <h5 class="mb-0 {{ object.get_heading }}">Barriers & Boundaries</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="centertext mb-3">
-                                    <h6 class="mb-1">Gauntlet</h6>
-                                    <span class="badge badge-pill badge-secondary">{{ object.gauntlet }}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="centertext mb-3">
-                                    <h6 class="mb-1">Shroud</h6>
-                                    <span class="badge badge-pill badge-secondary">{{ object.shroud }}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="centertext mb-3">
-                                    <h6 class="mb-1">Dimension Barrier</h6>
-                                    <span class="badge badge-pill badge-secondary">{{ object.dimension_barrier }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {# Model-specific details section #}
-        {% block model_specific %}
-        {% endblock model_specific %}
-        {# Description section #}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card location-card">
-                    <div class="card-header">
-                        <h5 class="mb-0 {{ object.get_heading }}">Description</h5>
-                    </div>
-                    <div class="card-body">{{ object.description|sanitize_html|linebreaks }}</div>
-                </div>
-            </div>
-        </div>
-        {# Reality zone section, if applicable #}
-        {% block reality_zone %}
-        {% endblock reality_zone %}
-        {# Additional content section #}
-        {% block additional_content %}
-        {% endblock additional_content %}
-        {# Scenes section #}
-        {% include "locations/core/location/scenes_include.html" %}
+    {# Status and boundaries section #}
+    <div class="row mb-4">
+        {% include "locations/core/location/status_include.html" %}
+        {% include "locations/core/location/boundaries_include.html" %}
     </div>
+    {# Model-specific details section #}
+    {% block model_specific %}
+    {% endblock model_specific %}
+    {# Reality zone section, if applicable #}
+    {% block reality_zone %}
+    {% endblock reality_zone %}
+    {# Additional content section #}
+    {% block additional_content %}
+    {% endblock additional_content %}
+    {# Scenes section #}
+    {% include "locations/core/location/scenes_include.html" %}
 {% endblock contents %}

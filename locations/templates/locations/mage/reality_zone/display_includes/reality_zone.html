@@ -1,6 +1,6 @@
 {% load dots %}
 {% load reverse %}
-{% if object.reality_zone %}
+{% if object %}
     <div class="row mb-4">
         <div class="col-12">
             <div class="card location-card">
@@ -14,7 +14,7 @@
                             <div class="table-responsive">
                                 <table class="table node-table mb-0">
                                     <tbody>
-                                        {% for pr in object.reality_zone.get_positive_practices %}
+                                        {% for pr in object.get_positive_practices %}
                                             <tr>
                                                 <td>
                                                     <a href="{{ pr.practice.get_absolute_url }}" class="node-link">{{ pr.practice }}</a>
@@ -38,7 +38,7 @@
                                 <table class="table node-table mb-0">
                                     <tbody>
                                         {% load reverse %}
-                                        {% for pr in object.reality_zone.get_negative_practices %}
+                                        {% for pr in object.get_negative_practices %}
                                             <tr>
                                                 <td>
                                                     <a href="{{ pr.practice.get_absolute_url }}" class="node-link">{{ pr.practice }}</a>

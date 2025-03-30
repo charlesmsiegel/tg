@@ -1,0 +1,42 @@
+<div class="col-md-6 mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0 heading-text">Node Properties</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-6">
+                    <h6 class="{{ object.get_heading }} heading-text">Size</h6>
+                </div>
+                <div class="col-6">
+                    <p>{{ object.get_size_display }}</p>
+                </div>
+            </div>
+            <h6 class="border-bottom pb-2 {{ object.get_heading }} heading-text">Energy Output</h6>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <span class="badge badge-pill badge-quintessence px-3 py-2">{{ object.quintessence_per_week }}</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 {{ object.get_heading }} heading-text">Quintessence/week</h6>
+                            <small class="text-muted">{{ object.quintessence_form }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <span class="badge badge-pill badge-tass px-3 py-2">{{ object.tass_per_week }}</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 {{ object.get_heading }} heading-text">Tass/week</h6>
+                            <small class="text-muted">{{ object.tass_form }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

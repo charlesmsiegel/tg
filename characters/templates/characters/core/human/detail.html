@@ -2,13 +2,6 @@
 {% block statistics %}
     {% load dots %}
     {% load get_specialty %}
-    {% block name %}
-        <div class="row">
-            <div class="col-sm {{ object.get_heading }}">
-                <h1 class="pointer" data-toggle="collapse" data-target=".multi-collapse">{{ object.name }}</h1>
-            </div>
-        </div>
-    {% endblock name %}
     {% block basics %}
         <div class="row">
             <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
@@ -46,7 +39,7 @@
     {% block powers %}
     {% endblock powers %}
     {% block mfs %}
-        {% include "characters/core/human/mf_display_block.html" %}
+        {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
     {% endblock mfs %}
     {% block languages %}
         {% include "characters/core/human/language_display_block.html" %}

@@ -1,18 +1,13 @@
-{% load sanitize_text dots %}
-{# Common header section for all location models #}
+{% load sanitize_text %}
+{% load dots %}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card location-header-card">
             <div class="card-body">
                 <h1 class="{{ object.get_heading }}">
-                    {{ object.name }}
+                    {{ object.name|sanitize_html }}
                     {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
                 </h1>
-                {% if object.parent %}
-                    <p class="card-subtitle mb-0 text-muted">
-                        Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-                    </p>
-                {% endif %}
             </div>
         </div>
     </div>

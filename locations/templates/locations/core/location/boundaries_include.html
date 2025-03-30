@@ -1,15 +1,30 @@
-<div class="col-md-6">
-    <div class="card">
-        <div class="card-body py-2">
-            <p class="mb-1">
-                <strong>Gauntlet:</strong> {{ object.gauntlet }}
-            </p>
-            <p class="mb-1">
-                <strong>Shroud:</strong> {{ object.shroud }}
-            </p>
-            <p class="mb-0">
-                <strong>Dimension Barrier:</strong> {{ object.dimension_barrier }}
-            </p>
+{# Boundaries information #}
+<div class="col-md-6 mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header">
+            <h5 class="mb-0 {{ object.get_heading }}">Barriers & Boundaries</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="centertext mb-3">
+                        <h6 class="mb-1">Gauntlet</h6>
+                        <span class="badge badge-pill badge-secondary">{{ object.gauntlet }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="centertext mb-3">
+                        <h6 class="mb-1">Shroud</h6>
+                        <span class="badge badge-pill badge-secondary">{{ object.shroud }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="centertext mb-3">
+                        <h6 class="mb-1">Dimension Barrier</h6>
+                        <span class="badge badge-pill badge-secondary">{{ object.dimension_barrier }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

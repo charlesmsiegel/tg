@@ -7,41 +7,38 @@
 {% block content %}
     {% csrf_token %}
     <div class="centertext container">
-        {% block references %}
-            {% for reference in object.sources.all %}
-                <div class="row">
-                    <a class="col-sm" href="{{ reference.book.get_absolute_url }}"><i>{{ reference.book }}</i> p. {{ reference.page }}</a>
-                </div>
-            {% endfor %}
-        {% endblock references %}
-        {% block image %}
-            {% if object.image and object.image_status == "app" %}
-                <img src="{{ object.image.url }}"
-                     width="300"
-                     height="{{ image.height }}"
-                     alt="image of {{ object.name }}" />
-            {% elif object.image %}
-                Image pending approval
-            {% endif %}
-        {% endblock image %}
-        {% block contents %}
-        {% endblock contents %}
-        <form method="post">
-            {% block update %}
-                <div class="row">
-                    <div class="col-sm">
-                        {% if user.is_authenticated %}
-                            {% if user.profile.is_st %}
-                                {% if object.get_full_update_url %}
-                                    <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
-                                {% else %}
-                                    <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
+        <div class="container py-4">
+            {% block image %}
+                {% include "core/includes/image.html" %}
+            {% endblock image %}
+            {% block objectname %}
+                {% include "core/includes/title.html" %}
+            {% endblock objectname %}
+            {% block references %}
+                {% include "core/includes/references.html" %}
+            {% endblock references %}
+            {% block contents %}
+            {% endblock contents %}
+            {% block description %}
+                {% include "core/includes/description.html" %}
+            {% endblock description %}
+            <form method="post">
+                {% block update %}
+                    <div class="row">
+                        <div class="col-sm">
+                            {% if user.is_authenticated %}
+                                {% if user.profile.is_st %}
+                                    {% if object.get_full_update_url %}
+                                        <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
+                                    {% else %}
+                                        <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endblock update %}
-        </form>
+                {% endblock update %}
+            </form>
+        </div>
     </div>
 {% endblock content %}

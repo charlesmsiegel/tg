@@ -2,14 +2,6 @@
 {% block contents %}
     {% load dots %}
     <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rank</div>
-        <div class="col-sm">{{ object.rank }}</div>
-    </div>
-    <div class="row">
         <div class="col-sm">Allowed</div>
         <div class="col-sm"></div>
     </div>
@@ -19,8 +11,4 @@
             <div class="col-sm">{{ line }}</div>
         </div>
     {% endfor %}
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
-    </div>
 {% endblock contents %}

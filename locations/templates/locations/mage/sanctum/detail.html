@@ -1,5 +1,4 @@
 {% extends "locations/core/location/detail.html" %}
-{% load sanitize_text dots %}
 {% block reality_zone %}
-    {% include "locations/mage/reality_zone/reality_zone_block.html" %}
+    {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with object=object.reality_zone %}
 {% endblock reality_zone %}

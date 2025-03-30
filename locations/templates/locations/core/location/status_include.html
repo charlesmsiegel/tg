@@ -1,23 +1,23 @@
-<div class="col-md-6">
-    <div class="card">
-        <div class="card-body py-2">
-            <p class="mb-1">
+{# Status information #}
+<div class="col-md-6 mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header">
+            <h5 class="mb-0 {{ object.get_heading }}">Status Information</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-2">
                 <strong>Status:</strong> {{ object.get_status_display }}
             </p>
-            <p class="mb-1">
-                <strong>Owner:</strong>
+            <p class="mb-2">
                 {% if object.owner %}
+                    <strong>Owner:</strong>
                     <a href="{% url 'profile' object.owner.id %}">{{ object.owner.username }}</a>
-                {% else %}
-                    <span class="text-muted">None</span>
                 {% endif %}
             </p>
-            <p class="mb-1">
-                <strong>Owned By:</strong>
+            <p class="mb-2">
                 {% if object.owned_by %}
+                    <strong>Owned By:</strong>
                     <a href="{{ object.owned_by.get_absolute_url }}">{{ object.owned_by }}</a>
-                {% else %}
-                    <span class="text-muted">None</span>
                 {% endif %}
             </p>
             <p class="mb-0">

@@ -1,15 +1,17 @@
 {% extends "core/object.html" %}
-{% block contents %}
-        <div class="row">
-            <div class="col-sm">Title</div>
-            <div class="col-sm">{{ object.title }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Content</div>
-            <div class="col-sm">{{ object.content }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Date</div>
-            <div class="col-sm">{{ object.date }}</div>
-        </div>
-{% endblock contents %}
+{% block objectname %}
+    <div class="row">
+        <div class="col-sm">Title</div>
+        <div class="col-sm">{{ object.title }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Date</div>
+        <div class="col-sm">{{ object.date }}</div>
+    </div>
+{% endblock objectname %}
+{% block description %}
+    <div class="row">
+        <div class="col-sm">Content</div>
+        <div class="col-sm">{{ object.content }}</div>
+    </div>
+{% endblock description %}

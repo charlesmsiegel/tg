@@ -2,9 +2,6 @@
 {% block contents %}
     {% load dots %}
     <div class="row">
-        <h1 class="col-sm {{ object.get_heading }}">{{ object.name }}</h1>
-    </div>
-    <div class="row">
         <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
     </div>
     <div class="row">
@@ -46,12 +43,6 @@
 {% empty %}
 </div>
 {% endfor %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Description</h2>
-</div>
-<div class="row">
-    <div class="col-sm">{{ object.description }}</div>
-</div>
 <div class="row">
     <h2 class="col-sm {{ object.get_heading }}">Benefit</h2>
 </div>

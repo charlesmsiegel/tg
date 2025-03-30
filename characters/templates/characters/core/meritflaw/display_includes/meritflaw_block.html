@@ -1,0 +1,29 @@
+<div class="col-md mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0 heading-text">Merits & Flaws</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table node-table mb-0">
+                    <tbody>
+                        {% for mf, rating in object.get_mf_and_rating_list %}
+                            <tr>
+                                <td>
+                                    <a href="{{ mf.get_absolute_url }}" class="node-link">{{ mf.name }}</a>
+                                </td>
+                                <td class="text-right" width="40">
+                                    <span class="badge badge-pill {% if rating > 0 %}badge-success{% else %}badge-danger{% endif %}">{{ rating }}</span>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2" class="centertext text-muted py-3">No merits or flaws.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
