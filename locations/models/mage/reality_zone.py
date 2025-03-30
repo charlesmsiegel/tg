@@ -40,6 +40,19 @@ class RealityZone(models.Model):
     def get_negative_practices(self):
         return ZoneRating.objects.filter(zone=self, rating__lt=0)
 
+    def get_applied_to(self):
+        from locations.models.mage.node import Node
+        from locations.models.mage.realm import HorizonRealm
+        from locations.models.mage.sanctum import Sanctum
+        from locations.models.mage.sector import Sector
+
+        applied_to = []
+        applied_to.extend(list(Node.objects.filter(reality_zone=self)))
+        applied_to.extend(list(HorizonRealm.objects.filter(reality_zone=self)))
+        applied_to.extend(list(Sanctum.objects.filter(reality_zone=self)))
+        applied_to.extend(list(Sector.objects.filter(reality_zone=self)))
+        return applied_to
+
     def get_heading(self):
         return "mta_heading"
 
