@@ -16,7 +16,7 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Practice, SpecializedPractice, Tenet
-from characters.models.mage.mage import Mage, PracticeRating
+from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
@@ -355,6 +355,9 @@ class MageDetailView(HumanDetailView):
         context["rote_form"] = RoteCreationForm(instance=self.object)
         context["spec_form"] = SpecialtiesForm(
             object=self.object, specialties_needed=self.object.needed_specialties()
+        )
+        context["resonance"] = ResRating.objects.filter(mage=self.object).order_by(
+            "resonance__name"
         )
         return context
 
@@ -1169,9 +1172,9 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields[
-            "affinity_sphere"
-        ].queryset = self.object.get_affinity_sphere_options().order_by("name")
+        form.fields["affinity_sphere"].queryset = (
+            self.object.get_affinity_sphere_options().order_by("name")
+        )
         form.fields["affinity_sphere"].empty_label = "Choose an Affinity"
         form.fields["resonance"].widget = AutocompleteTextInput(
             suggestions=[x.name.title() for x in Resonance.objects.order_by("name")]
@@ -1548,9 +1551,9 @@ class MageChantryView(GenericBackgroundView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.chantry_creation_form.fields[
-            "total_points"
-        ].initial = self.current_background.rating
+        form.chantry_creation_form.fields["total_points"].initial = (
+            self.current_background.rating
+        )
         form.chantry_creation_form.fields["total_points"].widget.attrs.update(
             {
                 "min": self.current_background.rating,

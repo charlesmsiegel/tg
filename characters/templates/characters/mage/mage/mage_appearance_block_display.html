@@ -26,8 +26,5 @@
         <div class="col-sm">Age</div>
         <div class="col-sm">{{ object.age }}</div>
     </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description|sanitize_html|linebreaks }}</div>
-    </div>
+    {% include "core/includes/description.html" %}
 </div>

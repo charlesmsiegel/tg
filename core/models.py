@@ -121,6 +121,9 @@ class Model(PolymorphicModel):
         self.owner = owner
         return True
 
+    def owned_by_list(self):
+        return []
+
     def update_status(self, status):
         self.status = status
         return True

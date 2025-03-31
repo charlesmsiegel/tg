@@ -17,28 +17,39 @@
             {% block references %}
                 {% include "core/includes/references.html" %}
             {% endblock references %}
+            {% block status %}
+                <div class="row mb-4">
+                    {% include "core/includes/status.html" %}
+                    {% block status_row %}
+                    {% endblock status_row %}
+                </div>
+            {% endblock status %}
             {% block contents %}
             {% endblock contents %}
             {% block description %}
                 {% include "core/includes/description.html" %}
             {% endblock description %}
-            <form method="post">
-                {% block update %}
-                    <div class="row">
-                        <div class="col-sm">
-                            {% if user.is_authenticated %}
-                                {% if user.profile.is_st %}
-                                    {% if object.get_full_update_url %}
-                                        <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
-                                    {% else %}
-                                        <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
+            {% block post_content %}
+            {% endblock post_content %}
+            {% block buttons %}
+                <form method="post">
+                    {% block update %}
+                        <div class="row">
+                            <div class="col-sm">
+                                {% if user.is_authenticated %}
+                                    {% if user.profile.is_st %}
+                                        {% if object.get_full_update_url %}
+                                            <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
+                                        {% else %}
+                                            <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
-                            {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endblock update %}
-            </form>
+                    {% endblock update %}
+                </form>
+            {% endblock buttons %}
         </div>
     </div>
 {% endblock content %}

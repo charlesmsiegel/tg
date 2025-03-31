@@ -27,3 +27,6 @@ class ItemModel(Model):
 
     def get_heading(self):
         return "wod_heading"
+
+    def owned_by_list(self):
+        return list(self.owned_by.all())

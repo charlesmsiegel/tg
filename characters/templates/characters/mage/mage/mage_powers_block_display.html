@@ -10,21 +10,7 @@
 <div id="spheresSection" class="collapse show multi-collapse">
     {% include "characters/mage/spheres/display_with_names_and_specs.html" %}
 </div>
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#resSection"
-        aria-expanded="true"
-        aria-controls="resSection">Resonance</h2>
-</div>
-<div id="resSection" class="collapse show multi-collapse">
-    <div class="row">
-        {% for res in object.get_resonance %}
-            <div class="col-sm">{{ res.resonance }}</div>
-            <div class="col-sm dots">{{ res.rating }}</div>
-        {% endfor %}
-    </div>
-</div>
+{% include "characters/mage/resonance/display_includes/resonance.html" %}
 {% block rotes %}
     <div class="row">
         <h2 class="col-sm {{ object.get_heading }} pointer"

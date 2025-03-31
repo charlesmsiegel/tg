@@ -307,6 +307,13 @@ class Chantry(BackgroundBlock, LocationModel):
     def has_faction(self):
         return self.faction is not None
 
+    def get_independent_members(self):
+        """Returns members who aren't part of any cabals in this chantry."""
+        cabal_member_ids = set()
+        for cabal in self.cabals.all():
+            cabal_member_ids.update(cabal.members.values_list('id', flat=True))
+        return self.members.exclude(id__in=cabal_member_ids)
+
 
 class ChantryBackgroundRating(models.Model):
     bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)

@@ -1,23 +1,19 @@
 {% extends "core/object.html" %}
 {% load sanitize_text dots %}
 {% block objectname %}
-    {% include "locations/core/location/title_and_parent_include.html" %}
+    {% include "locations/core/location/display_includes/title.html" %}
 {% endblock objectname %}
+{% block status_row %}
+    {% include "locations/core/location/display_includes/boundaries.html" %}
+{% endblock status_row %}
 {% block contents %}
-    {# Status and boundaries section #}
-    <div class="row mb-4">
-        {% include "locations/core/location/status_include.html" %}
-        {% include "locations/core/location/boundaries_include.html" %}
-    </div>
-    {# Model-specific details section #}
     {% block model_specific %}
     {% endblock model_specific %}
-    {# Reality zone section, if applicable #}
     {% block reality_zone %}
     {% endblock reality_zone %}
-    {# Additional content section #}
     {% block additional_content %}
     {% endblock additional_content %}
-    {# Scenes section #}
-    {% include "locations/core/location/scenes_include.html" %}
 {% endblock contents %}
+{% block post_content %}
+    {% include "locations/core/location/display_includes/scenes.html" %}
+{% endblock post_content %}

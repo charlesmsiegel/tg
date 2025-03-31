@@ -1,0 +1,23 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-card">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">Resources</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-8">
+                        <strong>Available Points:</strong>
+                    </div>
+                    <div class="col-sm-4">{{ object.points }}/{{ object.total_points }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-8">
+                        <strong>Integrated Effects Points:</strong>
+                    </div>
+                    <div class="col-sm-4">{{ object.current_ie_points }}/{{ object.integrated_effects_number }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

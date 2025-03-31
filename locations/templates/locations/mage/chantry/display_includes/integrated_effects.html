@@ -1,0 +1,27 @@
+{% if object.integrated_effects.all %}
+    <div class="card mb-4">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0">Integrated Effects</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for effect in object.integrated_effects.all %}
+                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title {{ object.get_heading }}">
+                                    <a href="{{ effect.get_absolute_url }}">{{ effect.name }}</a>
+                                </h5>
+                                <p class="card-text">{{ effect.spheres }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col">
+                        <p class="text-muted mb-0">No integrated effects available.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

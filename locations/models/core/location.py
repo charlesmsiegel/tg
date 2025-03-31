@@ -43,3 +43,9 @@ class LocationModel(Model):
 
     def get_scenes(self):
         return Scene.objects.filter(location=self)
+
+    def owned_by_list(self):
+        if self.owned_by:
+            return [self.owned_by]
+        else:
+            return []

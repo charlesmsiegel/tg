@@ -1,5 +1,5 @@
 {# Status information #}
-<div class="col-md-6 mb-3">
+<div class="col-md mb-3">
     <div class="card location-card h-100">
         <div class="card-header">
             <h5 class="mb-0 {{ object.get_heading }}">Status Information</h5>
@@ -15,9 +15,12 @@
                 {% endif %}
             </p>
             <p class="mb-2">
-                {% if object.owned_by %}
+                {% if object.owned_by_list %}
                     <strong>Owned By:</strong>
-                    <a href="{{ object.owned_by.get_absolute_url }}">{{ object.owned_by }}</a>
+                    {% for owner in object.owned_by_list %}
+                        <a href="{{ owner.get_absolute_url }}">{{ owner }}</a>
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
                 {% endif %}
             </p>
             <p class="mb-0">

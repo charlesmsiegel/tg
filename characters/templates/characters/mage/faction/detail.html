@@ -3,10 +3,6 @@
     {% load dots %}
     {% load sanitize_text %}
     <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
         <div class="col-sm">Languages</div>
         <div class="col-sm">{{ languages }}</div>
     </div>
@@ -65,9 +61,5 @@
     <div class="row">
         <div class="col-sm">Subfactions</div>
         <div class="col-sm">{{ subfactions|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
     </div>
 {% endblock contents %}

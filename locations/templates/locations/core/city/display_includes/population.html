@@ -1,0 +1,55 @@
+{% load sanitize_text dots humanize %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-card">
+            <div class="card-header {{ object.get_heading }}">
+                <h5 class="mb-0">City Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Population</h6>
+                            <span class="badge badge-pill badge-primary px-3 py-2">{{ object.population|intcomma }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if object.characters.exists %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card location-card">
+                <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Characters</h5>
+                    <span class="badge badge-light">{{ object.characters.count }} Characters</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for character in object.characters.all %}
+                            <div class="col-sm-6 col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-header py-2">
+                                        <h6 class="mb-0">
+                                            <a href="{{ character.get_absolute_url }}">{{ character }}</a>
+                                        </h6>
+                                    </div>
+                                    <div class="card-body py-2">
+                                        {% if character.type %}<span class="badge badge-secondary">{{ character.type|title }}</span>{% endif %}
+                                        {% if character.get_status_display %}
+                                            <span class="badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                {{ character.get_status_display }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

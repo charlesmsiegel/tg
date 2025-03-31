@@ -5,43 +5,7 @@
         {% include "locations/mage/node/display_includes/basics.html" %}
         {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
     </div>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card location-card">
-                <div class="card-header {{ object.get_heading }}">
-                    <h5 class="mb-0 heading-text">Resonance</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table node-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="table_head_font_color {{ object.get_heading }}">Resonance Type</th>
-                                    <th class="text-center table_head_font_color {{ object.get_heading }}">Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for res in resonance %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ res.resonance.get_absolute_url }}" class="node-link">{{ res.resonance }}</a>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="dots colored-dots">{{ res.rating|dots }}</span>
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="2" class="centertext text-muted py-3">No resonance traits.</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/mage/resonance/display_includes/resonance.html" %}
 {% endblock model_specific %}
 {% block reality_zone %}
     {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with object=object.reality_zone %}
