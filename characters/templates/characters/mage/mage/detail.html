@@ -11,7 +11,7 @@
     {% include "characters/mage/mage/mage_advantage_display.html" %}
 {% endblock advantages %}
 {% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
 {% endblock backgrounds %}
 {% block powers %}
     {% include "characters/mage/mage/mage_powers_block_display.html" %}

@@ -34,7 +34,7 @@
         {% include "characters/core/human/advantages_display.html" %}
     {% endblock advantages %}
     {% block backgrounds %}
-        {% include "characters/core/background_block/detail.html" %}
+        {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
     {% endblock backgrounds %}
     {% block powers %}
     {% endblock powers %}

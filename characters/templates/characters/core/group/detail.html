@@ -1,80 +1,8 @@
 {% extends "core/object.html" %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm {{ object.get_heading }}">
-            <h1>{{ object.name }}</h1>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Chronicle</div>
-        <a class="col-sm" href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <a class="col-sm" href="{{ object.leader.get_absolute_url }}">{{ object.leader }}</a>
-    </div>
-    {% for member in object.members.all %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href="{{ member.get_absolute_url }}">{{ member }}</a>
-            <div class="col-sm"></div>
-        </div>
-    {% endfor %}
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Public Info</div>
-        <div class="col-sm">{{ object.public_info }}</div>
-    </div>
-    {% load dots %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }} pointer"
-            data-toggle="collapse"
-            data-target="#backgroundsSection"
-            aria-expanded="true"
-            aria-controls="backgroundsSection">Backgrounds</h2>
-    </div>
-    <div id="backgroundsSection" class="collapse show">
-        <div class="row">
-            {% for bg in object.pooled_backgrounds.all %}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="card mb-3">
-                        <!-- Center the content inside the card -->
-                        <div class="card-body text-center">
-                            <!-- Flex container to align bg.bg and bg.rating|dots horizontally -->
-                            <div class="d-inline-flex align-items-center">
-                                <div>{{ bg.bg }}</div>
-                                <div class="dots ml-2">{{ bg.rating|dots }}</div>
-                            </div>
-                            <!-- Ensure bg.note is on a new line with some top margin -->
-                            <div class="mt-2">
-                                {% if bg.note %}
-                                    {% if bg.url %}
-                                        <!-- Display bg.note as a link if bg.url exists -->
-                                        <a href="{{ bg.url }}">{{ bg.note }}</a>
-                                    {% else %}
-                                        <!-- Display bg.note as plain text -->
-                                        <div>{{ bg.note }}</div>
-                                    {% endif %}
-                                {% else %}
-                                    <!-- Insert an empty div to maintain spacing -->
-                                    <div class="hidden">&nbsp;</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col">No backgrounds available.</div>
-            {% endfor %}
-        </div>
-    </div>
+    {% include "characters/core/group/display_includes/members.html" %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.pooled_backgrounds %}
+    {% include "characters/core/group/display_includes/public_info.html" %}
 {% endblock contents %}
 {% block update %}
     <div class="row">

@@ -5,7 +5,7 @@
     {% if object.creation_status == 1 %}
         {% include "locations/mage/chantry/display_includes/resources_remaining.html" %}
     {% endif %}
-    {% include "characters/core/background_block/detail.html" %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
     {% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
 {% endblock model_specific %}
 {% block additional_content %}

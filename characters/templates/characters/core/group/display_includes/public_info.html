@@ -1,0 +1,12 @@
+{% load sanitize_text %}
+{# Description section #}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-card">
+            <div class="card-header">
+                <h5 class="mb-0 {{ object.get_heading }}">Public Info</h5>
+            </div>
+            <div class="card-body">{{ object.public_info|sanitize_html|linebreaks }}</div>
+        </div>
+    </div>
+</div>

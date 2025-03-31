@@ -10,5 +10,5 @@
     {% include "characters/changeling/ctdhuman/ability_block_display.html" %}
 {% endblock abilities %}
 {% block backgrounds %}
-    {% include "characters/core/background_block/detail.html" %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
 {% endblock backgrounds %}

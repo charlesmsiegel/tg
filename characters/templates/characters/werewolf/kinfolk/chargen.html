@@ -32,7 +32,7 @@
             {% if object.creation_status == 3 %}
                 {% include "characters/core/background_block/form.html" %}
             {% elif object.creation_status > 3 %}
-                {% include "characters/core/background_block/detail.html" %}
+                {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
             {% endif %}
         {% endblock backgrounds %}
         {% block advantages %}
