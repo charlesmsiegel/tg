@@ -11,15 +11,15 @@
         </div>
     {% endblock name %}
     {% block basics %}
-        {% include "locations/mage/chantry/basics_block_display.html" %}
+        {% include "locations/mage/chantry/display_includes/basics.html" %}
     {% endblock basics %}
     {% block points %}
         {% if object.creation_status == 1 %}
             {% if is_approved_user %}
                 {% include "locations/mage/chantry/point_spend_form.html" %}
             {% endif %}
-        {% elif object.creation_status > 1 %}
-            {% include "locations/mage/chantry/point_spend_display.html" %}
+            {% comment %} {% elif object.creation_status > 1 %}
+            {% include "locations/mage/chantry/point_spend_display.html" %}{% endcomment %}
         {% endif %}
     {% endblock points %}
     {% block effects %}
@@ -28,7 +28,7 @@
                 {% include "locations/mage/chantry/effects_form.html" %}
             {% endif %}
         {% elif object.creation_status > 2 %}
-            {% include "locations/mage/chantry/effects_display.html" %}
+            {% include "locations/mage/chantry/display_includes/integrated_effects.html" %}
         {% endif %}
     {% endblock effects %}
     {% block node %}
@@ -65,7 +65,7 @@
                 {% include "locations/mage/chantry/personnel_form.html" %}
             {% endif %}
         {% elif object.creation_status > 7 %}
-            {% include "locations/mage/chantry/personnel_display.html" %}
+            {% include "locations/mage/chantry/display_includes/members.html" %}
         {% endif %}
     {% endblock personnel %}
 {% endblock contents %}
