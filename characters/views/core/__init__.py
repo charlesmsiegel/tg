@@ -121,9 +121,7 @@ class CharacterIndexView(ListView):
 
         # Annotating the queryset with the first group id
         characters = (
-            Character.objects.exclude(status__in=["Dec", "Ret"])
-            .exclude(npc=True)
-            .annotate(first_group_id=first_group_id)
+            Character.objects.annotate(first_group_id=first_group_id)
             .select_related("chronicle")
             .order_by("chronicle__id", "-first_group_id", "name")
         )
@@ -165,10 +163,34 @@ class CharacterIndexView(ListView):
         # Create chron_dict similar to items and locations
         chron_dict = {}
         for chron in list(Chronicle.objects.all()) + [None]:
-            characters = self.get_queryset().filter(chronicle=chron)
-            # Only include characters that should be displayed
-            characters = [char for char in characters if char.display]
-            chron_dict[chron] = characters
+            chron_dict[chron] = {
+                "active": [
+                    char
+                    for char in self.get_queryset().filter(
+                        chronicle=chron, status__in=["Un", "Sub", "App"], npc=False
+                    )
+                    if char.display
+                ],
+                "retired": [
+                    char
+                    for char in self.get_queryset().filter(
+                        chronicle=chron, status="Ret"
+                    )
+                    if char.display
+                ],
+                "deceased": [
+                    char
+                    for char in self.get_queryset().filter(
+                        chronicle=chron, status="Dec"
+                    )
+                    if char.display
+                ],
+                "npc": [
+                    char
+                    for char in self.get_queryset().filter(chronicle=chron, npc=True)
+                    if char.display
+                ],
+            }
 
         context["chron_dict"] = chron_dict
         return context
