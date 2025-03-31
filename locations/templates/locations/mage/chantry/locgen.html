@@ -14,12 +14,12 @@
         {% include "locations/mage/chantry/display_includes/basics.html" %}
     {% endblock basics %}
     {% block points %}
+        {% include "locations/mage/chantry/display_includes/resources_remaining.html" %}
+        {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
         {% if object.creation_status == 1 %}
             {% if is_approved_user %}
                 {% include "locations/mage/chantry/point_spend_form.html" %}
             {% endif %}
-            {% comment %} {% elif object.creation_status > 1 %}
-            {% include "locations/mage/chantry/point_spend_display.html" %}{% endcomment %}
         {% endif %}
     {% endblock points %}
     {% block effects %}
