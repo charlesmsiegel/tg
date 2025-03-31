@@ -1,0 +1,33 @@
+<div class="col-md-6 mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0 heading-text">Physical Properties</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-6">
+                    <h6 class="{{ object.get_heading }} heading-text">Medium</h6>
+                </div>
+                <div class="col-6">
+                    <a href="{{ object.medium.get_absolute_url }}" class="node-link">{{ object.medium }}</a>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <h6 class="{{ object.get_heading }} heading-text">Cover Material</h6>
+                </div>
+                <div class="col-6">
+                    <a href="{{ object.cover_material.get_absolute_url }}" class="node-link">{{ object.cover_material }}</a>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <h6 class="{{ object.get_heading }} heading-text">Inner Material</h6>
+                </div>
+                <div class="col-6">
+                    <a href="{{ object.inner_material.get_absolute_url }}" class="node-link">{{ object.inner_material }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

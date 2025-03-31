@@ -2,12 +2,5 @@
 {% block resonance %}
 {% endblock resonance %}
 {% block powers %}
-    <div class="row">
-        <div class="col-sm">Gnosis</div>
-        <div class="col-sm">{{ object.gnosis }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Spirit</div>
-        <div class="col-sm">{{ object.spirit }}</div>
-    </div>
+    {% include "items/werewolf/fetish/display_includes/powers.html" %}
 {% endblock powers %}

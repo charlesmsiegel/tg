@@ -1,0 +1,32 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-card">
+            <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 heading-text">Powers</h5>
+                <span class="badge badge-light">Arete {{ object.arete }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for power in object.powers.all %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{{ power.get_absolute_url }}" class="node-link">{{ power.name }}</a>
+                                    </h6>
+                                    <div class="card-text">
+                                        <div class="dots mb-2">{{ power.spheres }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0">No powers available.</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

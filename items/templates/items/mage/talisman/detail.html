@@ -1,16 +1,4 @@
 {% extends "items/mage/wonder/detail.html" %}
-
 {% block powers %}
-    <div class="col-sm {{ object.get_heading }}">
-        <h2>Powers</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Arete</div>
-        <div class="col-sm">{{ object.arete }}</div>
-    </div>
-    <div class="row">
-        {% for power in object.powers.all %}
-            <a class="col-sm" href={{ power.get_absolute_url }}>{{ power.name }}</a>
-        {% endfor %}
-    </div>
+    {% include "items/mage/talisman/display_includes/powers.html" %}
 {% endblock powers %}

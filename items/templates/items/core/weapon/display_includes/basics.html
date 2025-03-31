@@ -1,0 +1,21 @@
+<div class="col">
+    <div class="card location-card mb-4">
+        <div class="card-header {{ object.get_heading }}">
+            <h5 class="mb-0 heading-text">Weapon Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4"><strong>Damage:</strong></div>
+                <div class="col-sm-8">{{ object.damage }}/{{ object.get_damage_type_display }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Difficulty:</strong></div>
+                <div class="col-sm-8">{{ object.difficulty }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Conceal:</strong></div>
+                <div class="col-sm-8">{{ object.get_conceal_display }}</div>
+            </div>
+        </div>
+    </div>
+</div>

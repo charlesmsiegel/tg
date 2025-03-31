@@ -34,6 +34,7 @@
                                     <div class="card-header py-2">
                                         <h6 class="mb-0">
                                             <a href="{{ character.get_absolute_url }}">{{ character }}</a>
+                                            {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                         </h6>
                                     </div>
                                     <div class="card-body py-2">

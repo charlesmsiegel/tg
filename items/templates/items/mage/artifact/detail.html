@@ -1,7 +1,4 @@
 {% extends "items/mage/wonder/detail.html" %}
 {% block powers %}
-    <div class="row">
-        <div class="col-sm">Power</div>
-        <a class="col-sm" href={{ object.power.get_absolute_url }}>{{ object.power.name }}</a>
-    </div>
+    {% include "items/mage/artifact/display_includes/power.html" %}
 {% endblock powers %}

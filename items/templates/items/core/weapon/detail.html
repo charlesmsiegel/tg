@@ -1,13 +1,8 @@
 {% extends "items/core/item/detail.html" %}
 {% block additional_stats %}
     <div class="row">
-        <div class="col-sm">Damage</div>
-        <div class="col-sm">{{ object.damage }}/{{ object.get_damage_type_display }}</div>
-        <div class="col-sm">Difficulty</div>
-        <div class="col-sm">{{ object.difficulty }}</div>
-        <div class="col-sm">Conceal</div>
-        <div class="col-sm">{{ object.get_conceal_display }}</div>
+        {% include "items/core/weapon/display_includes/basics.html" %}
+        {% block ranged_details %}
+        {% endblock ranged_details %}
     </div>
-    {% block ranged_details %}
-    {% endblock ranged_details %}
 {% endblock additional_stats %}

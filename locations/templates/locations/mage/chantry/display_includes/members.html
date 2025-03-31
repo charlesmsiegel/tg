@@ -12,6 +12,7 @@
                             <div class="card-header py-2">
                                 <h6 class="mb-0">
                                     <a href="{{ leader.get_absolute_url }}">{{ leader.name }}</a>
+                                    {% if leader.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
                             <div class="card-body py-2">
@@ -35,6 +36,7 @@
                             <h6 class="mb-0">
                                 <strong>Ambassador:</strong>
                                 <a href="{{ object.ambassador.get_absolute_url }}">{{ object.ambassador.name }}</a>
+                                {% if object.ambassador.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                             </h6>
                         </div>
                         <div class="card-body py-2">
@@ -55,6 +57,7 @@
                             <h6 class="mb-0">
                                 <strong>Node Tender:</strong>
                                 <a href="{{ object.node_tender.get_absolute_url }}">{{ object.node_tender.name }}</a>
+                                {% if object.node_tender.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                             </h6>
                         </div>
                         <div class="card-body py-2">
@@ -78,6 +81,7 @@
                             <div class="card-header py-2">
                                 <h6 class="mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
                             <div class="card-body py-2">
@@ -102,6 +106,7 @@
                             <div class="card-header py-2">
                                 <h6 class="mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
                             <div class="card-body py-2">
@@ -126,6 +131,7 @@
                             <div class="card-header py-2">
                                 <h6 class="mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
+                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
                             <div class="card-body py-2">
@@ -170,6 +176,7 @@
                                                 <div class="card-header py-2">
                                                     <h6 class="mb-0">
                                                         <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                                        {% if member.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                                     </h6>
                                                 </div>
                                                 <div class="card-body py-2">
@@ -204,6 +211,7 @@
                                 <div class="card-header py-2">
                                     <h6 class="mb-0">
                                         <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                        {% if member.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
                                     </h6>
                                 </div>
                                 <div class="card-body py-2">

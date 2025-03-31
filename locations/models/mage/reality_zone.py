@@ -35,10 +35,10 @@ class RealityZone(models.Model):
         return reverse("locations:mage:create:reality_zone")
 
     def get_positive_practices(self):
-        return ZoneRating.objects.filter(zone=self, rating__gt=0)
+        return ZoneRating.objects.filter(zone=self, rating__gt=0).order_by('-rating', 'practice__name')
 
     def get_negative_practices(self):
-        return ZoneRating.objects.filter(zone=self, rating__lt=0)
+        return ZoneRating.objects.filter(zone=self, rating__lt=0).order_by('rating', 'practice__name')
 
     def get_applied_to(self):
         from locations.models.mage.node import Node

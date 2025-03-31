@@ -1,68 +1,18 @@
 {% extends "items/core/item/detail.html" %}
 {% load dots %}
+{% block status_row %}
+    {% include "items/mage/wonder/display_includes/basics.html" %}
+{% endblock status_row %}
 {% block contents %}
-    <div class="container py-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card location-header-card">
-                    <div class="card-body">
-                        <h1 class="{{ object.get_heading }}">
-                            {{ object.name }}
-                            {% if object.rank %}
-                                <small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>
-                            {% endif %}
-                        </h1>
-                        {% if object.parent %}
-                            <p class="card-subtitle mb-0 text-muted">
-                                Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
+    {% block additional_stats %}
+        {% block creation %}
+        {% endblock creation %}
+        {% block resonance %}
+            <div class="row mb-4">
+                <div class="col-12">{% include "characters/mage/resonance/display_includes/resonance.html" %}</div>
             </div>
-        </div>
-
-        {% block additional_stats %}
-            {% block basics %}
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <div class="card location-card h-100">
-                            <div class="card-header {{ object.get_heading }}">
-                                <h5 class="mb-0 heading-text">Basic Information</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <h6 class="{{ object.get_heading }} heading-text">Background Cost</h6>
-                                    </div>
-                                    <div class="col-6">
-                                        {{ object.background_cost }}
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <h6 class="{{ object.get_heading }} heading-text">Maximum Quintessence</h6>
-                                    </div>
-                                    <div class="col-6">
-                                        {{ object.quintessence_max }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endblock basics %}
-            {% block creation %}
-            {% endblock creation %}
-            {% block resonance %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        {% include "characters/mage/resonance/display_includes/resonance.html" %}
-                    </div>
-                </div>
-            {% endblock resonance %}
-            {% block powers %}
-            {% endblock powers %}
-        {% endblock additional_stats %}
-    </div>
+        {% endblock resonance %}
+        {% block powers %}
+        {% endblock powers %}
+    {% endblock additional_stats %}
 {% endblock contents %}

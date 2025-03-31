@@ -1,0 +1,21 @@
+<div class="card location-card mb-4">
+    <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 heading-text">Power</h5>
+    </div>
+    <div class="card-body">
+        {% if object.power %}
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="{{ object.power.get_absolute_url }}" class="node-link">{{ object.power.name }}</a>
+                    </h6>
+                    <div class="card-text">
+                        <div class="dots mb-2">{{ object.power.spheres }}</div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-0">No powers available.</div>
+        {% endif %}
+    </div>
+</div>
