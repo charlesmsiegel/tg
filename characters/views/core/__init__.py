@@ -32,6 +32,7 @@ from django.db.models import OuterRef, Subquery
 from django.shortcuts import redirect, render
 from django.views.generic import ListView
 from game.models import ObjectType
+from game.models import Chronicle
 
 from .group import GroupDetailView
 
@@ -75,7 +76,7 @@ class GenericGroupDetailView(DictView):
 
 class CharacterIndexView(ListView):
     model = Character
-    template_name = "characters/charlist.html"
+    template_name = "characters/index.html"
 
     chars = {
         "human": Human,
@@ -156,7 +157,20 @@ class CharacterIndexView(ListView):
         context["title"] = "Characters"
         context["button_include"] = True
         context["form"] = CharacterCreationForm(user=self.request.user)
-        context["header"] = "wod_heading"
+        if self.request.user.is_authenticated:
+            context["header"] = self.request.user.profile.preferred_heading
+        else:
+            context["header"] = "wod_heading"
+
+        # Create chron_dict similar to items and locations
+        chron_dict = {}
+        for chron in list(Chronicle.objects.all()) + [None]:
+            characters = self.get_queryset().filter(chronicle=chron)
+            # Only include characters that should be displayed
+            characters = [char for char in characters if char.display]
+            chron_dict[chron] = characters
+
+        context["chron_dict"] = chron_dict
         return context
 
 

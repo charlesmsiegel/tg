@@ -1,0 +1,162 @@
+{% extends "core/base.html" %}
+{% load field %}
+
+{% block title %}
+    {{ title }}
+{% endblock title %}
+
+{% block styling %}
+{{ block.super }}
+<style>
+    .btn-link {
+        color: inherit;
+    }
+    .btn-link:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    .list-group-item {
+        background-color: inherit;
+        border-color: inherit;
+    }
+    .list-group {
+        background-color: inherit;
+    }
+    .centertext {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header {{ header }}">
+                        <h1 class="mb-0">{{ title }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Character List -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="characterTabs" role="tablist">
+                    {% for chron in chron_dict.keys %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                               id="tab-{{ chron.id|default:'no-chronicle' }}" 
+                               data-toggle="tab" 
+                               href="#chron-{{ chron.id|default:'no-chronicle' }}" 
+                               role="tab">
+                                {% if chron %}
+                                    {{ chron.name }}
+                                {% else %}
+                                    No Chronicle
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="characterTabsContent">
+                    {% for chron in chron_dict.keys %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                             id="chron-{{ chron.id|default:'no-chronicle' }}" 
+                             role="tabpanel">
+                            
+                            {% with chron_chars=chron_dict|field:chron %}
+                                {% if chron_chars %}
+                                    {% regroup chron_chars by group_set.first as grouplist %}
+                                    {% for g in grouplist %}
+                                        {% if g.list %}
+                                            <div class="mb-3">
+                                                <h3 class="mb-2">
+                                                    {% if g.grouper %}
+                                                        <a href="{{ g.grouper.get_absolute_url }}">{{ g.grouper }}</a>
+                                                    {% else %}
+                                                        Solo Characters
+                                                    {% endif %}
+                                                </h3>
+                                                <div class="list-group">
+                                                    {% for char in g.list %}
+                                                        {% if char.display %}
+                                                            <div class="list-group-item">
+                                                                <div class="row">
+                                                                    <div class="col-sm">
+                                                                        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <a href="{{ char.owner.profile.get_absolute_url }}" class="text-muted">{{ char.owner.username }}</a>
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <span class="badge badge-secondary">{{ char.get_type }}</span>
+                                                                    </div>
+                                                                    <div class="col-sm">
+                                                                        <span class="badge badge-info">{{ char.get_status_display }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% empty %}
+                                                        <div class="text-center py-3 text-muted">No characters found in this group.</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% empty %}
+                                        <div class="text-center py-3 text-muted">No characters found for this chronicle.</div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-3 text-muted">No characters found for this chronicle.</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Character Type Navigation -->
+        <div class="card mb-4">
+            <div class="card-header {{ header }}">
+                <div class="row centertext">
+                    <div class="col-sm">
+                        <a href="{% url 'characters:index' %}">Active</a>
+                    </div>
+                    <div class="col-sm">
+                        <a href="{% url 'characters:retired' %}">Retired</a>
+                    </div>
+                    <div class="col-sm">
+                        <a href="{% url 'characters:deceased' %}">Deceased</a>
+                    </div>
+                    <div class="col-sm">
+                        <a href="{% url 'characters:npc' %}">NPC</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create New Character Form -->
+        {% if button_include %}
+        <div class="card">
+            <div class="card-header {{ header }}">
+                <h5 class="mb-0">Create New Character</h5>
+            </div>
+            <div class="card-body">
+                <form id="charForm" class="form-inline justify-content-center" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group mr-2">
+                        {{ form.char_type }}
+                    </div>
+                    <button type="submit" name="action" value="create" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock content %} 
