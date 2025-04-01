@@ -21,7 +21,9 @@ from locations.models.core.location import LocationModel
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, help_text="The user this profile belongs to")
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, help_text="The user this profile belongs to"
+    )
 
     preferred_heading = models.CharField(
         max_length=30,
@@ -44,68 +46,63 @@ class Profile(models.Model):
             ],
         ),
         default="wod_heading",
-        help_text="Choose the game system font style for headings"
+        help_text="Choose the game system font style for headings",
     )
-    
-    theme_list = ['light', 'dark']
-    
+
+    theme_list = ["light", "dark"]
+
     theme = models.CharField(
         max_length=100,
         choices=zip(
             theme_list,
-            [
-                x.replace("_", " ").title() for x in theme_list
-            ],
+            [x.replace("_", " ").title() for x in theme_list],
         ),
         default="light",
-        help_text="Choose a color scheme"
+        help_text="Choose a color scheme",
     )
-    
+
     highlight_text = models.BooleanField(
-        default=True, 
-        help_text="When enabled, quotes and special text will be highlighted in theme colors"
+        default=True,
+        help_text="When enabled, quotes and special text will be highlighted in theme colors",
     )
-    
+
     discord_id = models.CharField(
-        max_length=100, 
-        default="", 
+        max_length=100,
+        default="",
         blank=True,
-        help_text="Your Discord username for communication outside the game"
+        help_text="Your Discord username for communication outside the game",
     )
-    
+
     lines = models.TextField(
-        default="", 
-        blank=True, 
+        default="",
+        blank=True,
         null=True,
-        help_text="Topics you prefer not to interact with at all during gameplay"
+        help_text="Topics you prefer not to interact with at all during gameplay",
     )
-    
+
     veils = models.TextField(
-        default="", 
-        blank=True, 
+        default="",
+        blank=True,
         null=True,
-        help_text="Content you prefer not to have shown on screen, but can be referenced indirectly"
+        help_text="Content you prefer not to have shown on screen, but can be referenced indirectly",
     )
 
     discord_toggle = models.BooleanField(
-        default=False,
-        help_text="Show your Discord ID to other players"
+        default=False, help_text="Show your Discord ID to other players"
     )
-    
+
     lines_toggle = models.BooleanField(
-        default=False,
-        help_text="Show your lines to other players"
+        default=False, help_text="Show your lines to other players"
     )
-    
+
     veils_toggle = models.BooleanField(
-        default=False,
-        help_text="Show your veils to other players"
+        default=False, help_text="Show your veils to other players"
     )
 
     class Meta:
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
-        
+
     def get_theme_css_path(self):
         """Returns the appropriate CSS path based on theme selections."""
         base = f"themes/{self.theme}.css"

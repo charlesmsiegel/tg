@@ -31,8 +31,7 @@ from core.views.generic import DictView
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import redirect, render
 from django.views.generic import ListView
-from game.models import ObjectType
-from game.models import Chronicle
+from game.models import Chronicle, ObjectType
 
 from .group import GroupDetailView
 

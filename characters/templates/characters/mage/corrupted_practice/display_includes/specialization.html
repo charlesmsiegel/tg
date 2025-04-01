@@ -1,0 +1,25 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <h2 class="mb-0 {{ object.get_heading }}">Corruption Details</h2>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="h5 mb-3">Extra Benefit</h3>
+                        {{ object.extra_benefit }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="h5 mb-3">Price</h3>
+                        {{ object.price }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

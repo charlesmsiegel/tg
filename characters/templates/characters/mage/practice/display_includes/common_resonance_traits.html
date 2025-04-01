@@ -1,0 +1,19 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <h2 class="mb-0 {{ object.get_heading }}">Common Resonance Traits</h2>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            {% for abb in object.common_resonance_traits.all %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <a href="{{ abb.get_absolute_url }}">{{ abb }}</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

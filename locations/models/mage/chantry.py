@@ -311,7 +311,7 @@ class Chantry(BackgroundBlock, LocationModel):
         """Returns members who aren't part of any cabals in this chantry."""
         cabal_member_ids = set()
         for cabal in self.cabals.all():
-            cabal_member_ids.update(cabal.members.values_list('id', flat=True))
+            cabal_member_ids.update(cabal.members.values_list("id", flat=True))
         return self.members.exclude(id__in=cabal_member_ids)
 
 

@@ -1,0 +1,18 @@
+{% load dots %}
+<div class="card mb-3">
+    <div class="card-header">
+        <h2 class="mb-0 {{ object.get_heading }}">Abilities</h2>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            {% for abb in object.abilities.all %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">{{ abb }}</div>
+                    </div>
+                </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

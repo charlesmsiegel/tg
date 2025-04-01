@@ -126,6 +126,9 @@ class CorruptedPractice(Practice):
     def get_creation_url(cls):
         return reverse("characters:mage:create:corrupted_practice")
 
+    def get_rotes(self):
+        return self.parent_practice.get_rotes()
+
 
 class Tenet(Model):
     type = "tenet"

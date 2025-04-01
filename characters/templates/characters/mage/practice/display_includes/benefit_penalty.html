@@ -1,0 +1,21 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <h2 class="mb-0 {{ object.get_heading }}">Benefits & Penalties</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="h5 mb-3">Benefit</h3>
+                <div class="card">
+                    <div class="card-body">{{ object.benefit }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="h5 mb-3">Penalty</h3>
+                <div class="card">
+                    <div class="card-body">{{ object.penalty }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

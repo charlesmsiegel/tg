@@ -1,0 +1,25 @@
+<div class="card shadow-sm mb-4">
+    <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Details</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- Effect -->
+            <div class="col-md-6 mb-3">
+                <h6 class="text-muted">Effect</h6>
+                <a href="{{ object.effect.get_absolute_url }}">{{ object.effect.name }}</a>
+            </div>
+            <!-- Practice -->
+            <div class="col-md-6 mb-3">
+                <h6 class="text-muted">Practice</h6>
+                <a href="{{ object.practice.get_absolute_url }}"
+                   class="badge bg-info text-dark">{{ object.practice }}</a>
+            </div>
+        </div>
+        <!-- Centered Dicepool -->
+        <div class="col-md mb">
+            <h6 class="text-muted">Dicepool</h6>
+            <div>{{ object.attribute.name }} + {{ object.ability.name }}</div>
+        </div>
+    </div>
+</div>

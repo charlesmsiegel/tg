@@ -1,11 +1,6 @@
 {% extends "characters/mage/practice/detail.html" %}
 {% block specialization %}
-<div class="row">
-    <div class="col-sm">Extra Benefit</div>
-    <div class="col-sm">{{ object.extra_benefit }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Price</div>
-    <div class="col-sm">{{ object.price }}</div>
-</div>
+    {% include "characters/mage/corrupted_practice/display_includes/specialization.html" %}
 {% endblock specialization %}
+{% block extensions %}
+{% endblock extensions %}

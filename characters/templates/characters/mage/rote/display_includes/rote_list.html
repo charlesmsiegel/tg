@@ -3,11 +3,15 @@
         <div class="card location-card">
             <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 heading-text">Rotes</h5>
-                <span class="badge badge-light">{{ object.rotes.count }} Rotes</span>
+                {% if object.rote_points is not None %}
+                    <span class="badge badge-light">{{ object.rote_points }} Rote Points</span>
+                {% else %}
+                    <span class="badge badge-light">{{ object.rotes.count }} Rotes</span>
+                {% endif %}
             </div>
             <div class="card-body">
                 <div class="row">
-                    {% for rote in object.rotes.all %}
+                    {% for rote in rote_list.all %}
                         <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
                             <div class="card h-100">
                                 <div class="card-body">

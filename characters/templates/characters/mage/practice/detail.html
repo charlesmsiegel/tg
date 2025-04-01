@@ -1,108 +1,14 @@
 {% extends "core/object.html" %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
-    </div>
-    <div class="row">
-        {% for abb in object.abilities.all %}
-            {% if forloop.counter0|divisibleby:3 %}
-            </div>
-            <div class="row">
-            {% endif %}
-            <div class="col-sm-4">{{ abb }}</div>
-            {% if forloop.last %}</div>{% endif %}
-    {% empty %}
-    </div>
-{% endfor %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Instruments</h2>
-</div>
-<div class="row">
-    {% for abb in object.instruments.all %}
-        {% if forloop.counter0|divisibleby:3 %}
-        </div>
-        <div class="row">
-        {% endif %}
-        <a class="col-sm-4" href="{{ abb.get_absolute_url }}">{{ abb }}</a>
-        {% if forloop.last %}</div>{% endif %}
-{% empty %}
-</div>
-{% endfor %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Common Resonance Traits</h2>
-</div>
-<div class="row">
-    {% for abb in object.common_resonance_traits.all %}
-        {% if forloop.counter0|divisibleby:3 %}
-        </div>
-        <div class="row">
-        {% endif %}
-        <a class="col-sm-4" href="{{ abb.get_absolute_url }}">{{ abb }}</a>
-        {% if forloop.last %}</div>{% endif %}
-{% empty %}
-</div>
-{% endfor %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Benefit</h2>
-</div>
-<div class="row">
-    <div class="col-sm">{{ object.benefit }}</div>
-</div>
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Penalty</h2>
-</div>
-<div class="row">
-    <div class="col-sm">{{ object.penalty }}</div>
-</div>
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Rotes</h2>
-</div>
-<div class="row">
-    {% for rote in object.get_rotes %}
-        <div class="col-sm-12 col-md-6 col-lg-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <a href="{{ rote.get_absolute_url }}">{{ rote.name }}</a>
-                    <div class="dots">{{ rote.effect.spheres }}</div>
-                    <a href="{{ rote.practice.get_absolute_url }}">{{ rote.practice }}</a>
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <div class="col">No rotes available.</div>
-    {% endfor %}
-</div>
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Specializations</h2>
-</div>
-<div class="row">
-    {% for abb in specializations %}
-        {% if forloop.counter0|divisibleby:3 %}
-        </div>
-        <div class="row">
-        {% endif %}
-        <div class="col-sm-4">
-            <a href="{{ abb.get_absolute_url }}">{{ abb }}</a> <a href="{{ abb.faction.get_absolute_url }}">({{ abb.faction }})</a>
-        </div>
-        {% if forloop.last %}</div>{% endif %}
-{% empty %}
-</div>
-{% endfor %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Corruptions</h2>
-</div>
-<div class="row">
-    {% for abb in corruptions %}
-        {% if forloop.counter0|divisibleby:3 %}
-        </div>
-        <div class="row">
-        {% endif %}
-        <a class="col-sm-4" href="{{ abb.get_absolute_url }}">{{ abb }}</a>
-        {% if forloop.last %}</div>{% endif %}
-{% empty %}
-</div>
-{% endfor %}
-{% block specialization %}
-{% endblock specialization %}
+    {% include "characters/mage/practice/display_includes/abilities.html" %}
+    {% include "characters/mage/practice/display_includes/instruments.html" %}
+    {% include "characters/mage/practice/display_includes/common_resonance_traits.html" %}
+    {% include "characters/mage/practice/display_includes/benefit_penalty.html" %}
+    {% include "characters/mage/rote/display_includes/rote_list.html" with rote_list=object.get_rotes %}
+    {% block extensions %}
+        {% include "characters/mage/practice/display_includes/specializations.html" %}
+        {% include "characters/mage/practice/display_includes/corruptions.html" %}
+    {% endblock extensions %}
+    {% block specialization %}
+    {% endblock specialization %}
 {% endblock contents %}

@@ -12,38 +12,5 @@
 </div>
 {% include "characters/mage/resonance/display_includes/resonance.html" %}
 {% block rotes %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }} pointer"
-            data-toggle="collapse"
-            data-target="#rotesSection"
-            aria-expanded="true"
-            aria-controls="rotesSection">
-            {% if object.affiliation.name == "Technocratic Union" %}
-                Procedures
-            {% else %}
-                Rotes
-            {% endif %}
-        </h2>
-    </div>
-    <div id="rotesSection" class="collapse show multi-collapse">
-        <div class="row">
-            <div class="col-sm {{ object.get_heading }}">Rote Points Remaining</div>
-            <div class="col-sm {{ object.get_heading }}">{{ object.rote_points }}</div>
-        </div>
-        <div class="row">
-            {% for rote in object.rotes.all %}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <a href="{{ rote.get_absolute_url }}">{{ rote.name }}</a>
-                            <div class="dots">{{ rote.effect.spheres }}</div>
-                            <a href="{{ rote.practice.get_absolute_url }}">{{ rote.practice }}</a>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col">No rotes available.</div>
-            {% endfor %}
-        </div>
-    </div>
+    {% include "characters/mage/rote/display_includes/rote_list.html" with rote_list=object.rotes %}
 {% endblock rotes %}

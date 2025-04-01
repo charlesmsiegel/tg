@@ -5,7 +5,7 @@ def theme_context(request):
     context = {}
     if request.user.is_authenticated:
         profile = request.user.profile
-        context['user_theme'] = profile.theme
-        context['user_highlight_text'] = profile.highlight_text
-        
+        context["user_theme"] = profile.theme
+        context["user_highlight_text"] = profile.highlight_text
+
     return context
