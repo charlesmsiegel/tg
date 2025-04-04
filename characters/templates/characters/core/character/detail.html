@@ -2,24 +2,9 @@
 {% block contents %}
     {% if is_approved_user %}
         {% block statistics %}
-            {% block name %}
-                <div class="row">
-                    <div class="col-sm {{ object.get_heading }}">
-                        <h1>{{ object.name }}</h1>
-                    </div>
-                </div>
-            {% endblock name %}
             {% block basics %}
                 <div class="row">
                     <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Name</div>
-                    <div class="col-sm">{{ object.name }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Player</div>
-                    <a class="col-sm" href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a>
                 </div>
                 <div class="row">
                     <div class="col-sm">Concept</div>

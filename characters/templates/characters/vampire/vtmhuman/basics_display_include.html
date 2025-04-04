@@ -2,26 +2,14 @@
     <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
 </div>
 <div class="row">
-    <div class="col-sm">Name</div>
-    <div class="col-sm">{{ object.name }}</div>
     <div class="col-sm">Nature</div>
     <a class="col-sm" href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
 </div>
 <div class="row">
-    <div class="col-sm">Player</div>
-    <a class="col-sm" href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a>
     <div class="col-sm">Demeanor</div>
     <a class="col-sm" href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
 </div>
 <div class="row">
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
     <div class="col-sm">Concept</div>
     <div class="col-sm">{{ object.concept }}</div>
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
 </div>

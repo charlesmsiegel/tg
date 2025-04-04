@@ -2,16 +2,12 @@
     <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
 </div>
 <div class="row">
-    <div class="col-sm">Name</div>
-    <div class="col-sm">{{ object.name }}</div>
     <div class="col-sm">Seelie Legacy</div>
     <a class="col-sm" href="{{ object.seelie_legacy.get_absolute_url }}">{{ object.seelie_legacy }}</a>
     <div class="col-sm">Court</div>
     <div class="col-sm">{{ object.get_court_display }}</div>
 </div>
 <div class="row">
-    <div class="col-sm">Player</div>
-    <a class="col-sm" href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a>
     <div class="col-sm">Unseelie Legacy</div>
     <a class="col-sm" href="{{ object.unseelie_legacy.get_absolute_url }}">{{ object.unseelie_legacy }}</a>
     <div class="col-sm">Kith</div>

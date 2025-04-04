@@ -2,10 +2,6 @@
     <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
 </div>
 <div class="row">
-    <div class="col-sm">Name</div>
-    <div class="col-sm">{{ object.name }}</div>
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
     <div class="col-sm">Tribe</div>
     <div class="col-sm">
         <a href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>
@@ -13,16 +9,12 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm">Player</div>
-    <a class="col-sm" href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a>
     <div class="col-sm">Rank</div>
     <div class="col-sm">{{ object.get_rank_name }}</div>
     <div class="col-sm">Auspice</div>
     <div class="col-sm">{{ object.get_auspice_display }}</div>
 </div>
 <div class="row">
-    <div class="col-sm"></div>
-    <div class="col-sm"></div>
     <div class="col-sm">Concept</div>
     <div class="col-sm">{{ object.concept }}</div>
     <div class="col-sm">Breed</div>
