@@ -1,14 +1,9 @@
 {% extends "core/object.html" %}
+{% block status_row %}
+    <div class="col-md-6 mb-3">{% include "characters/werewolf/gift/display_includes/permissions.html" %}</div>
+    {{ block.super }}
+{% endblock status_row %}
 {% block contents %}
     {% load dots %}
-    <div class="row">
-        <div class="col-sm">Allowed</div>
-        <div class="col-sm"></div>
-    </div>
-    {% for line in allowed %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <div class="col-sm">{{ line }}</div>
-        </div>
-    {% endfor %}
+    {# No additional content needed as permissions are shown in status_row #}
 {% endblock contents %}

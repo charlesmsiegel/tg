@@ -14,30 +14,13 @@
         {% endblock statistics %}
         {% block flavor %}
         {% endblock flavor %}
-        {% block scenes %}
-            {% include "characters/core/character/char_scene_display.html" %}
-        {% endblock scenes %}
     {% else %}
         {% include "characters/core/character/not_owner.html" %}
     {% endif %}
-    {% block status_change %}
-        {% if is_approved_user %}
-                <form {% block formdetails %}
-                      action=""
-                      method="post"
-                      {% endblock formdetails %}>
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-sm">
-                            <input type="submit" name="retire" value="Mark Retired" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm">
-                            <input type="submit" name="decease" value="Mark Deceased" />
-                        </div>
-                    </div>
-                </form>
-        {% endif %}
-    {% endblock status_change %}
 {% endblock contents %}
+{% block post_content %}
+    {% include "characters/core/character/char_scene_display.html" %}
+{% endblock post_content %}
+{% block buttons %}
+    {% include "characters/core/character/display_includes/buttons.html" %}
+{% endblock buttons %}

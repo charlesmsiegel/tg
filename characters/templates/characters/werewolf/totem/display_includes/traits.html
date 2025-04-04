@@ -1,0 +1,36 @@
+{% load static %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 {{ object.get_heading }}">Traits</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted">Individual Traits</h6>
+                        <div class="card">
+                            <div class="card-body">{{ object.individual_traits }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted">Pack Traits</h6>
+                        <div class="card">
+                            <div class="card-body">{{ object.pack_traits }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted">Ban</h6>
+                        <div class="card">
+                            <div class="card-body">{{ object.ban }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

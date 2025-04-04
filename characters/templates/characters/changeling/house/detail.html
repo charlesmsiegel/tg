@@ -1,20 +1,7 @@
 {% extends "core/object.html" %}
+{% block objectname %}
+    {% include "characters/changeling/house/display_includes/title.html" %}
+{% endblock objectname %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Court</div>
-        <div class="col-sm">{{ object.get_court_display }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Boon</div>
-        <div class="col-sm">{{ object.boon }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Flaw</div>
-        <div class="col-sm">{{ object.flaw }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Factions</div>
-        <div class="col-sm">{{ object.factions.all }}</div>
-    </div>
+    {% include "characters/changeling/house/display_includes/details.html" %}
 {% endblock contents %}

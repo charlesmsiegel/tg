@@ -1,0 +1,37 @@
+{% load sanitize_text %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header {{ object.get_heading }}">Focus</div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Affinities</div>
+                    <div class="col-sm-9">
+                        {% for affinity in object.affinities.all %}
+                            <a href="{{ affinity.get_absolute_url }}">{{ affinity.name|sanitize_html }}</a>
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Paradigms</div>
+                    <div class="col-sm-9">
+                        {% for paradigm in object.paradigms.all %}
+                            <a href="{{ paradigm.get_absolute_url }}">{{ paradigm.name|sanitize_html }}</a>
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Practices</div>
+                    <div class="col-sm-9">
+                        {% for practice in object.practices.all %}
+                            <a href="{{ practice.get_absolute_url }}">{{ practice.name|sanitize_html }}</a>
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

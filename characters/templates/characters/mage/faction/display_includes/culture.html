@@ -1,0 +1,30 @@
+{% load sanitize_text %}
+{% if languages or media or materials %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header {{ object.get_heading }}">Culture</div>
+                <div class="card-body">
+                    {% if languages %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3 {{ object.get_heading }}">Languages</div>
+                            <div class="col-sm-9">{{ languages }}</div>
+                        </div>
+                    {% endif %}
+                    {% if media %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3 {{ object.get_heading }}">Media</div>
+                            <div class="col-sm-9">{{ media|sanitize_html }}</div>
+                        </div>
+                    {% endif %}
+                    {% if materials %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3 {{ object.get_heading }}">Materials</div>
+                            <div class="col-sm-9">{{ materials|sanitize_html }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

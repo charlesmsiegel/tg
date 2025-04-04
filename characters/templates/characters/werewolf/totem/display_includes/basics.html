@@ -1,0 +1,24 @@
+{% load static %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 {{ object.get_heading }}">Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Cost</strong>
+                    </div>
+                    <div class="col-sm-8">{{ object.cost }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Type</strong>
+                    </div>
+                    <div class="col-sm-8">{{ object.get_totem_type_display }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

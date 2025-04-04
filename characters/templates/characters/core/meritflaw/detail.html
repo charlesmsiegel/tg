@@ -1,13 +1,5 @@
 {% extends "core/object.html" %}
-{% block contents %}
-    {% load sanitize_text %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Ratings</div>
-        <div class="col-sm">{{ ratings }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Allowed</div>
-        <div class="col-sm">{{ object.booleans }}</div>
-    </div>
-{% endblock contents %}
+{% load dots %}
+{% block objectname %}
+    {% include "characters/core/meritflaw/display_includes/title.html" %}
+{% endblock objectname %}

@@ -1,0 +1,26 @@
+<div class="col-md mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header {{ object.get_heading }}">
+            Basics
+            <span class="badge badge-secondary float-right">Essence: {{ object.essence }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-sm-4 {{ object.get_heading }}">Willpower</div>
+                <div class="col-sm-4 {{ object.get_heading }}">Rage</div>
+                <div class="col-sm-4 {{ object.get_heading }}">Gnosis</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4">{{ object.willpower }}</div>
+                <div class="col-sm-4">{{ object.rage }}</div>
+                <div class="col-sm-4">{{ object.gnosis }}</div>
+            </div>
+            {% if object.concept %}
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Concept</div>
+                    <div class="col-sm-9">{{ object.concept }}</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

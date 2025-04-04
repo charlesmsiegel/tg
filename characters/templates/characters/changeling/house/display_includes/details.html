@@ -1,0 +1,50 @@
+{% load dots %}
+<div class="card location-card h-100">
+    <div class="card-header {{ object.get_heading }}">
+        <h5 class="mb-0">House Details</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0">Boon</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">{{ object.boon|default:"No boon specified" }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0">Flaw</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">{{ object.flaw|default:"No flaw specified" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h6 class="text-muted mb-3">Factions</h6>
+                {% if object.factions.all %}
+                    <div class="row g-3">
+                        {% for faction in object.factions.all %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">{{ faction.name }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No factions specified</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

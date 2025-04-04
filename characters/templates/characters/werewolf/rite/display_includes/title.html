@@ -1,0 +1,15 @@
+{% load sanitize_text %}
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card location-header-card">
+            <div class="card-body">
+                <h1 class="{{ object.get_heading }}">
+                    {{ object.name|sanitize_html }}
+                    {% if object.level %}<small><span class="dots colored-dots">{{ object.level|dots }}</span></small>{% endif %}
+                </h1>
+                <span class="badge bg-primary">{{ object.rite_type|title }}</span>
+            </div>
+        </div>
+    </div>
+</div>

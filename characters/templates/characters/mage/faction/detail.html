@@ -1,65 +1,7 @@
 {% extends "core/object.html" %}
 {% block contents %}
     {% load dots %}
-    {% load sanitize_text %}
-    <div class="row">
-        <div class="col-sm">Languages</div>
-        <div class="col-sm">{{ languages }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Affinities</div>
-        <div class="col-sm">{{ affinities }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Paradigms</div>
-        <div class="col-sm">{{ paradigms|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Practices</div>
-        <div class="col-sm">{{ practices|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Media</div>
-        <div class="col-sm">{{ media|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Materials</div>
-        <div class="col-sm">{{ materials|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Founded</div>
-        <div class="col-sm">
-            {{ year }}
-            {% if date_written > 0 %}
-                AD
-            {% else %}
-                BC
-            {% endif %}
-        </div>
-    </div>
-    {% if object.ended < 5000 %}
-        <div class="row">
-            <div class="col-sm">Ended</div>
-            <div class="col-sm">
-                {{ year }}
-                {% if object.ended > 0 %}
-                    AD
-                {% else %}
-                    BC
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-sm">Parent Faction</div>
-        {% if object.parent %}
-            <a class="col-sm" href="{{ object.parent.get_absolute_url }}">{{ object.parent }}</a>
-        {% else %}
-            <div class="col-sm"></div>
-        {% endif %}
-    </div>
-    <div class="row">
-        <div class="col-sm">Subfactions</div>
-        <div class="col-sm">{{ subfactions|sanitize_html }}</div>
-    </div>
+    {% include "characters/mage/faction/display_includes/history.html" %}
+    {% include "characters/mage/faction/display_includes/focus.html" %}
+    {% include "characters/mage/faction/display_includes/culture.html" %}
 {% endblock contents %}

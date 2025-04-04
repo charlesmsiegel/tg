@@ -2,20 +2,6 @@
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    <div class="row">
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ object.get_tenet_type_display }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Associated Practices</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ associated_practices|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Limited Practices</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ limited_practices|sanitize_html }}</div>
-    </div>
+    {% include "characters/mage/tenet/display_includes/basics.html" %}
+    {% include "characters/mage/tenet/display_includes/practices.html" %}
 {% endblock contents %}

@@ -1,0 +1,23 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">Charms</div>
+            <div class="card-body">
+                <div class="row">
+                    {% for charm in object.charms.all %}
+                        <div class="col-sm-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <a href="{{ charm.get_absolute_url }}">{{ charm.name }}</a>
+                                </div>
+                                <div class="card-body">
+                                    <p>Essence Cost: {{ charm.essence_cost }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

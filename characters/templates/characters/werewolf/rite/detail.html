@@ -1,12 +1,4 @@
 {% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Level</div>
-        <div class="col-sm">{{ object.level }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ object.rite_type.title }}</div>
-    </div>
-{% endblock contents %}
+{% block objectname %}
+    {% include "characters/werewolf/rite/display_includes/title.html" %}
+{% endblock objectname %}

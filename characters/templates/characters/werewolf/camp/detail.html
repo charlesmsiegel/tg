@@ -1,8 +1,8 @@
 {% extends "core/object.html" %}
+{% block objectname %}
+    {% include "characters/werewolf/camp/title.html" %}
+{% endblock objectname %}
 {% block contents %}
     {% load dots %}
-    <div class="row">
-        <div class="col-sm">Tribe</div>
-        <a class="col-sm" href="{{ object.tribe.get_absolute_url }}">{{ object.tribe }}</a>
-    </div>
+    {# No additional content needed as tribe is shown in title #}
 {% endblock contents %}

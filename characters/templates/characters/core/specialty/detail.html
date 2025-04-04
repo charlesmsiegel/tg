@@ -1,8 +1,4 @@
 {% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Statistic</div>
-        <div class="col-sm">{{ object.stat }}</div>
-    </div>
-{% endblock contents %}
+{% block objectname %}
+    {% include "characters/core/specialty/display_includes/title.html" %}
+{% endblock objectname %}

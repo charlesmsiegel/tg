@@ -2,21 +2,6 @@
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    <div class="row">
-        <div class="col-sm">Favored Attributes</div>
-    </div>
-    <div class="row">
-        {% for attribute in object.favored_attributes.all %}
-            <div class="col-sm-12 col-md-6 col-lg-4">{{ attribute }}</div>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <div class="col-sm">Favored Paths</div>
-    </div>
-    <div class="row">
-        {% for path in object.favored_paths.all %}
-            <a class="col-sm-12 col-md-6 col-lg-4"
-               href="{{ path.get_absolute_url }}">{{ path }}</a>
-        {% endfor %}
-    </div>
+    {% include "characters/mage/fellowship/display_includes/attributes.html" %}
+    {% include "characters/mage/fellowship/display_includes/paths.html" %}
 {% endblock contents %}

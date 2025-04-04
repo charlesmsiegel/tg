@@ -1,32 +1,7 @@
-{% extends "core/object.html" %}
+ׁ{% extends "core/object.html" %}
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Tenets</h2>
-    </div>
-    <div class="row">
-        {% for tenet in object.tenets.all %}
-            <a class="col-sm-12 col-md-6 col-lg-4"
-               href="{{ tenet.get_absolute_url }}">{{ tenet }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Associated Practices</h2>
-    </div>
-    <div class="row">
-        {% for practice in object.get_associated_practices %}
-            <a class="col-sm-12 col-md-6 col-lg-4"
-               href="{{ practice.get_absolute_url }}">{{ practice }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Limited Practices</h2>
-    </div>
-    <div class="row">
-        {% for practice in object.get_limited_practices %}
-            <a class="col-sm-12 col-md-6 col-lg-4"
-               href="{{ practice.get_absolute_url }}">{{ practice }}</a>
-        {% endfor %}
-    </div>
+    {% include "characters/mage/paradigm/display_includes/tenets.html" %}
+    {% include "characters/mage/paradigm/display_includes/practices.html" %}
 {% endblock contents %}

@@ -1,0 +1,11 @@
+{% load dots %}
+<div class="card location-card h-100">
+    <div class="card-header {{ object.get_heading }}">
+        <h1 class="mb-0">{{ object.name }}</h1>
+        {% if object.court %}
+            <span class="badge {% if object.court == 'seelie' %}bg-success{% else %}bg-danger{% endif %}">
+                {{ object.get_court_display }}
+            </span>
+        {% endif %}
+    </div>
+</div>

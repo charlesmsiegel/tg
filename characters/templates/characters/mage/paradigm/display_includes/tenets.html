@@ -1,0 +1,20 @@
+{% load static %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 {{ object.get_heading }}">Tenets</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for tenet in object.tenets.all %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-2">
+                            <a href="{{ tenet.get_absolute_url }}"
+                               class="btn btn-outline-primary w-100">{{ tenet }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

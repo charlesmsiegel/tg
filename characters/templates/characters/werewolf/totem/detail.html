@@ -1,24 +1,7 @@
 {% extends "core/object.html" %}
 {% block contents %}
     {% load dots %}
-    <div class="row">
-        <div class="col-sm">Cost</div>
-        <div class="col-sm">{{ object.cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Type</div>
-        <div class="col-sm">{{ object.get_type_display }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Individual Traits</div>
-        <div class="col-sm">{{ object.individual_traits }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Pack Traits</div>
-        <div class="col-sm">{{ object.pack_traits }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Ban</div>
-        <div class="col-sm">{{ object.ban }}</div>
-    </div>
+    {% load sanitize_text %}
+    {% include "characters/werewolf/totem/display_includes/basics.html" %}
+    {% include "characters/werewolf/totem/display_includes/traits.html" %}
 {% endblock contents %}

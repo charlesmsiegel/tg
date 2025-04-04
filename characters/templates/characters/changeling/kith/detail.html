@@ -1,12 +1,8 @@
 {% extends "core/object.html" %}
+{% block status_row %}
+    <div class="col-md-6 mb-3">{% include "characters/changeling/kith/display_includes/details.html" %}</div>
+    {{ block.super }}
+{% endblock status_row %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Birthrights</div>
-        <div class="col-sm">{{ object.birthrights }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Frailty</div>
-        <div class="col-sm">{{ object.frailty }}</div>
-    </div>
+    {# No additional content needed as details are shown in status_row #}
 {% endblock contents %}

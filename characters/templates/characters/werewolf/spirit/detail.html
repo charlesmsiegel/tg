@@ -1,38 +1,7 @@
 {% extends "characters/core/character/detail.html" %}
+{% block status_row %}
+    {% include "characters/werewolf/spirit/display_includes/basics.html" %}
+{% endblock status_row %}
 {% block statistics %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Player</div>
-        <div class="col-sm">{{ object.owner }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ object.concept }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Willpower</div>
-        <div class="col-sm">{{ object.willpower }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rage</div>
-        <div class="col-sm">{{ object.rage }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Gnosis</div>
-        <div class="col-sm">{{ object.gnosis }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Essence</div>
-        <div class="col-sm">{{ object.essence }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm">Charms</h2>
-    </div>
-    {% for charm in object.charms.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ charm.get_absolute_url }}">{{ charm.name }}</a>
-        </div>
-    {% endfor %}
+    {% include "characters/werewolf/spirit/display_includes/spiritcharms.html" %}
 {% endblock statistics %}

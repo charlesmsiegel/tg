@@ -1,16 +1,5 @@
 {% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    {% load sanitize_text %}
-    <div class="row">
-        <div class="col-sm">
-            {% for num in object.ratings.all %}
-                {% if forloop.last %}
-                    {{ num }}
-                {% else %}
-                    {{ num }},
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-{% endblock contents %}
+{% load dots %}
+{% block objectname %}
+    {% include "characters/mage/advantage/display_includes/title.html" %}
+{% endblock objectname %}

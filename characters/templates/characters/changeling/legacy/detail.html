@@ -1,8 +1,4 @@
 {% extends "core/object.html" %}
-{% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Court</div>
-        <div class="col-sm">{{ object.get_court_display }}</div>
-    </div>
-{% endblock contents %}
+{% block objectname %}
+    {% include "characters/changeling/legacy/display_includes/title.html" %}
+{% endblock objectname %}

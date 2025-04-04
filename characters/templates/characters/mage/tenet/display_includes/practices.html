@@ -1,0 +1,39 @@
+{% load static %}
+{% load sanitize_text %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 {{ object.get_heading }}">Practices</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted">Associated Practices</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                {% for practice in object.associated_practices.all %}
+                                    <a href="{{ practice.get_absolute_url }}" class="card-link">{{ practice.name|sanitize_html }}</a>
+                                    <br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted">Limited Practices</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                {% for practice in object.limited_practices.all %}
+                                    <a href="{{ practice.get_absolute_url }}" class="card-link">{{ practice.name|sanitize_html }}</a>
+                                    <br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

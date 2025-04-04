@@ -1,0 +1,49 @@
+{% load sanitize_text %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header {{ object.get_heading }}">History</div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Founded</div>
+                    <div class="col-sm-9">
+                        {{ year }}
+                        {% if date_written > 0 %}
+                            AD
+                        {% else %}
+                            BC
+                        {% endif %}
+                    </div>
+                </div>
+                {% if object.ended < 5000 %}
+                    <div class="row mb-2">
+                        <div class="col-sm-3 {{ object.get_heading }}">Ended</div>
+                        <div class="col-sm-9">
+                            {{ year }}
+                            {% if object.ended > 0 %}
+                                AD
+                            {% else %}
+                                BC
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Parent Faction</div>
+                    <div class="col-sm-9">
+                        {% if object.parent %}<a href="{{ object.parent.get_absolute_url }}">{{ object.parent }}</a>{% endif %}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3 {{ object.get_heading }}">Subfactions</div>
+                    <div class="col-sm-9">
+                        {% for subfaction in object.magefaction_set.all %}
+                            <a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name|sanitize_html }}</a>
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
