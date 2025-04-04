@@ -36,7 +36,7 @@ class GenericLocationDetailView(DictView):
 
     model_class = LocationModel
     key_property = "type"
-    default_redirect = "locations:index wod"
+    default_redirect = "locations:index"
 
 
 class LocationIndexView(View):

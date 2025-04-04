@@ -66,7 +66,7 @@ class GenericItemDetailView(DictView):
     }
     model_class = ItemModel
     key_property = "type"
-    default_redirect = "items:index wod"
+    default_redirect = "items:index"
 
 
 class ItemIndexView(View):

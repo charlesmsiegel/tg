@@ -56,7 +56,7 @@ class GenericCharacterDetailView(DictView):
     }
     model_class = Character
     key_property = "type"
-    default_redirect = "characters:index wod"
+    default_redirect = "characters:index"
 
 
 class GenericGroupDetailView(DictView):
@@ -70,7 +70,7 @@ class GenericGroupDetailView(DictView):
     }
     model_class = Group
     key_property = "type"
-    default_redirect = "characters:index wod"
+    default_redirect = "characters:index"
 
 
 class CharacterIndexView(ListView):
