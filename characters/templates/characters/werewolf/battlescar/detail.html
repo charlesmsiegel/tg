@@ -1,8 +1,9 @@
 {% extends "core/object.html" %}
+{% block status_row %}
+
+{% include "characters/werewolf/renownincident/display_includes/temporary_renown.html" %}
+{% endblock status_row %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Temporary Glory</div>
-        <div class="col-sm">{{ object.glory }}</div>
-    </div>
+{% load dots %}
+<!-- Additional content can go here if needed -->
 {% endblock contents %}

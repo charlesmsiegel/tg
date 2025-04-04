@@ -3,9 +3,6 @@
     {% load dots %}
     {% load sanitize_text %}
     <div class="row">
-        <h1 class="col-sm {{ object.get_heading }}">{{ object.name }}</h1>
-    </div>
-    <div class="row">
         <div class="col-sm">Type</div>
         <div class="col-sm">{{ object.get_tenet_type_display }}</div>
     </div>
@@ -20,11 +17,5 @@
     </div>
     <div class="row">
         <div class="col-sm">{{ limited_practices|sanitize_html }}</div>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Description</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ object.description }}</div>
     </div>
 {% endblock contents %}

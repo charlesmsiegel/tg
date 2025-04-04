@@ -1,82 +1,39 @@
 {% extends "core/object.html" %}
+{% block status_row %}
+    {% load dots %}
+    <div class="col-md-6 mb-3">
+        <div class="card location-card">
+            <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Basic Information</h5>
+                <span class="badge badge-pill badge-primary">Willpower: {{ object.willpower }}</span>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Camps</h6>
+                {% include "characters/werewolf/tribe/display_includes/camps.html" with camps=object.get_camps %}
+            </div>
+        </div>
+    </div>
+{% endblock status_row %}
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
     <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Starting Willpower</div>
-        <div class="col-sm">{{ object.willpower }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Camps</div>
-        <div class="col-sm">
-            {% for camp in object.get_camps %}
-                {% if forloop.last %}
-                    <a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>
-                {% else %}
-                    <a href="{{ camp.get_absolute_url }}">{{ camp.name }}, </a>
-                {% endif %}
-            {% endfor % %}
+        <div class="col-12">
+            <div class="card location-card">
+                <div class="card-header {{ object.get_heading }}">
+                    <h5 class="mb-0">Gifts</h5>
+                </div>
+                <div class="card-body">
+                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=1 gifts=object.gifts_1 %}
+                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=2 gifts=object.gifts_2 %}
+                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=3 gifts=object.gifts_3 %}
+                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=4 gifts=object.gifts_4 %}
+                    {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=5 gifts=object.gifts_5 %}
+                    {% if object.gift_6 %}
+                        {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=6 gifts=object.gifts_6 %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Gifts</h2>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Level 1</h3>
-    </div>
-    <div class="row">
-        {% for gift in object.gifts_1 %}
-            <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Level 2</h3>
-    </div>
-    <div class="row">
-        {% for gift in object.gifts_2 %}
-            <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Level 3</h3>
-    </div>
-    <div class="row">
-        {% for gift in object.gifts_3 %}
-            <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Level 4</h3>
-    </div>
-    <div class="row">
-        {% for gift in object.gifts_4 %}
-            <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Level 5</h3>
-    </div>
-    <div class="row">
-        {% for gift in object.gifts_5 %}
-            <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-        {% endfor %}
-    </div>
-    {% if object.gift_6 %}
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Level 6</h3>
-        </div>
-        <div class="row">
-            {% for gift in object.gifts_6 %}
-                <a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name|sanitize_html }}</a>
-            {% endfor %}
-        </div>
-    {% endif %}
 {% endblock contents %}

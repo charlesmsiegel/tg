@@ -1,0 +1,15 @@
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for camp in camps %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <a href="{{ camp.get_absolute_url }}" class="node-link">{{ camp.name }}</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="text-muted mb-0">No camps available.</p>
+        </div>
+    {% endfor %}
+</div> 

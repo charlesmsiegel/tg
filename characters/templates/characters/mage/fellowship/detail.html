@@ -3,9 +3,6 @@
     {% load dots %}
     {% load sanitize_text %}
     <div class="row">
-        <h1 class="col-sm {{ object.get_heading }}">{{ object.name }}</h1>
-    </div>
-    <div class="row">
         <div class="col-sm">Favored Attributes</div>
     </div>
     <div class="row">
@@ -21,11 +18,5 @@
             <a class="col-sm-12 col-md-6 col-lg-4"
                href="{{ path.get_absolute_url }}">{{ path }}</a>
         {% endfor %}
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ object.description }}</div>
     </div>
 {% endblock contents %}

@@ -1,40 +1,7 @@
 {% extends "core/object.html" %}
+{% block status_row %}
+    {% include "characters/werewolf/renownincident/display_includes/requirements.html" %}
+{% endblock status_row %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Glory</div>
-        <div class="col-sm">{{ object.glory }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Honor</div>
-        <div class="col-sm">{{ object.honor }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Wisdom</div>
-        <div class="col-sm">{{ object.wisdom }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Posthumous?</div>
-        <div class="col-sm">{{ object.posthumous }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Only Once?</div>
-        <div class="col-sm">{{ object.only_once }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Breed Restriction</div>
-        <div class="col-sm">{{ object.breed }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Rite Required</div>
-        <div class="col-sm">{{ object.rite.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
-    </div>
+    {% include "characters/werewolf/renownincident/display_includes/temporary_renown.html" %}
 {% endblock contents %}

@@ -1,0 +1,23 @@
+{% load sanitize_text %}
+<div class="card mb-3">
+    <div class="card-header {{ object.get_heading }}">
+        <h6 class="mb-0">Level {{ level }} Gifts</h6>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            {% for gift in gifts %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <a href="{{ gift.get_absolute_url }}" class="node-link">{{ gift.name|sanitize_html }}</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p class="text-muted mb-0">No gifts available at this level.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div> 

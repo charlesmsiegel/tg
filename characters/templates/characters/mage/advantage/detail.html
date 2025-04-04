@@ -2,9 +2,6 @@
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    <h1 class="row">
-        <div class="col-sm mta_heading">{{ object.name }}</div>
-    </h1>
     <div class="row">
         <div class="col-sm">
             {% for num in object.ratings.all %}
@@ -15,11 +12,5 @@
                 {% endif %}
             {% endfor %}
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">{{ object.description }}</div>
     </div>
 {% endblock contents %}

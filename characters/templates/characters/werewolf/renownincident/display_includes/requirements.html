@@ -1,0 +1,17 @@
+{% if object.posthumous or object.only_once or object.breed or object.rite %}
+    <div class="col-md mb-3">
+        <div class="card location-card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Requirements</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap">
+                    {% if object.posthumous %}<span class="badge badge-primary mr-1">Posthumous</span>{% endif %}
+                    {% if object.only_once %}<span class="badge badge-secondary mr-1">Only Once</span>{% endif %}
+                    {% if object.breed %}<span class="badge badge-info mr-1">{{ object.breed|title }}-only</span>{% endif %}
+                    {% if object.rite %}<span class="badge badge-success mr-1">{{ object.rite.name }} Rite Required</span>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,26 @@
+<div class="col-md mb-3">
+    <div class="card location-card h-100">
+        <div class="card-header">
+            <h5 class="mb-0">Renown</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap">
+                {% if object.glory %}
+                    <div class="col-sm-6">
+                        <strong>Glory:</strong> <span class="badge badge-primary">{{ object.glory }}</span>
+                    </div>
+                {% endif %}
+                {% if object.honor %}
+                    <div class="col-sm-6">
+                        <strong>Honor:</strong> <span class="badge badge-secondary">{{ object.honor }}</span>
+                    </div>
+                {% endif %}
+                {% if object.wisdom %}
+                    <div class="col-sm-6">
+                        <strong>Wisdom:</strong> <span class="badge badge-info">{{ object.wisdom }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

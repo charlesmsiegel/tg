@@ -2,19 +2,11 @@
 {% block contents %}
     {% load dots %}
     <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
         <div class="col-sm">Level</div>
         <div class="col-sm">{{ object.level }}</div>
     </div>
     <div class="row">
         <div class="col-sm">Type</div>
         <div class="col-sm">{{ object.rite_type.title }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
     </div>
 {% endblock contents %}

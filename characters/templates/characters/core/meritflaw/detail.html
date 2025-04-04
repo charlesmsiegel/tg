@@ -3,19 +3,11 @@
     {% load sanitize_text %}
     {% load dots %}
     <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
         <div class="col-sm">Ratings</div>
         <div class="col-sm">{{ ratings }}</div>
     </div>
     <div class="row">
         <div class="col-sm">Allowed</div>
         <div class="col-sm">{{ object.booleans }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description|sanitize_html|linebreaks }}</div>
     </div>
 {% endblock contents %}

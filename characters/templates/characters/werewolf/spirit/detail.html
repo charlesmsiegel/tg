@@ -1,16 +1,7 @@
 {% extends "characters/core/character/detail.html" %}
 {% block statistics %}
     <div class="row">
-        <div class="col-sm {{ object.get_heading }}">
-            <h1>{{ object.name }}</h1>
-        </div>
-    </div>
-    <div class="row">
         <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
     </div>
     <div class="row">
         <div class="col-sm">Player</div>
@@ -45,9 +36,3 @@
         </div>
     {% endfor %}
 {% endblock statistics %}
-{% block flavor %}
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
-    </div>
-{% endblock flavor %}
