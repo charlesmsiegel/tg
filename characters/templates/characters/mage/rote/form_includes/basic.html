@@ -1,0 +1,36 @@
+{% load dots %}
+<div class="card shadow-sm mb-4 hover-card">
+    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-basic-form" aria-expanded="true" aria-controls="rote-basic-form">
+        <h5 class="mb-0">Basics</h5>
+    </div>
+    <div id="rote-basic-form" class="collapse show">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.practice.id_for_label }}" class="form-label">Practice</label>
+                        {{ form.practice }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.attribute.id_for_label }}" class="form-label">Attribute</label>
+                        {{ form.attribute }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.ability.id_for_label }}" class="form-label">Ability</label>
+                        {{ form.ability }}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+        </div>
+    </div>
+</div> 

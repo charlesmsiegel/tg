@@ -1,0 +1,66 @@
+{% load dots %}
+<div class="card shadow-sm mb-4 hover-card">
+    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#spheres-form" aria-expanded="true" aria-controls="spheres-form">
+        <h5 class="mb-0">Spheres</h5>
+    </div>
+    <div id="spheres-form" class="collapse show">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_correspondence">Correspondence</label>
+                        {{ form.correspondence }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_entropy">Entropy</label>
+                        {{ form.entropy }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_forces">Forces</label>
+                        {{ form.forces }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_life">Life</label>
+                        {{ form.life }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_matter">Matter</label>
+                        {{ form.matter }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_mind">Mind</label>
+                        {{ form.mind }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_prime">Prime</label>
+                        {{ form.prime }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_spirit">Spirit</label>
+                        {{ form.spirit }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group text-center h-100 d-flex flex-column justify-content-center">
+                        <label for="id_time">Time</label>
+                        {{ form.time }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

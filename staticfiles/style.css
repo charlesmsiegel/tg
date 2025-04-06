@@ -235,24 +235,24 @@ p.post {
 */
 
 /* Card styling for location templates */
-.location-card {
+.card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     margin-bottom: 1.5rem;
     border-radius: 0.5rem;
     overflow: hidden;
 }
 
-.location-card:hover {
+.card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.location-card .card-header {
+.card .card-header {
     padding: 0.75rem 1rem;
     font-weight: 600;
 }
 
-.location-header-card {
+.header-card {
     border-radius: 0.5rem;
     overflow: hidden;
     margin-bottom: 1.5rem;

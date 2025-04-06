@@ -1,0 +1,25 @@
+<div class="card shadow-sm mb-4 hover-card">
+    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#basic-form" aria-expanded="true" aria-controls="basic-form">
+        <h5 class="mb-0">Basic Information</h5>
+    </div>
+    <div id="basic-form" class="collapse show">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-sm-3">
+                    <label for="id_name">Name:</label>
+                </div>
+                <div class="col-sm-9">
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="id_description">Description:</label>
+                </div>
+                <div class="col-sm-9">
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

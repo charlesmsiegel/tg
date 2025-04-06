@@ -1,27 +1,17 @@
 {% extends "core/form.html" %}
 {% block creation_title %}
-    Create Rote
+    {% if object %}
+        Edit {{ object.name }}
+    {% else %}
+        Create Rote
+    {% endif %}
 {% endblock creation_title %}
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Effect</div>
-        <a class="col-sm" href={{ form.effect.get_absolute_url }}>{{ form.effect }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Practice</div>
-        <div class="col-sm">{{ form.practice }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Dicepool</div>
-        <div class="col-sm">{{ form.attribute }} + {{ form.ability }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
+    {% include "characters/mage/rote/form_includes/basic.html" %}
+    {% include "characters/mage/rote/form_includes/effect.html" %}
 {% endblock contents %}
+{% block buttons %}
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Save Rote
+    </button>
+{% endblock buttons %}

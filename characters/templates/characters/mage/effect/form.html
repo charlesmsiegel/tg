@@ -1,20 +1,30 @@
 {% extends "core/form.html" %}
 {% block creation_title %}
-    Create Effect
+    {% if object %}
+        Edit {{ object.name }}
+    {% else %}
+        Create Effect
+    {% endif %}
 {% endblock creation_title %}
+{% block creation_title_2 %}
+    {% if object %}
+        Edit {{ object.name }}
+    {% else %}
+        Create Effect
+    {% endif %}
+{% endblock creation_title_2 %}
+
 {% block contents %}
-    {% load dots %}
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ form.name }}</div>
-    </div>
-    {% include "characters/mage/spheres/form.html" %}
-    <div class="row">
-        <div class="col-sm">Cost</div>
-        <div class="col-sm">{{ form.rote_cost }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ form.description }}</div>
-    </div>
+    {% include "characters/mage/effect/form_includes/basic.html" %}
+    {% include "characters/mage/effect/form_includes/spheres.html" %}
 {% endblock contents %}
+
+{% block buttons %}
+    <div class="row">
+        <div class="col-sm">
+            <button type="submit" class="btn btn-success btn-lg mt-3">
+                <i class="fas fa-save"></i> Save Effect
+            </button>
+        </div>
+    </div>
+{% endblock buttons %}

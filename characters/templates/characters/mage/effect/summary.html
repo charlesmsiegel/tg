@@ -1,0 +1,40 @@
+<div class="card shadow-sm h-100">
+    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#effect-summary-{{ object.id }}" aria-expanded="true" aria-controls="effect-summary-{{ object.id }}">
+        <h5 class="mb-0"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h5>
+        <span class="badge bg-secondary">Cost: {{ object.rote_cost }}</span>
+    </div>
+    <div id="effect-summary-{{ object.id }}" class="collapse show">
+        <div class="card-body">
+            <p class="text-muted small mb-3">{{ object.description|truncatewords:20 }}</p>
+            <div class="d-flex flex-wrap gap-2">
+                {% if object.correspondence > 0 %}
+                    <span class="badge bg-primary">Correspondence {{ object.correspondence }}</span>
+                {% endif %}
+                {% if object.entropy > 0 %}
+                    <span class="badge bg-primary">Entropy {{ object.entropy }}</span>
+                {% endif %}
+                {% if object.forces > 0 %}
+                    <span class="badge bg-primary">Forces {{ object.forces }}</span>
+                {% endif %}
+                {% if object.life > 0 %}
+                    <span class="badge bg-primary">Life {{ object.life }}</span>
+                {% endif %}
+                {% if object.matter > 0 %}
+                    <span class="badge bg-primary">Matter {{ object.matter }}</span>
+                {% endif %}
+                {% if object.mind > 0 %}
+                    <span class="badge bg-primary">Mind {{ object.mind }}</span>
+                {% endif %}
+                {% if object.prime > 0 %}
+                    <span class="badge bg-primary">Prime {{ object.prime }}</span>
+                {% endif %}
+                {% if object.spirit > 0 %}
+                    <span class="badge bg-primary">Spirit {{ object.spirit }}</span>
+                {% endif %}
+                {% if object.time > 0 %}
+                    <span class="badge bg-primary">Time {{ object.time }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div> 

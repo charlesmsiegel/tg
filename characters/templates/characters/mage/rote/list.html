@@ -3,15 +3,163 @@
     Rotes
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Rotes</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h2 class="mta_heading">Rotes</h2>
             </div>
-        {% endfor %}
+        </div>
+        <div class="row mb-4 justify-content-center">
+            <div class="col-auto">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filter-panel" aria-expanded="false" aria-controls="filter-panel">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="collapse mb-4" id="filter-panel">
+            <div class="card">
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="name-filter" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name-filter">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="practice-filter" class="form-label">Practice</label>
+                                <select class="form-control" id="practice-filter">
+                                    <option value="">Any</option>
+                                    {% for practice in practices %}
+                                        <option value="{{ practice.id }}">{{ practice.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="attribute-filter" class="form-label">Attribute</label>
+                                <select class="form-control" id="attribute-filter">
+                                    <option value="">Any</option>
+                                    {% for attribute in attributes %}
+                                        <option value="{{ attribute.id }}">{{ attribute.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ability-filter" class="form-label">Ability</label>
+                                <select class="form-control" id="ability-filter">
+                                    <option value="">Any</option>
+                                    {% for ability in abilities %}
+                                        <option value="{{ ability.id }}">{{ ability.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="correspondence-filter" class="form-label">Correspondence (≤)</label>
+                                <input type="number" class="form-control" id="correspondence-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="entropy-filter" class="form-label">Entropy (≤)</label>
+                                <input type="number" class="form-control" id="entropy-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="forces-filter" class="form-label">Forces (≤)</label>
+                                <input type="number" class="form-control" id="forces-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="life-filter" class="form-label">Life (≤)</label>
+                                <input type="number" class="form-control" id="life-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="matter-filter" class="form-label">Matter (≤)</label>
+                                <input type="number" class="form-control" id="matter-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="mind-filter" class="form-label">Mind (≤)</label>
+                                <input type="number" class="form-control" id="mind-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="prime-filter" class="form-label">Prime (≤)</label>
+                                <input type="number" class="form-control" id="prime-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="spirit-filter" class="form-label">Spirit (≤)</label>
+                                <input type="number" class="form-control" id="spirit-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="time-filter" class="form-label">Time (≤)</label>
+                                <input type="number" class="form-control" id="time-filter" min="0" max="5">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4" id="rote-list">
+            {% for obj in object_list %}
+            <div class="col-3 mb-4">
+                {% include "characters/mage/rote/summary.html" with object=obj %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
+
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const roteList = document.getElementById('rote-list');
+            const rotes = Array.from(roteList.children);
+
+            function applyFilters() {
+                const nameFilter = document.getElementById('name-filter').value.toLowerCase();
+                const practiceFilter = document.getElementById('practice-filter').value;
+                const attributeFilter = document.getElementById('attribute-filter').value;
+                const abilityFilter = document.getElementById('ability-filter').value;
+                const sphereFilters = {
+                    correspondence: document.getElementById('correspondence-filter').value,
+                    entropy: document.getElementById('entropy-filter').value,
+                    forces: document.getElementById('forces-filter').value,
+                    life: document.getElementById('life-filter').value,
+                    matter: document.getElementById('matter-filter').value,
+                    mind: document.getElementById('mind-filter').value,
+                    prime: document.getElementById('prime-filter').value,
+                    spirit: document.getElementById('spirit-filter').value,
+                    time: document.getElementById('time-filter').value
+                };
+
+                rotes.forEach(rote => {
+                    const name = rote.querySelector('.card-header h5').textContent.toLowerCase();
+                    const practice = rote.querySelector('.badge.bg-info').getAttribute('data-practice-id');
+                    const attribute = rote.querySelector('.badge.bg-warning').getAttribute('data-attribute-id');
+                    const ability = rote.querySelector('.badge.bg-warning').getAttribute('data-ability-id');
+                    const spheres = {};
+                    rote.querySelectorAll('.badge.bg-primary').forEach(badge => {
+                        const [sphere, level] = badge.textContent.split(' ');
+                        spheres[sphere.toLowerCase()] = parseInt(level);
+                    });
+
+                    const nameMatch = name.includes(nameFilter);
+                    const practiceMatch = !practiceFilter || practice === practiceFilter;
+                    const attributeMatch = !attributeFilter || attribute === attributeFilter;
+                    const abilityMatch = !abilityFilter || ability === abilityFilter;
+                    const sphereMatch = Object.entries(sphereFilters).every(([sphere, value]) => {
+                        if (!value) return true; // No filter set for this sphere
+                        const effectLevel = spheres[sphere] || 0; // If sphere not present, treat as level 0
+                        return effectLevel <= parseInt(value);
+                    });
+
+                    rote.style.display = nameMatch && practiceMatch && attributeMatch && abilityMatch && sphereMatch ? '' : 'none';
+                });
+            }
+
+            filterForm.addEventListener('input', applyFilters);
+            filterForm.addEventListener('change', applyFilters);
+        });
+    </script>
+    {% endblock %}
 {% endblock content %}

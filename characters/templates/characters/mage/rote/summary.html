@@ -1,0 +1,47 @@
+{% load dots %}
+<div class="card shadow-sm h-100">
+    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-{{ object.id }}" aria-expanded="true" aria-controls="rote-{{ object.id }}">
+        <h5 class="mb-0">{{ object.name }}</h5>
+        <span class="badge bg-info" data-practice-id="{{ object.practice.id }}">{{ object.practice }}</span>
+        <span class="badge bg-warning" data-attribute-id="{{ object.attribute.id }}" data-ability-id="{{ object.ability.id }}">{{ object.attribute }} + {{ object.ability }}</span>
+        <span class="badge bg-secondary">Cost: {{ object.effect.rote_cost }}</span>
+    </div>
+    <div id="rote-{{ object.id }}" class="collapse show">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-center">
+                {% if object.effect.correspondence > 0 %}
+                    <span class="badge bg-primary m-1">Correspondence {{ object.effect.correspondence }}</span>
+                {% endif %}
+                {% if object.effect.entropy > 0 %}
+                    <span class="badge bg-primary m-1">Entropy {{ object.effect.entropy }}</span>
+                {% endif %}
+                {% if object.effect.forces > 0 %}
+                    <span class="badge bg-primary m-1">Forces {{ object.effect.forces }}</span>
+                {% endif %}
+                {% if object.effect.life > 0 %}
+                    <span class="badge bg-primary m-1">Life {{ object.effect.life }}</span>
+                {% endif %}
+                {% if object.effect.matter > 0 %}
+                    <span class="badge bg-primary m-1">Matter {{ object.effect.matter }}</span>
+                {% endif %}
+                {% if object.effect.mind > 0 %}
+                    <span class="badge bg-primary m-1">Mind {{ object.effect.mind }}</span>
+                {% endif %}
+                {% if object.effect.prime > 0 %}
+                    <span class="badge bg-primary m-1">Prime {{ object.effect.prime }}</span>
+                {% endif %}
+                {% if object.effect.spirit > 0 %}
+                    <span class="badge bg-primary m-1">Spirit {{ object.effect.spirit }}</span>
+                {% endif %}
+                {% if object.effect.time > 0 %}
+                    <span class="badge bg-primary m-1">Time {{ object.effect.time }}</span>
+                {% endif %}
+            </div>
+            {% if object.description %}
+                <div class="mt-3">
+                    <p class="mb-0">{{ object.description }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div> 

@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% block title %}
     {% if object %}
-        {{ object.name| safe }}
+        Edit {{ object.name| safe }}
     {% else %}
         {% block creation_title %}
             Create
@@ -9,12 +9,33 @@
     {% endif %}
 {% endblock title %}
 {% block content %}
+    
     <form {% block formdetails %}
           action=""
           method="post"
           {% endblock formdetails %}>
         {% csrf_token %}
         <div class="centertext container">
+            <div class="container py-4">
+                {% block heading %}
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card location-header-card">
+                                <div class="card-body">
+                                    <h1 class="{{ object.get_heading }}">
+                                        {% if object %}
+                                            Edit {{ object.name| safe }}
+                                        {% else %}
+                                            {% block creation_title_2 %}
+                                                Create
+                                            {% endblock creation_title_2 %}
+                                        {% endif %}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endblock heading %}
             {% block image %}
                 {% if object.image and object.image_status == "app" %}
                     <img src="{{ object.image.url }}"
@@ -41,4 +62,5 @@
             {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
         {% endif %}
     {% endblock errors %}
+    </div>
 {% endblock content %}

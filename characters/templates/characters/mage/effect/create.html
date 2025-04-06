@@ -1,0 +1,83 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Create Effect
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2>Create Effect</h2>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="createTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">Basic Info</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="spheres-tab" data-bs-toggle="tab" data-bs-target="#spheres" type="button" role="tab">Spheres</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview" type="button" role="tab">Preview</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form method="post" id="effect-form">
+                    {% csrf_token %}
+                    <div class="tab-content" id="createTabsContent">
+                        <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                            {% include "characters/mage/effect/form_includes/basic.html" %}
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-secondary" disabled>Previous</button>
+                                <button type="button" class="btn btn-primary" onclick="nextTab('spheres-tab')">Next</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="spheres" role="tabpanel">
+                            {% include "characters/mage/effect/form_includes/spheres.html" %}
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-secondary" onclick="prevTab('basic-tab')">Previous</button>
+                                <button type="button" class="btn btn-primary" onclick="nextTab('preview-tab')">Next</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="preview" role="tabpanel">
+                            <div id="preview-content">
+                                <!-- Preview will be dynamically updated -->
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn btn-secondary" onclick="prevTab('spheres-tab')">Previous</button>
+                                <button type="submit" class="btn btn-success">Create Effect</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}
+    <script>
+        function nextTab(tabId) {
+            const tab = document.getElementById(tabId);
+            const tabInstance = new bootstrap.Tab(tab);
+            tabInstance.show();
+        }
+
+        function prevTab(tabId) {
+            const tab = document.getElementById(tabId);
+            const tabInstance = new bootstrap.Tab(tab);
+            tabInstance.show();
+        }
+
+        // Update preview when form changes
+        document.getElementById('effect-form').addEventListener('input', function() {
+            const previewContent = document.getElementById('preview-content');
+            // Here you would typically make an AJAX call to get a rendered preview
+            // For now, we'll just show a message
+            previewContent.innerHTML = '<div class="alert alert-info">Preview will be updated when you submit the form</div>';
+        });
+    </script>
+    {% endblock %}
+{% endblock content %} 

@@ -6,31 +6,21 @@
                 {% if object.rote_points is not None %}
                     <span class="badge badge-light">{{ object.rote_points }} Rote Points</span>
                 {% else %}
-                    <span class="badge badge-light">{{ object.rotes.count }} Rotes</span>
+                    <span class="badge badge-light">{{ rote_list.count }} Rotes</span>
                 {% endif %}
             </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for rote in rote_list.all %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <a href="{{ rote.get_absolute_url }}" class="node-link">{{ rote.name }}</a>
-                                    </h6>
-                                    <div class="card-text">
-                                        <div class="dots mb-2">{{ rote.effect.spheres }}</div>
-                                        <a href="{{ rote.practice.get_absolute_url }}" class="text-muted">{{ rote.practice }}</a>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="card-body text-center">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4 justify-content-center" id="rote-list">
+                        {% for obj in rote_list.all %}
+                        <div class="col-3 mb-4">
+                            {% include "characters/mage/rote/summary.html" with object=obj %}
                         </div>
-                    {% empty %}
+                        {% empty %}
                         <div class="col-12">
                             <div class="alert alert-info mb-0">No rotes available.</div>
                         </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
             </div>
         </div>
     </div>

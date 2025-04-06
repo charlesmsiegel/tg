@@ -3,15 +3,131 @@
     Effects
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Effects</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h2 class="mta_heading">Effects</h2>
             </div>
-        {% endfor %}
+        </div>
+        <div class="row mb-4 justify-content-center">
+            <div class="col-auto">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filter-panel" aria-expanded="false" aria-controls="filter-panel">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="collapse mb-4" id="filter-panel">
+            <div class="card">
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="name-filter" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name-filter">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cost-filter" class="form-label">Cost</label>
+                                <input type="number" class="form-control" id="cost-filter" min="0">
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="correspondence-filter" class="form-label">Correspondence</label>
+                                <input type="number" class="form-control" id="correspondence-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="entropy-filter" class="form-label">Entropy</label>
+                                <input type="number" class="form-control" id="entropy-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="forces-filter" class="form-label">Forces</label>
+                                <input type="number" class="form-control" id="forces-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="life-filter" class="form-label">Life</label>
+                                <input type="number" class="form-control" id="life-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="matter-filter" class="form-label">Matter</label>
+                                <input type="number" class="form-control" id="matter-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="mind-filter" class="form-label">Mind</label>
+                                <input type="number" class="form-control" id="mind-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="prime-filter" class="form-label">Prime</label>
+                                <input type="number" class="form-control" id="prime-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="spirit-filter" class="form-label">Spirit</label>
+                                <input type="number" class="form-control" id="spirit-filter" min="0" max="5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="time-filter" class="form-label">Time</label>
+                                <input type="number" class="form-control" id="time-filter" min="0" max="5">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4" id="effect-list">
+            {% for obj in object_list %}
+                <div class="col-3 mb-4">
+                    {% include "characters/mage/effect/summary.html" with object=obj %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
+
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const effectList = document.getElementById('effect-list');
+            const effects = Array.from(effectList.children);
+
+            function applyFilters() {
+                const nameFilter = document.getElementById('name-filter').value.toLowerCase();
+                const costFilter = document.getElementById('cost-filter').value;
+                const sphereFilters = {
+                    correspondence: document.getElementById('correspondence-filter').value,
+                    entropy: document.getElementById('entropy-filter').value,
+                    forces: document.getElementById('forces-filter').value,
+                    life: document.getElementById('life-filter').value,
+                    matter: document.getElementById('matter-filter').value,
+                    mind: document.getElementById('mind-filter').value,
+                    prime: document.getElementById('prime-filter').value,
+                    spirit: document.getElementById('spirit-filter').value,
+                    time: document.getElementById('time-filter').value
+                };
+
+                effects.forEach(effect => {
+                    const name = effect.querySelector('.card-header h5').textContent.toLowerCase();
+                    const cost = parseInt(effect.querySelector('.badge.bg-secondary').textContent.match(/\d+/)[0]);
+                    const spheres = {};
+                    effect.querySelectorAll('.badge.bg-primary').forEach(badge => {
+                        const [sphere, level] = badge.textContent.split(' ');
+                        spheres[sphere.toLowerCase()] = parseInt(level);
+                    });
+
+                    const nameMatch = name.includes(nameFilter);
+                    const costMatch = !costFilter || cost <= parseInt(costFilter);
+                    const sphereMatch = Object.entries(sphereFilters).every(([sphere, value]) => {
+                        if (!value) return true; // No filter set for this sphere
+                        const effectLevel = spheres[sphere] || 0; // If sphere not present, treat as level 0
+                        return effectLevel <= parseInt(value);
+                    });
+
+                    effect.style.display = nameMatch && costMatch && sphereMatch ? '' : 'none';
+                });
+            }
+
+            filterForm.addEventListener('input', applyFilters);
+        });
+    </script>
+    {% endblock %}
 {% endblock content %}
