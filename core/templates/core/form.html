@@ -9,58 +9,87 @@
     {% endif %}
 {% endblock title %}
 {% block content %}
-    
-    <form {% block formdetails %}
-          action=""
-          method="post"
-          {% endblock formdetails %}>
-        {% csrf_token %}
-        <div class="centertext container">
-            <div class="container py-4">
-                {% block heading %}
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card location-header-card">
-                                <div class="card-body">
-                                    <h1 class="{{ object.get_heading }}">
-                                        {% if object %}
-                                            Edit {{ object.name| safe }}
-                                        {% else %}
-                                            {% block creation_title_2 %}
-                                                Create
-                                            {% endblock creation_title_2 %}
-                                        {% endif %}
-                                    </h1>
-                                </div>
+    <div class="container py-4">
+        <form {% block formdetails %}
+              action=""
+              method="post"
+              {% endblock formdetails %}>
+            {% csrf_token %}
+            
+            {% block heading %}
+                <!-- Page Header -->
+                <div class="tg-card header-card mb-4" {% if object and object.get_gameline %}data-gameline="{{ object.get_gameline }}"{% endif %}>
+                    <div class="tg-card-header">
+                        <h1 class="tg-card-title {% if object and object.get_heading %}{{ object.get_heading }}{% endif %}">
+                            {% if object %}
+                                Edit {{ object.name| safe }}
+                            {% else %}
+                                {% block creation_title_2 %}
+                                    Create
+                                {% endblock creation_title_2 %}
+                            {% endif %}
+                        </h1>
+                    </div>
+                </div>
+            {% endblock heading %}
+
+            {% block errors %}
+                {% if form.non_field_errors %}
+                    <div class="tg-card mb-4">
+                        <div class="tg-card-body">
+                            {% for error in form.non_field_errors %}
+                                <div class="tg-error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endblock errors %}
+
+            {% block image %}
+                {% if object.image and object.image_status == "app" %}
+                    <div class="tg-card mb-4">
+                        <div class="tg-card-body text-center">
+                            <img src="{{ object.image.url }}"
+                                 width="300"
+                                 height="{{ image.height }}"
+                                 alt="image of {{ object.name }}"
+                                 class="img-fluid" />
+                        </div>
+                    </div>
+                {% elif object.image %}
+                    <div class="tg-card mb-4">
+                        <div class="tg-card-body">
+                            <div class="tg-info-message">
+                                <div class="tg-message-content">Image pending approval</div>
                             </div>
                         </div>
                     </div>
-                {% endblock heading %}
-            {% block image %}
-                {% if object.image and object.image_status == "app" %}
-                    <img src="{{ object.image.url }}"
-                         width="300"
-                         height="{{ image.height }}"
-                         alt="image of {{ object.name }}" />
-                {% elif object.image %}
-                    Image pending approval
                 {% endif %}
             {% endblock image %}
-            {% block contents %}
-            {% endblock contents %}
+
+            <!-- Form Content -->
+            <div class="tg-card mb-4">
+                <div class="tg-card-body">
+                    {% block contents %}
+                    {% endblock contents %}
+                </div>
+            </div>
+
             {% block buttons %}
-                <div class="row">
-                    <div class="col-sm">
-                        <input type="submit" value="Save" />
+                <!-- Form Actions -->
+                <div class="tg-card">
+                    <div class="tg-card-body text-center">
+                        <button type="submit" class="tg-btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        {% if object %}
+                            <a href="{{ object.get_absolute_url }}" class="tg-btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             {% endblock buttons %}
-        </div>
-    </form>
-    {% block errors %}
-        {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
-        {% endif %}
-    {% endblock errors %}
+        </form>
     </div>
 {% endblock content %}

@@ -1,117 +1,139 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
-    <div class="container centertext">
-        <div class="row">
-            <div class="col-sm">
-                Welcome to the Tellurium Games site! Here you will find World of Darkness games, starting with a Mage Chronicle I'm running, as well as links to other World of Darkness related projects of mine.
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                Warning! This site is currently in beta. It may change significantly. I will do everything I can to keep the database stable in the meantime, but data loss is possible.
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                A heads up: I reserve the right to use all content here in Storyteller's Vault products. Particularly, locations, items, plots, and some aspects of characters may appear in Storyteller's Vault products, particularly an eventual city book.
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="tg-card header-card mb-4">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title">Welcome to Tellurium Games</h1>
             </div>
         </div>
 
+        <!-- Welcome Message Card -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-body">
+                <p>Welcome to the Tellurium Games site! Here you will find World of Darkness games, starting with a Mage Chronicle I'm running, as well as links to other World of Darkness related projects of mine.</p>
+            </div>
+        </div>
+
+        <!-- Warning Card -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-body">
+                <div class="tg-warning-message">
+                    <div class="tg-message-title">Beta Notice</div>
+                    <div class="tg-message-content">
+                        This site is currently in beta. It may change significantly. I will do everything I can to keep the database stable in the meantime, but data loss is possible.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Usage Notice Card -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-body">
+                <div class="tg-info-message">
+                    <div class="tg-message-title">Content Usage Notice</div>
+                    <div class="tg-message-content">
+                        I reserve the right to use all content here in Storyteller's Vault products. Particularly, locations, items, plots, and some aspects of characters may appear in Storyteller's Vault products, particularly an eventual city book.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
         <div class="text-center mb-4">
-            <div>
-                <a href="https://github.com/charlesmsiegel/tg" class="btn btn-outline-secondary me-2 px-4 py-2">View Codebase</a>
-                <a href="https://github.com/charlesmsiegel/tg/issues" class="btn btn-outline-secondary px-4 py-2">Report Bugs</a>
+            <a href="https://github.com/charlesmsiegel/tg" class="btn btn-primary me-2">
+                <i class="fab fa-github"></i> View Codebase
+            </a>
+            <a href="https://github.com/charlesmsiegel/tg/issues" class="btn btn-primary">
+                <i class="fas fa-bug"></i> Report Bugs
+            </a>
+        </div>
+
+        <!-- Community Links -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <h2 class="tg-card-title">Community & Support</h2>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <!-- Patreon Card -->
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="text-center">
+                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <img src="{% static 'images/patreon.png' %}" alt="Patreon" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
+                            </div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Support on Patreon</h4>
+                            <a href="https://www.patreon.com/bePatron?u=62722820" class="btn btn-primary w-100">
+                                <i class="fab fa-patreon"></i> Become a Patron
+                            </a>
+                        </div>
+                    </div>
+                
+                    <!-- Storyteller's Vault Card -->
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="text-center">
+                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <img src="{% static 'images/stv.png' %}" alt="Storyteller's Vault" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
+                            </div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Storyteller's Vault</h4>
+                            <a href="https://www.storytellersvault.com/browse.php?author=Charles%20Siegel" class="btn btn-primary w-100">
+                                <i class="fas fa-book-open"></i> View Products
+                            </a>
+                        </div>
+                    </div>
+                
+                    <!-- Discord Card -->
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="text-center">
+                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <img src="{% static 'images/discord.png' %}" alt="Discord Server" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
+                            </div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Join Discord</h4>
+                            <a href="https://discord.gg/T2cmqf2yYY" class="btn btn-primary w-100">
+                                <i class="fab fa-discord"></i> Join Server
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Dark Pack Card -->
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="text-center">
+                            <div class="mb-3" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <img src="{% static 'images/dark_pack.png' %}" alt="Dark Pack" style="max-height: 100px; max-width: 100%; object-fit: contain;"/>
+                            </div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Dark Pack</h4>
+                            <a href="https://www.worldofdarkness.com/dark-pack" class="btn btn-primary w-100">
+                                <i class="fas fa-moon"></i> Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="row text-center mb-4">
-            <!-- Patreon Card -->
-            <div class="col-sm-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <div>
-                            <a href="https://www.patreon.com/bePatron?u=62722820">
-                                <img src="{% static 'images/patreon.png' %}" alt="Patreon" height="100px" width="auto"/>
-                            </a>
-                        </div>
-                        <div class="mt-3">
-                            <a href="https://www.patreon.com/bePatron?u=62722820" class="btn btn-outline-secondary w-100 py-2">Become a Patron!</a>
-                        </div>
-                    </div>
-                </div>
+        <!-- Updates Section -->
+        {% if news %}
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <h2 class="tg-card-title">Updates</h2>
             </div>
-        
-            <!-- Storyteller's Vault Card -->
-            <div class="col-sm-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <div>
-                            <a href="https://www.storytellersvault.com/browse.php?author=Charles%20Siegel">
-                                <img src="{% static 'images/stv.png' %}" alt="Storyteller's Vault" height="100px" width="auto"/>
-                            </a>
-                        </div>
-                        <div class="mt-3">
-                            <a href="https://www.storytellersvault.com/browse.php?author=Charles%20Siegel" class="btn btn-outline-secondary w-100 py-2">Visit Storyteller's Vault</a>
-                        </div>
+            <div class="tg-card-body">
+                {% for item in news %}
+                <div class="tg-card mb-3">
+                    <div class="tg-card-body">
+                        <h3 class="mb-2">
+                            <a href="#">{{ item.title }}</a>
+                        </h3>
+                        <div class="text-muted mb-2">{{ item.date }}</div>
+                        <p class="mb-0">{{ item.content }}</p>
                     </div>
                 </div>
-            </div>
-        
-            <!-- Discord Card -->
-            <div class="col-sm-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <div>
-                            <a href="https://discord.gg/T2cmqf2yYY">
-                                <img src="{% static 'images/discord.png' %}" alt="Discord Server" height="100px" width="auto"/>
-                            </a>
-                        </div>
-                        <div class="mt-3">
-                            <a href="https://discord.gg/T2cmqf2yYY" class="btn btn-outline-secondary w-100 py-2">Join Discord</a>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
-        
-        <div class="row text-center">
-            <!-- Dark Pack Card -->
-            <div class="col-sm-4 offset-sm-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <div>
-                            <a href="https://www.worldofdarkness.com/dark-pack">
-                                <img src="{% static 'images/dark_pack.png' %}" alt="Dark Pack" height="100px" width="auto"/>
-                            </a>
-                        </div>
-                        <div class="mt-3">
-                            <a href="https://www.worldofdarkness.com/dark-pack" class="btn btn-outline-secondary w-100 py-2">Learn About Dark Pack</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endif %}
     </div>
-    <div class="container centertext">
-        <div class="row">
-            <h2 class="col-sm">Updates</h2>
-        </div>
-    {% for item in news %}
-    <div class="row mb-2">
-            <div class="card flex-md-row mb-4 box-shadow h-md-250">
-                <div class="card-body d-flex flex-column align-items-start">
-                    <h3 class="mb-0">
-                        <a href="#">{{ item.title }}</a>
-                    </h3>
-                    <div class="mb-1">{{ item.date }}</div>
-                    <p class="card-text mb-auto">
-                        {{ item.content }}
-                    </p>
-                </div>
-            </div>
-    </div>
-    {% endfor %}</div>
 {% endblock content %}
 {% block extrascripts %}
     <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>

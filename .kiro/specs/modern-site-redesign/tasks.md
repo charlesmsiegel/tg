@@ -9,8 +9,7 @@
   - Add error/warning/info/success message styles to components.css
   - _Requirements: 1.1, 1.2, 1.3, 2.4, 5.1, 5.2, 5.3_
 
-- [-] 2. Update core app templates
-
+- [x] 2. Update core app templates
   - Update core/templates/core/index.html to use tg-card components and standardized page header pattern
   - Update core/templates/core/form.html to use enhanced tg-form components
   - Review core/templates/core/base.html for any needed consistency improvements
