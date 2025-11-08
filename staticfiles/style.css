@@ -462,3 +462,16 @@ p.post {
 .theme-card code {
     color: inherit;
 }
+
+/* Button text contrast fix */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:visited {
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
