@@ -6,59 +6,289 @@
 {% block styling %}
     {{ block.super }}
     <style>
-    .btn-link {
-        color: inherit;
-    }
-
-    .btn-link:hover {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .list-group-item {
-        background-color: inherit;
-        border-color: inherit;
-    }
-
-    .list-group {
-        background-color: inherit;
-    }
-
-    .centertext {
-        text-align: center;
-    }
-
-    .nav-tabs .nav-link {
-        color: inherit;
-    }
-
-    .nav-tabs .nav-link.active {
-        color: inherit;
-        background-color: inherit;
-    }
+        /* Enhanced tab styling */
+        .tg-nav-tabs .tg-nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Smooth collapse animation */
+        .collapse {
+            transition: height 0.3s ease;
+        }
+        
+        /* Rotate chevron when collapsed */
+        .collapsed .fa-chevron-down {
+            transform: rotate(-90deg);
+        }
+        
+        /* Enhanced table row hover */
+        .tg-table tbody tr:hover {
+            transform: translateX(4px);
+            box-shadow: -4px 0 0 var(--color-primary);
+        }
+        
+        /* Add more padding to table cells for badges */
+        .tg-table tbody td {
+            padding: var(--spacing-3) var(--spacing-4);
+            white-space: nowrap;
+        }
+        
+        /* Allow badge columns to wrap if needed */
+        .tg-table tbody td:nth-child(4),
+        .tg-table tbody td:nth-child(5) {
+            white-space: normal;
+        }
+        
+        /* Link hover effects */
+        .tg-table a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Form button hover */
+        .tg-btn.btn-primary:hover,
+        .tg-btn.btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md) !important;
+        }
+        
+        /* Quick action cards hover */
+        .col-md-6 .tg-card:hover {
+            transform: translateY(-4px);
+            transition: var(--transition-base);
+        }
+        
+        /* Icon circle pulse effect */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .col-md-6 .tg-card:hover div[style*="border-radius: 50%"] {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Badge animations */
+        .tg-badge {
+            transition: var(--transition-fast);
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .tg-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Ensure badges in table cells have proper sizing */
+        .tg-table .tg-badge {
+            font-size: var(--font-size-xs);
+            padding: 0.35em 0.75em;
+            white-space: nowrap;
+        }
+        
+        /* Gameline-specific badge colors for character types */
+        .tg-badge.badge-type-vtm {
+            background-color: var(--gameline-vtm);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wta {
+            background-color: var(--gameline-wta);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-mta {
+            background-color: var(--gameline-mta);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-ctd {
+            background-color: #20b2aa; /* Light sea green - fae/dreamlike quality */
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wto {
+            background-color: var(--gameline-wto);
+            color: var(--color-white);
+        }
+        
+        /* Lighter variants for secondary character types (humans, companions, etc.) */
+        /* Using opacity to create lighter versions of the main colors */
+        .tg-badge.badge-type-vtm-light {
+            background-color: #8b0000;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wta-light {
+            background-color: #228b22;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-mta-light {
+            background-color: #4b0082;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-ctd-light {
+            background-color: #20b2aa;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wto-light {
+            background-color: #2f4f4f;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        /* Dark theme adjustments */
+        @media (prefers-color-scheme: dark) {
+            :root:not(.theme-light) .tg-badge.badge-type-vtm {
+                background-color: #dc143c;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-vtm-light {
+                background-color: #dc143c;
+                opacity: 0.7;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-wta {
+                background-color: #32cd32;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-wta-light {
+                background-color: #32cd32;
+                opacity: 0.7;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-mta {
+                background-color: #9370db;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-mta-light {
+                background-color: #9370db;
+                opacity: 0.7;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-ctd {
+                background-color: #48d1cc;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-ctd-light {
+                background-color: #48d1cc;
+                opacity: 0.7;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-wto {
+                background-color: #708090;
+            }
+            
+            :root:not(.theme-light) .tg-badge.badge-type-wto-light {
+                background-color: #708090;
+                opacity: 0.7;
+            }
+        }
+        
+        .theme-dark .tg-badge.badge-type-vtm {
+            background-color: #dc143c;
+        }
+        
+        .theme-dark .tg-badge.badge-type-vtm-light {
+            background-color: #dc143c;
+            opacity: 0.7;
+        }
+        
+        .theme-dark .tg-badge.badge-type-wta {
+            background-color: #32cd32;
+        }
+        
+        .theme-dark .tg-badge.badge-type-wta-light {
+            background-color: #32cd32;
+            opacity: 0.7;
+        }
+        
+        .theme-dark .tg-badge.badge-type-mta {
+            background-color: #9370db;
+        }
+        
+        .theme-dark .tg-badge.badge-type-mta-light {
+            background-color: #9370db;
+            opacity: 0.7;
+        }
+        
+        .theme-dark .tg-badge.badge-type-ctd {
+            background-color: #48d1cc;
+        }
+        
+        .theme-dark .tg-badge.badge-type-ctd-light {
+            background-color: #48d1cc;
+            opacity: 0.7;
+        }
+        
+        .theme-dark .tg-badge.badge-type-wto {
+            background-color: #708090;
+        }
+        
+        .theme-dark .tg-badge.badge-type-wto-light {
+            background-color: #708090;
+            opacity: 0.7;
+        }
+        
+        /* Group header row styling */
+        .group-header-row {
+            cursor: pointer;
+        }
+        
+        .group-header-row:hover {
+            box-shadow: inset 0 0 0 2px var(--color-primary);
+        }
+        
+        .group-header-row td {
+            border-bottom: 2px solid var(--theme-border-color) !important;
+        }
+        
+        /* Character rows should not have hover transform when in unified table */
+        .character-row:hover {
+            transform: translateX(4px);
+            box-shadow: -4px 0 0 var(--color-primary);
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tg-table tbody tr:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
     </style>
 {% endblock styling %}
 {% block content %}
     <div class="container py-4">
         <!-- Page Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header {{ header }}">
-                        <h1 class="mb-0">{{ title }}</h1>
-                    </div>
-                </div>
+        <div class="tg-card header-card mb-4">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title {{ header }}">{{ title }}</h1>
             </div>
         </div>
         <!-- Character List -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs"
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <ul class="nav nav-tabs card-header-tabs tg-nav-tabs"
                     id="characterTabs"
-                    role="tablist">
+                    role="tablist"
+                    style="border-bottom: none; margin-bottom: 0;">
                     {% for chron in chron_dict.keys %}
                         <li class="nav-item">
-                            <a class="nav-link {% if forloop.first %}active{% endif %}"
+                            <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
                                id="tab-{{ chron.id|default:'no-chronicle' }}"
                                data-toggle="tab"
                                href="#chron-{{ chron.id|default:'no-chronicle' }}"
@@ -73,39 +303,39 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div class="card-body">
+            <div class="tg-card-body">
                 <div class="tab-content" id="characterTabsContent">
                     {% for chron in chron_dict.keys %}
                         <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
                              id="chron-{{ chron.id|default:'no-chronicle' }}"
                              role="tabpanel">
                             <!-- Status Tabs -->
-                            <ul class="nav nav-tabs mb-3"
+                            <ul class="nav nav-tabs tg-nav-tabs mb-3"
                                 id="statusTabs-{{ chron.id|default:'no-chronicle' }}"
                                 role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active"
+                                    <a class="nav-link tg-nav-link active {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
                                        id="active-tab-{{ chron.id|default:'no-chronicle' }}"
                                        data-toggle="tab"
                                        href="#active-{{ chron.id|default:'no-chronicle' }}"
                                        role="tab">Active</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"
+                                    <a class="nav-link tg-nav-link {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
                                        id="retired-tab-{{ chron.id|default:'no-chronicle' }}"
                                        data-toggle="tab"
                                        href="#retired-{{ chron.id|default:'no-chronicle' }}"
                                        role="tab">Retired</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"
+                                    <a class="nav-link tg-nav-link {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
                                        id="deceased-tab-{{ chron.id|default:'no-chronicle' }}"
                                        data-toggle="tab"
                                        href="#deceased-{{ chron.id|default:'no-chronicle' }}"
                                        role="tab">Deceased</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link"
+                                    <a class="nav-link tg-nav-link {% if chron %}{{ chron.headings }}{% else %}wod_heading{% endif %}"
                                        id="npc-tab-{{ chron.id|default:'no-chronicle' }}"
                                        data-toggle="tab"
                                        href="#npc-{{ chron.id|default:'no-chronicle' }}"
@@ -121,69 +351,162 @@
                                              role="tabpanel">
                                             {% if chars %}
                                                 {% regroup chars by group_set.first as grouplist %}
-                                                {% for g in grouplist %}
-                                                    {% if g.list %}
-                                                        <div>
-                                                            <div class="list-group-item">
-                                                                <div class="d-flex align-items-center">
-                                                                    {% if g.grouper %}
-                                                                        <a href="#group-{{ g.grouper.id }}-{{ chron.id|default:'no-chronicle' }}"
-                                                                           class="btn btn-link btn-sm p-0 mr-2"
-                                                                           data-toggle="collapse"
-                                                                           role="button"
-                                                                           aria-expanded="true"
-                                                                           aria-controls="group-{{ g.grouper.id }}-{{ chron.id|default:'no-chronicle' }}">
-                                                                            <i class="fas fa-chevron-down"></i>
-                                                                        </a>
-                                                                        <div class="flex-grow-1">
-                                                                            <a href="{{ g.grouper.get_absolute_url }}" class="text-muted">{{ g.grouper.name }}</a>
-                                                                        </div>
-                                                                    {% else %}
-                                                                        <a href="#solo-{{ chron.id|default:'no-chronicle' }}-{{ status }}"
-                                                                           class="btn btn-link btn-sm p-0 mr-2"
-                                                                           data-toggle="collapse"
-                                                                           role="button"
-                                                                           aria-expanded="true"
-                                                                           aria-controls="solo-{{ chron.id|default:'no-chronicle' }}-{{ status }}">
-                                                                            <i class="fas fa-chevron-down"></i>
-                                                                        </a>
-                                                                        <div class="flex-grow-1">
-                                                                            <span class="text-muted">Solo Characters</span>
-                                                                        </div>
-                                                                    {% endif %}
-                                                                </div>
-                                                            </div>
-                                                            <div id="{% if g.grouper %}group-{{ g.grouper.id }}-{{ chron.id|default:'no-chronicle' }}{% else %}solo-{{ chron.id|default:'no-chronicle' }}-{{ status }}{% endif %}"
-                                                                 class="collapse show">
-                                                                {% for char in g.list %}
-                                                                    <div class="list-group-item">
-                                                                        <div class="row align-items-center">
-                                                                            <div class="col-1"></div>
-                                                                            <div class="col-5">
-                                                                                <a href="{{ char.get_absolute_url }}" class="character-link">{{ char.name }}</a>
+                                                <!-- Single unified table with group headers as rows -->
+                                                <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                                                    <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 3%;"></th>
+                                                                <th style="width: 35%;">
+                                                                    <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                                                </th>
+                                                                <th style="width: 20%;">
+                                                                    <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Player
+                                                                </th>
+                                                                <th style="width: 22%;">
+                                                                    <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                                                </th>
+                                                                <th style="width: 20%;">
+                                                                    <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for g in grouplist %}
+                                                                {% if g.list %}
+                                                                    <!-- Group Header Row -->
+                                                                    <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
+                                                                        <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <a href="#group-{{ g.grouper.id|default:'solo' }}-{{ chron.id|default:'no-chronicle' }}-{{ status }}"
+                                                                                   class="mr-2"
+                                                                                   data-toggle="collapse"
+                                                                                   role="button"
+                                                                                   aria-expanded="true"
+                                                                                   style="padding: 0.25rem 0.5rem; 
+                                                                                          background: transparent; 
+                                                                                          border: none; 
+                                                                                          color: var(--theme-text-primary);
+                                                                                          cursor: pointer;
+                                                                                          transition: var(--transition-fast);">
+                                                                                    <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                                                </a>
+                                                                                <div class="flex-grow-1">
+                                                                                    {% if g.grouper %}
+                                                                                        <a href="{{ g.grouper.get_absolute_url }}" 
+                                                                                           style="color: var(--theme-text-primary); 
+                                                                                                  text-decoration: none; 
+                                                                                                  font-weight: 600;
+                                                                                                  font-size: var(--font-size-base);
+                                                                                                  transition: var(--transition-fast);">
+                                                                                            <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                                        </a>
+                                                                                    {% else %}
+                                                                                        <span style="color: var(--theme-text-primary); 
+                                                                                                     font-weight: 600;
+                                                                                                     font-size: var(--font-size-base);">
+                                                                                            <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Solo Characters
+                                                                                        </span>
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                                <span class="tg-badge badge-secondary badge-pill ml-2">{{ g.list|length }}</span>
                                                                             </div>
-                                                                            <div class="col-2">
+                                                                        </td>
+                                                                    </tr>
+                                                                    <!-- Character Rows (Collapsible) -->
+                                                                    {% for char in g.list %}
+                                                                        <tr class="collapse show character-row" 
+                                                                            id="group-{{ g.grouper.id|default:'solo' }}-{{ chron.id|default:'no-chronicle' }}-{{ status }}"
+                                                                            style="transition: var(--transition-fast);">
+                                                                            <td data-label=""></td>
+                                                                            <td data-label="Character">
+                                                                                <a href="{{ char.get_absolute_url }}" 
+                                                                                   class="{{ char.gameline }}_heading" 
+                                                                                   style="text-decoration: none; 
+                                                                                          font-weight: 600;
+                                                                                          font-size: var(--font-size-base);
+                                                                                          transition: var(--transition-fast);">
+                                                                                    {{ char.name }}
+                                                                                </a>
+                                                                            </td>
+                                                                            <td data-label="Player">
                                                                                 {% if char.owner %}
-                                                                                    <a href="{% url 'profile' char.owner.id %}" class="text-muted">{{ char.owner.username }}</a>
+                                                                                    <a href="{% url 'profile' char.owner.id %}" 
+                                                                                       style="color: var(--theme-text-secondary); 
+                                                                                              text-decoration: none;
+                                                                                              transition: var(--transition-fast);">
+                                                                                        <i class="fas fa-user mr-1" style="font-size: 0.85em;"></i>{{ char.owner.username }}
+                                                                                    </a>
+                                                                                {% else %}
+                                                                                    <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
                                                                                 {% endif %}
-                                                                            </div>
-                                                                            <div class="col-2">
-                                                                                <span class="badge badge-secondary">{{ char.get_type }}</span>
-                                                                            </div>
-                                                                            <div class="col-2">
-                                                                                <span class="badge badge-info">{{ char.get_status_display }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                {% endfor %}
-                                                            </div>
-                                                        </div>
-                                                    {% endif %}
-                                                {% empty %}
-                                                    <div class="text-center py-3 text-muted">No characters found for this status.</div>
-                                                {% endfor %}
+                                                                            </td>
+                                                                            <td data-label="Type">
+                                                                                {% if char.type == 'mage' or char.type == 'sorcerer' or char.type == 'companion' %}
+                                                                                    <span class="tg-badge badge-type-mta badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'mta_human' %}
+                                                                                    <span class="tg-badge badge-type-mta-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'werewolf' or char.type == 'kinfolk' or char.type == 'fomor' %}
+                                                                                    <span class="tg-badge badge-type-wta badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'wta_human' %}
+                                                                                    <span class="tg-badge badge-type-wta-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'vampire' %}
+                                                                                    <span class="tg-badge badge-type-vtm badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'vtm_human' %}
+                                                                                    <span class="tg-badge badge-type-vtm-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'changeling' %}
+                                                                                    <span class="tg-badge badge-type-ctd badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'ctd_human' %}
+                                                                                    <span class="tg-badge badge-type-ctd-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'wraith' %}
+                                                                                    <span class="tg-badge badge-type-wto badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'wto_human' %}
+                                                                                    <span class="tg-badge badge-type-wto-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% elif char.type == 'spirit_character' %}
+                                                                                    <span class="tg-badge badge-type-wta-light badge-pill">{{ char.get_type }}</span>
+                                                                                {% else %}
+                                                                                    <span class="tg-badge badge-secondary badge-pill">{{ char.get_type }}</span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                            <td data-label="Status">
+                                                                                {% if status == 'active' %}
+                                                                                    <span class="tg-badge badge-active badge-pill">{{ char.get_status_display }}</span>
+                                                                                {% elif status == 'retired' %}
+                                                                                    <span class="tg-badge badge-inactive badge-pill">{{ char.get_status_display }}</span>
+                                                                                {% elif status == 'deceased' %}
+                                                                                    <span class="tg-badge badge-deceased badge-pill">{{ char.get_status_display }}</span>
+                                                                                {% elif status == 'npc' %}
+                                                                                    <span class="tg-badge badge-npc badge-pill">{{ char.get_status_display }}</span>
+                                                                                {% else %}
+                                                                                    <span class="tg-badge badge-info badge-pill">{{ char.get_status_display }}</span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% empty %}
+                                                                <tr>
+                                                                    <td colspan="5" class="text-center py-5" 
+                                                                        style="color: var(--theme-text-muted);
+                                                                               background: var(--theme-bg-secondary);
+                                                                               border: 2px dashed var(--theme-border-color);">
+                                                                        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                                                                        <p class="mb-0" style="font-size: var(--font-size-base);">No characters found for this status.</p>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             {% else %}
-                                                <div class="text-center py-3 text-muted">No characters found for this status.</div>
+                                                <div class="text-center py-5" 
+                                                     style="color: var(--theme-text-muted);
+                                                            background: var(--theme-bg-secondary);
+                                                            border-radius: var(--border-radius-base);
+                                                            border: 2px dashed var(--theme-border-color);">
+                                                    <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                                                    <p class="mb-0" style="font-size: var(--font-size-base);">No characters found for this status.</p>
+                                                </div>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
@@ -194,21 +517,107 @@
                 </div>
             </div>
         </div>
-        <!-- Create New Character Form -->
+        <!-- Quick Actions -->
         {% if button_include %}
-            <div class="card">
-                <div class="card-header {{ header }}">
-                    <h5 class="mb-0">Create New Character</h5>
+            <div class="row">
+                <!-- Create Character -->
+                <div class="col-md-6 mb-4">
+                    <div class="tg-card" style="height: 100%; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary);">
+                        <div class="tg-card-body" style="padding: var(--spacing-5); text-align: center;">
+                            <div style="margin-bottom: var(--spacing-4);">
+                                <div style="width: 64px; 
+                                           height: 64px; 
+                                           margin: 0 auto var(--spacing-3); 
+                                           background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-success) 100%);
+                                           border-radius: 50%;
+                                           display: flex;
+                                           align-items: center;
+                                           justify-content: center;
+                                           box-shadow: var(--shadow-md);">
+                                    <i class="fas fa-user-plus" style="font-size: 28px; color: white;"></i>
+                                </div>
+                                <h5 class="tg-card-title {{ header }}" style="margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
+                                    Create Character
+                                </h5>
+                                <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+                                    Start a new character for your chronicle
+                                </p>
+                            </div>
+                            <form id="charForm" method="post" novalidate>
+                                {% csrf_token %}
+                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
+                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
+                                        <i class="fas fa-dice-d20 mr-2" style="color: var(--color-primary);"></i>Character Type
+                                    </label>
+                                    <select name="char_type" id="id_char_type" class="tg-form-control tg-form-select" required>
+                                        {% for value, label in form.char_type.field.choices %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" 
+                                        name="action" 
+                                        value="create" 
+                                        class="tg-btn btn-primary btn-lg"
+                                        style="width: 100%; 
+                                               box-shadow: var(--shadow-sm); 
+                                               transition: var(--transition-fast);
+                                               font-weight: 600;">
+                                    <i class="fas fa-plus-circle mr-2"></i>Create Character
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form id="charForm"
-                          class="form-inline justify-content-center"
-                          method="post"
-                          novalidate>
-                        {% csrf_token %}
-                        <div class="form-group mr-2">{{ form.char_type }}</div>
-                        <button type="submit" name="action" value="create" class="btn btn-primary">Create</button>
-                    </form>
+                
+                <!-- Create Group -->
+                <div class="col-md-6 mb-4">
+                    <div class="tg-card" style="height: 100%; box-shadow: var(--shadow-md); border-top: 4px solid var(--color-success);">
+                        <div class="tg-card-body" style="padding: var(--spacing-5); text-align: center;">
+                            <div style="margin-bottom: var(--spacing-4);">
+                                <div style="width: 64px; 
+                                           height: 64px; 
+                                           margin: 0 auto var(--spacing-3); 
+                                           background: linear-gradient(135deg, var(--color-success) 0%, var(--color-info) 100%);
+                                           border-radius: 50%;
+                                           display: flex;
+                                           align-items: center;
+                                           justify-content: center;
+                                           box-shadow: var(--shadow-md);">
+                                    <i class="fas fa-users" style="font-size: 28px; color: white;"></i>
+                                </div>
+                                <h5 class="tg-card-title {{ header }}" style="margin-bottom: var(--spacing-2); font-size: var(--font-size-xl);">
+                                    Create Group
+                                </h5>
+                                <p style="color: var(--theme-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+                                    Form a cabal, pack, coterie, or motley
+                                </p>
+                            </div>
+                            <form id="groupForm" method="post" novalidate>
+                                {% csrf_token %}
+                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
+                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
+                                        <i class="fas fa-users-cog mr-2" style="color: var(--color-success);"></i>Group Type
+                                    </label>
+                                    <select name="group_type" id="id_group_type" class="tg-form-control tg-form-select" required>
+                                        {% for value, label in group_form.group_type.field.choices %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" 
+                                        name="action" 
+                                        value="create_group" 
+                                        class="tg-btn btn-success btn-lg"
+                                        style="width: 100%; 
+                                               box-shadow: var(--shadow-sm); 
+                                               transition: var(--transition-fast);
+                                               font-weight: 600;">
+                                    <i class="fas fa-users-cog mr-2"></i>Create Group
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endif %}

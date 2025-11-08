@@ -1,4 +1,5 @@
 from characters.forms.core.character_creation import CharacterCreationForm
+from characters.forms.core.group_creation import GroupCreationForm
 from characters.models.core import Character, Derangement, Group, Human
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
@@ -129,31 +130,43 @@ class CharacterIndexView(ListView):
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
-        char_type = request.POST["char_type"]
-        obj = ObjectType.objects.get(name=char_type)
+        
+        # Determine if this is a character or group creation
+        if "char_type" in request.POST:
+            type_name = request.POST["char_type"]
+        elif "group_type" in request.POST:
+            type_name = request.POST["group_type"]
+        else:
+            context = self.get_context_data()
+            return render(request, "characters/index.html", context)
+        
+        obj = ObjectType.objects.get(name=type_name)
         gameline = obj.gameline
-        if action == "create":
+        
+        if action == "create" or action == "create_group":
             if gameline == "wod":
-                redi = f"characters:create:{char_type}"
+                redi = f"characters:create:{type_name}"
             elif gameline == "vtm":
-                redi = f"characters:vampire:create:{char_type}"
+                redi = f"characters:vampire:create:{type_name}"
             elif gameline == "wta":
-                redi = f"characters:werewolf:create:{char_type}"
+                redi = f"characters:werewolf:create:{type_name}"
             elif gameline == "mta":
-                redi = f"characters:mage:create:{char_type}"
+                redi = f"characters:mage:create:{type_name}"
             elif gameline == "wto":
-                redi = f"characters:wraith:create:{char_type}"
+                redi = f"characters:wraith:create:{type_name}"
             elif gameline == "ctd":
-                redi = f"characters:changeling:create:{char_type}"
+                redi = f"characters:changeling:create:{type_name}"
             return redirect(redi)
+        
         context = self.get_context_data()
-        return render(request, "characters/charlist.html", context)
+        return render(request, "characters/index.html", context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Characters"
         context["button_include"] = True
         context["form"] = CharacterCreationForm(user=self.request.user)
+        context["group_form"] = GroupCreationForm(user=self.request.user)
         if self.request.user.is_authenticated:
             context["header"] = self.request.user.profile.preferred_heading
         else:
