@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [-] 1. Enhance CSS theme system and components
+- [x] 1. Enhance CSS theme system and components
   - Add enhanced color palette variables to theme-system.css including accent colors, status colors, gameline light variants, and interactive state colors
   - Add page header component styles to components.css with gameline-specific styling
   - Add enhanced table component styles to components.css with responsive mobile layout
@@ -9,7 +9,8 @@
   - Add error/warning/info/success message styles to components.css
   - _Requirements: 1.1, 1.2, 1.3, 2.4, 5.1, 5.2, 5.3_
 
-- [ ] 2. Update core app templates
+- [-] 2. Update core app templates
+
   - Update core/templates/core/index.html to use tg-card components and standardized page header pattern
   - Update core/templates/core/form.html to use enhanced tg-form components
   - Review core/templates/core/base.html for any needed consistency improvements
