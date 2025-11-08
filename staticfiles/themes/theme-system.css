@@ -1,0 +1,194 @@
+/* Theme System - CSS Custom Properties for Light and Dark Themes */
+
+:root {
+  /* Base Colors */
+  --color-primary: #1e7e34;
+  --color-secondary: #6c757d;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  
+  /* Accent Colors */
+  --color-accent-1: #3498db;
+  --color-accent-2: #9b59b6;
+  --color-accent-3: #e67e22;
+  
+  /* Status Colors */
+  --color-status-active: #28a745;
+  --color-status-inactive: #6c757d;
+  --color-status-pending: #ffc107;
+  --color-status-deceased: #dc3545;
+  --color-status-npc: #17a2b8;
+  
+  /* Gameline Colors */
+  --gameline-vtm: #8b0000;
+  --gameline-wta: #228b22;
+  --gameline-mta: #4b0082;
+  --gameline-ctd: #ff69b4;
+  --gameline-wto: #2f4f4f;
+  
+  /* Gameline Light Variants (for backgrounds) */
+  --gameline-vtm-light: rgba(139, 0, 0, 0.1);
+  --gameline-wta-light: rgba(34, 139, 34, 0.1);
+  --gameline-mta-light: rgba(75, 0, 130, 0.1);
+  --gameline-ctd-light: rgba(255, 105, 180, 0.1);
+  --gameline-wto-light: rgba(47, 79, 79, 0.1);
+  
+  /* Interactive States */
+  --color-hover-overlay: rgba(0, 0, 0, 0.05);
+  --color-active-overlay: rgba(0, 0, 0, 0.1);
+  --color-focus-ring: rgba(30, 126, 52, 0.25);
+  
+  /* Light Theme Variables */
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #f8f9fa;
+  --theme-bg-tertiary: #e9ecef;
+  --theme-text-primary: #000000;
+  --theme-text-secondary: #6c757d;
+  --theme-text-muted: #adb5bd;
+  --theme-border-color: #dee2e6;
+  --theme-border-light: #e9ecef;
+  --theme-card-bg: #f8f9fa;
+  --theme-card-header-bg: #e9ecef;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #ced4da;
+  --theme-input-focus-border: #1e7e34;
+  
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.5rem;
+  --spacing-6: 2rem;
+  --spacing-8: 3rem;
+  
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Gameline Fonts */
+  --font-family-vtm: "Delavan", serif;
+  --font-family-wta: "Balthazar", serif;
+  --font-family-mta: "Abbess", serif;
+  --font-family-ctd: "Kells", serif;
+  --font-family-wto: "MatrixTall", serif;
+  --font-family-wod: "OPTIProtea", serif;
+  
+  /* Border Radius */
+  --border-radius-sm: 0.25rem;
+  --border-radius-base: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: all 0.15s ease-in-out;
+  --transition-base: all 0.2s ease-in-out;
+  --transition-slow: all 0.3s ease-in-out;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme Overrides */
+@media (prefers-color-scheme: dark) {
+  :root:not(.theme-light) {
+    --theme-bg-primary: #212529;
+    --theme-bg-secondary: #343a40;
+    --theme-bg-tertiary: #495057;
+    --theme-text-primary: #f8f9fa;
+    --theme-text-secondary: #adb5bd;
+    --theme-text-muted: #6c757d;
+    --theme-border-color: #495057;
+    --theme-border-light: #343a40;
+    --theme-card-bg: #343a40;
+    --theme-card-header-bg: #2d3338;
+    --theme-input-bg: #495057;
+    --theme-input-border: #6c757d;
+    --theme-input-focus-border: #2ecc71;
+    
+    --color-hover-overlay: rgba(255, 255, 255, 0.05);
+    --color-active-overlay: rgba(255, 255, 255, 0.1);
+    --color-focus-ring: rgba(46, 204, 113, 0.25);
+    
+    /* Brighter colors for dark theme */
+    --color-primary: #2ecc71;
+    --color-success: #2ecc71;
+    --gameline-vtm: #dc143c;
+    --gameline-wta: #32cd32;
+    --gameline-mta: #9370db;
+    --gameline-ctd: #ff69b4;
+    --gameline-wto: #708090;
+  }
+}
+
+/* Explicit theme class overrides */
+.theme-light {
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #f8f9fa;
+  --theme-bg-tertiary: #e9ecef;
+  --theme-text-primary: #000000;
+  --theme-text-secondary: #6c757d;
+  --theme-text-muted: #adb5bd;
+  --theme-border-color: #dee2e6;
+  --theme-border-light: #e9ecef;
+  --theme-card-bg: #f8f9fa;
+  --theme-card-header-bg: #e9ecef;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #ced4da;
+  --theme-input-focus-border: #1e7e34;
+  
+  --color-hover-overlay: rgba(0, 0, 0, 0.05);
+  --color-active-overlay: rgba(0, 0, 0, 0.1);
+  --color-focus-ring: rgba(30, 126, 52, 0.25);
+  
+  --color-primary: #1e7e34;
+  --color-success: #28a745;
+  --gameline-vtm: #8b0000;
+  --gameline-wta: #228b22;
+  --gameline-mta: #4b0082;
+  --gameline-ctd: #ff69b4;
+  --gameline-wto: #2f4f4f;
+}
+
+.theme-dark {
+  --theme-bg-primary: #212529;
+  --theme-bg-secondary: #343a40;
+  --theme-bg-tertiary: #495057;
+  --theme-text-primary: #f8f9fa;
+  --theme-text-secondary: #adb5bd;
+  --theme-text-muted: #6c757d;
+  --theme-border-color: #495057;
+  --theme-border-light: #343a40;
+  --theme-card-bg: #343a40;
+  --theme-card-header-bg: #2d3338;
+  --theme-input-bg: #495057;
+  --theme-input-border: #6c757d;
+  --theme-input-focus-border: #2ecc71;
+  
+  --color-hover-overlay: rgba(255, 255, 255, 0.05);
+  --color-active-overlay: rgba(255, 255, 255, 0.1);
+  --color-focus-ring: rgba(46, 204, 113, 0.25);
+  
+  --color-primary: #2ecc71;
+  --color-success: #2ecc71;
+  --gameline-vtm: #dc143c;
+  --gameline-wta: #32cd32;
+  --gameline-mta: #9370db;
+  --gameline-ctd: #ff69b4;
+  --gameline-wto: #708090;
+}
