@@ -1,31 +1,31 @@
 <div class="col-md-6 mb-3">
-    <div class="card location-card h-100">
-        <div class="card-header {{ object.get_heading }}">
-            <h5 class="mb-0 heading-text">Creation Details</h5>
+    <div class="tg-card h-100">
+        <div class="tg-card-header">
+            <h5 class="tg-card-title mta_heading">Creation Details</h5>
         </div>
         {% include "characters/mage/faction/faction_include.html" %}
-        <div class="card-body">
-            <div class="row mb-3">
+        <div class="tg-card-body">
+            <div class="row mb-2">
                 <div class="col-6">
-                    <h6 class="{{ object.get_heading }} heading-text">Primer</h6>
+                    <strong>Primer:</strong>
                 </div>
                 <div class="col-6">
                     {% if object.is_primer %}
-                        <span class="badge badge-warning">Primer</span>
+                        <span class="tg-badge badge-pill badge-warning">Primer</span>
                     {% else %}
                         <span class="text-muted">Not a primer</span>
                     {% endif %}
                 </div>
             </div>
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-6">
-                    <h6 class="{{ object.get_heading }} heading-text">Background Cost</h6>
+                    <strong>Background Cost:</strong>
                 </div>
                 <div class="col-6">{{ object.background_cost }}</div>
             </div>
-            <div class="row mb-3">
+            <div class="row mb-0">
                 <div class="col-6">
-                    <h6 class="{{ object.get_heading }} heading-text">Maximum Quintessence</h6>
+                    <strong>Maximum Quintessence:</strong>
                 </div>
                 <div class="col-6">{{ object.quintessence_max }}</div>
             </div>

@@ -1,18 +1,18 @@
 <div class="col">
-    <div class="card location-card mb-4">
-        <div class="card-header {{ object.get_heading }}">
-            <h5 class="mb-0 heading-text">Ranged Weapon Details</h5>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h5 class="tg-card-title {{ object.get_heading }}">Ranged Weapon Details</h5>
         </div>
-        <div class="card-body">
-            <div class="row">
+        <div class="tg-card-body">
+            <div class="row mb-2">
                 <div class="col-sm-4"><strong>Range:</strong></div>
                 <div class="col-sm-8">{{ object.range }}</div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col-sm-4"><strong>Rate:</strong></div>
                 <div class="col-sm-8">{{ object.rate }}</div>
             </div>
-            <div class="row">
+            <div class="row mb-0">
                 <div class="col-sm-4"><strong>Clip:</strong></div>
                 <div class="col-sm-8">{{ object.clip }}</div>
             </div>

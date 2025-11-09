@@ -24,6 +24,7 @@
   - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
 - [ ] 4. Update characters app detail templates
+  - Use STYLE.md as a guide
   - Update vampire character detail template to use tg-card sections and vtm_heading class
   - Update werewolf character detail template to use tg-card sections and wta_heading class
   - Update mage character detail template to use tg-card sections and mta_heading class
@@ -34,6 +35,7 @@
   - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 5. Update characters app form templates
+  - Use STYLE.md as a guide
   - Update character creation forms to use tg-form-group and tg-form-control classes
   - Update character edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes
@@ -50,11 +52,6 @@
   - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
 - [x] 7. Update locations app detail templates
-
-
-
-
-
   - Update location detail template to use tg-card sections
   - Update city location detail template to use tg-card sections
   - Update chantry location detail template to use tg-card sections and mta_heading class
@@ -70,6 +67,7 @@
   - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 8. Update locations app form templates
+  - Use STYLE.md as a guide
   - Update location creation forms to use tg-form-group and tg-form-control classes
   - Update location edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes
@@ -86,7 +84,8 @@
   - Update create item form to match character/location index styling
   - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
-- [ ] 10. Update items app detail templates
+- [x] 10. Update items app detail templates
+  - Use STYLE.md as a guide
   - Update weapon detail templates to use tg-card sections
   - Update armor detail templates to use tg-card sections
   - Update fetish detail templates to use tg-card sections and wta_heading class
@@ -97,6 +96,7 @@
   - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 11. Update items app form templates
+  - Use STYLE.md as a guide
   - Update item creation forms to use tg-form-group and tg-form-control classes
   - Update item edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes

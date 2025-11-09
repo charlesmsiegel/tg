@@ -1,9 +1,9 @@
-<div class="card location-card mb-4">
-    <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 heading-text">Power</h5>
-        <span class="badge badge-light">Arete {{ object.arete }}</span>
+<div class="tg-card mb-4">
+    <div class="tg-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tg-card-title mta_heading">Power</h5>
+        <span class="tg-badge badge-pill badge-light">Arete {{ object.arete }}</span>
     </div>
-    <div class="card-body text-center">
+    <div class="tg-card-body text-center">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4 justify-content-center">
         {% if object.power %}
         <div class="col-3 mb-4">

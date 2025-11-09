@@ -1,13 +1,13 @@
-<div class="card location-card">
-    <div class="card-header {{ object.get_heading }}">
-        <h5 class="mb-0 heading-text">Historical Details</h5>
+<div class="tg-card">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title mta_heading">Historical Details</h5>
     </div>
-    <div class="card-body">
+    <div class="tg-card-body">
         <div class="row">
             <div class="col-md-4">
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-6">
-                        <h6 class="{{ object.get_heading }} heading-text">Length</h6>
+                        <strong>Length:</strong>
                     </div>
                     <div class="col-6">
                         {{ object.length }}
@@ -15,9 +15,9 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-6">
-                        <h6 class="{{ object.get_heading }} heading-text">Date Written</h6>
+                        <strong>Date Written:</strong>
                     </div>
                     <div class="col-6">
                         {{ year }}
@@ -30,9 +30,9 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-6">
-                        <h6 class="{{ object.get_heading }} heading-text">Language</h6>
+                        <strong>Language:</strong>
                     </div>
                     <div class="col-6">
                         <a href="{{ object.language.get_absolute_url }}" class="node-link">{{ object.language }}</a>
