@@ -37,6 +37,125 @@
                 <link rel="stylesheet" href="{% static 'themes/highlight.css' %}">
             {% endif %}
         {% endblock styling %}
+        <style>
+            /* Notification badge styling */
+            .nav-link .badge {
+                border-radius: 50%;
+                min-width: 1.5em;
+                height: 1.5em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0%, 100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+            
+            .nav-link:hover .badge {
+                animation: none;
+            }
+            
+            /* Notification dropdown styling */
+            .notification-dropdown {
+                min-width: 320px;
+                max-width: 400px;
+                max-height: 500px;
+                overflow-y: auto;
+            }
+            
+            .notification-dropdown .dropdown-header {
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                padding: 0.75rem 1rem;
+            }
+            
+            .notification-dropdown .dropdown-item-text {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+                color: #495057;
+                white-space: normal;
+                cursor: default;
+            }
+            
+            .notification-dropdown .dropdown-item-text:hover {
+                background-color: #f8f9fa;
+            }
+            
+            .notification-dropdown .badge-pill {
+                font-size: 0.75rem;
+                padding: 0.35em 0.65em;
+            }
+            
+            .notification-dropdown .dropdown-item {
+                font-weight: 500;
+            }
+            
+            .notification-dropdown .dropdown-item:hover {
+                background-color: #e9ecef;
+            }
+            
+            /* Dark theme adjustments */
+            @media (prefers-color-scheme: dark) {
+                .notification-dropdown {
+                    background-color: #343a40;
+                    border-color: #495057;
+                }
+                
+                .notification-dropdown .dropdown-header {
+                    color: #f8f9fa;
+                }
+                
+                .notification-dropdown .dropdown-item-text {
+                    color: #dee2e6;
+                }
+                
+                .notification-dropdown .dropdown-item-text:hover {
+                    background-color: #495057;
+                }
+                
+                .notification-dropdown .dropdown-item:hover {
+                    background-color: #495057;
+                }
+                
+                .notification-dropdown .dropdown-divider {
+                    border-color: #495057;
+                }
+            }
+            
+            .theme-dark .notification-dropdown {
+                background-color: #343a40;
+                border-color: #495057;
+            }
+            
+            .theme-dark .notification-dropdown .dropdown-header {
+                color: #f8f9fa;
+            }
+            
+            .theme-dark .notification-dropdown .dropdown-item-text {
+                color: #dee2e6;
+            }
+            
+            .theme-dark .notification-dropdown .dropdown-item-text:hover {
+                background-color: #495057;
+            }
+            
+            .theme-dark .notification-dropdown .dropdown-item:hover {
+                background-color: #495057;
+            }
+            
+            .theme-dark .notification-dropdown .dropdown-divider {
+                border-color: #495057;
+            }
+        </style>
         <title>
             {% block title %}
                 Tellurium Games
@@ -114,6 +233,39 @@
                     </ul>
                     
                     <ul class="navbar-nav ml-auto">
+                        {% if user.is_authenticated and notification_count > 0 %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link position-relative dropdown-toggle" 
+                                   href="#" 
+                                   id="notificationDropdown"
+                                   role="button"
+                                   data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false"
+                                   title="You have {{ notification_count }} notification{{ notification_count|pluralize }}">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="badge badge-danger position-absolute" style="top: 0; right: 5px; font-size: 0.7rem; padding: 0.25em 0.5em;">
+                                        {{ notification_count }}
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right notification-dropdown" aria-labelledby="notificationDropdown">
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-bell"></i> Notifications ({{ notification_count }})
+                                    </h6>
+                                    <div class="dropdown-divider"></div>
+                                    {% for category, count in notification_breakdown.items %}
+                                        <div class="dropdown-item-text d-flex justify-content-between align-items-center">
+                                            <span>{{ category }}</span>
+                                            <span class="badge badge-primary badge-pill">{{ count }}</span>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-center" href="{{ user.profile.get_absolute_url }}">
+                                        <i class="fas fa-arrow-right"></i> View All
+                                    </a>
+                                </div>
+                            </li>
+                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle"
                                href="#"

@@ -1,43 +1,51 @@
 {% if object.characters_to_approve %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">Characters To Approve</h2>
-    </div>
-    <div class="row">
-        {% for obj in object.characters_to_approve %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#character-approval-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Characters To Approve
+            </h3>
+        </div>
+        <div id="character-approval-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for obj in object.characters_to_approve %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                                    </h5>
+                                    <div class="mb-2">
+                                        {% if obj.owner is not None %}
+                                            <a href="{{ obj.owner.profile.get_absolute_url }}">{{ obj.owner }}</a>
+                                        {% else %}
+                                            <span class="text-muted">No Owner</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-1">
+                                        <span class="tg-badge badge-{{ obj.status|lower }}">{{ obj.get_status_display }}</span>
+                                    </div>
+                                    <div class="text-muted small mb-3">
+                                        {% if obj.get_type %}
+                                            {{ obj.get_type }}
+                                        {% else %}
+                                            {{ obj.type.title }}
+                                        {% endif %}
+                                    </div>
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="approve_character" value="{{ obj.pk }}" class="tg-btn btn-success btn-sm">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            {% if obj.owner is not None %}
-                                <a href="{{ obj.owner.profile.get_absolute_url }}">{{ obj.owner }}</a>
-                            {% else %}
-                                <div>No Owner</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <div>{{ obj.get_status_display }}</div>
-                        </div>
-                        <div>
-                            {% if obj.get_type %}
-                                <div>{{ obj.get_type }}</div>
-                            {% else %}
-                                <div>{{ obj.type.title }}</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <form action="" method="post">
-                                {% csrf_token %}
-                                <button type="submit" name="approve_character" value="{{ obj.pk }}">Approve</button>
-                            </form>
-                        </div>
-                    </div>
+                    {% empty %}
+                        <div class="col text-center text-muted">No Characters.</div>
+                    {% endfor %}
                 </div>
             </div>
-        {% empty %}
-            <div class="col">No Characters.</div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

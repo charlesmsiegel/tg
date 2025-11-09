@@ -1,22 +1,32 @@
 {% if object.unread_scenes %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">Unread Scenes</h2>
-    </div>
-    <div class="row">
-        {% for scene in object.unread_scenes %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#unread-scenes-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Unread Scenes
+            </h3>
+        </div>
+        <div id="unread-scenes-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for scene in object.unread_scenes %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-3">
+                                        <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
+                                    </h5>
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="mark_scene_read" value="{{ scene.pk }}" class="tg-btn btn-primary btn-sm">
+                                            Mark Read
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            <button type="submit" name="mark_scene_read" value="{{ scene.pk }}">Mark Read</button>
-                        </form>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

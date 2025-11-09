@@ -1,18 +1,26 @@
 {% if object.get_updated_journals %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">Updated Journals</h2>
-    </div>
-    <div class="row">
-        {% for journal in object.get_updated_journals %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ journal.get_absolute_url }}">{{ journal.character.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#journals-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Updated Journals
+            </h3>
+        </div>
+        <div id="journals-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for journal in object.get_updated_journals %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ journal.get_absolute_url }}">{{ journal.character.name }}</a>
+                                    </h5>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

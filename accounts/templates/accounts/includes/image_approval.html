@@ -1,70 +1,105 @@
 {% if object.character_images_to_approve or object.location_images_to_approve or object.item_images_to_approve %}
-    <h2 class="col-sm {{ user.profile.preferred_heading }}">Images To Approve</h2>
-    {% for char in object.character_images_to_approve %}
-        <div class="row border">
-            <a class="col-sm border d-flex justify-content-center align-items-center"
-               href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-            <div class="col-sm border d-flex justify-content-center align-items-center">
-                {% if char.owner is not None %}{{ char.owner }}{% endif %}
-            </div>
-            <div class="cols-sm border">
-                <img src="{{ char.image.url }}"
-                     width="300"
-                     height="{{ image.height }}"
-                     alt="image of {{ char.name }}" />
-            </div>
-            <div class="col-sm border d-flex justify-content-center align-items-center">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                            name="approve_character_image"
-                            value="character-{{ char.pk }}">Approve</button>
-                </form>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#image-approval-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ user.profile.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Images To Approve
+            </h3>
+        </div>
+        <div id="image-approval-section" class="collapse show">
+            <div class="tg-card-body">
+                {% for char in object.character_images_to_approve %}
+                    <div class="tg-card mb-3">
+                        <div class="tg-card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    <h5 class="mb-1">
+                                        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                    </h5>
+                                    {% if char.owner is not None %}
+                                        <div class="text-muted small">{{ char.owner }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 text-center mb-3 mb-md-0">
+                                    <img src="{{ char.image.url }}" 
+                                         class="img-fluid" 
+                                         style="max-width: 300px; max-height: 300px;"
+                                         alt="image of {{ char.name }}" />
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="approve_character_image" value="character-{{ char.pk }}" class="tg-btn btn-success">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% for loc in object.location_images_to_approve %}
+                    <div class="tg-card mb-3">
+                        <div class="tg-card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    <h5 class="mb-1">
+                                        <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
+                                    </h5>
+                                    {% if loc.owner is not None %}
+                                        <div class="text-muted small">{{ loc.owner }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 text-center mb-3 mb-md-0">
+                                    <img src="{{ loc.image.url }}" 
+                                         class="img-fluid" 
+                                         style="max-width: 300px; max-height: 300px;"
+                                         alt="image of {{ loc.name }}" />
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="approve_location_image" value="location-{{ loc.pk }}" class="tg-btn btn-success">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% for item in object.item_images_to_approve %}
+                    <div class="tg-card mb-3">
+                        <div class="tg-card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center mb-3 mb-md-0">
+                                    <h5 class="mb-1">
+                                        <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                                    </h5>
+                                    {% if item.owner is not None %}
+                                        <div class="text-muted small">{{ item.owner }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 text-center mb-3 mb-md-0">
+                                    <img src="{{ item.image.url }}" 
+                                         class="img-fluid" 
+                                         style="max-width: 300px; max-height: 300px;"
+                                         alt="image of {{ item.name }}" />
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" name="approve_item_image" value="item-{{ item.pk }}" class="tg-btn btn-success">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    {% endfor %}
-    {% for char in object.location_images_to_approve %}
-        <div class="row border">
-            <a class="col-sm-3 border d-flex justify-content-center align-items-center"
-               href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-            <div class="col-sm-3 border d-flex justify-content-center align-items-center">
-                {% if char.owner is not None %}{{ char.owner }}{% endif %}
-            </div>
-            <div class="cols-sm-3 border">
-                <img src="{{ char.image.url }}"
-                     width="300"
-                     height="{{ image.height }}"
-                     alt="image of {{ char.name }}" />
-            </div>
-            <div class="col-sm border d-flex justify-content-center align-items-center">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                            name="approve_location_image"
-                            value="location-{{ char.pk }}">Approve</button>
-                </form>
-            </div>
-        </div>
-    {% endfor %}
-    {% for char in object.item_images_to_approve %}
-        <div class="row border">
-            <a class="col-sm-3 border d-flex justify-content-center align-items-center"
-               href="{{ char.get_absolute_url }}">{{ char.name }}</a>
-            <div class="col-sm-3 border d-flex justify-content-center align-items-center">
-                {% if char.owner is not None %}{{ char.owner }}{% endif %}
-            </div>
-            <div class="cols-sm-3 border">
-                <img src="{{ char.image.url }}"
-                     width="300"
-                     height="{{ image.height }}"
-                     alt="image of {{ char.name }}" />
-            </div>
-            <div class="col-sm border d-flex justify-content-center align-items-center">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <button type="submit" name="approve_item_image" value="item-{{ char.pk }}">Approve</button>
-                </form>
-            </div>
-        </div>
-    {% endfor %}
+    </div>
 {% endif %}

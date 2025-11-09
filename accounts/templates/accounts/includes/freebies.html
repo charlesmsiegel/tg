@@ -1,46 +1,52 @@
 {% if object.freebies_to_approve %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">Freebies To Approve</h2>
-    </div>
-    <div class="row">
-        {% for freebie_form in freebie_forms %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ freebie_form.character.get_absolute_url }}">{{ freebie_form.character.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#freebies-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Freebies To Approve
+            </h3>
+        </div>
+        <div id="freebies-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for freebie_form in freebie_forms %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ freebie_form.character.get_absolute_url }}">{{ freebie_form.character.name }}</a>
+                                    </h5>
+                                    <div class="mb-2">
+                                        {% if freebie_form.character.owner is not None %}
+                                            <a href="{{ freebie_form.character.owner.profile.get_absolute_url }}">{{ freebie_form.character.owner }}</a>
+                                        {% else %}
+                                            <span class="text-muted">No Owner</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-1">
+                                        <span class="tg-badge badge-{{ freebie_form.character.status|lower }}">{{ freebie_form.character.get_status_display }}</span>
+                                    </div>
+                                    <div class="text-muted small mb-3">
+                                        {% if freebie_form.character.get_type %}
+                                            {{ freebie_form.character.get_type }}
+                                        {% else %}
+                                            {{ freebie_form.character.type.title }}
+                                        {% endif %}
+                                    </div>
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <div class="mb-2">{{ freebie_form.backstory_freebies }}</div>
+                                        <button type="submit" name="submit_freebies" value="{{ freebie_form.character.pk }}" class="tg-btn btn-primary btn-sm">
+                                            Add Freebies
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            {% if obj.owner is not None %}
-                                <a href="{{ freebie_form.character.owner.profile.get_absolute_url }}">{{ freebie_form.character.owner }}</a>
-                            {% else %}
-                                <div>No Owner</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <div>{{ freebie_form.character.get_status_display }}</div>
-                        </div>
-                        <div>
-                            {% if freebie_form.character.get_type %}
-                                <div>{{ freebie_form.character.get_type }}</div>
-                            {% else %}
-                                <div>{{ freebie_form.character.type.title }}</div>
-                            {% endif %}
-                        </div>
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            <div>{{ freebie_form.backstory_freebies }}</div>
-                            <div>
-                                <button type="submit"
-                                        name="submit_freebies"
-                                        value="{{ freebie_form.character.pk }}">Add Freebies</button>
-                            </form>
-                        </div>
-                    </div>
+                    {% empty %}
+                        <div class="col text-center text-muted">No Characters.</div>
+                    {% endfor %}
                 </div>
             </div>
-        {% empty %}
-            <div class="col">No Characters.</div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

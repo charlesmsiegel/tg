@@ -1,24 +1,32 @@
 {% if object.xp_spend_requests %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">XP Spend Requests</h2>
-    </div>
-    <div class="row">
-        {% for char in object.xp_spend_requests %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-spend-requests-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> XP Spend Requests
+            </h3>
+        </div>
+        <div id="xp-spend-requests-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for char in object.xp_spend_requests %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                    </h5>
+                                    <div class="text-muted small">
+                                        {{ char.get_full_gameline }}
+                                    </div>
+                                    <div class="text-muted small">
+                                        {{ char.get_type }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <div>{{ char.get_full_gameline }}</div>
-                        </div>
-                        <div>
-                            <div>{{ char.get_type }}</div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

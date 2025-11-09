@@ -1,55 +1,133 @@
 {% extends "core/base.html" %}
-{% block title %}
-    Sign Up
-{% endblock title %}
+{% block title %}Sign Up{% endblock title %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <h2 class="col-sm wod_heading centertext">Sign Up</h2>
-        </div>
-        <form method="post">
-            {% csrf_token %}
-            <div class="row centertext">
-                <div class="col-sm">Username</div>
-                <div class="col-sm">{{ form.username }}</div>
-                <div class="col-sm">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
-            </div>
-            <div class="row centertext">
-                <div class="col-sm">Email</div>
-                <div class="col-sm">{{ form.email }}</div>
-                <div class="col-sm">Should not be the same as username</div>
-            </div>
-            <div class="row centertext">
-                <div class="col-sm">Password</div>
-                <div class="col-sm">{{ form.password1 }}</div>
-                <div class="col-sm">
-                    <ul>
-                        Your password can't be too similar to your other personal information.
-                    </ul>
-                    <ul>
-                        Your password must contain at least 8 characters.
-                    </ul>
-                    <ul>
-                        Your password can't be a commonly used password.
-                    </ul>
-                    <ul>
-                        Your password can't be entirely numeric.
-                    </ul>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Page Header -->
+                    <div class="tg-card header-card mb-4">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title wod_heading">Sign Up</h1>
+                        </div>
+                    </div>
+
+                    <!-- Error Messages -->
+                    {% if form.non_field_errors %}
+                        <div class="tg-card mb-4">
+                            <div class="tg-card-body">
+                                <div class="tg-error-message">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Sign Up Form Card -->
+                    <div class="tg-card mb-4">
+                        <div class="tg-card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="{{ form.username.id_for_label }}" class="tg-form-label required">
+                                        Username
+                                    </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ form.username }}
+                                    <div class="tg-form-help">
+                                        Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+                                    </div>
+                                    {% if form.username.errors %}
+                                        <div class="tg-form-feedback invalid-feedback d-block">
+                                            {{ form.username.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="{{ form.email.id_for_label }}" class="tg-form-label required">
+                                        Email
+                                    </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ form.email }}
+                                    <div class="tg-form-help">
+                                        Should not be the same as username
+                                    </div>
+                                    {% if form.email.errors %}
+                                        <div class="tg-form-feedback invalid-feedback d-block">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="{{ form.password1.id_for_label }}" class="tg-form-label required">
+                                        Password
+                                    </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ form.password1 }}
+                                    <div class="tg-form-help">
+                                        <ul class="mb-0 pl-4">
+                                            <li>Your password can't be too similar to your other personal information.</li>
+                                            <li>Your password must contain at least 8 characters.</li>
+                                            <li>Your password can't be a commonly used password.</li>
+                                            <li>Your password can't be entirely numeric.</li>
+                                        </ul>
+                                    </div>
+                                    {% if form.password1.errors %}
+                                        <div class="tg-form-feedback invalid-feedback d-block">
+                                            {{ form.password1.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label for="{{ form.password2.id_for_label }}" class="tg-form-label required">
+                                        Confirm Password
+                                    </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                        <div class="tg-form-feedback invalid-feedback d-block">
+                                            {{ form.password2.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="tg-card mb-3">
+                        <div class="tg-card-body text-center">
+                            <button type="submit" id="signup_button" class="tg-btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Login Button -->
+                <div class="text-center">
+                    <p class="text-muted mb-2">Already have an account?</p>
+                    <a href="{% url 'login' %}" class="tg-btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
                 </div>
             </div>
-            <div class="row centertext">
-                <div class="col-sm">Confirm Password</div>
-                <div class="col-sm">{{ form.password2 }}</div>
-                <div class="col-sm"></div>
-            </div>
-            <div class="row centertext">
-                <button type="submit" id="signup_button" class="col-sm">Sign up</button>
-            </div>
-        </form>
-        {% block errors %}
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
-            {% endif %}
-        {% endblock errors %}
+        </div>
     </div>
 {% endblock content %}

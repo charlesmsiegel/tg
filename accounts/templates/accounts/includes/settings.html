@@ -1,47 +1,133 @@
-<!-- accounts/templates/accounts/includes/settings.html (updated) -->
-<form method="post" action="">
-    {% csrf_token %}
-    {% if user == object.user %}
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Heading</div>
-            <div class="col-sm-9">{{ object.get_preferred_heading_display }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Theme</div>
-            <div class="col-sm-9">{{ object.get_theme_display }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Highlight Text</div>
-            <div class="col-sm-9">{% if object.highlight_text %}Yes{% else %}No{% endif %}</div>
-        </div>
-    {% endif %}
-    
-    {% if user == object.user or user.profile.is_st or object.discord_toggle %}
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Discord</div>
-            <div class="col-sm-9">{{ object.discord_id }}</div>
-        </div>
-    {% endif %}
-    
-    {% if user == object.user or user.profile.is_st or object.veils_toggle %}
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Veils</div>
-            <div class="col-sm-9">{{ object.veils }}</div>
-        </div>
-    {% endif %}
-    
-    {% if user == object.user or user.profile.is_st or object.lines_toggle %}
-        <div class="row mb-2">
-            <div class="col-sm-3 font-weight-bold">Lines</div>
-            <div class="col-sm-9">{{ object.lines }}</div>
-        </div>
-    {% endif %}
-    
-    {% if user == object.user %}
-        <div class="row">
-            <div class="col-sm">
-                <button type="submit" class="btn btn-primary" name="Edit Preferences">Edit Preferences</button>
+{% if user == object.user %}
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">
+            <i class="fas fa-palette"></i> Display Preferences
+        </h5>
+        
+        <div class="row align-items-center mb-3 pb-3 border-bottom">
+            <div class="col-sm-4">
+                <strong><i class="fas fa-heading"></i> Heading Style</strong>
+            </div>
+            <div class="col-sm-8">
+                <span class="{{ object.preferred_heading }}" style="font-size: 1.1rem;">
+                    {{ object.get_preferred_heading_display }}
+                </span>
             </div>
         </div>
-    {% endif %}
-</form>
+        
+        <div class="row align-items-center mb-3 pb-3 border-bottom">
+            <div class="col-sm-4">
+                <strong><i class="fas fa-moon"></i> Theme</strong>
+            </div>
+            <div class="col-sm-8">
+                <span class="tg-badge badge-info">
+                    <i class="fas fa-{% if object.theme == 'dark' %}moon{% else %}sun{% endif %}"></i>
+                    {{ object.get_theme_display }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="row align-items-center mb-3">
+            <div class="col-sm-4">
+                <strong><i class="fas fa-highlighter"></i> Highlight Text</strong>
+            </div>
+            <div class="col-sm-8">
+                {% if object.highlight_text %}
+                    <span class="tg-badge badge-success">
+                        <i class="fas fa-check"></i> Enabled
+                    </span>
+                {% else %}
+                    <span class="tg-badge badge-secondary">
+                        <i class="fas fa-times"></i> Disabled
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if user == object.user or user.profile.is_st or object.discord_toggle or object.veils_toggle or object.lines_toggle %}
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">
+            <i class="fas fa-user-shield"></i> Privacy & Safety
+        </h5>
+        
+        {% if user == object.user or user.profile.is_st or object.discord_toggle %}
+            <div class="row align-items-center mb-3 pb-3 border-bottom">
+                <div class="col-sm-4">
+                    <strong><i class="fab fa-discord"></i> Discord</strong>
+                    {% if user == object.user %}
+                        <div class="small text-muted">
+                            {% if object.discord_toggle %}
+                                <i class="fas fa-eye"></i> Visible
+                            {% else %}
+                                <i class="fas fa-eye-slash"></i> Private
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-8">
+                    {% if object.discord_id %}
+                        <code class="bg-light px-2 py-1 rounded">{{ object.discord_id }}</code>
+                    {% else %}
+                        <span class="text-muted">Not set</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if user == object.user or user.profile.is_st or object.veils_toggle %}
+            <div class="row align-items-start mb-3 pb-3 border-bottom">
+                <div class="col-sm-4">
+                    <strong><i class="fas fa-veil"></i> Veils</strong>
+                    {% if user == object.user %}
+                        <div class="small text-muted">
+                            {% if object.veils_toggle %}
+                                <i class="fas fa-eye"></i> Visible
+                            {% else %}
+                                <i class="fas fa-eye-slash"></i> Private
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <div class="small text-muted mt-1">
+                        Content to fade to black
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    {% if object.veils %}
+                        <div class="bg-light p-2 rounded" style="white-space: pre-wrap;">{{ object.veils }}</div>
+                    {% else %}
+                        <span class="text-muted">Not set</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if user == object.user or user.profile.is_st or object.lines_toggle %}
+            <div class="row align-items-start mb-3">
+                <div class="col-sm-4">
+                    <strong><i class="fas fa-ban"></i> Lines</strong>
+                    {% if user == object.user %}
+                        <div class="small text-muted">
+                            {% if object.lines_toggle %}
+                                <i class="fas fa-eye"></i> Visible
+                            {% else %}
+                                <i class="fas fa-eye-slash"></i> Private
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <div class="small text-muted mt-1">
+                        Hard boundaries
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    {% if object.lines %}
+                        <div class="bg-light p-2 rounded" style="white-space: pre-wrap;">{{ object.lines }}</div>
+                    {% else %}
+                        <span class="text-muted">Not set</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
