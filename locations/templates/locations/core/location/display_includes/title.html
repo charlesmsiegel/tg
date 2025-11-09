@@ -2,14 +2,14 @@
 {# Common header section for all location models #}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-header-card">
-            <div class="card-body">
-                <h1 class="{{ object.get_heading }}">
+        <div class="tg-card header-card">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title {{ object.get_heading }}">
                     {{ object.name }}
                     {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
                 </h1>
                 {% if object.parent %}
-                    <p class="card-subtitle mb-0 text-muted">
+                    <p class="tg-card-subtitle mb-0">
                         Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
                     </p>
                 {% endif %}

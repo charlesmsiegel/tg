@@ -49,11 +49,20 @@
   - Update create location form to match character index styling
   - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
-- [ ] 7. Update locations app detail templates
+- [x] 7. Update locations app detail templates
+
+
+
+
+
+  - Update location detail template to use tg-card sections
   - Update city location detail template to use tg-card sections
   - Update chantry location detail template to use tg-card sections and mta_heading class
   - Update node location detail template to use tg-card sections and mta_heading class
   - Update library location detail template to use tg-card sections and mta_heading class
+  - Update sector location detail template to use tg-card sections and mta_heading class
+  - Update realm location detail template to use tg-card sections and mta_heading class
+  - Update sanctum location detail template to use tg-card sections and mta_heading class
   - Update caern location detail template to use tg-card sections and wta_heading class
   - Update reality zone detail template to use tg-card sections
   - Ensure consistent section organization across all location types

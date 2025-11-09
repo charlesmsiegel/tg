@@ -1,34 +1,42 @@
 <div class="row mb-4">
     <div class="col-md-6 mb-3">
-        <div class="card location-card h-100">
-            <div class="card-header {{ object.get_heading }}">
-                <h5 class="mb-0">Mood & Theme</h5>
+        <div class="tg-card h-100">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Mood & Theme</h5>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="{{ object.get_heading }} mb-2">Mood</h6>
-                    <p class="mb-0">{{ object.mood|default:"Not specified" }}</p>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="mb-4 text-center">
+                    <h6 class="{{ object.get_heading }} mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Mood</h6>
+                    <div style="padding: 12px 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.mood|default:"Not specified" }}</p>
+                    </div>
                 </div>
-                <div class="mb-0">
-                    <h6 class="{{ object.get_heading }} mb-2">Theme</h6>
-                    <p class="mb-0">{{ object.theme|default:"Not specified" }}</p>
+                <div class="text-center">
+                    <h6 class="{{ object.get_heading }} mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Theme</h6>
+                    <div style="padding: 12px 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.theme|default:"Not specified" }}</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-6 mb-3">
-        <div class="card location-card h-100">
-            <div class="card-header {{ object.get_heading }}">
-                <h5 class="mb-0">Local Power</h5>
+        <div class="tg-card h-100">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Local Power</h5>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="{{ object.get_heading }} mb-2">Media</h6>
-                    <p class="mb-0">{{ object.media|default:"Not specified" }}</p>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="mb-4 text-center">
+                    <h6 class="{{ object.get_heading }} mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Media</h6>
+                    <div style="padding: 12px 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.media|default:"Not specified" }}</p>
+                    </div>
                 </div>
-                <div class="mb-0">
-                    <h6 class="{{ object.get_heading }} mb-2">Politicians</h6>
-                    <p class="mb-0">{{ object.politicians|default:"Not specified" }}</p>
+                <div class="text-center">
+                    <h6 class="{{ object.get_heading }} mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Politicians</h6>
+                    <div style="padding: 12px 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.politicians|default:"Not specified" }}</p>
+                    </div>
                 </div>
             </div>
         </div>

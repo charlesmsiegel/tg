@@ -1,42 +1,49 @@
 {% load static %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Scenes</h5>
+<div class="row mb-4 justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Scenes</h5>
             </div>
-            <div class="card-body">
+            <div class="tg-card-body">
                 {% if scenes %}
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for scene in scenes %}
-                                    <tr class="theme-card">
-                                        <td>
-                                            <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
-                                        </td>
-                                        <td>{{ scene.date_of_scene }}</td>
-                                        <td>
-                                            {% if not scene.finished %}
-                                                <span class="badge badge-success">Ongoing</span>
-                                            {% else %}
-                                                <span class="badge badge-secondary">Completed</span>
-                                            {% endif %}
-                                        </td>
+                    <div style="display: flex; justify-content: center; overflow-x: auto;">
+                        <div style="display: inline-block;">
+                            <table class="tg-table mb-0" style="margin: 0;">
+                                <colgroup>
+                                    <col style="width: 33.33%;">
+                                    <col style="width: 33.33%;">
+                                    <col style="width: 33.33%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 12px 16px; text-align: center;">Title</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Date</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Status</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% for scene in scenes %}
+                                        <tr>
+                                            <td style="padding: 14px 16px; text-align: center;">
+                                                <a href="{{ scene.get_absolute_url }}" style="font-weight: 500;">{{ scene.name }}</a>
+                                            </td>
+                                            <td style="padding: 14px 16px; text-align: center;">{{ scene.date_of_scene }}</td>
+                                            <td style="padding: 14px 16px; text-align: center;">
+                                                {% if not scene.finished %}
+                                                    <span class="tg-badge badge-pill badge-success">Ongoing</span>
+                                                {% else %}
+                                                    <span class="tg-badge badge-pill badge-secondary">Completed</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 {% else %}
-                    <p class="text-muted mb-0">No scenes available.</p>
+                    <p class="text-muted mb-0 text-center">No scenes available.</p>
                 {% endif %}
             </div>
         </div>
