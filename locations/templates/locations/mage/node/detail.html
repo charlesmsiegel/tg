@@ -1,5 +1,21 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
+{% block objectname %}
+    <!-- Page Header with Mage styling -->
+    <div class="tg-card header-card mb-4" data-gameline="mta">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title mta_heading">
+                {{ object.name }}
+                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
 {% block model_specific %}
     <div class="row mb-4">
         {% include "locations/mage/node/display_includes/basics.html" %}

@@ -1,18 +1,18 @@
-<div class="card mb-4">
-    <div class="card-header {{ object.get_heading }}">
-        <h4 class="mb-0">Sector Information</h4>
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Sector Information</h4>
     </div>
-    <div class="card-body">
-        <div class="row mb-3">
-            <div class="col-sm-4">
-                <strong>Sector Class:</strong>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="mb-4 text-center">
+            <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Sector Class:</span>
+                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_sector_class_display }}</span>
             </div>
-            <div class="col-sm-8">{{ object.get_sector_class_display }}</div>
         </div>
-        <h5 class="mb-2">Constraints</h5>
-        <div class="row">
-            <div class="col">
-                <p class="mb-0">{{ object.constraints|default:"No constraints specified." }}</p>
+        <div class="text-center">
+            <h4 class="mta_heading mb-3">Constraints</h4>
+            <div style="max-width: 800px; margin: 0 auto; padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02); text-align: center;">
+                <p class="mb-0" style="line-height: 1.6; text-align: center;">{{ object.constraints|default:"No constraints specified." }}</p>
             </div>
         </div>
     </div>

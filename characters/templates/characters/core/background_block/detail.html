@@ -1,15 +1,15 @@
 {% load dots %}
-<div class="card mb-4">
-    <div class="card-header {{ object.get_heading }}">
-        <h5 class="mb-0">Backgrounds</h5>
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title {{ object.get_heading }}">Backgrounds</h5>
     </div>
-    <div class="card-body">
+    <div class="tg-card-body">
         <div class="row">
             {% for background in backgrounds.all %}
                 <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title {{ object.get_heading }}">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-body">
+                            <h5 class="tg-card-title {{ object.get_heading }}">
                                 <div>
                                     {% if background.display_alt_name %}
                                         {{ background.bg.alternate_name }}
@@ -18,12 +18,12 @@
                                     {% endif %}
                                 </div>
                             </h5>
-                            <p class="card-text">
+                            <p>
                                 <strong>Rating:</strong>
                                 <span class="dots colored-dots">{{ background.rating|dots }}</span>
                             </p>
                             {% if background.note %}
-                                <p class="card-text">
+                                <p>
                                     <small>
                                         {% if background.url %}
                                             <a href="{{ background.url }}">{{ background.note }}</a>

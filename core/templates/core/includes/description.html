@@ -2,11 +2,15 @@
 {# Description section #}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Description</h5>
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Description</h5>
             </div>
-            <div class="card-body">{{ object.description|sanitize_html|linebreaks }}</div>
+            <div class="tg-card-body" style="text-align: center;">
+                <div style="display: inline-block; text-align: left; max-width: 800px;">
+                    {{ object.description|sanitize_html|linebreaks }}
+                </div>
+            </div>
         </div>
     </div>
 </div>

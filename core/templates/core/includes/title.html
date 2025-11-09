@@ -2,9 +2,9 @@
 {% load dots %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-header-card">
-            <div class="card-body">
-                <h1 class="{{ object.get_heading }}">
+        <div class="tg-card header-card">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title {{ object.get_heading }}">
                     {{ object.name|sanitize_html }}
                     {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
                 </h1>

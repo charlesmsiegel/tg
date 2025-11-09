@@ -1,34 +1,22 @@
 {% load dots %}
-<div class="card">
-    <div class="card-header {{ object.get_heading }}">
-        <h5 class="mb-0 heading-text">Resonance</h5>
+<div class="tg-card">
+    <div class="tg-card-header text-center">
+        <h5 class="tg-card-title {{ object.get_heading }}">Resonance</h5>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table node-table mb-0">
-                <thead>
-                    <tr>
-                        <th class="table_head_font_color {{ object.get_heading }}">Resonance Type</th>
-                        <th class="text-center table_head_font_color {{ object.get_heading }}">Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for res in resonance %}
-                        <tr>
-                            <td>
-                                <a href="{{ res.resonance.get_absolute_url }}" class="node-link">{{ res.resonance }}</a>
-                            </td>
-                            <td class="text-center">
-                                <span class="dots colored-dots">{{ res.rating|dots }}</span>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="2" class="centertext text-muted py-3">No resonance traits.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="tg-card-body" style="padding: 20px;">
+        {% if resonance %}
+            <div class="row">
+                {% for res in resonance %}
+                    <div class="col-sm-6 col-md-4 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02); text-align: center;">
+                            <a href="{{ res.resonance.get_absolute_url }}" style="font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">{{ res.resonance }}</a>
+                            <span class="dots colored-dots" style="font-size: 1.1rem;">{{ res.rating|dots }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted text-center mb-0">No resonance traits.</p>
+        {% endif %}
     </div>
 </div>

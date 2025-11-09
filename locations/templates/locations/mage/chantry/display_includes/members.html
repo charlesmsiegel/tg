@@ -1,24 +1,24 @@
-<div class="card mb-4">
-    <div class="card-header {{ object.get_heading }}">
-        <h5 class="mb-0">Personnel</h5>
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title mta_heading">Personnel</h5>
     </div>
-    <div class="card-body">
+    <div class="tg-card-body">
         {% if object.leaders.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Leaders</h5>
+            <h5 class="mb-2 mta_heading">Leaders</h5>
             <div class="row mb-3">
                 {% for leader in object.leaders.all %}
                     <div class="col-sm-6 col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header py-2">
+                                <h6 class="tg-card-title mb-0">
                                     <a href="{{ leader.get_absolute_url }}">{{ leader.name }}</a>
-                                    {% if leader.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                    {% if leader.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
-                            <div class="card-body py-2">
-                                <span class="badge badge-secondary">{{ leader.type|title }}</span>
+                            <div class="tg-card-body py-2">
+                                <span class="tg-badge badge-secondary">{{ leader.type|title }}</span>
                                 {% if leader.get_status_display %}
-                                    <span class="badge {% if leader.status == 'App' %}badge-success {% elif leader.status == 'Sub' %}badge-warning {% elif leader.status == 'Dec' %}badge-danger {% elif leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge {% if leader.status == 'App' %}badge-success {% elif leader.status == 'Sub' %}badge-warning {% elif leader.status == 'Dec' %}badge-danger {% elif leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                         {{ leader.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -31,18 +31,18 @@
         <div class="row mb-3">
             {% if object.ambassador %}
                 <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header py-2">
-                            <h6 class="mb-0">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header py-2">
+                            <h6 class="tg-card-title mb-0">
                                 <strong>Ambassador:</strong>
                                 <a href="{{ object.ambassador.get_absolute_url }}">{{ object.ambassador.name }}</a>
-                                {% if object.ambassador.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                {% if object.ambassador.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                             </h6>
                         </div>
-                        <div class="card-body py-2">
-                            <span class="badge badge-secondary">{{ object.ambassador.type|title }}</span>
+                        <div class="tg-card-body py-2">
+                            <span class="tg-badge badge-secondary">{{ object.ambassador.type|title }}</span>
                             {% if object.ambassador.get_status_display %}
-                                <span class="badge {% if object.ambassador.status == 'App' %}badge-success {% elif object.ambassador.status == 'Sub' %}badge-warning {% elif object.ambassador.status == 'Dec' %}badge-danger {% elif object.ambassador.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                <span class="tg-badge {% if object.ambassador.status == 'App' %}badge-success {% elif object.ambassador.status == 'Sub' %}badge-warning {% elif object.ambassador.status == 'Dec' %}badge-danger {% elif object.ambassador.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                     {{ object.ambassador.get_status_display }}
                                 </span>
                             {% endif %}
@@ -52,18 +52,18 @@
             {% endif %}
             {% if object.node_tender %}
                 <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header py-2">
-                            <h6 class="mb-0">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header py-2">
+                            <h6 class="tg-card-title mb-0">
                                 <strong>Node Tender:</strong>
                                 <a href="{{ object.node_tender.get_absolute_url }}">{{ object.node_tender.name }}</a>
-                                {% if object.node_tender.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                {% if object.node_tender.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                             </h6>
                         </div>
-                        <div class="card-body py-2">
-                            <span class="badge badge-secondary">{{ object.node_tender.type|title }}</span>
+                        <div class="tg-card-body py-2">
+                            <span class="tg-badge badge-secondary">{{ object.node_tender.type|title }}</span>
                             {% if object.node_tender.get_status_display %}
-                                <span class="badge {% if object.node_tender.status == 'App' %}badge-success {% elif object.node_tender.status == 'Sub' %}badge-warning {% elif object.node_tender.status == 'Dec' %}badge-danger {% elif object.node_tender.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                <span class="tg-badge {% if object.node_tender.status == 'App' %}badge-success {% elif object.node_tender.status == 'Sub' %}badge-warning {% elif object.node_tender.status == 'Dec' %}badge-danger {% elif object.node_tender.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                     {{ object.node_tender.get_status_display }}
                                 </span>
                             {% endif %}
@@ -73,21 +73,21 @@
             {% endif %}
         </div>
         {% if object.investigator.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Investigators</h5>
+            <h5 class="mb-2 mta_heading">Investigators</h5>
             <div class="row mb-3">
                 {% for character in object.investigator.all %}
                     <div class="col-sm-6 col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header py-2">
+                                <h6 class="tg-card-title mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
-                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                    {% if character.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
-                            <div class="card-body py-2">
-                                <span class="badge badge-secondary">{{ character.type|title }}</span>
+                            <div class="tg-card-body py-2">
+                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -98,21 +98,21 @@
             </div>
         {% endif %}
         {% if object.guardian.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Guardians</h5>
+            <h5 class="mb-2 mta_heading">Guardians</h5>
             <div class="row mb-3">
                 {% for character in object.guardian.all %}
                     <div class="col-sm-6 col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header py-2">
+                                <h6 class="tg-card-title mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
-                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                    {% if character.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
-                            <div class="card-body py-2">
-                                <span class="badge badge-secondary">{{ character.type|title }}</span>
+                            <div class="tg-card-body py-2">
+                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -123,21 +123,21 @@
             </div>
         {% endif %}
         {% if object.teacher.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Teachers</h5>
+            <h5 class="mb-2 mta_heading">Teachers</h5>
             <div class="row mb-3">
                 {% for character in object.teacher.all %}
                     <div class="col-sm-6 col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header py-2">
+                                <h6 class="tg-card-title mb-0">
                                     <a href="{{ character.get_absolute_url }}">{{ character.name }}</a>
-                                    {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                    {% if character.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                 </h6>
                             </div>
-                            <div class="card-body py-2">
-                                <span class="badge badge-secondary">{{ character.type|title }}</span>
+                            <div class="tg-card-body py-2">
+                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -148,13 +148,13 @@
             </div>
         {% endif %}
         {% if object.cabals.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Cabals</h5>
+            <h5 class="mb-2 mta_heading">Cabals</h5>
             <div class="accordion mb-3" id="cabalAccordion">
                 {% for cabal in object.cabals.all %}
-                    <div class="card mb-2">
-                        <div class="card-header" id="heading{{ cabal.id }}">
-                            <h5 class="mb-0">
-                                <button class="btn btn-link {{ object.get_heading }}"
+                    <div class="tg-card mb-2">
+                        <div class="tg-card-header" id="heading{{ cabal.id }}">
+                            <h5 class="tg-card-title mb-0">
+                                <button class="tg-btn btn-link mta_heading"
                                         type="button"
                                         data-toggle="collapse"
                                         data-target="#collapse{{ cabal.id }}"
@@ -168,21 +168,21 @@
                              class="collapse show"
                              aria-labelledby="heading{{ cabal.id }}"
                              data-parent="#cabalAccordion">
-                            <div class="card-body">
+                            <div class="tg-card-body">
                                 <div class="row">
                                     {% for member in cabal.members.all %}
                                         <div class="col-sm-6 col-md-4 mb-3">
-                                            <div class="card h-100">
-                                                <div class="card-header py-2">
-                                                    <h6 class="mb-0">
+                                            <div class="tg-card h-100">
+                                                <div class="tg-card-header py-2">
+                                                    <h6 class="tg-card-title mb-0">
                                                         <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
-                                                        {% if member.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                                        {% if member.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                                     </h6>
                                                 </div>
-                                                <div class="card-body py-2">
-                                                    <span class="badge badge-secondary">{{ member.type|title }}</span>
+                                                <div class="tg-card-body py-2">
+                                                    <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
                                                     {% if member.get_status_display %}
-                                                        <span class="badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                        <span class="tg-badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                                             {{ member.get_status_display }}
                                                         </span>
                                                     {% endif %}
@@ -203,21 +203,21 @@
         {% endif %}
         {% with independent_members=object.get_independent_members %}
             {% if independent_members %}
-                <h5 class="mb-2 {{ object.get_heading }}">Independent Members</h5>
+                <h5 class="mb-2 mta_heading">Independent Members</h5>
                 <div class="row">
                     {% for member in independent_members %}
                         <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header py-2">
-                                    <h6 class="mb-0">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-header py-2">
+                                    <h6 class="tg-card-title mb-0">
                                         <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
-                                        {% if member.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                        {% if member.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                     </h6>
                                 </div>
-                                <div class="card-body py-2">
-                                    <span class="badge badge-secondary">{{ member.type|title }}</span>
+                                <div class="tg-card-body py-2">
+                                    <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
                                     {% if member.get_status_display %}
-                                        <span class="badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                        <span class="tg-badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                             {{ member.get_status_display }}
                                         </span>
                                     {% endif %}

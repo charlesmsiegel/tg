@@ -1,16 +1,43 @@
 {% load sanitize_text dots humanize %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-card">
-            <div class="card-header {{ object.get_heading }}">
-                <h5 class="mb-0">City Information</h5>
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">City Information</h5>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">Population</h6>
-                            <span class="badge badge-pill badge-primary px-3 py-2">{{ object.population|intcomma }}</span>
+            <div class="tg-card-body" style="padding: 20px;">
+                <!-- Population -->
+                <div class="text-center mb-3">
+                    <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Population:</span>
+                        <span style="font-size: 1.25rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.population|intcomma }}</span>
+                    </div>
+                </div>
+                
+                <!-- Mood & Theme and Local Power in two columns -->
+                <div class="row">
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <div style="padding: 10px; border-radius: 6px; background-color: rgba(0,0,0,0.02); text-align: center;">
+                            <div class="mb-2">
+                                <strong style="font-size: 0.7rem; text-transform: uppercase; color: var(--theme-text-secondary);">Mood:</strong>
+                                <span style="font-size: 0.9rem;">{{ object.mood|default:"Not specified" }}</span>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.7rem; text-transform: uppercase; color: var(--theme-text-secondary);">Theme:</strong>
+                                <span style="font-size: 0.9rem;">{{ object.theme|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="padding: 10px; border-radius: 6px; background-color: rgba(0,0,0,0.02); text-align: center;">
+                            <div class="mb-2">
+                                <strong style="font-size: 0.7rem; text-transform: uppercase; color: var(--theme-text-secondary);">Media:</strong>
+                                <span style="font-size: 0.9rem;">{{ object.media|default:"Not specified" }}</span>
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.7rem; text-transform: uppercase; color: var(--theme-text-secondary);">Politicians:</strong>
+                                <span style="font-size: 0.9rem;">{{ object.politicians|default:"Not specified" }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -21,26 +48,26 @@
 {% if object.characters.exists %}
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card location-card">
-                <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Characters</h5>
-                    <span class="badge badge-light">{{ object.characters.count }} Characters</span>
+            <div class="tg-card">
+                <div class="tg-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Characters</h5>
+                    <span class="tg-badge badge-light">{{ object.characters.count }} Characters</span>
                 </div>
-                <div class="card-body">
+                <div class="tg-card-body">
                     <div class="row">
                         {% for character in object.characters.all %}
                             <div class="col-sm-6 col-md-4 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-header py-2">
-                                        <h6 class="mb-0">
+                                <div class="tg-card h-100">
+                                    <div class="tg-card-header py-2">
+                                        <h6 class="tg-card-title mb-0">
                                             <a href="{{ character.get_absolute_url }}">{{ character }}</a>
-                                            {% if character.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
+                                            {% if character.npc %}<span class="tg-badge badge-dark ml-2">NPC</span>{% endif %}
                                         </h6>
                                     </div>
-                                    <div class="card-body py-2">
-                                        {% if character.type %}<span class="badge badge-secondary">{{ character.type|title }}</span>{% endif %}
+                                    <div class="tg-card-body py-2">
+                                        {% if character.type %}<span class="tg-badge badge-secondary">{{ character.type|title }}</span>{% endif %}
                                         {% if character.get_status_display %}
-                                            <span class="badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                            <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
                                                 {{ character.get_status_display }}
                                             </span>
                                         {% endif %}

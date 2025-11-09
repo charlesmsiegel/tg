@@ -1,21 +1,21 @@
 {% load dots %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-card">
-            <div class="card-header {{ object.get_heading }}">
-                <h5 class="mb-0">Applied To</h5>
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Applied To</h5>
             </div>
-            <div class="card-body">
+            <div class="tg-card-body">
                 <div class="row">
                     {% for loc in object.get_applied_to %}
                         <div class="col-sm-6 col-md-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header py-2">
-                                    <h6 class="mb-0">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-header py-2">
+                                    <h6 class="tg-card-title mb-0">
                                         <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
                                     </h6>
                                 </div>
-                                <div class="card-body">
+                                <div class="tg-card-body">
                                     <small class="text-muted">{{ loc.type|title }}</small>
                                     {% if loc.rank %}
                                         <div class="mt-2">

@@ -3,16 +3,16 @@
 {% if object %}
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card location-card">
-                <div class="card-header {{ object.get_heading }}">
-                    <h5 class="mb-0 heading-text">Reality Zone</h5>
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Reality Zone</h5>
                 </div>
-                <div class="card-body">
+                <div class="tg-card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="enhanced-heading">Enhanced Practices</h6>
                             <div class="table-responsive">
-                                <table class="table node-table mb-0">
+                                <table class="tg-table node-table mb-0">
                                     <tbody>
                                         {% for pr in object.get_positive_practices %}
                                             <tr>
@@ -35,7 +35,7 @@
                         <div class="col-md-6">
                             <h6 class="hindered-heading">Hindered Practices</h6>
                             <div class="table-responsive">
-                                <table class="table node-table mb-0">
+                                <table class="tg-table node-table mb-0">
                                     <tbody>
                                         {% load reverse %}
                                         {% for pr in object.get_negative_practices %}

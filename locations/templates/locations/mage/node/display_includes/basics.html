@@ -1,39 +1,32 @@
 <div class="col-md-6 mb-3">
-    <div class="card location-card h-100">
-        <div class="card-header {{ object.get_heading }}">
-            <h5 class="mb-0 heading-text">Node Properties</h5>
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title mta_heading">Node Properties</h5>
         </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-6">
-                    <h6 class="{{ object.get_heading }} heading-text">Size</h6>
-                </div>
-                <div class="col-6">
-                    <p>{{ object.get_size_display }}</p>
+        <div class="tg-card-body text-center" style="padding: 20px;">
+            <!-- Size -->
+            <div class="mb-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Size:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_size_display }}</span>
                 </div>
             </div>
-            <h6 class="border-bottom pb-2 {{ object.get_heading }} heading-text">Energy Output</h6>
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <div class="mr-3">
-                            <span class="badge badge-pill badge-quintessence px-3 py-2">{{ object.quintessence_per_week }}</span>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 {{ object.get_heading }} heading-text">Quintessence/week</h6>
-                            <small class="text-muted">{{ object.quintessence_form }}</small>
-                        </div>
+            
+            <!-- Energy Output -->
+            <h6 class="mta_heading mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Energy Output</h6>
+            <div class="row">
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.quintessence_per_week }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Quintessence/week</div>
+                        <small class="text-muted" style="font-size: 0.7rem;">{{ object.quintessence_form }}</small>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center">
-                        <div class="mr-3">
-                            <span class="badge badge-pill badge-tass px-3 py-2">{{ object.tass_per_week }}</span>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 {{ object.get_heading }} heading-text">Tass/week</h6>
-                            <small class="text-muted">{{ object.tass_form }}</small>
-                        </div>
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.tass_per_week }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Tass/week</div>
+                        <small class="text-muted" style="font-size: 0.7rem;">{{ object.tass_form }}</small>
                     </div>
                 </div>
             </div>

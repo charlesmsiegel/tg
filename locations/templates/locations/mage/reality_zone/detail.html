@@ -1,5 +1,16 @@
 {% extends "core/object.html" %}
-{% load dots %}
+{% load dots sanitize_text %}
+{% block objectname %}
+    <!-- Page Header -->
+    <div class="tg-card header-card mb-4">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title {{ object.get_heading }}">
+                {{ object.name }}
+                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
+            </h1>
+        </div>
+    </div>
+{% endblock objectname %}
 {% block contents %}
     {% block reality_zone %}
         {% include "locations/mage/reality_zone/display_includes/reality_zone.html" %}
