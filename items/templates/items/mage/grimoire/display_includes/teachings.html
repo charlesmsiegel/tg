@@ -1,28 +1,28 @@
-<div class="card-header {{ object.get_heading }}">
-    <h5 class="mb-0 heading-text">Teachings</h5>
+<div class="tg-card-header">
+    <h5 class="tg-card-title mta_heading">Teachings</h5>
 </div>
-<div class="card-body">
+<div class="tg-card-body">
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12">
-                    <h6 class="{{ object.get_heading }} heading-text">Paradigms</h6>
+                    <strong class="mta_heading">Paradigms</strong>
                 </div>
                 <div class="col-12">{{ paradigms| safe }}</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12">
-                    <h6 class="{{ object.get_heading }} heading-text">Practices</h6>
+                    <strong class="mta_heading">Practices</strong>
                 </div>
                 <div class="col-12">{{ practices| safe }}</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12">
-                    <h6 class="{{ object.get_heading }} heading-text">Instruments</h6>
+                    <strong class="mta_heading">Instruments</strong>
                 </div>
                 <div class="col-12">{{ instruments| safe }}</div>
             </div>
@@ -30,17 +30,17 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12">
-                    <h6 class="{{ object.get_heading }} heading-text">Abilities</h6>
+                    <strong class="mta_heading">Abilities</strong>
                 </div>
                 <div class="col-12">{{ abilities| safe }}</div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="row mb-3">
+            <div class="row mb-2">
                 <div class="col-12">
-                    <h6 class="{{ object.get_heading }} heading-text">Spheres</h6>
+                    <strong class="mta_heading">Spheres</strong>
                 </div>
                 <div class="col-12">{{ spheres| safe }}</div>
             </div>

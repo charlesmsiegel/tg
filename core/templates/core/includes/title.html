@@ -2,7 +2,7 @@
 {% load dots %}
 <div class="row mb-4">
     <div class="col-12">
-        <div class="tg-card header-card">
+        <div class="tg-card header-card" {% if object.get_heading == "mta_heading" %}data-gameline="mta"{% elif object.get_heading == "wta_heading" %}data-gameline="wta"{% elif object.get_heading == "vtm_heading" %}data-gameline="vtm"{% elif object.get_heading == "ctd_heading" %}data-gameline="ctd"{% elif object.get_heading == "wto_heading" %}data-gameline="wto"{% endif %}>
             <div class="tg-card-header">
                 <h1 class="tg-card-title {{ object.get_heading }}">
                     {{ object.name|sanitize_html }}
