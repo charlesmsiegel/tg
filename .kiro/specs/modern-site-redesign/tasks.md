@@ -40,33 +40,68 @@
   - Apply consistent button styling with tg-btn classes
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
-- [ ] 6. Update locations app templates
+- [x] 6. Update locations app index template
   - Update locations/templates/locations/index.html to use tg-card and tg-nav-tabs components
-  - Update location detail templates to use standardized page header with gameline fonts
-  - Update location detail templates to use tg-card sections for attributes
-  - Update location forms to use enhanced tg-form components
-  - Apply gameline-specific styling to location names and headers
-  - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
+  - Replace inline styles with tg-nav-tabs component classes
+  - Apply standardized page header with gameline font support
+  - Update location list display to use tg-table with collapsible hierarchy
+  - Ensure type badges use tg-badge component classes with gameline-specific colors
+  - Update create location form to match character index styling
+  - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
-- [ ] 7. Update items app templates
+- [ ] 7. Update locations app detail templates
+  - Update city location detail template to use tg-card sections
+  - Update chantry location detail template to use tg-card sections and mta_heading class
+  - Update node location detail template to use tg-card sections and mta_heading class
+  - Update library location detail template to use tg-card sections and mta_heading class
+  - Update caern location detail template to use tg-card sections and wta_heading class
+  - Update reality zone detail template to use tg-card sections
+  - Ensure consistent section organization across all location types
+  - Apply gameline-specific data-gameline attributes to header cards
+  - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
+
+- [ ] 8. Update locations app form templates
+  - Update location creation forms to use tg-form-group and tg-form-control classes
+  - Update location edit forms to use enhanced form components
+  - Ensure form validation feedback uses tg-form-feedback classes
+  - Apply consistent button styling with tg-btn classes
+  - Update chantry creation wizard (locgen.html) to use enhanced components
+  - _Requirements: 2.1, 2.2, 3.4, 8.2_
+
+- [ ] 9. Update items app index template
   - Update items/templates/items/index.html to use tg-card and tg-nav-tabs components
-  - Update item detail templates to use standardized page header with gameline fonts
-  - Update item detail templates to use tg-card sections for properties
-  - Update item forms to use enhanced tg-form components
-  - Apply gameline-specific styling to item names and headers
-  - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
+  - Replace inline styles with tg-nav-tabs component classes
+  - Apply standardized page header with gameline font support
+  - Update item list display to use tg-table or enhanced card layout
+  - Ensure type badges use tg-badge component classes with gameline-specific colors
+  - Update create item form to match character/location index styling
+  - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
-- [ ] 8. Update game app templates
+- [ ] 10. Update items app detail templates
+  - Update weapon detail templates to use tg-card sections
+  - Update armor detail templates to use tg-card sections
+  - Update fetish detail templates to use tg-card sections and wta_heading class
+  - Update talisman detail templates to use tg-card sections and mta_heading class
+  - Update wonder detail templates to use tg-card sections and ctd_heading class
+  - Ensure consistent section organization across all item types
+  - Apply gameline-specific data-gameline attributes to header cards
+  - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
+
+- [ ] 11. Update items app form templates
+  - Update item creation forms to use tg-form-group and tg-form-control classes
+  - Update item edit forms to use enhanced form components
+  - Ensure form validation feedback uses tg-form-feedback classes
+  - Apply consistent button styling with tg-btn classes
+  - _Requirements: 2.1, 2.2, 3.4, 8.2_
+
+- [ ] 12. Update game app templates
   - Update chronicle list and detail templates to use tg-card components
   - Update scene list and detail templates to use tg-card components
   - Update game-related forms to use enhanced tg-form components
   - Ensure consistent navigation and layout patterns
   - _Requirements: 2.1, 3.1, 3.3, 3.4_
 
-- [x] 9. Update accounts app templates
-
-
-
+- [x] 13. Update accounts app templates
   - Update profile templates to use tg-card components
   - Update login template to use enhanced tg-form components
   - Update signup template to use enhanced tg-form components
@@ -74,7 +109,7 @@
   - Ensure theme selection interface is styled consistently
   - _Requirements: 2.1, 3.1, 3.4_
 
-- [ ] 10. Perform visual and functional testing
+- [ ] 14. Perform visual and functional testing
   - Test all templates in light theme mode across Chrome, Firefox, Safari, Edge
   - Test all templates in dark theme mode across Chrome, Firefox, Safari, Edge
   - Test responsive layouts on mobile devices (iOS and Android)
@@ -85,7 +120,7 @@
   - Verify theme switching works correctly
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 5.1, 5.2, 5.3, 5.4, 5.5, 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 11. Perform accessibility testing
+- [ ] 15. Perform accessibility testing
   - Test keyboard navigation through all interactive elements
   - Verify visible focus indicators on all buttons, links, and form controls
   - Test with screen reader (NVDA, JAWS, or VoiceOver)
@@ -95,7 +130,7 @@
   - Test with reduced motion preferences enabled
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 12. Final review and refinement
+- [ ] 16. Final review and refinement
   - Review all updated templates for consistency
   - Verify no inline styles remain where components can be used
   - Check that all templates maintain existing functionality

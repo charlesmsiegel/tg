@@ -1,0 +1,62 @@
+{% load sanitize_text %}
+<!-- Location Row -->
+<tr class="location-row {% if parent_id %}collapse show{% endif %}" 
+    {% if parent_id %}id="loc-{{ parent_id }}-children"{% endif %}
+    style="transition: var(--transition-fast);">
+    <td data-label="Location" style="padding-left: {{ level|default:0|add:12 }}px;">
+        {% if location.children.exists %}
+            <a href="#loc-{{ location.id }}-children"
+               class="btn btn-link btn-sm p-0 mr-2"
+               data-toggle="collapse"
+               role="button"
+               aria-expanded="true"
+               aria-controls="loc-{{ location.id }}-children"
+               style="color: var(--theme-text-primary);">
+                <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+            </a>
+        {% else %}
+            <span class="mr-2" style="display: inline-block; width: 20px;"></span>
+        {% endif %}
+        {% if level %}
+            <i class="fas fa-level-up-alt fa-rotate-90 mr-2" style="color: var(--theme-text-muted); font-size: 0.75em;"></i>
+        {% endif %}
+        <a href="{{ location.get_absolute_url }}" 
+           class="{{ location.gameline }}_heading" 
+           style="text-decoration: none; 
+                  font-weight: 600;
+                  font-size: var(--font-size-base);
+                  transition: var(--transition-fast);">
+            {{ location.name|sanitize_html }}
+        </a>
+    </td>
+    <td data-label="Owner">
+        {% if location.owner %}
+            <a href="{% url 'profile' location.owner.id %}" 
+               style="color: var(--theme-text-secondary); 
+                      text-decoration: none;
+                      transition: var(--transition-fast);">
+                <i class="fas fa-user mr-1" style="font-size: 0.85em;"></i>{{ location.owner.username }}
+            </a>
+        {% else %}
+            <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+        {% endif %}
+    </td>
+    <td data-label="Type">
+        {% if location.type == 'chantry' or location.type == 'library' or location.type == 'node' or location.type == 'reality_zone' or location.type == 'realm' or location.type == 'sanctum' or location.type == 'sector' %}
+            <span class="tg-badge badge-type-mta badge-pill">{{ location.type|title }}</span>
+        {% elif location.type == 'caern' %}
+            <span class="tg-badge badge-type-wta badge-pill">{{ location.type|title }}</span>
+        {% elif location.type == 'city' or location.type == 'location' %}
+            <span class="tg-badge badge-secondary badge-pill">{{ location.type|title }}</span>
+        {% else %}
+            <span class="tg-badge badge-secondary badge-pill">{{ location.type|title }}</span>
+        {% endif %}
+    </td>
+</tr>
+
+<!-- Child Locations (Recursive) -->
+{% if location.children.exists %}
+    {% for child in location.children.all %}
+        {% include "locations/location_table_row.html" with location=child level=level|default:0|add:24 parent_id=location.id %}
+    {% endfor %}
+{% endif %}
