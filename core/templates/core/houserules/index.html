@@ -1,33 +1,129 @@
 {% extends "core/base.html" %}
+{% load sanitize_text %}
+{% load field %}
+
 {% block title %}
-    {{ gameline }} House Rules
+    House Rules
 {% endblock title %}
+
+{% block styling %}
+{{ block.super }}
+<style>
+    /* House rule card hover effects */
+    .houserule-card {
+        transition: var(--transition-base);
+        border-left: 4px solid transparent;
+    }
+    
+    .houserule-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-left-color: var(--color-primary);
+    }
+    
+    /* Source badge styling */
+    .source-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        margin: 0.25rem 0.25rem 0.25rem 0;
+        background: var(--theme-bg-tertiary);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        color: var(--theme-text-secondary);
+        border: 1px solid var(--theme-border-color);
+    }
+    
+    /* Rule name styling */
+    .rule-name {
+        color: var(--color-primary);
+        font-weight: 600;
+        margin-bottom: var(--spacing-2);
+    }
+    
+    /* Description styling */
+    .rule-description {
+        color: var(--theme-text-primary);
+        line-height: 1.6;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-6) var(--spacing-4);
+        color: var(--theme-text-muted);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        opacity: 0.3;
+        margin-bottom: var(--spacing-3);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-    {% load sanitize_text %}
-    {% load field %}
     <div class="container py-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header {{ header }}">
-                        <h3 class="mb-0">House Rules</h3>
-                    </div>
-                    <div class="card-body">
-                        {% for hr in object_list %}
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <h5 class="mb-0">{{ hr.name }}</h5>
-                                    <p class="text-muted">{{ hr.display_sources|sanitize_html }}</p>
-                                </div>
-                                <div class="col-md-8">
-                                    <p>{{ hr.description|sanitize_html }}</p>
+        <!-- Page Header -->
+        <div class="tg-card header-card mb-4">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title {{ header }}">
+                    <i class="fas fa-gavel mr-2" style="font-size: 0.9em;"></i>House Rules
+                </h1>
+            </div>
+        </div>
+
+        <!-- House Rules List -->
+        {% if object_list %}
+            <div class="row">
+                {% for hr in object_list %}
+                    <div class="col-12 mb-4">
+                        <div class="tg-card houserule-card" style="box-shadow: var(--shadow-md);">
+                            <div class="tg-card-body" style="padding: var(--spacing-5);">
+                                <div class="row">
+                                    <!-- Rule Name and Sources -->
+                                    <div class="col-md-4 mb-3 mb-md-0">
+                                        <h4 class="rule-name {{ header }}">
+                                            <i class="fas fa-book-open mr-2" style="font-size: 0.85em; color: var(--color-primary);"></i>{{ hr.name }}
+                                        </h4>
+                                        {% if hr.display_sources %}
+                                            <div class="mt-3">
+                                                <div style="font-size: var(--font-size-xs); 
+                                                           color: var(--theme-text-muted); 
+                                                           text-transform: uppercase; 
+                                                           letter-spacing: 0.5px;
+                                                           margin-bottom: var(--spacing-2);">
+                                                    <i class="fas fa-tags mr-1"></i>Sources
+                                                </div>
+                                                <div>
+                                                    {{ hr.display_sources|sanitize_html }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Rule Description -->
+                                    <div class="col-md-8">
+                                        <div class="rule-description">
+                                            {{ hr.description|sanitize_html }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <hr>
-                        {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="tg-card">
+                <div class="tg-card-body">
+                    <div class="empty-state">
+                        <i class="fas fa-scroll"></i>
+                        <p style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-2);">No House Rules Found</p>
+                        <p style="font-size: var(--font-size-sm);">There are currently no house rules defined for this game.</p>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock content %}

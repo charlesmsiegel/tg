@@ -68,7 +68,7 @@
   - Update chantry creation wizard (locgen.html) to use enhanced components
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
-- [ ] 9. Update items app index template
+- [x] 9. Update items app index template
   - Update items/templates/items/index.html to use tg-card and tg-nav-tabs components
   - Replace inline styles with tg-nav-tabs component classes
   - Apply standardized page header with gameline font support
