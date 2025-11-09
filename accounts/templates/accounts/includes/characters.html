@@ -1,27 +1,35 @@
 {% if object.my_characters %}
-    <div class="row">
-        <h2 class="col-sm {{ object.preferred_heading }}">Characters</h2>
-    </div>
-    <div class="row">
-        {% for char in object.my_characters %}
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
-                        <div>
-                            <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#characters-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Characters
+            </h3>
+        </div>
+        <div id="characters-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for char in object.my_characters %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                    </h5>
+                                    <div class="mb-1">
+                                        <span class="tg-badge badge-{{ char.status|lower }}">{{ char.get_status_display }}</span>
+                                    </div>
+                                    <div class="text-muted small">
+                                        {{ char.get_full_gameline }}
+                                    </div>
+                                    <div class="text-muted small">
+                                        {{ char.get_type }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <div>{{ char.get_status_display }}</div>
-                        </div>
-                        <div>
-                            <div>{{ char.get_full_gameline }}</div>
-                        </div>
-                        <div>
-                            <div>{{ char.get_type }}</div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
 {% endif %}

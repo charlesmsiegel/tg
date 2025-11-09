@@ -1,67 +1,167 @@
-<!-- accounts/templates/accounts/form.html (updated to show help_text) -->
 {% extends "core/form.html" %}
-{% block title %}
-    {{ object.user.username }}
-{% endblock title %}
+{% block title %}Edit Profile Settings - {{ object.user.username }}{% endblock title %}
 {% block contents %}
-    <div class="row mb-3">
-        <div class="col-sm-4">Heading</div>
-        <div class="col-sm-5">{{ form.preferred_heading }}</div>
-        <div class="col-sm-3 text-muted small">{{ form.preferred_heading.help_text }}</div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-sm-4">Theme</div>
-        <div class="col-sm-5">{{ form.theme }}</div>
-        <div class="col-sm-3 text-muted small">{{ form.theme.help_text }}</div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-sm-4">Highlight Text</div>
-        <div class="col-sm-5">{{ form.highlight_text }}</div>
-        <div class="col-sm-3 text-muted small">{{ form.highlight_text.help_text }}</div>
-    </div>
-    
-    <h4 class="mt-4 mb-3 {{ object.preferred_heading }}">Privacy Settings</h4>
-    
-    <div class="row mb-3">
-        <div class="col-sm-3">Discord ID</div>
-        <div class="col-sm-4">{{ form.discord_id }}</div>
-        <div class="col-sm-2">
-            <label class="d-flex align-items-center">
-                {{ form.discord_toggle }}
-                <span class="ml-2">Visible?</span>
+    <!-- Display Preferences Section -->
+    <div class="mb-5">
+        <h4 class="mb-4 pb-2 border-bottom">
+            <i class="fas fa-palette"></i> Display Preferences
+        </h4>
+        
+        <div class="tg-form-group">
+            <label for="{{ form.preferred_heading.id_for_label }}" class="tg-form-label">
+                <i class="fas fa-heading"></i> Heading Style
             </label>
+            {{ form.preferred_heading }}
+            {% if form.preferred_heading.help_text %}
+                <div class="tg-form-help">
+                    <i class="fas fa-info-circle"></i> {{ form.preferred_heading.help_text }}
+                </div>
+            {% endif %}
+            {% if form.preferred_heading.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.preferred_heading.errors }}
+                </div>
+            {% endif %}
         </div>
-        <div class="col-sm-3 text-muted small">{{ form.discord_id.help_text }}</div>
+
+        <div class="tg-form-group">
+            <label for="{{ form.theme.id_for_label }}" class="tg-form-label">
+                <i class="fas fa-moon"></i> Theme
+            </label>
+            {{ form.theme }}
+            {% if form.theme.help_text %}
+                <div class="tg-form-help">
+                    <i class="fas fa-info-circle"></i> {{ form.theme.help_text }}
+                </div>
+            {% endif %}
+            {% if form.theme.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.theme.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="tg-form-group">
+            <div class="tg-form-check">
+                {{ form.highlight_text }}
+                <label for="{{ form.highlight_text.id_for_label }}" class="tg-form-check-label">
+                    <i class="fas fa-highlighter"></i> Highlight Text
+                </label>
+            </div>
+            {% if form.highlight_text.help_text %}
+                <div class="tg-form-help ml-4">
+                    <i class="fas fa-info-circle"></i> {{ form.highlight_text.help_text }}
+                </div>
+            {% endif %}
+            {% if form.highlight_text.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.highlight_text.errors }}
+                </div>
+            {% endif %}
+        </div>
     </div>
     
-    <div class="row mb-3">
-        <div class="col-sm-3">Veils</div>
-        <div class="col-sm-4">{{ form.veils }}</div>
-        <div class="col-sm-2">
-            <label class="d-flex align-items-center">
-                {{ form.veils_toggle }}
-                <span class="ml-2">Visible?</span>
+    <!-- Privacy & Safety Section -->
+    <div class="mb-4">
+        <h4 class="mb-4 pb-2 border-bottom {{ object.preferred_heading }}">
+            <i class="fas fa-user-shield"></i> Privacy & Safety
+        </h4>
+        
+        <div class="tg-form-group">
+            <label for="{{ form.discord_id.id_for_label }}" class="tg-form-label">
+                <i class="fab fa-discord"></i> Discord ID
             </label>
+            <div class="row">
+                <div class="col-md-8">
+                    {{ form.discord_id }}
+                    {% if form.discord_id.help_text %}
+                        <div class="tg-form-help">
+                            <i class="fas fa-info-circle"></i> {{ form.discord_id.help_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="tg-form-check">
+                        {{ form.discord_toggle }}
+                        <label for="{{ form.discord_toggle.id_for_label }}" class="tg-form-check-label">
+                            <i class="fas fa-eye"></i> Visible to others?
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% if form.discord_id.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.discord_id.errors }}
+                </div>
+            {% endif %}
         </div>
-        <div class="col-sm-3 text-muted small">{{ form.veils.help_text }}</div>
-    </div>
-    
-    <div class="row mb-3">
-        <div class="col-sm-3">Lines</div>
-        <div class="col-sm-4">{{ form.lines }}</div>
-        <div class="col-sm-2">
-            <label class="d-flex align-items-center">
-                {{ form.lines_toggle }}
-                <span class="ml-2">Visible?</span>
+        
+        <div class="tg-form-group">
+            <label for="{{ form.veils.id_for_label }}" class="tg-form-label">
+                <i class="fas fa-veil"></i> Veils
             </label>
+            <div class="row">
+                <div class="col-md-8">
+                    {{ form.veils }}
+                    {% if form.veils.help_text %}
+                        <div class="tg-form-help">
+                            <i class="fas fa-info-circle"></i> {{ form.veils.help_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="tg-form-check">
+                        {{ form.veils_toggle }}
+                        <label for="{{ form.veils_toggle.id_for_label }}" class="tg-form-check-label">
+                            <i class="fas fa-eye"></i> Visible to others?
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% if form.veils.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.veils.errors }}
+                </div>
+            {% endif %}
         </div>
-        <div class="col-sm-3 text-muted small">{{ form.lines.help_text }}</div>
+        
+        <div class="tg-form-group">
+            <label for="{{ form.lines.id_for_label }}" class="tg-form-label">
+                <i class="fas fa-ban"></i> Lines
+            </label>
+            <div class="row">
+                <div class="col-md-8">
+                    {{ form.lines }}
+                    {% if form.lines.help_text %}
+                        <div class="tg-form-help">
+                            <i class="fas fa-info-circle"></i> {{ form.lines.help_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="tg-form-check">
+                        {{ form.lines_toggle }}
+                        <label for="{{ form.lines_toggle.id_for_label }}" class="tg-form-check-label">
+                            <i class="fas fa-eye"></i> Visible to others?
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% if form.lines.errors %}
+                <div class="tg-form-feedback invalid-feedback d-block">
+                    {{ form.lines.errors }}
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock contents %}
 {% block buttons %}
-<div class="row">
-    <div class="col-sm">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+    <div class="mt-4 text-center">
+        <button type="submit" class="tg-btn btn-primary btn-lg">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{% url 'profile' object.pk %}" class="tg-btn btn-secondary btn-lg ml-2">
+            <i class="fas fa-times"></i> Cancel
+        </a>
     </div>
-</div>
 {% endblock buttons %}

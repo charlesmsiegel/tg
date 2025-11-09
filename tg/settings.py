@@ -75,6 +75,7 @@ TEMPLATES = [
                 "core.context_processors.all_chronicles",
                 "core.context_processors.add_special_user_flag",
                 "accounts.context_processors.theme_context",
+                "accounts.context_processors.notification_count",
             ],
         },
     },

@@ -1,4 +1,5 @@
 from accounts.forms import (
+    CustomAuthenticationForm,
     CustomUSerCreationForm,
     FreebieAwardForm,
     ProfileUpdateForm,
@@ -177,5 +178,7 @@ class ProfileUpdateView(UpdateView):
 
 
 class CustomLoginView(LoginView):
+    form_class = CustomAuthenticationForm
+    
     def get_success_url(self):
         return self.request.user.profile.get_absolute_url()

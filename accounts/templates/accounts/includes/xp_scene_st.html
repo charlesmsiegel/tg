@@ -1,10 +1,15 @@
 {% if object.xp_requests %}
-    <div class="row">
-        <h2 class="col-sm {{ user.profile.preferred_heading }}">XP Requests</h2>
-    </div>
-    <form method="post" action="">
-        {% csrf_token %}
-        <div class="row">
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-scene-st-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ user.profile.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> XP Requests
+            </h3>
+        </div>
+        <div id="xp-scene-st-section" class="collapse show">
+            <div class="tg-card-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row">
             {% for scenexp_form in scenexp_forms %}
                 <div class="col-sm-12 col-md-6 col-lg-4">
                     <div class="card mb-3">
@@ -32,6 +37,9 @@
                     </div>
                 </div>
             {% endfor %}
+                    </div>
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 {% endif %}

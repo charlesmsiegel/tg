@@ -1,22 +1,32 @@
 {% load field %}
-<div class="row">
-    <h2 class="col-sm {{ object.preferred_heading }}">Chronicles STed</h2>
-</div>
-<div class="row">
-    {% for chronicle in object.st_relations %}
-        <div class="col-sm-12 col-md-6 col-lg-4">
-            <div class="card mb-3">
-                <div class="card-body text-center">
-                    <div>
-                        <a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a>
-                    </div>
-                    {% for str in object.st_relations|field:chronicle %}
-                        <div class="text-center">
-                            <div>{{ str.gameline }}</div>
+{% if object.st_relations %}
+    <div class="tg-card mb-4">
+        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#chronicles-section" aria-expanded="true">
+            <h3 class="tg-card-title {{ object.preferred_heading }}">
+                <i class="fas fa-chevron-down"></i> Chronicles STed
+            </h3>
+        </div>
+        <div id="chronicles-section" class="collapse show">
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for chronicle in object.st_relations %}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="tg-card mb-3">
+                                <div class="tg-card-body text-center">
+                                    <h5 class="mb-2">
+                                        <a href="{{ chronicle.get_absolute_url }}">{{ chronicle.name }}</a>
+                                    </h5>
+                                    {% for str in object.st_relations|field:chronicle %}
+                                        <div class="text-muted small">
+                                            {{ str.gameline }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
-    {% endfor %}
-</div>
+    </div>
+{% endif %}
