@@ -2,31 +2,35 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Traits</h5>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 wta_heading">Traits</h5>
             </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h6 class="text-muted">Individual Traits</h6>
-                        <div class="card">
-                            <div class="card-body">{{ object.individual_traits }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h6 class="text-muted">Pack Traits</h6>
-                        <div class="card">
-                            <div class="card-body">{{ object.pack_traits }}</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="card-body py-3">
                 <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-user mr-2"></i>Individual Traits
+                        </h6>
+                        <div class="p-3 border-left border-success" style="border-left-width: 4px !important; background-color: rgba(40, 167, 69, 0.05); line-height: 1.6;">
+                            {{ object.individual_traits|default:"No individual traits specified." }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-users mr-2"></i>Pack Traits
+                        </h6>
+                        <div class="p-3 border-left border-success" style="border-left-width: 4px !important; background-color: rgba(40, 167, 69, 0.05); line-height: 1.6;">
+                            {{ object.pack_traits|default:"No pack traits specified." }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
                     <div class="col-12">
-                        <h6 class="text-muted">Ban</h6>
-                        <div class="card">
-                            <div class="card-body">{{ object.ban }}</div>
+                        <h6 class="text-danger mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-ban mr-2"></i>Ban
+                        </h6>
+                        <div class="p-3 border-left border-danger" style="border-left-width: 4px !important; background-color: rgba(220, 53, 69, 0.05); line-height: 1.6;">
+                            {{ object.ban|default:"No ban specified." }}
                         </div>
                     </div>
                 </div>

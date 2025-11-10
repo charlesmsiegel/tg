@@ -39,8 +39,12 @@
                         <a class="col-sm border" href="{{ char.get_absolute_url }}">{{ char.name }}</a>
                         <a class="col-sm border"
                            href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
-                        <div class="col-sm border">{{ char.get_type }}</div>
-                        <div class="col-sm border">{{ char.get_status_display }}</div>
+                        <div class="col-sm border">
+                            <span class="tg-badge badge-pill {% if char.type == 'mage' %}badge-mta{% elif char.type == 'sorcerer' or char.type == 'companion' %}badge-mta-faded{% elif char.type == 'garou' %}badge-wta{% elif char.type == 'kinfolk' or char.type == 'fomor' %}badge-wta-faded{% elif char.type == 'changeling' %}badge-ctd{% elif char.type == 'vampire' %}badge-vtm{% elif char.type == 'ghoul' %}badge-vtm-faded{% elif char.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ char.get_type }}</span>
+                        </div>
+                        <div class="col-sm border">
+                            <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
+                        </div>
                     </div>
                     {% endif %}
                 {% endfor %}

@@ -469,17 +469,7 @@
                                                                                 {% endif %}
                                                                             </td>
                                                                             <td data-label="Status">
-                                                                                {% if status == 'active' %}
-                                                                                    <span class="tg-badge badge-active badge-pill">{{ char.get_status_display }}</span>
-                                                                                {% elif status == 'retired' %}
-                                                                                    <span class="tg-badge badge-inactive badge-pill">{{ char.get_status_display }}</span>
-                                                                                {% elif status == 'deceased' %}
-                                                                                    <span class="tg-badge badge-deceased badge-pill">{{ char.get_status_display }}</span>
-                                                                                {% elif status == 'npc' %}
-                                                                                    <span class="tg-badge badge-npc badge-pill">{{ char.get_status_display }}</span>
-                                                                                {% else %}
-                                                                                    <span class="tg-badge badge-info badge-pill">{{ char.get_status_display }}</span>
-                                                                                {% endif %}
+                                                                                <span class="tg-badge badge-{{ char.status|lower }}">{{ char.get_status_display }}</span>
                                                                             </td>
                                                                         </tr>
                                                                     {% endfor %}

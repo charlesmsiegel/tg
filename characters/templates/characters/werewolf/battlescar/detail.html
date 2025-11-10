@@ -1,9 +1,18 @@
 {% extends "core/object.html" %}
-{% block status_row %}
-
-{% include "characters/werewolf/renownincident/display_includes/temporary_renown.html" %}
-{% endblock status_row %}
-{% block contents %}
 {% load dots %}
-<!-- Additional content can go here if needed -->
+{% block contents %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title wta_heading">Glory Gained</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 32px;">
+                    <div style="display: inline-block; padding: 24px 48px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                        <div style="font-size: 3rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.glory|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock contents %}

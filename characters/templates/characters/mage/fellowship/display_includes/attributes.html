@@ -2,17 +2,19 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Favored Attributes</h5>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">Favored Attributes</h5>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for attribute in object.favored_attributes.all %}
-                        <div class="col-sm-12 col-md-6 col-lg-4 mb-2">
-                            <div class="btn btn-outline-primary w-100">{{ attribute }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
+            <div class="card-body py-3">
+                {% if object.favored_attributes.all %}
+                    <div class="d-flex flex-wrap justify-content-center">
+                        {% for attribute in object.favored_attributes.all %}
+                            <span class="badge badge-pill badge-mta mr-2 mb-2">{{ attribute }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mb-0">No favored attributes specified.</p>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,7 +1,12 @@
 {% extends "core/object.html" %}
+{% block references %}
+    {{ block.super }}
+    <div class="text-center mb-3">
+        <span class="badge badge-pill badge-mta" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ object.get_tenet_type_display }}</span>
+    </div>
+{% endblock references %}
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    {% include "characters/mage/tenet/display_includes/basics.html" %}
     {% include "characters/mage/tenet/display_includes/practices.html" %}
 {% endblock contents %}

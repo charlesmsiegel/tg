@@ -1,18 +1,18 @@
 {% load dots %}
 {% load get_specialty %}
-<div class="card mb-3">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#abilitiesSection" aria-expanded="true" aria-controls="abilitiesSection">
+<div class="tg-card mb-3">
+    <div class="tg-card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#abilitiesSection" aria-expanded="true" aria-controls="abilitiesSection">
         <h2 class="mb-0">Abilities</h2>
     </div>
     <div id="abilitiesSection" class="collapse show multi-collapse">
-        <div class="card-body">
+        <div class="tg-card-body">
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header {{ object.get_heading }}">
                             <h3 class="mb-0">Talents</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="tg-card-body">
                             <div class="row mb-2">
                                 <div class="col-6">Alertness {% if object|get_specialty:'alertness' %}({{ object|get_specialty:'alertness' }}){% endif %}</div>
                                 <div class="col-6 dots">{{ object.alertness|dots }}</div>
@@ -57,11 +57,11 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header {{ object.get_heading }}">
                             <h3 class="mb-0">Skills</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="tg-card-body">
                             <div class="row mb-2">
                                 <div class="col-6">Crafts {% if object|get_specialty:'crafts' %}({{ object|get_specialty:'crafts' }}){% endif %}</div>
                                 <div class="col-6 dots">{{ object.crafts|dots }}</div>
@@ -106,11 +106,11 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header {{ object.get_heading }}">
                             <h3 class="mb-0">Knowledges</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="tg-card-body">
                             <div class="row mb-2">
                                 <div class="col-6">Academics {% if object|get_specialty:'academics' %}({{ object|get_specialty:'academics' }}){% endif %}</div>
                                 <div class="col-6 dots">{{ object.academics|dots }}</div>
@@ -158,11 +158,11 @@
             {% if object.get_secondaries_for_display %}
                 <div class="row mt-3">
                     <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-header {{ object.get_heading }}">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
                                 <h3 class="mb-0">Secondary Talents</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="tg-card-body">
                                 {% for tal, ski, kno in object.get_secondaries_for_display %}
                                     <div class="row mb-2">
                                         <div class="col-6">
@@ -182,11 +182,11 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-header {{ object.get_heading }}">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
                                 <h3 class="mb-0">Secondary Skills</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="tg-card-body">
                                 {% for tal, ski, kno in object.get_secondaries_for_display %}
                                     <div class="row mb-2">
                                         <div class="col-6">
@@ -206,11 +206,11 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-header {{ object.get_heading }}">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
                                 <h3 class="mb-0">Secondary Knowledges</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="tg-card-body">
                                 {% for tal, ski, kno in object.get_secondaries_for_display %}
                                     <div class="row mb-2">
                                         <div class="col-6">

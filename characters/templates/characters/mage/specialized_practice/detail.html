@@ -1,6 +1,21 @@
 {% extends "characters/mage/practice/detail.html" %}
-{% block specialization %}
-    {% include "characters/mage/specialized_practice/display_includes/specialization.html" %}
-{% endblock specialization %}
+{% block status_row %}
+    <div class="col-12">
+        <div class="card mb-3">
+            <div class="card-body py-2">
+                <div class="d-flex align-items-center justify-content-center flex-wrap">
+                    <span class="mr-3">
+                        <strong class="text-muted">Faction:</strong>
+                        <a href="{{ object.faction.get_absolute_url }}" class="ml-2">{{ object.faction }}</a>
+                    </span>
+                    <span class="mr-3">
+                        <strong class="text-muted">Parent Practice:</strong>
+                        <a href="{{ object.parent_practice.get_absolute_url }}" class="ml-2">{{ object.parent_practice }}</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock status_row %}
 {% block extensions %}
 {% endblock extensions %}

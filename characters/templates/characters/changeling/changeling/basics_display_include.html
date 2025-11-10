@@ -1,28 +1,53 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Seelie Legacy</div>
-    <a class="col-sm" href="{{ object.seelie_legacy.get_absolute_url }}">{{ object.seelie_legacy }}</a>
-    <div class="col-sm">Court</div>
-    <div class="col-sm">{{ object.get_court_display }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Unseelie Legacy</div>
-    <a class="col-sm" href="{{ object.unseelie_legacy.get_absolute_url }}">{{ object.unseelie_legacy }}</a>
-    <div class="col-sm">Kith</div>
-    <a class="col-sm" href="{{ object.kith.get_absolute_url }}">{{ object.kith }}</a>
-</div>
-<div class="row">
-    <div class="col-sm">Concept</div>
-    <div class="col-sm">{{ object.concept }}</div>
-    {% if object.house %}
-        <div class="col-sm">House</div>
-        <a class="col-sm" href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
-    {% else %}
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-    {% endif %}
-    <div class="col-sm">Seeming</div>
-    <div class="col-sm">{{ object.get_seeming_display }}</div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title ctd_heading">Basics</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Seelie Legacy:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.seelie_legacy.get_absolute_url }}">{{ object.seelie_legacy }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Court:</strong>
+                    </div>
+                    <div class="col-sm-3">{{ object.get_court_display }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Unseelie Legacy:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.unseelie_legacy.get_absolute_url }}">{{ object.unseelie_legacy }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Kith:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.kith.get_absolute_url }}">{{ object.kith }}</a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-2">
+                        <strong>Concept:</strong>
+                    </div>
+                    <div class="col-sm-4">{{ object.concept }}</div>
+                    <div class="col-sm-2">
+                        <strong>{% if object.house %}House{% else %}Seeming{% endif %}:</strong>
+                    </div>
+                    <div class="col-sm-4">
+                        {% if object.house %}
+                            <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
+                        {% else %}
+                            {{ object.get_seeming_display }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,26 +1,26 @@
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card location-card">
-            <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 heading-text">Rotes</h5>
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 mta_heading">Rotes</h5>
                 {% if object.rote_points is not None %}
-                    <span class="badge badge-light">{{ object.rote_points }} Rote Points</span>
+                    <span class="badge badge-pill badge-mta">{{ object.rote_points }} Rote Points</span>
                 {% else %}
-                    <span class="badge badge-light">{{ rote_list.count }} Rotes</span>
+                    <span class="badge badge-pill badge-mta">{{ rote_list.count }} Rotes</span>
                 {% endif %}
             </div>
-            <div class="card-body text-center">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4 justify-content-center" id="rote-list">
-                        {% for obj in rote_list.all %}
-                        <div class="col-3 mb-4">
+            <div class="card-body">
+                <div class="row" id="rote-list">
+                    {% for obj in rote_list.all %}
+                        <div class="col-md-6 col-lg-4 mb-4">
                             {% include "characters/mage/rote/summary.html" with object=obj %}
                         </div>
-                        {% empty %}
+                    {% empty %}
                         <div class="col-12">
-                            <div class="alert alert-info mb-0">No rotes available.</div>
+                            <p class="text-muted text-center mb-0">No rotes available.</p>
                         </div>
-                        {% endfor %}
-                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

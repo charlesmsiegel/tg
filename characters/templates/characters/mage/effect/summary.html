@@ -1,10 +1,10 @@
-<div class="card shadow-sm h-100">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#effect-summary-{{ object.id }}" aria-expanded="true" aria-controls="effect-summary-{{ object.id }}">
+<div class="tg-card h-100">
+    <div class="tg-card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#effect-summary-{{ object.id }}" aria-expanded="true" aria-controls="effect-summary-{{ object.id }}">
         <h5 class="mb-0"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h5>
         <span class="badge bg-secondary">Cost: {{ object.rote_cost }}</span>
     </div>
     <div id="effect-summary-{{ object.id }}" class="collapse show">
-        <div class="card-body">
+        <div class="tg-card-body">
             <p class="text-muted small mb-3">{{ object.description|truncatewords:20 }}</p>
             <div class="d-flex flex-wrap gap-2">
                 {% if object.correspondence > 0 %}

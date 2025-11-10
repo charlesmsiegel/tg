@@ -105,3 +105,4 @@ populate_db/zz*
 media/*
 remove_pycache.sh
 selenium_fix.sh
+SOURCES/

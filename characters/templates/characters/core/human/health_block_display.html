@@ -1,26 +1,28 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#healthSection"
-        aria-expanded="true"
-        aria-controls="healthSection">Health</h2>
-</div>
-<div id="healthSection" class="collapse show multi-collapse">
-    {% for nm, pen, hl in object.get_health_table %}
-        <div class="row">
-            <div class="col-sm">{{ nm }}</div>
-            <div class="col-sm">{{ pen }}</div>
-            <div class="col-sm">
-                {% if hl == "-" %}
-                    <div class="health-box"></div>
-                {% elif hl == "B" %}
-                    <div class="health-box bashing"></div>
-                {% elif hl == "L" %}
-                    <div class="health-box lethal"></div>
-                {% elif hl == "A" %}
-                    <div class="health-box aggravated"></div>
-                {% endif %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Health</h5>
+            </div>
+            <div class="tg-card-body">
+                {% for nm, pen, hl in object.get_health_table %}
+                    <div class="row mb-2">
+                        <div class="col-sm-4">{{ nm }}</div>
+                        <div class="col-sm-4">{{ pen }}</div>
+                        <div class="col-sm-4">
+                            {% if hl == "-" %}
+                                <div class="health-box"></div>
+                            {% elif hl == "B" %}
+                                <div class="health-box bashing"></div>
+                            {% elif hl == "L" %}
+                                <div class="health-box lethal"></div>
+                            {% elif hl == "A" %}
+                                <div class="health-box aggravated"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    {% endfor %}
+    </div>
 </div>

@@ -1,40 +1,32 @@
 {% load dots %}
-<div class="card location-card h-100">
-    <div class="card-header {{ object.get_heading }}">
-        <h5 class="mb-0">Kith Details</h5>
+<div class="card h-100">
+    <div class="card-header bg-light py-2">
+        <h5 class="mb-0 ctd_heading">Kith Details</h5>
     </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h6 class="mb-0">Birthrights</h6>
-                    </div>
-                    <div class="card-body">
-                        {% if object.birthrights %}
-                            <ul class="list-unstyled mb-0">
-                                {% for birthright in object.birthrights %}
-                                    <li class="mb-2">
-                                        <div class="card">
-                                            <div class="card-body py-2">{{ birthright }}</div>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted mb-0">No birthrights specified</p>
-                        {% endif %}
-                    </div>
-                </div>
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                    <i class="fas fa-star mr-2"></i>Birthrights
+                </h6>
+                {% if object.birthrights %}
+                    <ul class="list-unstyled mb-0">
+                        {% for birthright in object.birthrights %}
+                            <li class="mb-2 p-3 border-left border-success" style="border-left-width: 3px !important; background-color: rgba(40, 167, 69, 0.05); line-height: 1.6;">
+                                {{ birthright }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No birthrights specified</p>
+                {% endif %}
             </div>
             <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h6 class="mb-0">Frailty</h6>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0">{{ object.frailty|default:"No frailty specified" }}</p>
-                    </div>
+                <h6 class="text-danger mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Frailty
+                </h6>
+                <div class="p-3 border-left border-danger" style="border-left-width: 4px !important; background-color: rgba(220, 53, 69, 0.05); line-height: 1.6;">
+                    {{ object.frailty|default:"No frailty specified" }}
                 </div>
             </div>
         </div>

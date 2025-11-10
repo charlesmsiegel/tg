@@ -2,35 +2,40 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header {{ object.get_heading }}">Focus</div>
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Affinities</div>
-                    <div class="col-sm-9">
-                        {% for affinity in object.affinities.all %}
-                            <a href="{{ affinity.get_absolute_url }}">{{ affinity.name|sanitize_html }}</a>
-                            {% if not forloop.last %},{% endif %}
-                        {% endfor %}
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">Focus</h5>
+            </div>
+            <div class="card-body py-3">
+                {% if object.affinities.all %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted font-weight-bold">Affinities</div>
+                        <div class="col-sm-9">
+                            {% for affinity in object.affinities.all %}
+                                <a href="{{ affinity.get_absolute_url }}" class="badge badge-pill badge-mta mr-2 mb-2">{{ affinity.name|sanitize_html }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Paradigms</div>
-                    <div class="col-sm-9">
-                        {% for paradigm in object.paradigms.all %}
-                            <a href="{{ paradigm.get_absolute_url }}">{{ paradigm.name|sanitize_html }}</a>
-                            {% if not forloop.last %},{% endif %}
-                        {% endfor %}
+                {% endif %}
+                {% if object.paradigms.all %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted font-weight-bold">Paradigms</div>
+                        <div class="col-sm-9">
+                            {% for paradigm in object.paradigms.all %}
+                                <a href="{{ paradigm.get_absolute_url }}" class="badge badge-pill badge-secondary mr-2 mb-2">{{ paradigm.name|sanitize_html }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Practices</div>
-                    <div class="col-sm-9">
-                        {% for practice in object.practices.all %}
-                            <a href="{{ practice.get_absolute_url }}">{{ practice.name|sanitize_html }}</a>
-                            {% if not forloop.last %},{% endif %}
-                        {% endfor %}
+                {% endif %}
+                {% if object.practices.all %}
+                    <div class="row">
+                        <div class="col-sm-3 text-muted font-weight-bold">Practices</div>
+                        <div class="col-sm-9">
+                            {% for practice in object.practices.all %}
+                                <a href="{{ practice.get_absolute_url }}" class="badge badge-pill badge-secondary mr-2 mb-2">{{ practice.name|sanitize_html }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

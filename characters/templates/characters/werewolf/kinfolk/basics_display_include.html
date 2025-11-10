@@ -1,21 +1,47 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Nature</div>
-    <a class="col-sm" href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-    <div class="col-sm">Tribe</div>
-    <a class="col-sm" href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>
-</div>
-<div class="row">
-    <div class="col-sm">Demeanor</div>
-    <a class="col-sm" href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-    <div class="col-sm">Relation</div>
-    <div class="col-sm">{{ object.relation }}</div>
-</div>
-<div class="row">
-    <div class="col-sm">Concept</div>
-    <div class="col-sm">{{ object.concept }}</div>
-    <div class="col-sm">Breed</div>
-    <div class="col-sm">{{ object.get_breed_display }}</div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">Basics</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Nature:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Tribe:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Demeanor:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Relation:</strong>
+                    </div>
+                    <div class="col-sm-3">{{ object.relation }}</div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-3">
+                        <strong>Concept:</strong>
+                    </div>
+                    <div class="col-sm-3">{{ object.concept }}</div>
+                    <div class="col-sm-3">
+                        <strong>Breed:</strong>
+                    </div>
+                    <div class="col-sm-3">{{ object.get_breed_display }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

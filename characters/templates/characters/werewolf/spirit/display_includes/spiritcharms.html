@@ -1,22 +1,36 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">Charms</div>
-            <div class="card-body">
-                <div class="row">
-                    {% for charm in object.charms.all %}
-                        <div class="col-sm-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header">
-                                    <a href="{{ charm.get_absolute_url }}">{{ charm.name }}</a>
-                                </div>
-                                <div class="card-body">
-                                    <p>Essence Cost: {{ charm.essence_cost }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 wta_heading">Charms</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if object.charms.all %}
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Charm</th>
+                                <th class="text-center">Essence Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for charm in object.charms.all %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ charm.get_absolute_url }}" class="font-weight-bold">{{ charm.name }}</a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-pill badge-wta">{{ charm.essence_cost }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="p-3">
+                        <p class="text-muted text-center mb-0">No charms.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,18 +1,20 @@
 {% load dots %}
-<div class="card mb-3">
-    <div class="card-header">
-        <h2 class="mb-0 {{ object.get_heading }}">Abilities</h2>
-    </div>
-    <div class="card-body">
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            {% for abb in object.abilities.all %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">{{ abb }}</div>
-                    </div>
-                </div>
-            {% empty %}
-            {% endfor %}
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 mta_heading">Abilities</h5>
+            </div>
+            <div class="card-body">
+                {% if object.abilities.all %}
+                    {% for abb in object.abilities.all %}
+                        <span class="badge badge-pill badge-mta mr-2 mb-2">{{ abb }}</span>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center mb-0">No abilities specified.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

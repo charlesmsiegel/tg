@@ -1,15 +1,33 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Nature</div>
-    <a class="col-sm" href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-</div>
-<div class="row">
-    <div class="col-sm">Demeanor</div>
-    <a class="col-sm" href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-</div>
-<div class="row">
-    <div class="col-sm">Concept</div>
-    <div class="col-sm">{{ object.concept }}</div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title vtm_heading">Basics</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Nature:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Demeanor:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-4">
+                        <strong>Concept:</strong>
+                    </div>
+                    <div class="col-sm-8">{{ object.concept }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

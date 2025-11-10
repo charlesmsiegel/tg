@@ -1,10 +1,18 @@
 {% load dots %}
-<div class="card location-card h-100">
-    <div class="card-header {{ object.get_heading }}">
-        <h1 class="mb-0">{{ object.name }}</h1>
-        Ratings:
-        {% if object.ratings %}
-            {% for rating in object.ratings.all %}<span class="badge bg-info">{{ rating.value }}</span>{% endfor %}
+<div class="card mb-4">
+    <div class="card-header bg-light py-3 text-center">
+        <h1 class="mb-3 mta_heading">{{ object.name }}</h1>
+        {% if object.ratings.all %}
+            <div>
+                <h6 class="text-muted mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Available Ratings</h6>
+                <div>
+                    {% for rating in object.ratings.all|dictsort:"value" %}
+                        <span class="badge badge-pill badge-mta mr-2 mb-2" style="font-size: 1rem; padding: 0.5rem 0.75rem;">
+                            {{ rating.value }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
         {% endif %}
     </div>
 </div>

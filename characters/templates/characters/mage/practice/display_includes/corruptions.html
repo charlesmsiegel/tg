@@ -1,19 +1,22 @@
-<div class="card mb-3">
-    <div class="card-header">
-        <h2 class="mb-0 {{ object.get_heading }}">Corruptions</h2>
-    </div>
-    <div class="card-body">
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            {% for abb in corruptions %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <a href="{{ abb.get_absolute_url }}">{{ abb }}</a>
-                        </div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 mta_heading">Corruptions</h5>
+            </div>
+            <div class="card-body">
+                {% if corruptions %}
+                    <div class="list-group list-group-flush">
+                        {% for abb in corruptions %}
+                            <div class="list-group-item border-left border-danger" style="border-left-width: 4px !important;">
+                                <a href="{{ abb.get_absolute_url }}" class="font-weight-bold text-danger">{{ abb }}</a>
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
-            {% empty %}
-            {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center mb-0">No corruptions available.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

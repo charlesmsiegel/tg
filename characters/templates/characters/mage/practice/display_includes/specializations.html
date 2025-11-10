@@ -1,19 +1,27 @@
-<div class="card mb-3">
-    <div class="card-header">
-        <h2 class="mb-0 {{ object.get_heading }}">Specializations</h2>
-    </div>
-    <div class="card-body">
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            {% for abb in specializations %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <a href="{{ abb.get_absolute_url }}">{{ abb }}</a> <a href="{{ abb.faction.get_absolute_url }}">({{ abb.faction }})</a>
-                        </div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 mta_heading">Specializations</h5>
+            </div>
+            <div class="card-body">
+                {% if specializations %}
+                    <div class="list-group list-group-flush">
+                        {% for abb in specializations %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{{ abb.get_absolute_url }}" class="font-weight-bold">{{ abb }}</a>
+                                </div>
+                                <div>
+                                    <a href="{{ abb.faction.get_absolute_url }}" class="badge badge-pill badge-mta">{{ abb.faction }}</a>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
-            {% empty %}
-            {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center mb-0">No specializations available.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

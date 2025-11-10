@@ -1,24 +1,24 @@
 {% if object.my_characters %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#characters-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#characters-section" aria-expanded="true">
             <h3 class="tg-card-title {{ object.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Characters
             </h3>
         </div>
         <div id="characters-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row">
                     {% for char in object.my_characters %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="tg-card mb-3">
-                                <div class="tg-card-body text-center">
-                                    <h5 class="mb-2">
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 20px;">
+                                    <h5 class="mb-3">
                                         <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
                                     </h5>
-                                    <div class="mb-1">
+                                    <div class="mb-2">
                                         <span class="tg-badge badge-{{ char.status|lower }}">{{ char.get_status_display }}</span>
                                     </div>
-                                    <div class="text-muted small">
+                                    <div class="text-muted small mb-1">
                                         {{ char.get_full_gameline }}
                                     </div>
                                     <div class="text-muted small">

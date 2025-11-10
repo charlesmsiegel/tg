@@ -3,23 +3,25 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header {{ object.get_heading }}">Culture</div>
-                <div class="card-body">
+                <div class="card-header bg-light py-2">
+                    <h5 class="mb-0 mta_heading">Culture</h5>
+                </div>
+                <div class="card-body py-3">
                     {% if languages %}
-                        <div class="row mb-2">
-                            <div class="col-sm-3 {{ object.get_heading }}">Languages</div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3 text-muted font-weight-bold">Languages</div>
                             <div class="col-sm-9">{{ languages }}</div>
                         </div>
                     {% endif %}
                     {% if media %}
-                        <div class="row mb-2">
-                            <div class="col-sm-3 {{ object.get_heading }}">Media</div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3 text-muted font-weight-bold">Media</div>
                             <div class="col-sm-9">{{ media|sanitize_html }}</div>
                         </div>
                     {% endif %}
                     {% if materials %}
-                        <div class="row mb-2">
-                            <div class="col-sm-3 {{ object.get_heading }}">Materials</div>
+                        <div class="row">
+                            <div class="col-sm-3 text-muted font-weight-bold">Materials</div>
                             <div class="col-sm-9">{{ materials|sanitize_html }}</div>
                         </div>
                     {% endif %}

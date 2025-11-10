@@ -1,36 +1,39 @@
 {% if object.xp_requests %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-scene-st-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-scene-st-section" aria-expanded="true">
             <h3 class="tg-card-title {{ user.profile.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> XP Requests
             </h3>
         </div>
         <div id="xp-scene-st-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <form method="post" action="">
                     {% csrf_token %}
                     <div class="row">
             {% for scenexp_form in scenexp_forms %}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="card mb-3">
-                        <div class="card-body text-center">
-                            <h3>
-                                <a class="col-sm {{ user.profile.preferred_heading }}"
-                                   href="{{ scenexp_form.scene.get_absolute_url }}">{{ scenexp_form.scene.name }}</a>
-                            </h3>
+                <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-header text-center">
+                            <h5 class="tg-card-title {{ user.profile.preferred_heading }}">
+                                <a href="{{ scenexp_form.scene.get_absolute_url }}">{{ scenexp_form.scene.name }}</a>
+                            </h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
                             {% for field in scenexp_form %}
-                                <div class="row align-items-center mb-2">
-                                    <div class="col-6 text-start">
-                                        <div class="col-sm" id="{{ field.id_for_label }}">{{ field.label }}</div>
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        <label class="mb-0">{{ field }}</label>
+                                <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                    <div class="row align-items-center">
+                                        <div class="col-6">
+                                            <span style="font-weight: 600; font-size: 0.875rem;">{{ field.label }}</span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            {{ field }}
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}
-                            <div class="text-center mt-3">
-                                <button type="submit" name="submit_scene" value="{{ scenexp_form.scene.pk }}">
-                                    Submit {{ scenexp_form.scene.name }}
+                            <div class="text-center mt-4">
+                                <button type="submit" name="submit_scene" value="{{ scenexp_form.scene.pk }}" class="tg-btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Submit
                                 </button>
                             </div>
                         </div>

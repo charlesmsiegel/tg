@@ -1,19 +1,43 @@
-<div class="card mb-3">
-    <div class="card-header">
-        <h2 class="mb-0 {{ object.get_heading }}">Benefits & Penalties</h2>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <h3 class="h5 mb-3">Benefit</h3>
-                <div class="card">
-                    <div class="card-body">{{ object.benefit }}</div>
-                </div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 mta_heading">Benefits & Penalties</h5>
             </div>
-            <div class="col-md-6">
-                <h3 class="h5 mb-3">Penalty</h3>
-                <div class="card">
-                    <div class="card-body">{{ object.penalty }}</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-plus-circle mr-2"></i>Benefit
+                        </h6>
+                        <div class="p-3 border-left border-success mb-3" style="border-left-width: 4px !important; background-color: rgba(40, 167, 69, 0.05); line-height: 1.6;">
+                            {{ object.benefit }}
+                        </div>
+                        {% if object.extra_benefit %}
+                            <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                                <i class="fas fa-star mr-2"></i>Extra Benefit
+                            </h6>
+                            <div class="p-3 border-left border-success" style="border-left-width: 4px !important; background-color: rgba(40, 167, 69, 0.1); line-height: 1.6;">
+                                {{ object.extra_benefit }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-danger mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-minus-circle mr-2"></i>Penalty
+                        </h6>
+                        <div class="p-3 border-left border-danger mb-3" style="border-left-width: 4px !important; background-color: rgba(220, 53, 69, 0.05); line-height: 1.6;">
+                            {{ object.penalty }}
+                        </div>
+                        {% if object.price %}
+                            <h6 class="text-danger mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                                <i class="fas fa-skull-crossbones mr-2"></i>Price
+                            </h6>
+                            <div class="p-3 border-left border-danger" style="border-left-width: 4px !important; background-color: rgba(220, 53, 69, 0.1); line-height: 1.6;">
+                                {{ object.price }}
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

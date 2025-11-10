@@ -23,7 +23,7 @@
   - Ensure status badges use tg-badge component classes
   - _Requirements: 1.1, 1.5, 2.1, 2.2, 3.1, 3.2, 4.6, 5.5_
 
-- [ ] 4. Update characters app detail templates
+- [x] 4. Update characters app detail templates
   - Use STYLE.md as a guide
   - Update vampire character detail template to use tg-card sections and vtm_heading class
   - Update werewolf character detail template to use tg-card sections and wta_heading class
@@ -104,6 +104,7 @@
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
 - [ ] 12. Update game app templates
+  - Use STYLE.md as a guide
   - Update chronicle list and detail templates to use tg-card components
   - Update scene list and detail templates to use tg-card components
   - Update game-related forms to use enhanced tg-form components

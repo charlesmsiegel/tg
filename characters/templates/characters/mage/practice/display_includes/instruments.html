@@ -1,19 +1,18 @@
-<div class="card mb-3">
-    <div class="card-header">
-        <h2 class="mb-0 {{ object.get_heading }}">Instruments</h2>
-    </div>
-    <div class="card-body">
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            {% for abb in object.instruments.all %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <a href="{{ abb.get_absolute_url }}">{{ abb }}</a>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-            {% endfor %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0 mta_heading">Instruments</h5>
+            </div>
+            <div class="card-body">
+                {% if object.instruments.all %}
+                    {% for abb in object.instruments.all %}
+                        <a href="{{ abb.get_absolute_url }}" class="badge badge-pill badge-secondary mr-2 mb-2">{{ abb }}</a>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center mb-0">No instruments specified.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

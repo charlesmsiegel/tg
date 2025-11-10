@@ -1,12 +1,22 @@
 {% load dots %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
-</div>
-<div class="row">
-    <div class="col-sm">Willpower</div>
-    <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
-</div>
-<div class="row">
-    <div class="col-sm"></div>
-    <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <strong>Willpower:</strong>
+                    </div>
+                    <div class="col-sm-8 dots">{{ object.willpower|dots:10 }}</div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-8 dots">{{ object.temporary_willpower|boxes:10 }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

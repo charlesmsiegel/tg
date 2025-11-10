@@ -3,34 +3,42 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Practices</h5>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">Practices</h5>
             </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h6 class="text-muted">Associated Practices</h6>
-                        <div class="card">
-                            <div class="card-body">
-                                {% for practice in object.associated_practices.all %}
-                                    <a href="{{ practice.get_absolute_url }}" class="card-link">{{ practice.name|sanitize_html }}</a>
-                                    <br>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="card-body py-3">
                 <div class="row">
-                    <div class="col-12">
-                        <h6 class="text-muted">Limited Practices</h6>
-                        <div class="card">
-                            <div class="card-body">
-                                {% for practice in object.limited_practices.all %}
-                                    <a href="{{ practice.get_absolute_url }}" class="card-link">{{ practice.name|sanitize_html }}</a>
-                                    <br>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-success mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-check-circle mr-2"></i>Associated Practices
+                        </h6>
+                        {% if object.associated_practices.all %}
+                            <div class="list-group list-group-flush">
+                                {% for practice in object.associated_practices.all %}
+                                    <a href="{{ practice.get_absolute_url }}" class="list-group-item list-group-item-action border-left border-success" style="border-left-width: 3px !important;">
+                                        {{ practice.name|sanitize_html }}
+                                    </a>
                                 {% endfor %}
                             </div>
-                        </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No associated practices.</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-warning mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Limited Practices
+                        </h6>
+                        {% if object.limited_practices.all %}
+                            <div class="list-group list-group-flush">
+                                {% for practice in object.limited_practices.all %}
+                                    <a href="{{ practice.get_absolute_url }}" class="list-group-item list-group-item-action border-left border-warning" style="border-left-width: 3px !important;">
+                                        {{ practice.name|sanitize_html }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No limited practices.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -1,61 +1,99 @@
 {% if weekly_xp_request_forms %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-weekly-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#xp-weekly-section" aria-expanded="true">
             <h3 class="tg-card-title {{ user.profile.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Weekly XP Requests
             </h3>
         </div>
         <div id="xp-weekly-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row">
         {% for weekly_xp_request_form in weekly_xp_request_forms %}
-            <div class="col-sm-12 col-md-12 col-lg-6">
-                <div class="card mb-3">
-                    <div class="card-body text-center">
+            <div class="col-sm-12 col-lg-6 mb-3">
+                <div class="tg-card h-100">
+                    <div class="tg-card-header text-center" style="padding: 12px 16px;">
+                        <h6 class="tg-card-title {{ weekly_xp_request_form.character.gameline }}_heading mb-1" style="font-size: 1rem;">{{ weekly_xp_request_form.week }}</h6>
+                        <div class="tg-card-subtitle" style="font-size: 0.875rem;">
+                            <a class="{{ weekly_xp_request_form.character.gameline }}_heading"
+                               href="{{ weekly_xp_request_form.character.get_absolute_url }}">{{ weekly_xp_request_form.character }}</a>
+                        </div>
+                    </div>
+                    <div class="tg-card-body" style="padding: 16px;">
                         <form method="post" action="">
                             {% csrf_token %}
-                            <div>
-                                <h3 class="{{ weekly_xp_request_form.character.gameline }}_heading">{{ weekly_xp_request_form.week }}</h3>
-                                <h3>
-                                    <a class="{{ weekly_xp_request_form.character.gameline }}_heading"
-                                       href="{{ weekly_xp_request_form.character.get_absolute_url }}">{{ weekly_xp_request_form.character }}</a>
-                                </h3>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">Learning</div>
-                                <div class="col-4">{{ weekly_xp_request_form.learning }}</div>
-                                <div class="col-4">{{ weekly_xp_request_form.learning_scene }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">Role-Playing</div>
-                                <div class="col-4">{{ weekly_xp_request_form.rp }}</div>
-                                <div class="col-4">{{ weekly_xp_request_form.rp_scene }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">Portrayal of Focus</div>
-                                <div class="col-4">{{ weekly_xp_request_form.focus }}</div>
-                                <div class="col-4">{{ weekly_xp_request_form.focus_scene }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">Standing-Out In A Scene With NPCs</div>
-                                <div class="col-4">{{ weekly_xp_request_form.standingout }}</div>
-                                <div class="col-4">{{ weekly_xp_request_form.standingout_scene }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <button type="submit"
-                                            name="submit_weekly_request"
-                                            value="week-{{ weekly_xp_request_form.week.pk }}-character-{{ weekly_xp_request_form.character.pk }}">
-                                        Submit {{ weekly_xp_request_form.week.end_date }}
-                                    </button>
+                            
+                            <div class="mb-2" style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.02);">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">Learning</span>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        {{ weekly_xp_request_form.learning }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ weekly_xp_request_form.learning_scene }}
+                                    </div>
                                 </div>
+                            </div>
+                            
+                            <div class="mb-2" style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.02);">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">Role-Playing</span>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        {{ weekly_xp_request_form.rp }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ weekly_xp_request_form.rp_scene }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2" style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.02);">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">Focus</span>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        {{ weekly_xp_request_form.focus }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ weekly_xp_request_form.focus_scene }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2" style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.02);">
+                                <div class="row align-items-center">
+                                    <div class="col-4">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">NPCs</span>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        {{ weekly_xp_request_form.standingout }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ weekly_xp_request_form.standingout_scene }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <button type="submit"
+                                        name="submit_weekly_request"
+                                        value="week-{{ weekly_xp_request_form.week.pk }}-character-{{ weekly_xp_request_form.character.pk }}"
+                                        class="tg-btn btn-primary btn-sm">
+                                    <i class="fas fa-paper-plane"></i> Submit
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
                 {% for form in weekly_xp_request_forms %}
                     {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
+                        <div class="alert alert-danger mt-2">
+                            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
                     {% endif %}
                 {% endfor %}
             </div>
