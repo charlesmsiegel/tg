@@ -1,84 +1,68 @@
 {% load dots %}
-<div class="card shadow-sm mb-4 hover-card">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#spheres-display" aria-expanded="true" aria-controls="spheres-display">
-        <h5 class="mb-0">Spheres</h5>
-        <span class="badge bg-secondary">Cost: {{ object.rote_cost }}</span>
-    </div>
-    <div id="spheres-display" class="collapse show">
-        <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-center">
-                {% if object.correspondence > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Correspondence:</strong>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <h5 class="mb-0 mta_heading">Spheres</h5>
+                <span class="badge badge-pill badge-secondary">Cost: {{ object.rote_cost }}</span>
+            </div>
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap justify-content-center">
+                    {% if object.correspondence > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Correspondence</strong>
                             <span class="dots">{{ object.correspondence|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.entropy > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Entropy:</strong>
+                    {% endif %}
+                    {% if object.entropy > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Entropy</strong>
                             <span class="dots">{{ object.entropy|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.forces > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Forces:</strong>
+                    {% endif %}
+                    {% if object.forces > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Forces</strong>
                             <span class="dots">{{ object.forces|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.life > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Life:</strong>
+                    {% endif %}
+                    {% if object.life > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Life</strong>
                             <span class="dots">{{ object.life|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.matter > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Matter:</strong>
+                    {% endif %}
+                    {% if object.matter > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Matter</strong>
                             <span class="dots">{{ object.matter|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.mind > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Mind:</strong>
+                    {% endif %}
+                    {% if object.mind > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Mind</strong>
                             <span class="dots">{{ object.mind|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.prime > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Prime:</strong>
+                    {% endif %}
+                    {% if object.prime > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Prime</strong>
                             <span class="dots">{{ object.prime|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.spirit > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Spirit:</strong>
+                    {% endif %}
+                    {% if object.spirit > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Spirit</strong>
                             <span class="dots">{{ object.spirit|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
-                {% if object.time > 0 %}
-                    <div class="col-md-4">
-                        <div class="text-center h-100 d-flex flex-column justify-content-center">
-                            <strong>Time:</strong>
+                    {% endif %}
+                    {% if object.time > 0 %}
+                        <div class="px-3 py-2 m-2 bg-light border rounded text-center">
+                            <strong class="d-block" style="font-size: 0.875rem;">Time</strong>
                             <span class="dots">{{ object.time|dots }}</span>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

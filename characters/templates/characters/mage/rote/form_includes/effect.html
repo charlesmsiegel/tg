@@ -1,10 +1,10 @@
 {% load dots %}
-<div class="card shadow-sm mb-4 hover-card">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-effect-form" aria-expanded="true" aria-controls="rote-effect-form">
+<div class="tg-card mb-4">
+    <div class="tg-card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-effect-form" aria-expanded="true" aria-controls="rote-effect-form">
         <h5 class="mb-0">Effect</h5>
     </div>
     <div id="rote-effect-form" class="collapse show">
-        <div class="card-body">
+        <div class="tg-card-body">
             <div class="mb-3">
                 <label for="{{ form.effect.id_for_label }}" class="form-label">Effect</label>
                 {{ form.effect }}

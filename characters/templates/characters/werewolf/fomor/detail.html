@@ -3,12 +3,22 @@
     {% include "characters/werewolf/fomor/basics_display_include.html" %}
 {% endblock basics %}
 {% block powers %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Powers</h2>
-    </div>
-    {% for power in object.powers.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ power.get_absolute_url }}">{{ power.name }}</a>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Powers</h5>
+                </div>
+                <div class="tg-card-body">
+                    {% for power in object.powers.all %}
+                        <div class="row mb-2">
+                            <div class="col-sm">
+                                <a href="{{ power.get_absolute_url }}">{{ power.name }}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-    {% endfor %}
+    </div>
 {% endblock powers %}

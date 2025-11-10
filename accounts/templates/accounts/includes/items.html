@@ -1,24 +1,24 @@
 {% if object.my_items %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#items-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#items-section" aria-expanded="true">
             <h3 class="tg-card-title {{ object.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Items
             </h3>
         </div>
         <div id="items-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row">
                     {% for item in object.my_items %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="tg-card mb-3">
-                                <div class="tg-card-body text-center">
-                                    <h5 class="mb-2">
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 20px;">
+                                    <h5 class="mb-3">
                                         <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
                                     </h5>
-                                    <div class="mb-1">
+                                    <div class="mb-2">
                                         <span class="tg-badge badge-{{ item.status|lower }}">{{ item.get_status_display }}</span>
                                     </div>
-                                    <div class="text-muted small">
+                                    <div class="text-muted small mb-1">
                                         {{ item.get_full_gameline }}
                                     </div>
                                     <div class="text-muted small">

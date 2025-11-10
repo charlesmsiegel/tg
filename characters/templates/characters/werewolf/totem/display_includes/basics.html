@@ -2,21 +2,19 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0 {{ object.get_heading }}">Basic Information</h5>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 wta_heading">Basic Information</h5>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-sm-4">
-                        <strong>Cost</strong>
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-4 py-2">
+                        <span class="text-muted font-weight-bold mr-2">Cost:</span>
+                        <span class="badge badge-pill badge-wta" style="font-size: 1rem; padding: 0.5rem 0.75rem;">{{ object.cost }}</span>
                     </div>
-                    <div class="col-sm-8">{{ object.cost }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4">
-                        <strong>Type</strong>
+                    <div class="px-4 py-2">
+                        <span class="text-muted font-weight-bold mr-2">Type:</span>
+                        <span class="badge badge-pill badge-secondary" style="font-size: 1rem; padding: 0.5rem 0.75rem;">{{ object.get_totem_type_display }}</span>
                     </div>
-                    <div class="col-sm-8">{{ object.get_totem_type_display }}</div>
                 </div>
             </div>
         </div>

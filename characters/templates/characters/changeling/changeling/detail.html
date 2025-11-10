@@ -4,151 +4,220 @@
     {% include "characters/changeling/changeling/basics_display_include.html" %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Willpower</div>
-        <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
-        <div class="col-sm">Glamour</div>
-        <div class="col-sm dots">{{ object.glamour|dots:10 }}</div>
-        <div class="col-sm">Banality</div>
-        <div class="col-sm dots">{{ object.banality|dots:10 }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Musing Threshold</div>
-        <div class="col-sm dots">{{ object.get_musing_threshold_display }}</div>
-        <div class="col-sm">Ravaging Threshold</div>
-        <div class="col-sm dots">{{ object.get_ravaging_threshold_display }}</div>
-        <div class="col-sm">Antithesis</div>
-        <div class="col-sm">{{ object.antithesis }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-2">
+                            <strong>Willpower:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Glamour:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.glamour|dots:10 }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-4 dots">{{ object.temporary_willpower|boxes:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Banality:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.banality|dots:10 }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <strong>Musing Threshold:</strong> {{ object.get_musing_threshold_display }}
+                        </div>
+                        <div class="col-sm-4">
+                            <strong>Ravaging Threshold:</strong> {{ object.get_ravaging_threshold_display }}
+                        </div>
+                        <div class="col-sm-4">
+                            <strong>Antithesis:</strong> {{ object.antithesis }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock advantages %}
 {% block powers %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Arts</h2>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Arts</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Autumn:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.autumn|dots }}</div>
+                        <div class="col-sm-2"><strong>Chicanery:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.chicanery|dots }}</div>
+                        <div class="col-sm-2"><strong>Chronos:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.chronos|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Contract:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.contract|dots }}</div>
+                        <div class="col-sm-2"><strong>Dragon's Ire:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.dragons_ire|dots }}</div>
+                        <div class="col-sm-2"><strong>Legerdemain:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.legerdemain|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Metamorphosis:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.metamorphosis|dots }}</div>
+                        <div class="col-sm-2"><strong>Naming:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.naming|dots }}</div>
+                        <div class="col-sm-2"><strong>Oneiromancy:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.oneiromancy|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Primal:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.primal|dots }}</div>
+                        <div class="col-sm-2"><strong>Pyretics:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.pyretics|dots }}</div>
+                        <div class="col-sm-2"><strong>Skycraft:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.skycraft|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Soothsay:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.soothsay|dots }}</div>
+                        <div class="col-sm-2"><strong>Sovereign:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.sovereign|dots }}</div>
+                        <div class="col-sm-2"><strong>Spring:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.spring|dots }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-2"><strong>Summer:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.summer|dots }}</div>
+                        <div class="col-sm-2"><strong>Wayfare:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.wayfare|dots }}</div>
+                        <div class="col-sm-2"><strong>Winter:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.winter|dots }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Autumn</div>
-        <div class="col-sm dots">{{ object.autumn|dots }}</div>
-        <div class="col-sm">Chicanery</div>
-        <div class="col-sm dots">{{ object.chicanery|dots }}</div>
-        <div class="col-sm">Chronos</div>
-        <div class="col-sm dots">{{ object.chronos|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Contract</div>
-        <div class="col-sm dots">{{ object.contract|dots }}</div>
-        <div class="col-sm">Dragon's Ire</div>
-        <div class="col-sm dots">{{ object.dragons_ire|dots }}</div>
-        <div class="col-sm">Legerdemain</div>
-        <div class="col-sm dots">{{ object.legerdemain|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Metamorphosis</div>
-        <div class="col-sm dots">{{ object.metamorphosis|dots }}</div>
-        <div class="col-sm">Naming</div>
-        <div class="col-sm dots">{{ object.naming|dots }}</div>
-        <div class="col-sm">Oneiromancy</div>
-        <div class="col-sm dots">{{ object.oneiromancy|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Primal</div>
-        <div class="col-sm dots">{{ object.primal|dots }}</div>
-        <div class="col-sm">Pyretics</div>
-        <div class="col-sm dots">{{ object.pyretics|dots }}</div>
-        <div class="col-sm">Skycraft</div>
-        <div class="col-sm dots">{{ object.skycraft|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Soothsay</div>
-        <div class="col-sm dots">{{ object.soothsay|dots }}</div>
-        <div class="col-sm">Sovereign</div>
-        <div class="col-sm dots">{{ object.sovereign|dots }}</div>
-        <div class="col-sm">Spring</div>
-        <div class="col-sm dots">{{ object.spring|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Summer</div>
-        <div class="col-sm dots">{{ object.summer|dots }}</div>
-        <div class="col-sm">Wayfare</div>
-        <div class="col-sm dots">{{ object.wayfare|dots }}</div>
-        <div class="col-sm">Winter</div>
-        <div class="col-sm dots">{{ object.winter|dots }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Realms</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Actor</div>
-        <div class="col-sm dots">{{ object.actor|dots }}</div>
-        <div class="col-sm">Fae</div>
-        <div class="col-sm dots">{{ object.fae|dots }}</div>
-        <div class="col-sm">Nature</div>
-        <div class="col-sm dots">{{ object.nature_realm|dots }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Prop</div>
-        <div class="col-sm dots">{{ object.prop|dots }}</div>
-        <div class="col-sm">Scene</div>
-        <div class="col-sm dots">{{ object.scene|dots }}</div>
-        <div class="col-sm">Time</div>
-        <div class="col-sm dots">{{ object.time|dots }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Realms</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-2"><strong>Actor:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.actor|dots }}</div>
+                        <div class="col-sm-2"><strong>Fae:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.fae|dots }}</div>
+                        <div class="col-sm-2"><strong>Nature:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.nature_realm|dots }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-2"><strong>Prop:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.prop|dots }}</div>
+                        <div class="col-sm-2"><strong>Scene:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.scene|dots }}</div>
+                        <div class="col-sm-2"><strong>Time:</strong></div>
+                        <div class="col-sm-2 dots">{{ object.time|dots }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock powers %}
 {% block appearance %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Appearance</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Date of Birth</div>
-        <div class="col-sm">{{ object.date_of_birth }}</div>
-        <div class="col-sm">Fae Mien</div>
-        <div class="col-sm">{{ object.fae_mien }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Apparent Age</div>
-        <div class="col-sm">{{ object.apparent_age }}</div>
-        <div class="col-sm">Age</div>
-        <div class="col-sm">{{ object.age }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Date of Birth:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.date_of_birth }}</div>
+                        <div class="col-sm-3">
+                            <strong>Fae Mien:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.fae_mien }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Apparent Age:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.apparent_age }}</div>
+                        <div class="col-sm-3">
+                            <strong>Age:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.age }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Description:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.description }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock appearance %}
 {% block history %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">History</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">History</div>
-        <div class="col-sm">{{ object.history }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Fae Name</div>
-        <div class="col-sm">{{ object.true_name }}</div>
-        <div class="col-sm">Date Ennobled</div>
-        <div class="col-sm">{{ object.date_ennobled }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Crysalis</div>
-        <div class="col-sm">{{ object.crysalis }}</div>
-        <div class="col-sm">Date of Crysalis</div>
-        <div class="col-sm">{{ object.date_of_crysalis }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goals</div>
-        <div class="col-sm">{{ object.goals }}</div>
-        <div class="col-sm">Notes</div>
-        <div class="col-sm">{{ object.notes }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>History:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.history }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Fae Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.true_name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Date Ennobled:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.date_ennobled }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Crysalis:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.crysalis }}</div>
+                        <div class="col-sm-3">
+                            <strong>Date of Crysalis:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.date_of_crysalis }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-2">
+                            <strong>Goals:</strong>
+                        </div>
+                        <div class="col-sm-4">{{ object.goals }}</div>
+                        <div class="col-sm-2">
+                            <strong>Notes:</strong>
+                        </div>
+                        <div class="col-sm-4">{{ object.notes }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock history %}

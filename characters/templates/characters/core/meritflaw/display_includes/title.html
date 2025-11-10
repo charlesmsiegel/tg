@@ -1,10 +1,40 @@
 {% load dots %}
-<div class="card location-card h-100">
-    <div class="card-header {{ object.get_heading }}">
-        <h1 class="mb-0">{{ object.name }}</h1>
-        Ratings:
-        {% if object.ratings %}
-            {% for rating in object.ratings.all %}<span class="badge bg-info">{{ rating.value }}</span>{% endfor %}
+<div class="card mb-4">
+    <div class="card-header bg-light py-3 text-center">
+        <h1 class="mb-3 wod_heading">{{ object.name }}</h1>
+        {% if object.ratings.all %}
+            <div class="mb-3">
+                <h6 class="text-muted mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Available Ratings</h6>
+                <div>
+                    {% for rating in object.ratings.all|dictsort:"value" %}
+                        <span class="badge badge-pill {% if rating.value > 0 %}badge-success{% elif rating.value < 0 %}badge-danger{% else %}badge-secondary{% endif %} mr-2 mb-2" style="font-size: 1rem; padding: 0.5rem 0.75rem;">
+                            {% if rating.value > 0 %}+{% endif %}{{ rating.value }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if object.allowed_types.all %}
+            <div>
+                <h6 class="text-muted mb-2" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Allowed For</h6>
+                <div>
+                    {% for type in object.allowed_types.all|dictsort:"name" %}
+                        {% if "mage" in type.name or "sorcerer" in type.name or "companion" in type.name %}
+                            <span class="badge badge-pill badge-mta mr-2 mb-2">{{ type.name|title }}</span>
+                        {% elif "garou" in type.name or "kinfolk" in type.name %}
+                            <span class="badge badge-pill badge-wta mr-2 mb-2">{{ type.name|title }}</span>
+                        {% elif "changeling" in type.name %}
+                            <span class="badge badge-pill badge-ctd mr-2 mb-2">{{ type.name|title }}</span>
+                        {% elif "vampire" in type.name or "ghoul" in type.name %}
+                            <span class="badge badge-pill badge-vtm mr-2 mb-2">{{ type.name|title }}</span>
+                        {% elif "wraith" in type.name %}
+                            <span class="badge badge-pill badge-wto mr-2 mb-2">{{ type.name|title }}</span>
+                        {% else %}
+                            <span class="badge badge-pill badge-secondary mr-2 mb-2">{{ type.name|title }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
         {% endif %}
     </div>
 </div>

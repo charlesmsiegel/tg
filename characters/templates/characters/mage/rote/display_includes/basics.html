@@ -1,27 +1,25 @@
 {% load dots %}
-<div class="card shadow-sm mb-4">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-basics" aria-expanded="true" aria-controls="rote-basics">
-        <h5 class="mb-0">Details</h5>
-    </div>
-    <div id="rote-basics" class="collapse show">
-        <div class="card-body">
-            <div class="row">
-                <!-- Effect -->
-                <div class="col-md-6 mb-3">
-                    <h6 class="text-muted">Effect</h6>
-                    <a href="{{ object.effect.get_absolute_url }}">{{ object.effect.name }}</a>
-                </div>
-                <!-- Practice -->
-                <div class="col-md-6 mb-3">
-                    <h6 class="text-muted">Practice</h6>
-                    <a href="{{ object.practice.get_absolute_url }}"
-                       class="badge bg-info text-dark">{{ object.practice }}</a>
-                </div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">Details</h5>
             </div>
-            <!-- Centered Dicepool -->
-            <div class="col-md mb">
-                <h6 class="text-muted">Dicepool</h6>
-                <div>{{ object.attribute.name }} + {{ object.ability.name }}</div>
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap justify-content-center align-items-center">
+                    <div class="px-3 py-2 m-2">
+                        <span class="text-muted mr-2" style="font-size: 0.875rem;">Effect:</span>
+                        <a href="{{ object.effect.get_absolute_url }}" class="font-weight-bold">{{ object.effect.name }}</a>
+                    </div>
+                    <div class="px-3 py-2 m-2">
+                        <span class="text-muted mr-2" style="font-size: 0.875rem;">Practice:</span>
+                        <a href="{{ object.practice.get_absolute_url }}" class="badge badge-pill badge-mta">{{ object.practice }}</a>
+                    </div>
+                    <div class="px-3 py-2 m-2">
+                        <span class="text-muted mr-2" style="font-size: 0.875rem;">Dicepool:</span>
+                        <span class="font-weight-bold">{{ object.attribute.name }} + {{ object.ability.name }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

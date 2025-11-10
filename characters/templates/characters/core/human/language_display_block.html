@@ -1,20 +1,20 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}  pointer"
-        data-toggle="collapse"
-        data-target="#languageSection"
-        aria-expanded="true"
-        aria-controls="languageSection">Languages</h2>
-</div>
-<div id="languageSection" class="collapse show multi-collapse">
-    <div class="row">
-        {% for lang in object.languages.all %}
-            {% if forloop.counter0|divisibleby:6 %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Languages</h5>
             </div>
-            <div class="row">
-            {% endif %}
-            <div class="col-sm-2">{{ lang }}</div>
-            {% if forloop.last %}</div>{% endif %}
-    {% empty %}
+            <div class="tg-card-body">
+                <div class="row">
+                    {% for lang in object.languages.all %}
+                        <div class="col-sm-2 mb-2">{{ lang }}</div>
+                    {% empty %}
+                        <div class="col-sm">
+                            <p class="text-muted mb-0">No languages specified.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-{% endfor %}
 </div>

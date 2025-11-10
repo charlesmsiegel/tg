@@ -2,13 +2,13 @@
 {% block status_row %}
     {% load dots %}
     <div class="col-md-6 mb-3">
-        <div class="card location-card">
-            <div class="card-header {{ object.get_heading }} d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Basic Information</h5>
-                <span class="badge badge-pill badge-primary">Willpower: {{ object.willpower }}</span>
+        <div class="card">
+            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 wta_heading">Basic Information</h5>
+                <span class="badge badge-pill badge-wta">Willpower: {{ object.willpower }}</span>
             </div>
-            <div class="card-body">
-                <h6 class="text-muted mb-3">Camps</h6>
+            <div class="card-body py-3">
+                <h6 class="text-muted mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">Camps</h6>
                 {% include "characters/werewolf/tribe/display_includes/camps.html" with camps=object.get_camps %}
             </div>
         </div>
@@ -17,13 +17,13 @@
 {% block contents %}
     {% load dots %}
     {% load sanitize_text %}
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="card location-card">
-                <div class="card-header {{ object.get_heading }}">
-                    <h5 class="mb-0">Gifts</h5>
+            <div class="card">
+                <div class="card-header bg-light py-2">
+                    <h5 class="mb-0 wta_heading">Gifts</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body py-3">
                     {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=1 gifts=object.gifts_1 %}
                     {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=2 gifts=object.gifts_2 %}
                     {% include "characters/werewolf/tribe/display_includes/gifts.html" with level=3 gifts=object.gifts_3 %}

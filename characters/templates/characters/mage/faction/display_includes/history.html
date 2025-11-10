@@ -2,10 +2,12 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header {{ object.get_heading }}">History</div>
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Founded</div>
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">History</h5>
+            </div>
+            <div class="card-body py-3">
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-muted font-weight-bold">Founded</div>
                     <div class="col-sm-9">
                         {{ year }}
                         {% if date_written > 0 %}
@@ -16,8 +18,8 @@
                     </div>
                 </div>
                 {% if object.ended < 5000 %}
-                    <div class="row mb-2">
-                        <div class="col-sm-3 {{ object.get_heading }}">Ended</div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted font-weight-bold">Ended</div>
                         <div class="col-sm-9">
                             {{ year }}
                             {% if object.ended > 0 %}
@@ -28,21 +30,24 @@
                         </div>
                     </div>
                 {% endif %}
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Parent Faction</div>
-                    <div class="col-sm-9">
-                        {% if object.parent %}<a href="{{ object.parent.get_absolute_url }}">{{ object.parent }}</a>{% endif %}
+                {% if object.parent %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted font-weight-bold">Parent Faction</div>
+                        <div class="col-sm-9">
+                            <a href="{{ object.parent.get_absolute_url }}" class="badge badge-pill badge-mta">{{ object.parent }}</a>
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-3 {{ object.get_heading }}">Subfactions</div>
-                    <div class="col-sm-9">
-                        {% for subfaction in object.magefaction_set.all %}
-                            <a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name|sanitize_html }}</a>
-                            {% if not forloop.last %},{% endif %}
-                        {% endfor %}
+                {% endif %}
+                {% if object.magefaction_set.all %}
+                    <div class="row">
+                        <div class="col-sm-3 text-muted font-weight-bold">Subfactions</div>
+                        <div class="col-sm-9">
+                            {% for subfaction in object.magefaction_set.all %}
+                                <a href="{{ subfaction.get_absolute_url }}" class="badge badge-pill badge-mta-faded mr-2 mb-2">{{ subfaction.name|sanitize_html }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

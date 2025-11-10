@@ -1,63 +1,93 @@
 {% load sanitize_text dots humanize %}
-<div class="card mb-4">
-    <div class="card-header {{ object.get_heading }}">
+<div class="tg-card mb-4">
+    <div class="tg-card-header {{ object.get_heading }}">
         <h5 class="mb-0">Group Members</h5>
     </div>
-    <div class="card-body">
-        {% if object.leader %}
-            <h5 class="mb-2 {{ object.get_heading }} text-center">Leader</h5>
-            <div class="row mb-3 justify-content-center">
-                <div class="col-sm-6 col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header py-2">
-                            <h6 class="mb-0 text-center">
-                                <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
-                                {% if object.leader.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
-                            </h6>
-                        </div>
-                        <div class="card-body py-2 text-center">
-                            <span class="badge badge-secondary">{{ object.leader.type|title }}</span>
-                            {% if object.leader.get_status_display %}
-                                <span class="badge {% if object.leader.status == 'App' %}badge-success {% elif object.leader.status == 'Sub' %}badge-warning {% elif object.leader.status == 'Dec' %}badge-danger {% elif object.leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
-                                    {{ object.leader.get_status_display }}
-                                </span>
+    <div class="tg-card-body">
+        {% if object.leader or object.members.exists %}
+            <div class="table-responsive">
+                <table class="tg-table mx-auto" style="text-align: center; max-width: 1000px;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 12px 16px;">Name</th>
+                            <th style="padding: 12px 16px;">Type</th>
+                            <th style="padding: 12px 16px;">Details</th>
+                            <th style="padding: 12px 16px;">Role</th>
+                            <th style="padding: 12px 16px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if object.leader %}
+                            <tr>
+                                <td style="padding: 14px 16px;">
+                                    <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
+                                </td>
+                                <td style="padding: 14px 16px;">
+                                    <span class="tg-badge badge-pill {% if object.leader.type == 'mage' %}badge-mta{% elif object.leader.type == 'sorcerer' or object.leader.type == 'companion' %}badge-mta-faded{% elif object.leader.type == 'garou' %}badge-wta{% elif object.leader.type == 'kinfolk' or object.leader.type == 'fomor' %}badge-wta-faded{% elif object.leader.type == 'changeling' %}badge-ctd{% elif object.leader.type == 'vampire' %}badge-vtm{% elif object.leader.type == 'ghoul' %}badge-vtm-faded{% elif object.leader.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ object.leader.type|title }}</span>
+                                </td>
+                                <td style="padding: 14px 16px;">
+                                    {% if object.leader.type == "mage" and object.leader.faction %}
+                                        {{ object.leader.faction }}
+                                    {% elif object.leader.type == "garou" and object.leader.tribe %}
+                                        {{ object.leader.tribe }} - {{ object.leader.get_auspice_display|default:"-" }}
+                                    {% elif object.leader.type == "changeling" and object.leader.kith %}
+                                        {{ object.leader.kith }} - {{ object.leader.get_court_display|default:"-" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 14px 16px;">
+                                    <span class="tg-badge badge-pill badge-primary">Leader</span>
+                                    {% if object.leader.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                </td>
+                                <td style="padding: 14px 16px;">
+                                    {% if object.leader.get_status_display %}
+                                        <span class="tg-badge badge-pill {% if object.leader.status == 'App' %}badge-success {% elif object.leader.status == 'Sub' %}badge-warning {% elif object.leader.status == 'Dec' %}badge-danger {% elif object.leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                            {{ object.leader.get_status_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% for member in object.members.all %}
+                            {% if member != object.leader %}
+                                <tr>
+                                    <td style="padding: 14px 16px;">
+                                        <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        <span class="tg-badge badge-pill {% if member.type == 'mage' %}badge-mta{% elif member.type == 'sorcerer' or member.type == 'companion' %}badge-mta-faded{% elif member.type == 'garou' %}badge-wta{% elif member.type == 'kinfolk' or member.type == 'fomor' %}badge-wta-faded{% elif member.type == 'changeling' %}badge-ctd{% elif member.type == 'vampire' %}badge-vtm{% elif member.type == 'ghoul' %}badge-vtm-faded{% elif member.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ member.type|title }}</span>
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        {% if member.type == "mage" and member.faction %}
+                                            {{ member.faction }}
+                                        {% elif member.type == "garou" and member.tribe %}
+                                            {{ member.tribe }} - {{ member.get_auspice_display|default:"-" }}
+                                        {% elif member.type == "changeling" and member.kith %}
+                                            {{ member.kith }} - {{ member.get_court_display|default:"-" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        <span class="tg-badge badge-pill badge-secondary">Member</span>
+                                        {% if member.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        {% if member.get_status_display %}
+                                            <span class="tg-badge badge-pill {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                {{ member.get_status_display }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                             {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if object.members.exists %}
-            <h5 class="mb-2 {{ object.get_heading }}">Members</h5>
-            <div class="row">
-                {% for member in object.members.all %}
-                    <div class="col-sm-6 col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header py-2">
-                                <h6 class="mb-0">
-                                    <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
-                                    {% if member.npc %}<span class="badge badge-dark ml-2">NPC</span>{% endif %}
-                                </h6>
-                            </div>
-                            <div class="card-body py-2">
-                                <span class="badge badge-secondary">{{ member.type|title }}</span>
-                                {% if member.get_status_display %}
-                                    <span class="badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
-                                        {{ member.get_status_display }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% else %}
-            <div class="row">
-                <div class="col">
-                    <p class="text-muted mb-0">No members in this group.</p>
-                </div>
-            </div>
+            <p class="text-muted text-center mb-0">No members in this group.</p>
         {% endif %}
     </div>
 </div>

@@ -1,14 +1,37 @@
 {% extends "core/object.html" %}
+{% block objectname %}
+    <!-- Page Header with gameline-specific styling -->
+    <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline|lower }}">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title {{ object.get_heading }}">
+                {{ object.name }}
+            </h1>
+            <p class="tg-card-subtitle mb-0">
+                {{ object.concept }}{% if object.chronicle %} | <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>{% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock objectname %}
 {% block contents %}
     {% if is_approved_user %}
         {% block statistics %}
             {% block basics %}
-                <div class="row">
-                    <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-                </div>
-                <div class="row">
-                    <div class="col-sm">Concept</div>
-                    <div class="col-sm">{{ object.concept }}</div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-0">
+                                    <div class="col-sm-4">
+                                        <strong>Concept:</strong>
+                                    </div>
+                                    <div class="col-sm-8">{{ object.concept }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             {% endblock basics %}
         {% endblock statistics %}

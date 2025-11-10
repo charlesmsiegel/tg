@@ -1,51 +1,59 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#basicsSection"
-        aria-expanded="true"
-        aria-controls="basicsSection">Basics</h2>
-</div>
-<div id="basicsSection" class="collapse show multi-collapse">
-    <div class="row">
-        <div class="col-sm">Nature</div>
-        <a class="col-sm" href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-        <div class="col-sm">Affiliation</div>
-        <a class="col-sm" href="{{ object.affiliation.get_absolute_url }}">{{ object.affiliation }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Demeanor</div>
-        <a class="col-sm" href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-        <div class="col-sm">
-            {% if object.affiliation.name == "Technocratic Union" %}
-                Convention
-            {% else %}
-                Sect
-            {% endif %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title mta_heading">Basics</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Nature:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Affiliation:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.affiliation.get_absolute_url }}">{{ object.affiliation }}</a>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <strong>Demeanor:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>{% if object.affiliation.name == "Technocratic Union" %}Convention{% else %}Sect{% endif %}:</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-2">
+                        <strong>{% if object.affiliation.name == "Technocratic Union" %}Eidolon{% else %}Essence{% endif %}:</strong>
+                    </div>
+                    <div class="col-sm-2">{{ object.get_essence_display }}</div>
+                    <div class="col-sm-2">
+                        <strong>Concept:</strong>
+                    </div>
+                    <div class="col-sm-2">{{ object.concept }}</div>
+                    <div class="col-sm-2">
+                        <strong>{% if object.affiliation.name == "Technocratic Union" %}Methodology{% else %}Subfaction{% endif %}:</strong>
+                    </div>
+                    <div class="col-sm-2">
+                        {% if object.subfaction %}
+                            <a href="{{ object.subfaction.get_absolute_url }}">{{ object.subfaction }}</a>
+                        {% else %}
+                            {{ object.subfaction }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <a class="col-sm" href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            {% if object.affiliation.name == "Technocratic Union" %}
-                Eidolon
-            {% else %}
-                Essence
-            {% endif %}
-        </div>
-        <div class="col-sm">{{ object.get_essence_display }}</div>
-        <div class="col-sm">Concept</div>
-        <div class="col-sm">{{ object.concept }}</div>
-        <div class="col-sm">
-            {% if object.affiliation.name == "Technocratic Union" %}
-                Methodology
-            {% else %}
-                Subfaction
-            {% endif %}
-        </div>
-        {% if object.subfaction %}
-            <a class="col-sm" href="{{ object.subfaction.get_absolute_url }}">{{ object.subfaction }}</a>
-        {% else %}
-            <div class="col-sm">{{ object.subfaction }}</div>
-        {% endif %}
     </div>
 </div>

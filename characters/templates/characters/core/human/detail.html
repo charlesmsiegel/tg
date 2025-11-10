@@ -3,26 +3,46 @@
     {% load dots %}
     {% load get_specialty %}
     {% block basics %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Basics</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Name</div>
-            <div class="col-sm">{{ object.name }}</div>
-            <div class="col-sm">Nature</div>
-            <a class="col-sm" href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
-        </div>
-        <div class="row">
-            <div class="col-sm">Player</div>
-            <div class="col-sm">{{ object.owner }}</div>
-            <div class="col-sm">Demeanor</div>
-            <a class="col-sm" href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
-        </div>
-        <div class="row">
-            <div class="col-sm"></div>
-            <div class="col-sm">Concept</div>
-            <div class="col-sm">{{ object.concept }}</div>
-            <div class="col-sm"></div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-3">
+                                <strong>Name:</strong>
+                            </div>
+                            <div class="col-sm-3">{{ object.name }}</div>
+                            <div class="col-sm-3">
+                                <strong>Nature:</strong>
+                            </div>
+                            <div class="col-sm-3">
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-3">
+                                <strong>Player:</strong>
+                            </div>
+                            <div class="col-sm-3">{{ object.owner }}</div>
+                            <div class="col-sm-3">
+                                <strong>Demeanor:</strong>
+                            </div>
+                            <div class="col-sm-3">
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            </div>
+                        </div>
+                        <div class="row mb-0">
+                            <div class="col-sm-3">
+                                <strong>Concept:</strong>
+                            </div>
+                            <div class="col-sm-9">{{ object.concept }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endblock basics %}
     {% block attributes %}
@@ -51,37 +71,66 @@
 {% endblock statistics %}
 {% block flavor %}
     {% block appearance %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Appearance</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">Date of Birth</div>
-            <div class="col-sm">{{ object.date_of_birth }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Apparent Age</div>
-            <div class="col-sm">{{ object.apparent_age }}</div>
-            <div class="col-sm">Age</div>
-            <div class="col-sm">{{ object.age }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Description</div>
-            <div class="col-sm">{{ object.description }}</div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <strong>Date of Birth:</strong>
+                            </div>
+                            <div class="col-sm-8">{{ object.date_of_birth }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <strong>Apparent Age:</strong>
+                            </div>
+                            <div class="col-sm-4">{{ object.apparent_age }}</div>
+                            <div class="col-sm-4">
+                                <strong>Age:</strong> {{ object.age }}
+                            </div>
+                        </div>
+                        <div class="row mb-0">
+                            <div class="col-sm-4">
+                                <strong>Description:</strong>
+                            </div>
+                            <div class="col-sm-8">{{ object.description }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endblock appearance %}
     {% block history %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">History</h2>
-        </div>
-        <div class="row">
-            <div class="col-sm">History</div>
-            <div class="col-sm">{{ object.history }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm">Goals</div>
-            <div class="col-sm">{{ object.goals }}</div>
-            <div class="col-sm">Notes</div>
-            <div class="col-sm">{{ object.notes }}</div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <strong>History:</strong>
+                            </div>
+                            <div class="col-sm-8">{{ object.history }}</div>
+                        </div>
+                        <div class="row mb-0">
+                            <div class="col-sm-2">
+                                <strong>Goals:</strong>
+                            </div>
+                            <div class="col-sm-4">{{ object.goals }}</div>
+                            <div class="col-sm-2">
+                                <strong>Notes:</strong>
+                            </div>
+                            <div class="col-sm-4">{{ object.notes }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endblock history %}
     {% block health %}
@@ -91,10 +140,16 @@
     {% block xp %}
     {% endblock xp %}
     {% block journal %}
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">
-                <a href="{{ object.journal.get_absolute_url }}">{{ object.name }} Journal</a>
-            </h3>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h5 class="tg-card-title {{ object.get_heading }}">
+                            <a href="{{ object.journal.get_absolute_url }}">{{ object.name }} Journal</a>
+                        </h5>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endblock journal %}
 {% endblock flavor %}

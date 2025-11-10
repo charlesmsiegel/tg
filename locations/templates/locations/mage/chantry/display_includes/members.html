@@ -18,7 +18,7 @@
                             <div class="tg-card-body py-2">
                                 <span class="tg-badge badge-secondary">{{ leader.type|title }}</span>
                                 {% if leader.get_status_display %}
-                                    <span class="tg-badge {% if leader.status == 'App' %}badge-success {% elif leader.status == 'Sub' %}badge-warning {% elif leader.status == 'Dec' %}badge-danger {% elif leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge badge-{{ leader.status|lower }}">
                                         {{ leader.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -42,7 +42,7 @@
                         <div class="tg-card-body py-2">
                             <span class="tg-badge badge-secondary">{{ object.ambassador.type|title }}</span>
                             {% if object.ambassador.get_status_display %}
-                                <span class="tg-badge {% if object.ambassador.status == 'App' %}badge-success {% elif object.ambassador.status == 'Sub' %}badge-warning {% elif object.ambassador.status == 'Dec' %}badge-danger {% elif object.ambassador.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                <span class="tg-badge badge-{{ object.ambassador.status|lower }}">
                                     {{ object.ambassador.get_status_display }}
                                 </span>
                             {% endif %}
@@ -63,7 +63,7 @@
                         <div class="tg-card-body py-2">
                             <span class="tg-badge badge-secondary">{{ object.node_tender.type|title }}</span>
                             {% if object.node_tender.get_status_display %}
-                                <span class="tg-badge {% if object.node_tender.status == 'App' %}badge-success {% elif object.node_tender.status == 'Sub' %}badge-warning {% elif object.node_tender.status == 'Dec' %}badge-danger {% elif object.node_tender.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                <span class="tg-badge badge-{{ object.node_tender.status|lower }}">
                                     {{ object.node_tender.get_status_display }}
                                 </span>
                             {% endif %}
@@ -87,7 +87,7 @@
                             <div class="tg-card-body py-2">
                                 <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -112,7 +112,7 @@
                             <div class="tg-card-body py-2">
                                 <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -137,7 +137,7 @@
                             <div class="tg-card-body py-2">
                                 <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
                                 {% if character.get_status_display %}
-                                    <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                    <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
                                     </span>
                                 {% endif %}
@@ -182,7 +182,7 @@
                                                 <div class="tg-card-body py-2">
                                                     <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
                                                     {% if member.get_status_display %}
-                                                        <span class="tg-badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                        <span class="tg-badge badge-{{ member.status|lower }}">
                                                             {{ member.get_status_display }}
                                                         </span>
                                                     {% endif %}
@@ -217,7 +217,7 @@
                                 <div class="tg-card-body py-2">
                                     <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
                                     {% if member.get_status_display %}
-                                        <span class="tg-badge {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                        <span class="tg-badge badge-{{ member.status|lower }}">
                                             {{ member.get_status_display }}
                                         </span>
                                     {% endif %}

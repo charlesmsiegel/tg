@@ -5,43 +5,75 @@
     {% include "characters/werewolf/garou/basics_display_include.html" %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Advantages</h2>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-2">
+                            <strong>Willpower:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Gnosis:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.gnosis|dots:10 }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-4 dots">{{ object.temporary_willpower|boxes:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Rage:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.rage|dots:10 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Willpower</div>
-        <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
-        <div class="col-sm">Gnosis</div>
-        <div class="col-sm dots">{{ object.gnosis|dots:10 }}</div>
-        <div class="col-sm">Rage</div>
-        <div class="col-sm dots">{{ object.rage|dots:10 }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-        <div class="col-sm"></div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Renown</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Glory</div>
-        <div class="col-sm dots">{{ object.glory|dots:10 }}</div>
-        <div class="col-sm">Honor</div>
-        <div class="col-sm dots">{{ object.honor|dots:10 }}</div>
-        <div class="col-sm">Wisdom</div>
-        <div class="col-sm dots">{{ object.wisdom|dots:10 }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Temporary Glory</div>
-        <div class="col-sm dots">{{ object.temporary_glory|dots:10 }}</div>
-        <div class="col-sm">Temporary Honor</div>
-        <div class="col-sm dots">{{ object.temporary_honor|dots:10 }}</div>
-        <div class="col-sm">Temporary Wisdom</div>
-        <div class="col-sm dots">{{ object.temporary_wisdom|dots:10 }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Renown</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-2">
+                            <strong>Glory:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.glory|dots:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Honor:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.honor|dots:10 }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-2">
+                            <strong>Temp Glory:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.temporary_glory|dots:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Temp Honor:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.temporary_honor|dots:10 }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-2">
+                            <strong>Wisdom:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.wisdom|dots:10 }}</div>
+                        <div class="col-sm-2">
+                            <strong>Temp Wisdom:</strong>
+                        </div>
+                        <div class="col-sm-4 dots">{{ object.temporary_wisdom|dots:10 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock advantages %}
 {% block backgrounds %}
@@ -49,115 +81,199 @@
 {% endblock backgrounds %}
 {% block powers %}
     {% block gifts %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Gifts</h2>
-        </div>
-        <div class="row">
-            {% for gift in object.gifts.all %}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="card mb-3">
-                        <div class="card-body text-center">
-                            <div class="mt-2">
-                                <a href={{ gift.get_absolute_url }}>{{ gift }}</a>
-                            </div>
-                            <div class="d-inline-flex align-items-center">
-                                <div class="dots ml-2">Rank {{ gift.rank }}</div>
-                            </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Gifts</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% for gift in object.gifts.all %}
+                                <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="tg-card h-100">
+                                        <div class="tg-card-body text-center">
+                                            <div class="mt-2">
+                                                <a href={{ gift.get_absolute_url }}>{{ gift }}</a>
+                                            </div>
+                                            <div class="d-inline-flex align-items-center">
+                                                <div class="dots ml-2">Rank {{ gift.rank }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="col">No Gifts.</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-            {% empty %}
-                <div class="col">No Gifts.</div>
-            {% endfor %}
+            </div>
         </div>
     {% endblock gifts %}
     {% block rites %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Rites</h2>
-        </div>
-        {% for row in rites %}
-            <div class="row">
-                {% for rite in row %}<a class="col-sm" href="{{ rite.get_absolute_url }}">{{ rite.name }}</a>{% endfor %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Rites</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for row in rites %}
+                            <div class="row mb-2">
+                                {% for rite in row %}<a class="col-sm" href="{{ rite.get_absolute_url }}">{{ rite.name }}</a>{% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-        {% endfor %}
+        </div>
     {% endblock rites %}
     {% block fetishes %}
-        <div class="row">
-            <h2 class="col-sm {{ object.get_heading }}">Fetishes</h2>
-        </div>
-        {% for fetish in object.fetishes_owned.all %}
-            <div class="row">
-                <a class="col-sm" href="{{ fetish.get_absolute_url }}">{{ fetish.name }}</a>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Fetishes</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for fetish in object.fetishes_owned.all %}
+                            <div class="row mb-2">
+                                <div class="col-sm">
+                                    <a href="{{ fetish.get_absolute_url }}">{{ fetish.name }}</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-        {% endfor %}
+        </div>
     {% endblock fetishes %}
 {% endblock powers %}
 {% block appearance %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Appearance</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Date of Birth</div>
-        <div class="col-sm">{{ object.date_of_birth }}</div>
-        <div class="col-sm">Age of First Change</div>
-        <div class="col-sm">{{ object.age_of_first_change }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Apparent Age</div>
-        <div class="col-sm">{{ object.apparent_age }}</div>
-        <div class="col-sm">Age</div>
-        <div class="col-sm">{{ object.age }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Description</div>
-        <div class="col-sm">{{ object.description|sanitize_html|linebreaks }}</div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Date of Birth:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.date_of_birth }}</div>
+                        <div class="col-sm-3">
+                            <strong>Age of First Change:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.age_of_first_change }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Apparent Age:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.apparent_age }}</div>
+                        <div class="col-sm-3">
+                            <strong>Age:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.age }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Description:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.description|sanitize_html|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock appearance %}
 {% block history %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">History</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Childhood</div>
-        <div class="col-sm">{{ object.childhood|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">History</div>
-        <div class="col-sm">{{ object.history|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">First Change</div>
-        <div class="col-sm">{{ object.first_change|sanitize_html|linebreaks }}</div>
-        <div class="col-sm">Battle Scars</div>
-        <div class="col-sm">
-            {% for scar in object.battle_scars.all %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }},</a>{% endfor %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Childhood:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.childhood|sanitize_html|linebreaks }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>History:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.history|sanitize_html|linebreaks }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>First Change:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.first_change|sanitize_html|linebreaks }}</div>
+                        <div class="col-sm-3">
+                            <strong>Battle Scars:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% for scar in object.battle_scars.all %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-2">
+                            <strong>Goals:</strong>
+                        </div>
+                        <div class="col-sm-4">{{ object.goals|sanitize_html|linebreaks }}</div>
+                        <div class="col-sm-2">
+                            <strong>Notes:</strong>
+                        </div>
+                        <div class="col-sm-4">{{ object.notes|sanitize_html|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goals</div>
-        <div class="col-sm">{{ object.goals|sanitize_html|linebreaks }}</div>
-        <div class="col-sm">Notes</div>
-        <div class="col-sm">{{ object.notes|sanitize_html|linebreaks }}</div>
     </div>
 {% endblock history %}
 {% block xp %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Experience</h2>
-    </div>
-    <div class="row">
-        <div class="col-sm">Experience Points</div>
-        <div class="col-sm">{{ object.xp }}</div>
-        <div class="col-sm">Spent XP</div>
-        <div class="col-sm">{{ object.spent_xp }}</div>
-    </div>
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Renown Incidents</h2>
-    </div>
-    {% for incident in object.renown_incidents %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href="{{ incident.get_absolute_url }}">{{ incident }}</a>
-            <div class="col-sm"></div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Experience</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Experience Points:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.xp }}</div>
+                        <div class="col-sm-3">
+                            <strong>Spent XP:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.spent_xp }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    {% endfor %}
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Renown Incidents</h5>
+                </div>
+                <div class="tg-card-body">
+                    {% for incident in object.renown_incidents %}
+                        <div class="row mb-2">
+                            <div class="col-sm text-center">
+                                <a href="{{ incident.get_absolute_url }}">{{ incident }}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock xp %}

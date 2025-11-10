@@ -1,27 +1,110 @@
 {% extends "core/object.html" %}
+{% block objectname %}
+    <div class="tg-card header-card mb-4" data-gameline="wta">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title wta_heading">{{ object.name }}</h1>
+            {% if object.chronicle %}
+                <p class="tg-card-subtitle mb-0">
+                    <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm {{ object.get_heading }}">
-            <h1>{{ object.name }}</h1>
+    {% if object.totem %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h5 class="tg-card-title wta_heading">Pack Totem</h5>
+                    </div>
+                    <div class="tg-card-body text-center" style="padding: 24px;">
+                        <div style="font-size: 1.5rem; font-weight: 600;">{{ object.totem }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title wta_heading">Members</h5>
+                </div>
+                <div class="tg-card-body">
+                    {% if object.leader or object.members.exists %}
+                        <div class="table-responsive">
+                            <table class="tg-table mx-auto" style="text-align: center; max-width: 900px;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 12px 16px;">Name</th>
+                                        <th style="padding: 12px 16px;">Tribe</th>
+                                        <th style="padding: 12px 16px;">Auspice</th>
+                                        <th style="padding: 12px 16px;">Role</th>
+                                        <th style="padding: 12px 16px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if object.leader %}
+                                        <tr>
+                                            <td style="padding: 14px 16px;">
+                                                <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.tribe %}{{ object.leader.tribe }}{% else %}-{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.get_auspice_display %}{{ object.leader.get_auspice_display }}{% else %}-{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                <span class="tg-badge badge-pill badge-primary">Pack Leader</span>
+                                                {% if object.leader.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.get_status_display %}
+                                                    <span class="tg-badge badge-{{ object.leader.status|lower }}">
+                                                        {{ object.leader.get_status_display }}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    {% for member in object.members.all %}
+                                        {% if member != object.leader %}
+                                            <tr>
+                                                <td style="padding: 14px 16px;">
+                                                    <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.tribe %}{{ member.tribe }}{% else %}-{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.get_auspice_display %}{{ member.get_auspice_display }}{% else %}-{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    <span class="tg-badge badge-pill badge-secondary">Pack Member</span>
+                                                    {% if member.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.get_status_display %}
+                                                        <span class="tg-badge badge-{{ member.status|lower }}">
+                                                            {{ member.get_status_display }}
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">No members in this pack.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Totem</div>
-        <div class="col-sm">{{ object.totem }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <a class="col-sm" href={{ object.leader.get_absolute_url }}>{{ object.leader }}</a>
-    </div>
-    {% for member in object.members.all %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href={{ member.get_absolute_url }}>{{ member }}</a>
-            <div class="col-sm"></div>
-        </div>
-    {% endfor %}
 {% endblock contents %}

@@ -67,7 +67,7 @@
                                     <div class="tg-card-body py-2">
                                         {% if character.type %}<span class="tg-badge badge-secondary">{{ character.type|title }}</span>{% endif %}
                                         {% if character.get_status_display %}
-                                            <span class="tg-badge {% if character.status == 'App' %}badge-success {% elif character.status == 'Sub' %}badge-warning {% elif character.status == 'Dec' %}badge-danger {% elif character.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                            <span class="tg-badge badge-{{ character.status|lower }}">
                                                 {{ character.get_status_display }}
                                             </span>
                                         {% endif %}

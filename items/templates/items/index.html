@@ -227,9 +227,11 @@
                                                         </td>
                                                         <td data-label="Type">
                                                             {% if item.type == 'fetish' %}
-                                                                <span class="tg-badge badge-type-wta badge-pill">{{ item.type|replace_underscore|title }}</span>
-                                                            {% elif item.type == 'talisman' or item.type == 'wonder' or item.type == 'artifact' or item.type == 'charm' or item.type == 'grimoire' or item.type == 'sorcerer_artifact' %}
-                                                                <span class="tg-badge badge-type-mta badge-pill">{{ item.type|replace_underscore|title }}</span>
+                                                                <span class="tg-badge badge-wta badge-pill">{{ item.type|replace_underscore|title }}</span>
+                                                            {% elif item.type == 'talisman' or item.type == 'wonder' or item.type == 'artifact' or item.type == 'charm' or item.type == 'grimoire' %}
+                                                                <span class="tg-badge badge-mta badge-pill">{{ item.type|replace_underscore|title }}</span>
+                                                            {% elif item.type == 'sorcerer_artifact' %}
+                                                                <span class="tg-badge badge-mta-faded badge-pill">{{ item.type|replace_underscore|title }}</span>
                                                             {% else %}
                                                                 <span class="tg-badge badge-secondary badge-pill">{{ item.type|replace_underscore|title }}</span>
                                                             {% endif %}

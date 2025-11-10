@@ -1,18 +1,18 @@
 {% if object.freebies_to_approve %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#freebies-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#freebies-section" aria-expanded="true">
             <h3 class="tg-card-title {{ object.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Freebies To Approve
             </h3>
         </div>
         <div id="freebies-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row">
                     {% for freebie_form in freebie_forms %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="tg-card mb-3">
-                                <div class="tg-card-body text-center">
-                                    <h5 class="mb-2">
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 20px;">
+                                    <h5 class="mb-3">
                                         <a href="{{ freebie_form.character.get_absolute_url }}">{{ freebie_form.character.name }}</a>
                                     </h5>
                                     <div class="mb-2">
@@ -22,7 +22,7 @@
                                             <span class="text-muted">No Owner</span>
                                         {% endif %}
                                     </div>
-                                    <div class="mb-1">
+                                    <div class="mb-2">
                                         <span class="tg-badge badge-{{ freebie_form.character.status|lower }}">{{ freebie_form.character.get_status_display }}</span>
                                     </div>
                                     <div class="text-muted small mb-3">
@@ -36,7 +36,7 @@
                                         {% csrf_token %}
                                         <div class="mb-2">{{ freebie_form.backstory_freebies }}</div>
                                         <button type="submit" name="submit_freebies" value="{{ freebie_form.character.pk }}" class="tg-btn btn-primary btn-sm">
-                                            Add Freebies
+                                            <i class="fas fa-plus"></i> Add Freebies
                                         </button>
                                     </form>
                                 </div>

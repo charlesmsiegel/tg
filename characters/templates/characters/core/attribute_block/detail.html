@@ -1,71 +1,73 @@
 {% load dots %}
 {% load get_specialty %}
-<div class="card mb-3">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#attributesSection" aria-expanded="true" aria-controls="attributesSection">
-        <h2 class="mb-0">Attributes</h2>
-    </div>
-    <div id="attributesSection" class="collapse show multi-collapse">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
-                            <h3 class="mb-0">Physical</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-6">Strength {% if object|get_specialty:'strength' %}({{ object|get_specialty:'strength' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.strength|dots }}</div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title {{ object.get_heading }}">Attributes</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header">
+                                <h6 class="tg-card-title {{ object.get_heading }}">Physical</h6>
                             </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Dexterity {% if object|get_specialty:'dexterity' %}({{ object|get_specialty:'dexterity' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.dexterity|dots }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Stamina {% if object|get_specialty:'stamina' %}({{ object|get_specialty:'stamina' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.stamina|dots }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
-                            <h3 class="mb-0">Social</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-6">Charisma {% if object|get_specialty:'charisma' %}({{ object|get_specialty:'charisma' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.charisma|dots }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Manipulation {% if object|get_specialty:'manipulation' %}({{ object|get_specialty:'manipulation' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.manipulation|dots }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Appearance {% if object|get_specialty:'appearance' %}({{ object|get_specialty:'appearance' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.appearance|dots }}</div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Strength {% if object|get_specialty:'strength' %}({{ object|get_specialty:'strength' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.strength|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Dexterity {% if object|get_specialty:'dexterity' %}({{ object|get_specialty:'dexterity' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.dexterity|dots }}</div>
+                                </div>
+                                <div class="row mb-0">
+                                    <div class="col-6">Stamina {% if object|get_specialty:'stamina' %}({{ object|get_specialty:'stamina' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.stamina|dots }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header {{ object.get_heading }}">
-                            <h3 class="mb-0">Mental</h3>
+                    <div class="col-md-4 mb-3">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header">
+                                <h6 class="tg-card-title {{ object.get_heading }}">Social</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Charisma {% if object|get_specialty:'charisma' %}({{ object|get_specialty:'charisma' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.charisma|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Manipulation {% if object|get_specialty:'manipulation' %}({{ object|get_specialty:'manipulation' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.manipulation|dots }}</div>
+                                </div>
+                                <div class="row mb-0">
+                                    <div class="col-6">Appearance {% if object|get_specialty:'appearance' %}({{ object|get_specialty:'appearance' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.appearance|dots }}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-6">Perception {% if object|get_specialty:'perception' %}({{ object|get_specialty:'perception' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.perception|dots }}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header">
+                                <h6 class="tg-card-title {{ object.get_heading }}">Mental</h6>
                             </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Intelligence {% if object|get_specialty:'intelligence' %}({{ object|get_specialty:'intelligence' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.intelligence|dots }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6">Wits {% if object|get_specialty:'wits' %}({{ object|get_specialty:'wits' }}){% endif %}</div>
-                                <div class="col-6 dots">{{ object.wits|dots }}</div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Perception {% if object|get_specialty:'perception' %}({{ object|get_specialty:'perception' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.perception|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Intelligence {% if object|get_specialty:'intelligence' %}({{ object|get_specialty:'intelligence' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.intelligence|dots }}</div>
+                                </div>
+                                <div class="row mb-0">
+                                    <div class="col-6">Wits {% if object|get_specialty:'wits' %}({{ object|get_specialty:'wits' }}){% endif %}</div>
+                                    <div class="col-6 dots">{{ object.wits|dots }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>

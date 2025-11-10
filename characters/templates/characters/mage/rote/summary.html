@@ -1,46 +1,50 @@
 {% load dots %}
-<div class="card shadow-sm h-100">
-    <div class="card-header {{ object.get_heading }} pointer" data-toggle="collapse" data-target="#rote-{{ object.id }}" aria-expanded="true" aria-controls="rote-{{ object.id }}">
-        <h5 class="mb-0">{{ object.name }}</h5>
-        <span class="badge bg-info" data-practice-id="{{ object.practice.id }}">{{ object.practice }}</span>
-        <span class="badge bg-warning" data-attribute-id="{{ object.attribute.id }}" data-ability-id="{{ object.ability.id }}">{{ object.attribute }} + {{ object.ability }}</span>
-        <span class="badge bg-secondary">Cost: {{ object.effect.rote_cost }}</span>
+<div class="card h-100 border">
+    <div class="card-header bg-light pointer" data-toggle="collapse" data-target="#rote-{{ object.id }}" aria-expanded="true" aria-controls="rote-{{ object.id }}">
+        <h6 class="mb-3 font-weight-bold">{{ object.name }}</h6>
+        <div class="mb-2">
+            <span class="badge badge-pill badge-mta mr-2" data-practice-id="{{ object.practice.id }}">{{ object.practice }}</span>
+            <span class="badge badge-pill badge-secondary mr-2" data-attribute-id="{{ object.attribute.id }}" data-ability-id="{{ object.ability.id }}">{{ object.attribute }} + {{ object.ability }}</span>
+        </div>
+        <div>
+            <small class="text-muted">Cost: {{ object.effect.rote_cost }}</small>
+        </div>
     </div>
     <div id="rote-{{ object.id }}" class="collapse show">
         <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-center">
+            <h6 class="text-uppercase text-muted mb-3" style="font-size: 0.75rem; letter-spacing: 0.5px;">Spheres</h6>
+            <div class="mb-3">
                 {% if object.effect.correspondence > 0 %}
-                    <span class="badge bg-primary m-1">Correspondence {{ object.effect.correspondence }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Correspondence {{ object.effect.correspondence }}</span></div>
                 {% endif %}
                 {% if object.effect.entropy > 0 %}
-                    <span class="badge bg-primary m-1">Entropy {{ object.effect.entropy }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Entropy {{ object.effect.entropy }}</span></div>
                 {% endif %}
                 {% if object.effect.forces > 0 %}
-                    <span class="badge bg-primary m-1">Forces {{ object.effect.forces }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Forces {{ object.effect.forces }}</span></div>
                 {% endif %}
                 {% if object.effect.life > 0 %}
-                    <span class="badge bg-primary m-1">Life {{ object.effect.life }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Life {{ object.effect.life }}</span></div>
                 {% endif %}
                 {% if object.effect.matter > 0 %}
-                    <span class="badge bg-primary m-1">Matter {{ object.effect.matter }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Matter {{ object.effect.matter }}</span></div>
                 {% endif %}
                 {% if object.effect.mind > 0 %}
-                    <span class="badge bg-primary m-1">Mind {{ object.effect.mind }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Mind {{ object.effect.mind }}</span></div>
                 {% endif %}
                 {% if object.effect.prime > 0 %}
-                    <span class="badge bg-primary m-1">Prime {{ object.effect.prime }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Prime {{ object.effect.prime }}</span></div>
                 {% endif %}
                 {% if object.effect.spirit > 0 %}
-                    <span class="badge bg-primary m-1">Spirit {{ object.effect.spirit }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Spirit {{ object.effect.spirit }}</span></div>
                 {% endif %}
                 {% if object.effect.time > 0 %}
-                    <span class="badge bg-primary m-1">Time {{ object.effect.time }}</span>
+                    <div class="mb-2"><span class="badge badge-info">Time {{ object.effect.time }}</span></div>
                 {% endif %}
             </div>
             {% if object.description %}
-                <div class="mt-3">
-                    <p class="mb-0">{{ object.description }}</p>
-                </div>
+                <hr class="my-3">
+                <p class="mb-0" style="line-height: 1.6;">{{ object.description }}</p>
             {% endif %}
         </div>
     </div>

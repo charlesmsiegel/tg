@@ -1,15 +1,9 @@
-<div class="row row-cols-1 row-cols-md-2 g-3">
-    {% for camp in camps %}
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body">
-                    <a href="{{ camp.get_absolute_url }}" class="node-link">{{ camp.name }}</a>
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <div class="col-12">
-            <p class="text-muted mb-0">No camps available.</p>
-        </div>
-    {% endfor %}
-</div> 
+{% if camps %}
+    <div class="d-flex flex-wrap">
+        {% for camp in camps %}
+            <a href="{{ camp.get_absolute_url }}" class="badge badge-pill badge-wta-faded mr-2 mb-2" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">{{ camp.name }}</a>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted mb-0">No camps available.</p>
+{% endif %} 

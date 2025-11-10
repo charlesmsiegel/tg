@@ -1,12 +1,12 @@
 {% if object.character_images_to_approve or object.location_images_to_approve or object.item_images_to_approve %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#image-approval-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#image-approval-section" aria-expanded="true">
             <h3 class="tg-card-title {{ user.profile.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Images To Approve
             </h3>
         </div>
         <div id="image-approval-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 {% for char in object.character_images_to_approve %}
                     <div class="tg-card mb-3">
                         <div class="tg-card-body">

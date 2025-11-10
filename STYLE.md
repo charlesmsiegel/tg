@@ -148,6 +148,16 @@ For displaying text content (descriptions, constraints, etc.):
 - Danger/Negative: Red (`#dc3545` with `rgba(220, 53, 69, 0.1)` background)
 - Info: Blue
 
+#### Status Badges
+Use standardized badge classes for character, location, and item statuses:
+- **Unfinished** (`badge-un`): Gray/Neutral - `rgba(108, 117, 125, 0.15)` background, `#6c757d` text
+- **Submitted** (`badge-sub`): Blue/Info - `rgba(23, 162, 184, 0.15)` background, `#17a2b8` text
+- **Approved** (`badge-app`): Green/Success - `rgba(40, 167, 69, 0.15)` background, `#28a745` text
+- **Retired** (`badge-ret`): Orange/Warning - `rgba(255, 193, 7, 0.15)` background, `#d39e00` text
+- **Deceased** (`badge-dec`): Red/Danger - `rgba(220, 53, 69, 0.15)` background, `#dc3545` text
+
+Usage: `<span class="tg-badge badge-{{ object.status|lower }}">{{ object.get_status_display }}</span>`
+
 ### 9. Border Radius Standards
 - Small elements (badges, inline boxes): `4px` to `6px`
 - Medium elements (content boxes, cards): `6px` to `8px`

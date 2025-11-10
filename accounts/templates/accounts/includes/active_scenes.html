@@ -1,24 +1,24 @@
 {% if object.unread_scenes %}
     <div class="tg-card mb-4">
-        <div class="tg-card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#unread-scenes-section" aria-expanded="true">
+        <div class="tg-card-header text-center" style="cursor: pointer;" data-toggle="collapse" data-target="#unread-scenes-section" aria-expanded="true">
             <h3 class="tg-card-title {{ object.preferred_heading }}">
                 <i class="fas fa-chevron-down"></i> Unread Scenes
             </h3>
         </div>
         <div id="unread-scenes-section" class="collapse show">
-            <div class="tg-card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row">
                     {% for scene in object.unread_scenes %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="tg-card mb-3">
-                                <div class="tg-card-body text-center">
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 20px;">
                                     <h5 class="mb-3">
                                         <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
                                     </h5>
                                     <form action="" method="post">
                                         {% csrf_token %}
                                         <button type="submit" name="mark_scene_read" value="{{ scene.pk }}" class="tg-btn btn-primary btn-sm">
-                                            Mark Read
+                                            <i class="fas fa-check"></i> Mark Read
                                         </button>
                                     </form>
                                 </div>

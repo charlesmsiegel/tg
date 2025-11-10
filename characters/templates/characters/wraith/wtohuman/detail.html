@@ -5,14 +5,24 @@
     {% include "characters/wraith/wtohuman/basics_display_include.html" %}
 {% endblock basics %}
 {% block abilities %}
-    <div class="row">
-        <h2 class="col-sm {{ object.get_heading }}">Abilities</h2>
-    </div>
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Talents</h3>
-        <h3 class="col-sm {{ object.get_heading }}">Skills</h3>
-        <h3 class="col-sm {{ object.get_heading }}">Knowledges</h3>
-    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Abilities</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Talents</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Skills</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Knowledges</h6>
+                        </div>
+                    </div>
     <div class="row">
         <div class="col-sm">
             Alertness
@@ -253,4 +263,8 @@
             <div class="col-sm"></div>
         </div>
     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock abilities %}

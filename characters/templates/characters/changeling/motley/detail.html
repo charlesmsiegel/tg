@@ -1,23 +1,95 @@
 {% extends "core/object.html" %}
+{% block objectname %}
+    <div class="tg-card header-card mb-4" data-gameline="ctd">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title ctd_heading">{{ object.name }}</h1>
+            {% if object.chronicle %}
+                <p class="tg-card-subtitle mb-0">
+                    <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
 {% block contents %}
-    <div class="row">
-        <div class="col-sm {{ object.get_heading }}">
-            <h1>{{ object.name }}</h1>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title ctd_heading">Members</h5>
+                </div>
+                <div class="tg-card-body">
+                    {% if object.leader or object.members.exists %}
+                        <div class="table-responsive">
+                            <table class="tg-table mx-auto" style="text-align: center; max-width: 900px;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 12px 16px;">Name</th>
+                                        <th style="padding: 12px 16px;">Kith</th>
+                                        <th style="padding: 12px 16px;">Court</th>
+                                        <th style="padding: 12px 16px;">Role</th>
+                                        <th style="padding: 12px 16px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if object.leader %}
+                                        <tr>
+                                            <td style="padding: 14px 16px;">
+                                                <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.kith %}{{ object.leader.kith }}{% else %}-{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.get_court_display %}{{ object.leader.get_court_display }}{% else %}-{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                <span class="tg-badge badge-pill badge-primary">Leader</span>
+                                                {% if object.leader.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                            </td>
+                                            <td style="padding: 14px 16px;">
+                                                {% if object.leader.get_status_display %}
+                                                    <span class="tg-badge badge-pill {% if object.leader.status == 'App' %}badge-success {% elif object.leader.status == 'Sub' %}badge-warning {% elif object.leader.status == 'Dec' %}badge-danger {% elif object.leader.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                        {{ object.leader.get_status_display }}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    {% for member in object.members.all %}
+                                        {% if member != object.leader %}
+                                            <tr>
+                                                <td style="padding: 14px 16px;">
+                                                    <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.kith %}{{ member.kith }}{% else %}-{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.get_court_display %}{{ member.get_court_display }}{% else %}-{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    <span class="tg-badge badge-pill badge-secondary">Member</span>
+                                                    {% if member.npc %}<span class="tg-badge badge-pill badge-dark ml-1">NPC</span>{% endif %}
+                                                </td>
+                                                <td style="padding: 14px 16px;">
+                                                    {% if member.get_status_display %}
+                                                        <span class="tg-badge badge-pill {% if member.status == 'App' %}badge-success {% elif member.status == 'Sub' %}badge-warning {% elif member.status == 'Dec' %}badge-danger {% elif member.status == 'Ret' %}badge-info {% else %}badge-secondary{% endif %}">
+                                                            {{ member.get_status_display }}
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">No members in this motley.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm">Name</div>
-        <div class="col-sm">{{ object.name }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Leader</div>
-        <a class="col-sm" href={{ object.leader.get_absolute_url }}>{{ object.leader }}</a>
-    </div>
-    {% for member in object.members.all %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <a class="col-sm" href={{ member.get_absolute_url }}>{{ member }}</a>
-            <div class="col-sm"></div>
-        </div>
-    {% endfor %}
 {% endblock contents %}

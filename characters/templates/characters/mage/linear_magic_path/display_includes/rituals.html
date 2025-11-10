@@ -1,0 +1,24 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light py-2">
+                <h5 class="mb-0 mta_heading">Rituals</h5>
+            </div>
+            <div class="card-body py-3">
+                {% if object.linearmagicritual_set.all %}
+                    <div class="list-group list-group-flush">
+                        {% for ritual in object.linearmagicritual_set.all %}
+                            <a href="{{ ritual.get_absolute_url }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span class="font-weight-bold">{{ ritual.name }}</span>
+                                <span class="dots">{{ ritual.level|dots:5 }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mb-0">No rituals for this path.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
