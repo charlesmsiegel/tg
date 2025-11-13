@@ -40,6 +40,7 @@
   - Update character edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes
   - Apply consistent button styling with tg-btn classes
+  - Make form templates match the styling and layout of the corresponding detail templates
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
 - [x] 6. Update locations app index template
@@ -66,13 +67,14 @@
   - Apply gameline-specific data-gameline attributes to header cards
   - _Requirements: 1.1, 1.5, 2.1, 3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 8. Update locations app form templates
+- [x] 8. Update locations app form templates
   - Use STYLE.md as a guide
   - Update location creation forms to use tg-form-group and tg-form-control classes
   - Update location edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes
   - Apply consistent button styling with tg-btn classes
   - Update chantry creation wizard (locgen.html) to use enhanced components
+  - Make form templates match the styling and layout of the corresponding detail templates
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
 - [x] 9. Update items app index template
@@ -101,9 +103,13 @@
   - Update item edit forms to use enhanced form components
   - Ensure form validation feedback uses tg-form-feedback classes
   - Apply consistent button styling with tg-btn classes
+  - Make form templates match the styling and layout of the corresponding detail templates
   - _Requirements: 2.1, 2.2, 3.4, 8.2_
 
-- [ ] 12. Update game app templates
+- [x] 12. Update game app templates
+
+
+
   - Use STYLE.md as a guide
   - Update chronicle list and detail templates to use tg-card components
   - Update scene list and detail templates to use tg-card components

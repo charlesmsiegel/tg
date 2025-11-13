@@ -1,178 +1,470 @@
 {% extends "core/base.html" %}
 
-{% block styling %}
-{{ block.super }}
-<style>
-    .btn-link {
-        color: inherit;
-    }
-    .btn-link:hover {
-        color: inherit;
-        text-decoration: none;
-    }
-    .location-link {
-        color: inherit;
-    }
-    .location-link:hover {
-        color: inherit;
-        text-decoration: none;
-    }
-    .list-group-item {
-        background-color: inherit;
-        border-color: inherit;
-    }
-    .list-group {
-        background-color: inherit;
-    }
-</style>
-{% endblock %}
-
 {% block title %}
     {{ object.name }}
 {% endblock title %}
+{% block styling %}
+    {{ block.super }}
+    <style>
+        /* Gameline-specific badge colors for character types */
+        .tg-badge.badge-type-vtm {
+            background-color: var(--gameline-vtm);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wta {
+            background-color: var(--gameline-wta);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-mta {
+            background-color: var(--gameline-mta);
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-ctd {
+            background-color: #20b2aa;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wto {
+            background-color: var(--gameline-wto);
+            color: var(--color-white);
+        }
+        
+        /* Lighter variants for secondary character types */
+        .tg-badge.badge-type-vtm-light {
+            background-color: #8b0000;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wta-light {
+            background-color: #228b22;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-mta-light {
+            background-color: #4b0082;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-ctd-light {
+            background-color: #20b2aa;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        .tg-badge.badge-type-wto-light {
+            background-color: #2f4f4f;
+            opacity: 0.7;
+            color: var(--color-white);
+        }
+        
+        /* Table styling for better alignment */
+        .tg-table tbody td {
+            padding: var(--spacing-3) var(--spacing-4);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        
+        .tg-table tbody td:nth-child(4),
+        .tg-table tbody td:nth-child(5) {
+            white-space: normal;
+        }
+        
+        /* Group header row styling */
+        .group-header-row {
+            cursor: pointer;
+        }
+        
+        .group-header-row:hover {
+            box-shadow: inset 0 0 0 2px var(--color-primary);
+        }
+        
+        .group-header-row td {
+            border-bottom: 2px solid var(--theme-border-color) !important;
+        }
+        
+        /* Character rows hover effect */
+        .character-row:hover {
+            transform: translateX(4px);
+            box-shadow: -4px 0 0 var(--color-primary);
+        }
+        
+        /* Badge styling */
+        .tg-badge {
+            font-size: var(--font-size-xs);
+            padding: 0.35em 0.75em;
+            white-space: nowrap;
+        }
+    </style>
+{% endblock styling %}
 {% block content %}
     {% load sanitize_text %}
     {% load location_tags %}
+    {% load field %}
     <div class="container py-4">
-        <div class="row">
-            <h2 class="col-sm {{ object.headings }} centertext">{{ object.name }}</h2>
-        </div>
-        <div class="row centertext">
-            <div class="col-sm">Storytellers</div>
-            <div class="col-sm">
-                {% for st in object.storytellers.distinct %}
-                    {% if not forloop.last %}
-                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>,
-                    {% else %}
-                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>
-                    {% endif %}
-                {% endfor %}
+        <!-- Chronicle Header -->
+        <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline }}">
+            <div class="tg-card-header text-center">
+                <h1 class="tg-card-title {{ object.headings }}">{{ object.name }}</h1>
             </div>
         </div>
-        <div class="row centertext">
-            <div class="col-sm">Theme</div>
-            <div class="col-sm">{{ object.theme }}</div>
-        </div>
-        <div class="row centertext">
-            <div class="col-sm">Mood</div>
-            <div class="col-sm">{{ object.mood }}</div>
-        </div>
-        <div class="row centertext">
-            <div class="col-sm">Year</div>
-            <div class="col-sm">{{ object.year }}</div>
-        </div>
-        <div class="row centertext">
-            <div class="col-sm">Common Knowledge</div>
-            <div class="col-sm">
-                {% for se in object.common_knowledge_elements.all %}
-                    <b>{{ se.name }}</b>
-                    <br>
-                    {{ se.description }}
-                    <br>
-                {% endfor %}
+
+        <!-- Chronicle Details -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title">Chronicle Information</h3>
             </div>
-        </div>
-        {% include "characters/charlist_include.html" with object_list=character_list %}
-        <div class="row">
-            <h4 class="col-sm {{ header }}">
-                <a href="{{ object.get_retired_character_url }}">Retired</a>
-            </h4>
-            <h4 class="col-sm {{ header }}">
-                <a href="{{ object.get_deceased_character_url }}">Deceased</a>
-            </h4>
-            <h4 class="col-sm {{ header }}  ">
-                <a href="{{ object.get_npc_url }}">NPC</a>
-            </h4>
-        </div>
-        <div class="row">
-            <h3 class="col-12 {{ object.headings }} mb-4">Locations</h3>
-        </div>
-        <div class="list-group mb-4">
-            {% for loc in top_locations %}
-                {% show_location loc indent_level=0 %}
-            {% endfor %}
-        </div>
-        <div class="row centertext">
-            <h3 class="col-sm {{ object.headings }}">Items</h3>
-        </div>
-        {% for item in items %}
-            <div class="row border centertext">
-                <a class="col-sm border" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
-                <div class="col-sm border">{{ item.type.title }}</div>
-            </div>
-        {% endfor %}
-        <div class="row centertext">
-            <h3 class="col-sm {{ object.headings }}">
-                <a href="{{ object.get_scenes_url }}">Scene List</a>
-            </h3>
-        </div>
-        <div class="row border">
-            <h3 class="col-sm border {{ object.headings }} pointer"
-                data-toggle="collapse"
-                data-target="#scenes-Section"
-                aria-expanded="true"
-                aria-controls="scenes-Section">Active Scenes</h3>
-        </div>
-        <div id="scenes-Section" class="collapse show">
-            <div class="row border">
-                <div class="col-sm border">
-                    <b>Title</b>
-                </div>
-                <div class="col-sm border">
-                    <b>Location</b>
-                </div>
-                <div class="col-sm border">
-                    <b>Date of Scene</b>
-                </div>
-                <div class="col-sm border">
-                    <b>Last Post Character</b>
-                </div>
-                <div class="col-sm border">
-                    <b>Last Post Date</b>
-                </div>
-            </div>
-            {% for scene in active_scenes %}
-                <div class="row border">
-                    <a class="col-sm border" href="{{ scene.get_absolute_url }}">{{ scene.name }}
-                        {% if not scene.finished %}- <b>Ongoing</b>{% endif %}
-                    </a>
-                    <a class="col-sm border" href="{{ scene.location.get_absolute_url }}">{{ scene.location }}</a>
-                    <div class="col-sm border">{{ scene.date_of_scene|date:"F d, Y" }}</div>
-                    <div class="col-sm border">{{ scene.most_recent_post.display_name }}</div>
-                    <div class="col-sm border">{{ scene.most_recent_post.datetime_created }}</div>
-                </div>
-            {% endfor %}
-        </div>
-        {% if request.user.is_authenticated %}
-            <div class="row centertext">
-                <h4 class="col-sm {{ object.headings }}">
-                    <div>New Scene</div>
-                </h4>
-            </div>
-            <form method="post" action="">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-sm">{{ form.name }}</div>
-                    <div class="col-sm">{{ form.location }}</div>
-                    <div class="col-sm">{{ form.date_of_scene }}</div>
-                    <div class="col-sm">
-                        <input type="submit" name="create_scene" value="Create Scene" />
-                    </div>
-                </div>
-            </form>
-            {% if request.user.profile.is_st %}
-                <form method="post" action="">
-                    {% csrf_token %}
-                    <h4 class="col-sm {{ object.headings }}">
-                        <div>New Story</div>
-                    </h4>
-                    <div class="row">
-                        <div class="col-sm">{{ story_form.name }}</div>
-                        <div class="col-sm">
-                            <input type="submit" name="create_story" value="Create Story" />
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Storytellers:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">
+                                {% for st in object.storytellers.distinct %}
+                                    {% if not forloop.last %}
+                                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>,
+                                    {% else %}
+                                        <a href="{{ st.profile.get_absolute_url }}">{{ st }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
                         </div>
                     </div>
-                </form>
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Year:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.year }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Theme:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.theme }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Mood:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.mood }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% if object.common_knowledge_elements.all %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="mb-3" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Common Knowledge</h6>
+                            {% for se in object.common_knowledge_elements.all %}
+                                <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                    <h6 style="font-weight: 600; margin-bottom: 8px;">{{ se.name }}</h6>
+                                    <p class="mb-0" style="line-height: 1.6;">{{ se.description }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Characters Section -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title {{ object.headings }}">Characters</h3>
+            </div>
+            <div class="tg-card-body">
+                <!-- Status Tabs -->
+                <ul class="nav nav-tabs tg-nav-tabs mb-3 justify-content-center" id="statusTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link tg-nav-link active {{ object.headings }}" id="active-tab" data-toggle="tab" href="#active" role="tab">Active</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link tg-nav-link {{ object.headings }}" id="retired-tab" data-toggle="tab" href="#retired" role="tab">Retired</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link tg-nav-link {{ object.headings }}" id="deceased-tab" data-toggle="tab" href="#deceased" role="tab">Deceased</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link tg-nav-link {{ object.headings }}" id="npc-tab" data-toggle="tab" href="#npc" role="tab">NPC</a>
+                    </li>
+                </ul>
+                
+                <!-- Status Tab Content -->
+                <div class="tab-content">
+                    <!-- Active Characters -->
+                    <div class="tab-pane fade show active" id="active" role="tabpanel">
+                        {% regroup character_list by group_set.first as grouplist %}
+                        {% if grouplist %}
+                            <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                                <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 3%;"></th>
+                                            <th style="width: 35%;">
+                                                <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Player
+                                            </th>
+                                            <th style="width: 22%;">
+                                                <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for g in grouplist %}
+                                            {% if g.list %}
+                                                <!-- Group Header Row -->
+                                                <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
+                                                    <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="#group-{{ g.grouper.id|default:'solo' }}-active" class="mr-2" data-toggle="collapse" role="button" aria-expanded="true" style="padding: 0.25rem 0.5rem; background: transparent; border: none; color: var(--theme-text-primary); cursor: pointer; transition: var(--transition-fast);">
+                                                                <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                            </a>
+                                                            <div class="flex-grow-1">
+                                                                {% if g.grouper %}
+                                                                    <a href="{{ g.grouper.get_absolute_url }}" style="color: var(--theme-text-primary); text-decoration: none; font-weight: 600; font-size: var(--font-size-base); transition: var(--transition-fast);">
+                                                                        <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                    </a>
+                                                                {% else %}
+                                                                    <span style="color: var(--theme-text-primary); font-weight: 600; font-size: var(--font-size-base);">
+                                                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Solo Characters
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <span class="tg-badge badge-secondary badge-pill ml-2">{{ g.list|length }}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <!-- Character Rows -->
+                                                {% for char in g.list %}
+                                                    {% if char.display %}
+                                                        <tr class="collapse show character-row" id="group-{{ g.grouper.id|default:'solo' }}-active" style="transition: var(--transition-fast);">
+                                                            <td data-label=""></td>
+                                                            <td data-label="Character" style="padding: 16px;">
+                                                                <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                                            </td>
+                                                            <td data-label="Player" style="padding: 16px;">
+                                                                <a href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
+                                                            </td>
+                                                            <td data-label="Type" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {% if char.type == 'mage' %}badge-mta{% elif char.type == 'sorcerer' or char.type == 'companion' %}badge-mta-faded{% elif char.type == 'garou' %}badge-wta{% elif char.type == 'kinfolk' or char.type == 'fomor' %}badge-wta-faded{% elif char.type == 'changeling' %}badge-ctd{% elif char.type == 'vampire' %}badge-vtm{% elif char.type == 'ghoul' %}badge-vtm-faded{% elif char.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ char.get_type }}</span>
+                                                            </td>
+                                                            <td data-label="Status" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                                <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                                <p class="mb-0" style="font-size: var(--font-size-base);">No active characters found.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Retired Characters -->
+                    <div class="tab-pane fade" id="retired" role="tabpanel">
+                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                            <i class="fas fa-user-clock fa-3x mb-3" style="opacity: 0.3;"></i>
+                            <p class="mb-2" style="font-size: var(--font-size-base);">No retired characters to display here.</p>
+                            <a href="{{ object.get_retired_character_url }}" class="tg-btn btn-outline-secondary btn-sm">View All Retired Characters</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Deceased Characters -->
+                    <div class="tab-pane fade" id="deceased" role="tabpanel">
+                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                            <i class="fas fa-skull fa-3x mb-3" style="opacity: 0.3;"></i>
+                            <p class="mb-2" style="font-size: var(--font-size-base);">No deceased characters to display here.</p>
+                            <a href="{{ object.get_deceased_character_url }}" class="tg-btn btn-outline-danger btn-sm">View All Deceased Characters</a>
+                        </div>
+                    </div>
+                    
+                    <!-- NPC Characters -->
+                    <div class="tab-pane fade" id="npc" role="tabpanel">
+                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                            <i class="fas fa-users fa-3x mb-3" style="opacity: 0.3;"></i>
+                            <p class="mb-2" style="font-size: var(--font-size-base);">No NPCs to display here.</p>
+                            <a href="{{ object.get_npc_url }}" class="tg-btn btn-outline-info btn-sm">View All NPCs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locations Section -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title {{ object.headings }}">Locations</h3>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="list-group">
+                    {% for loc in top_locations %}
+                        {% show_location loc indent_level=0 %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Section -->
+        {% if items %}
+            <div class="tg-card mb-4">
+                <div class="tg-card-header text-center">
+                    <h3 class="tg-card-title {{ object.headings }}">Items</h3>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="tg-table-responsive">
+                        <table class="tg-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                    <tr>
+                                        <td data-label="Name">
+                                            <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                                        </td>
+                                        <td data-label="Type">{{ item.type.title }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Scenes Section -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title {{ object.headings }}">
+                    <a href="{{ object.get_scenes_url }}" class="text-decoration-none">Scene List</a>
+                </h3>
+            </div>
+            <div class="tg-card-body" style="padding: 0;">
+                <div class="tg-card-header {{ object.headings }} pointer text-center"
+                     data-toggle="collapse"
+                     data-target="#scenes-Section"
+                     aria-expanded="true"
+                     aria-controls="scenes-Section"
+                     style="margin: 0; border-radius: 0;">
+                    <h5 class="mb-0">Active Scenes</h5>
+                </div>
+                <div id="scenes-Section" class="collapse show">
+                    {% if active_scenes %}
+                        <div class="tg-table-responsive" style="padding: 20px;">
+                            <table class="tg-table" style="margin: 0 auto;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 16px 20px; text-align: center;">Title</th>
+                                        <th style="padding: 16px 20px; text-align: center;">Location</th>
+                                        <th style="padding: 16px 20px; text-align: center;">Date of Scene</th>
+                                        <th style="padding: 16px 20px; text-align: center;">Last Post Character</th>
+                                        <th style="padding: 16px 20px; text-align: center;">Last Post Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scene in active_scenes %}
+                                        <tr>
+                                            <td data-label="Title" style="padding: 16px 20px; text-align: center;">
+                                                <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
+                                                {% if not scene.finished %}
+                                                    <br><span class="tg-badge badge-pill" style="background-color: rgba(255, 193, 7, 0.15); color: #d39e00; border-radius: 20px; margin-top: 4px;">Ongoing</span>
+                                                {% endif %}
+                                            </td>
+                                            <td data-label="Location" style="padding: 16px 20px; text-align: center;">
+                                                <a href="{{ scene.location.get_absolute_url }}">{{ scene.location }}</a>
+                                            </td>
+                                            <td data-label="Date of Scene" style="padding: 16px 20px; text-align: center;">{{ scene.date_of_scene|date:"F d, Y" }}</td>
+                                            <td data-label="Last Post Character" style="padding: 16px 20px; text-align: center;">{{ scene.most_recent_post.display_name }}</td>
+                                            <td data-label="Last Post Date" style="padding: 16px 20px; text-align: center;">{{ scene.most_recent_post.datetime_created }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No active scenes</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Forms Section -->
+        {% if request.user.is_authenticated %}
+            <div class="tg-card mb-4">
+                <div class="tg-card-header text-center">
+                    <h4 class="tg-card-title {{ object.headings }}">Create New Scene</h4>
+                </div>
+                <div class="tg-card-body" style="padding: 24px;">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="row align-items-end">
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
+                                    {{ form.name|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
+                                    {{ form.location|add_class:"tg-form-control tg-form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.date_of_scene.id_for_label }}" class="tg-form-label">Date</label>
+                                    {{ form.date_of_scene|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <button type="submit" name="create_scene" class="tg-btn btn-primary w-100" style="height: 38px;">Create Scene</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if request.user.profile.is_st %}
+                <div class="tg-card mb-4">
+                    <div class="tg-card-header text-center">
+                        <h4 class="tg-card-title {{ object.headings }}">Create New Story</h4>
+                    </div>
+                    <div class="tg-card-body" style="padding: 24px;">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="row align-items-end">
+                                <div class="col-md-8 mb-3">
+                                    <div class="tg-form-group">
+                                        <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
+                                        {{ story_form.name|add_class:"tg-form-control" }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button type="submit" name="create_story" class="tg-btn btn-primary w-100" style="height: 38px;">Create Story</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             {% endif %}
         {% endif %}
     </div>

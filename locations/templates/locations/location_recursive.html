@@ -25,7 +25,15 @@
             {% endif %}
         </div>
         <div class="ml-3">
-            <span class="tg-badge badge-secondary">{{ location.type|title }}</span>
+            {% if location.type == 'chantry' or location.type == 'library' or location.type == 'node' or location.type == 'reality_zone' or location.type == 'realm' or location.type == 'sanctum' or location.type == 'sector' or location.type == 'horizon_realm' %}
+                <span class="tg-badge badge-mta badge-pill">{% if location.type == 'horizon_realm' %}Horizon Realm{% else %}{{ location.type|title }}{% endif %}</span>
+            {% elif location.type == 'caern' %}
+                <span class="tg-badge badge-wta badge-pill">{{ location.type|title }}</span>
+            {% elif location.type == 'city' or location.type == 'location' %}
+                <span class="tg-badge badge-secondary badge-pill">{{ location.type|title }}</span>
+            {% else %}
+                <span class="tg-badge badge-secondary badge-pill">{{ location.type|title }}</span>
+            {% endif %}
         </div>
     </div>
 </div>

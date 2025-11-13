@@ -4,59 +4,99 @@
 {% endblock title %}
 {% block content %}
     {% load sanitize_text %}
+    {% load field %}
     {% if is_approved_user %}
-        <div class="container centertext">
-            <div class="row">
-                <h2 class="col-sm {{ object.character.get_heading }}">{{ object }}</h2>
+        <div class="container py-4">
+            <!-- Journal Header -->
+            <div class="tg-card header-card mb-4" data-gameline="{{ object.character.gameline }}">
+                <div class="tg-card-header text-center">
+                    <h1 class="tg-card-title {{ object.character.get_heading }}">{{ object }}</h1>
+                </div>
             </div>
-            <form method="post" action="">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-sm">{{ new_entry_form.date }}</div>
+
+            <!-- New Entry Form -->
+            <div class="tg-card mb-4">
+                <div class="tg-card-header text-center">
+                    <h3 class="tg-card-title">Add New Entry</h3>
                 </div>
-                <div class="row">
-                    <div class="col-sm">{{ new_entry_form.message }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <button type="submit" name="submit_entry" value="Submit Entry">Submit Entry</button>
-                    </div>
-                </div>
-            </form>
-            {% regroup st_response_forms by entry.date.date as date_groups %}
-            {% for date_group in date_groups %}
-                <div class="row">
-                    <h4 class="col-sm {{ object.character.get_heading }}">{{ date_group.grouper }}</h4>
-                </div>
-                {% for form in date_group.list %}
+                <div class="tg-card-body" style="padding: 24px;">
                     <form method="post" action="">
                         {% csrf_token %}
-                        <div class="row">
-                            <div class="col-sm">{{ form.entry.message|quote_tag|sanitize_html }}</div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ new_entry_form.date.id_for_label }}" class="tg-form-label">Date</label>
+                                    {{ new_entry_form.date|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-9 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ new_entry_form.message.id_for_label }}" class="tg-form-label">Journal Entry</label>
+                                    {{ new_entry_form.message|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
                         </div>
-                        {% if form.entry.st_message %}
-                            {% if form.entry.st_message != 'Read' %}
-                                <div class="row">
-                                    <div class="col-sm st">{{ form.entry.st_message|quote_tag|sanitize_html }}</div>
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            {% if request.user.profile.is_st %}
-                                <div class="row">
-                                    <div class="col-sm st">{{ form.st_message }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm">
-                                        <button type="submit" name="submit_response" value="{{ form.entry.pk }}">Submit ST Response</button>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endif %}
+                        <div class="text-center">
+                            <button type="submit" name="submit_entry" class="tg-btn btn-primary">Submit Entry</button>
+                        </div>
                     </form>
-                {% endfor %}
+                </div>
+            </div>
+            <!-- Journal Entries -->
+            {% regroup st_response_forms by entry.date.date as date_groups %}
+            {% for date_group in date_groups %}
+                <div class="tg-card mb-4">
+                    <div class="tg-card-header text-center">
+                        <h4 class="tg-card-title {{ object.character.get_heading }}">{{ date_group.grouper }}</h4>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        {% for form in date_group.list %}
+                            <div class="mb-4" style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                                <!-- Player Entry -->
+                                <div class="mb-3">
+                                    <h6 style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Entry</h6>
+                                    <p class="mb-0" style="line-height: 1.6;">{{ form.entry.message|quote_tag|sanitize_html }}</p>
+                                </div>
+                                
+                                <!-- ST Response -->
+                                {% if form.entry.st_message %}
+                                    {% if form.entry.st_message != 'Read' %}
+                                        <div class="mb-3" style="padding: 12px; border-left: 4px solid var(--color-info); background-color: rgba(23, 162, 184, 0.1);">
+                                            <h6 class="st" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">ST Response</h6>
+                                            <p class="mb-0 st" style="line-height: 1.6;">{{ form.entry.st_message|quote_tag|sanitize_html }}</p>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    {% if request.user.profile.is_st %}
+                                        <form method="post" action="">
+                                            {% csrf_token %}
+                                            <div class="tg-form-group mb-3">
+                                                <label for="{{ form.st_message.id_for_label }}" class="tg-form-label">ST Response</label>
+                                                {{ form.st_message|add_class:"tg-form-control" }}
+                                            </div>
+                                            <button type="submit" name="submit_response" value="{{ form.entry.pk }}" class="tg-btn btn-primary btn-sm">Submit ST Response</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="tg-card mb-4">
+                    <div class="tg-card-body text-center" style="padding: 40px;">
+                        <p class="text-muted mb-0">No journal entries yet</p>
+                    </div>
+                </div>
             {% endfor %}
-            <div class="row">
-                <a class="col-sm" href="{% url 'game:commands' %}">List of Commands</a>
+
+            <!-- Commands Link -->
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <a href="{% url 'game:commands' %}" class="tg-btn btn-outline-primary">
+                        <i class="fas fa-list"></i> List of Commands
+                    </a>
+                </div>
             </div>
         </div>
     {% endif %}
