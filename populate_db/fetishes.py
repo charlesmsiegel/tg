@@ -377,3 +377,122 @@ Fetish.objects.get_or_create(
     spirit="Lune",
     display=False,
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 385)
+
+# KLAIVES - Traditional Garou silver swords
+Fetish.objects.get_or_create(
+    name="Klaive",
+    rank=3,
+    gnosis=6,
+    description="Traditional silver sword of the Garou. Damage: Strength +2 (aggravated). Silver never harms attuned wielder. Respected symbol of rank and honor.",
+    spirit="War Spirit or Ancestor Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 224)
+
+Fetish.objects.get_or_create(
+    name="Grand Klaive",
+    rank=4,
+    gnosis=7,
+    description="Two-handed greatsword. Damage: Strength +4 (aggravated). -1 difficulty to parry. Requires Strength 4+ to wield effectively.",
+    spirit="War Spirit, Ancestor Spirit, or Spirit of Honor",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 224)
+
+Fetish.objects.get_or_create(
+    name="Bane Klaive",
+    rank=3,
+    gnosis=7,
+    description="Klaive dedicated to destroying Banes. Damage: Strength +3 (aggravated). +2 dice against Banes specifically.",
+    spirit="War Spirit and Bane-slayer Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 224)
+
+Fetish.objects.get_or_create(
+    name="Dagger Klaive",
+    rank=2,
+    gnosis=5,
+    description="Smaller silver blade. Damage: Strength +1 (aggravated). Easily concealed.",
+    spirit="War Spirit or Shadow Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 224)
+
+# Additional powerful fetishes
+Fetish.objects.get_or_create(
+    name="Fang Dagger",
+    rank=1,
+    gnosis=5,
+    description="Dagger that inflicts aggravated damage. Damage: Strength +1 (aggravated).",
+    spirit="Wolf Spirit or Predator Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 221)
+
+Fetish.objects.get_or_create(
+    name="Bane Arrow",
+    rank=1,
+    gnosis=6,
+    description="Arrow that always hits Banes. Damage: Strength +4 (aggravated to Banes).",
+    spirit="War Spirit or Predator Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 221)
+
+Fetish.objects.get_or_create(
+    name="Cat Claws",
+    rank=1,
+    gnosis=5,
+    description="Fingernail covers that extend into claws. Damage: Strength +1 (aggravated). Allows climbing like a cat.",
+    spirit="Cat Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 221)
+
+Fetish.objects.get_or_create(
+    name="Luna's Armor",
+    rank=2,
+    gnosis=8,
+    description="Armor that provides protection without hindering movement. +2 soak dice, no Dexterity penalties.",
+    spirit="Lune",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 223)
+
+Fetish.objects.get_or_create(
+    name="Phase Blade",
+    rank=3,
+    gnosis=6,
+    description="Knife that can cut immaterial beings. Damage: Strength +1 (aggravated even to spirits).",
+    spirit="Spirit of War or Shadow",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 224)
+
+Fetish.objects.get_or_create(
+    name="Doom Glaive",
+    rank=5,
+    gnosis=8,
+    description="Legendary polearm. Damage: Strength +5 (aggravated). Grants +2 to combat rolls.",
+    spirit="Ancient War Spirit or Incarna",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 225)
+
+Fetish.objects.get_or_create(
+    name="Horn of Distress",
+    rank=5,
+    gnosis=9,
+    description="Horn that summons all Garou within 100 miles. All Garou hear the call and know the location.",
+    spirit="Lune or Spirit of Unity",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 225)
+
+Fetish.objects.get_or_create(
+    name="Sanctuary Chimes",
+    rank=4,
+    gnosis=8,
+    description="Chimes that prevent hostile spirits from approaching. Creates 20-yard safe zone.",
+    spirit="Peace Spirit or Harmony Spirit",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 225)
+
+Fetish.objects.get_or_create(
+    name="Blanket of Safe Haven",
+    rank=4,
+    gnosis=7,
+    description="Creates protective barrier when spread. No violence can occur within the area.",
+    spirit="Peace Spirit or Unicorn's Brood",
+    display=False,
+)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 225)
