@@ -1,35 +1,16 @@
 {% load static %}
-<form method="post">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-sm">
-            {% if user.is_authenticated %}
-                {% if user.profile.is_st %}
-                    {% if object.get_full_update_url %}
-                        <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
-                    {% else %}
-                        <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
+{% if is_approved_user %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            <input type="submit"
+                   name="retire"
+                   value="Mark Retired"
+                   class="btn btn-warning mr-2" />
+            <input type="submit"
+                   name="decease"
+                   value="Mark Deceased"
+                   class="btn btn-danger" />
         </div>
-    </div>
-    {% if is_approved_user %}
-        <div class="row mt-2">
-            <div class="col-sm">
-                <input type="submit"
-                       name="retire"
-                       value="Mark Retired"
-                       class="btn btn-warning" />
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col-sm">
-                <input type="submit"
-                       name="decease"
-                       value="Mark Deceased"
-                       class="btn btn-danger" />
-            </div>
-        </div>
-    {% endif %}
-</form>
+    </form>
+{% endif %}

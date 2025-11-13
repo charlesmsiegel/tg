@@ -1,38 +1,25 @@
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col-12">
         <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title wta_heading">Basics</h5>
-            </div>
-            <div class="tg-card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-4">
-                        <strong>Tribe:</strong>
-                    </div>
-                    <div class="col-sm-8">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Tribe:</span>
                         <a href="{{ object.tribe.get_absolute_url }}">{{ object.tribe.name }}</a>
-                        {% for camp in object.camps.all %}- <a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>{% endfor %}
+                        {% for camp in object.camps.all %} - <a href="{{ camp.get_absolute_url }}">{{ camp.name }}</a>{% endfor %}
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-2">
-                        <strong>Rank:</strong>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Rank:</span>
+                        {{ object.get_rank_name }}
                     </div>
-                    <div class="col-sm-4">{{ object.get_rank_name }}</div>
-                    <div class="col-sm-2">
-                        <strong>Auspice:</strong>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Auspice:</span>
+                        {{ object.get_auspice_display }}
                     </div>
-                    <div class="col-sm-4">{{ object.get_auspice_display }}</div>
-                </div>
-                <div class="row mb-0">
-                    <div class="col-sm-2">
-                        <strong>Concept:</strong>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Breed:</span>
+                        {{ object.get_breed_display }}
                     </div>
-                    <div class="col-sm-4">{{ object.concept }}</div>
-                    <div class="col-sm-2">
-                        <strong>Breed:</strong>
-                    </div>
-                    <div class="col-sm-4">{{ object.get_breed_display }}</div>
                 </div>
             </div>
         </div>

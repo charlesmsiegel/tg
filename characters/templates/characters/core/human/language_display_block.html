@@ -1,19 +1,21 @@
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col-12">
         <div class="tg-card">
-            <div class="tg-card-header">
+            <div class="tg-card-header text-center">
                 <h5 class="tg-card-title {{ object.get_heading }}">Languages</h5>
             </div>
-            <div class="tg-card-body">
-                <div class="row">
-                    {% for lang in object.languages.all %}
-                        <div class="col-sm-2 mb-2">{{ lang }}</div>
-                    {% empty %}
-                        <div class="col-sm">
-                            <p class="text-muted mb-0">No languages specified.</p>
-                        </div>
-                    {% endfor %}
-                </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                {% if object.languages.all %}
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% for lang in object.languages.all %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; color: var(--theme-text-primary);">{{ lang }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No languages specified.</p>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,22 +1,28 @@
 {% load dots %}
-<div class="tg-card">
-    <div class="tg-card-header text-center">
-        <h5 class="tg-card-title {{ object.get_heading }}">Resonance</h5>
-    </div>
-    <div class="tg-card-body" style="padding: 20px;">
-        {% if resonance %}
-            <div class="row">
-                {% for res in resonance %}
-                    <div class="col-sm-6 col-md-4 mb-3">
-                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02); text-align: center;">
-                            <a href="{{ res.resonance.get_absolute_url }}" style="font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">{{ res.resonance }}</a>
-                            <span class="dots colored-dots" style="font-size: 1.1rem;">{{ res.rating|dots }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
+{% if resonance %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Resonance</h5>
             </div>
-        {% else %}
-            <p class="text-muted text-center mb-0">No resonance traits.</p>
-        {% endif %}
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="row">
+                    {% for res in resonance %}
+                        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <div class="mb-2">
+                                        <a href="{{ res.resonance.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ res.resonance }}</a>
+                                    </div>
+                                    <div class="dots" style="font-size: 0.875rem;">{{ res.rating|dots }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endif %}

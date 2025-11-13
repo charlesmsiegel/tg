@@ -1,23 +1,20 @@
-<div class="row mb-4">
+{% if rote_list.all %}
+<div class="row mb-3">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 mta_heading">Rotes</h5>
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Rotes</h5>
                 {% if object.rote_points is not None %}
-                    <span class="badge badge-pill badge-mta">{{ object.rote_points }} Rote Points</span>
-                {% else %}
-                    <span class="badge badge-pill badge-mta">{{ rote_list.count }} Rotes</span>
+                    <div class="mt-2">
+                        <span class="tg-badge" style="background-color: rgba(0,0,0,0.1); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem;">{{ object.rote_points }} Rote Points</span>
+                    </div>
                 {% endif %}
             </div>
-            <div class="card-body">
+            <div class="tg-card-body" style="padding: 20px;">
                 <div class="row" id="rote-list">
                     {% for obj in rote_list.all %}
-                        <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="col-md-6 col-lg-4 mb-3">
                             {% include "characters/mage/rote/summary.html" with object=obj %}
-                        </div>
-                    {% empty %}
-                        <div class="col-12">
-                            <p class="text-muted text-center mb-0">No rotes available.</p>
                         </div>
                     {% endfor %}
                 </div>
@@ -25,3 +22,4 @@
         </div>
     </div>
 </div>
+{% endif %}

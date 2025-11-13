@@ -1,20 +1,20 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }}  pointer"
-        data-toggle="collapse"
-        data-target="#equipmentSection"
-        aria-expanded="true"
-        aria-controls="equipmentSection">Equipment</h2>
-</div>
-<div id="equipmentSection" class="collapse show multi-collapse">
-    <div class="row">
-        {% for item in object.get_items_owned %}
-            {% if forloop.counter0|divisibleby:6 %}
+{% if object.get_items_owned %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Equipment</h5>
             </div>
-            <div class="row">
-            {% endif %}
-            <a class="col-sm-2" href="{{ item.get_absolute_url }}">{{ item }}</a>
-            {% if forloop.last %}</div>{% endif %}
-    {% empty %}
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    {% for item in object.get_items_owned %}
+                        <div class="px-3 py-2">
+                            <a href="{{ item.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ item }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-{% endfor %}
 </div>
+{% endif %}

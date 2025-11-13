@@ -1,53 +1,53 @@
 {% load dots %}
 {% load get_specialty %}
-<div class="row">
-    <div class="col-sm">
+<div class="row mb-2">
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         {{ object.get_corr_name_display }}
-        {% if object|get_specialty:'correspondence' %}({{ object|get_specialty:'correspondence' }}){% endif %}
+        {% if object|get_specialty:'correspondence' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'correspondence' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.correspondence|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.correspondence|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Life
-        {% if object|get_specialty:'life' %}({{ object|get_specialty:'life' }}){% endif %}
+        {% if object|get_specialty:'life' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'life' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.life|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.life|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         {{ object.get_prime_name_display }}
-        {% if object|get_specialty:'prime' %}({{ object|get_specialty:'prime' }}){% endif %}
+        {% if object|get_specialty:'prime' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'prime' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.prime|dots }}</div>
+    <div class="col-sm dots" style="text-align: center;">{{ object.prime|dots }}</div>
 </div>
-<div class="row">
-    <div class="col-sm">
+<div class="row mb-2">
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Entropy
-        {% if object|get_specialty:'entropy' %}({{ object|get_specialty:'entropy' }}){% endif %}
+        {% if object|get_specialty:'entropy' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'entropy' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.entropy|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.entropy|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Matter
-        {% if object|get_specialty:'matter' %}({{ object|get_specialty:'matter' }}){% endif %}
+        {% if object|get_specialty:'matter' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'matter' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.matter|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.matter|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         {{ object.get_spirit_name_display }}
-        {% if object|get_specialty:'spirit' %}({{ object|get_specialty:'spirit' }}){% endif %}
+        {% if object|get_specialty:'spirit' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'spirit' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.spirit|dots }}</div>
+    <div class="col-sm dots" style="text-align: center;">{{ object.spirit|dots }}</div>
 </div>
-<div class="row">
-    <div class="col-sm">
+<div class="row mb-0">
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Forces
-        {% if object|get_specialty:'forces' %}({{ object|get_specialty:'forces' }}){% endif %}
+        {% if object|get_specialty:'forces' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'forces' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.forces|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.forces|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Mind
-        {% if object|get_specialty:'mind' %}({{ object|get_specialty:'mind' }}){% endif %}
+        {% if object|get_specialty:'mind' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'mind' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.mind|dots }}</div>
-    <div class="col-sm">
+    <div class="col-sm dots" style="text-align: center;">{{ object.mind|dots }}</div>
+    <div class="col-sm" style="font-weight: 600; color: var(--theme-text-secondary);">
         Time
-        {% if object|get_specialty:'time' %}({{ object|get_specialty:'time' }}){% endif %}
+        {% if object|get_specialty:'time' %}<span style="font-weight: 400; font-size: 0.875rem;">({{ object|get_specialty:'time' }})</span>{% endif %}
     </div>
-    <div class="col-sm dots">{{ object.time|dots }}</div>
+    <div class="col-sm dots" style="text-align: center;">{{ object.time|dots }}</div>
 </div>

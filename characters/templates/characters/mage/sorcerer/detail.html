@@ -16,12 +16,7 @@
 {% block powers %}
     {% include "characters/mage/sorcerer/sorcerer_numina_block_display.html" %}
 {% endblock powers %}
-{% block appearance %}
-    {% include "characters/mage/sorcerer/sorcerer_appearance_block_display.html" %}
-{% endblock appearance %}
-{% block history %}
-    {% include "characters/mage/sorcerer/sorcerer_history_block_display.html" %}
-{% endblock history %}
+
 {% block freebies %}
     {% if object.status == "Sub" %}
         {% include "characters/mage/sorcerer/sorcerer_freebies_form.html" %}
