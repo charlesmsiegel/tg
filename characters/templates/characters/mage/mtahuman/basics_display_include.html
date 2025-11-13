@@ -1,41 +1,16 @@
-<div class="row mb-4">
+<div class="row mb-2">
     <div class="col-12">
         <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title mta_heading">Basics</h5>
-            </div>
-            <div class="tg-card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-2">
-                        <strong>Name:</strong>
-                    </div>
-                    <div class="col-sm-4">{{ object.name }}</div>
-                    <div class="col-sm-2">
-                        <strong>Nature:</strong>
-                    </div>
-                    <div class="col-sm-4">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
                         <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
                     </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-2">
-                        <strong>Player:</strong>
-                    </div>
-                    <div class="col-sm-4">
-                        <a href="{{ object.owner.profile.get_absolute_url }}">{{ object.owner }}</a>
-                    </div>
-                    <div class="col-sm-2">
-                        <strong>Demeanor:</strong>
-                    </div>
-                    <div class="col-sm-4">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
                         <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
                     </div>
-                </div>
-                <div class="row mb-0">
-                    <div class="col-sm-2">
-                        <strong>Concept:</strong>
-                    </div>
-                    <div class="col-sm-10">{{ object.concept }}</div>
                 </div>
             </div>
         </div>

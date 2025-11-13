@@ -1,12 +1,2 @@
 {% load static %}
-<form method="post">
-    {% if user.is_authenticated %}
-        {% if user.profile.is_st %}
-            {% if object.get_full_update_url %}
-                <a href="{{ object.get_full_update_url }}" class="btn btn-primary">Update</a>
-            {% else %}
-                <a href="{{ object.get_update_url }}" class="btn btn-primary">Update</a>
-            {% endif %}
-        {% endif %}
-    {% endif %}
-</form>
+{# Update buttons removed - use admin interface for updates #}

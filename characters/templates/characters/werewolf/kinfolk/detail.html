@@ -4,68 +4,58 @@
     {% include "characters/werewolf/kinfolk/basics_display_include.html" %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2">
-                            <strong>Willpower:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Gnosis:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.gnosis|dots:10 }}</div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
+                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-4 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                        <div class="col-sm-6"></div>
-                    </div>
+                    
+                    <!-- Gnosis Row (only if not zero) -->
+                    {% if object.gnosis > 0 %}
+                        <div class="row mb-0 text-center">
+                            <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Gnosis:</div>
+                            <div class="col-3 dots">{{ object.gnosis|dots:10 }}</div>
+                            <div class="col-6"></div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mb-4">
+    
+    <!-- Renown Section -->
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.get_heading }}">Renown</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2">
-                            <strong>Glory:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.glory|dots:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Honor:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.honor|dots:10 }}</div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glory:</div>
+                        <div class="col-3 dots">{{ object.glory|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glory:</div>
+                        <div class="col-3 dots">{{ object.temporary_glory|dots:10 }}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2">
-                            <strong>Temp Glory:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.temporary_glory|dots:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Temp Honor:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.temporary_honor|dots:10 }}</div>
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Honor:</div>
+                        <div class="col-3 dots">{{ object.honor|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Honor:</div>
+                        <div class="col-3 dots">{{ object.temporary_honor|dots:10 }}</div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-2">
-                            <strong>Wisdom:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.wisdom|dots:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Temp Wisdom:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.temporary_wisdom|dots:10 }}</div>
+                    <div class="row mb-0 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Wisdom:</div>
+                        <div class="col-3 dots">{{ object.wisdom|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Wisdom:</div>
+                        <div class="col-3 dots">{{ object.temporary_wisdom|dots:10 }}</div>
                     </div>
                 </div>
             </div>
@@ -101,38 +91,57 @@
     </div>
 {% endblock backgrounds %}
 {% block powers %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Gifts</h5>
-                </div>
-                <div class="tg-card-body">
-                    {% for row in gifts %}
-                        <div class="row mb-2">
-                            {% for gift in row %}<a class="col-sm" href="{{ gift.get_absolute_url }}">{{ gift.name }}</a>{% endfor %}
+    <!-- Gifts Section (only if gifts exist) -->
+    {% if gifts %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Gifts</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <div class="row">
+                            {% for row in gifts %}
+                                {% for gift in row %}
+                                    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                                        <div class="tg-card h-100">
+                                            <div class="tg-card-body text-center" style="padding: 16px;">
+                                                <a href="{{ gift.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ gift.name }}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Fetishes</h5>
-                </div>
-                <div class="tg-card-body">
-                    {% for fetish in object.fetishes_owned.all %}
-                        <div class="row mb-2">
-                            <div class="col-sm">
-                                <a href="{{ fetish.get_absolute_url }}">{{ fetish.name }}</a>
-                            </div>
+    {% endif %}
+    
+    <!-- Fetishes Section (only if fetishes exist) -->
+    {% if object.fetishes_owned.all %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Fetishes</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <div class="row">
+                            {% for fetish in object.fetishes_owned.all %}
+                                <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                                    <div class="tg-card h-100">
+                                        <div class="tg-card-body text-center" style="padding: 16px;">
+                                            <a href="{{ fetish.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ fetish.name }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock powers %}

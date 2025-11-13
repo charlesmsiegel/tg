@@ -1,49 +1,35 @@
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col-12">
         <div class="tg-card">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title mta_heading">Basics</h5>
-            </div>
-            <div class="tg-card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-3">
-                        <strong>Nature:</strong>
-                    </div>
-                    <div class="col-sm-3">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <!-- Character Basics Row -->
+                <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
                         <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
                     </div>
-                    <div class="col-sm-3">
-                        <strong>Fellowship:</strong>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Fellowship:</span>
                         <a href="{{ object.fellowship.get_absolute_url }}">{{ object.fellowship }}</a>
                     </div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-sm-3">
-                        <strong>Demeanor:</strong>
+                
+                <!-- Sorcerer Specifics Row -->
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Sorcerer Type:</span>
+                        {{ object.get_sorcerer_type_display }}
                     </div>
-                    <div class="col-sm-3">
-                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Casting Attribute:</span>
+                        {{ object.casting_attribute }}
                     </div>
-                    <div class="col-sm-3">
-                        <strong>Casting Attribute:</strong>
-                    </div>
-                    <div class="col-sm-3">{{ object.casting_attribute }}</div>
-                </div>
-                <div class="row mb-0">
-                    <div class="col-sm-2">
-                        <strong>Sorcerer Type:</strong>
-                    </div>
-                    <div class="col-sm-2">{{ object.get_sorcerer_type_display }}</div>
-                    <div class="col-sm-2">
-                        <strong>Concept:</strong>
-                    </div>
-                    <div class="col-sm-2">{{ object.concept }}</div>
-                    <div class="col-sm-2">
-                        <strong>Affinity Path:</strong>
-                    </div>
-                    <div class="col-sm-2">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Affinity Path:</span>
                         <a href="{{ object.affinity_path.get_absolute_url }}">{{ object.affinity_path }}</a>
                     </div>
                 </div>

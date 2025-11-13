@@ -1,53 +1,71 @@
 {% load dots %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#focusSection"
-        aria-expanded="true"
-        aria-controls="focusSection">Focus</h2>
-</div>
-<div id="focusSection" class="collapse show multi-collapse">
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Tenets</h3>
-    </div>
-    <div class="row">
-        <div class="col-sm">Metaphysical</div>
-        <a class="col-sm"
-           href="{{ object.metaphysical_tenet.get_absolute_url }}">{{ object.metaphysical_tenet }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Personal</div>
-        <a class="col-sm" href="{{ object.personal_tenet.get_absolute_url }}">{{ object.personal_tenet }}</a>
-    </div>
-    <div class="row">
-        <div class="col-sm">Ascension</div>
-        <a class="col-sm" href="{{ object.ascension_tenet.get_absolute_url }}">{{ object.ascension_tenet }}</a>
-    </div>
-    <div class="row">
-        <h4 class="col-sm {{ object.get_heading }}">Other Tenets</h4>
-    </div>
-    {% for tenet in object.other_tenets.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ tenet.get_absolute_url }}">{{ tenet }}</a>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Focus</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <!-- Tenets Section -->
+                <div class="mb-4">
+                    <h6 class="text-center mb-3" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Tenets</h6>
+                    <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Metaphysical:</span>
+                            <a href="{{ object.metaphysical_tenet.get_absolute_url }}">{{ object.metaphysical_tenet }}</a>
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Personal:</span>
+                            <a href="{{ object.personal_tenet.get_absolute_url }}">{{ object.personal_tenet }}</a>
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Ascension:</span>
+                            <a href="{{ object.ascension_tenet.get_absolute_url }}">{{ object.ascension_tenet }}</a>
+                        </div>
+                    </div>
+                    {% if object.other_tenets.all %}
+                        <div class="d-flex justify-content-center align-items-center flex-wrap">
+                            {% for tenet in object.other_tenets.all %}
+                                <div class="px-3 py-2">
+                                    <a href="{{ tenet.get_absolute_url }}" style="font-size: 0.875rem;">{{ tenet }}</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Practices Section -->
+                {% if object.get_practices %}
+                    <div class="mb-3">
+                        <h6 class="text-center mb-3" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Practices</h6>
+                        <div class="d-flex justify-content-center align-items-center flex-wrap">
+                            {% for pr in object.get_practices %}
+                                <div class="px-3 py-2">
+                                    <a href="{{ pr.practice.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ pr.practice }}:</a>
+                                    <span class="dots" style="font-weight: 700; color: var(--theme-text-primary);">{{ pr.rating|dots }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Quiet Section -->
+                {% if object.quiet != 0 %}
+                    <div class="mt-3">
+                        <h6 class="text-center mb-3" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Quiet</h6>
+                        <div class="d-flex justify-content-center align-items-center flex-wrap">
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Level:</span>
+                                <span class="dots" style="font-weight: 700; color: var(--theme-text-primary);">{{ object.quiet|dots }}</span>
+                            </div>
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_quiet_type_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-    {% endfor %}
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Practices</h3>
     </div>
-    {% for pr in object.get_practices %}
-        <div class="row">
-            <a class="col-sm" href="{{ pr.practice.get_absolute_url }}">{{ pr.practice }}</a>
-            <div class="col-sm dots">{{ pr.rating|dots }}</div>
-        </div>
-    {% endfor %}
-    {% if object.quiet != 0 %}
-        <div class="row">
-            <div class="col-sm"></div>
-            <div class="col-sm">Quiet</div>
-            <div class="col-sm dots">{{ object.quiet|dots }}</div>
-            <div class="col-sm">Quiet Type</div>
-            <div class="col-sm">{{ object.get_quiet_type_display }}</div>
-            <div class="col-sm"></div>
-        </div>
-    {% endif %}
 </div>

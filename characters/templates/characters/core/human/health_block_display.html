@@ -1,27 +1,44 @@
-<div class="row mb-4">
+<div class="row mb-3">
     <div class="col-12">
         <div class="tg-card">
-            <div class="tg-card-header">
+            <div class="tg-card-header text-center">
                 <h5 class="tg-card-title {{ object.get_heading }}">Health</h5>
             </div>
-            <div class="tg-card-body">
-                {% for nm, pen, hl in object.get_health_table %}
-                    <div class="row mb-2">
-                        <div class="col-sm-4">{{ nm }}</div>
-                        <div class="col-sm-4">{{ pen }}</div>
-                        <div class="col-sm-4">
-                            {% if hl == "-" %}
-                                <div class="health-box"></div>
-                            {% elif hl == "B" %}
-                                <div class="health-box bashing"></div>
-                            {% elif hl == "L" %}
-                                <div class="health-box lethal"></div>
-                            {% elif hl == "A" %}
-                                <div class="health-box aggravated"></div>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <table class="tg-table table-sm" style="margin: 0 auto; max-width: 600px;">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 40%; font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Health Level</th>
+                            <th class="text-center" style="width: 30%; font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Penalty</th>
+                            <th class="text-center" style="width: 30%; font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nm, pen, hl in object.get_health_table %}
+                            <tr>
+                                <td class="text-center">{{ nm }}</td>
+                                <td class="text-center">{{ pen }}</td>
+                                <td class="text-center">
+                                    {% if hl == "-" %}
+                                        <div class="health-box" style="display: inline-block; width: 20px; height: 20px; border: 2px solid #6c757d; border-radius: 3px; background-color: transparent;"></div>
+                                    {% elif hl == "B" %}
+                                        <div class="health-box bashing" style="display: inline-block; width: 20px; height: 20px; border: 2px solid #6c757d; border-radius: 3px; background-color: #ffc107; position: relative;">
+                                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 12px; color: #000;">B</span>
+                                        </div>
+                                    {% elif hl == "L" %}
+                                        <div class="health-box lethal" style="display: inline-block; width: 20px; height: 20px; border: 2px solid #6c757d; border-radius: 3px; background-color: #dc3545; position: relative;">
+                                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 12px; color: #fff;">L</span>
+                                        </div>
+                                    {% elif hl == "A" %}
+                                        <div class="health-box aggravated" style="display: inline-block; width: 20px; height: 20px; border: 2px solid #6c757d; border-radius: 3px; background-color: #000; position: relative;">
+                                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 12px; color: #fff;">A</span>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -1,37 +1,54 @@
 {% load sanitize_text %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#historySection"
-        aria-expanded="true"
-        aria-controls="historySection">History</h2>
-</div>
-<div id="historySection" class="collapse show multi-collapse">
-    <div class="row">
-        <div class="col-sm">History</div>
-        <div class="col-sm">{{ object.history|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">
-            {% if object.affiliation.name == "Technocratic Union" %}
-                Genius
-            {% else %}
-                Avatar
-            {% endif %}
-            Description
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
+            </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                {% if object.history %}
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">History:</span>
+                        </div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.history|sanitize_html|linebreaks }}</p>
+                    </div>
+                {% endif %}
+                {% if object.avatar_description %}
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">
+                                {% if object.affiliation.name == "Technocratic Union" %}
+                                    Genius Description:
+                                {% else %}
+                                    Avatar Description:
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.avatar_description|sanitize_html|linebreaks }}</p>
+                    </div>
+                {% endif %}
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    {% if object.goals %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Goals:</span>
+                            {{ object.goals|sanitize_html|linebreaks }}
+                        </div>
+                    {% endif %}
+                    {% if object.notes %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Notes:</span>
+                            {{ object.notes|sanitize_html|linebreaks }}
+                        </div>
+                    {% endif %}
+                    {% if object.public_info %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Public Information:</span>
+                            {{ object.public_info|sanitize_html|linebreaks }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="col-sm">{{ object.avatar_description|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Goals</div>
-        <div class="col-sm">{{ object.goals|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Notes</div>
-        <div class="col-sm">{{ object.notes|sanitize_html|linebreaks }}</div>
-    </div>
-    <div class="row">
-        <div class="col-sm">Public Information</div>
-        <div class="col-sm">{{ object.public_info|sanitize_html|linebreaks }}</div>
     </div>
 </div>

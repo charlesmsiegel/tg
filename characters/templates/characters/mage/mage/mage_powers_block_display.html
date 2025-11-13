@@ -1,14 +1,16 @@
 {% load dots %}
 {% load get_specialty %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#spheresSection"
-        aria-expanded="true"
-        aria-controls="spheresSection">Spheres</h2>
-</div>
-<div id="spheresSection" class="collapse show multi-collapse">
-    {% include "characters/mage/spheres/display_with_names_and_specs.html" %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Spheres</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                {% include "characters/mage/spheres/display_with_names_and_specs.html" %}
+            </div>
+        </div>
+    </div>
 </div>
 {% include "characters/mage/resonance/display_includes/resonance.html" %}
 {% block rotes %}

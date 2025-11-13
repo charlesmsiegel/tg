@@ -1,52 +1,62 @@
 {% load dots %}
 {% load get_specialty %}
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#numinaSection"
-        aria-expanded="true"
-        aria-controls="numinaSection">Numina</h2>
-</div>
-<div id="numinaSection" class="collapse show multi-collapse">
-    <div class="row">
-        <h3 class="col-sm {{ object.get_heading }}">Paths</h3>
+
+{% if object.pathrating_set.all %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Paths</h5>
+            </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    {% for pr in object.pathrating_set.all %}
+                        <div class="px-3 py-2">
+                            <a href="{{ pr.path.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">
+                                {{ pr.path }}{% if object|get_specialty:pr.path.property_name %} ({{ object|get_specialty:pr.path.property_name }}){% endif %}:
+                            </a>
+                            <span class="dots" style="font-weight: 700; color: var(--theme-text-primary);">{{ pr.rating|dots }}</span>
+                            {% if object.sorcerer_type == "hedge_mage" and pr.practice %}
+                                <br>
+                                <a href="{{ pr.practice.get_absolute_url }}" style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ pr.practice }}</a>
+                                {% if pr.ability %} - <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ pr.ability }}</span>{% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-    {% for pr in object.pathrating_set.all %}
-        <div class="row">
-            <a class="col-sm" href="{{ pr.path.get_absolute_url }}">{{ pr.path }}
-                {% if object|get_specialty:pr.path.property_name %}({{ object|get_specialty:pr.path.property_name }}){% endif %}
-            </a>
-            <div class="col-sm dots">{{ pr.rating|dots }}</div>
-            {% if object.sorcerer_type == "hedge_mage" %}
-                <a class="col-sm" href={{ pr.practice.get_absolute_url }}>{{ pr.practice }}</a>
-                <div class="col-sm">{{ pr.ability }}</div>
-            {% endif %}
-        </div>
-    {% endfor %}
-    {% if object.sorcerer_type == "hedge_mage" %}
-        <div class="row">
-            <h3 class="col-sm {{ object.get_heading }}">Rituals</h3>
-        </div>
-        <div class="row">
-            {% for ritual in object.rituals.all %}
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="tg-card mb-3">
-                        <!-- Center the content inside the card -->
-                        <div class="card-body text-center">
-                            <!-- Flex container to align ritual.ritual and ritual.rating|dots horizontally -->
-                            <div class="mt-2">
-                                <a href={{ ritual.get_absolute_url }}>{{ ritual }}</a>
-                            </div>
-                            <div class="d-inline-flex align-items-center">
-                                <div class="dots ml-2">{{ ritual.path }}</div>
-                                <div class="dots ml-2">{{ ritual.level|dots }}</div>
+</div>
+{% endif %}
+
+{% if object.sorcerer_type == "hedge_mage" and object.rituals.all %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Rituals</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="row">
+                    {% for ritual in object.rituals.all %}
+                        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <div class="mb-2">
+                                        <a href="{{ ritual.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-primary);">{{ ritual }}</a>
+                                    </div>
+                                    <div class="mb-1">
+                                        <span style="font-size: 0.75rem; color: var(--theme-text-secondary);">{{ ritual.path }}</span>
+                                    </div>
+                                    <div class="dots" style="font-size: 0.875rem;">{{ ritual.level|dots }}</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
-            {% empty %}
-                <div class="col">No Rituals available.</div>
-            {% endfor %}
+            </div>
         </div>
-    {% endif %}
+    </div>
 </div>
+{% endif %}

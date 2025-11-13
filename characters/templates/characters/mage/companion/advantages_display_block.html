@@ -1,14 +1,23 @@
-<div class="row">
-    <h2 class="col-sm {{ object.get_heading }} pointer"
-        data-toggle="collapse"
-        data-target="#advantageSection"
-        aria-expanded="true"
-        aria-controls="advantageSection">Special Advantages</h2>
-</div>
-<div id="advantageSection" class="collapse show multi-collapse">
-    <div class="row">
-        {% for advantage, rating in object.get_advantage_and_rating_list %}
-            <a class="col-sm" href="{{ advantage.get_absolute_url }}">{{ advantage }}: {{ rating }}</a>
-        {% endfor %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Special Advantages</h5>
+            </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                {% if object.get_advantage_and_rating_list %}
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% for advantage, rating in object.get_advantage_and_rating_list %}
+                            <div class="px-3 py-2">
+                                <a href="{{ advantage.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ advantage }}:</a>
+                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ rating }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No special advantages.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>

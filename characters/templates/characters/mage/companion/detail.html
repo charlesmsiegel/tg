@@ -17,12 +17,7 @@
     {% include "characters/mage/companion/advantages_display_block.html" %}
     {% include "characters/mage/companion/charms_display_block.html" %}
 {% endblock powers %}
-{% block appearance %}
-    {% include "characters/mage/companion/companion_appearance_block_display.html" %}
-{% endblock appearance %}
-{% block history %}
-    {% include "characters/mage/companion/companion_history_block_display.html" %}
-{% endblock history %}
+
 {% block freebies %}
     {% if object.status == "Sub" %}
         {% include "characters/mage/companion/companion_freebies_form.html" %}

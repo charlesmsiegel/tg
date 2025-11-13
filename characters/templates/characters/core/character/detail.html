@@ -1,12 +1,12 @@
 {% extends "core/object.html" %}
 {% block objectname %}
     <!-- Page Header with gameline-specific styling -->
-    <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline|lower }}">
+    <div class="tg-card header-card mb-2" data-gameline="{{ object.gameline|lower }}">
         <div class="tg-card-header">
             <h1 class="tg-card-title {{ object.get_heading }}">
                 {{ object.name }}
             </h1>
-            <p class="tg-card-subtitle mb-0">
+            <p class="tg-card-subtitle mb-0 text-center">
                 {{ object.concept }}{% if object.chronicle %} | <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>{% endif %}
             </p>
         </div>
@@ -37,6 +37,9 @@
         {% endblock statistics %}
         {% block flavor %}
         {% endblock flavor %}
+{% block description %}
+    {# Override the core description block - description is handled in the appearance section #}
+{% endblock description %}
     {% else %}
         {% include "characters/core/character/not_owner.html" %}
     {% endif %}

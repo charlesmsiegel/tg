@@ -1,43 +1,49 @@
 {% extends "characters/changeling/ctdhuman/detail.html" %}
 {% load dots %}
+{% load sanitize_text %}
 {% block basics %}
     {% include "characters/changeling/changeling/basics_display_include.html" %}
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2">
-                            <strong>Willpower:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.willpower|dots:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Glamour:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.glamour|dots:10 }}</div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
+                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-4 dots">{{ object.temporary_willpower|boxes:10 }}</div>
-                        <div class="col-sm-2">
-                            <strong>Banality:</strong>
-                        </div>
-                        <div class="col-sm-4 dots">{{ object.banality|dots:10 }}</div>
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glamour:</div>
+                        <div class="col-3 dots">{{ object.glamour|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glamour:</div>
+                        <div class="col-3 dots">{{ object.temporary_glamour|default:0|dots:10 }}</div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-4">
-                            <strong>Musing Threshold:</strong> {{ object.get_musing_threshold_display }}
+                    <div class="row mb-3 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
+                        <div class="col-3 dots">{{ object.banality|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Banality:</div>
+                        <div class="col-3 dots">{{ object.temporary_banality|default:0|dots:10 }}</div>
+                    </div>
+                    
+                    <!-- Changeling-specific thresholds -->
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Musing Threshold:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_musing_threshold_display }}</span>
                         </div>
-                        <div class="col-sm-4">
-                            <strong>Ravaging Threshold:</strong> {{ object.get_ravaging_threshold_display }}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Ravaging Threshold:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_ravaging_threshold_display }}</span>
                         </div>
-                        <div class="col-sm-4">
-                            <strong>Antithesis:</strong> {{ object.antithesis }}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Antithesis:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.antithesis }}</span>
                         </div>
                     </div>
                 </div>
@@ -134,38 +140,36 @@
     </div>
 {% endblock powers %}
 {% block appearance %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Date of Birth:</strong>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Birth:</span>
+                            {{ object.date_of_birth }}
                         </div>
-                        <div class="col-sm-3">{{ object.date_of_birth }}</div>
-                        <div class="col-sm-3">
-                            <strong>Fae Mien:</strong>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Fae Mien:</span>
+                            {{ object.fae_mien }}
                         </div>
-                        <div class="col-sm-3">{{ object.fae_mien }}</div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Apparent Age:</span>
+                            {{ object.apparent_age }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age:</span>
+                            {{ object.age }}
+                        </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Apparent Age:</strong>
+                    <div class="mt-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Description:</span>
                         </div>
-                        <div class="col-sm-3">{{ object.apparent_age }}</div>
-                        <div class="col-sm-3">
-                            <strong>Age:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.age }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-3">
-                            <strong>Description:</strong>
-                        </div>
-                        <div class="col-sm-9">{{ object.description }}</div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.description|sanitize_html|linebreaks }}</p>
                     </div>
                 </div>
             </div>
@@ -173,48 +177,50 @@
     </div>
 {% endblock appearance %}
 {% block history %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>History:</strong>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <!-- Main History Section -->
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">History:</span>
                         </div>
-                        <div class="col-sm-9">{{ object.history }}</div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.history|sanitize_html|linebreaks }}</p>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Fae Name:</strong>
+                    
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Crysalis:</span>
                         </div>
-                        <div class="col-sm-3">{{ object.true_name }}</div>
-                        <div class="col-sm-3">
-                            <strong>Date Ennobled:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.date_ennobled }}</div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.crysalis|sanitize_html|linebreaks }}</p>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Crysalis:</strong>
+                    
+                    <!-- Changeling-specific Information -->
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Fae Name:</span>
+                            {{ object.true_name }}
                         </div>
-                        <div class="col-sm-3">{{ object.crysalis }}</div>
-                        <div class="col-sm-3">
-                            <strong>Date of Crysalis:</strong>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date Ennobled:</span>
+                            {{ object.date_ennobled }}
                         </div>
-                        <div class="col-sm-3">{{ object.date_of_crysalis }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-2">
-                            <strong>Goals:</strong>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Crysalis:</span>
+                            {{ object.date_of_crysalis }}
                         </div>
-                        <div class="col-sm-4">{{ object.goals }}</div>
-                        <div class="col-sm-2">
-                            <strong>Notes:</strong>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Goals:</span>
+                            {{ object.goals|sanitize_html|linebreaks }}
                         </div>
-                        <div class="col-sm-4">{{ object.notes }}</div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Notes:</span>
+                            {{ object.notes|sanitize_html|linebreaks }}
+                        </div>
                     </div>
                 </div>
             </div>
