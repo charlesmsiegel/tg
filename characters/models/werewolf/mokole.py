@@ -34,7 +34,10 @@ class Mokole(Fera):
         ("rising_sun", "Rising Sun"),  # Dawn - Warriors
         ("noonday_sun", "Noonday Sun"),  # Noon - Leaders
         ("setting_sun", "Setting Sun"),  # Dusk - Mystics
+        ("shrouded_sun", "Shrouded Sun"),  # Twilight - Scholars
         ("midnight_sun", "Midnight Sun"),  # Night - Seers
+        ("decorated_sun", "Decorated Sun"),  # Special - Elders
+        ("solar_eclipse", "Solar Eclipse"),  # Rare - Chosen
     ]
 
     stream = models.CharField(default="", max_length=100, choices=STREAMS)

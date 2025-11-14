@@ -16,7 +16,7 @@ class Ratkin(Fera):
     # Ratkin breeds
     BREEDS = [
         ("homid", "Homid"),  # Born human
-        ("rodent", "Rodent"),  # Born rat
+        ("rodens", "Rodens"),  # Born rat
         ("metis", "Metis"),  # Born to two Ratkin
     ]
 
@@ -25,23 +25,14 @@ class Ratkin(Fera):
         ("tunnel_runner", "Tunnel Runner"),  # Scouts and spies
         ("warrior", "Warrior"),  # Soldiers
         ("plague_lord", "Plague Lord"),  # Disease-bringers
-        ("tinkerer", "Tinkerer"),  # Inventors
+        ("engineers", "Engineers"),  # Inventors
         ("munchmausen", "Munchmausen"),  # Storytellers
-        ("knife_skull", "Knife-Skull"),  # Assassins
+        ("knife_skulker", "Knife-Skulker"),  # Assassins
         ("shadow_seer", "Shadow Seer"),  # Mystics
-    ]
-
-    # Ratkin colonies (like tribes)
-    COLONIES = [
-        ("rat_fink", "Rat Fink"),  # Urban survivors
-        ("engineers", "Engineers"),  # Tech specialists
-        ("plague_lords", "Plague Lords"),  # Disease specialists
-        ("munchmausen", "Munchmausen"),  # Wanderers
-        ("warriors", "Warriors"),  # Fighters
+        ("twitchers", "Twitchers"),  # Psychics
     ]
 
     aspect = models.CharField(default="", max_length=100, choices=ASPECTS)
-    colony = models.CharField(default="", max_length=100, choices=COLONIES, blank=True)
 
     # Ratkin renown
     infamy = models.IntegerField(default=0)  # Like Glory
