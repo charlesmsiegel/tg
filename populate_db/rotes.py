@@ -584,3 +584,487 @@ rote_helper("Yoga Nidra", {"mind": 4}, "Yoga", "Perception", "Meditation").add_s
 rote_helper(
     "Agni Prana", {"forces": 3, "prime": 2}, "Yoga", "Stamina", "Survival"
 ).add_source("Prism of Focus", 123)
+
+# Get common attributes
+perception = Attribute.objects.get(property_name="perception")
+intelligence = Attribute.objects.get(property_name="intelligence")
+wits = Attribute.objects.get(property_name="wits")
+manipulation = Attribute.objects.get(property_name="manipulation")
+dexterity = Attribute.objects.get(property_name="dexterity")
+stamina = Attribute.objects.get(property_name="stamina")
+
+# Get common abilities
+awareness = Ability.objects.get(property_name="awareness")
+esoterica = Ability.objects.get(property_name="esoterica")
+occult = Ability.objects.get(property_name="occult")
+cosmology = Ability.objects.get(property_name="cosmology")
+brawl = Ability.objects.get(property_name="brawl")
+athletics = Ability.objects.get(property_name="athletics")
+science = Ability.objects.get(property_name="science")
+technology = Ability.objects.get(property_name="technology")
+crafts = Ability.objects.get(property_name="crafts")
+medicine = Ability.objects.get(property_name="medicine")
+expression = Ability.objects.get(property_name="expression")
+subterfuge = Ability.objects.get(property_name="subterfuge")
+
+# Get practices
+highritualmagick = Practice.objects.get(name="High Ritual Magick")
+martialarts = Practice.objects.get(name="Martial Arts")
+faith = Practice.objects.get(name="Faith")
+shamanism = Practice.objects.get(name="Shamanism")
+witchcraft = Practice.objects.get(name="Witchcraft")
+alchemy = Practice.objects.get(name="Alchemy")
+weirdscience = Practice.objects.get(name="Weird Science")
+realityhacking = Practice.objects.get(name="Reality Hacking")
+crazywisdom = Practice.objects.get(name="Crazy Wisdom")
+yoga = Practice.objects.get(name="Yoga")
+medicinework = Practice.objects.get(name="Medicine-Work")
+
+# ===== AKASHIC BROTHERHOOD ROTES =====
+
+effect = Effect.objects.get(name="Do Strike (Akashic)")
+rote = Rote.objects.get_or_create(
+    name="Striking Fist of Dragon",
+    effect=effect,
+    practice=martialarts,
+    attribute=dexterity,
+    ability=brawl,
+)[0]
+rote.description = (
+    "The mage channels chi through their strike, dealing aggravated damage. "
+    "A classic Akashic combat technique."
+)
+rote.add_source("Lore of the Traditions", 28)
+
+effect = Effect.objects.get(name="Chi Healing")
+rote = Rote.objects.get_or_create(
+    name="Breath of Life Restoration",
+    effect=effect,
+    practice=medicinework,
+    attribute=stamina,
+    ability=medicine,
+)[0]
+rote.description = (
+    "The mage uses chi manipulation to heal wounds by redirecting life energy."
+)
+rote.add_source("Lore of the Traditions", 28)
+
+effect = Effect.objects.get(name="Increase Speed")
+rote = Rote.objects.get_or_create(
+    name="Seven League Stride",
+    effect=effect,
+    practice=martialarts,
+    attribute=dexterity,
+    ability=athletics,
+)[0]
+rote.description = "Akashic technique to move at superhuman speeds through time manipulation."
+rote.add_source("Lore of the Traditions", 29)
+
+# ===== CELESTIAL CHORUS ROTES =====
+
+effect = Effect.objects.get(name="Holy Fire")
+rote = Rote.objects.get_or_create(
+    name="Pillar of Divine Flame",
+    effect=effect,
+    practice=faith,
+    attribute=stamina,
+    ability=expression,
+)[0]
+rote.description = (
+    "The mage calls down holy fire to smite the unworthy. "
+    "A dramatic display of divine wrath."
+)
+rote.add_source("Lore of the Traditions", 48)
+
+effect = Effect.objects.get(name="Blessing of the One")
+rote = Rote.objects.get_or_create(
+    name="Grace of the Divine",
+    effect=effect,
+    practice=faith,
+    attribute=manipulation,
+    ability=expression,
+)[0]
+rote.description = "The mage channels divine grace to bless and strengthen allies."
+rote.add_source("Lore of the Traditions", 48)
+
+effect = Effect.objects.get(name="Heal Living Being (Complex)")
+rote = Rote.objects.get_or_create(
+    name="Laying On of Hands",
+    effect=effect,
+    practice=faith,
+    attribute=stamina,
+    ability=medicine,
+)[0]
+rote.description = "Classical faith healing through divine intervention and prayer."
+rote.add_source("Lore of the Traditions", 49)
+
+# ===== CULT OF ECSTASY ROTES =====
+
+effect = Effect.objects.get(name="Temporal Fugue")
+rote = Rote.objects.get_or_create(
+    name="Dance of the Eternal Moment",
+    effect=effect,
+    practice=crazywisdom,
+    attribute=dexterity,
+    ability=expression,
+)[0]
+rote.description = (
+    "The mage enters an ecstatic state where time seems to slow or stop, "
+    "allowing multiple actions."
+)
+rote.add_source("Lore of the Traditions", 68)
+
+effect = Effect.objects.get(name="Ecstatic Vision")
+rote = Rote.objects.get_or_create(
+    name="Vision Quest",
+    effect=effect,
+    practice=crazywisdom,
+    attribute=perception,
+    ability=awareness,
+)[0]
+rote.description = "Through ecstatic trance, the mage gains visions of past or future."
+rote.add_source("Lore of the Traditions", 68)
+
+effect = Effect.objects.get(name="Influence Mood")
+rote = Rote.objects.get_or_create(
+    name="Empathic Wave",
+    effect=effect,
+    practice=crazywisdom,
+    attribute=manipulation,
+    ability=expression,
+)[0]
+rote.description = "The mage projects their emotional state to influence others' moods."
+rote.add_source("Lore of the Traditions", 69)
+
+# ===== DREAMSPEAKER ROTES =====
+
+effect = Effect.objects.get(name="Spirit Journey")
+rote = Rote.objects.get_or_create(
+    name="Walk Between Worlds",
+    effect=effect,
+    practice=shamanism,
+    attribute=stamina,
+    ability=cosmology,
+)[0]
+rote.description = (
+    "The shaman steps sideways into the spirit world to commune with spirits."
+)
+rote.add_source("Lore of the Traditions", 88)
+
+effect = Effect.objects.get(name="Call Totem Spirit")
+rote = Rote.objects.get_or_create(
+    name="Summon the Great Spirit",
+    effect=effect,
+    practice=shamanism,
+    attribute=manipulation,
+    ability=occult,
+)[0]
+rote.description = "The Dreamspeaker calls upon a powerful totem spirit for aid."
+rote.add_source("Lore of the Traditions", 88)
+
+effect = Effect.objects.get(name="Medicine Work Healing")
+rote = Rote.objects.get_or_create(
+    name="Spirit Medicine",
+    effect=effect,
+    practice=medicinework,
+    attribute=stamina,
+    ability=medicine,
+)[0]
+rote.description = "Traditional healing through spirit medicine and ancestral wisdom."
+rote.add_source("Lore of the Traditions", 89)
+
+# ===== EUTHANATOS ROTES =====
+
+effect = Effect.objects.get(name="Good Death")
+rote = Rote.objects.get_or_create(
+    name="The Merciful End",
+    effect=effect,
+    practice=yoga,
+    attribute=stamina,
+    ability=medicine,
+)[0]
+rote.description = (
+    "The Euthanatos grants a peaceful death to those whose time has come, "
+    "guiding them through the Wheel."
+)
+rote.add_source("Lore of the Traditions", 108)
+
+effect = Effect.objects.get(name="Wheel of Fate")
+rote = Rote.objects.get_or_create(
+    name="Spin the Wheel",
+    effect=effect,
+    practice=yoga,
+    attribute=perception,
+    ability=esoterica,
+)[0]
+rote.description = "The mage perceives and manipulates the threads of fate and destiny."
+rote.add_source("Lore of the Traditions", 108)
+
+effect = Effect.objects.get(name="Sense Fate and Fortune")
+rote = Rote.objects.get_or_create(
+    name="Read the Tapestry",
+    effect=effect,
+    practice=yoga,
+    attribute=perception,
+    ability=awareness,
+)[0]
+rote.description = "The Euthanatos reads the patterns of karma and destiny surrounding a person."
+rote.add_source("Lore of the Traditions", 109)
+
+# ===== ORDER OF HERMES ROTES =====
+
+effect = Effect.objects.get(name="Hermetic Circle of Protection")
+rote = Rote.objects.get_or_create(
+    name="Ward of Solomon",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=intelligence,
+    ability=occult,
+)[0]
+rote.description = (
+    "Classic Hermetic protective circle drawn with ritual implements and incantations."
+)
+rote.add_source("Lore of the Traditions", 128)
+
+effect = Effect.objects.get(name="Summon Elemental")
+rote = Rote.objects.get_or_create(
+    name="Conjuration of the Four Quarters",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=manipulation,
+    ability=occult,
+)[0]
+rote.description = "Hermetic ritual to summon and bind elemental spirits."
+rote.add_source("Lore of the Traditions", 128)
+
+effect = Effect.objects.get(name="Alchemical Transmutation")
+rote = Rote.objects.get_or_create(
+    name="The Philosopher's Work",
+    effect=effect,
+    practice=alchemy,
+    attribute=intelligence,
+    ability=science,
+)[0]
+rote.description = "Classical alchemical transmutation of base metals into gold."
+rote.add_source("Lore of the Traditions", 129)
+
+effect = Effect.objects.get(name="Lightning Bolt")
+rote = Rote.objects.get_or_create(
+    name="Bolt of Zeus",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=dexterity,
+    ability=occult,
+)[0]
+rote.description = "Hermetic evocation calling down lightning from the heavens."
+rote.add_source("Lore of the Traditions", 129)
+
+# ===== SONS OF ETHER ROTES =====
+
+effect = Effect.objects.get(name="Ether Ray")
+rote = Rote.objects.get_or_create(
+    name="Etheric Disruptor Beam",
+    effect=effect,
+    practice=weirdscience,
+    attribute=dexterity,
+    ability=science,
+)[0]
+rote.description = (
+    "The Etherite fires a beam of etheric energy from a mad science device."
+)
+rote.add_source("Lore of the Traditions", 148)
+
+effect = Effect.objects.get(name="Dimensional Portal Device")
+rote = Rote.objects.get_or_create(
+    name="Portable Tesseract Gate",
+    effect=effect,
+    practice=weirdscience,
+    attribute=intelligence,
+    ability=science,
+)[0]
+rote.description = "A device that opens portals through higher-dimensional space."
+rote.add_source("Lore of the Traditions", 148)
+
+effect = Effect.objects.get(name="Flying (Forces)")
+rote = Rote.objects.get_or_create(
+    name="Anti-Gravity Harness",
+    effect=effect,
+    practice=weirdscience,
+    attribute=dexterity,
+    ability=technology,
+)[0]
+rote.description = "Weird science device that negates gravity for flight."
+rote.add_source("Lore of the Traditions", 149)
+
+# ===== VERBENA ROTES =====
+
+effect = Effect.objects.get(name="Blood Magic Ritual")
+rote = Rote.objects.get_or_create(
+    name="The Blood Offering",
+    effect=effect,
+    practice=witchcraft,
+    attribute=stamina,
+    ability=occult,
+)[0]
+rote.description = "Verbena ritual using blood as a focus for powerful life magic."
+rote.add_source("Lore of the Traditions", 168)
+
+effect = Effect.objects.get(name="Primal Transformation")
+rote = Rote.objects.get_or_create(
+    name="Beast Within",
+    effect=effect,
+    practice=witchcraft,
+    attribute=stamina,
+    ability=occult,
+)[0]
+rote.description = "The witch transforms into an animal form, embracing primal nature."
+rote.add_source("Lore of the Traditions", 168)
+
+effect = Effect.objects.get(name="Call the Wild Hunt")
+rote = Rote.objects.get_or_create(
+    name="Summon the Horned Lord's Hunt",
+    effect=effect,
+    practice=witchcraft,
+    attribute=manipulation,
+    ability=occult,
+)[0]
+rote.description = "Powerful ritual calling forth the Wild Hunt and its spectral hunters."
+rote.add_source("Lore of the Traditions", 169)
+
+effect = Effect.objects.get(name="Heal Living Being (Complex)")
+rote = Rote.objects.get_or_create(
+    name="Herbal Remedy",
+    effect=effect,
+    practice=witchcraft,
+    attribute=stamina,
+    ability=medicine,
+)[0]
+rote.description = "Natural healing using herbs, poultices, and life magic."
+rote.add_source("Lore of the Traditions", 169)
+
+# ===== VIRTUAL ADEPT ROTES =====
+
+effect = Effect.objects.get(name="Reality Hack")
+rote = Rote.objects.get_or_create(
+    name="Root Access to Reality",
+    effect=effect,
+    practice=realityhacking,
+    attribute=intelligence,
+    ability=technology,
+)[0]
+rote.description = (
+    "The Adept hacks reality's source code to manipulate fundamental parameters."
+)
+rote.add_source("Lore of the Traditions", 188)
+
+effect = Effect.objects.get(name="Digital Avatar")
+rote = Rote.objects.get_or_create(
+    name="Upload Consciousness",
+    effect=effect,
+    practice=realityhacking,
+    attribute=intelligence,
+    ability=technology,
+)[0]
+rote.description = "The mage projects their consciousness into the Digital Web."
+rote.add_source("Lore of the Traditions", 188)
+
+effect = Effect.objects.get(name="Information Overload")
+rote = Rote.objects.get_or_create(
+    name="Denial of Service Attack",
+    effect=effect,
+    practice=realityhacking,
+    attribute=intelligence,
+    ability=technology,
+)[0]
+rote.description = "Overwhelms target's mind with massive data streams."
+rote.add_source("Lore of the Traditions", 189)
+
+# ===== COMMON/UTILITY ROTES =====
+
+effect = Effect.objects.get(name="Teleport Self (Short Range)")
+rote = Rote.objects.get_or_create(
+    name="Blink Step",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=dexterity,
+    ability=athletics,
+)[0]
+rote.description = "Instant short-range teleportation for tactical advantage."
+rote.add_source("How Do You Do That", 127)
+
+effect = Effect.objects.get(name="Read Surface Thoughts")
+rote = Rote.objects.get_or_create(
+    name="Peer Into Mind",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=perception,
+    ability=esoterica,
+)[0]
+rote.description = "Read the surface thoughts and immediate intentions of a target."
+rote.add_source("M20 Core", 519)
+
+effect = Effect.objects.get(name="Force Shield")
+rote = Rote.objects.get_or_create(
+    name="Wall of Force",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=stamina,
+    ability=occult,
+)[0]
+rote.description = "Create a barrier of solidified force energy for protection."
+rote.add_source("M20 Core", 517)
+
+effect = Effect.objects.get(name="See Spirits")
+rote = Rote.objects.get_or_create(
+    name="Spirit Sight",
+    effect=effect,
+    practice=shamanism,
+    attribute=perception,
+    ability=awareness,
+)[0]
+rote.description = "Perceive spirits and the Penumbra while in the material world."
+rote.add_source("M20 Core", 521)
+
+effect = Effect.objects.get(name="Curse of Bad Luck")
+rote = Rote.objects.get_or_create(
+    name="Jinx",
+    effect=effect,
+    practice=witchcraft,
+    attribute=manipulation,
+    ability=occult,
+)[0]
+rote.description = "Curse a target with persistent bad luck and misfortune."
+rote.add_source("M20 Core", 516)
+
+effect = Effect.objects.get(name="Create Portal (Temporary)")
+rote = Rote.objects.get_or_create(
+    name="Gateway Between Spaces",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=intelligence,
+    ability=cosmology,
+)[0]
+rote.description = "Open a temporary portal connecting two locations."
+rote.add_source("How Do You Do That", 128)
+
+effect = Effect.objects.get(name="Shapeshift into Animal (Self)")
+rote = Rote.objects.get_or_create(
+    name="Beast Form",
+    effect=effect,
+    practice=witchcraft,
+    attribute=stamina,
+    ability=occult,
+)[0]
+rote.description = "Transform into an animal shape while retaining human mind."
+rote.add_source("How Do You Do That", 34)
+
+effect = Effect.objects.get(name="Channel Quintessence")
+rote = Rote.objects.get_or_create(
+    name="Draw Upon the Wellspring",
+    effect=effect,
+    practice=highritualmagick,
+    attribute=stamina,
+    ability=occult,
+)[0]
+rote.description = "Channel Quintessence from a Node or Tass for magical use."
+rote.add_source("M20 Core", 520)
