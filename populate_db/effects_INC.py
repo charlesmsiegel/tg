@@ -13738,11 +13738,7 @@ Effect.objects.get_or_create(
     life=2,
 )[0].add_source("How Do You Do That", 126)
 
-Effect.objects.get_or_create(
-    name="Call Storm",
-    forces=4,
-    prime=2,
-)[0].add_source("How Do You Do That", 49)
+# Duplicate of line 49 - removed
 
 Effect.objects.get_or_create(
     name="Control Weather (Major)",
@@ -13846,15 +13842,9 @@ Effect.objects.get_or_create(
 )[0].add_source("M20 Core", 516)
 
 # ===== ADVANCED PRIME =====
-Effect.objects.get_or_create(
-    name="Sense Quintessence",
-    prime=1,
-)[0].add_source("M20 Core", 520)
+# "Sense Quintessence" - duplicate of line 3301, removed
 
-Effect.objects.get_or_create(
-    name="Channel Quintessence",
-    prime=3,
-)[0].add_source("M20 Core", 520)
+# "Channel Quintessence" - duplicate of line 127, removed
 
 Effect.objects.get_or_create(
     name="Enchant Talisman",
@@ -13898,10 +13888,7 @@ Effect.objects.get_or_create(
 )[0].add_source("M20 Core", 520)
 
 # ===== ADVANCED SPIRIT =====
-Effect.objects.get_or_create(
-    name="See Spirits",
-    spirit=1,
-)[0].add_source("M20 Core", 521)
+# "See Spirits" - duplicate of line 144, removed
 
 Effect.objects.get_or_create(
     name="Touch Spirit Matter",
