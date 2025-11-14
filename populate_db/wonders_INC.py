@@ -34,6 +34,19 @@ Talisman.objects.get_or_create(
     background_cost=8,
     arete=3,
     quintessence_max=25,
+    description="""The Alanson Light Hardsuit represents the cutting edge of Void Engineer personal protection technology. Designed for operatives who need mobility as much as protection, this powered armor provides substantial defensive capabilities without sacrificing agility.
+
+The suit features:
+- **Armor Rating 3**: Provides +3 dice to soak rolls against all physical damage
+- **Environmental Sealing**: Complete protection against vacuum, toxins, radiation, and extreme temperatures
+- **Heads-Up Display (HUD)**: Tactical information, target tracking, and sensor data overlaid on visor
+- **Enhanced Strength**: Servomotors provide +1 Strength for lifting and close combat
+- **Limited Flight**: Maneuvering jets allow short bursts of flight or zero-G navigation
+- **Communication Suite**: Encrypted quantum-link communicator with global range
+
+The Light Hardsuit is typically deployed for Border Corps Division missions, extraplanetary security operations, and rapid response scenarios. The armor's matte black finish incorporates stealth materials that reduce visual and sensor signatures.
+
+Donning the suit requires 2 minutes with assistance or 5 minutes alone. The suit's Quintessence reserve (25 points) powers all systems, with typical deployment consuming 1-2 points per hour of active use.""",
 )[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -41,6 +54,29 @@ Talisman.objects.get_or_create(
     background_cost=5,
     arete=4,
     quintessence_max=20,
+    description="""The Alanson R-25 Hardsuit is the premier combat armor used by Void Engineer operatives who expect heavy resistance. Substantially more robust than the Light Hardsuit, the R-25 provides maximum protection while maintaining the technological sophistication expected of Enlightened Science.
+
+The suit features:
+- **Armor Rating 7**: When fully powered, provides +7 dice to soak rolls (requires 1 Quintessence per scene)
+- **Armor Rating 3**: Passive protection even when unpowered
+- **Environmental Sealing**: Complete protection against all environmental hazards including hard vacuum and deep ocean pressure
+- **Integrated Weapons**: Built-in gauss rifle or plasma caster (wielder's choice at deployment)
+- **Dimensional Stabilizers**: Correspondence-based systems that resist teleportation attacks and dimensional shunts
+- **Advanced Sensors**: Full-spectrum scanners including infrared, ultraviolet, radiation detection, and Primium resonance scanners
+- **Enhanced Strength**: +2 Strength from heavy-duty servomotors
+- **Flight Systems**: Sustained flight up to 100 mph for 1 hour per Quintessence point
+- **Tactical AI**: Limited artificial intelligence assists with targeting, threat assessment, and tactical analysis
+
+The R-25 is primarily deployed for:
+- Deep Umbra exploration and combat
+- Paradox Realm incursions
+- Reality Deviant elimination operations
+- Extradimensional entity containment
+- High-threat Construct defense
+
+The suit's distinctive angular design and glowing blue power conduits make it immediately recognizable. It requires 5 minutes to don even with assistance, and its significant bulk (adds 10 lbs to effective weight) makes stealth operations impractical.
+
+The R-25 saw extensive use during the Dimensional Anomaly campaigns of the late 1990s and proved particularly effective against Nephandi incursions. Captain Chen Zhang of the London Border Corps is known to favor this model.""",
 )[0]
 Artifact.objects.get_or_create(display=False, name="Alley Shades", background_cost=2)
 Talisman.objects.get_or_create(
@@ -2498,34 +2534,102 @@ Talisman.objects.get_or_create(
 Artifact.objects.get_or_create(display=False, name="Zulu Warshield", background_cost=2)
 
 
-Artifact.objects.get_or_create(display=False, name="Dragon Pearls", background_cost=6)[
-    0
-].add_source("Lore of the Traditions", 35)
 Artifact.objects.get_or_create(
-    display=False, name="Angel Tear Daggers", quintessence_max=10, background_cost=7
+    display=False,
+    name="Dragon Pearls",
+    background_cost=6,
+    description="""These sacred pearls are treasured artifacts of the Akashic Brotherhood, serving as powerful Quintessence channeling conduits. Formed through decades of meditation and prime energy manipulation, each pearl contains crystallized enlightenment. The pearls glow with an inner light when filled with Quintessence, and skilled practitioners can draw upon this stored energy to fuel their magical workings. They are often worn as prayer beads or carried in silk pouches.""",
+)[0].add_source("Lore of the Traditions", 35)
+Artifact.objects.get_or_create(
+    display=False,
+    name="Angel Tear Daggers",
+    quintessence_max=10,
+    background_cost=7,
+    description="""These paired daggers are forged from a mysterious crystalline substance said to be the solidified tears of angels. Whether this origin is literal or metaphorical, the daggers possess undeniable holy power. The translucent blades shimmer with an inner radiance, glowing softly in the presence of evil or infernal entities.
+
+The Angel Tear Daggers are particularly prized by mages who hunt demons, Nephandi, and other creatures of darkness. Against such beings, the daggers deal aggravated damage and ignore certain forms of supernatural protection. The blades also provide a warning system - they glow more brightly as evil draws near, with intensity proportional to the threat level.
+
+Each dagger deals Strength + 1 lethal damage normally, or Strength + 2 aggravated damage against infernal entities. The daggers can store up to 10 points of Quintessence and are often carried by Celestial Chorus members and other mages who battle dark forces. Legend holds that they were gifts from a repentant demon who wished to aid humanity's struggle against the Infernal.""",
 )[0].add_source("Lore of the Traditions", 49)
 Talisman.objects.get_or_create(
-    display=False, name="Antaratma", arete=4, quintessence_max=10, background_cost=8
+    display=False,
+    name="Antaratma",
+    arete=4,
+    quintessence_max=10,
+    background_cost=8,
+    description="""The Antaratma is a sacred talisman of the Euthanatos Tradition, designed to protect the wielder from the madness of Quiet that can afflict mages who peer too deeply into the Wheel of Ages. Crafted through complex rituals involving Spirit, Mind, and Prime magicks, this talisman appears as an ornate silver medallion inscribed with Sanskrit mantras and symbols of the eternal wheel. When activated, it provides 1 level of Quiet resistance per 2 successes rolled on the user's Arete. Additionally, once per day, the Antaratma can provide a single Willpower point to fuel spellcasting, drawing on the stored spiritual energy within.""",
 )[0].add_source("Lore of the Traditions", 98)
 
-Artifact.objects.get_or_create(display=False, name="Game of Senet", background_cost=2)[
-    0
-].add_source("Lore of the Traditions", 115)
 Artifact.objects.get_or_create(
-    display=False, name="Imphepho Wierook", quintessence_max=15, background_cost=3
+    display=False,
+    name="Game of Senet",
+    background_cost=2,
+    description="""The Game of Senet is an ancient Egyptian board game that predates most modern forms of divination. This particular set is more than just a game - it is a tool for reading fate and probability. The board is made of aged sycamore wood with squares of ivory and ebony, and the playing pieces are carved from semiprecious stones.
+
+When two players engage in a proper ritual game of Senet, the movements of the pieces across the board trace the paths of probability and fate. Skilled practitioners can read these patterns to divine future events, understand the consequences of different choices, or identify opportune moments for action. The game requires at least one hour of focused play to produce meaningful divination results.
+
+The Senet board also serves as a focus for Entropy magic, making it easier to manipulate probability or read the threads of fate. Some versions of the game are said to be gateways to the Duat (Egyptian underworld), allowing communication with the deceased or spirits of ancient Egypt.""",
 )[0].add_source("Lore of the Traditions", 115)
 Artifact.objects.get_or_create(
-    display=False, name="Waidan Ding", quintessence_max=10, background_cost=5
+    display=False,
+    name="Imphepho Wierook",
+    quintessence_max=15,
+    background_cost=3,
+    description="""Imphepho (Helichrysum petiolare) is a sacred plant used in southern African traditional practices, particularly among the Xhosa and Zulu peoples. This specially prepared wierook (incense) has been blessed by Dreamspeaker shamans to enhance its natural spiritual properties.
+
+When burned, the aromatic smoke of Imphepho creates a bridge between the physical and spirit worlds. The smoke carries prayers, requests, and offerings to the ancestors and spirits, while simultaneously inviting their presence and guidance into the ritual space. Practitioners often use Imphepho before important decisions, healing work, or when seeking ancestral wisdom.
+
+The incense enhances spiritual perception, making it easier to sense the presence of spirits and receive their messages. It also provides a degree of protection, as malevolent spirits typically avoid the sacred smoke. A complete bundle provides enough Imphepho for approximately 10-15 ritual burnings. The incense can store up to 15 points of Quintessence and is particularly effective when combined with other Spirit-focused rituals.""",
+)[0].add_source("Lore of the Traditions", 115)
+Artifact.objects.get_or_create(
+    display=False,
+    name="Waidan Ding",
+    quintessence_max=10,
+    background_cost=5,
+    description="""The Waidan Ding is a three-legged bronze cauldron used in Chinese external alchemy (waidan). This particular ding has been used in countless alchemical operations over centuries, absorbing magical resonance until it became a Wonder in its own right. The vessel is inscribed with Taoist trigrams and dragons, and it shows the patina of great age.
+
+The ding serves as both container and catalyst for alchemical transmutations. When used in the creation of elixirs, talismans, or other alchemical products, it reduces the difficulty of the working and can improve the quality of the final product. The cauldron is particularly suited for:
+- Creating medicinal elixirs and potions
+- Transmuting base metals toward gold
+- Purifying substances to reveal their quintessential nature
+- Brewing longevity formulas
+- Crafting alchemical Tass
+
+The ding can store up to 10 points of Quintessence, which it draws from when aiding alchemical processes. Practitioners typically consecrate the vessel before each major working, and the greatest respect is shown when cleaning it, as the residue from past operations contributes to its power. This particular ding is associated with the Wu Lung tradition of Chinese sorcerers.""",
 )[0].add_source("Lore of the Traditions", 115)
 
 Talisman.objects.get_or_create(
-    display=False, name="Dümerang Blade (2)", arete=2, background_cost=4
+    display=False,
+    name="Dümerang Blade (2)",
+    arete=2,
+    background_cost=4,
+    description="""This enchanted weapon appears as an elegant boomerang blade with Hermetic sigils etched along its curved edge. Created by the Order of Hermes, the Dümerang Blade is a masterwork of Forces and Correspondence magick that allows it to return unerringly to its wielder's hand after being thrown. The blade is perfectly balanced for both melee combat and ranged attacks.
+
+The Dümerang Blade has an Arete rating of 2 which automatically regenerates each day, allowing the wielder to channel Quintessence through the weapon. When thrown, the blade traces an arc through the air, striking its target before curving back to the wielder's waiting hand. Masters of the blade can throw it through impossible trajectories, having it strike multiple opponents or navigate around obstacles.
+
+The weapon deals Strength + 2 lethal damage in melee and Strength + 1 lethal damage when thrown (range 20 yards). Some versions of the blade were crafted as automotive ignition keys, with the pommel serving as a hood ornament when not in use.""",
 )[0].add_source("Lore of the Traditions", 130)
 Talisman.objects.get_or_create(
-    display=False, name="Dümerang Blade (3)", arete=3, background_cost=8
+    display=False,
+    name="Dümerang Blade (3)",
+    arete=3,
+    background_cost=8,
+    description="""This enchanted weapon appears as an elegant boomerang blade with Hermetic sigils etched along its curved edge. Created by the Order of Hermes, the Dümerang Blade is a masterwork of Forces and Correspondence magick that allows it to return unerringly to its wielder's hand after being thrown. The blade is perfectly balanced for both melee combat and ranged attacks.
+
+The Dümerang Blade has an Arete rating of 3 which automatically regenerates each day, allowing the wielder to channel Quintessence through the weapon. When thrown, the blade traces an arc through the air, striking its target before curving back to the wielder's waiting hand. Masters of the blade can throw it through impossible trajectories, having it strike multiple opponents or navigate around obstacles.
+
+The weapon deals Strength + 2 lethal damage in melee and Strength + 1 lethal damage when thrown (range 20 yards). Some versions of the blade were crafted as automotive ignition keys, with the pommel serving as a hood ornament when not in use.""",
 )[0].add_source("Lore of the Traditions", 130)
 Talisman.objects.get_or_create(
-    display=False, name="Dümerang Blade (4)", arete=4, background_cost=12
+    display=False,
+    name="Dümerang Blade (4)",
+    arete=4,
+    background_cost=12,
+    description="""This enchanted weapon appears as an elegant boomerang blade with Hermetic sigils etched along its curved edge. Created by the Order of Hermes, the Dümerang Blade is a masterwork of Forces and Correspondence magick that allows it to return unerringly to its wielder's hand after being thrown. The blade is perfectly balanced for both melee combat and ranged attacks.
+
+The Dümerang Blade has an Arete rating of 4 which automatically regenerates each day, allowing the wielder to channel Quintessence through the weapon. When thrown, the blade traces an arc through the air, striking its target before curving back to the wielder's waiting hand. Masters of the blade can throw it through impossible trajectories, having it strike multiple opponents or navigate around obstacles.
+
+The weapon deals Strength + 2 lethal damage in melee and Strength + 1 lethal damage when thrown (range 20 yards). Some versions of the blade were crafted as automotive ignition keys, with the pommel serving as a hood ornament when not in use.""",
 )[0].add_source("Lore of the Traditions", 130)
 
 Grimoire.objects.get_or_create(
@@ -2542,6 +2646,11 @@ Talisman.objects.get_or_create(
     arete=1,
     background_cost=2,
     quintessence_max=5,
+    description="""A hand-crafted ritual candle, typically made from beeswax infused with sacred herbs and oils. The Candle of Communion is a staple tool among Verbena practitioners, particularly those who work with spirits and ancestors. When lit with proper ritual intent, the candle's flame becomes a beacon in both the physical world and the Umbra, opening channels of communication.
+
+The candle (Arete 1) glows with an otherworldly light when activated, and spirits are drawn to its warmth. The practitioner can speak with entities across the Gauntlet, receive messages from ancestors, or even attract helpful spirits to aid in magical workings. The quality of communion depends on the candle's Arete rating - lower rated candles provide vaguer, more symbolic communication, while higher rated ones allow for clearer dialogue.
+
+Each candle typically provides several hours of burn time, and master crafters can create candles with specific attunements to particular types of spirits or ancestors.""",
 )[0].add_source("Lore of the Traditions", 146)
 Talisman.objects.get_or_create(
     display=False,
@@ -2549,6 +2658,11 @@ Talisman.objects.get_or_create(
     arete=2,
     background_cost=2,
     quintessence_max=10,
+    description="""A hand-crafted ritual candle, typically made from beeswax infused with sacred herbs and oils. The Candle of Communion is a staple tool among Verbena practitioners, particularly those who work with spirits and ancestors. When lit with proper ritual intent, the candle's flame becomes a beacon in both the physical world and the Umbra, opening channels of communication.
+
+The candle (Arete 2) glows with an otherworldly light when activated, and spirits are drawn to its warmth. The practitioner can speak with entities across the Gauntlet, receive messages from ancestors, or even attract helpful spirits to aid in magical workings. The quality of communion depends on the candle's Arete rating - lower rated candles provide vaguer, more symbolic communication, while higher rated ones allow for clearer dialogue.
+
+Each candle typically provides several hours of burn time, and master crafters can create candles with specific attunements to particular types of spirits or ancestors.""",
 )[0].add_source("Lore of the Traditions", 146)
 Talisman.objects.get_or_create(
     display=False,
@@ -2556,6 +2670,11 @@ Talisman.objects.get_or_create(
     arete=3,
     background_cost=2,
     quintessence_max=15,
+    description="""A hand-crafted ritual candle, typically made from beeswax infused with sacred herbs and oils. The Candle of Communion is a staple tool among Verbena practitioners, particularly those who work with spirits and ancestors. When lit with proper ritual intent, the candle's flame becomes a beacon in both the physical world and the Umbra, opening channels of communication.
+
+The candle (Arete 3) glows with an otherworldly light when activated, and spirits are drawn to its warmth. The practitioner can speak with entities across the Gauntlet, receive messages from ancestors, or even attract helpful spirits to aid in magical workings. The quality of communion depends on the candle's Arete rating - lower rated candles provide vaguer, more symbolic communication, while higher rated ones allow for clearer dialogue.
+
+Each candle typically provides several hours of burn time, and master crafters can create candles with specific attunements to particular types of spirits or ancestors.""",
 )[0].add_source("Lore of the Traditions", 146)
 
 Talisman.objects.get_or_create(
@@ -2564,6 +2683,18 @@ Talisman.objects.get_or_create(
     arete=2,
     background_cost=4,
     quintessence_max=10,
+    description="""Mama Cybele is a renowned Verbena herbalist whose tea collection has become legendary among the Traditions. Each blend in her collection is carefully crafted from rare herbs, flowers, and other natural ingredients, infused with Life and Prime magick to create powerful healing and enhancement effects.
+
+This tea collection (Arete 2) contains numerous blends, each with different properties:
+- **Healing Blend**: Accelerates natural healing, can cure diseases
+- **Dreaming Tea**: Grants prophetic visions and insights during sleep
+- **Vitality Brew**: Provides sustained energy without the crash of mundane stimulants
+- **Protection Tisane**: Strengthens the body's natural defenses
+- **Clarity Infusion**: Sharpens the mind and enhances mental acuity
+
+The teas are typically prepared with proper ritual - water blessed under appropriate moon phases, steeped for specific durations while chanting, and consumed with mindful intent. Higher Arete collections contain rarer and more potent blends capable of more dramatic effects.
+
+The collection is usually stored in an antique wooden box with individual compartments for each blend, labeled in Mama Cybele's flowing script.""",
 )[0].add_source("Lore of the Traditions", 146)
 Talisman.objects.get_or_create(
     display=False,
@@ -2571,6 +2702,18 @@ Talisman.objects.get_or_create(
     arete=3,
     background_cost=4,
     quintessence_max=15,
+    description="""Mama Cybele is a renowned Verbena herbalist whose tea collection has become legendary among the Traditions. Each blend in her collection is carefully crafted from rare herbs, flowers, and other natural ingredients, infused with Life and Prime magick to create powerful healing and enhancement effects.
+
+This tea collection (Arete 3) contains numerous blends, each with different properties:
+- **Healing Blend**: Accelerates natural healing, can cure diseases
+- **Dreaming Tea**: Grants prophetic visions and insights during sleep
+- **Vitality Brew**: Provides sustained energy without the crash of mundane stimulants
+- **Protection Tisane**: Strengthens the body's natural defenses
+- **Clarity Infusion**: Sharpens the mind and enhances mental acuity
+
+The teas are typically prepared with proper ritual - water blessed under appropriate moon phases, steeped for specific durations while chanting, and consumed with mindful intent. Higher Arete collections contain rarer and more potent blends capable of more dramatic effects.
+
+The collection is usually stored in an antique wooden box with individual compartments for each blend, labeled in Mama Cybele's flowing script.""",
 )[0].add_source("Lore of the Traditions", 146)
 Talisman.objects.get_or_create(
     display=False,
@@ -2578,6 +2721,18 @@ Talisman.objects.get_or_create(
     arete=4,
     background_cost=4,
     quintessence_max=20,
+    description="""Mama Cybele is a renowned Verbena herbalist whose tea collection has become legendary among the Traditions. Each blend in her collection is carefully crafted from rare herbs, flowers, and other natural ingredients, infused with Life and Prime magick to create powerful healing and enhancement effects.
+
+This tea collection (Arete 4) contains numerous blends, each with different properties:
+- **Healing Blend**: Accelerates natural healing, can cure diseases
+- **Dreaming Tea**: Grants prophetic visions and insights during sleep
+- **Vitality Brew**: Provides sustained energy without the crash of mundane stimulants
+- **Protection Tisane**: Strengthens the body's natural defenses
+- **Clarity Infusion**: Sharpens the mind and enhances mental acuity
+
+The teas are typically prepared with proper ritual - water blessed under appropriate moon phases, steeped for specific durations while chanting, and consumed with mindful intent. Higher Arete collections contain rarer and more potent blends capable of more dramatic effects.
+
+The collection is usually stored in an antique wooden box with individual compartments for each blend, labeled in Mama Cybele's flowing script.""",
 )[0].add_source("Lore of the Traditions", 146)
 Talisman.objects.get_or_create(
     display=False,
@@ -2585,6 +2740,18 @@ Talisman.objects.get_or_create(
     arete=5,
     background_cost=4,
     quintessence_max=25,
+    description="""Mama Cybele is a renowned Verbena herbalist whose tea collection has become legendary among the Traditions. Each blend in her collection is carefully crafted from rare herbs, flowers, and other natural ingredients, infused with Life and Prime magick to create powerful healing and enhancement effects.
+
+This tea collection (Arete 5) contains numerous blends, each with different properties:
+- **Healing Blend**: Accelerates natural healing, can cure diseases
+- **Dreaming Tea**: Grants prophetic visions and insights during sleep
+- **Vitality Brew**: Provides sustained energy without the crash of mundane stimulants
+- **Protection Tisane**: Strengthens the body's natural defenses
+- **Clarity Infusion**: Sharpens the mind and enhances mental acuity
+
+The teas are typically prepared with proper ritual - water blessed under appropriate moon phases, steeped for specific durations while chanting, and consumed with mindful intent. Higher Arete collections contain rarer and more potent blends capable of more dramatic effects.
+
+The collection is usually stored in an antique wooden box with individual compartments for each blend, labeled in Mama Cybele's flowing script.""",
 )[0].add_source("Lore of the Traditions", 146)
 
 Talisman.objects.get_or_create(
@@ -2593,6 +2760,18 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=10,
     background_cost=8,
+    description="""The Grand Book of Shadows is a magnificent leather-bound tome that serves as both grimoire and mystical artifact for a Verbena coven. Bound in aged leather and inscribed with symbols of the Goddess and God, this book is more than just a repository of spells - it is a living record of the coven's practices, history, and collective wisdom.
+
+The book (Arete 4) typically resides on a central altar and is treated with great reverence. Each page contains hand-written entries from generations of witches, detailing rituals, herb lore, spell formulae, and mystical insights. The book itself has absorbed so much magical energy over the years that it has developed a quasi-sentient awareness.
+
+Many Grand Books of Shadows can function as Familiars (see Familiar Background), offering guidance, warning of danger, or even refusing to open if a non-initiate attempts to read it. The book can:
+- Store and organize magical knowledge
+- Teach new spells and rituals to worthy students
+- Provide mystical insights and guidance
+- Generate protective wards when placed on an altar
+- Record magical workings automatically when they occur nearby
+
+The book grows more powerful as it ages, accumulating wisdom and Quintessence. Some of the oldest examples are considered irreplaceable treasures of their Traditions, containing lost knowledge and unique spell variants found nowhere else.""",
 )[0].add_source("Lore of the Traditions", 131)
 Talisman.objects.get_or_create(
     display=False,
@@ -2600,6 +2779,18 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=15,
     background_cost=8,
+    description="""The Grand Book of Shadows is a magnificent leather-bound tome that serves as both grimoire and mystical artifact for a Verbena coven. Bound in aged leather and inscribed with symbols of the Goddess and God, this book is more than just a repository of spells - it is a living record of the coven's practices, history, and collective wisdom.
+
+The book (Arete 5) typically resides on a central altar and is treated with great reverence. Each page contains hand-written entries from generations of witches, detailing rituals, herb lore, spell formulae, and mystical insights. The book itself has absorbed so much magical energy over the years that it has developed a quasi-sentient awareness.
+
+Many Grand Books of Shadows can function as Familiars (see Familiar Background), offering guidance, warning of danger, or even refusing to open if a non-initiate attempts to read it. The book can:
+- Store and organize magical knowledge
+- Teach new spells and rituals to worthy students
+- Provide mystical insights and guidance
+- Generate protective wards when placed on an altar
+- Record magical workings automatically when they occur nearby
+
+The book grows more powerful as it ages, accumulating wisdom and Quintessence. Some of the oldest examples are considered irreplaceable treasures of their Traditions, containing lost knowledge and unique spell variants found nowhere else.""",
 )[0].add_source("Lore of the Traditions", 131)
 Talisman.objects.get_or_create(
     display=False,
@@ -2607,6 +2798,18 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=20,
     background_cost=8,
+    description="""The Grand Book of Shadows is a magnificent leather-bound tome that serves as both grimoire and mystical artifact for a Verbena coven. Bound in aged leather and inscribed with symbols of the Goddess and God, this book is more than just a repository of spells - it is a living record of the coven's practices, history, and collective wisdom.
+
+The book (Arete 6) typically resides on a central altar and is treated with great reverence. Each page contains hand-written entries from generations of witches, detailing rituals, herb lore, spell formulae, and mystical insights. The book itself has absorbed so much magical energy over the years that it has developed a quasi-sentient awareness.
+
+Many Grand Books of Shadows can function as Familiars (see Familiar Background), offering guidance, warning of danger, or even refusing to open if a non-initiate attempts to read it. The book can:
+- Store and organize magical knowledge
+- Teach new spells and rituals to worthy students
+- Provide mystical insights and guidance
+- Generate protective wards when placed on an altar
+- Record magical workings automatically when they occur nearby
+
+The book grows more powerful as it ages, accumulating wisdom and Quintessence. Some of the oldest examples are considered irreplaceable treasures of their Traditions, containing lost knowledge and unique spell variants found nowhere else.""",
 )[0].add_source("Lore of the Traditions", 131)
 Talisman.objects.get_or_create(
     display=False,
@@ -2614,6 +2817,18 @@ Talisman.objects.get_or_create(
     arete=7,
     quintessence_max=25,
     background_cost=8,
+    description="""The Grand Book of Shadows is a magnificent leather-bound tome that serves as both grimoire and mystical artifact for a Verbena coven. Bound in aged leather and inscribed with symbols of the Goddess and God, this book is more than just a repository of spells - it is a living record of the coven's practices, history, and collective wisdom.
+
+The book (Arete 7) typically resides on a central altar and is treated with great reverence. Each page contains hand-written entries from generations of witches, detailing rituals, herb lore, spell formulae, and mystical insights. The book itself has absorbed so much magical energy over the years that it has developed a quasi-sentient awareness.
+
+Many Grand Books of Shadows can function as Familiars (see Familiar Background), offering guidance, warning of danger, or even refusing to open if a non-initiate attempts to read it. The book can:
+- Store and organize magical knowledge
+- Teach new spells and rituals to worthy students
+- Provide mystical insights and guidance
+- Generate protective wards when placed on an altar
+- Record magical workings automatically when they occur nearby
+
+The book grows more powerful as it ages, accumulating wisdom and Quintessence. Some of the oldest examples are considered irreplaceable treasures of their Traditions, containing lost knowledge and unique spell variants found nowhere else.""",
 )[0].add_source("Lore of the Traditions", 131)
 Talisman.objects.get_or_create(
     display=False,
@@ -2621,6 +2836,18 @@ Talisman.objects.get_or_create(
     arete=8,
     quintessence_max=25,
     background_cost=8,
+    description="""The Grand Book of Shadows is a magnificent leather-bound tome that serves as both grimoire and mystical artifact for a Verbena coven. Bound in aged leather and inscribed with symbols of the Goddess and God, this book is more than just a repository of spells - it is a living record of the coven's practices, history, and collective wisdom.
+
+The book (Arete 8) typically resides on a central altar and is treated with great reverence. Each page contains hand-written entries from generations of witches, detailing rituals, herb lore, spell formulae, and mystical insights. The book itself has absorbed so much magical energy over the years that it has developed a quasi-sentient awareness.
+
+Many Grand Books of Shadows can function as Familiars (see Familiar Background), offering guidance, warning of danger, or even refusing to open if a non-initiate attempts to read it. The book can:
+- Store and organize magical knowledge
+- Teach new spells and rituals to worthy students
+- Provide mystical insights and guidance
+- Generate protective wards when placed on an altar
+- Record magical workings automatically when they occur nearby
+
+The book grows more powerful as it ages, accumulating wisdom and Quintessence. Some of the oldest examples are considered irreplaceable treasures of their Traditions, containing lost knowledge and unique spell variants found nowhere else.""",
 )[0].add_source("Lore of the Traditions", 131)
 
 Artifact.objects.get_or_create(
