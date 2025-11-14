@@ -1,4 +1,4 @@
-from items.models.changeling import Cantrip
+from characters.models.changeling import Cantrip
 
 # AUTUMN ART
 Cantrip.objects.get_or_create(
