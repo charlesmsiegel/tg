@@ -2857,14 +2857,9 @@ Artifact.objects.get_or_create(
 
 # Create Effects for Wonders and attach them
 
-# Dragon Pearls - Quintessence channeling
-dragon_pearl_effect = Effect.objects.get_or_create(
-    name="Quintessence Channeling (Dragon Pearls)",
-    prime=3,
-    description="Channels and stores Quintessence, allowing the user to draw upon mystical energies for spellcasting. Acts as a conduit for Prime energy.",
-)[0]
+# Dragon Pearls - Use existing Channel Quintessence effect
 dragon_pearls = Artifact.objects.get(name="Dragon Pearls")
-dragon_pearls.power = dragon_pearl_effect
+dragon_pearls.power = Effect.objects.get(name="Channel Quintessence")
 dragon_pearls.save()
 
 # Antaratma - Quiet resistance talisman
