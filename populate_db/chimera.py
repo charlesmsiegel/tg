@@ -1,4 +1,4 @@
-from items.models.changeling import Chimera
+from characters.models.changeling import Chimera
 
 # FACSIMILES (5 points)
 Chimera.objects.get_or_create(

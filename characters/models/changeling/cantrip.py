@@ -1,9 +1,9 @@
+from core.models import Model
 from django.db import models
 from django.urls import reverse
-from items.models.core import ItemModel
 
 
-class Cantrip(ItemModel):
+class Cantrip(Model):
     """
     Cantrips are the spells/magical effects of Changelings.
     They combine an Art (method) with Realms (targets).
@@ -86,11 +86,11 @@ class Cantrip(ItemModel):
         verbose_name_plural = "Cantrips"
 
     def get_update_url(self):
-        return reverse("items:changeling:update:cantrip", args=[str(self.id)])
+        return reverse("characters:changeling:update:cantrip", args=[str(self.id)])
 
     @classmethod
     def get_creation_url(cls):
-        return reverse("items:changeling:create:cantrip")
+        return reverse("characters:changeling:create:cantrip")
 
     def get_heading(self):
         return "ctd_heading"

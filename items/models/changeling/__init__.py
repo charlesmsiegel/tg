@@ -1,5 +1,5 @@
-from items.models.changeling.cantrip import Cantrip
-from items.models.changeling.chimera import Chimera
 from items.models.changeling.treasure import Treasure
 
-__all__ = ["Cantrip", "Treasure", "Chimera"]
+# Cantrip and Chimera have been moved to characters.models.changeling
+
+__all__ = ["Treasure"]

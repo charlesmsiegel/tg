@@ -1,9 +1,9 @@
+from core.models import Model
 from django.db import models
 from django.urls import reverse
-from items.models.core import ItemModel
 
 
-class Chimera(ItemModel):
+class Chimera(Model):
     """
     Chimera are sentient or semi-sentient chimerical creations.
     They can be manifested from dreams or created through Treasures.
@@ -99,11 +99,11 @@ class Chimera(ItemModel):
         verbose_name_plural = "Chimera"
 
     def get_update_url(self):
-        return reverse("items:changeling:update:chimera", args=[str(self.id)])
+        return reverse("characters:changeling:update:chimera", args=[str(self.id)])
 
     @classmethod
     def get_creation_url(cls):
-        return reverse("items:changeling:create:chimera")
+        return reverse("characters:changeling:create:chimera")
 
     def get_heading(self):
         return "ctd_heading"

@@ -1,4 +1,6 @@
+from .cantrip import Cantrip
 from .changeling import Changeling
+from .chimera import Chimera
 from .ctdhuman import CtDHuman
 from .house import House
 from .house_faction import HouseFaction
