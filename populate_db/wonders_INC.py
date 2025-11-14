@@ -1,6 +1,7 @@
 from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
+from characters.models.mage.effect import Effect
 
 Artifact.objects.get_or_create(display=False, name="'O'ole Tatu", background_cost=6)
 Talisman.objects.get_or_create(
@@ -2853,6 +2854,154 @@ The book grows more powerful as it ages, accumulating wisdom and Quintessence. S
 Artifact.objects.get_or_create(
     display=False, name="Rod Logic Computer", quintessence_max=10, background_cost=3
 )[0].add_source("Lore of the Traditions", 161)
+
+# Create Effects for Wonders and attach them
+
+# Dragon Pearls - Quintessence channeling
+dragon_pearl_effect = Effect.objects.get_or_create(
+    name="Quintessence Channeling (Dragon Pearls)",
+    prime=3,
+    description="Channels and stores Quintessence, allowing the user to draw upon mystical energies for spellcasting. Acts as a conduit for Prime energy.",
+)[0]
+dragon_pearls = Artifact.objects.get(name="Dragon Pearls")
+dragon_pearls.power = dragon_pearl_effect
+dragon_pearls.save()
+
+# Antaratma - Quiet resistance talisman
+antaratma_effect = Effect.objects.get_or_create(
+    name="Quiet Resistance (Antaratma)",
+    mind=3,
+    prime=2,
+    spirit=2,
+    description="Provides resistance to Quiet and madness. Grants 1 level of Quiet resistance per 2 successes on Arete roll. Can provide a Willpower point for casting once per day.",
+)[0]
+antaratma = Talisman.objects.get(name="Antaratma")
+antaratma.powers.add(antaratma_effect)
+
+# Dümerang Blade - Returning weapon
+dumerang_effect = Effect.objects.get_or_create(
+    name="Returning Weapon (Dümerang Blade)",
+    forces=2,
+    correspondence=2,
+    prime=2,
+    description="Enchanted boomerang that automatically returns to the wielder's hand after being thrown. The blade auto-regenerates its Arete rating daily. Can be used as both melee and ranged weapon.",
+)[0]
+for arete_level in [2, 3, 4]:
+    dumerang = Talisman.objects.get(name=f"Dümerang Blade ({arete_level})")
+    dumerang.powers.add(dumerang_effect)
+
+# Candle of Communion - Spirit communication
+candle_effect = Effect.objects.get_or_create(
+    name="Spirit Communion (Candle)",
+    spirit=3,
+    mind=2,
+    prime=2,
+    description="When lit, this candle opens a channel of communication with spirits, ancestors, and entities in the Umbra. The flickering flame creates a beacon visible in both the physical and spirit worlds, attracting helpful spirits and allowing for clearer communion.",
+)[0]
+for arete_level in [1, 2, 3]:
+    candle = Talisman.objects.get(name=f"Candle of Communion ({arete_level})")
+    candle.powers.add(candle_effect)
+
+# Mama Cybele's Tea Collection - Healing and enhancement
+tea_heal_effect = Effect.objects.get_or_create(
+    name="Herbal Healing (Tea)",
+    life=3,
+    prime=2,
+    description="Magically enhanced herbal tea that promotes healing and well-being. Different blends can cure ailments, grant visions, provide energy, or offer protection.",
+)[0]
+tea_enhance_effect = Effect.objects.get_or_create(
+    name="Herbal Enhancement (Tea)",
+    life=2,
+    mind=1,
+    description="Herbal tea that temporarily enhances physical or mental capabilities, or provides prophetic dreams and insights.",
+)[0]
+for arete_level in [2, 3, 4, 5]:
+    tea = Talisman.objects.get(name=f"Mama Cybele's Tea Collection ({arete_level})")
+    tea.powers.add(tea_heal_effect)
+    tea.powers.add(tea_enhance_effect)
+
+# Grand Book of Shadows - Living grimoire
+book_power_effect = Effect.objects.get_or_create(
+    name="Mystical Grimoire Power (Book of Shadows)",
+    prime=3,
+    spirit=2,
+    mind=2,
+    description="A living grimoire that stores knowledge, spells, and mystical power. Can function as a Familiar, offering advice and magical assistance. Contains centuries of Verbena wisdom and practices.",
+)[0]
+for arete_level in [4, 5, 6, 7, 8]:
+    if Talisman.objects.filter(name=f"Grand Book of Shadows ({arete_level})").exists():
+        book = Talisman.objects.get(name=f"Grand Book of Shadows ({arete_level})")
+        book.powers.add(book_power_effect)
+
+# Angel Tear Daggers - Holy weapons
+angel_dagger_effect = Effect.objects.get_or_create(
+    name="Blessed Blade (Angel Tears)",
+    prime=2,
+    spirit=2,
+    forces=1,
+    description="Daggers forged from crystallized tears of angels (or so the legend claims). Highly effective against demonic and infernal entities, dealing aggravated damage to such beings. The blades glow with soft silver light when evil is near.",
+)[0]
+angel_daggers = Artifact.objects.get(name="Angel Tear Daggers")
+angel_daggers.power = angel_dagger_effect
+angel_daggers.save()
+
+# Game of Senet - Divination board game
+senet_effect = Effect.objects.get_or_create(
+    name="Fate Game (Senet)",
+    entropy=2,
+    time=1,
+    description="An ancient Egyptian board game that can divine fate and fortune. Playing the game allows glimpses into probability streams and potential futures.",
+)[0]
+senet = Artifact.objects.get(name="Game of Senet")
+senet.power = senet_effect
+senet.save()
+
+# Imphepho Wierook - Ancestral incense
+imphepho_effect = Effect.objects.get_or_create(
+    name="Ancestral Incense (Imphepho)",
+    spirit=2,
+    mind=1,
+    prime=1,
+    description="Sacred incense that opens channels to the ancestors and spirits. The smoke carries prayers and messages to the spirit world while inviting ancestral guidance and protection.",
+)[0]
+imphepho = Artifact.objects.get(name="Imphepho Wierook")
+imphepho.power = imphepho_effect
+imphepho.save()
+
+# Waidan Ding - Alchemical cauldron
+ding_effect = Effect.objects.get_or_create(
+    name="Alchemical Vessel (Ding)",
+    matter=3,
+    prime=2,
+    forces=1,
+    description="An alchemical cauldron used for transmutation and the creation of elixirs. Enhances all alchemical workings and can transmute base materials into more refined substances.",
+)[0]
+ding = Artifact.objects.get(name="Waidan Ding")
+ding.power = ding_effect
+ding.save()
+
+# Alanson Light Hardsuit - Void Engineer armor
+light_hardsuit_effect = Effect.objects.get_or_create(
+    name="Light Combat Armor (Alanson)",
+    matter=3,
+    forces=2,
+    prime=2,
+    description="Lightweight powered armor providing protection and enhanced mobility. Includes HUD, environmental seals, and basic combat systems. Armor Rating 3 (+3 soak dice).",
+)[0]
+light_hardsuit = Talisman.objects.get(name="Alanson Light Hardsuit")
+light_hardsuit.powers.add(light_hardsuit_effect)
+
+# Alanson R-25 Hardsuit - Heavy combat armor
+r25_hardsuit_effect = Effect.objects.get_or_create(
+    name="Heavy Combat Armor (Alanson R-25)",
+    matter=4,
+    forces=3,
+    prime=2,
+    correspondence=2,
+    description="Advanced powered armor with heavy protection, weapons systems, and dimensional stabilizers. Armor Rating 7 when fully powered. Includes integrated weapons and sensor suite.",
+)[0]
+r25_hardsuit = Talisman.objects.get(name="Alanson R-25 Hardsuit")
+r25_hardsuit.powers.add(r25_hardsuit_effect)
 
 
 for a in Artifact.objects.all():
