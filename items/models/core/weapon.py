@@ -29,8 +29,8 @@ class Weapon(ItemModel):
     )
 
     def get_update_url(self):
-        return reverse("items:update:weapon", args=[str(self.id)])
+        return reverse(f"items:update:{self.type}", args=[str(self.id)])
 
     @classmethod
     def get_creation_url(cls):
-        return reverse("items:create:weapon")
+        return reverse(f"items:create:{cls.type}")

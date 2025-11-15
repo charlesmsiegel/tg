@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 from items.models.core.weapon import Weapon
 
 
@@ -13,10 +12,3 @@ class RangedWeapon(Weapon):
     class Meta:
         verbose_name = "Ranged Weapon"
         verbose_name_plural = "Ranged Weapons"
-
-    def get_update_url(self):
-        return reverse("items:update:ranged_weapon", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("items:create:ranged_weapon")
