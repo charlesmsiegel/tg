@@ -83,3 +83,12 @@ class Character(CharacterModel):
             if d["approved"] == "Pending":
                 return True
         return False
+
+    def add_xp(self, amount):
+        """Add XP to the character.
+
+        Args:
+            amount: Integer amount of XP to add.
+        """
+        self.xp += amount
+        self.save()
