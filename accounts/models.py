@@ -3,8 +3,6 @@ from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.urls import reverse
 from game.models import (
     Chronicle,
@@ -109,15 +107,24 @@ class Profile(models.Model):
         return base
 
     def is_st(self):
-        num_st = STRelationship.objects.filter(user=self.user).count()
-        return num_st > 0
+        """Check if user is a storyteller for any chronicle."""
+        return STRelationship.objects.filter(user=self.user).exists()
 
     def st_relations(self):
-        str = STRelationship.objects.filter(user=self.user)
+        """Get all storyteller relationships organized by chronicle.
+
+        Returns a dict mapping Chronicle objects to lists of STRelationship objects.
+        Optimized to avoid N+1 query issues.
+        """
+        relationships = STRelationship.objects.filter(
+            user=self.user
+        ).select_related("chronicle", "gameline")
+
         d = {}
-        for chron in Chronicle.objects.all():
-            if str.filter(chronicle=chron).count() > 0:
-                d[chron] = str.filter(chronicle=chron)
+        for rel in relationships:
+            if rel.chronicle not in d:
+                d[rel.chronicle] = []
+            d[rel.chronicle].append(rel)
         return d
 
     def my_characters(self):
@@ -161,13 +168,21 @@ class Profile(models.Model):
         ).order_by("name")
 
     def rotes_to_approve(self):
-        d = {}
-        for r in Rote.objects.filter(
-            status__in=["Un", "Sub"],
-            chronicle__in=self.user.chronicle_set.all(),
-        ).order_by("name"):
-            d[r] = Mage.objects.filter(rotes__in=[r])
-        return d
+        """Get rotes pending approval with their associated mages.
+
+        Optimized to avoid N+1 query issues by using prefetch_related.
+        """
+        from django.db.models import Prefetch
+
+        rotes = (
+            Rote.objects.filter(
+                status__in=["Un", "Sub"],
+                chronicle__in=self.user.chronicle_set.all(),
+            )
+            .prefetch_related(Prefetch("mage_set", queryset=Mage.objects.all()))
+            .order_by("name")
+        )
+        return {r: list(r.mage_set.all()) for r in rotes}
 
     def objects_to_approve(self):
         to_approve = list(self.characters_to_approve())
@@ -259,10 +274,3 @@ class Profile(models.Model):
         return Scene.objects.filter(
             userscenereadstatus__user=self.user, userscenereadstatus__read=False
         ).distinct()
-
-
-@receiver(post_save, sender=User)
-def update_profile_signal(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-    instance.profile.save()

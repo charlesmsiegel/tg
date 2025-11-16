@@ -21,7 +21,9 @@ class CustomAuthenticationForm(AuthenticationForm):
         })
 
 
-class CustomUSerCreationForm(UserCreationForm):
+class CustomUserCreationForm(UserCreationForm):
+    """Custom user creation form with email field and tg-form-control styling."""
+
     email = forms.EmailField(required=False)
 
     class Meta:
@@ -80,6 +82,8 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 class SceneXP(forms.Form):
+    """Form for awarding XP to characters in a scene."""
+
     def __init__(self, *args, **kwargs):
         self.scene = kwargs.pop("scene")
         super().__init__(*args, **kwargs)
@@ -87,12 +91,8 @@ class SceneXP(forms.Form):
             self.fields[f"{character.name}"] = forms.BooleanField(required=False)
 
     def save(self):
-        self.scene.xp_given = True
-        self.scene.save()
-        for char in self.cleaned_data.keys():
-            if self.cleaned_data[char]:
-                char.xp += 1
-                char.save()
+        """Save XP awards using the Scene model's business logic."""
+        self.scene.award_xp(self.cleaned_data)
 
     def clean(self):
         cleaned_data = super().clean()
