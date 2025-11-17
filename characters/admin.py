@@ -91,7 +91,7 @@ from characters.models.wraith.guild import Guild
 from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
-from characters.models.wraith.wraith import Wraith, ThoronRating
+from characters.models.wraith.wraith import Wraith, ThornRating
 from django.contrib import admin
 
 admin.site.register(CharacterModel)
@@ -536,6 +536,6 @@ class ThornAdmin(admin.ModelAdmin):
     list_filter = ("thorn_type", "point_cost")
 
 
-admin.site.register(ThoronRating)
+admin.site.register(ThornRating)
 admin.site.register(Fetter)
 admin.site.register(Passion)
