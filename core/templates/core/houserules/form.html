@@ -1,0 +1,18 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create House Rule
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.gameline }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.chronicle }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+{% endblock contents %}

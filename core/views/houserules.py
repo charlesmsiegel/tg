@@ -1,7 +1,7 @@
 from typing import Any
 
 from core.models import HouseRule
-from django.views.generic import ListView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class HouseRulesIndexView(ListView):
@@ -15,3 +15,36 @@ class HouseRulesIndexView(ListView):
         else:
             context["header"] = "wod_heading"
         return context
+
+
+class HouseRuleDetailView(DetailView):
+    model = HouseRule
+    template_name = "core/houserules/detail.html"
+
+
+class HouseRuleCreateView(CreateView):
+    model = HouseRule
+    fields = ["name", "description", "chronicle", "gameline"]
+    template_name = "core/houserules/form.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
+        form.fields["description"].widget.attrs.update(
+            {"placeholder": "Enter description here"}
+        )
+        return form
+
+
+class HouseRuleUpdateView(UpdateView):
+    model = HouseRule
+    fields = ["name", "description", "chronicle", "gameline"]
+    template_name = "core/houserules/form.html"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
+        form.fields["description"].widget.attrs.update(
+            {"placeholder": "Enter description here"}
+        )
+        return form
