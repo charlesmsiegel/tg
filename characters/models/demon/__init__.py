@@ -1,3 +1,4 @@
+from .apocalyptic_form import ApocalypticFormTrait
 from .demon import Demon, LoreRating
 from .dtf_human import DtFHuman
 from .earthbound import Earthbound

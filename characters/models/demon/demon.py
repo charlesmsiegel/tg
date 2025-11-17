@@ -78,8 +78,10 @@ class Demon(LoreBlock, DtFHuman):
 
     # Lores inherited from LoreBlock
 
-    # Apocalyptic form
-    apocalyptic_form_abilities = models.JSONField(default=list)  # 8 abilities
+    # Apocalyptic form (select 8 traits)
+    apocalyptic_form = models.ManyToManyField(
+        "ApocalypticFormTrait", blank=True, related_name="demons_with_trait"
+    )
 
     # Host information
     host_name = models.CharField(max_length=200, default="")
@@ -167,8 +169,36 @@ class Demon(LoreBlock, DtFHuman):
         )
 
     def has_apocalyptic_form(self):
-        """Check if apocalyptic form has 8 abilities."""
-        return len(self.apocalyptic_form_abilities) == 8
+        """Check if apocalyptic form has 8 traits."""
+        return self.apocalyptic_form.count() == 8
+
+    def add_apocalyptic_trait(self, trait):
+        """Add a trait to apocalyptic form (max 8)."""
+        if self.apocalyptic_form.count() >= 8:
+            return False
+        if trait not in self.apocalyptic_form.all():
+            self.apocalyptic_form.add(trait)
+            return True
+        return False
+
+    def remove_apocalyptic_trait(self, trait):
+        """Remove a trait from apocalyptic form."""
+        if trait in self.apocalyptic_form.all():
+            self.apocalyptic_form.remove(trait)
+            return True
+        return False
+
+    def get_apocalyptic_traits(self):
+        """Get all selected apocalyptic form traits."""
+        return self.apocalyptic_form.all()
+
+    def get_available_apocalyptic_traits(self):
+        """Get traits available from demon's visage."""
+        if self.visage:
+            return self.visage.available_traits.exclude(
+                id__in=self.apocalyptic_form.values_list("id", flat=True)
+            )
+        return None
 
     def has_demon_history(self):
         """Check if demon has celestial name and history."""

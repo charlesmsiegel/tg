@@ -1,3 +1,4 @@
+from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.house import House
 from characters.models.demon.visage import Visage
 
@@ -10,11 +11,25 @@ defilers = House.objects.get(name="Defilers")
 devourers = House.objects.get(name="Devourers")
 slayers = House.objects.get(name="Slayers")
 
+
+# Helper function to create traits and link to visage
+def create_visage_with_traits(name, house, trait_names):
+    visage = Visage.objects.get_or_create(name=name, house=house)[0]
+
+    for trait_name in trait_names:
+        trait = ApocalypticFormTrait.objects.get_or_create(
+            name=trait_name, house=house
+        )[0]
+        visage.available_traits.add(trait)
+
+    return visage
+
+
 # Devil Visages
-bel = Visage.objects.get_or_create(
-    name="Bel",
-    house=devils,
-    abilities=[
+bel = create_visage_with_traits(
+    "Bel",
+    devils,
+    [
         "Voice of Heaven",
         "Aura of Legend",
         "Wings",
@@ -24,12 +39,12 @@ bel = Visage.objects.get_or_create(
         "Divine Voice",
         "Celestial Radiance",
     ],
-)[0]
+)
 
-nusku = Visage.objects.get_or_create(
-    name="Nusku",
-    house=devils,
-    abilities=[
+nusku = create_visage_with_traits(
+    "Nusku",
+    devils,
+    [
         "Fire Manipulation",
         "Burning Aura",
         "Wings of Flame",
@@ -39,12 +54,12 @@ nusku = Visage.objects.get_or_create(
         "Fire Immunity",
         "Inferno Form",
     ],
-)[0]
+)
 
-qingu = Visage.objects.get_or_create(
-    name="Qingu",
-    house=devils,
-    abilities=[
+qingu = create_visage_with_traits(
+    "Qingu",
+    devils,
+    [
         "Commanding Presence",
         "Fearsome Visage",
         "Enhanced Charisma",
@@ -54,13 +69,13 @@ qingu = Visage.objects.get_or_create(
         "Venomous Strike",
         "Dragon Wings",
     ],
-)[0]
+)
 
 # Scourge Visages
-dagan = Visage.objects.get_or_create(
-    name="Dagan",
-    house=scourges,
-    abilities=[
+dagan = create_visage_with_traits(
+    "Dagan",
+    scourges,
+    [
         "Wind Walk",
         "Breath of Life",
         "Healing Touch",
@@ -70,12 +85,12 @@ dagan = Visage.objects.get_or_create(
         "Air Shield",
         "Cyclone Form",
     ],
-)[0]
+)
 
-anshar = Visage.objects.get_or_create(
-    name="Anshar",
-    house=scourges,
-    abilities=[
+anshar = create_visage_with_traits(
+    "Anshar",
+    scourges,
+    [
         "Plague Touch",
         "Disease Immunity",
         "Pestilence Aura",
@@ -85,12 +100,12 @@ anshar = Visage.objects.get_or_create(
         "Decay",
         "Death's Herald",
     ],
-)[0]
+)
 
-ellil = Visage.objects.get_or_create(
-    name="Ellil",
-    house=scourges,
-    abilities=[
+ellil = create_visage_with_traits(
+    "Ellil",
+    scourges,
+    [
         "Far Sight",
         "Clairvoyance",
         "Omniscient Eye",
@@ -100,13 +115,13 @@ ellil = Visage.objects.get_or_create(
         "Lightning Strike",
         "Storm Eye",
     ],
-)[0]
+)
 
 # Malefactor Visages
-kishar = Visage.objects.get_or_create(
-    name="Kishar",
-    house=malefactors,
-    abilities=[
+kishar = create_visage_with_traits(
+    "Kishar",
+    malefactors,
+    [
         "Stone Skin",
         "Earth Strength",
         "Earthquake",
@@ -116,12 +131,12 @@ kishar = Visage.objects.get_or_create(
         "Tremor Sense",
         "Earthen Avatar",
     ],
-)[0]
+)
 
-mummu = Visage.objects.get_or_create(
-    name="Mummu",
-    house=malefactors,
-    abilities=[
+mummu = create_visage_with_traits(
+    "Mummu",
+    malefactors,
+    [
         "Master Craftsman",
         "Animate Object",
         "Perfect Tool",
@@ -131,12 +146,12 @@ mummu = Visage.objects.get_or_create(
         "Living Forge",
         "Creation's Touch",
     ],
-)[0]
+)
 
-antu = Visage.objects.get_or_create(
-    name="Antu",
-    house=malefactors,
-    abilities=[
+antu = create_visage_with_traits(
+    "Antu",
+    malefactors,
+    [
         "Foundation's Strength",
         "Unbreakable Will",
         "Anchor",
@@ -146,13 +161,13 @@ antu = Visage.objects.get_or_create(
         "Atomic Form",
         "Creator's Avatar",
     ],
-)[0]
+)
 
-# Fiend Visages (generic examples)
-neberu_seer = Visage.objects.get_or_create(
-    name="Neberu Seer",
-    house=fiends,
-    abilities=[
+# Fiend Visages
+neberu_seer = create_visage_with_traits(
+    "Neberu Seer",
+    fiends,
+    [
         "Time Sight",
         "Prophetic Vision",
         "Fate Reading",
@@ -162,13 +177,13 @@ neberu_seer = Visage.objects.get_or_create(
         "Probability Control",
         "Omniscient Form",
     ],
-)[0]
+)
 
-# Defiler Visages (generic examples)
-lammasu_ocean = Visage.objects.get_or_create(
-    name="Lammasu of the Ocean",
-    house=defilers,
-    abilities=[
+# Defiler Visages
+lammasu_ocean = create_visage_with_traits(
+    "Lammasu of the Ocean",
+    defilers,
+    [
         "Water Breathing",
         "Tidal Strength",
         "Storm Summoning",
@@ -178,13 +193,13 @@ lammasu_ocean = Visage.objects.get_or_create(
         "Beauty's Radiance",
         "Tempest Avatar",
     ],
-)[0]
+)
 
-# Devourer Visages (generic examples)
-rabisu_hunter = Visage.objects.get_or_create(
-    name="Rabisu Hunter",
-    house=devourers,
-    abilities=[
+# Devourer Visages
+rabisu_hunter = create_visage_with_traits(
+    "Rabisu Hunter",
+    devourers,
+    [
         "Beast Form",
         "Predator's Senses",
         "Claws and Fangs",
@@ -194,13 +209,13 @@ rabisu_hunter = Visage.objects.get_or_create(
         "Wild Empathy",
         "Primordial Beast",
     ],
-)[0]
+)
 
-# Slayer Visages (generic examples)
-halaku_reaper = Visage.objects.get_or_create(
-    name="Halaku Reaper",
-    house=slayers,
-    abilities=[
+# Slayer Visages
+halaku_reaper = create_visage_with_traits(
+    "Halaku Reaper",
+    slayers,
+    [
         "Death's Touch",
         "Spirit Sight",
         "Corpse Animation",
@@ -210,4 +225,4 @@ halaku_reaper = Visage.objects.get_or_create(
         "Decay Aura",
         "Death's Avatar",
     ],
-)[0]
+)
