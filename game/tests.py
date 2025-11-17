@@ -306,7 +306,10 @@ class TestWeeklyXPRequestValidation(TestCase):
     def test_standingout_requires_scene(self):
         """Test that standing out XP requires a scene."""
         request = WeeklyXPRequest(
-            week=self.week, character=self.char, standingout=True, standingout_scene=None
+            week=self.week,
+            character=self.char,
+            standingout=True,
+            standingout_scene=None,
         )
         with self.assertRaises(ValidationError) as context:
             request.full_clean()

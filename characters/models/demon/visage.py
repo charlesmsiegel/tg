@@ -1,4 +1,4 @@
-from characters.models.demon.house import House
+from characters.models.demon.house import DemonHouse
 from core.models import Model
 from django.db import models
 
@@ -9,12 +9,19 @@ class Visage(Model):
     type = "visage"
 
     house = models.ForeignKey(
-        House, on_delete=models.CASCADE, related_name="visages", null=True, blank=True
+        DemonHouse,
+        on_delete=models.CASCADE,
+        related_name="visages",
+        null=True,
+        blank=True,
     )
 
     # Available apocalyptic form traits for this visage
-    available_traits = models.ManyToManyField(
-        "ApocalypticFormTrait", blank=True, related_name="visages"
+    low_torment_traits = models.ManyToManyField(
+        "ApocalypticFormTrait", blank=True, related_name="low_torment_visages"
+    )
+    high_torment_traits = models.ManyToManyField(
+        "ApocalypticFormTrait", blank=True, related_name="high_torment_visages"
     )
 
     class Meta:

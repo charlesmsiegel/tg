@@ -7,18 +7,16 @@ from django.contrib.auth.models import User
 
 class CustomAuthenticationForm(AuthenticationForm):
     """Custom authentication form with tg-form-control styling"""
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Add tg-form-control class to all fields
-        self.fields['username'].widget.attrs.update({
-            'class': 'tg-form-control',
-            'placeholder': 'Enter your username'
-        })
-        self.fields['password'].widget.attrs.update({
-            'class': 'tg-form-control',
-            'placeholder': 'Enter your password'
-        })
+        self.fields["username"].widget.attrs.update(
+            {"class": "tg-form-control", "placeholder": "Enter your username"}
+        )
+        self.fields["password"].widget.attrs.update(
+            {"class": "tg-form-control", "placeholder": "Enter your password"}
+        )
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -34,11 +32,13 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         # Add tg-form-control class to all fields
         for field_name in self.fields:
-            existing_classes = self.fields[field_name].widget.attrs.get('class', '')
+            existing_classes = self.fields[field_name].widget.attrs.get("class", "")
             if existing_classes:
-                self.fields[field_name].widget.attrs['class'] = f'{existing_classes} tg-form-control'
+                self.fields[field_name].widget.attrs[
+                    "class"
+                ] = f"{existing_classes} tg-form-control"
             else:
-                self.fields[field_name].widget.attrs['class'] = 'tg-form-control'
+                self.fields[field_name].widget.attrs["class"] = "tg-form-control"
 
     def is_valid(self):
         if self.data["username"] == self.data["email"]:
@@ -72,13 +72,24 @@ class ProfileUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["discord_id"].required = False
-        
+
         # Add tg-form-control class to text inputs and selects
         for field_name, field in self.fields.items():
-            if field_name in ['preferred_heading', 'theme', 'discord_id', 'lines', 'veils']:
-                field.widget.attrs.update({'class': 'tg-form-control'})
-            elif field_name in ['highlight_text', 'discord_toggle', 'lines_toggle', 'veils_toggle']:
-                field.widget.attrs.update({'class': 'tg-form-check-input'})
+            if field_name in [
+                "preferred_heading",
+                "theme",
+                "discord_id",
+                "lines",
+                "veils",
+            ]:
+                field.widget.attrs.update({"class": "tg-form-control"})
+            elif field_name in [
+                "highlight_text",
+                "discord_toggle",
+                "lines_toggle",
+                "veils_toggle",
+            ]:
+                field.widget.attrs.update({"class": "tg-form-check-input"})
 
 
 class SceneXP(forms.Form):

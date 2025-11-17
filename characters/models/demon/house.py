@@ -2,7 +2,7 @@ from core.models import Model
 from django.db import models
 
 
-class House(Model):
+class DemonHouse(Model):
     """Represents one of the seven Houses of the Fallen."""
 
     type = "house"

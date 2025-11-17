@@ -15,27 +15,27 @@ class CharacterCreationForm(forms.Form):
             "wta": "Werewolf",
             "vtm": "Vampire",
         }
-        
+
         # Check if this is a human type
         if "_human" in name:
             prefix = name.split("_")[0]
             gameline = gameline_map.get(prefix, prefix.upper())
             return f"Human ({gameline})"
-        
+
         # Special cases
         if name == "spirit_character":
             return "Spirit"
-        
+
         # Default: title case with underscores replaced
         return name.replace("_", " ").title()
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        
+
         # Group types to exclude from character creation
         group_types = ["cabal", "group", "pack", "motley"]
-        
+
         if user.is_authenticated:
             if user.profile.is_st():
                 choices = [

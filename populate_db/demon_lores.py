@@ -1,14 +1,14 @@
-from characters.models.demon.house import House
+from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 
 # Get the houses
-devils = House.objects.get(name="Devils")
-scourges = House.objects.get(name="Scourges")
-malefactors = House.objects.get(name="Malefactors")
-fiends = House.objects.get(name="Fiends")
-defilers = House.objects.get(name="Defilers")
-devourers = House.objects.get(name="Devourers")
-slayers = House.objects.get(name="Slayers")
+devils = DemonHouse.objects.get(name="Devils")
+scourges = DemonHouse.objects.get(name="Scourges")
+malefactors = DemonHouse.objects.get(name="Malefactors")
+fiends = DemonHouse.objects.get(name="Fiends")
+defilers = DemonHouse.objects.get(name="Defilers")
+devourers = DemonHouse.objects.get(name="Devourers")
+slayers = DemonHouse.objects.get(name="Slayers")
 
 # Scourge House Lores
 lore_of_awakening = Lore.objects.get_or_create(
@@ -177,4 +177,6 @@ lore_of_humanity = Lore.objects.get_or_create(
     property_name="humanity",
     description="Engage, influence, and manipulate mortals; human psychology and control",
 )[0]
-# This lore is available to all houses
+lore_of_humanity.houses.add(
+    devils, scourges, malefactors, fiends, defilers, devourers, slayers
+)

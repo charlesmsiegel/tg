@@ -1,7 +1,7 @@
+from characters.models.mage.effect import Effect
 from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
-from characters.models.mage.effect import Effect
 
 Artifact.objects.get_or_create(display=False, name="'O'ole Tatu", background_cost=6)
 Talisman.objects.get_or_create(
@@ -3001,9 +3001,9 @@ r25_hardsuit.powers.add(r25_hardsuit_effect)
 # ===== EXAMPLE WONDERS, TALISMANS, ARTIFACTS FROM MAGE SOURCEBOOKS =====
 # These serve as examples and templates for magical items
 
-from items.models.mage.wonder import Wonder
-from items.models.mage.charm import Charm
 from characters.models.mage.resonance import Resonance
+from items.models.mage.charm import Charm
+from items.models.mage.wonder import Wonder
 
 # Dragon Pearls (Akashic Brotherhood)
 pearl = Wonder.objects.get_or_create(

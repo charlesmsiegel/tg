@@ -212,7 +212,14 @@ x = SpiritCharacter.objects.get_or_create(
 x.add_source("M20 Core", 549)
 x.charms.set(
     SpiritCharm.objects.filter(
-        name__in=["Materialize", "Blast", "Tracking", "Armor", "Realm Sense", "Corruption"]
+        name__in=[
+            "Materialize",
+            "Blast",
+            "Tracking",
+            "Armor",
+            "Realm Sense",
+            "Corruption",
+        ]
     )
 )
 x.description = (
@@ -260,7 +267,9 @@ x = SpiritCharacter.objects.get_or_create(
     display=True,
 )[0]
 x.add_source("M20 Core", 368)
-x.charms.set(SpiritCharm.objects.filter(name__in=["Materialize", "Blast", "Create Fire"]))
+x.charms.set(
+    SpiritCharm.objects.filter(name__in=["Materialize", "Blast", "Create Fire"])
+)
 x.description = "Minor spirit of fire and heat, embodies flame and combustion."
 x.save()
 
@@ -278,7 +287,9 @@ x.charms.set(
         name__in=["Materialize", "Blast", "Create Fire", "Armor", "Shapeshift"]
     )
 )
-x.description = "Powerful spirit of fire, can manifest as living flame or fire creatures."
+x.description = (
+    "Powerful spirit of fire, can manifest as living flame or fire creatures."
+)
 x.save()
 
 x = SpiritCharacter.objects.get_or_create(
@@ -291,7 +302,9 @@ x = SpiritCharacter.objects.get_or_create(
 )[0]
 x.add_source("M20 Core", 368)
 x.charms.set(
-    SpiritCharm.objects.filter(name__in=["Materialize", "Healing", "Cleanse the Blight"])
+    SpiritCharm.objects.filter(
+        name__in=["Materialize", "Healing", "Cleanse the Blight"]
+    )
 )
 x.description = "Minor spirit of water, embodies flow and adaptation."
 x.save()
@@ -339,7 +352,13 @@ x = SpiritCharacter.objects.get_or_create(
 x.add_source("M20 Core", 368)
 x.charms.set(
     SpiritCharm.objects.filter(
-        name__in=["Materialize", "Armor", "Umbraquake", "Shapeshift", "Solidify Reality"]
+        name__in=[
+            "Materialize",
+            "Armor",
+            "Umbraquake",
+            "Shapeshift",
+            "Solidify Reality",
+        ]
     )
 )
 x.description = (
@@ -491,7 +510,9 @@ x.charms.set(
         name__in=["Materialize", "Armor", "Tracking", "Realm Sense"]
     )
 )
-x.description = "Spirit bound to guard a node or sacred place. Defends against intruders."
+x.description = (
+    "Spirit bound to guard a node or sacred place. Defends against intruders."
+)
 x.save()
 
 x = SpiritCharacter.objects.get_or_create(
@@ -647,7 +668,9 @@ x.charms.set(
         name__in=["Materialize", "Corruption", "Blast", "Possession"]
     )
 )
-x.description = "Corrupted spirit that spreads decay and corruption. Serves the Nephandi."
+x.description = (
+    "Corrupted spirit that spreads decay and corruption. Serves the Nephandi."
+)
 x.save()
 
 x = SpiritCharacter.objects.get_or_create(
@@ -757,7 +780,9 @@ x = SpiritCharacter.objects.get_or_create(
 )[0]
 x.add_source("Lore of the Traditions", 88)
 x.charms.set(
-    SpiritCharm.objects.filter(name__in=["Materialize", "Open Moon Bridge", "Airt Sense"])
+    SpiritCharm.objects.filter(
+        name__in=["Materialize", "Open Moon Bridge", "Airt Sense"]
+    )
 )
 x.description = (
     "Moon spirit associated with the Dreamspeakers and werewolves. Helps spirit travel."
@@ -823,9 +848,7 @@ x.charms.set(
         name__in=["Possession", "Airt Sense", "Tracking", "Mind Speech"]
     )
 )
-x.description = (
-    "Virtual Adept spirit ally inhabiting the Digital Web. Guides hackers and reality coders."
-)
+x.description = "Virtual Adept spirit ally inhabiting the Digital Web. Guides hackers and reality coders."
 x.save()
 
 for spirit in SpiritCharacter.objects.all():

@@ -159,7 +159,9 @@ class ProfileView(LoginRequiredMixin, DetailView):
             char = get_object_or_404(Character, pk=char_pk)
             # Check user owns this character
             if char.owner != request.user:
-                raise PermissionDenied("You can only submit requests for your own characters")
+                raise PermissionDenied(
+                    "You can only submit requests for your own characters"
+                )
             form = WeeklyXPRequestForm(request.POST, week=week, character=char)
             if form.is_valid():
                 form.player_save()
@@ -205,6 +207,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
-    
+
     def get_success_url(self):
         return self.request.user.profile.get_absolute_url()

@@ -8,6 +8,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     """Create a Profile when a new User is created."""
     if created:
         from accounts.models import Profile
+
         Profile.objects.create(user=instance)
 
 

@@ -130,7 +130,7 @@ class CharacterIndexView(ListView):
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
-        
+
         # Determine if this is a character or group creation
         if "char_type" in request.POST:
             type_name = request.POST["char_type"]
@@ -139,10 +139,10 @@ class CharacterIndexView(ListView):
         else:
             context = self.get_context_data()
             return render(request, "characters/index.html", context)
-        
+
         obj = ObjectType.objects.get(name=type_name)
         gameline = obj.gameline
-        
+
         if action == "create" or action == "create_group":
             if gameline == "wod":
                 redi = f"characters:create:{type_name}"
@@ -157,7 +157,7 @@ class CharacterIndexView(ListView):
             elif gameline == "ctd":
                 redi = f"characters:changeling:create:{type_name}"
             return redirect(redi)
-        
+
         context = self.get_context_data()
         return render(request, "characters/index.html", context)
 
