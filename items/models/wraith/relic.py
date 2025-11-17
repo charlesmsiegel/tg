@@ -3,7 +3,7 @@ from django.urls import reverse
 from items.models.core import ItemModel
 
 
-class Relic(ItemModel):
+class WraithRelic(ItemModel):
     type = "relic"
 
     level = models.IntegerField(default=1)
