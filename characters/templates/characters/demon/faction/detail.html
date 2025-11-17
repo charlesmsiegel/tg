@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% load dots %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            {% include "core/includes/title.html" %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Philosophy</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.philosophy|default:"No philosophy specified." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Goal</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.goal|default:"No goal specified." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Leadership</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.leadership|default:"No leadership information." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Tactics</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.tactics|default:"No tactics specified." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.description %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Description</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

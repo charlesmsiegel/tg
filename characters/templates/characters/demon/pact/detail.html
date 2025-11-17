@@ -1,0 +1,113 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% load dots %}
+{% block title %}
+    {{ object }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="dtf">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title dtf_heading">{{ object }}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Pact Details</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <div class="row mb-2">
+                                <div class="col-sm-4">
+                                    <strong>Demon:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {% if object.demon %}
+                                        <a href="{{ object.demon.get_absolute_url }}">{{ object.demon.name }}</a>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4">
+                                    <strong>Thrall:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {% if object.thrall %}
+                                        <a href="{{ object.thrall.get_absolute_url }}">{{ object.thrall.name }}</a>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4">
+                                    <strong>Faith Payment:</strong>
+                                </div>
+                                <div class="col-sm-8">{{ object.faith_payment }} per interval</div>
+                            </div>
+                            <div class="row mb-0">
+                                <div class="col-sm-4">
+                                    <strong>Status:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {% if object.active %}
+                                        <span class="tg-badge badge-app">Active</span>
+                                    {% else %}
+                                        <span class="tg-badge badge-ret">Inactive</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Terms</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.terms|default:"No terms specified." }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.enhancements %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Enhancements</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                {% for enhancement in object.enhancements %}
+                                    <div class="row mb-1">
+                                        <div class="col-sm">{{ enhancement }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

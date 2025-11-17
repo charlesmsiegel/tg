@@ -1,0 +1,71 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% load dots %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            {% include "core/includes/title.html" %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Lore Details</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <div class="row mb-0">
+                                <div class="col-sm-4">
+                                    <strong>Property Name:</strong>
+                                </div>
+                                <div class="col-sm-8">{{ object.property_name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.houses.all %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Associated Houses</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                {% for house in object.houses.all %}
+                                    <div class="row mb-1">
+                                        <div class="col-sm">
+                                            <a href="{{ house.get_absolute_url }}">{{ house }}</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Description</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.description|default:"No description available."|sanitize_html }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

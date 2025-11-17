@@ -25,6 +25,9 @@ class Necropolis(LocationModel):
         verbose_name = "Necropolis"
         verbose_name_plural = "Necropolises"
 
+    def get_absolute_url(self):
+        return reverse("locations:wraith:necropolis", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("locations:wraith:update:necropolis", args=[str(self.id)])
 

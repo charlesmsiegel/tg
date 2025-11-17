@@ -1,0 +1,56 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+{% block objectname %}
+    <!-- Page Header with Wraith styling -->
+    <div class="tg-card header-card mb-4" data-gameline="wto">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title wto_heading">
+                {{ object.name }}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
+{% block model_specific %}
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h5 class="tg-card-title wto_heading">Necropolis Details</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.get_region_display }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Region</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.population }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Population</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{% if object.deathlord %}{{ object.deathlord }}{% else %}<span class="text-muted">None</span>{% endif %}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Deathlord</div>
+                    </div>
+                </div>
+            </div>
+            {% if object.description %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Description</div>
+                            <div style="line-height: 1.6; color: var(--theme-text-primary);">{{ object.description|sanitize_html }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock model_specific %}
