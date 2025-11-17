@@ -1,11 +1,14 @@
 from django.db import models
 from locations.models.core.location import LocationModel
-
+from django.urls import reverse
 
 class Haunt(LocationModel):
     """Faith-rich location where the Veil is weakened."""
 
     type = "haunt"
+    
+    rank = models.IntegerField(default=1)
+    shroud_rating = models.IntegerField(default=5)
 
     # Type of haunt
     haunt_type = models.CharField(
@@ -21,9 +24,18 @@ class Haunt(LocationModel):
             ("other", "Other"),
         ],
     )
+    
+    HAUNT_SIZE_CHOICES = [
+        ("single_room", "Single Room"),
+        ("apartment", "Small Apartment/Shop"),
+        ("house", "House/Small Warehouse"),
+        ("mansion", "Mansion/Large Building"),
+        ("estate", "Estate/Compound"),
+    ]
 
-    # Veil difficulty (default 5, easier to cross than normal)
-    veil_difficulty = models.IntegerField(default=5)
+    haunt_size = models.CharField(
+        max_length=20, choices=HAUNT_SIZE_CHOICES, default="single_room"
+    )
 
     # Faith resonance
     faith_resonance = models.TextField(default="")
@@ -38,3 +50,26 @@ class Haunt(LocationModel):
 
     def __str__(self):
         return f"{self.name} (Haunt)"
+
+    def get_update_url(self):
+        return reverse("locations:wraith:update:haunt", args=[str(self.id)])
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("locations:wraith:create:haunt")
+
+    def get_heading(self):
+        return "wto_heading"
+
+    def set_rank(self, rank):
+        self.rank = rank
+        # Set shroud rating based on rank
+        shroud_map = {
+            1: 5,
+            2: 4,
+            3: 3,
+            4: 2,
+            5: 1,
+        }
+        self.shroud_rating = shroud_map.get(rank, 5)
+        return True
