@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import datetime
 from django.views import View
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 from game.forms import (
     AddCharForm,
     JournalEntryForm,
@@ -283,3 +283,50 @@ class JournalDetailView(SpecialUserMixin, DetailView):
         return render(
             request, "game/journal/detail.html", self.get_context_data(**kwargs)
         )
+
+
+class ChronicleListView(ListView):
+    model = Chronicle
+    ordering = ["name"]
+    template_name = "game/chronicle/list.html"
+
+
+class SceneListView(ListView):
+    model = Scene
+    ordering = ["-date_of_scene", "-date_played"]
+    template_name = "game/scene/list.html"
+
+
+class JournalListView(ListView):
+    model = Journal
+    ordering = ["character__name"]
+    template_name = "game/journal/list.html"
+
+
+class StoryDetailView(DetailView):
+    model = Story
+    template_name = "game/story/detail.html"
+
+
+class StoryListView(ListView):
+    model = Story
+    ordering = ["name"]
+    template_name = "game/story/list.html"
+
+
+class StoryCreateView(CreateView):
+    model = Story
+    fields = ["name"]
+    template_name = "game/story/form.html"
+
+    def get_success_url(self):
+        return reverse("game:story:detail", kwargs={"pk": self.object.pk})
+
+
+class StoryUpdateView(UpdateView):
+    model = Story
+    fields = ["name"]
+    template_name = "game/story/form.html"
+
+    def get_success_url(self):
+        return reverse("game:story:detail", kwargs={"pk": self.object.pk})
