@@ -103,6 +103,178 @@
         </div>
     </div>
 
+    <!-- Character Type-Specific Fields Section -->
+    <div class="tg-card mb-4" id="type-specific-section" style="display: none;">
+        <div class="tg-card-header">
+            <h5 class="tg-card-title mb-0">Character Details</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+
+            <!-- Mage Fields -->
+            <div id="mage-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.mage_affiliation.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Affiliation
+                        </label>
+                        {{ form.mage_affiliation }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.mage_essence.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Essence
+                        </label>
+                        {{ form.mage_essence }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.mage_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Faction
+                        </label>
+                        {{ form.mage_faction }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.mage_subfaction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Subfaction
+                        </label>
+                        {{ form.mage_subfaction }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Werewolf Fields -->
+            <div id="werewolf-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="{{ form.werewolf_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Tribe
+                        </label>
+                        {{ form.werewolf_tribe }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ form.werewolf_breed.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Breed
+                        </label>
+                        {{ form.werewolf_breed }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ form.werewolf_auspice.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Auspice
+                        </label>
+                        {{ form.werewolf_auspice }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kinfolk Fields -->
+            <div id="kinfolk-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.kinfolk_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Tribe
+                        </label>
+                        {{ form.kinfolk_tribe }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.kinfolk_breed.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Breed
+                        </label>
+                        {{ form.kinfolk_breed }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wraith Fields -->
+            <div id="wraith-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.wraith_guild.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Guild
+                        </label>
+                        {{ form.wraith_guild }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.wraith_character_type.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Wraith Type
+                        </label>
+                        {{ form.wraith_character_type }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.wraith_legion.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Legion
+                        </label>
+                        {{ form.wraith_legion }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.wraith_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Faction
+                        </label>
+                        {{ form.wraith_faction }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Changeling Fields -->
+            <div id="changeling-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.changeling_kith.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Kith
+                        </label>
+                        {{ form.changeling_kith }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.changeling_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            House
+                        </label>
+                        {{ form.changeling_house }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.changeling_court.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Court
+                        </label>
+                        {{ form.changeling_court }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.changeling_seeming.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Seeming
+                        </label>
+                        {{ form.changeling_seeming }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demon Fields -->
+            <div id="demon-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="{{ form.demon_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            House
+                        </label>
+                        {{ form.demon_house }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ form.demon_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Faction
+                        </label>
+                        {{ form.demon_faction }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="{{ form.demon_visage.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Visage
+                        </label>
+                        {{ form.demon_visage }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- Description Section -->
     <div class="tg-card mb-4">
         <div class="tg-card-header">
@@ -202,3 +374,54 @@
         </div>
     </div>
 {% endblock buttons %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const npcTypeSelect = document.getElementById('{{ form.npc_type.id_for_label }}');
+    const typeSpecificSection = document.getElementById('type-specific-section');
+    const allTypeFields = document.querySelectorAll('.type-specific-fields');
+
+    // Mapping of character types to their corresponding field divs
+    const typeFieldMapping = {
+        'mage': 'mage-fields',
+        'werewolf': 'werewolf-fields',
+        'kinfolk': 'kinfolk-fields',
+        'wraith': 'wraith-fields',
+        'changeling': 'changeling-fields',
+        'demon': 'demon-fields'
+    };
+
+    function toggleTypeSpecificFields() {
+        const selectedType = npcTypeSelect.value;
+
+        // Hide all type-specific field sets
+        allTypeFields.forEach(fieldSet => {
+            fieldSet.style.display = 'none';
+        });
+
+        // Check if the selected type needs specific fields
+        if (typeFieldMapping.hasOwnProperty(selectedType)) {
+            // Show the type-specific section
+            typeSpecificSection.style.display = 'block';
+
+            // Show only the relevant fields for this type
+            const relevantFieldsId = typeFieldMapping[selectedType];
+            const relevantFields = document.getElementById(relevantFieldsId);
+            if (relevantFields) {
+                relevantFields.style.display = 'block';
+            }
+        } else {
+            // Hide the entire type-specific section for types without special fields
+            typeSpecificSection.style.display = 'none';
+        }
+    }
+
+    // Run on page load
+    toggleTypeSpecificFields();
+
+    // Run when selection changes
+    npcTypeSelect.addEventListener('change', toggleTypeSpecificFields);
+});
+</script>
+{% endblock extra_scripts %}
