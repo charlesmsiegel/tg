@@ -141,7 +141,54 @@ STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
 
 LOGIN_REDIRECT_URL = "user"
 LOGOUT_REDIRECT_URL = "home"
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Email Configuration
+# ====================
+# Currently using console backend for development.
+# When ready for production, configure one of the following:
+#
+# Option 1: SMTP (Gmail, SendGrid, etc.)
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+# EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+# EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+# EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+# EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+#
+# Option 2: Amazon SES
+# EMAIL_BACKEND = "django_ses.SESBackend"
+# AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+# AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+# AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME", "us-east-1")
+# AWS_SES_REGION_ENDPOINT = f"email.{AWS_SES_REGION_NAME}.amazonaws.com"
+#
+# Option 3: Mailgun
+# EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+# ANYMAIL = {
+#     "MAILGUN_API_KEY": os.environ.get("MAILGUN_API_KEY", ""),
+#     "MAILGUN_SENDER_DOMAIN": os.environ.get("MAILGUN_SENDER_DOMAIN", ""),
+# }
+
+# Development: Console backend (prints emails to console)
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+
+# Production email settings (configure via environment variables)
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "25"))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "False") == "True"
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "False") == "True"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "30"))
+
+# Default sender for password resets and other system emails
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@tellurian-games.com")
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
+
+# Password reset token expiration (in seconds, default 3 days = 259200)
+PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT", "259200"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
