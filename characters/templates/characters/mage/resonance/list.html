@@ -3,15 +3,218 @@
     Resonances
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Resonance</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="mta">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title mta_heading">Resonances</h1>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header d-flex justify-content-between align-items-center">
+                <h5 class="tg-card-title mb-0">Filters</h5>
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
+                    Toggle Filters
+                </button>
+            </div>
+            <div class="collapse show" id="filterPanel">
+                <div class="tg-card-body" style="padding: 20px;">
+                    <!-- Search Filter -->
+                    <div class="mb-3">
+                        <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
+                        <input type="text" class="form-control" id="nameFilter" placeholder="Type to filter by name...">
+                    </div>
+
+                    <!-- Sphere Filters -->
+                    <div class="mb-3">
+                        <label style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); display: block; margin-bottom: 8px;">Filter by Spheres</label>
+                        <div class="row">
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="correspondence" id="filterCorrespondence">
+                                    <label class="form-check-label" for="filterCorrespondence">Correspondence</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="entropy" id="filterEntropy">
+                                    <label class="form-check-label" for="filterEntropy">Entropy</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="forces" id="filterForces">
+                                    <label class="form-check-label" for="filterForces">Forces</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="life" id="filterLife">
+                                    <label class="form-check-label" for="filterLife">Life</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="matter" id="filterMatter">
+                                    <label class="form-check-label" for="filterMatter">Matter</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="mind" id="filterMind">
+                                    <label class="form-check-label" for="filterMind">Mind</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="prime" id="filterPrime">
+                                    <label class="form-check-label" for="filterPrime">Prime</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="spirit" id="filterSpirit">
+                                    <label class="form-check-label" for="filterSpirit">Spirit</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input sphere-filter" type="checkbox" value="time" id="filterTime">
+                                    <label class="form-check-label" for="filterTime">Time</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear All Filters</button>
+                        <span id="resultCount" style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resonance List -->
+        <div class="row" id="resonanceList">
+            {% for obj in object_list %}
+                <div class="col-md-4 col-sm-6 mb-3 resonance-item"
+                     data-name="{{ obj.name|lower }}"
+                     data-correspondence="{{ obj.correspondence|yesno:'true,false' }}"
+                     data-entropy="{{ obj.entropy|yesno:'true,false' }}"
+                     data-forces="{{ obj.forces|yesno:'true,false' }}"
+                     data-life="{{ obj.life|yesno:'true,false' }}"
+                     data-matter="{{ obj.matter|yesno:'true,false' }}"
+                     data-mind="{{ obj.mind|yesno:'true,false' }}"
+                     data-prime="{{ obj.prime|yesno:'true,false' }}"
+                     data-spirit="{{ obj.spirit|yesno:'true,false' }}"
+                     data-time="{{ obj.time|yesno:'true,false' }}">
+                    <div class="tg-card h-100">
+                        <div class="tg-card-body" style="padding: 16px;">
+                            <h6 class="tg-card-title mb-2">
+                                <a href="{{ obj.get_absolute_url }}" style="text-decoration: none; color: var(--theme-text-primary);">{{ obj.name }}</a>
+                            </h6>
+                            {% if obj.associated_spheres %}
+                                <div style="font-size: 0.75rem; color: var(--theme-text-secondary);">
+                                    {{ obj.associated_spheres }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center" style="padding: 20px;">
+                            <p style="color: var(--theme-text-secondary); margin: 0;">No resonances found.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="tg-card" style="display: none;">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <p style="color: var(--theme-text-secondary); margin: 0;">No resonances match the current filters.</p>
+            </div>
+        </div>
     </div>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameFilter = document.getElementById('nameFilter');
+    const sphereFilters = document.querySelectorAll('.sphere-filter');
+    const resonanceItems = document.querySelectorAll('.resonance-item');
+    const clearButton = document.getElementById('clearFilters');
+    const resultCount = document.getElementById('resultCount');
+    const noResults = document.getElementById('noResults');
+
+    function updateFilters() {
+        const nameQuery = nameFilter.value.toLowerCase().trim();
+        const selectedSpheres = Array.from(sphereFilters)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        let visibleCount = 0;
+
+        resonanceItems.forEach(item => {
+            let show = true;
+
+            // Name filter
+            if (nameQuery && !item.dataset.name.includes(nameQuery)) {
+                show = false;
+            }
+
+            // Sphere filters (must match ALL selected spheres)
+            if (show && selectedSpheres.length > 0) {
+                for (const sphere of selectedSpheres) {
+                    if (item.dataset[sphere] !== 'true') {
+                        show = false;
+                        break;
+                    }
+                }
+            }
+
+            if (show) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Update result count
+        const totalCount = resonanceItems.length;
+        if (nameQuery || selectedSpheres.length > 0) {
+            resultCount.textContent = `Showing ${visibleCount} of ${totalCount} resonances`;
+        } else {
+            resultCount.textContent = `${totalCount} resonances`;
+        }
+
+        // Show/hide no results message
+        if (visibleCount === 0 && totalCount > 0) {
+            noResults.style.display = '';
+        } else {
+            noResults.style.display = 'none';
+        }
+    }
+
+    // Event listeners
+    nameFilter.addEventListener('input', updateFilters);
+    sphereFilters.forEach(cb => cb.addEventListener('change', updateFilters));
+
+    clearButton.addEventListener('click', function() {
+        nameFilter.value = '';
+        sphereFilters.forEach(cb => cb.checked = false);
+        updateFilters();
+    });
+
+    // Initial count
+    updateFilters();
+});
+</script>
+{% endblock extra_js %}
