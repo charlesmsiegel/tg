@@ -16,13 +16,13 @@ class Thrall(DtFHuman):
     # Daily Faith offered to demon master
     daily_faith_offered = models.IntegerField(default=1)
 
-    # Master demon
+    # Master demon (primary, for convenience - can have multiple via pacts)
     master = models.ForeignKey(
         "Demon",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="thralls",
+        related_name="primary_thralls",
     )
 
     # Enhancements granted by pact
@@ -63,6 +63,20 @@ class Thrall(DtFHuman):
             and self.conscience >= 1
             and (self.conviction + self.courage + self.conscience) == 6
         )
+
+    def get_pacts(self):
+        """Get all pacts this thrall has with demons."""
+        from characters.models.demon.pact import Pact
+
+        return Pact.objects.filter(thrall=self)
+
+    def get_active_pacts(self):
+        """Get all active pacts."""
+        return self.get_pacts().filter(active=True)
+
+    def total_pacts(self):
+        """Get total number of active pacts."""
+        return self.get_active_pacts().count()
 
     def add_enhancement(self, enhancement):
         """Add an enhancement to the thrall."""

@@ -2,18 +2,10 @@ from django.db import models
 
 
 class Pact(models.Model):
-    """Represents a pact between a demon and a thrall."""
+    """Through table for Demon-Thrall many-to-many relationship with pact details."""
 
-    demon = models.ForeignKey(
-        "Demon", on_delete=models.CASCADE, related_name="pacts", null=True, blank=True
-    )
-    thrall = models.ForeignKey(
-        "Thrall",
-        on_delete=models.CASCADE,
-        related_name="pact_with",
-        null=True,
-        blank=True,
-    )
+    demon = models.ForeignKey("Demon", on_delete=models.CASCADE, null=True)
+    thrall = models.ForeignKey("Thrall", on_delete=models.CASCADE, null=True)
 
     terms = models.TextField(default="")
     faith_payment = models.IntegerField(
