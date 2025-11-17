@@ -1,0 +1,132 @@
+{% extends "characters/demon/dtfhuman/form.html" %}
+{% load dots %}
+{% block creation_title %}
+    Create Thrall
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Player</div>
+        <div class="col-sm">{{ form.owner }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Concept</div>
+        <div class="col-sm">{{ form.concept }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Nature</div>
+        <div class="col-sm">{{ form.nature }}</div>
+        <div class="col-sm">Demeanor</div>
+        <div class="col-sm">{{ form.demeanor }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Master</div>
+        <div class="col-sm">{{ form.master }}</div>
+    </div>
+    <div class="row">
+        <h2 class="col-sm {{ form.get_heading }}">Attributes</h2>
+    </div>
+    <div class="row">
+        <h3 class="col-sm {{ form.get_heading }}">Physical</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Social</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Mental</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Strength</div>
+        <div class="col-sm dots">{{ form.strength }}</div>
+        <div class="col-sm">Charisma</div>
+        <div class="col-sm dots">{{ form.charisma }}</div>
+        <div class="col-sm">Perception</div>
+        <div class="col-sm dots">{{ form.perception }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Dexterity</div>
+        <div class="col-sm dots">{{ form.dexterity }}</div>
+        <div class="col-sm">Manipulation</div>
+        <div class="col-sm dots">{{ form.manipulation }}</div>
+        <div class="col-sm">Intelligence</div>
+        <div class="col-sm dots">{{ form.intelligence }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Stamina</div>
+        <div class="col-sm dots">{{ form.stamina }}</div>
+        <div class="col-sm">Appearance</div>
+        <div class="col-sm dots">{{ form.appearance }}</div>
+        <div class="col-sm">Wits</div>
+        <div class="col-sm dots">{{ form.wits }}</div>
+    </div>
+    {% block abilities %}
+        {{ block.super }}
+    {% endblock abilities %}
+    <div class="row">
+        <h2 class="col-sm {{ form.get_heading }}">Advantages</h2>
+    </div>
+    <div class="row">
+        <h3 class="col-sm {{ form.get_heading }}">Virtues</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Faith Potential</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Willpower</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Conscience</div>
+        <div class="col-sm">{{ form.conscience }}</div>
+        <div class="col-sm">Faith Potential</div>
+        <div class="col-sm">{{ form.faith_potential }}</div>
+        <div class="col-sm">Willpower</div>
+        <div class="col-sm">{{ form.willpower }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Conviction</div>
+        <div class="col-sm">{{ form.conviction }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Courage</div>
+        <div class="col-sm">{{ form.courage }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Specialties</div>
+        <div class="col-sm dots">{{ form.specialties }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Derangements</div>
+        <div class="col-sm dots">{{ form.derangements }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Merits and Flaws</div>
+        <div class="col-sm dots">{{ form.merits_and_flaws }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Date of Birth</div>
+        <div class="col-sm">{{ form.date_of_birth }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Apparent Age</div>
+        <div class="col-sm">{{ form.apparent_age }}</div>
+        <div class="col-sm">Age</div>
+        <div class="col-sm">{{ form.age }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">History</div>
+        <div class="col-sm">{{ form.history }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Goals</div>
+        <div class="col-sm">{{ form.goals }}</div>
+        <div class="col-sm">Notes</div>
+        <div class="col-sm">{{ form.notes }}</div>
+    </div>
+{% endblock contents %}

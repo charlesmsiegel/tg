@@ -1,5 +1,6 @@
 from core.models import Model
 from django.db import models
+from django.urls import reverse
 
 
 class ApocalypticFormTrait(Model):
@@ -31,3 +32,18 @@ class ApocalypticFormTrait(Model):
 
     def __str__(self):
         return f"{self.name} ({self.cost} pts)"
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:apocalyptic_trait", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse(
+            "characters:demon:update:apocalyptic_trait", kwargs={"pk": self.pk}
+        )
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:apocalyptic_trait")
+
+    def get_heading(self):
+        return "dtf_heading"

@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Houses
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="dtf">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title dtf_heading">Houses of the Fallen</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body">
+                            {% for obj in object_list %}
+                                <div class="row mb-2">
+                                    <div class="col-sm">
+                                        <a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+                                    </div>
+                                    <div class="col-sm">{{ obj.celestial_name }}</div>
+                                </div>
+                            {% empty %}
+                                <div class="row">
+                                    <div class="col-sm">No houses found.</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

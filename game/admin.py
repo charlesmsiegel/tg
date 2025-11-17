@@ -2,6 +2,8 @@ from django.contrib import admin
 from game.models import (
     Chronicle,
     Gameline,
+    Journal,
+    JournalEntry,
     ObjectType,
     Post,
     Scene,
@@ -64,3 +66,14 @@ admin.site.register(Week)
 admin.site.register(WeeklyXPRequest)
 admin.site.register(StoryXPRequest)
 admin.site.register(UserSceneReadStatus)
+
+
+@admin.register(Journal)
+class JournalAdmin(admin.ModelAdmin):
+    list_display = ("character",)
+
+
+@admin.register(JournalEntry)
+class JournalEntryAdmin(admin.ModelAdmin):
+    list_display = ("journal", "date", "datetime_created")
+    list_filter = ("journal", "date")

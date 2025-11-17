@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Pacts
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="dtf">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title dtf_heading">Pacts</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body">
+                            {% for obj in object_list %}
+                                <div class="row mb-2">
+                                    <div class="col-sm">
+                                        <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+                                    </div>
+                                    <div class="col-sm">
+                                        {% if obj.active %}
+                                            <span class="tg-badge badge-app">Active</span>
+                                        {% else %}
+                                            <span class="tg-badge badge-ret">Inactive</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="row">
+                                    <div class="col-sm">No pacts found.</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

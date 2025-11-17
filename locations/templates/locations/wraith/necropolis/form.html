@@ -1,0 +1,13 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Necropolis
+{% endblock creation_title %}
+{% block other %}
+    <div class="row">
+        <div class="col-sm">{{ form.region }}</div>
+        <div class="col-sm">{{ form.population }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.deathlord }}</div>
+    </div>
+{% endblock other %}

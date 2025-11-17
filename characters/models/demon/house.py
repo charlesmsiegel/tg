@@ -1,5 +1,6 @@
 from core.models import Model
 from django.db import models
+from django.urls import reverse
 
 
 class DemonHouse(Model):
@@ -20,3 +21,16 @@ class DemonHouse(Model):
 
     def __str__(self):
         return f"{self.name} ({self.celestial_name})"
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:house", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:house", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:house")
+
+    def get_heading(self):
+        return "dtf_heading"

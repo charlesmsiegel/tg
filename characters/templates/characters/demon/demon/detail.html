@@ -1,0 +1,288 @@
+{% extends "characters/demon/dtfhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block creation_title %}
+    Create Demon
+{% endblock creation_title %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>House:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.house %}
+                                <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-3">
+                            <strong>Faction:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.faction %}
+                                <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Celestial Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.celestial_name|default:"-" }}</div>
+                        <div class="col-sm-3">
+                            <strong>Host Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.host_name|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Visage:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {% if object.visage %}
+                                <a href="{{ object.visage.get_absolute_url }}">{{ object.visage }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Virtues</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Faith & Torment</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Willpower</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Conscience</div>
+                        <div class="col-sm dots">{{ object.conscience|dots }}</div>
+                        <div class="col-sm">Faith</div>
+                        <div class="col-sm dots">{{ object.faith|dots }}</div>
+                        <div class="col-sm">Willpower</div>
+                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Conviction</div>
+                        <div class="col-sm dots">{{ object.conviction|dots }}</div>
+                        <div class="col-sm">Temp. Faith</div>
+                        <div class="col-sm dots">{{ object.temporary_faith|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm">Courage</div>
+                        <div class="col-sm dots">{{ object.courage|dots }}</div>
+                        <div class="col-sm">Torment</div>
+                        <div class="col-sm dots">{{ object.torment|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}
+{% block powers %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Lores</h5>
+                </div>
+                <div class="tg-card-body">
+                    {% if object.get_lores %}
+                        {% for lore in object.get_lores %}
+                            <div class="row mb-1">
+                                <div class="col-sm">
+                                    <a href="{{ lore.get_absolute_url }}">{{ lore.name }}</a>
+                                </div>
+                                <div class="col-sm dots">{{ lore.rating|dots }}</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="row">
+                            <div class="col-sm">No lores selected.</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.apocalyptic_form.all %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Apocalyptic Form</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for trait in object.apocalyptic_form.all %}
+                            <div class="row mb-1">
+                                <div class="col-sm">{{ trait.name }}</div>
+                                <div class="col-sm">{{ trait.description }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock powers %}
+{% block equipment %}
+    {% include "characters/core/human/equipment_block.html" %}
+{% endblock equipment %}
+{% block appearance %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% if object.date_of_birth %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Birth:</span>
+                                {{ object.date_of_birth }}
+                            </div>
+                        {% endif %}
+                        {% if object.apparent_age %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Apparent Age:</span>
+                                {{ object.apparent_age }}
+                            </div>
+                        {% endif %}
+                        {% if object.age %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age:</span>
+                                {{ object.age }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if object.description %}
+                        <div class="mt-3 text-center">
+                            <div class="mb-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Description:</span>
+                            </div>
+                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.description }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock appearance %}
+{% block history %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.get_heading }}">History</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% if object.age_of_fall %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age of Fall:</span>
+                                {{ object.age_of_fall }}
+                            </div>
+                        {% endif %}
+                        {% if object.abyss_duration %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Time in Abyss:</span>
+                                {{ object.abyss_duration }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if object.history %}
+                        <div class="mb-3 text-center">
+                            <div class="mb-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">History:</span>
+                            </div>
+                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.history }}</p>
+                        </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% if object.goals %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Goals:</span>
+                                {{ object.goals }}
+                            </div>
+                        {% endif %}
+                        {% if object.notes %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Notes:</span>
+                                {{ object.notes }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock history %}

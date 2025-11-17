@@ -26,6 +26,18 @@ from characters.models.core.background_block import (
     PooledBackgroundRating,
 )
 from characters.models.core.statistic import Statistic
+from characters.models.demon import (
+    Demon,
+    DemonFaction,
+    DemonHouse,
+    DtFHuman,
+    Lore,
+    LoreRating,
+    Pact,
+    Thrall,
+    Visage,
+)
+from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.mage import (
     Cabal,
     CorruptedPractice,
@@ -72,6 +84,14 @@ from characters.models.werewolf import (
     WtAHuman,
 )
 from characters.models.wraith import WtOHuman
+from characters.models.wraith.arcanos import Arcanos
+from characters.models.wraith.faction import WraithFaction
+from characters.models.wraith.fetter import Fetter
+from characters.models.wraith.guild import Guild
+from characters.models.wraith.passion import Passion
+from characters.models.wraith.shadow_archetype import ShadowArchetype
+from characters.models.wraith.thorn import Thorn
+from characters.models.wraith.wraith import Wraith, ThoronRating
 from django.contrib import admin
 
 admin.site.register(CharacterModel)
@@ -411,3 +431,111 @@ admin.site.register(SorcererFellowship)
 admin.site.register(Advantage)
 admin.site.register(AdvantageRating)
 admin.site.register(GiftPermission)
+
+# Demon Models
+
+
+@admin.register(Demon)
+class DemonAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "owner",
+        "house",
+        "faction",
+        "faith",
+        "torment",
+        "chronicle",
+        "status",
+    )
+    list_filter = ("owner", "house", "faction", "chronicle", "status")
+
+
+admin.site.register(DtFHuman)
+
+
+@admin.register(DemonFaction)
+class DemonFactionAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(DemonHouse)
+class DemonHouseAdmin(admin.ModelAdmin):
+    list_display = ("name", "celestial_name", "starting_torment")
+
+
+@admin.register(Visage)
+class VisageAdmin(admin.ModelAdmin):
+    list_display = ("name", "house")
+    list_filter = ("house",)
+
+
+@admin.register(Lore)
+class LoreAdmin(admin.ModelAdmin):
+    list_display = ("name", "property_name")
+
+
+admin.site.register(LoreRating)
+admin.site.register(Pact)
+
+
+@admin.register(Thrall)
+class ThrallAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "master", "faith_potential")
+    list_filter = ("owner", "master")
+
+
+@admin.register(ApocalypticFormTrait)
+class ApocalypticFormTraitAdmin(admin.ModelAdmin):
+    list_display = ("name", "cost", "high_torment_only")
+    list_filter = ("cost", "high_torment_only")
+
+# Wraith Models
+
+
+@admin.register(Wraith)
+class WraithAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "owner",
+        "guild",
+        "legion",
+        "faction",
+        "corpus",
+        "pathos",
+        "angst",
+        "chronicle",
+        "status",
+    )
+    list_filter = ("owner", "guild", "legion", "faction", "chronicle", "status")
+
+
+@admin.register(Guild)
+class GuildAdmin(admin.ModelAdmin):
+    list_display = ("name", "willpower")
+
+
+@admin.register(WraithFaction)
+class WraithFactionAdmin(admin.ModelAdmin):
+    list_display = ("name", "faction_type")
+    list_filter = ("faction_type",)
+
+
+@admin.register(Arcanos)
+class ArcanosAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(ShadowArchetype)
+class ShadowArchetypeAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(Thorn)
+class ThornAdmin(admin.ModelAdmin):
+    list_display = ("name", "thorn_type", "point_cost")
+    list_filter = ("thorn_type", "point_cost")
+
+
+admin.site.register(ThoronRating)
+admin.site.register(Fetter)
+admin.site.register(Passion)
