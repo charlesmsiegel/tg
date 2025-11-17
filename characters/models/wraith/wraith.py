@@ -263,7 +263,7 @@ class Wraith(WtOHuman):
         return self.total_fetter_rating() == self.fetter_points
 
     def add_thorn(self, thorn):
-        tr, _ = ThoronRating.objects.get_or_create(thorn=thorn, wraith=self)
+        tr, _ = ThornRating.objects.get_or_create(thorn=thorn, wraith=self)
         if tr.rating == 0:
             tr.rating = 1
             tr.save()
@@ -574,7 +574,7 @@ class Wraith(WtOHuman):
         }
 
 
-class ThoronRating(models.Model):
+class ThornRating(models.Model):
     wraith = models.ForeignKey(Wraith, on_delete=models.CASCADE)
     thorn = models.ForeignKey(Thorn, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
