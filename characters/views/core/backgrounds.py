@@ -35,7 +35,9 @@ class HumanBackgroundsView(SpecialUserMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = Human.objects.get(pk=self.kwargs["pk"])
+        self.object = Human.objects.get(pk=self.kwargs["pk"])
+        kwargs["character"] = self.object
+        kwargs["instance"] = self.object  # Required for inline formset
         return kwargs
 
     def get_form(self, form_class=None):
@@ -44,7 +46,9 @@ class HumanBackgroundsView(SpecialUserMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.object = Human.objects.get(pk=self.kwargs["pk"])
+        # Ensure self.object is set (it's set in get_form_kwargs during POST/GET)
+        if not hasattr(self, "object") or self.object is None:
+            self.object = Human.objects.get(pk=self.kwargs["pk"])
         context["object"] = self.object
         context["is_approved_user"] = self.check_if_special_user(
             self.object, self.request.user
