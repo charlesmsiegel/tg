@@ -1,0 +1,21 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Book
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.url }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.edition }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.gameline }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.storytellers_vault }}</div>
+    </div>
+{% endblock contents %}

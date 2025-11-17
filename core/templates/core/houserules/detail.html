@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    {% load field %}
+    <div class="centertext container">
+        <div class="row border">
+            <h3 class="col-sm border">{{ object.name }}</h3>
+        </div>
+        <div class="row border">
+            <div class="col-sm border">Gameline</div>
+            <div class="col-sm border">{{ object.get_gameline_display }}</div>
+        </div>
+        {% if object.chronicle %}
+        <div class="row border">
+            <div class="col-sm border">Chronicle</div>
+            <div class="col-sm border">{{ object.chronicle }}</div>
+        </div>
+        {% endif %}
+        <div class="row border">
+            <div class="col-sm border">Description</div>
+            <div class="col-sm border">{{ object.description }}</div>
+        </div>
+        {% if object.sources.all %}
+        <div class="row border">
+            <div class="col-sm border">Sources</div>
+            <div class="col-sm border">{{ object.display_sources }}</div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock content %}
