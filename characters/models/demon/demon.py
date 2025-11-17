@@ -71,6 +71,11 @@ class Demon(LoreBlock, DtFHuman):
     courage = models.IntegerField(default=1)  # 1-5
     conscience = models.IntegerField(default=1)  # 1-5
 
+    # Thralls (many-to-many through Pact)
+    thralls = models.ManyToManyField(
+        "Thrall", blank=True, through="Pact", related_name="masters"
+    )
+
     # Lores inherited from LoreBlock
 
     # Apocalyptic form
@@ -172,6 +177,32 @@ class Demon(LoreBlock, DtFHuman):
             and self.true_name != ""
             and self.age_of_fall != 0
         )
+
+    def get_pacts(self):
+        """Get all pacts this demon has with thralls."""
+        from characters.models.demon.pact import Pact
+
+        return Pact.objects.filter(demon=self)
+
+    def add_pact(self, thrall, terms="", faith_payment=0, enhancements=None):
+        """Create a new pact with a thrall."""
+        from characters.models.demon.pact import Pact
+
+        if enhancements is None:
+            enhancements = []
+
+        pact = Pact.objects.create(
+            demon=self,
+            thrall=thrall,
+            terms=terms,
+            faith_payment=faith_payment,
+            enhancements=enhancements,
+        )
+        return pact
+
+    def total_pacts(self):
+        """Get total number of active pacts."""
+        return self.get_pacts().filter(active=True).count()
 
     def xp_frequencies(self):
         """XP spending frequencies for random spending."""
