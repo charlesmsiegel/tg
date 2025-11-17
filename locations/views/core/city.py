@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.core import City
 
 
 class CityDetailView(DetailView):
     model = City
     template_name = "locations/core/city/detail.html"
+
+
+class CityListView(ListView):
+    model = City
+    ordering = ["name"]
+    template_name = "locations/core/city/list.html"
 
 
 class CityCreateView(CreateView):

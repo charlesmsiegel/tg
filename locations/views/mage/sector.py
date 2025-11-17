@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.sector import Sector
 
 
 class SectorDetailView(DetailView):
     model = Sector
     template_name = "locations/mage/sector/detail.html"
+
+
+class SectorListView(ListView):
+    model = Sector
+    ordering = ["name"]
+    template_name = "locations/mage/sector/list.html"
 
 
 class SectorCreateView(CreateView):

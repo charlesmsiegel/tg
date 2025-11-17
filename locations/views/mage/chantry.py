@@ -8,7 +8,7 @@ from core.views.generic import DictView
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import View
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.chantry import (
     ChantryCreateForm,
     ChantryEffectsForm,
@@ -36,6 +36,12 @@ class ChantryDetailView(DetailView):
         factions = "/".join(factions)
         context["factions"] = factions
         return context
+
+
+class ChantryListView(ListView):
+    model = Chantry
+    ordering = ["name"]
+    template_name = "locations/mage/chantry/list.html"
 
 
 class ChantryCreateView(CreateView):

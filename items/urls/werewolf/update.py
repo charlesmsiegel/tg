@@ -7,4 +7,9 @@ urls = [
         views.werewolf.FetishUpdateView.as_view(),
         name="fetish",
     ),
+    path(
+        "talen/<pk>/",
+        views.werewolf.TalenUpdateView.as_view(),
+        name="talen",
+    ),
 ]

@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage import WonderResonanceRating
 from items.models.mage.artifact import Artifact
 
@@ -15,6 +15,12 @@ class ArtifactDetailView(DetailView):
             wonder=self.object
         ).order_by("resonance__name")
         return context
+
+
+class ArtifactListView(ListView):
+    model = Artifact
+    ordering = ["name"]
+    template_name = "items/mage/artifact/list.html"
 
 
 class ArtifactCreateView(CreateView):

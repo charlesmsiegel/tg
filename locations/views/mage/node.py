@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 from locations.forms.mage.node import NodeForm
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
@@ -19,6 +19,12 @@ class NodeDetailView(DetailView):
             node=self.object
         ).order_by("mf__name")
         return context
+
+
+class NodeListView(ListView):
+    model = Node
+    ordering = ["name"]
+    template_name = "locations/mage/node/list.html"
 
 
 class NodeCreateView(FormView):

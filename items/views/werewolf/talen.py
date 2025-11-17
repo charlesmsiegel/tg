@@ -1,40 +1,30 @@
-from typing import Any
-
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from items.models.mage import WonderResonanceRating
-from items.models.mage.talisman import Talisman
+from items.models.werewolf.talen import Talen
 
 
-class TalismanDetailView(DetailView):
-    model = Talisman
-    template_name = "items/mage/talisman/detail.html"
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["resonance"] = WonderResonanceRating.objects.filter(
-            wonder=self.object
-        ).order_by("resonance__name")
-        return context
+class TalenDetailView(DetailView):
+    model = Talen
+    template_name = "items/werewolf/talen/detail.html"
 
 
-class TalismanListView(ListView):
-    model = Talisman
+class TalenListView(ListView):
+    model = Talen
     ordering = ["name"]
-    template_name = "items/mage/talisman/list.html"
+    template_name = "items/werewolf/talen/list.html"
 
 
-class TalismanCreateView(CreateView):
-    model = Talisman
+class TalenCreateView(CreateView):
+    model = Talen
     fields = [
         "name",
         "rank",
         "background_cost",
         "quintessence_max",
         "description",
-        "powers",
-        "arete",
+        "gnosis",
+        "spirit",
     ]
-    template_name = "items/mage/talisman/form.html"
+    template_name = "items/werewolf/talen/form.html"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -45,18 +35,18 @@ class TalismanCreateView(CreateView):
         return form
 
 
-class TalismanUpdateView(UpdateView):
-    model = Talisman
+class TalenUpdateView(UpdateView):
+    model = Talen
     fields = [
         "name",
         "rank",
         "background_cost",
         "quintessence_max",
         "description",
-        "powers",
-        "arete",
+        "gnosis",
+        "spirit",
     ]
-    template_name = "items/mage/talisman/form.html"
+    template_name = "items/werewolf/talen/form.html"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

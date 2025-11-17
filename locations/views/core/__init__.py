@@ -17,7 +17,7 @@ from locations.models.mage.sector import Sector
 from locations.models.werewolf.caern import Caern
 from locations.views import mage, werewolf
 
-from .city import CityCreateView, CityDetailView, CityUpdateView
+from .city import CityCreateView, CityDetailView, CityListView, CityUpdateView
 from .location import LocationCreateView, LocationDetailView, LocationUpdateView
 
 

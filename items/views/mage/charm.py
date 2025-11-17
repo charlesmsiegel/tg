@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage import Charm, WonderResonanceRating
 
 
@@ -14,6 +14,12 @@ class CharmDetailView(DetailView):
             wonder=self.object
         ).order_by("resonance__name")
         return context
+
+
+class CharmListView(ListView):
+    model = Charm
+    ordering = ["name"]
+    template_name = "items/mage/charm/list.html"
 
 
 class CharmCreateView(CreateView):

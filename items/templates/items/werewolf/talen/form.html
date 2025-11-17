@@ -1,0 +1,16 @@
+{% extends "items/mage/wonder/form.html" %}
+{% block creation_title %}
+    Create Talen
+{% endblock creation_title %}
+{% block resonance %}
+{% endblock resonance %}
+{% block powers %}
+    <div class="row">
+        <div class="col-sm">Gnosis</div>
+        <div class="col-sm">{{ form.gnosis }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Spirit</div>
+        <div class="col-sm">{{ form.spirit }}</div>
+    </div>
+{% endblock powers %}
