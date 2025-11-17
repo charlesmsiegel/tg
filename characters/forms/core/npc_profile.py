@@ -18,7 +18,6 @@ from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.faction import WraithFaction
@@ -44,7 +43,6 @@ class NPCProfileForm(forms.Form):
             ("kinfolk", "Kinfolk"),
             ("fomor", "Fomor"),
             ("werewolf", "Werewolf"),
-            ("spirit", "Spirit"),
         )),
         ("Mage", (
             ("mta_human", "Human (Mage)"),
@@ -77,7 +75,6 @@ class NPCProfileForm(forms.Form):
         "mage": Mage,
         "sorcerer": Sorcerer,
         "companion": Companion,
-        "spirit": SpiritCharacter,
         "kinfolk": Kinfolk,
         "fomor": Fomor,
         "werewolf": Werewolf,
@@ -367,7 +364,7 @@ class NPCProfileForm(forms.Form):
 
     # Thrall-specific fields
     thrall_master = forms.ModelChoiceField(
-        queryset=Demon.objects.filter(npc=True),
+        queryset=Demon.objects.all(),
         label="Master Demon",
         required=False,
         empty_label="-- Select Master Demon --",
