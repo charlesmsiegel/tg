@@ -39,15 +39,19 @@ class DictView(View):
 
 class MultipleFormsetsMixin:
     formsets = {}
+    _bound_formsets = None  # Cache for bound formsets during POST
 
-    def get_formset_context(self, formset_class, formset_prefix):
+    def get_formset_context(self, formset_class, formset_prefix, bound_formset=None):
         """Generate context and JavaScript code for a given formset."""
-        formset = formset_class(prefix=formset_prefix)  # Initialize formset
+        if bound_formset is not None:
+            formset = bound_formset
+        else:
+            kwargs = self.get_formset_kwargs(formset_prefix)
+            formset = formset_class(**kwargs)  # Initialize formset
 
-        if len(formset.forms) == 0:
-            formset = formset_class(
-                initial=[{}], prefix=formset_prefix
-            )  # Ensure at least one form exists
+            if len(formset.forms) == 0:
+                kwargs["initial"] = [{}]
+                formset = formset_class(**kwargs)  # Ensure at least one form exists
 
         empty_form = formset.empty_form  # Generate the "empty" form for cloning
 
@@ -76,13 +80,45 @@ class MultipleFormsetsMixin:
 
         return context, js_code
 
+    def get_formset_kwargs(self, prefix):
+        """
+        Get kwargs for creating a formset. Override this method to pass custom
+        kwargs like 'instance' for inline formsets.
+        """
+        kwargs = {"prefix": prefix}
+        # If view has self.object (e.g., UpdateView), pass it as instance for inline formsets
+        if hasattr(self, "object") and self.object is not None:
+            kwargs["instance"] = self.object
+        return kwargs
+
+    def get_bound_formsets(self):
+        """Create formsets bound to POST data. Caches result for reuse."""
+        if self._bound_formsets is not None:
+            return self._bound_formsets
+
+        self._bound_formsets = {}
+        for prefix, formset_class in self.formsets.items():
+            kwargs = self.get_formset_kwargs(prefix)
+            formset = formset_class(self.request.POST, **kwargs)
+            if len(formset.forms) == 0:
+                formset = formset_class(self.request.POST, initial=[{}], **kwargs)
+            self._bound_formsets[prefix] = formset
+
+        return self._bound_formsets
+
     def get_formsets(self):
         """Create and return all formsets defined in the view."""
         formsets_context = {}
         formsets_js = {}
 
+        # Check if we have bound formsets (from POST) to preserve
+        bound_formsets = getattr(self, "_bound_formsets", None)
+
         for prefix, formset_class in self.formsets.items():
-            context, js_code = self.get_formset_context(formset_class, prefix)
+            bound_formset = bound_formsets.get(prefix) if bound_formsets else None
+            context, js_code = self.get_formset_context(
+                formset_class, prefix, bound_formset
+            )
             formsets_context[f"{prefix}_context"] = context
             formsets_js[f"{prefix}_js"] = js_code
 
@@ -100,15 +136,22 @@ class MultipleFormsetsMixin:
 
     def form_valid(self, form):
         """Override to handle formsets saving logic."""
-        formsets_context, _ = self.get_formsets()
+        # Get bound formsets from POST data
+        bound_formsets = self.get_bound_formsets()
 
-        for prefix, formset_context in formsets_context.items():
-            formset = formset_context["formset"]
+        for prefix, formset in bound_formsets.items():
             if not formset.is_valid():
                 return self.form_invalid(form)  # Handle invalid formsets
             formset.save()  # Save valid formsets
 
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """Ensure bound formsets are preserved in context when form is invalid."""
+        # Make sure bound formsets are available for get_context_data
+        if self.request.method == "POST" and self._bound_formsets is None:
+            self.get_bound_formsets()
+        return super().form_invalid(form)
 
     def get_form_data(self, formset_prefix, blankable=None):
         """
