@@ -109,6 +109,26 @@ class Wraith(WtOHuman):
     )
     thorns = models.ManyToManyField(Thorn, blank=True, through="ThoronRating")
 
+    # Catharsis and Harrowing Tracking
+    in_catharsis = models.BooleanField(default=False)
+    catharsis_count = models.IntegerField(default=0)
+    harrowing_count = models.IntegerField(default=0)
+    last_harrowing_result = models.CharField(
+        max_length=20,
+        choices=[
+            ("none", "None"),
+            ("success", "Success"),
+            ("failure", "Failure"),
+            ("catharsis", "Catharsis"),
+        ],
+        default="none",
+    )
+
+    # Spectre Transition
+    is_shadow_dominant = models.BooleanField(default=False)
+    spectrehood_date = models.DateTimeField(null=True, blank=True)
+    redemption_attempts = models.IntegerField(default=0)
+
     # History
     death_description = models.TextField(default="")
     age_at_death = models.IntegerField(default=0)
@@ -292,6 +312,252 @@ class Wraith(WtOHuman):
             }
         )
         return costs
+
+    # Catharsis and Harrowing Mechanics
+
+    def check_catharsis_trigger(self):
+        """
+        Check if Catharsis should trigger.
+        Catharsis triggers when Shadow's temporary Angst exceeds Psyche's permanent Willpower.
+        """
+        return self.angst > self.willpower
+
+    def trigger_catharsis(self):
+        """
+        Trigger a Catharsis event where Shadow takes temporary control.
+        Returns True if successfully triggered.
+        """
+        if not self.check_catharsis_trigger():
+            return False
+
+        self.in_catharsis = True
+        self.catharsis_count += 1
+        self.is_shadow_dominant = True
+        self.save()
+        return True
+
+    def resolve_catharsis(self, shadow_won=False):
+        """
+        Resolve a Catharsis event.
+        shadow_won: True if Shadow maintained control, False if Psyche regained it.
+        """
+        self.in_catharsis = False
+        if not shadow_won:
+            self.is_shadow_dominant = False
+        self.save()
+        return True
+
+    def check_harrowing_trigger(self):
+        """
+        Check if Harrowing should trigger.
+        Triggers on:
+        - Loss of all Willpower
+        - Loss of a Fetter
+        - Corpus reduced to 0
+        - Angst reaches 10 (permanent Spectrehood threshold)
+        """
+        from characters.models.wraith.fetter import Fetter
+
+        triggers = []
+
+        # Check Willpower
+        if self.willpower == 0:
+            triggers.append("zero_willpower")
+
+        # Check Corpus
+        if self.corpus <= 0:
+            triggers.append("zero_corpus")
+
+        # Check for lost Fetters (this would need to be tracked separately)
+        if Fetter.objects.filter(wraith=self).count() == 0:
+            triggers.append("no_fetters")
+
+        # Check permanent Angst
+        if self.angst_permanent >= 10:
+            triggers.append("max_angst")
+
+        return triggers
+
+    def trigger_harrowing(self, trigger_type="unknown"):
+        """
+        Trigger a Harrowing - the Psyche enters the Labyrinth to face the Shadow.
+        This is a contested roll between Psyche and Shadow.
+        """
+        self.harrowing_count += 1
+        self.save()
+        return {
+            "count": self.harrowing_count,
+            "trigger": trigger_type,
+            "message": f"Harrowing #{self.harrowing_count} triggered due to: {trigger_type}",
+        }
+
+    def resolve_harrowing(self, result="success"):
+        """
+        Resolve a Harrowing.
+        result: 'success' (Psyche wins), 'failure' (becomes Spectre), or 'catharsis' (extraordinary success)
+        """
+        self.last_harrowing_result = result
+
+        if result == "failure":
+            # Psyche loses to Shadow - becomes Spectre
+            return self.become_spectre()
+        elif result == "catharsis":
+            # Extraordinary success - reduce Angst
+            self.angst_permanent = max(0, self.angst_permanent - 1)
+            self.angst = max(0, self.angst - 3)
+        # Success - just survive
+
+        self.save()
+        return True
+
+    def become_spectre(self):
+        """
+        Transform a Wraith into a Spectre.
+        Shadow becomes dominant, Psyche is suppressed.
+        Changes character type and converts Passions to Dark Passions.
+        """
+        from characters.models.wraith.passion import Passion
+        from django.utils import timezone
+
+        if self.character_type == "spectre":
+            return False  # Already a Spectre
+
+        # Change character type
+        self.character_type = "spectre"
+        self.is_shadow_dominant = True
+        self.spectrehood_date = timezone.now()
+
+        # Convert all normal Passions to Dark Passions
+        passions = Passion.objects.filter(wraith=self, is_dark_passion=False)
+        for passion in passions:
+            passion.is_dark_passion = True
+            passion.save()
+
+        # Reduce connection to Fetters (optional - makes them weaker)
+        from characters.models.wraith.fetter import Fetter
+        fetters = Fetter.objects.filter(wraith=self)
+        for fetter in fetters:
+            fetter.rating = max(1, fetter.rating // 2)  # Halve fetter strength
+            fetter.save()
+
+        # Shadow gains any Eidolon background points
+        if self.eidolon > 0:
+            self.angst_permanent = min(10, self.angst_permanent + self.eidolon)
+            self.eidolon = 0
+
+        self.save()
+        return True
+
+    def attempt_redemption(self):
+        """
+        Attempt to redeem a Spectre back to Wraith status.
+        This is a difficult process requiring intervention (Pardoners, Darksiders, etc.)
+        Returns success/failure and requirements.
+        """
+        if self.character_type != "spectre":
+            return {
+                "success": False,
+                "message": "Character is not a Spectre - redemption not needed",
+            }
+
+        self.redemption_attempts += 1
+
+        # Requirements for redemption (these would be checked externally):
+        # - Must have at least 1 remaining Fetter
+        # - Angst must be reduced below 10
+        # - Requires Castigate Arcanos or Pardoner assistance
+        # - Willpower contest between restored Psyche and Shadow
+
+        from characters.models.wraith.fetter import Fetter
+
+        fetters = Fetter.objects.filter(wraith=self).count()
+        can_attempt = fetters > 0 and self.angst_permanent < 10
+
+        if not can_attempt:
+            return {
+                "success": False,
+                "message": f"Redemption requirements not met. Fetters: {fetters}, Permanent Angst: {self.angst_permanent}",
+                "requirements": {
+                    "fetters": "At least 1 Fetter required",
+                    "angst": "Permanent Angst must be below 10",
+                    "assistance": "Pardoner or Darksider assistance required",
+                },
+            }
+
+        return {
+            "success": True,
+            "can_attempt": True,
+            "message": "Redemption requirements met - ready for contested roll",
+            "roll_info": {
+                "psyche_pool": f"Willpower ({self.willpower}) + Eidolon (if any)",
+                "shadow_pool": f"Permanent Angst ({self.angst_permanent})",
+                "difficulty": 6,
+            },
+        }
+
+    def complete_redemption(self, psyche_successes, shadow_successes):
+        """
+        Complete a redemption attempt based on contested rolls.
+        psyche_successes: Number of successes on Psyche's roll
+        shadow_successes: Number of successes on Shadow's roll
+        """
+        from characters.models.wraith.passion import Passion
+        from django.utils import timezone
+
+        if psyche_successes > shadow_successes:
+            # Redemption successful - Psyche regains control
+            self.character_type = "wraith"
+            self.is_shadow_dominant = False
+
+            # Convert Dark Passions back to normal (some may remain dark)
+            dark_passions = Passion.objects.filter(wraith=self, is_dark_passion=True)
+            redeemed_count = max(1, psyche_successes - shadow_successes)
+            for i, passion in enumerate(dark_passions[:redeemed_count]):
+                passion.is_dark_passion = False
+                passion.save()
+
+            # Reduce Angst
+            self.angst_permanent = max(0, self.angst_permanent - (psyche_successes - shadow_successes))
+            self.angst = max(0, self.angst - (psyche_successes - shadow_successes) * 2)
+
+            self.save()
+            return {
+                "success": True,
+                "message": f"Redemption successful! Psyche regained control. {redeemed_count} Passion(s) redeemed.",
+                "passions_redeemed": redeemed_count,
+                "angst_reduced": psyche_successes - shadow_successes,
+            }
+        else:
+            # Redemption failed - remains Spectre
+            return {
+                "success": False,
+                "message": "Redemption failed. Shadow maintained control.",
+                "consequence": "Shadow grows stronger from the failed attempt",
+            }
+
+    def get_catharsis_info(self):
+        """Return information about current Catharsis state."""
+        return {
+            "in_catharsis": self.in_catharsis,
+            "catharsis_count": self.catharsis_count,
+            "can_trigger": self.check_catharsis_trigger(),
+            "shadow_dominant": self.is_shadow_dominant,
+            "angst": self.angst,
+            "willpower": self.willpower,
+        }
+
+    def get_harrowing_info(self):
+        """Return information about Harrowing status and triggers."""
+        triggers = self.check_harrowing_trigger()
+        return {
+            "harrowing_count": self.harrowing_count,
+            "last_result": self.last_harrowing_result,
+            "active_triggers": triggers,
+            "at_risk": len(triggers) > 0,
+            "angst_permanent": self.angst_permanent,
+            "corpus": self.corpus,
+            "willpower": self.willpower,
+        }
 
 
 class ThoronRating(models.Model):
