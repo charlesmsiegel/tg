@@ -4,6 +4,7 @@ from characters.views.core.derangement import DerangementCreateView
 from characters.views.core.group import GroupCreateView
 from characters.views.core.human import HumanBasicsView, HumanCreateView
 from characters.views.core.meritflaw import MeritFlawCreateView
+from characters.views.core.npc import NPCProfileCreateView
 from characters.views.core.specialty import SpecialtyCreateView
 from django.urls import path
 
@@ -28,6 +29,16 @@ urls = [
         "human/full/",
         HumanCreateView.as_view(),
         name="human_full",
+    ),
+    path(
+        "npc/",
+        NPCProfileCreateView.as_view(),
+        name="npc",
+    ),
+    path(
+        "npc/<int:pk>/",
+        NPCProfileCreateView.as_view(),
+        name="npc_for_character",
     ),
     path(
         "archetypes/",
