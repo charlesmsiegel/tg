@@ -276,3 +276,151 @@ class TestChantryUpdateView(TestCase):
         self.chantry.refresh_from_db()
         self.assertEqual(self.chantry.name, "Chantry Updated")
         self.assertEqual(self.chantry.description, "Test Chantry")
+
+
+class TestCharacterRetirementChantryRemoval(TestCase):
+    """Test that retiring or marking a character as deceased removes them from chantries."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.player,
+            status="App",  # Approved status
+        )
+        self.chantry = Chantry.objects.create(name="Test Chantry")
+
+    def test_character_removed_from_chantry_members_on_retirement(self):
+        """Test that retiring a character removes them from chantry membership."""
+        self.chantry.members.add(self.character)
+        self.assertIn(self.character, self.chantry.members.all())
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from chantry
+        self.assertNotIn(self.character, self.chantry.members.all())
+
+    def test_character_removed_from_chantry_leaders_on_retirement(self):
+        """Test that retiring a character removes them from chantry leadership."""
+        self.chantry.leaders.add(self.character)
+        self.assertIn(self.character, self.chantry.leaders.all())
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from leadership
+        self.assertNotIn(self.character, self.chantry.leaders.all())
+
+    def test_character_removed_from_ambassador_on_retirement(self):
+        """Test that retiring a character removes them from ambassador position."""
+        self.chantry.ambassador = self.character
+        self.chantry.save()
+        self.assertEqual(self.chantry.ambassador, self.character)
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from ambassador position
+        self.assertIsNone(self.chantry.ambassador)
+
+    def test_character_removed_from_node_tender_on_retirement(self):
+        """Test that retiring a character removes them from node tender position."""
+        self.chantry.node_tender = self.character
+        self.chantry.save()
+        self.assertEqual(self.chantry.node_tender, self.character)
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from node tender position
+        self.assertIsNone(self.chantry.node_tender)
+
+    def test_character_removed_from_investigator_on_retirement(self):
+        """Test that retiring a character removes them from investigator role."""
+        self.chantry.investigator.add(self.character)
+        self.assertIn(self.character, self.chantry.investigator.all())
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from investigator role
+        self.assertNotIn(self.character, self.chantry.investigator.all())
+
+    def test_character_removed_from_guardian_on_retirement(self):
+        """Test that retiring a character removes them from guardian role."""
+        self.chantry.guardian.add(self.character)
+        self.assertIn(self.character, self.chantry.guardian.all())
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from guardian role
+        self.assertNotIn(self.character, self.chantry.guardian.all())
+
+    def test_character_removed_from_teacher_on_retirement(self):
+        """Test that retiring a character removes them from teacher role."""
+        self.chantry.teacher.add(self.character)
+        self.assertIn(self.character, self.chantry.teacher.all())
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from teacher role
+        self.assertNotIn(self.character, self.chantry.teacher.all())
+
+    def test_character_removed_from_all_chantry_roles_on_death(self):
+        """Test that marking a character as deceased removes them from all chantry roles."""
+        # Add character to all possible roles
+        self.chantry.members.add(self.character)
+        self.chantry.leaders.add(self.character)
+        self.chantry.ambassador = self.character
+        self.chantry.node_tender = self.character
+        self.chantry.investigator.add(self.character)
+        self.chantry.guardian.add(self.character)
+        self.chantry.teacher.add(self.character)
+        self.chantry.save()
+
+        # Mark character as deceased
+        self.character.status = "Dec"
+        self.character.save()
+
+        # Refresh from database
+        self.chantry.refresh_from_db()
+
+        # Character should be removed from all roles
+        self.assertNotIn(self.character, self.chantry.members.all())
+        self.assertNotIn(self.character, self.chantry.leaders.all())
+        self.assertIsNone(self.chantry.ambassador)
+        self.assertIsNone(self.chantry.node_tender)
+        self.assertNotIn(self.character, self.chantry.investigator.all())
+        self.assertNotIn(self.character, self.chantry.guardian.all())
+        self.assertNotIn(self.character, self.chantry.teacher.all())

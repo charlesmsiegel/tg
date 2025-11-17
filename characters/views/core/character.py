@@ -2,6 +2,8 @@ from typing import Any
 
 from characters.models.core import Character
 from core.views.approved_user_mixin import SpecialUserMixin
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
 from game.models import Scene
 
@@ -19,6 +21,17 @@ class CharacterDetailView(SpecialUserMixin, DetailView):
             self.object, self.request.user
         )
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # Handle retirement and death status changes
+        if "retire" in request.POST:
+            self.object.status = "Ret"
+            self.object.save()
+        if "decease" in request.POST:
+            self.object.status = "Dec"
+            self.object.save()
+        return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
 class CharacterCreateView(CreateView):
