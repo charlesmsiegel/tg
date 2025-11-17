@@ -1,7 +1,7 @@
 from collections import namedtuple
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage.grimoire import Grimoire
 
 EmptyRote = namedtuple("EmptyRote", ["name", "spheres"])
@@ -32,6 +32,12 @@ class GrimoireDetailView(DetailView):
         )
         context["year"] = abs(self.object.date_written)
         return context
+
+
+class GrimoireListView(ListView):
+    model = Grimoire
+    ordering = ["name"]
+    template_name = "items/mage/grimoire/list.html"
 
 
 class GrimoireCreateView(CreateView):

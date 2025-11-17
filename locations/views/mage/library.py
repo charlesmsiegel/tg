@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.library import LibraryForm
 from locations.models.mage.library import Library
 
@@ -6,6 +6,12 @@ from locations.models.mage.library import Library
 class LibraryDetailView(DetailView):
     model = Library
     template_name = "locations/mage/library/detail.html"
+
+
+class LibraryListView(ListView):
+    model = Library
+    ordering = ["name"]
+    template_name = "locations/mage/library/list.html"
 
 
 class LibraryCreateView(FormView):

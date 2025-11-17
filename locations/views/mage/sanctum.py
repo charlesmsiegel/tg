@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.sanctum import Sanctum
 
@@ -6,6 +6,12 @@ from locations.models.mage.sanctum import Sanctum
 class SanctumDetailView(DetailView):
     model = Sanctum
     template_name = "locations/mage/sanctum/detail.html"
+
+
+class SanctumListView(ListView):
+    model = Sanctum
+    ordering = ["name"]
+    template_name = "locations/mage/sanctum/list.html"
 
 
 class SanctumCreateView(FormView):

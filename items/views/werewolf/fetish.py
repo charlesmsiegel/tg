@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
 class FetishDetailView(DetailView):
     model = Fetish
     template_name = "items/werewolf/fetish/detail.html"
+
+
+class FetishListView(ListView):
+    model = Fetish
+    ordering = ["name"]
+    template_name = "items/werewolf/fetish/list.html"
 
 
 class FetishCreateView(CreateView):

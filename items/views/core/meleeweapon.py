@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.core import MeleeWeapon
 
 
 class MeleeWeaponDetailView(DetailView):
     model = MeleeWeapon
     template_name = "items/core/meleeweapon/detail.html"
+
+
+class MeleeWeaponListView(ListView):
+    model = MeleeWeapon
+    ordering = ["name"]
+    template_name = "items/core/meleeweapon/list.html"
 
 
 class MeleeWeaponCreateView(CreateView):

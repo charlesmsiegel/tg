@@ -34,19 +34,22 @@ from .medium import MediumCreateView, MediumDetailView, MediumListView, MediumUp
 from .meleeweapon import (
     MeleeWeaponCreateView,
     MeleeWeaponDetailView,
+    MeleeWeaponListView,
     MeleeWeaponUpdateView,
 )
 from .rangedweapon import (
     RangedWeaponCreateView,
     RangedWeaponDetailView,
+    RangedWeaponListView,
     RangedWeaponUpdateView,
 )
 from .thrownweapon import (
     ThrownWeaponCreateView,
     ThrownWeaponDetailView,
+    ThrownWeaponListView,
     ThrownWeaponUpdateView,
 )
-from .weapon import WeaponCreateView, WeaponDetailView, WeaponUpdateView
+from .weapon import WeaponCreateView, WeaponDetailView, WeaponListView, WeaponUpdateView
 
 
 class GenericItemDetailView(DictView):

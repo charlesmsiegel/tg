@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.werewolf.caern import Caern
 
 
 class CaernDetailView(DetailView):
     model = Caern
     template_name = "locations/werewolf/caern/detail.html"
+
+
+class CaernListView(ListView):
+    model = Caern
+    ordering = ["name"]
+    template_name = "locations/werewolf/caern/list.html"
 
 
 class CaernCreateView(CreateView):

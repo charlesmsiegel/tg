@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Talismans
+{% endblock title %}
+{% block content %}
+    {% load field %}
+    <div class="centertext container">
+        <div class="row border">
+            <h3 class="col-sm border">Talismans</h3>
+        </div>
+        {% for obj in object_list %}
+            <div class="row border">
+                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

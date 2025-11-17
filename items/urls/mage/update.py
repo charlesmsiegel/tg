@@ -27,4 +27,9 @@ urls = [
         views.mage.GrimoireUpdateView.as_view(),
         name="grimoire",
     ),
+    path(
+        "sorcerer_artifact/<pk>/",
+        views.mage.SorcererArtifactUpdateView.as_view(),
+        name="sorcerer_artifact",
+    ),
 ]

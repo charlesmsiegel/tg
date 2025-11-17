@@ -1,10 +1,16 @@
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.realm import HorizonRealm
 
 
 class RealmDetailView(DetailView):
     model = HorizonRealm
     template_name = "locations/mage/realm/detail.html"
+
+
+class RealmListView(ListView):
+    model = HorizonRealm
+    ordering = ["name"]
+    template_name = "locations/mage/realm/list.html"
 
 
 class RealmCreateView(CreateView):
