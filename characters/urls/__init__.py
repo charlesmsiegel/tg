@@ -1,7 +1,7 @@
 from characters import views
 from django.urls import include, path
 
-from . import changeling, mage, vampire, werewolf, wraith
+from . import changeling, demon, mage, vampire, werewolf, wraith
 from .core import ajax, create, detail, index, update
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path(
         "changeling/", include((changeling.urls, "changeling"), namespace="changeling")
     ),
+    path("demon/", include((demon.urls, "demon"), namespace="demon")),
     path("ajax/", include((ajax.urls, "characters_ajax"), namespace="ajax")),
     path("create/", include((create.urls, "characters_create"), namespace="create")),
     path("update/", include((update.urls, "characters_update"), namespace="update")),

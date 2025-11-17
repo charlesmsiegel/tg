@@ -1,0 +1,111 @@
+{% extends "characters/core/human/form.html" %}
+{% load dots %}
+{% block creation_title %}
+    Create Human (Demon)
+{% endblock creation_title %}
+{% block abilities %}
+    <div class="row">
+        <h2 class="col-sm {{ form.get_heading }}">Abilities</h2>
+    </div>
+    <div class="row">
+        <h3 class="col-sm {{ form.get_heading }}">Talents</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Skills</h3>
+        <h3 class="col-sm {{ form.get_heading }}">Knowledges</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Alertness</div>
+        <div class="col-sm dots">{{ form.alertness|dots }}</div>
+        <div class="col-sm">Crafts</div>
+        <div class="col-sm dots">{{ form.crafts|dots }}</div>
+        <div class="col-sm">Academics</div>
+        <div class="col-sm dots">{{ form.academics|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Athletics</div>
+        <div class="col-sm dots">{{ form.athletics|dots }}</div>
+        <div class="col-sm">Drive</div>
+        <div class="col-sm dots">{{ form.drive|dots }}</div>
+        <div class="col-sm">Computer</div>
+        <div class="col-sm dots">{{ form.computer|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Awareness</div>
+        <div class="col-sm dots">{{ form.awareness|dots }}</div>
+        <div class="col-sm">Etiquette</div>
+        <div class="col-sm dots">{{ form.etiquette|dots }}</div>
+        <div class="col-sm">Enigmas</div>
+        <div class="col-sm dots">{{ form.enigmas|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Brawl</div>
+        <div class="col-sm dots">{{ form.brawl|dots }}</div>
+        <div class="col-sm">Firearms</div>
+        <div class="col-sm dots">{{ form.firearms|dots }}</div>
+        <div class="col-sm">Finance</div>
+        <div class="col-sm dots">{{ form.finance|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Empathy</div>
+        <div class="col-sm dots">{{ form.empathy|dots }}</div>
+        <div class="col-sm">Melee</div>
+        <div class="col-sm dots">{{ form.melee|dots }}</div>
+        <div class="col-sm">Investigation</div>
+        <div class="col-sm dots">{{ form.investigation|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Expression</div>
+        <div class="col-sm dots">{{ form.expression|dots }}</div>
+        <div class="col-sm">Performance</div>
+        <div class="col-sm dots">{{ form.performance|dots }}</div>
+        <div class="col-sm">Law</div>
+        <div class="col-sm dots">{{ form.law|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Intimidation</div>
+        <div class="col-sm dots">{{ form.intimidation|dots }}</div>
+        <div class="col-sm">Security</div>
+        <div class="col-sm dots">{{ form.security|dots }}</div>
+        <div class="col-sm">Medicine</div>
+        <div class="col-sm dots">{{ form.medicine|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Intuition</div>
+        <div class="col-sm dots">{{ form.intuition|dots }}</div>
+        <div class="col-sm">Stealth</div>
+        <div class="col-sm dots">{{ form.stealth|dots }}</div>
+        <div class="col-sm">Occult</div>
+        <div class="col-sm dots">{{ form.occult|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Leadership</div>
+        <div class="col-sm dots">{{ form.leadership|dots }}</div>
+        <div class="col-sm">Survival</div>
+        <div class="col-sm dots">{{ form.survival|dots }}</div>
+        <div class="col-sm">Politics</div>
+        <div class="col-sm dots">{{ form.politics|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Seduction</div>
+        <div class="col-sm dots">{{ form.seduction|dots }}</div>
+        <div class="col-sm">Technology</div>
+        <div class="col-sm dots">{{ form.technology|dots }}</div>
+        <div class="col-sm">Religion</div>
+        <div class="col-sm dots">{{ form.religion|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Streetwise</div>
+        <div class="col-sm dots">{{ form.streetwise|dots }}</div>
+        <div class="col-sm">Animal Ken</div>
+        <div class="col-sm dots">{{ form.animal_ken|dots }}</div>
+        <div class="col-sm">Research</div>
+        <div class="col-sm dots">{{ form.research|dots }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Subterfuge</div>
+        <div class="col-sm dots">{{ form.subterfuge|dots }}</div>
+        <div class="col-sm">Demolitions</div>
+        <div class="col-sm dots">{{ form.demolitions|dots }}</div>
+        <div class="col-sm">Science</div>
+        <div class="col-sm dots">{{ form.science|dots }}</div>
+    </div>
+{% endblock abilities %}

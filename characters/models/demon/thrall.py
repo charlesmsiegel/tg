@@ -1,6 +1,7 @@
 from characters.models.demon.dtf_human import DtFHuman
 from core.utils import add_dot
 from django.db import models
+from django.urls import reverse
 
 
 class Thrall(DtFHuman):
@@ -39,6 +40,19 @@ class Thrall(DtFHuman):
         verbose_name = "Thrall"
         verbose_name_plural = "Thralls"
         ordering = ["name"]
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:thrall", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:thrall", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:thrall")
+
+    def get_heading(self):
+        return "dtf_heading"
 
     def add_faith_potential(self):
         """Add a dot of Faith Potential."""

@@ -1,6 +1,7 @@
 from characters.models.demon.house import DemonHouse
 from core.models import Model
 from django.db import models
+from django.urls import reverse
 
 
 class Visage(Model):
@@ -31,6 +32,19 @@ class Visage(Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:visage", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:visage", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:visage")
+
+    def get_heading(self):
+        return "dtf_heading"
 
     def get_available_traits(self):
         """Get all traits available for this visage."""

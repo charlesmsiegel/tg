@@ -1,0 +1,160 @@
+{% extends "characters/demon/dtfhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block creation_title %}
+    Create Thrall
+{% endblock creation_title %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Master:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {% if object.master %}
+                                <a href="{{ object.master.get_absolute_url }}">{{ object.master }}</a>
+                            {% else %}
+                                None
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Virtues</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Faith Potential</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Willpower</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Conscience</div>
+                        <div class="col-sm dots">{{ object.conscience|dots }}</div>
+                        <div class="col-sm">Faith Potential</div>
+                        <div class="col-sm dots">{{ object.faith_potential|dots }}</div>
+                        <div class="col-sm">Willpower</div>
+                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Conviction</div>
+                        <div class="col-sm dots">{{ object.conviction|dots }}</div>
+                        <div class="col-sm">Daily Faith</div>
+                        <div class="col-sm">{{ object.daily_faith_offered }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm">Courage</div>
+                        <div class="col-sm dots">{{ object.courage|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}
+{% block powers %}
+    {% if object.enhancements %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Enhancements</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for enhancement in object.enhancements %}
+                            <div class="row mb-1">
+                                <div class="col-sm">{{ enhancement }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.get_active_pacts %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Active Pacts</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for pact in object.get_active_pacts %}
+                            <div class="row mb-1">
+                                <div class="col-sm">
+                                    <a href="{{ pact.get_absolute_url }}">{{ pact }}</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock powers %}
+{% block equipment %}
+    {% include "characters/core/human/equipment_block.html" %}
+{% endblock equipment %}

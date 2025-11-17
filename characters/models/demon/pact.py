@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Pact(models.Model):
@@ -23,3 +24,16 @@ class Pact(models.Model):
         demon_name = self.demon.name if self.demon else "No Demon"
         thrall_name = self.thrall.name if self.thrall else "No Thrall"
         return f"Pact: {demon_name} <-> {thrall_name}"
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:pact", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:pact", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:pact")
+
+    def get_heading(self):
+        return "dtf_heading"

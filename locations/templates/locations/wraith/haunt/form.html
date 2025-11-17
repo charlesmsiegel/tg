@@ -1,0 +1,20 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Haunt
+{% endblock creation_title %}
+{% block other %}
+    <div class="row">
+        <div class="col-sm">{{ form.rank }}</div>
+        <div class="col-sm">{{ form.shroud_rating }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.haunt_type }}</div>
+        <div class="col-sm">{{ form.haunt_size }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.faith_resonance }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.attracts_ghosts }}</div>
+    </div>
+{% endblock other %}

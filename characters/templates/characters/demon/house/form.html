@@ -1,0 +1,28 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create House
+{% endblock creation_title %}
+{% block contents %}
+    {% load sanitize_text %}
+    {% load dots %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Celestial Name</div>
+        <div class="col-sm">{{ form.celestial_name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Starting Torment</div>
+        <div class="col-sm">{{ form.starting_torment }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Domain</div>
+        <div class="col-sm">{{ form.domain }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+{% endblock contents %}

@@ -8,6 +8,8 @@ from locations.models.mage.realm import HorizonRealm
 from locations.models.mage.sanctum import Sanctum
 from locations.models.mage.sector import Sector
 from locations.models.werewolf.caern import Caern
+from locations.models.wraith.haunt import Haunt
+from locations.models.wraith.necropolis import Necropolis
 
 admin.site.register(LocationModel)
 admin.site.register(Sanctum)
@@ -55,3 +57,15 @@ class ChantryAdmin(admin.ModelAdmin):
 @admin.register(ChantryBackgroundRating)
 class ChantryBackgroundRatingAdmin(admin.ModelAdmin):
     list_display = ("chantry", "bg", "note", "rating", "url", "complete")
+
+
+@admin.register(Haunt)
+class HauntAdmin(admin.ModelAdmin):
+    list_display = ("name", "rank", "haunt_type", "shroud_rating", "parent")
+    list_filter = ("haunt_type", "rank")
+
+
+@admin.register(Necropolis)
+class NecropolisAdmin(admin.ModelAdmin):
+    list_display = ("name", "region", "population", "deathlord")
+    list_filter = ("region",)
