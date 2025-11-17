@@ -1,4 +1,4 @@
-from . import changeling, mage, werewolf
+from . import demon, changeling, mage, werewolf
 from .core import (
     ItemModel,
     Material,
