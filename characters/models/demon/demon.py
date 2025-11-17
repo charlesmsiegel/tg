@@ -96,6 +96,7 @@ class Demon(LoreBlock, DtFHuman):
     abyss_duration = models.TextField(default="")  # Time in the Abyss
 
     background_points = 5
+    apocalyptic_form_points = 10  # Point budget for apocalyptic form traits
 
     class Meta:
         verbose_name = "Demon"
@@ -168,18 +169,35 @@ class Demon(LoreBlock, DtFHuman):
             and (self.conviction + self.courage + self.conscience) == 6
         )
 
+    def apocalyptic_form_points_spent(self):
+        """Calculate total points spent on apocalyptic form traits."""
+        return sum(trait.cost for trait in self.apocalyptic_form.all())
+
+    def apocalyptic_form_points_remaining(self):
+        """Calculate remaining points for apocalyptic form."""
+        return self.apocalyptic_form_points - self.apocalyptic_form_points_spent()
+
     def has_apocalyptic_form(self):
-        """Check if apocalyptic form has 8 traits."""
-        return self.apocalyptic_form.count() == 8
+        """Check if apocalyptic form is complete (spent all or most points)."""
+        # Complete if spent at least 80% of points (8 out of 10)
+        return self.apocalyptic_form_points_spent() >= 8
 
     def add_apocalyptic_trait(self, trait):
-        """Add a trait to apocalyptic form (max 8)."""
+        """Add a trait to apocalyptic form (respects point budget and max 8 traits)."""
+        # Check if already has trait
+        if trait in self.apocalyptic_form.all():
+            return False
+
+        # Check max 8 traits limit
         if self.apocalyptic_form.count() >= 8:
             return False
-        if trait not in self.apocalyptic_form.all():
-            self.apocalyptic_form.add(trait)
-            return True
-        return False
+
+        # Check point budget
+        if self.apocalyptic_form_points_spent() + trait.cost > self.apocalyptic_form_points:
+            return False
+
+        self.apocalyptic_form.add(trait)
+        return True
 
     def remove_apocalyptic_trait(self, trait):
         """Remove a trait from apocalyptic form."""
@@ -193,11 +211,19 @@ class Demon(LoreBlock, DtFHuman):
         return self.apocalyptic_form.all()
 
     def get_available_apocalyptic_traits(self):
-        """Get traits available from demon's visage."""
+        """Get traits available from demon's visage (excluding already selected)."""
         if self.visage:
             return self.visage.available_traits.exclude(
                 id__in=self.apocalyptic_form.values_list("id", flat=True)
             )
+        return None
+
+    def get_affordable_apocalyptic_traits(self):
+        """Get traits available that can be afforded with remaining points."""
+        available = self.get_available_apocalyptic_traits()
+        if available is not None:
+            remaining_points = self.apocalyptic_form_points_remaining()
+            return available.filter(cost__lte=remaining_points)
         return None
 
     def has_demon_history(self):
