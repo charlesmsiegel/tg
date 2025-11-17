@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from core.utils import dice
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Max, OuterRef, Subquery
 from django.urls import reverse
@@ -194,15 +195,18 @@ class Week(models.Model):
         )
 
     def weekly_characters(self):
+        """Get all characters who participated in scenes this week.
+
+        Optimized to avoid N+1 query issues.
+        """
         from characters.models.core.human import Human
 
-        scenes = self.finished_scenes()
-        q = Human.objects.none()
-        for scene in scenes:
-            q |= scene.characters.filter(npc=False)
-        q = q.distinct()
-        q = q.order_by("name")
-        return q
+        scene_ids = self.finished_scenes().values_list("id", flat=True)
+        return (
+            Human.objects.filter(scenes__id__in=scene_ids, npc=False)
+            .distinct()
+            .order_by("name")
+        )
 
 
 class Scene(models.Model):
@@ -308,6 +312,19 @@ class Scene(models.Model):
     def most_recent_post(self):
         return Post.objects.filter(scene=self).order_by("-datetime_created").first()
 
+    def award_xp(self, character_awards):
+        """Award XP to characters based on dict of {character: bool}.
+
+        Args:
+            character_awards: Dict mapping Character objects to bool indicating
+                             whether they should receive XP.
+        """
+        self.xp_given = True
+        for char, should_award in character_awards.items():
+            if should_award:
+                char.add_xp(1)
+        self.save()
+
 
 class UserSceneReadStatus(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -325,11 +342,15 @@ class Post(models.Model):
     display_name = models.CharField(max_length=100)
     scene = models.ForeignKey("game.Scene", on_delete=models.SET_NULL, null=True)
     message = models.TextField(default="")
-    datetime_created = models.DateTimeField(default=now)
+    datetime_created = models.DateTimeField(default=now, db_index=True)
 
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
+        indexes = [
+            models.Index(fields=["-datetime_created"]),
+            models.Index(fields=["scene", "-datetime_created"]),
+        ]
 
     def __str__(self):
         if self.display_name:
@@ -338,15 +359,17 @@ class Post(models.Model):
 
 
 class JournalEntry(models.Model):
-
     journal = models.ForeignKey("Journal", on_delete=models.SET_NULL, null=True)
     message = models.TextField(default="")
     st_message = models.TextField(default="")
-    date = models.DateTimeField()
-    datetime_created = models.DateTimeField(default=now)
+    date = models.DateTimeField(db_index=True)
+    datetime_created = models.DateTimeField(default=now, db_index=True)
 
     class Meta:
         ordering = ["-date", "datetime_created"]
+        indexes = [
+            models.Index(fields=["journal", "-date"]),
+        ]
 
 
 class Journal(models.Model):
@@ -548,8 +571,42 @@ class WeeklyXPRequest(models.Model):
     )
     approved = models.BooleanField(default=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["character", "week"]),
+            models.Index(fields=["approved"]),
+        ]
+
     def __str__(self):
         return f"{self.character.name} request for {self.week}"
+
+    def clean(self):
+        """Validate that scenes are provided when XP is claimed for those categories."""
+        super().clean()
+        errors = {}
+        if self.learning and not self.learning_scene:
+            errors["learning_scene"] = "Learning scene required when learning XP is claimed"
+        if self.rp and not self.rp_scene:
+            errors["rp_scene"] = "RP scene required when RP XP is claimed"
+        if self.focus and not self.focus_scene:
+            errors["focus_scene"] = "Focus scene required when focus XP is claimed"
+        if self.standingout and not self.standingout_scene:
+            errors["standingout_scene"] = (
+                "Standing out scene required when standing out XP is claimed"
+            )
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def total_xp(self):
+        """Calculate total XP for this request."""
+        return sum(
+            [self.finishing, self.learning, self.rp, self.focus, self.standingout]
+        )
 
 
 class StoryXPRequest(models.Model):
