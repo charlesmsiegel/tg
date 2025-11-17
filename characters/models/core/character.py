@@ -32,6 +32,76 @@ class Character(CharacterModel):
         verbose_name = "Character"
         verbose_name_plural = "Characters"
 
+    def save(self, *args, **kwargs):
+        # Check if this is an existing character whose status is changing to Ret or Dec
+        if self.pk:
+            try:
+                old_instance = Character.objects.get(pk=self.pk)
+                old_status = old_instance.status
+                new_status = self.status
+                # If status is changing to Retired or Deceased, remove from organizations
+                if old_status not in ["Ret", "Dec"] and new_status in ["Ret", "Dec"]:
+                    # Call parent save first to ensure we're working with saved state
+                    super().save(*args, **kwargs)
+                    self.remove_from_organizations()
+                    return
+            except Character.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+
+    def remove_from_organizations(self):
+        """Remove this character from all organizational structures when retired or deceased."""
+        # Import here to avoid circular imports
+        from characters.models.core.group import Group
+
+        # Remove from Group memberships
+        for group in Group.objects.filter(members=self):
+            group.members.remove(self)
+
+        # Remove from Group leadership positions
+        for group in Group.objects.filter(leader=self):
+            group.leader = None
+            group.save()
+
+        # Handle Human-specific relationships (Chantry)
+        # Check if this character is a Human (or subclass) for Chantry relations
+        if hasattr(self, "member_of"):
+            # Remove from Chantry memberships
+            for chantry in self.member_of.all():
+                chantry.members.remove(self)
+
+        if hasattr(self, "chantry_leader_at"):
+            # Remove from Chantry leadership
+            for chantry in self.chantry_leader_at.all():
+                chantry.leaders.remove(self)
+
+        if hasattr(self, "ambassador_from"):
+            # Remove from ambassador positions
+            for chantry in self.ambassador_from.all():
+                chantry.ambassador = None
+                chantry.save()
+
+        if hasattr(self, "tends_node_at"):
+            # Remove from node tender positions
+            for chantry in self.tends_node_at.all():
+                chantry.node_tender = None
+                chantry.save()
+
+        if hasattr(self, "investigator_at"):
+            # Remove from investigator roles
+            for chantry in self.investigator_at.all():
+                chantry.investigator.remove(self)
+
+        if hasattr(self, "guardian_of"):
+            # Remove from guardian roles
+            for chantry in self.guardian_of.all():
+                chantry.guardian.remove(self)
+
+        if hasattr(self, "teacher_at"):
+            # Remove from teacher roles
+            for chantry in self.teacher_at.all():
+                chantry.teacher.remove(self)
+
     def get_type(self):
         if "human" in self.type:
             return "Human"

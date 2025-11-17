@@ -74,3 +74,120 @@ class TestGenericGroupDetailView(TestCase):
     def test_generic_group_detail_view_templates(self):
         response = self.client.get(self.group.get_absolute_url())
         self.assertTemplateUsed(response, "characters/core/group/detail.html")
+
+
+class TestCharacterRetirementRemoval(TestCase):
+    """Test that retiring or marking a character as deceased removes them from groups."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.player,
+            status="App",  # Approved status
+        )
+        self.group = Group.objects.create(name="Test Group")
+        # Add character to group
+        self.group.members.add(self.character)
+        # Set character as leader
+        self.group.leader = self.character
+        self.group.save()
+
+    def test_character_removed_from_group_on_retirement(self):
+        """Test that retiring a character removes them from group membership."""
+        self.assertIn(self.character, self.group.members.all())
+        self.assertEqual(self.group.leader, self.character)
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.group.refresh_from_db()
+
+        # Character should be removed from group
+        self.assertNotIn(self.character, self.group.members.all())
+        self.assertIsNone(self.group.leader)
+
+    def test_character_removed_from_group_on_death(self):
+        """Test that marking a character as deceased removes them from group membership."""
+        self.assertIn(self.character, self.group.members.all())
+        self.assertEqual(self.group.leader, self.character)
+
+        # Mark character as deceased
+        self.character.status = "Dec"
+        self.character.save()
+
+        # Refresh from database
+        self.group.refresh_from_db()
+
+        # Character should be removed from group
+        self.assertNotIn(self.character, self.group.members.all())
+        self.assertIsNone(self.group.leader)
+
+    def test_character_removed_from_multiple_groups(self):
+        """Test that retiring a character removes them from all groups."""
+        group2 = Group.objects.create(name="Second Group")
+        group2.members.add(self.character)
+        group2.leader = self.character
+        group2.save()
+
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Refresh from database
+        self.group.refresh_from_db()
+        group2.refresh_from_db()
+
+        # Character should be removed from both groups
+        self.assertNotIn(self.character, self.group.members.all())
+        self.assertIsNone(self.group.leader)
+        self.assertNotIn(self.character, group2.members.all())
+        self.assertIsNone(group2.leader)
+
+    def test_no_removal_for_other_status_changes(self):
+        """Test that other status changes don't remove characters from groups."""
+        # Start with unfinished status
+        self.character.status = "Un"
+        self.character.save()
+
+        # Add to group
+        self.group.members.add(self.character)
+        self.group.leader = self.character
+        self.group.save()
+
+        # Change to submitted
+        self.character.status = "Sub"
+        self.character.save()
+
+        # Character should still be in group
+        self.group.refresh_from_db()
+        self.assertIn(self.character, self.group.members.all())
+        self.assertEqual(self.group.leader, self.character)
+
+        # Change to approved
+        self.character.status = "App"
+        self.character.save()
+
+        # Character should still be in group
+        self.group.refresh_from_db()
+        self.assertIn(self.character, self.group.members.all())
+        self.assertEqual(self.group.leader, self.character)
+
+    def test_already_retired_character_stays_removed(self):
+        """Test that re-saving an already retired character doesn't cause errors."""
+        # Retire the character
+        self.character.status = "Ret"
+        self.character.save()
+
+        # Character should be removed
+        self.group.refresh_from_db()
+        self.assertNotIn(self.character, self.group.members.all())
+
+        # Save again (should not cause errors)
+        self.character.notes = "Updated notes"
+        self.character.save()
+
+        # Should still not be in group
+        self.assertNotIn(self.character, self.group.members.all())
