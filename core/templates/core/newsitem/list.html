@@ -3,15 +3,31 @@
     News Items
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">News Items</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.title }} - {{ obj.date }}</a>
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wod_heading">News Items</h3>
             </div>
-        {% endfor %}
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="row">
+                    {% for obj in object_list %}
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.title }}</a>
+                                    <div style="font-size: 0.85rem; color: var(--theme-text-secondary); margin-top: 4px;">
+                                        {{ obj.date|date:"M d, Y" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No news items found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}

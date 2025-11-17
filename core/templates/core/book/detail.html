@@ -6,17 +6,28 @@
 {% block content %}
     {% csrf_token %}
     {% load sanitize_text %}
-    <div class="centertext container">
+    <div class="container">
         {% block contents %}
-            <div class="row">
-                <h1 class="col-sm {{ object.gameline }}_heading">
-                    <a href={{ object.url }}>{{ object.name }}</a>
-                </h1>
+            <div class="tg-card header-card mb-4" data-gameline="{{ object.gameline }}">
+                <div class="tg-card-header text-center">
+                    <h1 class="tg-card-title {{ object.gameline }}_heading">
+                        <a href="{{ object.url }}" style="color: inherit; text-decoration: none;">{{ object.name }}</a>
+                    </h1>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-sm">
-                    {{ object.get_gameline_display }} {{ object.get_edition_display }}
-                    {% if object.storytellers_vault %}Storyteller's Vault{% endif %}
+            <div class="tg-card mb-4">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.gameline }}_heading">Book Details</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div style="display: inline-block; padding: 12px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                        <span style="font-weight: 700; color: var(--theme-text-primary);">
+                            {{ object.get_gameline_display }} {{ object.get_edition_display }}
+                            {% if object.storytellers_vault %}
+                                <span class="tg-badge" style="margin-left: 8px;">Storyteller's Vault</span>
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
             </div>
         {% endblock contents %}

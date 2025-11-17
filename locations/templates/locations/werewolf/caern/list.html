@@ -3,15 +3,28 @@
     Caerns
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Caerns</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wta_heading">Caerns</h3>
             </div>
-        {% endfor %}
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="row">
+                    {% for obj in object_list %}
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No caerns found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}

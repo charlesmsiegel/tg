@@ -7,33 +7,44 @@
     {% endif %}
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">
-                {% if object.pk %}
-                    Update {{ object.name }}
-                {% else %}
-                    Create Story
-                {% endif %}
-            </h3>
-        </div>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="row border">
-                    <div class="col-sm border">{{ field.label }}</div>
-                    <div class="col-sm border">{{ field }}</div>
-                </div>
-                {% if field.errors %}
-                    <div class="row border">
-                        <div class="col-sm border text-danger">{{ field.errors }}</div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            <div class="row border">
-                <button type="submit" class="btn btn-primary col-sm">Save</button>
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wod_heading">
+                    {% if object.pk %}
+                        Update {{ object.name }}
+                    {% else %}
+                        Create Story
+                    {% endif %}
+                </h3>
             </div>
-        </form>
+            <div class="tg-card-body" style="padding: 24px;">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label" style="font-weight: 600; color: var(--theme-text-secondary);">{{ field.label }}</label>
+                            </div>
+                            <div class="col-md-8">
+                                {{ field }}
+                            </div>
+                        </div>
+                        {% if field.errors %}
+                            <div class="row mb-3">
+                                <div class="col-md-8 offset-md-4">
+                                    <div class="text-danger" style="font-size: 0.875rem;">{{ field.errors }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-md-8 offset-md-4">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock content %}
