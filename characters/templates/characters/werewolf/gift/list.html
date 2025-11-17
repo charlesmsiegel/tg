@@ -3,15 +3,162 @@
     Gifts
 {% endblock title %}
 {% block content %}
-    {% load field %}
-    <div class="centertext container">
-        <div class="row border">
-            <h3 class="col-sm border">Gifts</h3>
-        </div>
-        {% for obj in object_list %}
-            <div class="row border">
-                <a class="col-sm border" href="{{ obj.get_absolute_url }}">{{ obj.name }}</a>
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="wta">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title wta_heading">Gifts</h1>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <button class="btn btn-link"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#filterPanel"
+                        aria-expanded="false"
+                        aria-controls="filterPanel">
+                    <i class="fas fa-filter"></i> Filter Gifts
+                </button>
+            </div>
+            <div class="collapse" id="filterPanel">
+                <div class="tg-card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="nameFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
+                            <input type="text" class="form-control" id="nameFilter" placeholder="Search by name...">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="rankFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Level</label>
+                            <select class="form-select" id="rankFilter">
+                                <option value="">All Levels</option>
+                                {% for rank in ranks %}
+                                    <option value="{{ rank }}">Level {{ rank }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="typeFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Allowed Type</label>
+                            <select class="form-select" id="typeFilter">
+                                <option value="">All Types</option>
+                                {% for permission in gift_permissions %}
+                                    <option value="{{ permission.id }}">{{ permission.shifter|title }} - {{ permission.condition|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-secondary" id="clearFilters">Clear Filters</button>
+                            <span class="ms-3" id="resultCount" style="font-weight: 600; color: var(--theme-text-secondary);"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gifts List -->
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 0;">
+                <div id="giftsList">
+                    {% for obj in object_list %}
+                        <div class="gift-item"
+                             data-name="{{ obj.name|lower }}"
+                             data-rank="{{ obj.rank }}"
+                             data-allowed="{% for perm in obj.allowed.all %}{{ perm.id }},{% endfor %}"
+                             style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+                            <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary); text-decoration: none;">
+                                    {{ obj.name }}
+                                </a>
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <span class="tg-badge badge-pill" style="background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
+                                        Level {{ obj.rank }}
+                                    </span>
+                                    <span style="font-size: 0.85rem; color: var(--theme-text-secondary);">
+                                        {% for perm in obj.allowed.all %}
+                                            {{ perm.shifter|title }}{% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            Any
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div style="padding: 20px; text-align: center; color: var(--theme-text-secondary);">
+                            No gifts found.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameFilter = document.getElementById('nameFilter');
+            const rankFilter = document.getElementById('rankFilter');
+            const typeFilter = document.getElementById('typeFilter');
+            const clearButton = document.getElementById('clearFilters');
+            const resultCount = document.getElementById('resultCount');
+            const giftItems = document.querySelectorAll('.gift-item');
+
+            function filterGifts() {
+                const nameValue = nameFilter.value.toLowerCase();
+                const rankValue = rankFilter.value;
+                const typeValue = typeFilter.value;
+
+                let visibleCount = 0;
+
+                giftItems.forEach(function(item) {
+                    const itemName = item.getAttribute('data-name');
+                    const itemRank = item.getAttribute('data-rank');
+                    const itemAllowed = item.getAttribute('data-allowed');
+
+                    let showItem = true;
+
+                    // Filter by name
+                    if (nameValue && !itemName.includes(nameValue)) {
+                        showItem = false;
+                    }
+
+                    // Filter by rank/level
+                    if (rankValue && itemRank !== rankValue) {
+                        showItem = false;
+                    }
+
+                    // Filter by allowed type
+                    if (typeValue) {
+                        const allowedIds = itemAllowed.split(',').filter(id => id !== '');
+                        if (!allowedIds.includes(typeValue)) {
+                            showItem = false;
+                        }
+                    }
+
+                    item.style.display = showItem ? '' : 'none';
+                    if (showItem) visibleCount++;
+                });
+
+                // Update result count
+                resultCount.textContent = `Showing ${visibleCount} of ${giftItems.length} gifts`;
+            }
+
+            // Add event listeners
+            nameFilter.addEventListener('input', filterGifts);
+            rankFilter.addEventListener('change', filterGifts);
+            typeFilter.addEventListener('change', filterGifts);
+
+            clearButton.addEventListener('click', function() {
+                nameFilter.value = '';
+                rankFilter.value = '';
+                typeFilter.value = '';
+                filterGifts();
+            });
+
+            // Initial count
+            filterGifts();
+        });
+    </script>
 {% endblock content %}
