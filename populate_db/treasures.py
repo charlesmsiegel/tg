@@ -213,7 +213,12 @@ Treasure.objects.get_or_create(
     creation_method="Ancient artifact from Arcadia itself",
     permanence=True,
     special_abilities="Wearer commands respect and authority from all Changelings; +3 die to all social rolls; wearer cannot be compelled against their will; restored nightly to full Glamour",
-    effects=["Unquestionable Authority", "Social Domination", "Glamour Restoration", "Magical Resistance"],
+    effects=[
+        "Unquestionable Authority",
+        "Social Domination",
+        "Glamour Restoration",
+        "Magical Resistance",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 185)
 
 Treasure.objects.get_or_create(
@@ -224,7 +229,12 @@ Treasure.objects.get_or_create(
     creation_method="Legendary weapon that exists between worlds",
     permanence=True,
     special_abilities="Deals +3 aggravated damage; can strike targets in Dreaming from waking world; wounds never heal naturally; wielder gains +2 dice to all combat rolls",
-    effects=["Aggravated Damage", "Reality Piercing", "Unhealable Wounds", "Combat Mastery"],
+    effects=[
+        "Aggravated Damage",
+        "Reality Piercing",
+        "Unhealable Wounds",
+        "Combat Mastery",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 185)
 
 Treasure.objects.get_or_create(
@@ -235,7 +245,12 @@ Treasure.objects.get_or_create(
     creation_method="Legendary artifact of healing and renewal",
     permanence=True,
     special_abilities="Can heal any wound including Banality damage; restores Glamour to full when drunk from; grants vision of righteous path for user",
-    effects=["Complete Healing", "Glamour Restoration", "Banality Reduction", "Divine Guidance"],
+    effects=[
+        "Complete Healing",
+        "Glamour Restoration",
+        "Banality Reduction",
+        "Divine Guidance",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 185)
 
 Treasure.objects.get_or_create(

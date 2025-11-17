@@ -33,6 +33,7 @@ class ObjectType(models.Model):
             ("mta", "Mage: the Ascension"),
             ("wto", "Wraith: the Oblivion"),
             ("ctd", "Changeling: the Dreaming"),
+            ("dtf", "Demon: the Fallen"),
         ],
     )
 
@@ -83,6 +84,7 @@ class Chronicle(models.Model):
             ("mta_heading", "Mage: the Ascension"),
             ("ctd_heading", "Changeling: the Dreaming"),
             ("wto_heading", "Wraith: the Oblivion"),
+            ("dtf_heading", "Demon: the Fallen"),
             ("wod_heading", "World of Darkness"),
         ],
     )
@@ -591,15 +593,17 @@ class WeeklyXPRequest(models.Model):
         super().clean()
         errors = {}
         if self.learning and not self.learning_scene:
-            errors["learning_scene"] = "Learning scene required when learning XP is claimed"
+            errors[
+                "learning_scene"
+            ] = "Learning scene required when learning XP is claimed"
         if self.rp and not self.rp_scene:
             errors["rp_scene"] = "RP scene required when RP XP is claimed"
         if self.focus and not self.focus_scene:
             errors["focus_scene"] = "Focus scene required when focus XP is claimed"
         if self.standingout and not self.standingout_scene:
-            errors["standingout_scene"] = (
-                "Standing out scene required when standing out XP is claimed"
-            )
+            errors[
+                "standingout_scene"
+            ] = "Standing out scene required when standing out XP is claimed"
         if errors:
             raise ValidationError(errors)
 

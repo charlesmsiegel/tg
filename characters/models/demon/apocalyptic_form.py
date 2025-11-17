@@ -13,17 +13,6 @@ class ApocalypticFormTrait(Model):
     # Point cost for this trait (1-5, typically 1-3)
     cost = models.IntegerField(default=1)
 
-    # Power level categorization
-    POWER_LEVELS = [
-        ("minor", "Minor"),
-        ("moderate", "Moderate"),
-        ("major", "Major"),
-        ("legendary", "Legendary"),
-    ]
-    power_level = models.CharField(
-        max_length=20, choices=POWER_LEVELS, default="minor"
-    )
-
     # Associated house (optional - some traits might be universal)
     house = models.ForeignKey(
         "House",
@@ -32,6 +21,8 @@ class ApocalypticFormTrait(Model):
         blank=True,
         related_name="apocalyptic_traits",
     )
+
+    high_torment_only = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Apocalyptic Form Trait"

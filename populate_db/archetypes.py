@@ -228,3 +228,73 @@ Archetype.objects.get_or_create(
     name="Zealot",
     description="Your cause is everything, and you pursue it with fanatical devotion. The Zealot has found absolute truth and cannot comprehend why others don't see it. You will use any means necessary to advance your beliefs, viewing moderation and compromise as betrayal. You regain Willpower when you make converts to your cause or when you sacrifice significantly in service to your beliefs.",
 )[0].add_source("Book of Secrets", 17)
+
+
+Archetype.objects.get_or_create(name="Addict")[0].add_source("Demon: the Fallen", 132)
+Archetype.objects.get_or_create(name="Architect")[0].add_source(
+    "Demon: the Fallen", 133
+)
+Archetype.objects.get_or_create(name="Autocrat")[0].add_source("Demon: the Fallen", 133)
+Archetype.objects.get_or_create(name="Bon Vivant")[0].add_source(
+    "Demon: the Fallen", 133
+)
+Archetype.objects.get_or_create(name="Bravo")[0].add_source("Demon: the Fallen", 133)
+Archetype.objects.get_or_create(name="Caregiver")[0].add_source(
+    "Demon: the Fallen", 133
+)
+Archetype.objects.get_or_create(name="Child")[0].add_source("Demon: the Fallen", 133)
+Archetype.objects.get_or_create(name="Competitor")[0].add_source(
+    "Demon: the Fallen", 133
+)
+Archetype.objects.get_or_create(name="Conformist")[0].add_source(
+    "Demon: the Fallen", 133
+)
+Archetype.objects.get_or_create(name="Conniver")[0].add_source("Demon: the Fallen", 133)
+Archetype.objects.get_or_create(name="Curmudgeon")[0].add_source(
+    "Demon: the Fallen", 134
+)
+Archetype.objects.get_or_create(name="Deviant")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Director")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Fanatic")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Gallant")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Gambler")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Judge")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Loner")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Martyr")[0].add_source("Demon: the Fallen", 134)
+Archetype.objects.get_or_create(name="Masochist")[0].add_source(
+    "Demon: the Fallen", 135
+)
+Archetype.objects.get_or_create(name="Monster")[0].add_source("Demon: the Fallen", 135)
+Archetype.objects.get_or_create(name="Pedagogue")[0].add_source(
+    "Demon: the Fallen", 135
+)
+Archetype.objects.get_or_create(name="Penitent")[0].add_source("Demon: the Fallen", 135)
+Archetype.objects.get_or_create(name="Perfectionist")[0].add_source(
+    "Demon: the Fallen", 135
+)
+Archetype.objects.get_or_create(name="Rebel")[0].add_source("Demon: the Fallen", 135)
+Archetype.objects.get_or_create(name="Rogue")[0].add_source("Demon: the Fallen", 135)
+Archetype.objects.get_or_create(name="Survivor")[0].add_source("Demon: the Fallen", 135)
+Archetype.objects.get_or_create(name="Thrill-Seeker")[0].add_source(
+    "Demon: the Fallen", 135
+)
+Archetype.objects.get_or_create(name="Traditionalist")[0].add_source(
+    "Demon: the Fallen", 135
+)
+Archetype.objects.get_or_create(name="Trickster")[0].add_source(
+    "Demon: the Fallen", 136
+)
+Archetype.objects.get_or_create(name="Visionary")[0].add_source(
+    "Demon: the Fallen", 136
+)
+Archetype.objects.get_or_create(name="Zealot")[0].add_source("Demon: the Fallen", 136)
+
+Archetype.objects.get_or_create(name="Damned Soul")[0].add_source(
+    "Dammned and Deceived", 60
+)
+Archetype.objects.get_or_create(name="Narcissist")[0].add_source(
+    "Dammned and Deceived", 60
+)
+Archetype.objects.get_or_create(name="Proselytizer")[0].add_source(
+    "Dammned and Deceived", 61
+)

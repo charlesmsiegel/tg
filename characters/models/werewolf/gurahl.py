@@ -65,9 +65,7 @@ class Gurahl(Fera):
     def set_auspice(self, auspice):
         self.auspice = auspice
         self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(shifter="gurahl", condition=auspice)[
-                0
-            ]
+            GiftPermission.objects.get_or_create(shifter="gurahl", condition=auspice)[0]
         )
 
         # Set starting Rage by auspice

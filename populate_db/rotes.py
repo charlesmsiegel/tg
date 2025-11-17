@@ -657,7 +657,9 @@ rote = Rote.objects.get_or_create(
     attribute=dexterity,
     ability=athletics,
 )[0]
-rote.description = "Akashic technique to move at superhuman speeds through time manipulation."
+rote.description = (
+    "Akashic technique to move at superhuman speeds through time manipulation."
+)
 rote.add_source("Lore of the Traditions", 29)
 
 # ===== CELESTIAL CHORUS ROTES =====
@@ -808,7 +810,9 @@ rote = Rote.objects.get_or_create(
     attribute=perception,
     ability=awareness,
 )[0]
-rote.description = "The Euthanatos reads the patterns of karma and destiny surrounding a person."
+rote.description = (
+    "The Euthanatos reads the patterns of karma and destiny surrounding a person."
+)
 rote.add_source("Lore of the Traditions", 109)
 
 # ===== ORDER OF HERMES ROTES =====
@@ -928,7 +932,9 @@ rote = Rote.objects.get_or_create(
     attribute=manipulation,
     ability=occult,
 )[0]
-rote.description = "Powerful ritual calling forth the Wild Hunt and its spectral hunters."
+rote.description = (
+    "Powerful ritual calling forth the Wild Hunt and its spectral hunters."
+)
 rote.add_source("Lore of the Traditions", 169)
 
 effect = Effect.objects.get(name="Heal Living Being (Complex)")

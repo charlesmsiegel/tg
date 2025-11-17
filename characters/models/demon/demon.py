@@ -1,10 +1,10 @@
 from collections import defaultdict
 
-from characters.models.core.lore_block import LoreBlock
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
-from characters.models.demon.house import House
+from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
+from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
 from core.utils import add_dot
 from django.db import models
@@ -37,7 +37,7 @@ class Demon(LoreBlock, DtFHuman):
 
     # House and Faction
     house = models.ForeignKey(
-        House,
+        DemonHouse,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -96,7 +96,7 @@ class Demon(LoreBlock, DtFHuman):
     abyss_duration = models.TextField(default="")  # Time in the Abyss
 
     background_points = 5
-    apocalyptic_form_points = 10  # Point budget for apocalyptic form traits
+    apocalyptic_form_points = 16  # Point budget for apocalyptic form traits
 
     class Meta:
         verbose_name = "Demon"
@@ -193,7 +193,10 @@ class Demon(LoreBlock, DtFHuman):
             return False
 
         # Check point budget
-        if self.apocalyptic_form_points_spent() + trait.cost > self.apocalyptic_form_points:
+        if (
+            self.apocalyptic_form_points_spent() + trait.cost
+            > self.apocalyptic_form_points
+        ):
             return False
 
         self.apocalyptic_form.add(trait)
@@ -229,9 +232,7 @@ class Demon(LoreBlock, DtFHuman):
     def has_demon_history(self):
         """Check if demon has celestial name and history."""
         return (
-            self.celestial_name != ""
-            and self.true_name != ""
-            and self.age_of_fall != 0
+            self.celestial_name != "" and self.true_name != "" and self.age_of_fall != 0
         )
 
     def get_pacts(self):

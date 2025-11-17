@@ -92,3 +92,19 @@ Background.objects.get_or_create(name="Notoriety", property_name="notoriety")[0]
 Background.objects.get_or_create(name="Relic", property_name="relic")[0]
 
 Background.objects.get_or_create(name="Elders", property_name="elders")[0]
+
+Background.objects.get_or_create(name="Eminence", property_name="eminence")[
+    0
+].add_source("Demon: the Fallen", 154)
+Background.objects.get_or_create(name="Followers", property_name="followers")[
+    0
+].add_source("Demon: the Fallen", 155)
+Background.objects.get_or_create(name="Legacy", property_name="legacy")[0].add_source(
+    "Demon: the Fallen", 156
+)
+Background.objects.get_or_create(name="Pacts", property_name="pacts")[0].add_source(
+    "Demon: the Fallen", 156
+)
+Background.objects.get_or_create(name="Paragon", property_name="paragon")[0].add_source(
+    "Demon: the Fallen", 157
+)

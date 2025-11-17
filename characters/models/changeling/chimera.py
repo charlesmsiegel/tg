@@ -27,7 +27,8 @@ class Chimera(Model):
     )
 
     chimera_points = models.IntegerField(
-        default=5, help_text="Power level: 5-10 (simple), 15-25 (moderate), 30-50 (master)"
+        default=5,
+        help_text="Power level: 5-10 (simple), 15-25 (moderate), 30-50 (master)",
     )
 
     # Sentience and behavior
@@ -65,9 +66,7 @@ class Chimera(Model):
     )
 
     # Relationship properties
-    loyalty = models.IntegerField(
-        default=0, help_text="Loyalty to creator (0-5)"
-    )
+    loyalty = models.IntegerField(default=0, help_text="Loyalty to creator (0-5)")
     creator = models.CharField(
         max_length=100, blank=True, default="", help_text="Who created/manifested this"
     )

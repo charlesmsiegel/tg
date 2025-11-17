@@ -11,3 +11,4 @@ djlint
 selenium
 numpy==1.26.4
 bleach
+python-dotenv

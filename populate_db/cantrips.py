@@ -26,7 +26,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Eyes glow with Samhain light revealing decay, illness, weakness, doom. Spot weak points in objects (+1 damage per success). Diagnose health conditions. Recognize curses with 3+ successes. Identify impending doom.",
-    bunk_examples=["Paint eyes with special cosmetics", "Stare intensely", "Close one eye repeatedly"],
+    bunk_examples=[
+        "Paint eyes with special cosmetics",
+        "Stare intensely",
+        "Close one eye repeatedly",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 340)
 
 Cantrip.objects.get_or_create(
@@ -54,7 +58,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Steal vitality, age target by one decade per success dedicated. 2 successes = -1 to physical pools. Duration based on remaining successes. Multiple castings require more successes than existing curse.",
-    bunk_examples=["Break objects with age", "Perform aging rituals", "Consume aged items"],
+    bunk_examples=[
+        "Break objects with age",
+        "Perform aging rituals",
+        "Consume aged items",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 341)
 
 Cantrip.objects.get_or_create(
@@ -111,7 +119,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Confuse targets' minds with Glamour. +3 difficulty to Mental/Social tasks. Make targets suggestible. Targets resist by Willpower (difficulty 8) or spend Willpower to resist suggestions.",
-    bunk_examples=["Whisper confusing statements", "Create nonsensical scenarios", "Sing strange songs"],
+    bunk_examples=[
+        "Whisper confusing statements",
+        "Create nonsensical scenarios",
+        "Sing strange songs",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 344)
 
 Cantrip.objects.get_or_create(
@@ -125,7 +137,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="both",
     effect="Wipe subject from everyone's memory. Can create exceptions with additional Realms. Changeling can unravel effects anytime. Others resist if motivated.",
-    bunk_examples=["Make subject leave area", "Describe amnesia rituals", "Destroy memory items"],
+    bunk_examples=[
+        "Make subject leave area",
+        "Describe amnesia rituals",
+        "Destroy memory items",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 344)
 
 Cantrip.objects.get_or_create(
@@ -139,7 +155,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="both",
     effect="Strip identity and implant delusions. Target resists via Perception + Kenning (difficulty 9). Can then resist each turn with Willpower (difficulty 8) or spend Willpower for scene.",
-    bunk_examples=["Describe desired delusion clearly", "Create symbolic items", "Perform identity-altering rituals"],
+    bunk_examples=[
+        "Describe desired delusion clearly",
+        "Create symbolic items",
+        "Perform identity-altering rituals",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 344)
 
 # DRAGON'S IRE ART
@@ -154,7 +174,12 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Infuse target with burning might. Living creatures: add Strength per success. Objects: add damage dice per success. Gold aura surrounds target. Split successes between efficacy and duration.",
-    bunk_examples=["Flex dramatically", "Ignite small flame", "Douse self with accelerant", "Roar battle cry"],
+    bunk_examples=[
+        "Flex dramatically",
+        "Ignite small flame",
+        "Douse self with accelerant",
+        "Roar battle cry",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 359)
 
 Cantrip.objects.get_or_create(
@@ -168,7 +193,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Grant target grace of coiling serpent. Difficult to hit: +2 difficulty to attacks against subject (max 9). Object becomes slippery/shifting, deflecting strikes. Ineffective against cold iron.",
-    bunk_examples=["Dance serpentine movements", "Wrap in ropes", "Create circular patterns"],
+    bunk_examples=[
+        "Dance serpentine movements",
+        "Wrap in ropes",
+        "Create circular patterns",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 360)
 
 Cantrip.objects.get_or_create(
@@ -182,7 +211,12 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Infuse subject with mystical dragon hide toughness. All damage against subject: +2 difficulty (max 9). Shimmer with heat haze. Ineffective against cold iron attacks.",
-    bunk_examples=["Brush with scales", "Harden skin", "Coat with metallic dust", "Invoke dragon protection"],
+    bunk_examples=[
+        "Brush with scales",
+        "Harden skin",
+        "Coat with metallic dust",
+        "Invoke dragon protection",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 360)
 
 Cantrip.objects.get_or_create(
@@ -196,7 +230,11 @@ Cantrip.objects.get_or_create(
     range="(Willpower x 10) yards/meters",
     type_of_effect="wyrd",
     effect="Blast of eldritch power destroying target. Activation roll = attack roll. Inflicts lethal damage = Willpower + Glamour + extra successes.",
-    bunk_examples=["Channel specific element", "Invoke legendary warrior", "Dramatic attack stance"],
+    bunk_examples=[
+        "Channel specific element",
+        "Invoke legendary warrior",
+        "Dramatic attack stance",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 360)
 
 Cantrip.objects.get_or_create(
@@ -210,7 +248,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Grant subject martial wisdom of legendary warriors. Pool of extra dice = successes. Each round divide pool among combat pools.",
-    bunk_examples=["Invoke legendary knights", "Glow with ancient power", "Call ancestral warriors"],
+    bunk_examples=[
+        "Invoke legendary knights",
+        "Glow with ancient power",
+        "Call ancestral warriors",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 361)
 
 # LEGERDEMAIN ART
@@ -239,7 +281,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="both",
     effect="Instantly transfer one inanimate object from target to caster. Item appears anywhere on caster's person. Target rolls Perception + Alertness (difficulty 8) to notice.",
-    bunk_examples=["Sleight of hand gestures", "Distract target", "Casual theft gestures"],
+    bunk_examples=[
+        "Sleight of hand gestures",
+        "Distract target",
+        "Casual theft gestures",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 365)
 
 Cantrip.objects.get_or_create(
@@ -253,7 +299,11 @@ Cantrip.objects.get_or_create(
     range="Line of sight",
     type_of_effect="both",
     effect="Create replica good enough to fool observer briefly. Sentient effigies perform single repetitive action. Objects appear exactly. Exist in physical world. Effigy food tastes bad, no nutrition.",
-    bunk_examples=["Sculpt Glamour replica", "Describe copied item", "Perform imitation actions"],
+    bunk_examples=[
+        "Sculpt Glamour replica",
+        "Describe copied item",
+        "Perform imitation actions",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 366)
 
 Cantrip.objects.get_or_create(
@@ -267,7 +317,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Move/control objects with precision/force without touching. Art + Realm = Strength (sudden force) or Dexterity (precision). Attack roll if used offensively.",
-    bunk_examples=["Elaborate gestures", "Maintain focus", "Dramatic object manipulation"],
+    bunk_examples=[
+        "Elaborate gestures",
+        "Maintain focus",
+        "Dramatic object manipulation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 366)
 
 Cantrip.objects.get_or_create(
@@ -281,7 +335,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="both",
     effect="Create long-lasting, convincing illusions. No mass in mundane world. Requires all relevant Realms. Look/sound/smell real. Extended action accumulates successes.",
-    bunk_examples=["Create elaborate mise-en-scene", "Gather props", "Invoke audience perception"],
+    bunk_examples=[
+        "Create elaborate mise-en-scene",
+        "Gather props",
+        "Invoke audience perception",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 366)
 
 # METAMORPHOSIS ART
@@ -296,7 +354,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="both",
     effect="Change one fundamental feature to plausible alternative (gender, hair color, height, species equivalent). Can attach condition to duration end. Only one discrete feature. Must be reasonably possible.",
-    bunk_examples=["Describe transformation visually", "Invoke animal essence", "Perform ritual alteration"],
+    bunk_examples=[
+        "Describe transformation visually",
+        "Invoke animal essence",
+        "Perform ritual alteration",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 368)
 
 Cantrip.objects.get_or_create(
@@ -310,7 +372,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Shrink or enlarge subject. Successes determine extent: 1 = 3/4 or 1.5x; 2 = 1/2 or 2x; 3 = 1/4 or 2.5x; 4 = 1/8 or 3x; 5 = 1/16 or 3.5x. Repeated castings stack.",
-    bunk_examples=["Perform size-changing gestures", "Describe growth/shrinkage", "Invoke age/youth"],
+    bunk_examples=[
+        "Perform size-changing gestures",
+        "Describe growth/shrinkage",
+        "Invoke age/youth",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 369)
 
 Cantrip.objects.get_or_create(
@@ -324,7 +390,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Transform person/object into animal. Retain mind/instincts but gain physical traits. Objects gain typical animal mind. Transformed retain speech (chimerical only). Severity determines animal restrictions.",
-    bunk_examples=["Invoke animal spirit", "Perform animal movements", "Describe transformation"],
+    bunk_examples=[
+        "Invoke animal spirit",
+        "Perform animal movements",
+        "Describe transformation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 369)
 
 Cantrip.objects.get_or_create(
@@ -338,7 +408,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Partial transformations. Grant animal features (claws, fur, wings, poison fangs). Each success = 1 feature or duration extension. Can set condition to end early.",
-    bunk_examples=["Describe specific animal features", "Invoke enhancement magic", "Ritualize partial transformation"],
+    bunk_examples=[
+        "Describe specific animal features",
+        "Invoke enhancement magic",
+        "Ritualize partial transformation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 370)
 
 Cantrip.objects.get_or_create(
@@ -352,7 +426,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Transform into creature of legend combining traits. Each success = 1 fantastic ability (flight, strength, toughness, fire breath, etc.). Duration always Glamour minutes but can reset with Glamour spending.",
-    bunk_examples=["Invoke legendary beasts", "Describe multiple powers", "Dramatic transformation stance"],
+    bunk_examples=[
+        "Invoke legendary beasts",
+        "Describe multiple powers",
+        "Dramatic transformation stance",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 370)
 
 # PRIMAL ART
@@ -381,7 +459,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Imbue subject with elemental essence. AIR: invisible, float. EARTH: stone-form. WATER: +1 Dex, breathe underwater. WOOD: rooted in place. FIRE: flame-form, +1 aggravated damage.",
-    bunk_examples=["Invoke element spirit", "Describe elemental form", "Channel natural force"],
+    bunk_examples=[
+        "Invoke element spirit",
+        "Describe elemental form",
+        "Channel natural force",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 373)
 
 Cantrip.objects.get_or_create(
@@ -395,7 +477,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Master five elements. Command existing elemental manifestations. Realm determines actions: Actor/Fae = elements attack or restrain. Prop/Nature = reshape elements into forms.",
-    bunk_examples=["Command elements dramatically", "Invoke elemental lords", "Conduct with gestures"],
+    bunk_examples=[
+        "Command elements dramatically",
+        "Invoke elemental lords",
+        "Conduct with gestures",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 374)
 
 # PYRETICS ART
@@ -424,7 +510,11 @@ Cantrip.objects.get_or_create(
     range="Based on Realm use",
     type_of_effect="both",
     effect="Create dispelling light. Reveals hidden/obscured things, supernatural illusions, physical disguises, lies. Illusions with lower power than successes revealed.",
-    bunk_examples=["Create illumination", "Invoke revelation magic", "Burn away shadows"],
+    bunk_examples=[
+        "Create illumination",
+        "Invoke revelation magic",
+        "Burn away shadows",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 376)
 
 Cantrip.objects.get_or_create(
@@ -438,7 +528,11 @@ Cantrip.objects.get_or_create(
     range="Touch/sight",
     type_of_effect="wyrd",
     effect="Burn away contaminants with chimerical fire (doesn't damage target). Purify water/food, destroy infection/poison, temporarily cure disease. With Fae Realm, burn away curses/cantrip effects.",
-    bunk_examples=["Apply cleansing flame", "Invoke purification ritual", "Destroy contamination"],
+    bunk_examples=[
+        "Apply cleansing flame",
+        "Invoke purification ritual",
+        "Destroy contamination",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 376)
 
 Cantrip.objects.get_or_create(
@@ -495,7 +589,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Summon host of gremlins harassing electronics. Fae/Actor: gremlins disrupt complex electronics target uses. Nature/Prop: curse objects making electronics nearby malfunction.",
-    bunk_examples=["Invoke gremlins", "Cause electrical chaos", "Invite mischief spirits"],
+    bunk_examples=[
+        "Invoke gremlins",
+        "Cause electrical chaos",
+        "Invite mischief spirits",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 379)
 
 Cantrip.objects.get_or_create(
@@ -523,7 +621,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Call lightning essence into target surrounding with electrical aura. Contact = 3 dice bashing damage. Caster immune to own cantrip. Can enchant own weapons/clothing safely.",
-    bunk_examples=["Invoke lightning", "Crackle electricity", "Dramatic aura manifestation"],
+    bunk_examples=[
+        "Invoke lightning",
+        "Crackle electricity",
+        "Dramatic aura manifestation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 380)
 
 Cantrip.objects.get_or_create(
@@ -537,7 +639,11 @@ Cantrip.objects.get_or_create(
     range="Open sky (or from fingertips with Storm Shroud)",
     type_of_effect="wyrd",
     effect="Strike target with lightning. Normally requires open sky. With Storm Shroud active, throw lightning from fingertips. Activation roll = attack roll. 5 dice aggravated damage + 1 per extra success.",
-    bunk_examples=["Invoke sky spirits", "Dramatic lightning pose", "Call down celestial power"],
+    bunk_examples=[
+        "Invoke sky spirits",
+        "Dramatic lightning pose",
+        "Call down celestial power",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 381)
 
 # SOVEREIGN ART
@@ -552,7 +658,11 @@ Cantrip.objects.get_or_create(
     range="Hearing range",
     type_of_effect="wyrd",
     effect="Issue command in caster's voice. Must be single-word or two-word command understandable by listener. Resist via Willpower (difficulty = caster's Glamour). Subject compelled to obey unless violates fundamental nature.",
-    bunk_examples=["Formal command statement", "Use authoritative voice", "Dramatic gesturing"],
+    bunk_examples=[
+        "Formal command statement",
+        "Use authoritative voice",
+        "Dramatic gesturing",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 389)
 
 Cantrip.objects.get_or_create(
@@ -566,7 +676,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Enchant group within Scene to respond to caster's leadership. Group acts on caster's direction (within Realm's scope). Scene use requires +1 Glamour and +1 difficulty.",
-    bunk_examples=["Gather group", "Issue orders", "Demonstrate authority over followers"],
+    bunk_examples=[
+        "Gather group",
+        "Issue orders",
+        "Demonstrate authority over followers",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 390)
 
 Cantrip.objects.get_or_create(
@@ -580,7 +694,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Grant temporary mastery of skill. Subject gains pool of dice = successes for skill use. Lasts successes in scenes. Subjects of Mastery contribute doubled successes to group actions under caster's direction.",
-    bunk_examples=["Invoke skill transferrence", "Touch/bless target", "Grant empowerment"],
+    bunk_examples=[
+        "Invoke skill transferrence",
+        "Touch/bless target",
+        "Grant empowerment",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 390)
 
 Cantrip.objects.get_or_create(
@@ -623,7 +741,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Summon bright dancing light motes evoking emotion. Provide torch-light (Dreaming-visible). Touched by light feel chosen emotion (anger, melancholy, lust, happiness, etc.). -1 difficulty for emotional resonance rolls.",
-    bunk_examples=["Create colored lights", "Invoke emotional magic", "Dance with lights"],
+    bunk_examples=[
+        "Create colored lights",
+        "Invoke emotional magic",
+        "Dance with lights",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 385)
 
 Cantrip.objects.get_or_create(
@@ -637,7 +759,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Fan emotion flames to roaring height. Target emotion intensifies. Objects inspire inflamed emotions. Irritation becomes resentment, anger becomes full rage, sadness becomes crippling, happiness becomes leaping.",
-    bunk_examples=["Invoke passion magic", "Stoke emotional flames", "Dramatic emotional intensification"],
+    bunk_examples=[
+        "Invoke passion magic",
+        "Stoke emotional flames",
+        "Dramatic emotional intensification",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 385)
 
 Cantrip.objects.get_or_create(
@@ -651,7 +777,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Create all-encompassing awe, fascination, desire. Subject gains magnetic attraction. Person: every word/action entrancing. Object: everyone who beholds covets it. Affects individuals with lower Willpower than successes.",
-    bunk_examples=["Invoke attractiveness magic", "Dance seductively", "Embody desirability"],
+    bunk_examples=[
+        "Invoke attractiveness magic",
+        "Dance seductively",
+        "Embody desirability",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 386)
 
 Cantrip.objects.get_or_create(
@@ -679,7 +809,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Erupt target's Banality into red-gold destructive flames. Roll lethal damage (difficulty = target's Banality). With 5+ successes: aggravated damage, every 2 successes burn away 1 Banality.",
-    bunk_examples=["Invoke Banality-burning magic", "Dramatic flame manifestation", "Purifying fire"],
+    bunk_examples=[
+        "Invoke Banality-burning magic",
+        "Dramatic flame manifestation",
+        "Purifying fire",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 387)
 
 # WAYFARE ART
@@ -708,7 +842,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Move as literal blur (speed lines/crackling lightning). Each success = extra action OR doubles movement speed. Hurled objects gain successes as damage dice. Vehicles just speed up.",
-    bunk_examples=["Invoke speed magic", "Dramatic acceleration stance", "Trail Glamour"],
+    bunk_examples=[
+        "Invoke speed magic",
+        "Dramatic acceleration stance",
+        "Trail Glamour",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 382)
 
 Cantrip.objects.get_or_create(
@@ -722,7 +860,11 @@ Cantrip.objects.get_or_create(
     range="Up to 10 feet thick barrier",
     type_of_effect="wyrd",
     effect="Create door piercing any barrier (brick/hedge/van). Doors unique to caster (recognizable). Actor/Fae doors: only targeted individuals use. Prop/Nature doors: anyone perceiving Dreaming uses.",
-    bunk_examples=["Draw portal", "Invoke gateway magic", "Describe passage destination"],
+    bunk_examples=[
+        "Draw portal",
+        "Invoke gateway magic",
+        "Describe passage destination",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 382)
 
 Cantrip.objects.get_or_create(
@@ -750,7 +892,11 @@ Cantrip.objects.get_or_create(
     range="Must know/see/possess location",
     type_of_effect="wyrd",
     effect="Teleport anywhere desired. Must know/see/possess destination; can't cross realm boundaries. On others: subject chooses destination. Successes determine speed: (5 - successes) = turns to teleport; 5+ = instant.",
-    bunk_examples=["Invoke teleportation magic", "Touch destination", "Dramatic vanishing"],
+    bunk_examples=[
+        "Invoke teleportation magic",
+        "Touch destination",
+        "Dramatic vanishing",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 383)
 
 # WINTER ART
@@ -779,7 +925,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Mute emotion, insulate from manipulation/control. Target cannot spend Willpower during duration. Resist mundane/supernatural mind/emotion control. Objects can resist commands (Dictum).",
-    bunk_examples=["Invoke emotional numbness", "Freeze out feeling", "Create cold isolation"],
+    bunk_examples=[
+        "Invoke emotional numbness",
+        "Freeze out feeling",
+        "Create cold isolation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 392)
 
 Cantrip.objects.get_or_create(
@@ -793,7 +943,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Overwhelming existential fear in unending frigid darkness. Target must spend Willpower for any action besides run/hide/cower. Changelings/supernatural resist via Willpower (difficulty 8). Mortals flee automatically.",
-    bunk_examples=["Invoke deep fear", "Create primal terror", "Embody winter darkness"],
+    bunk_examples=[
+        "Invoke deep fear",
+        "Create primal terror",
+        "Embody winter darkness",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 392)
 
 Cantrip.objects.get_or_create(
@@ -807,7 +961,11 @@ Cantrip.objects.get_or_create(
     range="Line of sight",
     type_of_effect="wyrd",
     effect="Conjure and sculpt ice. Cannot be mistaken for anything else. Feels bitterly cold to touch. Doesn't melt unless magical heat/flame. Forms approximately 1 cubic foot per turn. Create functional items or combat application.",
-    bunk_examples=["Sculpt ice carefully", "Invoke ice formation magic", "Create winter art"],
+    bunk_examples=[
+        "Sculpt ice carefully",
+        "Invoke ice formation magic",
+        "Create winter art",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 393)
 
 Cantrip.objects.get_or_create(
@@ -821,7 +979,11 @@ Cantrip.objects.get_or_create(
     range="Sight/touch",
     type_of_effect="wyrd",
     effect="Trap target in magical frost. Target immobile, doesn't age/decay/break/change. Conscious beings can resist via Willpower + Stamina (difficulty 9). Supernatural magic thaws frost.",
-    bunk_examples=["Invoke magical stasis", "Touch with freezing intent", "Create eternal sleep"],
+    bunk_examples=[
+        "Invoke magical stasis",
+        "Touch with freezing intent",
+        "Create eternal sleep",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 393)
 
 # SPRING ART
@@ -850,7 +1012,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Speed nature's reclamation. Plant coverage center on target. Roots/flowers/vines sprout covering surface. Lasts 1 scene then withers. Machines become unusable. Living creatures trapped must accumulate successes.",
-    bunk_examples=["Invoke rapid growth", "Dance with plants", "Invite nature's embrace"],
+    bunk_examples=[
+        "Invoke rapid growth",
+        "Dance with plants",
+        "Invite nature's embrace",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 384)
 
 Cantrip.objects.get_or_create(
@@ -878,7 +1044,11 @@ Cantrip.objects.get_or_create(
     range="Must create physical circle",
     type_of_effect="wyrd",
     effect="Create protective circle with natural substance. Anyone allowed inside becomes invisible/protected from hostile magic. Each success +1 difficulty for detection/harm. Violators suffer curse.",
-    bunk_examples=["Create physical circle", "Invoke protection ritual", "Stand within"],
+    bunk_examples=[
+        "Create physical circle",
+        "Invoke protection ritual",
+        "Stand within",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 384)
 
 Cantrip.objects.get_or_create(
@@ -892,7 +1062,11 @@ Cantrip.objects.get_or_create(
     range="Sight/recognition",
     type_of_effect="wyrd",
     effect="Grant life to inert/dead target recognized by caster (skeleton/building husk OK). Target returns to life fully as prime. No protections granted. Dies again if killed. Fades at next sunrise.",
-    bunk_examples=["Invoke resurrection magic", "Touch target with love", "Perform rebirth ritual"],
+    bunk_examples=[
+        "Invoke resurrection magic",
+        "Touch target with love",
+        "Perform rebirth ritual",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 385)
 
 # CHRONOS ART
@@ -907,7 +1081,11 @@ Cantrip.objects.get_or_create(
     range="Sight or known location",
     type_of_effect="chimerical",
     effect="Look backward in time. Range varies by successes: 1 = 1 hour; 2 = 1 day; 3 = 1 week; 4 = 1 month; 5 = 1 year. Specify time or event to focus on.",
-    bunk_examples=["Visit location and meditate", "Focus on memory", "Create temporal anchor"],
+    bunk_examples=[
+        "Visit location and meditate",
+        "Focus on memory",
+        "Create temporal anchor",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 346)
 
 Cantrip.objects.get_or_create(
@@ -921,7 +1099,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Scatter temporal progression of target. Sound precedes action, effects precede causes. -3 die penalty to those perceiving target. Knowledgeable casters resist via Wits + Gremayre (difficulty 8).",
-    bunk_examples=["Rearrange objects oddly", "Speak in reverse order", "Describe reversed causality"],
+    bunk_examples=[
+        "Rearrange objects oddly",
+        "Speak in reverse order",
+        "Describe reversed causality",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 347)
 
 Cantrip.objects.get_or_create(
@@ -935,7 +1117,11 @@ Cantrip.objects.get_or_create(
     range="Touch/sight",
     type_of_effect="wyrd",
     effect="Prevent aging, exposure effects on target. Target cannot grow, age, deteriorate, or progress. Doesn't prevent intentional harm. Can prolong other cantrips with sufficient Fae rating.",
-    bunk_examples=["Preserve objects carefully", "Ritualize time-stopping", "Hold objects still"],
+    bunk_examples=[
+        "Preserve objects carefully",
+        "Ritualize time-stopping",
+        "Hold objects still",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 347)
 
 Cantrip.objects.get_or_create(
@@ -949,7 +1135,11 @@ Cantrip.objects.get_or_create(
     range="Self or willing target",
     type_of_effect="wyrd",
     effect="Relive recent moment to re-experience present with future knowledge. Turn used for orientation (cannot act). Then -3 difficulty to all rolls for successes in turns. Each use increases next use difficulty by 1.",
-    bunk_examples=["Describe bunk during casting", "Create time-loop symbolism", "Prepare specifically for moment"],
+    bunk_examples=[
+        "Describe bunk during casting",
+        "Create time-loop symbolism",
+        "Prepare specifically for moment",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 348)
 
 Cantrip.objects.get_or_create(
@@ -963,7 +1153,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Push target forward through time out of sync with world. Target ages/suffers time effects while world barely changes. Subject experiences successes duration while seconds pass for others.",
-    bunk_examples=["Accelerate growth symbolically", "Describe passage of time", "Ritualize aging"],
+    bunk_examples=[
+        "Accelerate growth symbolically",
+        "Describe passage of time",
+        "Ritualize aging",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 348)
 
 # CONTRACT ART
@@ -978,7 +1172,11 @@ Cantrip.objects.get_or_create(
     range="Presence required (Realms modify)",
     type_of_effect="chimerical",
     effect="Enter binding oaths with others or sanctify witnessed oaths. Oathbreakers punished by Dreaming. Realms must be Actor/Fae or Prop/Nature. Severity of oath determines curse severity.",
-    bunk_examples=["Elaborate oath-taking ceremony", "Blood/ink signing", "Dramatic pronouncements"],
+    bunk_examples=[
+        "Elaborate oath-taking ceremony",
+        "Blood/ink signing",
+        "Dramatic pronouncements",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 350)
 
 Cantrip.objects.get_or_create(
@@ -992,7 +1190,11 @@ Cantrip.objects.get_or_create(
     range="Bound oath location",
     type_of_effect="chimerical",
     effect="Become aware when someone breaks oath sanctified by caster. Know who and when. Not location/why. Automatically attached to Done Deal. Reduce cantrip difficulty by 1 for locating oathbreaker.",
-    bunk_examples=["Listen for bells", "Feel connection to oathbreaker", "Sense betrayal"],
+    bunk_examples=[
+        "Listen for bells",
+        "Feel connection to oathbreaker",
+        "Sense betrayal",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 351)
 
 Cantrip.objects.get_or_create(
@@ -1006,7 +1208,11 @@ Cantrip.objects.get_or_create(
     range="Anywhere (through oath connection)",
     type_of_effect="chimerical",
     effect="Reach out to inflict punishment on oathbreaker. Reflexively target oathbreaker with known cantrip through whatever Realm bound the oath. No Fae/Actor required.",
-    bunk_examples=["Direct curse specifically", "Speak punishment aloud", "Invoke Dreaming's justice"],
+    bunk_examples=[
+        "Direct curse specifically",
+        "Speak punishment aloud",
+        "Invoke Dreaming's justice",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 351)
 
 Cantrip.objects.get_or_create(
@@ -1020,7 +1226,11 @@ Cantrip.objects.get_or_create(
     range="Within Done Deal's range",
     type_of_effect="chimerical",
     effect="Sanctify careless agreements, idle boasts, sarcastic rejoinders as binding contracts. Permanently modifies Done Deal's scope.",
-    bunk_examples=["Casual oath-taking", "Nonverbal binding", "Ironic contract formalization"],
+    bunk_examples=[
+        "Casual oath-taking",
+        "Nonverbal binding",
+        "Ironic contract formalization",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 352)
 
 Cantrip.objects.get_or_create(
@@ -1034,7 +1244,11 @@ Cantrip.objects.get_or_create(
     range="Oath location",
     type_of_effect="chimerical",
     effect="Weave Glamour into contracts to grant blessings assisting oath fulfillment. Successes buy enchantments: Favor of Mists (1/die pool), Fortified Will (1/Willpower), Questing Token (1), Bond of Glamour (2/Glamour).",
-    bunk_examples=["Inscribe oath terms", "Create magical seals", "Invoke legendary blessings"],
+    bunk_examples=[
+        "Inscribe oath terms",
+        "Create magical seals",
+        "Invoke legendary blessings",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 352)
 
 # NAMING ART
@@ -1049,7 +1263,11 @@ Cantrip.objects.get_or_create(
     range="Sight/hearing",
     type_of_effect="chimerical",
     effect="Understand any language or intended meaning. Realm dictates message source. Any successes allow understanding. Each success = +1 die to contested rolls seeking truth/seeing through lies for scene.",
-    bunk_examples=["Study written works", "Listen carefully", "Invoke comprehension magic"],
+    bunk_examples=[
+        "Study written works",
+        "Listen carefully",
+        "Invoke comprehension magic",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 354)
 
 Cantrip.objects.get_or_create(
@@ -1063,7 +1281,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Apply cursory label warping identity. Everyone sees target through nickname lens. Sentient creatures cannot regain Willpower unless acting per nickname spirit. Objects conform to nickname spirit.",
-    bunk_examples=["Announce nickname publicly", "Describe effect clearly", "Invoke identity change"],
+    bunk_examples=[
+        "Announce nickname publicly",
+        "Describe effect clearly",
+        "Invoke identity change",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 355)
 
 Cantrip.objects.get_or_create(
@@ -1091,7 +1313,12 @@ Cantrip.objects.get_or_create(
     range="Touch (apply rune physically or in air/dirt)",
     type_of_effect="wyrd",
     effect="Extended action writing/drawing rune. Spend Glamour per roll. Reduce/enhance Attributes on target. On objects without Attributes, modify function/capability.",
-    bunk_examples=["Draw actual runes", "Inscribe carefully", "Speak incantations", "Create magical symbols"],
+    bunk_examples=[
+        "Draw actual runes",
+        "Inscribe carefully",
+        "Speak incantations",
+        "Create magical symbols",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 356)
 
 Cantrip.objects.get_or_create(
@@ -1105,7 +1332,11 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="wyrd",
     effect="Extended action rewriting target's name. Minor change (tastes/habits, addiction): 1 success. Moderate (interests/mood, form change): 2. Major (inner nature, Court switch): 3. Total (change Legacies): 4. Fundamental (rearrange Attributes, form change): 5.",
-    bunk_examples=["Perform elaborate ritual", "Invoke fundamental change", "Meditate on transformation"],
+    bunk_examples=[
+        "Perform elaborate ritual",
+        "Invoke fundamental change",
+        "Meditate on transformation",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 356)
 
 # ONEIROMANCY ART
@@ -1120,7 +1351,11 @@ Cantrip.objects.get_or_create(
     range="Must target sleeping being (know well or see)",
     type_of_effect="wyrd",
     effect="Forge bridge between Dreaming and target's mind. Fully enter target's dream. Don't rest yourself. May take chimerical damage. Don't risk physical harm. Spend Willpower to forge connection.",
-    bunk_examples=["Sleep next to target", "Meditate on their dreams", "Create sleep-state gesture"],
+    bunk_examples=[
+        "Sleep next to target",
+        "Meditate on their dreams",
+        "Create sleep-state gesture",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 357)
 
 Cantrip.objects.get_or_create(
@@ -1134,7 +1369,11 @@ Cantrip.objects.get_or_create(
     range="Inside target's dream via Dream Walk",
     type_of_effect="chimerical",
     effect="Exert control within dreamscape. Shape dreams, create peaceful/terrifying scenarios. Positive dreams grant +1 Willpower recovery, +2 dice when encountering trigger. Nightmares drain -1 Willpower.",
-    bunk_examples=["Narrate dream visions", "Invoke emotional intensity", "Create symbolic imagery"],
+    bunk_examples=[
+        "Narrate dream visions",
+        "Invoke emotional intensity",
+        "Create symbolic imagery",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 357)
 
 Cantrip.objects.get_or_create(
@@ -1148,7 +1387,11 @@ Cantrip.objects.get_or_create(
     range="Through target's dream to caster's location",
     type_of_effect="wyrd",
     effect="Extended action overlapping dreaming mind with Dreaming itself. Create portal through target's dream. Realm dictates what transports. Successes = mass/volume (1 = adult human).",
-    bunk_examples=["Describe portal destination", "Invoke travel magic", "Create gateway symbol"],
+    bunk_examples=[
+        "Describe portal destination",
+        "Invoke travel magic",
+        "Create gateway symbol",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 358)
 
 Cantrip.objects.get_or_create(
@@ -1162,7 +1405,11 @@ Cantrip.objects.get_or_create(
     range="Dream to waking world",
     type_of_effect="both",
     effect="Pull dream elements into waking as chimera. Target disappears from dream. Chimera retains dream nature. Automatically gain insight. Maintain with daily Glamour or becomes permanent.",
-    bunk_examples=["Describe dream form", "Invoke manifestation magic", "Create symbolic transition"],
+    bunk_examples=[
+        "Describe dream form",
+        "Invoke manifestation magic",
+        "Create symbolic transition",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 358)
 
 Cantrip.objects.get_or_create(
@@ -1176,7 +1423,11 @@ Cantrip.objects.get_or_create(
     range="Via Dream Walk connection",
     type_of_effect="wyrd",
     effect="Invade target's mind and control body while they sleep. Use physical Attributes but retain social/mental Attributes and skills. Can use Arts but not target's abilities. Can't use Dream Walk on others while Puppet-ing.",
-    bunk_examples=["Invoke possession magic", "Describe puppet control", "Meditate on target identity"],
+    bunk_examples=[
+        "Invoke possession magic",
+        "Describe puppet control",
+        "Meditate on target identity",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 359)
 
 # SOOTHSAY ART
@@ -1219,7 +1470,11 @@ Cantrip.objects.get_or_create(
     range="Sight (establish focus)",
     type_of_effect="chimerical",
     effect="Scry distant scenes through ensorcelled object/person. Traditionally reflective surface, some use screens/monitors. Requires obvious ritual dedication. Use perception cantrips through focus once connected.",
-    bunk_examples=["Prepare scrying focus", "Invoke vision magic", "Meditate on connection"],
+    bunk_examples=[
+        "Prepare scrying focus",
+        "Invoke vision magic",
+        "Meditate on connection",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 374)
 
 Cantrip.objects.get_or_create(
@@ -1233,7 +1488,11 @@ Cantrip.objects.get_or_create(
     range="Realm-dependent",
     type_of_effect="chimerical",
     effect="Extended action reaching into Dán weave. Reveal fragmented path toward desired fortune. Unreliable/expensive road but leads to fated outcome. One clue per success. Only 1 attempt per story per fortune.",
-    bunk_examples=["Ritual Dán touching", "Meditation", "Elaborate divination ceremony"],
+    bunk_examples=[
+        "Ritual Dán touching",
+        "Meditation",
+        "Elaborate divination ceremony",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 375)
 
 Cantrip.objects.get_or_create(
@@ -1247,5 +1506,9 @@ Cantrip.objects.get_or_create(
     range="Sight",
     type_of_effect="chimerical",
     effect="Lay hands on Dán threads, bending to will. Bless subject: +1 automatic success per success at auspicious moment. Curse subject: -1 automatic success per success at dire moment. One Fate Fire per target at time.",
-    bunk_examples=["Invoke destiny threads", "Bless/curse dramatically", "Touch Dán weave"],
+    bunk_examples=[
+        "Invoke destiny threads",
+        "Bless/curse dramatically",
+        "Touch Dán weave",
+    ],
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 375)

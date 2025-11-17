@@ -1,2 +1,2 @@
-from . import demon, mage, werewolf
+from . import mage, werewolf, wraith
 from .core import City, LocationModel

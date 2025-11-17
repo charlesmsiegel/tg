@@ -1,0 +1,1 @@
+from .haunt import Haunt

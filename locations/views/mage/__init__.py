@@ -6,7 +6,12 @@ from .chantry import (
     ChantryListView,
     ChantryUpdateView,
 )
-from .library import LibraryCreateView, LibraryDetailView, LibraryListView, LibraryUpdateView
+from .library import (
+    LibraryCreateView,
+    LibraryDetailView,
+    LibraryListView,
+    LibraryUpdateView,
+)
 from .node import NodeCreateView, NodeDetailView, NodeListView, NodeUpdateView
 from .reality_zone import (
     RealityZoneCreateView,
@@ -15,5 +20,10 @@ from .reality_zone import (
     RealityZoneUpdateView,
 )
 from .realm import RealmCreateView, RealmDetailView, RealmListView, RealmUpdateView
-from .sanctum import SanctumCreateView, SanctumDetailView, SanctumListView, SanctumUpdateView
+from .sanctum import (
+    SanctumCreateView,
+    SanctumDetailView,
+    SanctumListView,
+    SanctumUpdateView,
+)
 from .sector import SectorCreateView, SectorDetailView, SectorListView, SectorUpdateView

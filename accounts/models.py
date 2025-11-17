@@ -116,9 +116,9 @@ class Profile(models.Model):
         Returns a dict mapping Chronicle objects to lists of STRelationship objects.
         Optimized to avoid N+1 query issues.
         """
-        relationships = STRelationship.objects.filter(
-            user=self.user
-        ).select_related("chronicle", "gameline")
+        relationships = STRelationship.objects.filter(user=self.user).select_related(
+            "chronicle", "gameline"
+        )
 
         d = {}
         for rel in relationships:

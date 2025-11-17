@@ -10,7 +10,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import datetime
 from django.views import View
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 from game.forms import (
     AddCharForm,
     JournalEntryForm,
@@ -136,18 +142,14 @@ class SceneDetailView(LoginRequiredMixin, View):
             # Only storytellers can close scenes
             if not request.user.profile.is_st():
                 raise PermissionDenied("Only storytellers can close scenes")
-            context["post_form"] = context["post_form"](
-                user=request.user, scene=scene
-            )
+            context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.close()
         elif "character_to_add" in request.POST.keys():
             c = get_object_or_404(CharacterModel, pk=request.POST["character_to_add"])
             # Check that user owns the character
             if c.owner != request.user:
                 raise PermissionDenied("You can only add your own characters")
-            context["post_form"] = context["post_form"](
-                user=request.user, scene=scene
-            )
+            context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.add_character(c)
         elif "message" in request.POST.keys():
             context["post_form"] = context["post_form"](
