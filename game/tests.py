@@ -13,6 +13,8 @@ from game.models import (
     STRelationship,
     Week,
     WeeklyXPRequest,
+    extended_roll,
+    message_processing,
 )
 from locations.models.core import LocationModel
 
@@ -375,3 +377,104 @@ class TestCharacterXP(TestCase):
         self.char.add_xp(-3)
         self.char.refresh_from_db()
         self.assertEqual(self.char.xp, 7)
+
+
+class TestExtendedRoll(TestCase):
+    """Test extended roll functionality."""
+
+    def test_extended_roll_returns_html(self):
+        """Test that extended roll returns formatted HTML."""
+        result = extended_roll(5, 10, difficulty=6)
+        self.assertIn("Extended Roll:", result)
+        self.assertIn("<br>", result)
+        self.assertIn("<b>", result)
+
+    def test_extended_roll_shows_cumulative_totals(self):
+        """Test that extended roll shows cumulative success totals."""
+        result = extended_roll(5, 10, difficulty=6)
+        self.assertIn("Total:", result)
+        self.assertIn("Roll 1:", result)
+
+    def test_extended_roll_success_message(self):
+        """Test that successful extended roll shows success message."""
+        # Use high dice pool and low target to ensure success
+        result = extended_roll(10, 5, difficulty=4)
+        self.assertIn("SUCCESS!", result)
+        self.assertIn("Target of 5 reached", result)
+
+    def test_extended_roll_max_rolls_limit(self):
+        """Test that extended roll respects max_rolls limit."""
+        # Use impossible target with very few max rolls
+        result = extended_roll(1, 1000, difficulty=10, max_rolls=3)
+        self.assertIn("INCOMPLETE:", result)
+        self.assertIn("after 3 rolls", result)
+
+    def test_extended_roll_with_specialty(self):
+        """Test extended roll with specialty parameter."""
+        result = extended_roll(5, 10, difficulty=6, specialty=True)
+        self.assertIn("Extended Roll:", result)
+
+    def test_extended_roll_with_high_difficulty(self):
+        """Test extended roll with high difficulty."""
+        result = extended_roll(5, 5, difficulty=9)
+        self.assertIn("Extended Roll:", result)
+
+
+class TestExtendedRollMessageProcessing(TestCase):
+    """Test extended roll command parsing in message processing."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+
+    def test_extended_command_basic(self):
+        """Test basic /extended command parsing."""
+        msg = "Researching /extended 4 target 12"
+        result = message_processing(self.char, msg)
+        self.assertIn("extended roll of 4 dice", result)
+        self.assertIn("targeting 12 successes", result)
+        self.assertIn("Extended Roll:", result)
+
+    def test_extended_command_with_difficulty(self):
+        """Test /extended command with difficulty."""
+        msg = "Complex task /extended 5 target 10 difficulty 7"
+        result = message_processing(self.char, msg)
+        self.assertIn("difficulty 7", result)
+        self.assertIn("targeting 10 successes", result)
+
+    def test_extended_command_with_specialty(self):
+        """Test /extended command with specialty."""
+        msg = "Expert work /extended 6 target 15 difficulty 6 True"
+        result = message_processing(self.char, msg)
+        self.assertIn("with relevant specialty", result)
+
+    def test_extended_command_default_difficulty(self):
+        """Test that /extended defaults to difficulty 6."""
+        msg = "Simple task /extended 4 target 8"
+        result = message_processing(self.char, msg)
+        self.assertIn("difficulty 6", result)
+
+    def test_extended_command_preserves_text(self):
+        """Test that text before /extended is preserved."""
+        msg = "Working on a complex ritual /extended 5 target 10"
+        result = message_processing(self.char, msg)
+        self.assertIn("Working on a complex ritual:", result)
+
+    def test_extended_command_invalid_format_raises_error(self):
+        """Test that invalid /extended format raises ValueError."""
+        msg = "Invalid /extended 5"  # Missing target
+        with self.assertRaises(ValueError):
+            message_processing(self.char, msg)
+
+    def test_extended_command_case_insensitive(self):
+        """Test that target keyword is case insensitive."""
+        msg = "Test /extended 4 TARGET 10 DIFFICULTY 7 TRUE"
+        result = message_processing(self.char, msg)
+        self.assertIn("difficulty 7", result)
+        self.assertIn("with relevant specialty", result)
