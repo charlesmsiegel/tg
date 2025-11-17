@@ -1,5 +1,6 @@
 from characters.models.core.human import Human
 from django.db import models
+from django.urls import reverse
 
 
 class DtFHuman(Human):
@@ -134,3 +135,16 @@ class DtFHuman(Human):
         verbose_name = "Human (Demon)"
         verbose_name_plural = "Humans (Demon)"
         ordering = ["name"]
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:dtfhuman", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:dtfhuman", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:dtfhuman")
+
+    def get_heading(self):
+        return "dtf_heading"

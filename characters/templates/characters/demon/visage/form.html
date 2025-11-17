@@ -1,0 +1,28 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Visage
+{% endblock creation_title %}
+{% block contents %}
+    {% load sanitize_text %}
+    {% load dots %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">House</div>
+        <div class="col-sm">{{ form.house }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Low Torment Traits</div>
+        <div class="col-sm">{{ form.low_torment_traits }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">High Torment Traits</div>
+        <div class="col-sm">{{ form.high_torment_traits }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+{% endblock contents %}

@@ -51,6 +51,9 @@ class Haunt(LocationModel):
     def __str__(self):
         return f"{self.name} (Haunt)"
 
+    def get_absolute_url(self):
+        return reverse("locations:wraith:haunt", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("locations:wraith:update:haunt", args=[str(self.id)])
 

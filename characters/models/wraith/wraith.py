@@ -6,6 +6,7 @@ from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
 from core.utils import add_dot
 from django.db import models
+from django.urls import reverse
 
 
 class Wraith(WtOHuman):
@@ -141,6 +142,19 @@ class Wraith(WtOHuman):
         verbose_name = "Wraith"
         verbose_name_plural = "Wraiths"
         ordering = ["name"]
+
+    def get_absolute_url(self):
+        return reverse("characters:wraith:wraith", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:wraith:update:wraith", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:wraith:create:wraith")
+
+    def get_heading(self):
+        return "wto_heading"
 
     def has_guild(self):
         return self.guild is not None

@@ -1,0 +1,32 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Pact
+{% endblock creation_title %}
+{% block contents %}
+    {% load sanitize_text %}
+    {% load dots %}
+    <div class="row">
+        <div class="col-sm">Demon</div>
+        <div class="col-sm">{{ form.demon }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Thrall</div>
+        <div class="col-sm">{{ form.thrall }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Terms</div>
+        <div class="col-sm">{{ form.terms }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Faith Payment</div>
+        <div class="col-sm">{{ form.faith_payment }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Enhancements</div>
+        <div class="col-sm">{{ form.enhancements }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Active</div>
+        <div class="col-sm">{{ form.active }}</div>
+    </div>
+{% endblock contents %}

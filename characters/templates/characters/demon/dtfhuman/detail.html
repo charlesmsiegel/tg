@@ -1,0 +1,177 @@
+{% extends "characters/core/human/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block abilities %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Abilities</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Talents</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Skills</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="{{ object.get_heading }}">Knowledges</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Alertness</div>
+                        <div class="col-sm dots">{{ object.alertness|dots }}</div>
+                        <div class="col-sm">Crafts</div>
+                        <div class="col-sm dots">{{ object.crafts|dots }}</div>
+                        <div class="col-sm">Academics</div>
+                        <div class="col-sm dots">{{ object.academics|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Athletics</div>
+                        <div class="col-sm dots">{{ object.athletics|dots }}</div>
+                        <div class="col-sm">Drive</div>
+                        <div class="col-sm dots">{{ object.drive|dots }}</div>
+                        <div class="col-sm">Computer</div>
+                        <div class="col-sm dots">{{ object.computer|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Awareness</div>
+                        <div class="col-sm dots">{{ object.awareness|dots }}</div>
+                        <div class="col-sm">Etiquette</div>
+                        <div class="col-sm dots">{{ object.etiquette|dots }}</div>
+                        <div class="col-sm">Enigmas</div>
+                        <div class="col-sm dots">{{ object.enigmas|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Brawl</div>
+                        <div class="col-sm dots">{{ object.brawl|dots }}</div>
+                        <div class="col-sm">Firearms</div>
+                        <div class="col-sm dots">{{ object.firearms|dots }}</div>
+                        <div class="col-sm">Finance</div>
+                        <div class="col-sm dots">{{ object.finance|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Empathy</div>
+                        <div class="col-sm dots">{{ object.empathy|dots }}</div>
+                        <div class="col-sm">Melee</div>
+                        <div class="col-sm dots">{{ object.melee|dots }}</div>
+                        <div class="col-sm">Investigation</div>
+                        <div class="col-sm dots">{{ object.investigation|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Expression</div>
+                        <div class="col-sm dots">{{ object.expression|dots }}</div>
+                        <div class="col-sm">Performance</div>
+                        <div class="col-sm dots">{{ object.performance|dots }}</div>
+                        <div class="col-sm">Law</div>
+                        <div class="col-sm dots">{{ object.law|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Intimidation</div>
+                        <div class="col-sm dots">{{ object.intimidation|dots }}</div>
+                        <div class="col-sm">Security</div>
+                        <div class="col-sm dots">{{ object.security|dots }}</div>
+                        <div class="col-sm">Medicine</div>
+                        <div class="col-sm dots">{{ object.medicine|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Intuition</div>
+                        <div class="col-sm dots">{{ object.intuition|dots }}</div>
+                        <div class="col-sm">Stealth</div>
+                        <div class="col-sm dots">{{ object.stealth|dots }}</div>
+                        <div class="col-sm">Occult</div>
+                        <div class="col-sm dots">{{ object.occult|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Leadership</div>
+                        <div class="col-sm dots">{{ object.leadership|dots }}</div>
+                        <div class="col-sm">Survival</div>
+                        <div class="col-sm dots">{{ object.survival|dots }}</div>
+                        <div class="col-sm">Politics</div>
+                        <div class="col-sm dots">{{ object.politics|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Seduction</div>
+                        <div class="col-sm dots">{{ object.seduction|dots }}</div>
+                        <div class="col-sm">Technology</div>
+                        <div class="col-sm dots">{{ object.technology|dots }}</div>
+                        <div class="col-sm">Religion</div>
+                        <div class="col-sm dots">{{ object.religion|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Streetwise</div>
+                        <div class="col-sm dots">{{ object.streetwise|dots }}</div>
+                        <div class="col-sm">Animal Ken</div>
+                        <div class="col-sm dots">{{ object.animal_ken|dots }}</div>
+                        <div class="col-sm">Research</div>
+                        <div class="col-sm dots">{{ object.research|dots }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">Subterfuge</div>
+                        <div class="col-sm dots">{{ object.subterfuge|dots }}</div>
+                        <div class="col-sm">Demolitions</div>
+                        <div class="col-sm dots">{{ object.demolitions|dots }}</div>
+                        <div class="col-sm">Science</div>
+                        <div class="col-sm dots">{{ object.science|dots }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock abilities %}
+{% block health %}
+    {% include "characters/core/human/health_block_display.html" %}
+{% endblock health %}

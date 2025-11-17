@@ -1,6 +1,7 @@
 from characters.models.demon.house import DemonHouse
 from core.models import Model
 from django.db import models
+from django.urls import reverse
 
 
 class Lore(Model):
@@ -23,3 +24,16 @@ class Lore(Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("characters:demon:lore", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        return reverse("characters:demon:update:lore", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:demon:create:lore")
+
+    def get_heading(self):
+        return "dtf_heading"
