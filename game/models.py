@@ -448,7 +448,43 @@ def message_processing(character, message):
             character.save()
 
     expenditures = ", ".join(["#" + x for x in expenditures])
-    if "/rolls" in message:
+    if "/extended" in message:
+        text, roll = message.split("/extended")
+        text = text.strip()
+        roll = roll.strip()
+        if match := re.match(
+            r"^(?P<num_dice>\d+)\s+target\s+(?P<target>\d+)(?:\s+difficulty\s+(?P<difficulty>\d+))?(?:\s+(?P<specialty>\S+))?",
+            roll,
+            re.IGNORECASE,
+        ):
+            num_dice = int(match.group("num_dice"))
+            target_successes = int(match.group("target"))
+            difficulty = (
+                int(match.group("difficulty")) if match.group("difficulty") else 6
+            )
+            specialty_str = match.group("specialty")
+            specialty = specialty_str.lower() == "true" if specialty_str else False
+            r = extended_roll(
+                num_dice,
+                target_successes,
+                difficulty=difficulty,
+                specialty=specialty,
+            )
+            roll_description = (
+                f"extended roll of {num_dice} dice at difficulty {difficulty} targeting {target_successes} successes"
+            )
+            if specialty:
+                roll_description += " with relevant specialty"
+            m = ""
+            if text:
+                m += text + ": "
+            if expenditures:
+                m += expenditures + ": "
+            m += roll_description + ": " + r
+            message = m
+        else:
+            raise ValueError("Command does not match the expected format.")
+    elif "/rolls" in message:
         text, roll = message.split("/rolls")
         text = text.strip()
         roll = roll.strip()
@@ -553,6 +589,61 @@ def rolls(num_rolls, num_dice, difficulty, specialty):
         if suxx == 0:
             join_list[-1] = join_list[-1] + f": difficulty increased to {diff + 1}"
     return "Rolls:<br>" + f"<br>".join(join_list)
+
+
+def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100):
+    """
+    Perform an extended roll, accumulating successes until target is reached or botch occurs.
+
+    Args:
+        num_dice: Number of dice to roll each time
+        target_successes: Total successes needed to complete the action
+        difficulty: Target number for each die (default 6)
+        specialty: If True, 10s count as 2 successes
+        max_rolls: Maximum number of rolls before giving up (default 100)
+
+    Returns:
+        HTML string showing each roll and cumulative progress
+    """
+    roll_list = []
+    successes_per_roll = []
+    cumulative_successes = 0
+    botched = False
+
+    for roll_num in range(max_rolls):
+        roll, success_count = dice(num_dice, difficulty=difficulty, specialty=specialty)
+        roll_str = ", ".join(map(str, roll))
+        roll_list.append(roll_str)
+        successes_per_roll.append(success_count)
+        cumulative_successes += success_count
+
+        # Check for botch (negative successes means catastrophic failure)
+        if success_count < 0:
+            botched = True
+            break
+
+        # Check if target reached
+        if cumulative_successes >= target_successes:
+            break
+
+    # Build output
+    join_list = []
+    running_total = 0
+    for i, (roll, suxx) in enumerate(zip(roll_list, successes_per_roll), 1):
+        running_total += suxx
+        join_list.append(f"Roll {i}: {roll}: <b>{suxx}</b> (Total: {running_total})")
+
+    result = "Extended Roll:<br>" + "<br>".join(join_list)
+
+    # Add final status
+    if botched:
+        result += f"<br><b>BOTCH! Extended action failed catastrophically.</b>"
+    elif cumulative_successes >= target_successes:
+        result += f"<br><b>SUCCESS! Target of {target_successes} reached in {len(roll_list)} rolls.</b>"
+    else:
+        result += f"<br><b>INCOMPLETE: Only {cumulative_successes}/{target_successes} successes after {max_rolls} rolls.</b>"
+
+    return result
 
 
 class WeeklyXPRequest(models.Model):
