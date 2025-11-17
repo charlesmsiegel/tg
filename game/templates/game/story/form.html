@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {% if object.pk %}
+        Update {{ object.name }}
+    {% else %}
+        Create Story
+    {% endif %}
+{% endblock title %}
+{% block content %}
+    {% load field %}
+    <div class="centertext container">
+        <div class="row border">
+            <h3 class="col-sm border">
+                {% if object.pk %}
+                    Update {{ object.name }}
+                {% else %}
+                    Create Story
+                {% endif %}
+            </h3>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="row border">
+                    <div class="col-sm border">{{ field.label }}</div>
+                    <div class="col-sm border">{{ field }}</div>
+                </div>
+                {% if field.errors %}
+                    <div class="row border">
+                        <div class="col-sm border text-danger">{{ field.errors }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="row border">
+                <button type="submit" class="btn btn-primary col-sm">Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

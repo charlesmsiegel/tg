@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    {% load field %}
+    <div class="centertext container">
+        <div class="row border">
+            <h3 class="col-sm border">{{ object.name }}</h3>
+        </div>
+    </div>
+{% endblock content %}

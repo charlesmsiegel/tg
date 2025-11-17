@@ -158,6 +158,12 @@ class STRelationship(models.Model):
 class Story(models.Model):
     name = models.CharField(max_length=100, default="")
 
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("game:story:detail", kwargs={"pk": self.pk})
+
 
 class Week(models.Model):
     end_date = models.DateField()
