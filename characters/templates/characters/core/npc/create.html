@@ -248,26 +248,47 @@
                 </div>
             </div>
 
+            <!-- Sorcerer Fields -->
+            <div id="sorcerer-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.sorcerer_fellowship.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Fellowship
+                        </label>
+                        {{ form.sorcerer_fellowship }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thrall Fields -->
+            <div id="thrall-fields" class="type-specific-fields" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.thrall_master.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
+                            Master Demon
+                        </label>
+                        {{ form.thrall_master }}
+                        <small style="color: var(--theme-text-secondary); font-size: 0.75rem; display: block; margin-top: 4px;">
+                            The demon this thrall is bound to through a pact.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
             <!-- Demon Fields -->
             <div id="demon-fields" class="type-specific-fields" style="display: none;">
                 <div class="row mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="{{ form.demon_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
                             House
                         </label>
                         {{ form.demon_house }}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="{{ form.demon_faction.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
                             Faction
                         </label>
                         {{ form.demon_faction }}
-                    </div>
-                    <div class="col-md-4">
-                        <label for="{{ form.demon_visage.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
-                            Visage
-                        </label>
-                        {{ form.demon_visage }}
                     </div>
                 </div>
             </div>
@@ -385,10 +406,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mapping of character types to their corresponding field divs
     const typeFieldMapping = {
         'mage': 'mage-fields',
+        'sorcerer': 'sorcerer-fields',
         'werewolf': 'werewolf-fields',
         'kinfolk': 'kinfolk-fields',
         'wraith': 'wraith-fields',
         'changeling': 'changeling-fields',
+        'thrall': 'thrall-fields',
         'demon': 'demon-fields'
     };
 

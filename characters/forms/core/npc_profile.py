@@ -8,9 +8,9 @@ from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.thrall import Thrall
-from characters.models.demon.visage import Visage
 from characters.models.mage.companion import Companion
 from characters.models.mage.faction import MageFaction
+from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
@@ -356,6 +356,24 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
 
+    # Sorcerer-specific fields
+    sorcerer_fellowship = forms.ModelChoiceField(
+        queryset=SorcererFellowship.objects.all(),
+        label="Fellowship",
+        required=False,
+        empty_label="-- Select Fellowship --",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    # Thrall-specific fields
+    thrall_master = forms.ModelChoiceField(
+        queryset=Demon.objects.filter(npc=True),
+        label="Master Demon",
+        required=False,
+        empty_label="-- Select Master Demon --",
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
     # Demon-specific fields
     demon_house = forms.ModelChoiceField(
         queryset=DemonHouse.objects.all(),
@@ -369,13 +387,6 @@ class NPCProfileForm(forms.Form):
         label="Faction",
         required=False,
         empty_label="-- Select Faction --",
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
-    demon_visage = forms.ModelChoiceField(
-        queryset=Visage.objects.all(),
-        label="Visage",
-        required=False,
-        empty_label="-- Select Visage --",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
 
@@ -491,13 +502,19 @@ class NPCProfileForm(forms.Form):
             if self.cleaned_data.get("changeling_seeming"):
                 npc.seeming = self.cleaned_data["changeling_seeming"]
 
+        elif npc_type == "sorcerer":
+            if self.cleaned_data.get("sorcerer_fellowship"):
+                npc.fellowship = self.cleaned_data["sorcerer_fellowship"]
+
+        elif npc_type == "thrall":
+            if self.cleaned_data.get("thrall_master"):
+                npc.master = self.cleaned_data["thrall_master"]
+
         elif npc_type == "demon":
             if self.cleaned_data.get("demon_house"):
                 npc.house = self.cleaned_data["demon_house"]
             if self.cleaned_data.get("demon_faction"):
                 npc.faction = self.cleaned_data["demon_faction"]
-            if self.cleaned_data.get("demon_visage"):
-                npc.visage = self.cleaned_data["demon_visage"]
 
         if commit:
             npc.save()
