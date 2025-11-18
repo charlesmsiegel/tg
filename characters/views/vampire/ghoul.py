@@ -1,0 +1,67 @@
+from typing import Any
+
+from characters.models.vampire.ghoul import Ghoul
+from characters.views.core.human import HumanDetailView
+from django.views.generic import CreateView, ListView, UpdateView
+
+
+class GhoulDetailView(HumanDetailView):
+    model = Ghoul
+    template_name = "characters/vampire/ghoul/detail.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["is_approved_user"] = self.check_if_special_user(
+            self.object, self.request.user
+        )
+        context["disciplines"] = self.object.get_disciplines()
+        return context
+
+
+class GhoulCreateView(CreateView):
+    model = Ghoul
+    fields = [
+        "name",
+        "nature",
+        "demeanor",
+        "concept",
+        "chronicle",
+        "image",
+        "npc",
+        "domitor",
+        "is_independent",
+    ]
+    template_name = "characters/vampire/ghoul/form.html"
+
+
+class GhoulUpdateView(UpdateView):
+    model = Ghoul
+    fields = [
+        "name",
+        "nature",
+        "demeanor",
+        "concept",
+        "chronicle",
+        "image",
+        "npc",
+        "domitor",
+        "is_independent",
+        "blood_pool",
+        "max_blood_pool",
+        "years_as_ghoul",
+        # Disciplines
+        "potence",
+        "celerity",
+        "fortitude",
+        "auspex",
+        "dominate",
+        "obfuscate",
+        "presence",
+    ]
+    template_name = "characters/vampire/ghoul/form.html"
+
+
+class GhoulListView(ListView):
+    model = Ghoul
+    ordering = ["name"]
+    template_name = "characters/vampire/ghoul/list.html"
