@@ -1,0 +1,42 @@
+{% load sanitize_text %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">
+        Freebie Points ({{ object.freebies }} remaining)
+    </h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        <p>Spend your remaining freebie points to customize your character. Different traits have different costs.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {% csrf_token %}
+        {{ form.as_p }}
+    </div>
+</div>
+{% if object.spent_freebies %}
+    <div class="row mt-3">
+        <div class="col-sm">
+            <h4>Freebie Expenditures</h4>
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Trait</th>
+                        <th>Value</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for spend in object.spent_freebies %}
+                        <tr>
+                            <td>{{ spend.trait }}</td>
+                            <td>{{ spend.value }}</td>
+                            <td>{{ spend.cost }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}

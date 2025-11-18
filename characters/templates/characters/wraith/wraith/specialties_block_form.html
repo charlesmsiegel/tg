@@ -1,0 +1,14 @@
+{% csrf_token %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Specialties</h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        <p>Select specialties for your character's abilities and attributes rated at 4 or higher.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.as_p }}
+    </div>
+</div>
