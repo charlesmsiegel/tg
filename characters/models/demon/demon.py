@@ -452,6 +452,56 @@ class Demon(LoreBlock, DtFHuman):
             return demon_costs[trait_type]
         return super().freebie_cost(trait_type)
 
+    def lore_freebies(self, form):
+        """Spend freebies on lores."""
+        lore = form.cleaned_data["example"]
+        lore_property = f"lore_of_{lore.property_name}"
+
+        # Check if this is a house lore
+        is_house_lore = False
+        if self.house and lore in self.house.lores.all():
+            is_house_lore = True
+
+        cost = 7 if is_house_lore else 10
+
+        # Get current rating and increment
+        current_rating = getattr(self, lore_property, 0)
+        if self.add_lore(lore_property):
+            self.freebies -= cost
+            trait = lore.name
+            value = getattr(self, lore_property)
+            return trait, value, cost
+        return None
+
+    def faith_freebies(self, form):
+        """Spend freebies on Faith."""
+        cost = 7
+        if self.add_faith():
+            self.freebies -= cost
+            return "Faith", self.faith, cost
+        return None
+
+    def virtue_freebies(self, form):
+        """Spend freebies on virtues."""
+        cost = 2
+        virtue_name = form.cleaned_data["example"].lower()
+
+        # Get current rating and increment
+        if add_dot(self, virtue_name, 5):
+            self.freebies -= cost
+            trait = virtue_name.title()
+            value = getattr(self, virtue_name)
+            return trait, value, cost
+        return None
+
+    def temporary_faith_freebies(self, form):
+        """Spend freebies on temporary Faith pool."""
+        cost = 1
+        self.temporary_faith += 1
+        self.freebies -= cost
+        self.save()
+        return "Temporary Faith", self.temporary_faith, cost
+
 
 class LoreRating(models.Model):
     """Through table for Demon-Lore relationships with ratings."""
