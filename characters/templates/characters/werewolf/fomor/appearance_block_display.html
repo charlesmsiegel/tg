@@ -1,0 +1,24 @@
+{% load sanitize_text %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }} pointer"
+        data-toggle="collapse"
+        data-target="#appearanceSection"
+        aria-expanded="true"
+        aria-controls="appearanceSection">Appearance</h5>
+</div>
+<div id="appearanceSection" class="collapse show multi-collapse">
+    <div class="row">
+        <div class="col-sm">Date of Birth</div>
+        <div class="col-sm">{{ object.date_of_birth }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Apparent Age</div>
+        <div class="col-sm">{{ object.apparent_age }}</div>
+        <div class="col-sm">Age</div>
+        <div class="col-sm">{{ object.age }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ object.description|sanitize_html|linebreaks }}</div>
+    </div>
+</div>

@@ -12,10 +12,19 @@ from .charm import (
     SpiritCharmUpdateView,
 )
 from .fomor import (
+    FomorAbilityView,
+    FomorAttributeView,
+    FomorBackgroundsView,
     FomorBasicsView,
     FomorCharacterCreationView,
     FomorCreateView,
     FomorDetailView,
+    FomorExtrasView,
+    FomorFreebieFormPopulationView,
+    FomorFreebiesView,
+    FomorLanguagesView,
+    FomorPowersView,
+    FomorSpecialtiesView,
     FomorUpdateView,
 )
 from .fomoripower import (
