@@ -830,3 +830,42 @@ class PracticeRating(models.Model):
         mage_name = self.mage.name if self.mage else "No Mage"
         practice_name = str(self.practice) if self.practice else "No Practice"
         return f"{mage_name}: {practice_name}: {self.rating}"
+
+    def get_tenet_bonus(self):
+        """
+        Calculate the net tenet bonus/penalty for this practice.
+        Returns:
+            -1 if the practice is ONLY limited by tenets
+            +1 if the practice is ONLY associated to tenets
+            0 otherwise
+        """
+        if not self.mage or not self.practice:
+            return 0
+
+        # Get all tenets for this mage
+        all_tenets = []
+        if self.mage.metaphysical_tenet:
+            all_tenets.append(self.mage.metaphysical_tenet)
+        if self.mage.personal_tenet:
+            all_tenets.append(self.mage.personal_tenet)
+        if self.mage.ascension_tenet:
+            all_tenets.append(self.mage.ascension_tenet)
+        all_tenets.extend(self.mage.other_tenets.all())
+
+        # Check if practice is in associated or limited practices
+        is_associated = False
+        is_limited = False
+
+        for tenet in all_tenets:
+            if self.practice in tenet.associated_practices.all():
+                is_associated = True
+            if self.practice in tenet.limited_practices.all():
+                is_limited = True
+
+        # Calculate bonus
+        if is_limited and not is_associated:
+            return -1
+        elif is_associated and not is_limited:
+            return +1
+        else:
+            return 0
