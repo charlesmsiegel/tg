@@ -1,4 +1,5 @@
 from .clan import VampireClan
+from .coterie import Coterie
 from .discipline import Discipline
 from .ghoul import Ghoul
 from .path import Path

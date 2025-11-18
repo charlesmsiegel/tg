@@ -1,4 +1,5 @@
 from .apocalyptic_form import ApocalypticFormTrait
+from .conclave import Conclave
 from .demon import Demon, LoreRating
 from .dtf_human import DtFHuman
 from .faction import DemonFaction

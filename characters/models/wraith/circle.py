@@ -1,0 +1,20 @@
+from characters.models.core.group import Group
+from django.urls import reverse
+
+
+class Circle(Group):
+    type = "circle"
+
+    class Meta:
+        verbose_name = "Circle"
+        verbose_name_plural = "Circles"
+
+    def get_heading(self):
+        return "wto_heading"
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:wraith:create:circle")
+
+    def get_update_url(self):
+        return reverse("characters:wraith:update:circle", kwargs={"pk": self.pk})
