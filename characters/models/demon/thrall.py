@@ -224,3 +224,26 @@ class Thrall(DtFHuman):
         if trait_type in thrall_costs:
             return thrall_costs[trait_type]
         return super().freebie_cost(trait_type)
+
+    def faith_potential_freebies(self, form):
+        """Spend freebies on Faith Potential."""
+        cost = 7
+        if self.add_faith_potential():
+            self.freebies -= cost
+            self.calculate_daily_faith()
+            return "Faith Potential", self.faith_potential, cost
+        return None
+
+    def virtue_freebies(self, form):
+        """Spend freebies on virtues."""
+        cost = 2
+        virtue_name = form.cleaned_data["example"].lower()
+
+        # Get current rating and increment
+        current_rating = getattr(self, virtue_name, 1)
+        if add_dot(self, virtue_name, 5):
+            self.freebies -= cost
+            trait = virtue_name.title()
+            value = getattr(self, virtue_name)
+            return trait, value, cost
+        return None

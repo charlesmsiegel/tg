@@ -1,10 +1,13 @@
 from characters.views.demon import (
+    DemonCharacterCreationView,
     DemonDetailView,
     DemonFactionDetailView,
     DemonHouseDetailView,
+    DtFHumanCharacterCreationView,
     DtFHumanDetailView,
     LoreDetailView,
     PactDetailView,
+    ThrallCharacterCreationView,
     ThrallDetailView,
     VisageDetailView,
 )
@@ -19,4 +22,20 @@ urls = [
     path("visage/<int:pk>/", VisageDetailView.as_view(), name="visage"),
     path("lore/<int:pk>/", LoreDetailView.as_view(), name="lore"),
     path("pact/<int:pk>/", PactDetailView.as_view(), name="pact"),
+    # Staged character creation routes
+    path(
+        "demon/<int:pk>/chargen/",
+        DemonCharacterCreationView.as_view(),
+        name="demon_chargen",
+    ),
+    path(
+        "dtfhuman/<int:pk>/chargen/",
+        DtFHumanCharacterCreationView.as_view(),
+        name="dtfhuman_chargen",
+    ),
+    path(
+        "thrall/<int:pk>/chargen/",
+        ThrallCharacterCreationView.as_view(),
+        name="thrall_chargen",
+    ),
 ]
