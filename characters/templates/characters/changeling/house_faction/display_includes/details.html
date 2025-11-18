@@ -1,0 +1,26 @@
+{% load dots %}
+<div class="card h-100">
+    <div class="card-header bg-light py-2">
+        <h5 class="mb-0 ctd_heading">House Faction Details</h5>
+    </div>
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <h6 class="text-primary mb-3" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.875rem;">
+                    <i class="fas fa-home mr-2"></i>Houses
+                </h6>
+                {% if object.house_set.exists %}
+                    <ul class="list-unstyled mb-0">
+                        {% for house in object.house_set.all %}
+                            <li class="mb-2 p-3 border-left border-primary" style="border-left-width: 3px !important; background-color: rgba(0, 123, 255, 0.05); line-height: 1.6;">
+                                <a href="{{ house.get_absolute_url }}">{{ house.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No houses belong to this faction</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
