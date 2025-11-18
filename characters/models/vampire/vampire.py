@@ -214,3 +214,69 @@ class Vampire(VtMHuman):
         if self.clan:
             return list(self.clan.disciplines.all())
         return []
+
+    def freebie_cost(self, trait_type):
+        """Return freebie point cost for vampire-specific traits."""
+        vampire_costs = {
+            "discipline": 7,  # In-clan disciplines
+            "out_of_clan_discipline": 10,
+            "virtue": 2,
+            "humanity": 1,
+            "path_rating": 1,
+        }
+        if trait_type in vampire_costs.keys():
+            return vampire_costs[trait_type]
+        return super().freebie_cost(trait_type)
+
+    def is_clan_discipline(self, discipline):
+        """Check if a discipline is in-clan."""
+        if not self.clan:
+            return False
+        clan_disciplines = [d.property_name for d in self.clan.disciplines.all()]
+        if isinstance(discipline, str):
+            return discipline in clan_disciplines
+        return discipline.property_name in clan_disciplines
+
+    def discipline_freebies(self, form):
+        """Spend freebies on disciplines."""
+        discipline = form.cleaned_data["example"]
+        is_clan = self.is_clan_discipline(discipline)
+        cost = 7 if is_clan else 10
+
+        # Get current rating and increment
+        current_rating = getattr(self, discipline.property_name, 0)
+        setattr(self, discipline.property_name, current_rating + 1)
+        self.freebies -= cost
+
+        trait = discipline.name
+        value = current_rating + 1
+        return trait, value, cost
+
+    def virtue_freebies(self, form):
+        """Spend freebies on virtues."""
+        # Virtues cost 2 freebies per dot
+        cost = 2
+        virtue_name = form.cleaned_data["example"].lower()
+
+        # Get current rating and increment
+        current_rating = getattr(self, virtue_name, 1)
+        setattr(self, virtue_name, current_rating + 1)
+        self.freebies -= cost
+
+        trait = virtue_name.title()
+        value = current_rating + 1
+        return trait, value, cost
+
+    def humanity_freebies(self, form):
+        """Spend freebies on Humanity."""
+        cost = 1
+        self.humanity += 1
+        self.freebies -= cost
+        return "Humanity", self.humanity, cost
+
+    def path_rating_freebies(self, form):
+        """Spend freebies on Path rating."""
+        cost = 1
+        self.path_rating += 1
+        self.freebies -= cost
+        return "Path Rating", self.path_rating, cost
