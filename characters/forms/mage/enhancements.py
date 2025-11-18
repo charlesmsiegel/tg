@@ -82,6 +82,87 @@ class EnhancementForm(forms.Form):
     device = forms.ModelChoiceField(queryset=Wonder.objects.none(), required=False)
     flaw = forms.ModelChoiceField(queryset=MeritFlaw.objects.none(), required=False)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        enhancement_type = cleaned_data.get("enhancement_type")
+        enhancement_style = cleaned_data.get("enhancement_style")
+
+        # Validate enhancement_style is selected
+        if not enhancement_style:
+            raise forms.ValidationError("Enhancement style must be selected.")
+
+        # Validate enhancement_type is selected
+        if not enhancement_type:
+            raise forms.ValidationError("Enhancement type must be selected.")
+
+        # Type-specific validation
+        if enhancement_type == "Attributes":
+            # Validate that the correct number of attributes are selected
+            selected_attributes = []
+            for i in range(self.rank):
+                att = cleaned_data.get(f"attribute_{i}")
+                if att:
+                    selected_attributes.append(att)
+
+            if len(selected_attributes) != self.rank:
+                raise forms.ValidationError(
+                    f"You must select exactly {self.rank} attribute(s) for this enhancement."
+                )
+
+        elif enhancement_type == "Existing Device":
+            # Validate that a device is selected
+            if not cleaned_data.get("device"):
+                raise forms.ValidationError("You must select an existing device.")
+
+        elif enhancement_type == "New Device":
+            # Validate new device fields
+            new_power_option = cleaned_data.get("new_device_new_power_option")
+            wonder_type = cleaned_data.get("new_device_wonder_type")
+            resonance = cleaned_data.get("new_device_resonance")
+
+            if not new_power_option:
+                raise forms.ValidationError("You must select a power option for the new device.")
+
+            if not wonder_type:
+                raise forms.ValidationError("You must select a wonder type for the new device.")
+
+            if not resonance:
+                raise forms.ValidationError("You must specify a resonance for the new device.")
+
+            # Validate effect-specific fields
+            if new_power_option == "New Effect":
+                # Check that new effect fields are filled
+                if not cleaned_data.get("new_device_new_effect_name"):
+                    raise forms.ValidationError("You must provide a name for the new effect.")
+
+                if not cleaned_data.get("new_device_new_effect_description"):
+                    raise forms.ValidationError("You must provide a description for the new effect.")
+
+                # Validate effect cost
+                effect_cost = sum([
+                    cleaned_data.get("new_device_new_effect_correspondence", 0),
+                    cleaned_data.get("new_device_new_effect_time", 0),
+                    cleaned_data.get("new_device_new_effect_spirit", 0),
+                    cleaned_data.get("new_device_new_effect_matter", 0),
+                    cleaned_data.get("new_device_new_effect_life", 0),
+                    cleaned_data.get("new_device_new_effect_forces", 0),
+                    cleaned_data.get("new_device_new_effect_entropy", 0),
+                    cleaned_data.get("new_device_new_effect_mind", 0),
+                    cleaned_data.get("new_device_new_effect_prime", 0),
+                ])
+
+                if effect_cost > 2 * self.rank:
+                    raise forms.ValidationError(
+                        f"Effect cost ({effect_cost}) cannot exceed {2 * self.rank} for rank {self.rank} enhancement."
+                    )
+
+            elif new_power_option == "Existing Effect":
+                # Check that an effect is selected
+                if not cleaned_data.get("new_device_effect"):
+                    raise forms.ValidationError("You must select an existing effect.")
+
+        return cleaned_data
+
     def __init__(self, *args, **kwargs):
         self.rank = kwargs.pop("rank", 0)
         suggestions = kwargs.pop("suggestions", None)
@@ -165,8 +246,6 @@ class EnhancementForm(forms.Form):
                     mind=self.cleaned_data["new_device_new_effect_mind"],
                     prime=self.cleaned_data["new_device_new_effect_prime"],
                 )
-                if effect.cost() > 2 * self.rank:
-                    return False
                 effect.save()
             elif self.cleaned_data["new_device_new_power_option"] == "Existing Effect":
                 effect = self.cleaned_data["new_device_effect"]
@@ -178,13 +257,13 @@ class EnhancementForm(forms.Form):
                 "background_cost": 2 * self.rank,
                 "quintessence_max": 5 * self.rank,
             }
-            if self.cleaned_data["new_device_winder_type"] == "artifact":
+            if self.cleaned_data["new_device_wonder_type"] == "artifact":
                 wonder_kwargs.update({"power": effect})
-            elif self.cleaned_data["new_device_winder_type"] == "talisman":
+            elif self.cleaned_data["new_device_wonder_type"] == "talisman":
                 wonder_kwargs.update({"arete": self.rank})
 
             w = wonder.objects.create(**wonder_kwargs)
-            if self.cleaned_data["new_device_winder_type"] == "talisman":
+            if self.cleaned_data["new_device_wonder_type"] == "talisman":
                 w.powers.add(effect)
 
             WonderResonanceRating.objects.create(
@@ -224,5 +303,3 @@ class EnhancementForm(forms.Form):
         bgr.url = url
         bgr.complete = True
         bgr.save()
-
-        return True
