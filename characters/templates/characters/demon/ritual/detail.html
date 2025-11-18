@@ -1,0 +1,190 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% load dots %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            {% include "core/includes/title.html" %}
+            <!-- Basics -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Ritual Details</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    <strong>House:</strong>
+                                </div>
+                                <div class="col-sm-9">
+                                    {% if object.house %}
+                                        <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    <strong>Experience Cost:</strong>
+                                </div>
+                                <div class="col-sm-9">
+                                    <span class="badge bg-primary">{{ object.base_cost }} XP</span>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    <strong>Casting Time:</strong>
+                                </div>
+                                <div class="col-sm-9">{{ object.minimum_casting_time }} minutes</div>
+                            </div>
+                            {% if object.source_page %}
+                                <div class="row mb-0">
+                                    <div class="col-sm-3">
+                                        <strong>Source:</strong>
+                                    </div>
+                                    <div class="col-sm-9">{{ object.source_page }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Lore Requirements -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title dtf_heading">Lore Requirements</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    <strong>Primary Lore:</strong>
+                                </div>
+                                <div class="col-sm-9">
+                                    {% if object.primary_lore %}
+                                        <a href="{{ object.primary_lore.get_absolute_url }}">{{ object.primary_lore.name }}</a>
+                                        <span class="ms-2 dots">{{ object.primary_lore_rating|dots }}</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if object.get_secondary_lores %}
+                                <div class="row mb-0">
+                                    <div class="col-sm-3">
+                                        <strong>Secondary Lore:</strong>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        {% for lore_info in object.get_secondary_lores %}
+                                            <div class="mb-1">
+                                                <a href="{{ lore_info.lore.get_absolute_url }}">{{ lore_info.lore.name }}</a>
+                                                <span class="ms-2 dots">{{ lore_info.rating|dots }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row mt-3 mb-0">
+                                <div class="col-sm-3">
+                                    <strong>Total Lore:</strong>
+                                </div>
+                                <div class="col-sm-9">{{ object.total_lore_dots }} dots across {{ object.total_lore_paths }} path{% if object.total_lore_paths != 1 %}s{% endif %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Restrictions -->
+            {% if object.restrictions %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Restrictions</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.restrictions|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- System -->
+            {% if object.system %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">System</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.system|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Torment Effect -->
+            {% if object.torment_effect %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">High-Torment Effect</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.torment_effect|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Variations -->
+            {% if object.variations %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Variations</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.variations|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Flavor Text -->
+            {% if object.flavor_text %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title dtf_heading">Description</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6; font-style: italic;">{{ object.flavor_text|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Edit Button -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{{ object.get_update_url }}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
