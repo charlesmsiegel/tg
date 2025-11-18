@@ -46,15 +46,13 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         self.object = form.save()
-        # Set initial values
+        # Set initial willpower
         self.object.willpower = self.object.courage
+        # The save() method will handle setting virtue booleans based on path
+        # and will set humanity/path_rating to 0 initially
         if self.object.path:
-            # Following a Path of Enlightenment
-            self.object.path_rating = self.object.conviction + self.object.instinct
             self.object.humanity = 0
         else:
-            # Default Humanity path
-            self.object.humanity = self.object.conscience + self.object.self_control
             self.object.path_rating = 0
         self.object.save()
         return super().form_valid(form)
@@ -187,19 +185,24 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
 
-        # Hide unused virtues based on path
-        if self.object.path:
-            # Sabbat/Path: use Conviction and Instinct
+        # Hide unused virtues based on boolean fields
+        if self.object.has_conviction:
+            # Use Conviction (hide Conscience)
             form.fields["conscience"].widget = forms.HiddenInput()
-            form.fields["self_control"].widget = forms.HiddenInput()
-            form.fields["conviction"].help_text = "Sabbat Virtue"
-            form.fields["instinct"].help_text = "Sabbat Virtue"
+            form.fields["conviction"].help_text = "Active Virtue"
         else:
-            # Camarilla: use Conscience and Self-Control
+            # Use Conscience (hide Conviction)
             form.fields["conviction"].widget = forms.HiddenInput()
+            form.fields["conscience"].help_text = "Active Virtue"
+
+        if self.object.has_instinct:
+            # Use Instinct (hide Self-Control)
+            form.fields["self_control"].widget = forms.HiddenInput()
+            form.fields["instinct"].help_text = "Active Virtue"
+        else:
+            # Use Self-Control (hide Instinct)
             form.fields["instinct"].widget = forms.HiddenInput()
-            form.fields["conscience"].help_text = "Camarilla Virtue"
-            form.fields["self_control"].help_text = "Camarilla Virtue"
+            form.fields["self_control"].help_text = "Active Virtue"
 
         form.fields["courage"].help_text = "Universal Virtue"
 
@@ -214,40 +217,34 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        # Calculate total virtues
-        if self.object.path:
-            # Sabbat: Conviction + Instinct + Courage = 7
-            total = (
-                form.cleaned_data.get("conviction", 0)
-                + form.cleaned_data.get("instinct", 0)
-                + form.cleaned_data.get("courage", 0)
-            )
+        # Calculate total virtues based on active virtue booleans
+        if self.object.has_conviction:
+            virtue_1 = form.cleaned_data.get("conviction", 0)
         else:
-            # Camarilla: Conscience + Self-Control + Courage = 7
-            total = (
-                form.cleaned_data.get("conscience", 0)
-                + form.cleaned_data.get("self_control", 0)
-                + form.cleaned_data.get("courage", 0)
-            )
+            virtue_1 = form.cleaned_data.get("conscience", 0)
+
+        if self.object.has_instinct:
+            virtue_2 = form.cleaned_data.get("instinct", 0)
+        else:
+            virtue_2 = form.cleaned_data.get("self_control", 0)
+
+        courage = form.cleaned_data.get("courage", 0)
+        total = virtue_1 + virtue_2 + courage
 
         if total != 7:
             form.add_error(None, f"Virtues must total 7 dots. Currently: {total}")
             return self.form_invalid(form)
 
         # Update dependent values
-        self.object.willpower = form.cleaned_data.get("courage", 1)
+        self.object.willpower = courage
 
         if self.object.path:
-            self.object.path_rating = (
-                form.cleaned_data.get("conviction", 0)
-                + form.cleaned_data.get("instinct", 0)
-            )
+            # Following a path: Path Rating = virtue_1 + virtue_2, Humanity = 0
+            self.object.path_rating = virtue_1 + virtue_2
             self.object.humanity = 0
         else:
-            self.object.humanity = (
-                form.cleaned_data.get("conscience", 0)
-                + form.cleaned_data.get("self_control", 0)
-            )
+            # Default Humanity: Humanity = virtue_1 + virtue_2, Path Rating = 0
+            self.object.humanity = virtue_1 + virtue_2
             self.object.path_rating = 0
 
         self.object.creation_status += 1

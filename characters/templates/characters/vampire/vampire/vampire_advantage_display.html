@@ -20,25 +20,14 @@
 
                 <!-- Virtues Row -->
                 <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
-                    {% if object.path %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Conviction:</span>
-                            <span class="dots">{{ object.conviction|dots }}</span>
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Instinct:</span>
-                            <span class="dots">{{ object.instinct|dots }}</span>
-                        </div>
-                    {% else %}
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Conscience:</span>
-                            <span class="dots">{{ object.conscience|dots }}</span>
-                        </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Self-Control:</span>
-                            <span class="dots">{{ object.self_control|dots }}</span>
-                        </div>
-                    {% endif %}
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ object.active_virtue_1_name }}:</span>
+                        <span class="dots">{{ object.active_virtue_1|dots }}</span>
+                    </div>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ object.active_virtue_2_name }}:</span>
+                        <span class="dots">{{ object.active_virtue_2|dots }}</span>
+                    </div>
                     <div class="px-3 py-2">
                         <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Courage:</span>
                         <span class="dots">{{ object.courage|dots }}</span>
