@@ -276,8 +276,44 @@ def load_examples(request):
 
 def load_values(request):
     mf = MeritFlaw.objects.get(pk=request.GET.get("example"))
+    character_id = request.GET.get("object")
+    is_xp = request.GET.get("xp", "false").lower() == "true"
+
     ratings = [x.value for x in mf.ratings.all()]
     ratings.sort()
+
+    # Filter ratings based on character's available freebies/XP and flaw limit
+    if character_id:
+        from characters.models import Human
+        character = Human.objects.get(pk=character_id)
+        current_rating = character.mf_rating(mf)
+
+        affordable_ratings = []
+
+        if is_xp:
+            # For XP spending: cost = 3 × |new_rating - current_rating|
+            available_xp = character.xp
+            for rating in ratings:
+                cost = 3 * abs(rating - current_rating)
+                if cost <= available_xp and rating != current_rating:
+                    affordable_ratings.append(rating)
+        else:
+            # For freebie spending: cost = rating value
+            current_flaws = character.total_flaws()
+            available_freebies = character.freebies
+
+            for rating in ratings:
+                # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
+                if rating < 0:
+                    if current_flaws + rating >= -7:
+                        affordable_ratings.append(rating)
+                # Merits and neutral (0) ratings are affordable if we have enough freebies
+                else:
+                    if rating <= available_freebies:
+                        affordable_ratings.append(rating)
+
+        ratings = affordable_ratings
+
     return render(
         request,
         "characters/core/human/load_values_dropdown_list.html",
@@ -340,11 +376,32 @@ class HumanFreebieFormPopulationView(View):
             char_type = "human"
         chartype = ObjectType.objects.get(name=char_type)
         examples = MeritFlaw.objects.filter(allowed_types=chartype)
-        if self.character.total_flaws() <= 0:
-            examples = examples.exclude(
-                max_rating__lt=min(0, -7 - self.character.total_flaws())
-            )
-        return examples.exclude(min_rating__gt=self.character.freebies)
+
+        # Filter to only show merit/flaws with at least one affordable rating
+        affordable_mfs = []
+        current_flaws = self.character.total_flaws()
+        available_freebies = self.character.freebies
+
+        for mf in examples:
+            ratings = mf.get_ratings()
+            has_affordable = False
+
+            for rating in ratings:
+                # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
+                if rating < 0:
+                    if current_flaws + rating >= -7:
+                        has_affordable = True
+                        break
+                # Merits and neutral (0) ratings are affordable if we have enough freebies
+                else:
+                    if rating <= available_freebies:
+                        has_affordable = True
+                        break
+
+            if has_affordable:
+                affordable_mfs.append(mf.id)
+
+        return examples.filter(id__in=affordable_mfs)
 
 
 class HumanFreebiesView(SpecialUserMixin, UpdateView):
