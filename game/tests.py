@@ -478,3 +478,86 @@ class TestExtendedRollMessageProcessing(TestCase):
         result = message_processing(self.char, msg)
         self.assertIn("difficulty 7", result)
         self.assertIn("with relevant specialty", result)
+
+
+class TestStatRollMessageProcessing(TestCase):
+    """Test stat-based roll command parsing in message processing."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+        # Set some stats for testing
+        self.char.dexterity = 3
+        self.char.firearms = 2
+        self.char.strength = 4
+        self.char.brawl = 3
+        self.char.save()
+
+    def test_stat_command_two_stats(self):
+        """Test basic /stat command with two stats."""
+        msg = "Shooting /stat Dexterity + Firearms"
+        result = message_processing(self.char, msg)
+        self.assertIn("Dexterity (3)", result)
+        self.assertIn("Firearms (2)", result)
+        self.assertIn("= 5 dice", result)
+        self.assertIn("difficulty 6", result)
+
+    def test_stat_command_three_stats(self):
+        """Test /stat command with three stats."""
+        msg = "Complex action /stat Strength + Brawl + 2"
+        result = message_processing(self.char, msg)
+        self.assertIn("Strength (4)", result)
+        self.assertIn("Brawl (3)", result)
+        self.assertIn("2", result)
+        self.assertIn("= 9 dice", result)
+
+    def test_stat_command_with_difficulty(self):
+        """Test /stat command with custom difficulty."""
+        msg = "Difficult shot /stat Dexterity + Firearms difficulty 8"
+        result = message_processing(self.char, msg)
+        self.assertIn("difficulty 8", result)
+        self.assertIn("= 5 dice", result)
+
+    def test_stat_command_with_specialty(self):
+        """Test /stat command with specialty."""
+        msg = "Expert shot /stat Dexterity + Firearms difficulty 6 True"
+        result = message_processing(self.char, msg)
+        self.assertIn("with relevant specialty", result)
+
+    def test_stat_command_preserves_text(self):
+        """Test that text before /stat is preserved."""
+        msg = "I take aim and fire /stat Dexterity + Firearms"
+        result = message_processing(self.char, msg)
+        self.assertIn("I take aim and fire:", result)
+
+    def test_stat_command_case_insensitive(self):
+        """Test that stat names are case insensitive."""
+        msg = "Shooting /stat dexterity + firearms"
+        result = message_processing(self.char, msg)
+        self.assertIn("= 5 dice", result)
+
+    def test_stat_command_invalid_stat_raises_error(self):
+        """Test that invalid stat names raise ValueError."""
+        msg = "Invalid /stat InvalidStat + Firearms"
+        with self.assertRaises(ValueError) as context:
+            message_processing(self.char, msg)
+        self.assertIn("not found", str(context.exception))
+
+    def test_stat_command_single_stat(self):
+        """Test /stat command with single stat."""
+        msg = "Raw strength /stat Strength"
+        result = message_processing(self.char, msg)
+        self.assertIn("Strength (4)", result)
+        self.assertIn("= 4 dice", result)
+
+    def test_stat_command_default_difficulty(self):
+        """Test that /stat defaults to difficulty 6."""
+        msg = "Attack /stat Strength + Brawl"
+        result = message_processing(self.char, msg)
+        self.assertIn("difficulty 6", result)
