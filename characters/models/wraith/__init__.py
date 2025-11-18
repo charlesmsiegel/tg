@@ -1,4 +1,5 @@
 from .arcanos import Arcanos
+from .circle import Circle
 from .faction import WraithFaction
 from .fetter import Fetter
 from .guild import Guild
