@@ -948,3 +948,888 @@ mf.allowed_types.add(dtfhuman)
 mf.description = "Your character's mortal host looks like she did in high school. She always gets carded at bars and often has to produce identification to buy even cigarettes. In order to gain entry to clubs, concerts and bars, or to purchase alcohol, your character needs to present a valid-looking ID."
 mf.source = "Demon Players Guide, p. 86-87"
 mf.save()
+
+# PHYSICAL FLAWS - Part 2 (18-33) - Continued physical limitations
+
+mf = MeritFlaw.objects.get_or_create(name="Disfigured")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's host's face is misshapen or maimed. Increase the difficulty by two on any rolls involving social situations when your character is not in his apocalyptic form."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Insomniac")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "For whatever reason, your character has tremendous trouble getting more than a few hours of sleep. She is often groggy and slow-witted as a result. Increase the difficulty of any Alertness, Awareness and Intuition rolls by two."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Low Pain Tolerance")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had a very low threshold for pain. Your character turns into a whimpering, blubbering ball of misery at the first sign of it. While your character soaks damage normally, she suffers an additional -1 die-pool penalty when she is injured."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Obese")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's host body is seriously overweight, large enough that she has trouble using the seats in most theaters. Add two to the difficulty of any Dodge or Athletics rolls you make. Your character moves at half the normal rate."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Old Injury")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's host body was hurt pretty badly back in her younger days, and she now pays the price with chronic pain and swelling. Increase the difficulty of any Athletics roll by two."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Night Vision")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's eyesight is poor in low-light conditions. Increase the difficulty of any action attempted in dim light, such as that from a flashlight or when under starlight, by two."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Short")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's host body is less than five feet tall, making it difficult to reach and use many objects designed for adult use. Your character's movement rate is also half that of normal-sized people."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Crippled Limb")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal body is either missing a limb or has injured one so badly that it is unusable. If one of her arms is crippled, increase the difficulty by two for actions that normally require two hands, such as firing a rifle. If one of her legs is crippled, she moves at only one-quarter normal speed without some sort of cane, walker or wheelchair. With the appropriate aid, your character can move up to half normal speed."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Elderly")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "While your character's mortal body is just as strong and quick as a younger host, it doesn't have the endurance or resilience of youth anymore. You make soak rolls against a difficulty of 7 instead of the normal 6. In addition, increase the dice-pool penalty for each of your character's levels of injury by one."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Shaky Hands")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has trouble keeping herself composed under pressure. In any extremely stressful situation such as combat, her hands shake so badly that she has trouble completing any tasks that require a delicate touch or intense concentration. Examples include picking a lock, loading bullets into a revolver or typing at a computer. Increase the difficulty of any rolls for such high-stress actions by two."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Missing Eye")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal body is missing an eye. Increase the difficulty by two for any Perception rolls involving eyesight. The difficulties of all die rolls involving depth-perception (such as ranged-weapon attacks) increases by two as well."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Child")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is pre-pubescent. She's much smaller than the average adult, and she moves at half the rate of adults. Also, since the host body isn't fully developed physically, your character may not start play with more than three dots in any Physical Attribute. Similarly, your character does not have the experience of an adult, so he cannot start play with more than three dots in any Knowledge Ability."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Chronic Illness")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal body suffers from a debilitating illness such as chronic fatigue syndrome or even cancer. She frequently feels weak and is injured easily. Add two to the difficulty of any Athletics and soak rolls."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Deafness")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character cannot hear. You automatically fail any test that requires hearing, and the difficulty of appropriate Alertness rolls increases by three."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Blind")[0]
+mf.add_ratings([-6])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character can't see. Increase the difficulty of any rolls involving hand-eye coordination by three."
+mf.source = "Demon Players Guide, p. 87"
+mf.save()
+
+# SOCIAL FLAWS - Part 1 (1-15) - Social disadvantages and personality issues
+
+mf = MeritFlaw.objects.get_or_create(name="Bad Liar")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had tremendous trouble lying. The spontaneous excuses that she came up with were usually unbelievably elaborate or easily refuted with the bare modicum of research. While telling a lie, your character stutters, stammers, blushes and generally looks guilty. Increase the difficulty by two on any roll that involves verbal deception."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Balding")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character barely has any hair left on his head, whether it's due to old age or cruel genes. He is relatively easy to pick out of crowds and has problems making a good impression on the opposite sex. Increase the difficulty by one for any Ability rolls involved in attempting to seduce a member of the opposite sex."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Bully")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character tends to push people around when she can get away with it. This aggression doesn't necessarily take on a physical display. It is often purely social. She chafes under the leadership of more forceful personalities and can be a malcontent when she isn't in charge."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Children")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has children for whom she is the primary emotional, social and economic provider. She takes a lot of joy in her kids and prides herself on being a good parent, but clawing for rank and title in the infernal court gets in the way of parenting. If your character goes more than three days without seeing her kids because of work or activities related to her infernal agenda, she feels tremendous guilt. Your character ceases to regain a Willpower point after a night of rest until she sees her kids."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Chronically Late")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character is always running behind schedule. If she agrees to meet someone at a particular time, you must make a successful Willpower roll (difficulty 6) to arrive on time. Failure means your character arrives between 15 and 30 minutes late. A botch means she shows up an hour late or not at all."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Chronically Shy")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character becomes very nervous and ill at ease when dealing with strangers in social situations. She often goes out of her way to avoid meeting new people. Increase the difficulty by two for all Social rolls involving strangers. If she becomes the center of attention in a large group of strangers, increase the difficulty of any Social rolls by two."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Chronic Pessimist")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character thinks the glass is half-empty, that the water in the glass is contaminated, and that the glass will probably be dropped any second now. Others practice pessimism out of habit, but it's an art form for your character. Nothing can ever go right, especially plans that others propose. She is the implacable voice of gloom and doom, always ready to point out a potential problem no matter how remote a chance it has of coming to pass. Add two to the difficulty of your Leadership rolls."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Clannish Family")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's family is as loving and supportive as anyone else's, but they don't take kindly to strangers. Your character's relatives either disapprove of her friends or they like to keep favors in the family. Your character's family members don't do anything that directly or indirectly helps anyone beyond their own."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Collaborator")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.description = "Some time in the recent past, your character allied with demon-hunters (or possibly an Earthbound) to injure or eliminate a fallen rival. Or the gossip at court reports her doing so, whether it's true or not. Either way, word has spread through the local or widespread fallen community, and many demons mistrust your character."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Crude")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host never learned any manners while growing up. As a result, your character talks with her mouth full, burps loudly and slurps her soup. When interacting with others in any refined or formal environment, increase the difficulty of all Social rolls by two."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Cultural Snob")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had nothing but disdain for popular music, TV and movies. She couldn't name any of the current top-10 songs, and she thinks knowledge of TV is a sign of poor taste and incorrigible stupidity. Unfortunately, this means your character has a hard time relating to people who aren't equally snobbish about such things. When dealing with strangers who don't share your character's allegedly enlightened views, increase the difficulty of any die rolls involving socialization by two."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Defensive")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had problems taking responsibility for her actions. Perhaps she viewed herself as a perfectionist, or maybe she was simply too immature to accept the blame for failure. When things go wrong, your character tends to look for ways to blame others. She rarely accepts blame or criticism for her actions without contention."
+mf.source = "Demon Players Guide, p. 88"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Eccentric Appearance")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host dyed her hair pink, wore clothes that were fashionable only among fringe subcultures such as goths or punks, and otherwise appeared nothing like the average citizen. When dealing with people who are not familiar with your character's host's particular subculture, increase the difficulty by two on any Social rolls you attempt. Your character's appearance unnerves mainstream people and makes them wary of her. Furthermore, her appearance is eye-catching, though people tend to focus on her mode of dress rather than her actual physical characteristics."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Gambling Addict")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host was addicted to wagering money on games of chance. A sizeable chunk of her income goes toward this habit, and even when she wins she inevitably gambles the winnings away. Your character is too much of an addict to walk away with a profit over any extended period of time. Increase the difficulty of any Resources rolls you attempt by two."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Ghoulish Sense of Humor")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character finds humor in situations that make most people uncomfortable. Her bad taste doesn't make her particularly resistant to the horrors of gruesome sights. Her defense mechanism is simply to belittle the situation or those involved in an off-color way. When confronted with a horribly gory scene or otherwise uncomfortable situation, she tends to crack jokes and sling insults. The difficulty of any Social roll you make under such circumstances increases by two."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+# SOCIAL FLAWS - Part 2 (16-30) - Continued social disadvantages
+
+mf = MeritFlaw.objects.get_or_create(name="Icy Demeanor")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character is uncomfortable relating to people on an emotional level, which is reflected in her mannerisms and speech. She clams up, seeks escape or avoids eye contact. Increase the difficulty by two for any Empathy rolls made toward your character, as people have trouble identifying with her."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Ignorant")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character tends to miss common cultural references that others take for granted, such as knowing that the Statue of Liberty is in New York City. Your character is not necessarily dumb or uneducated, though. A cloistered college researcher could just as easily dive so deeply into his field of study that he dismisses anything outside it. She does tend to give people the impression that she's slow or uneducated, however."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Impractical Dresser")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host tended to dress with more of an eye toward impressing others than personal comfort. Unless you explicitly state that your character dresses appropriately for physical activity, she wears high heels, tight jeans or something else that hampers physical activity. Increase the difficulty of Athletics or Dodge rolls by two when your character wears such clothes."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Insensitive")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has problems understanding how to gauge others' emotional reactions. She can be rather blunt in handling delicate matters, and she often finds herself apologizing without really understanding what she's done to offend someone. Add two the difficulty of any Empathy rolls you attempt."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Intolerant Neighbors")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's neighborhood is exceptionally placid, and people like it that way. Any odd noises or disturbances coming from your character's home invariably cause someone to call the police."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Misinformed")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host upheld some odd belief, such as a conspiracy theory or a UFO visitation, that flies in the face of accepted science or common wisdom. Your character now tends to incorporate this misinformation into her worldview. Whenever you test a Knowledge that in some way relates to your character's belief, increase the difficulty by two. This penalty kicks in when you roll a failure, and it represents your character's tendency to come up with off-the-wall answers that are obviously incorrect to others."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Mistaken Identity")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal appearance bears a striking resemblance to a notorious figure. This person could be a wanted criminal or an obnoxious local lout, or your character might simply look like an infamous media star. While most people can quickly figure out that your character isn't who they think she is, hotheads might not think twice before confronting her."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Needy Friends")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal friends and other non-fallen social contacts have a pattern of falling into bad situations and turning to her for help. She is the bedrock in their lives. Whether they need some advice dealing with a girlfriend or need bail money, they look to her. If your character has the Allies Background, this effect is magnified even more, at the Storyteller's discretion."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="No Internet Access")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character does not have an email address, web access or perhaps even a computer. She must do her research through non-digital outlets such as libraries or by old-fashioned legwork."
+mf.source = "Demon Players Guide, p. 89"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="No Phone")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character does not have a regular phone number through which she can be contacted. Therefore, she can be very hard to get in touch with on short notice, and mortals find her difficult to track down."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Non-Confrontational")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had a hard time bringing up difficult subjects with others. Now, your character is willing to make a lot of sacrifices to avoid interpersonal confrontations. She lets people have their way simply to avoid fights, and she often steps into arguments and attempts to end them without giving any thought to the outcome of the discussion. She has a hard time coping with pushy people and finds herself making compromises that she later wishes she hadn't. Add two to the difficulty of any roll that involves debating or arguing with someone who is normally friendly with your character."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Dental Health")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's teeth are obviously in need of serious work. They jut out at weird angles, and some have fallen out. When interacting with her preferred sex in superficial social settings such as a nightclub or bar, increase the difficulty of any Social roll by two."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Personal Hygiene")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character often goes days without showering, and she only brushes her teeth when they start to gain a dark yellowish cast. She often smells quite bad and her breath is atrociously offensive. Add two to the difficulty of any die roll that involves interacting socially with others."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Taste")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host wallowed in bathroom humor, lowbrow jokes and other practices that make more refined people uncomfortable. She had seen movies like Dumb and Dumber dozens of times and didn't plan on giving up on them any time soon. Your character's sense of humor makes her an instant pariah in any reasonably cultured company, and she can't help but let her true colors shine through in even short-term social contacts. Add two to the difficulty of any Social roll that involves people who might dislike your character's brand of humor."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Socially Oblivious")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has trouble picking up subtle hints from others. She often overstays her welcome at parties, and she tends to blurt out topics that everyone else takes great pains to avoid in conversation. Your character isn't a socially repellent person, just occasionally tactless. Add two to the difficulty of any Etiquette rolls you attempt."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Speech Impediment")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character stutters, stammers or otherwise has trouble speaking clearly. Increase the difficulty by two on any roll involving verbal communication."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Stubborn")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Once your character's mind is made up, there's no changing it. She clings to her beliefs with the tenacity of a rabid bulldog, and she is equally pleasantly comported when others challenge them. She hates being proved wrong and will go to extremes to avoid enduring the shame of it. Increase the difficulties of all Social rolls by two when someone challenges your character's behavior."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Superstitious")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host adhered to a superstition doggedly, such as knocking on wood or tossing salt over her shoulder. While everyone has foibles, she took the behavior to an extreme, often tying misfortune to her inability to obey a superstition and crediting any success to paying proper respects. Your character's new obsession doesn't lead her to risk her life, nor does it have a pervasive sway over her. She tends to raise warnings and make superstitious suggestions frequently, though. Add two to the difficulty of any Social roll when dealing with people who know about your character's superstitious bent and who frown upon it."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Trusting")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character tends to follow her instincts when dealing with strangers. Sadly, her instincts often tell her that she can trust people. Your character wants to believe the best about everyone she meets. As a result, she tends to put herself in situations that could be dangerous, such as accepting a ride home from a recent acquaintance, going home with a person she just met at a bar or taking a stroll in a poorly patrolled city park after dark."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+# Additional SOCIAL FLAWS (2-4 pt flaws)
+
+mf = MeritFlaw.objects.get_or_create(name="Abusive Partner")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is married to or living with someone who routinely abuses her physically. Make a Stamina roll (difficulty 6) every time she spends a night at home. Failure indicates that your character has suffered one health level of bashing damage. A botch means that she suffers two health levels of bashing damage. Though it seems strange that a demon would submit herself to such a situation willingly, the psychological dependencies that kept her mortal host bound into the same cycle of violence hold sway over her as well."
+mf.source = "Demon Players Guide, p. 90"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Compulsive Liar")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character can't help but put her personal spin on the truth. She doesn't necessarily do so out of spite or maliciousness; she might even come to genuinely believe the tall tales she tells (especially when she spins them often enough). This trait is especially troublesome when other demons rely on your character for information. You might have to spend a Willpower point to force your character to be honest, especially if it means publicly revealing a previous lie."
+mf.source = "Demon Players Guide, p. 90-91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Conspicuous Consumer")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host tended to blow a lot of money on useless items and overpay for brand-name clothes and other impractical items. Your character still tends to live above her means and is always short of cash. Add two to the difficulties of Resources rolls."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Dogged by Fringe Media")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has somehow attracted the attention of an amateur reporter, one who operates a fringe website or publishes a 'zine that covers the bizarre or paranormal. This crank occasionally follows her, trying to uncover any dirt on her. Unfortunately, and in true modern journalist style, he tends to catch your character in the most bizarre circumstances that he simply can't understand. Of course, he tries to interpret them anyway."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Foreigner")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is not native to the area in which she's been living. While your character might understand the language and the general customs, she has trouble with many of the finer details. She has a distinguishing accent (which makes her easy to identify), and the difficulty of any Streetwise and Etiquette rolls you attempt increases by two."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Lustful")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character can't resist the advances of the appropriate gender. She is easily seduced and often exhibits very poor judgment when dealing with sexually attractive people. The difficulty of any attempts to seduce her decreases by two."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Mired in Scandal")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "People in your character's community tend to recognize her for all the wrong reasons. Maybe her mortal host was involved in a scandal involving a local politician, or perhaps she was charged but not convicted in a sensational case. No matter what the cause, your character tends to attract a lot of unwanted attention wherever she goes. People look down on her, though they don't necessarily hinder or harass her. Add two to the difficulty of any Social rolls that involve people who know your character's mortal past."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Monstrous Connections")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.description = "Your character has to deal with a monstrous demon as part of your mortal job or even your family life. Perhaps it's your character's boss or an important family figure. The demon is not necessarily hostile toward your character, but it's in a position to cause her a lot of trouble should it choose to."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Nosy Neighbors")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's neighborhood is exceptionally rife with gossips and busybodies. Her neighbors are always dropping by for unannounced visits, and they take an active interest in her comings and goings. What's worse, they aren't shy about sharing what they know with anyone who asks."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Judge of Character")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host was the type of person who always ended up hanging out with the wrong crowd. Maybe she just liked to date dangerous men or was a sucker for a woman in trouble. Whatever the reason, your character has a very hard time figuring out whom to trust. Increase the difficulty by two for all Awareness and Intuition rolls you attempt in social circumstances. Also, your character's friends and acquaintances tend to be leeches and other lowlifes."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Stalked")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Someone has an unhealthy obsession with your character. Despite repeated calls to the police and several restraining orders, he continues to follow and occasionally harass her. Your Storyteller should create game stats for the stalker. Any time your character heads out on the town, the Storyteller can make a Perception test on your character's behalf (difficulty 6). If it fails or botches, the stalker has managed to tail your character throughout the night and might put in an appearance when it's least helpful."
+mf.source = "Demon Players Guide, p. 91"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Technophobe")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host was severely intimidated by computers and other technology. Therefore, your character never uses an ATM if a teller is available, and she gets nervous at the sight of a keyboard. You must make an Intelligence roll (difficulty 6) for your character to perform even simple tasks on a computer, ATM or similar device. Increase the difficulty of any Computer or Technology roll by two."
+mf.source = "Demon Players Guide, p. 91-92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Greedy")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host lived to make money. Family, friends and other concerns were trivial when compared to the all-mighty dollar. If someone offers your character a bribe, you must make a Willpower roll (difficulty 7) to resist. If the bribe involves something that won't directly result in any injuries or lasting damage as far as the character knows, increase the difficulty to 8. Your character also tends to victimize demons who have a lot of material wealth."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Criminal Entanglements")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host owes someone on the wrong side of the law a lot of money or a big favor that she now refuses to pay. While hit men aren't being sent after her quite yet, the threat hangs over her constantly. The exact nature of the debt and the figures behind it are left to the Storyteller, but they should suit your character concept."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Unlucky")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host dealt with bad breaks all her life. From the struggling Internet company she quit two months before its billion-dollar IPO to that true love who had to move across the country, your character seems to make the wrong moves at the wrong time. Once per game session, the Storyteller may increase the difficulty of a critical roll you make by two. If you fail the roll, it's due to some random, hard-luck factor. Your character's bad luck seems to crop up at the most inconvenient times. You may not take this Flaw and the Lucky Merit."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Pacifist")[0]
+mf.add_ratings([-5])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character utterly refuses to use violence against anything, even if her life or the lives of others are in immediate danger. Furthermore, your character works hard to prevent others from using violence, though she does not recklessly endanger herself or expect others to do so. She never carries weapons, and she refuses to procure them. A Willpower roll (difficulty 6) might be required to resist the temptation to engage in violence when a gross offense is committed before or against your character, such as a loved one being harmed. If she defies her nature and succumbs to violence at some point, she cannot regain Willpower each morning until she comes to terms with her indiscretion or she changes life philosophies altogether."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+# MENTAL FLAWS - Cognitive and psychological limitations
+
+mf = MeritFlaw.objects.get_or_create(name="Gullible")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had a lot of trouble separating truth from fiction. Your character is not stupid, she just tends to believe what people tell her rather than taking things with a grain of salt. Increase the difficulty by two on any roll to detect lies."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="No Direction Sense")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host got lost all the time. Maps, compasses and detailed directions never seemed to help. She now has a lot of trouble figuring out where she is in relation to landmarks that aren't immediately obvious, and maps are largely incomprehensible to her. Increase the difficulty by two on any roll that involves following convoluted directions, backtracking a route or navigating a confusing set of city streets."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Poor Sense of Time")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has no intuitive sense for the flow of time. She can't even begin to guess the current time without looking at a clock, and she always over- or underestimates the amount of time that has passed since (or that remains before) a specified event."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Short Temper")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character is easily driven to distraction by what would otherwise be minor failures and other frustrations. If you fail to gain any successes on any single roll during an extended action, increase the difficulty of all subsequent rolls by one, cumulatively."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Terrible with Names")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Try as you might, your character almost always forget people's names, especially when meeting large groups for the first time. You may not write down the names of any people your character meets during the game unless your character has a pad and paper handy. Your character also has problems with recognizing faces or remembering if she's been somewhere before. Make an Intelligence roll (difficulty 6) to recall such information."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Absent Minded")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Details and important facts slip your character's mind constantly. Once per game session, when your character attempts to use an item that she normally carries with her, the Storyteller might require you to make a Willpower roll (difficulty 6) to see if she remembered to bring it or if she can remember where it is. The item turns up again after an hour or so of searching."
+mf.source = "Demon Players Guide, p. 92"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Attention-Deficit Disorder")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character has a hard time sitting still and paying attention to anything for more than a few minutes. If she must sit still and quiet for more than 10 minutes, such as when keeping watch over an enemy or standing guard, make a Willpower roll (difficulty 6). On a failure, your character loses interest in her task and is distracted from it."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Dyslexic")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Printed information of any sort, from written text to maps, is nearly indecipherable to your character. While she is not necessarily illiterate, she struggles to read the simplest sentences. In order for your character to interpret a map or read anything, you must make a successful Intelligence roll (difficulty 8). On a botch, she interprets the message to have its nearly opposite meaning."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Eating Disorder")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had an unhealthy obsession with her appearance and had chosen to starve herself in order to lose weight. Increase the difficulty of any Stamina-related rolls by two."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Language Barrier")[0]
+mf.add_ratings([-2, -3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character cannot speak the language in the region where she lives. In order to communicate with the locals without using any lore, your character must find a translator or rely on a language handbook to attempt rough translations. Taking the two-point version means your character can read the language but has trouble using it in conversation. The three-point Flaw means that your character can neither speak nor read it."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Overconfident")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character either overestimates her own skill or underestimates her opponents'. Once per game session, the Storyteller may secretly add two to the difficulty of a non-combat action that your character takes. This increase represents her tendency to plunge headlong into activities that are beyond her capabilities."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Faint of Heart")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "The sight of gore and blood shocks your character to the core. If she witnesses a gruesome scene, you must make a Willpower roll (difficulty 6) to keep your character from suffering debilitating nausea for five to 10 minutes. The difficulty of all actions increases by one when your character is ill."
+mf.source = "Demon Players Guide, p. 93"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Incompetent")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host was spectacularly bad at something. Unfortunately, your character is the only person around who doesn't know this fact. Pick a single Ability. Your character believes that she has the proficiency of three dots in that trait, when in reality she almost always messes up any attempt at it. When you try to use the Ability, treat the outcome as if you rolled a botch."
+mf.source = "Demon Players Guide, p. 93-94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Low Self-Esteem")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had trouble accepting her own value and worth. She tended to highlight her failures and overlook her triumphs. Whenever your character has the opportunity to gain Willpower from accomplishing a goal (not from resting), make a Willpower roll (difficulty 6). If you fail the roll, your character does not gain the bonus. If you botch, your character loses a temporary point of Willpower."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Slow Learner")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host always lagged behind in school, and even the most patient people found it frustrating to teach her the simplest concepts. Your character isn't dumb, she just takes longer than most to wrap her brain around things. For the purposes of figuring out how many experience points it costs to raise an Ability, add one to your character's current rating. Acquiring a new Ability costs four experience points, not the usual three."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Weak Willed")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Try as your character might, it's challenging for her to summon inner reserves of courage or toughness. While others shoulder extra burdens in pursuit of their goals, your character simply finds the going harder and harder. Your character isn't a coward, she just doesn't have the fortitude necessary to make truly heroic efforts. Add two to the difficulty of all Willpower rolls. As long as your character has this Flaw, her Willpower rating may never rise above 8."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Amnesia")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "The life of your mortal host before possession is a blur. Your character remembers nothing of her host's existence before she was possessed, although that doesn't mean that her old life has forgotten her. Your Storyteller creates the details of your character's host's old life and the circumstances surrounding her amnesia."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Depression")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host was mired in a pit of bleak, mind-numbing sorrow. She refused to seek professional help, convinced that her eternally dark mood was completely natural — or deserved. Your character does not regain a point of Willpower per day as most characters do. Instead, she gains Willpower only through actions, and even those must ardently reaffirm her goals."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Illiterate")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host never learned to read or write. She can understand most traffic signs and warning labels that rely on pictographs, but written instructions and warnings are completely beyond her comprehension."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+# LEGAL FLAWS - Legal problems and restrictions
+
+mf = MeritFlaw.objects.get_or_create(name="Political Radical")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had connections to a radical political organization that many people view with suspicion, such as the Nation of Islam or the KKK. Your character is an active member of the group, and local law enforcement has an open dossier on her. While she does not necessarily have a criminal record or engage in illegal activity, the local police view her as a troublemaker and suspicious character. At any given time, she might be the target of undercover observation prompted by the activities of her organization."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Revoked Driver's License")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host has lost her driver's license due to a poor driving record. If your character is pulled over for reckless driving or is otherwise caught driving, the police will attempt to arrest her immediately and impound her car."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Sunday Driver")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Whenever your character goes out with friends, no one wants her to drive. She pays almost obsessive attention to traffic regulations and makes a conscious effort to drive below the speed limit. Alternatively, your character has no patience for traffic, right of way or signs, or she simply fails to pay attention to the road. The difficulty of any Drive rolls you make during a chase or other high-speed situation increases by two."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Criminal Record")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host had a bit of a shady past, having been convicted for several misdemeanors or perhaps for a minor felony. Your character is unable to buy firearms legally, and she receives exceptionally poor treatment from law-enforcement officials who know her record."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Probation")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is currently on probation for some minor offense. She has to meet with a case officer on a regular basis, and she is subject to random drug tests and searches of her apartment and person. She must also commit — or seem to commit — herself to becoming a good citizen by maintaining a job, keeping an apartment and engaging in other aspects of respectable life."
+mf.source = "Demon Players Guide, p. 94"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Illegal Immigrant")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host lacks proper legal permission to be in the country in which she currently lives. She does not have a legitimate ID and will most likely be deported back to her home country if she is placed under arrest. Your character cannot hold a job unless it pays under the table."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Wanted by Law Enforcement")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is the prime suspect in a felony crime. The police actively look for her, and she cannot move openly about her usual hangouts. If she encounters cops who know that she's wanted, they'll call in backup and try to bring her in."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+# ECONOMIC FLAWS - Financial difficulties
+
+mf = MeritFlaw.objects.get_or_create(name="Audit")[0]
+mf.add_ratings([-1])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is currently undergoing an audit by the national tax authority. She cannot purchase illegal goods totaling more than $500 without attracting the attention of the officers assigned to her case. Any money she wishes to use for illegal purposes must be laundered first. Increase the difficulty by two for all Resources rolls."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Demanding Career")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's host's current job requires long hours and frequent travel, making it challenging for her to both work and pursue her goals. She must always carry a pager and keep in touch with the office, and she can be called back to work at almost any time. If she should quit her job to free up time for her infernal agenda, reduce your character's Resources by at least one point."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Primary Breadwinner")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is the primary income-earner in her family. She pays the bills, from the heat and electricity to the weekly groceries. She must maintain a steady paying job, despite the demands of her infernal obligations. At least two points of your character's Resources score must be dedicated to supporting her family. If her rating drops below that level, her family begins to suffer. The difficulty of all Willpower rolls you attempt increases by two thereafter, because of the deep shame and embarrassment your character feels for not providing for her loved ones."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Uninsured")[0]
+mf.add_ratings([-2])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host either cannot afford insurance or has simply chosen to go without it. She must pay for all medical expenses and any damage incurred from accidents out of pocket."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Alimony Payments")[0]
+mf.add_ratings([-3])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character's mortal host is financially responsible for his ex-spouse and perhaps children. He must hold down a steady job and meet monthly payments or risk having his assets frozen and his possessions seized. Your character can never have more than three dots of Resources because of the economic hardship of keeping up with payments."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
+
+mf = MeritFlaw.objects.get_or_create(name="Homeless")[0]
+mf.add_ratings([-4])
+mf.allowed_types.add(demon)
+mf.allowed_types.add(thrall)
+mf.allowed_types.add(dtfhuman)
+mf.description = "Your character lives on the streets. She can never have any dots in Resources, and she doesn't have a secure place to rest and recuperate. Your character cannot heal any aggravated damage naturally while living on the street, and she must carry all of her possessions with her at all times or hide them and hope no one finds them."
+mf.source = "Demon Players Guide, p. 95"
+mf.save()
