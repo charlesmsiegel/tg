@@ -64,7 +64,16 @@ from characters.models.mage.sorcerer import (
     Sorcerer,
 )
 from characters.models.mage.sphere import Sphere
-from characters.models.vampire import VtMHuman
+from characters.models.vampire import (
+    Discipline,
+    Ghoul,
+    Path,
+    Vampire,
+    VampireClan,
+    VampireSect,
+    VampireTitle,
+    VtMHuman,
+)
 from characters.models.werewolf import (
     BattleScar,
     Camp,
@@ -296,6 +305,13 @@ class CabalAdmin(admin.ModelAdmin):
 admin.site.register(HouseFaction)
 
 admin.site.register(VtMHuman)
+admin.site.register(Vampire)
+admin.site.register(Ghoul)
+admin.site.register(VampireClan)
+admin.site.register(VampireSect)
+admin.site.register(VampireTitle)
+admin.site.register(Path)
+admin.site.register(Discipline)
 admin.site.register(WtOHuman)
 admin.site.register(PracticeRating)
 
