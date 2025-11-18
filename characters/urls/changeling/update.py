@@ -1,6 +1,7 @@
 from characters.views.changeling.changeling import ChangelingUpdateView
 from characters.views.changeling.ctdhuman import CtDHumanUpdateView
 from characters.views.changeling.house import HouseUpdateView
+from characters.views.changeling.house_faction import HouseFactionUpdateView
 from characters.views.changeling.kith import KithUpdateView
 from characters.views.changeling.legacy import LegacyUpdateView
 from characters.views.changeling.motley import MotleyUpdateView
@@ -31,6 +32,11 @@ urls = [
         "house/<pk>/",
         HouseUpdateView.as_view(),
         name="house",
+    ),
+    path(
+        "house_faction/<pk>/",
+        HouseFactionUpdateView.as_view(),
+        name="house_faction",
     ),
     path(
         "legacy/<pk>/",

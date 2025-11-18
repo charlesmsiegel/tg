@@ -1,0 +1,8 @@
+{% extends "core/object.html" %}
+{% block status_row %}
+    <div class="col-md-6 mb-3">{% include "characters/changeling/house_faction/display_includes/details.html" %}</div>
+    {{ block.super }}
+{% endblock status_row %}
+{% block contents %}
+    {# No additional content needed as details are shown in status_row #}
+{% endblock contents %}
