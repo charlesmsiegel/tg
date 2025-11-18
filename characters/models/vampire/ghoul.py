@@ -82,3 +82,37 @@ class Ghoul(VtMHuman):
             "Presence": self.presence,
         }
         return {k: v for k, v in disciplines.items() if v > 0}
+
+    def freebie_cost(self, trait_type):
+        """Return freebie point cost for ghoul-specific traits."""
+        ghoul_costs = {
+            "discipline": 7,  # Physical disciplines easier for ghouls
+        }
+        if trait_type in ghoul_costs.keys():
+            return ghoul_costs[trait_type]
+        return super().freebie_cost(trait_type)
+
+    def get_available_disciplines(self):
+        """Return list of disciplines the ghoul can learn."""
+        if self.domitor and self.domitor.clan:
+            # Can learn domitor's clan disciplines
+            return list(self.domitor.clan.disciplines.all())
+        # Independent ghouls can learn physical disciplines
+        from characters.models.vampire.discipline import Discipline
+
+        physical = ["Potence", "Celerity", "Fortitude"]
+        return list(Discipline.objects.filter(name__in=physical))
+
+    def discipline_freebies(self, form):
+        """Spend freebies on disciplines."""
+        discipline = form.cleaned_data["example"]
+        cost = 7
+
+        # Get current rating and increment
+        current_rating = getattr(self, discipline.property_name, 0)
+        setattr(self, discipline.property_name, current_rating + 1)
+        self.freebies -= cost
+
+        trait = discipline.name
+        value = current_rating + 1
+        return trait, value, cost
