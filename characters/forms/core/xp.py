@@ -79,10 +79,37 @@ class XPForm(forms.Form):
                 for bg in self.character.backgrounds.all()
             ]
         elif category == "MeritFlaw":
+            # Filter merit/flaws by character type and affordability
+            from game.models import ObjectType
+
+            char_type = self.character.type
+            if "human" in char_type:
+                char_type = "human"
+
+            try:
+                chartype = ObjectType.objects.get(name=char_type)
+                filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
+            except ObjectType.DoesNotExist:
+                filtered_mfs = MeritFlaw.objects.none()
+
+            # Only show merit/flaws with at least one affordable rating
+            affordable_mfs = []
+            for mf in filtered_mfs:
+                current_rating = self.character.mf_rating(mf)
+                ratings = mf.get_ratings()
+
+                for rating in ratings:
+                    # Calculate cost: 3 × |new_rating - current_rating|
+                    cost = 3 * abs(rating - current_rating)
+                    if cost <= self.character.xp and rating != current_rating:
+                        affordable_mfs.append(mf.id)
+                        break
+
+            filtered_mfs = filtered_mfs.filter(id__in=affordable_mfs)
+
             self.fields["example"].choices = [
-                (mf.id, mf.name) for mf in MeritFlaw.objects.all()
+                (mf.id, mf.name) for mf in filtered_mfs
             ]
-            # self.fields['value'].queryset = Number.objects.all()
 
     def image_valid(self):
         if self.character.image and self.character.image.storage.exists(
@@ -153,7 +180,31 @@ class XPForm(forms.Form):
         )
 
     def mf_valid(self):
-        return self.character.xp >= 3
+        # Check if character has any affordable merit/flaws
+        from game.models import ObjectType
+
+        char_type = self.character.type
+        if "human" in char_type:
+            char_type = "human"
+
+        try:
+            chartype = ObjectType.objects.get(name=char_type)
+            filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
+        except ObjectType.DoesNotExist:
+            return False
+
+        # Check if any merit/flaw has an affordable rating
+        for mf in filtered_mfs:
+            current_rating = self.character.mf_rating(mf)
+            ratings = mf.get_ratings()
+
+            for rating in ratings:
+                # Calculate cost: 3 × |new_rating - current_rating|
+                cost = 3 * abs(rating - current_rating)
+                if cost <= self.character.xp and rating != current_rating:
+                    return True
+
+        return False
 
     def clean_category(self):
         category = self.cleaned_data.get("category")

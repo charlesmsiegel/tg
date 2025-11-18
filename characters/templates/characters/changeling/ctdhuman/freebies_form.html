@@ -131,7 +131,8 @@
                 $.ajax({
                     url: '{% url 'characters:ajax:load_values' %}',
                     data: {
-                        'example': this.value
+                        'example': this.value,
+                        'object': {{object.id}}
                     },
                     success: function (data) {
                         $("#id_value").html(data);
