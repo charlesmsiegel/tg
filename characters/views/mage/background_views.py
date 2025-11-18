@@ -61,31 +61,32 @@ class MtAEnhancementView(SpecialUserMixin, FormView):
     def form_valid(self, form):
         context = self.get_context_data()
         obj = context["object"]
-        # Check Data Valid
-        if form.save(char=obj):
-            if (
-                BackgroundRating.objects.filter(
-                    char=obj,
-                    bg=Background.objects.get(property_name="enhancement"),
-                    complete=False,
-                ).count()
-                == 0
-            ):
-                obj.creation_status += 1
-                obj.save()
-                for step in self.potential_skip:
-                    if (
-                        BackgroundRating.objects.filter(
-                            bg=Background.objects.get(property_name=step),
-                            char=obj,
-                            complete=False,
-                        ).count()
-                        == 0
-                    ):
-                        obj.creation_status += 1
-                    else:
-                        obj.save()
-                        break
-                obj.save()
-            return HttpResponseRedirect(obj.get_absolute_url())
-        return super().form_invalid(form)
+        # Save the form data
+        form.save(char=obj)
+
+        # Check if there are more enhancements to complete
+        if (
+            BackgroundRating.objects.filter(
+                char=obj,
+                bg=Background.objects.get(property_name="enhancement"),
+                complete=False,
+            ).count()
+            == 0
+        ):
+            obj.creation_status += 1
+            obj.save()
+            for step in self.potential_skip:
+                if (
+                    BackgroundRating.objects.filter(
+                        bg=Background.objects.get(property_name=step),
+                        char=obj,
+                        complete=False,
+                    ).count()
+                    == 0
+                ):
+                    obj.creation_status += 1
+                else:
+                    obj.save()
+                    break
+            obj.save()
+        return HttpResponseRedirect(obj.get_absolute_url())
