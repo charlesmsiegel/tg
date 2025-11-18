@@ -38,4 +38,15 @@ urls = [
         views.vampire.DisciplineDetailView.as_view(),
         name="discipline",
     ),
+    # Staged character creation routes
+    path(
+        "vampire/<int:pk>/chargen/",
+        views.vampire.VampireCharacterCreationView.as_view(),
+        name="vampire_chargen",
+    ),
+    path(
+        "ghoul/<int:pk>/chargen/",
+        views.vampire.GhoulCharacterCreationView.as_view(),
+        name="ghoul_chargen",
+    ),
 ]

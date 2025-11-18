@@ -10,12 +10,12 @@ urls = [
     ),
     path(
         "vampire/",
-        views.vampire.VampireCreateView.as_view(),
+        views.vampire.VampireBasicsView.as_view(),
         name="vampire",
     ),
     path(
         "ghoul/",
-        views.vampire.GhoulCreateView.as_view(),
+        views.vampire.GhoulBasicsView.as_view(),
         name="ghoul",
     ),
     path(

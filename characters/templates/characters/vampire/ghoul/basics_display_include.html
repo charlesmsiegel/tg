@@ -1,0 +1,38 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
+                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                    </div>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    </div>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Concept:</span>
+                        {{ object.concept }}
+                    </div>
+                    {% if object.domitor %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Domitor:</span>
+                            <a href="{{ object.domitor.get_absolute_url }}">{{ object.domitor }}</a>
+                        </div>
+                    {% endif %}
+                    {% if object.is_independent %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Status:</span>
+                            <span class="tg-badge badge-pill" style="background-color: #28a745; color: white;">Independent</span>
+                        </div>
+                    {% endif %}
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Years as Ghoul:</span>
+                        {{ object.years_as_ghoul }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

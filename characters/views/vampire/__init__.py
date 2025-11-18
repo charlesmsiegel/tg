@@ -11,6 +11,20 @@ from .discipline import (
     DisciplineUpdateView,
 )
 from .ghoul import GhoulCreateView, GhoulDetailView, GhoulListView, GhoulUpdateView
+from .ghoul_chargen import (
+    GhoulAlliesView,
+    GhoulAttributeView,
+    GhoulAbilityView,
+    GhoulBackgroundsView,
+    GhoulBasicsView,
+    GhoulCharacterCreationView,
+    GhoulDisciplinesView,
+    GhoulExtrasView,
+    GhoulFreebieFormPopulationView,
+    GhoulFreebiesView,
+    GhoulLanguagesView,
+    GhoulSpecialtiesView,
+)
 from .path import PathCreateView, PathDetailView, PathListView, PathUpdateView
 from .sect import (
     VampireSectCreateView,
@@ -25,6 +39,21 @@ from .title import (
     VampireTitleUpdateView,
 )
 from .vampire import VampireCreateView, VampireDetailView, VampireListView, VampireUpdateView
+from .vampire_chargen import (
+    VampireAlliesView,
+    VampireAttributeView,
+    VampireAbilityView,
+    VampireBackgroundsView,
+    VampireBasicsView,
+    VampireCharacterCreationView,
+    VampireDisciplinesView,
+    VampireExtrasView,
+    VampireFreebieFormPopulationView,
+    VampireFreebiesView,
+    VampireLanguagesView,
+    VampireSpecialtiesView,
+    VampireVirtuesView,
+)
 from .vtmhuman import (
     VtMHumanBasicsView,
     VtMHumanCharacterCreationView,

@@ -1,0 +1,223 @@
+{% extends "core/form.html" %}
+{% load dots %}
+{% block creation_title %}
+    Create Ghoul
+{% endblock creation_title %}
+{% block contents %}
+    {% if is_approved_user %}
+        {% block name %}
+            <div class="row">
+                <div class="col-sm {{ object.get_heading }}">
+                    <h1>{{ object.name }}</h1>
+                </div>
+            </div>
+        {% endblock name %}
+        {% block basics %}
+            <div class="row">
+                <div class="col-sm">
+                    <div class="tg-card">
+                        <div class="tg-card-body">
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.nature }}</span>
+                                </div>
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.demeanor }}</span>
+                                </div>
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Concept:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.concept }}</span>
+                                </div>
+                                {% if object.domitor %}
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Domitor:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.domitor }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.is_independent %}
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Status:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">Independent</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock basics %}
+        {% block attributes %}
+            {% if object.creation_status == 1 %}
+                {% include "characters/core/attribute_block/form.html" %}
+            {% elif object.creation_status > 1 %}
+                {% include "characters/core/attribute_block/detail.html" %}
+            {% endif %}
+        {% endblock attributes %}
+        {% block abilities %}
+            {% if object.creation_status == 2 %}
+                {% include "characters/vampire/vtmhuman/ability_block_form.html" %}
+            {% elif object.creation_status > 2 %}
+                {% include "characters/vampire/vtmhuman/ability_block_display.html" %}
+            {% endif %}
+        {% endblock abilities %}
+        {% block backgrounds %}
+            {% if object.creation_status == 3 %}
+                {% include "characters/core/background_block/form.html" %}
+            {% elif object.creation_status > 3 %}
+                {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+            {% endif %}
+        {% endblock backgrounds %}
+        {% block disciplines %}
+            {% if object.creation_status == 4 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
+                                <p class="tg-card-subtitle">You have Potence 1 automatically. You may spend up to 2 dots on additional disciplines{% if has_domitor %} from your domitor's clan{% else %} (Physical disciplines only){% endif %}.</p>
+                            </div>
+                            <div class="tg-card-body">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif object.creation_status > 4 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Potence</span>
+                                    <span>{{ object.potence|dots }}</span>
+                                </div>
+                                {% if object.celerity > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Celerity</span>
+                                    <span>{{ object.celerity|dots }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.fortitude > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Fortitude</span>
+                                    <span>{{ object.fortitude|dots }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.auspex > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Auspex</span>
+                                    <span>{{ object.auspex|dots }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.dominate > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Dominate</span>
+                                    <span>{{ object.dominate|dots }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.obfuscate > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Obfuscate</span>
+                                    <span>{{ object.obfuscate|dots }}</span>
+                                </div>
+                                {% endif %}
+                                {% if object.presence > 0 %}
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: 600; margin-right: 12px;">Presence</span>
+                                    <span>{{ object.presence|dots }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock disciplines %}
+        {% block extras %}
+            {% if object.creation_status == 5 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Character Details</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock extras %}
+        {% block advantages %}
+            {% if object.creation_status > 5 %}
+                {% include "characters/core/human/advantages_display.html" %}
+            {% endif %}
+        {% endblock advantages %}
+        {% block freebies %}
+            {% if object.creation_status == 6 and object.freebies_approved %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Freebie Points</h5>
+                                <p class="tg-card-subtitle">Remaining: {{ object.freebies }}</p>
+                            </div>
+                            <div class="tg-card-body">
+                                {% include "characters/vampire/ghoul/freebies_form.html" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif object.creation_status == 6 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Waiting on ST to Assign Freebie Total</h2>
+                </div>
+            {% endif %}
+        {% endblock freebies %}
+        {% block languages %}
+            {% if object.creation_status > 7 %}
+                {% include "characters/core/human/language_display_block.html" %}
+            {% elif object.creation_status == 7 %}
+                {% include "characters/core/human/human_language_block_form.html" %}
+            {% endif %}
+        {% endblock languages %}
+        {% block ally %}
+            {% if object.creation_status == 8 %}
+                {% include "characters/core/ally/form_include.html" %}
+            {% endif %}
+        {% endblock ally %}
+        {% block specialties_form %}
+            {% if object.creation_status == 9 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title {{ object.get_heading }}">Specialties</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                {% include "characters/core/specialty/form.html" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock specialties_form %}
+    {% else %}
+        {% include "characters/core/character/not_owner.html" %}
+    {% endif %}
+{% endblock contents %}
+{% block buttons %}
+    {% if object.creation_status == object.freebie_step and not object.freebies_approved %}
+    {% elif not is_approved_user %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock buttons %}

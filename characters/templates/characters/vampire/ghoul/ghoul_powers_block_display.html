@@ -1,0 +1,26 @@
+{% load dots %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Disciplines</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="row">
+                    {% for discipline in object.get_disciplines.items %}
+                        <div class="col-md-6 mb-3">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <span style="font-weight: 600; color: var(--theme-text-primary);">{{ discipline.0 }}</span>
+                                <span class="dots">{{ discipline.1|dots }}</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <p class="text-center" style="color: var(--theme-text-secondary);">No disciplines learned yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
