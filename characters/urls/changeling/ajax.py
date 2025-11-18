@@ -8,4 +8,9 @@ urls = [
         views.changeling.ctdhuman.CtDHumanFreebieFormPopulationView.as_view(),
         name="load_ctdhuman_examples",
     ),
+    path(
+        "load_changeling_examples/",
+        views.changeling.changeling.ChangelingFreebieFormPopulationView.as_view(),
+        name="load_changeling_examples",
+    ),
 ]

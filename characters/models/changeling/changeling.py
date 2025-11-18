@@ -10,6 +10,8 @@ from django.utils.timezone import now
 class Changeling(CtDHuman):
     type = "changeling"
 
+    freebie_step = 6
+
     court = models.CharField(
         default="",
         max_length=20,
@@ -289,3 +291,33 @@ class Changeling(CtDHuman):
         if "Sidhe" in self.kith.name:
             self.add_attribute("appearance", maximum=10)
             self.add_attribute("appearance", maximum=10)
+
+    def art_freebies(self, form):
+        """Spend freebies to increase an art"""
+        trait = form.cleaned_data["example"]
+        value = getattr(self, trait.property_name, 0) + 1
+        cost = 5
+        self.add_art(trait.property_name)
+        self.freebies -= cost
+        self.spent_freebies.append(self.freebie_spend_record(trait.name, trait.property_name, value, cost))
+        return True
+
+    def realm_freebies(self, form):
+        """Spend freebies to increase a realm"""
+        trait = form.cleaned_data["example"]
+        value = getattr(self, trait.property_name, 0) + 1
+        cost = 3
+        self.add_realm(trait.property_name)
+        self.freebies -= cost
+        self.spent_freebies.append(self.freebie_spend_record(trait.name, trait.property_name, value, cost))
+        return True
+
+    def glamour_freebies(self, form):
+        """Spend freebies to increase glamour"""
+        trait = "Glamour"
+        value = self.glamour + 1
+        cost = 3
+        self.add_glamour()
+        self.freebies -= cost
+        self.spent_freebies.append(self.freebie_spend_record(trait, "glamour", value, cost))
+        return True

@@ -1,0 +1,76 @@
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Character Details</h2>
+</div>
+{% if object.date_of_birth or object.apparent_age or object.age %}
+    <div class="row">
+        {% if object.date_of_birth %}
+            <div class="col-sm">Date of Birth</div>
+            <div class="col-sm">{{ object.date_of_birth }}</div>
+        {% endif %}
+        {% if object.apparent_age %}
+            <div class="col-sm">Apparent Age</div>
+            <div class="col-sm">{{ object.apparent_age }}</div>
+        {% endif %}
+        {% if object.age %}
+            <div class="col-sm">Age</div>
+            <div class="col-sm">{{ object.age }}</div>
+        {% endif %}
+    </div>
+{% endif %}
+{% if object.description %}
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ object.description }}</div>
+    </div>
+{% endif %}
+{% if object.public_info %}
+    <div class="row">
+        <div class="col-sm">Public Information</div>
+        <div class="col-sm">{{ object.public_info }}</div>
+    </div>
+{% endif %}
+<div class="row">
+    <h3 class="col-sm {{ object.get_heading }}">Changeling Details</h3>
+</div>
+{% if object.true_name %}
+    <div class="row">
+        <div class="col-sm">True Name</div>
+        <div class="col-sm">{{ object.true_name }}</div>
+    </div>
+{% endif %}
+{% if object.fae_mien %}
+    <div class="row">
+        <div class="col-sm">Fae Mien</div>
+        <div class="col-sm">{{ object.fae_mien }}</div>
+    </div>
+{% endif %}
+{% if object.crysalis %}
+    <div class="row">
+        <div class="col-sm">Chrysalis</div>
+        <div class="col-sm">{{ object.crysalis }}</div>
+    </div>
+{% endif %}
+{% if object.date_of_crysalis %}
+    <div class="row">
+        <div class="col-sm">Date of Chrysalis</div>
+        <div class="col-sm">{{ object.date_of_crysalis }}</div>
+    </div>
+{% endif %}
+{% if object.musing_threshold %}
+    <div class="row">
+        <div class="col-sm">Musing Threshold</div>
+        <div class="col-sm">{{ object.get_musing_threshold_display }}</div>
+    </div>
+{% endif %}
+{% if object.ravaging_threshold %}
+    <div class="row">
+        <div class="col-sm">Ravaging Threshold</div>
+        <div class="col-sm">{{ object.get_ravaging_threshold_display }}</div>
+    </div>
+{% endif %}
+{% if object.antithesis %}
+    <div class="row">
+        <div class="col-sm">Antithesis</div>
+        <div class="col-sm">{{ object.antithesis }}</div>
+    </div>
+{% endif %}

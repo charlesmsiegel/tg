@@ -1,0 +1,21 @@
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">History</h2>
+</div>
+{% if object.history %}
+    <div class="row">
+        <div class="col-sm">History</div>
+        <div class="col-sm">{{ object.history }}</div>
+    </div>
+{% endif %}
+{% if object.goals %}
+    <div class="row">
+        <div class="col-sm">Goals</div>
+        <div class="col-sm">{{ object.goals }}</div>
+    </div>
+{% endif %}
+{% if object.notes %}
+    <div class="row">
+        <div class="col-sm">Notes</div>
+        <div class="col-sm">{{ object.notes }}</div>
+    </div>
+{% endif %}

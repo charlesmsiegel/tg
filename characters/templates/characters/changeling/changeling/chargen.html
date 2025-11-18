@@ -35,6 +35,56 @@
                 {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
             {% endif %}
         {% endblock backgrounds %}
+        {% block arts_realms %}
+            {% if object.creation_status == 4 %}
+                {% include "characters/changeling/changeling/arts_realms_form.html" %}
+            {% elif object.creation_status > 4 %}
+                {% include "characters/changeling/changeling/arts_realms_display.html" %}
+            {% endif %}
+        {% endblock arts_realms %}
+        {% block advantages %}
+            {% include "characters/core/human/advantages_display.html" %}
+        {% endblock advantages %}
+        {% block appearance %}
+            {% if object.creation_status == 5 %}
+                {% include "characters/changeling/changeling/extras_form.html" %}
+            {% elif object.creation_status > 5 %}
+                {% include "characters/changeling/changeling/extras_display.html" %}
+            {% endif %}
+        {% endblock appearance %}
+        {% block mfs %}
+            {% if object.creation_status >= 5 %}
+                {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+            {% endif %}
+        {% endblock mfs %}
+        {% block history %}
+            {% if object.creation_status == 5 %}
+                {% include "characters/changeling/changeling/history_form.html" %}
+            {% elif object.creation_status > 5 %}
+                {% include "characters/changeling/changeling/history_display.html" %}
+            {% endif %}
+        {% endblock history %}
+        {% block freebies %}
+            {% if object.creation_status == 6 and object.freebies_approved %}
+                {% include "characters/changeling/changeling/freebies_form.html" %}
+            {% elif object.creation_status == 6 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Waiting on ST to Assign Freebie Total</h2>
+                </div>
+            {% endif %}
+        {% endblock freebies %}
+        {% block languages %}
+            {% if object.creation_status > 7 %}
+                {% include "characters/core/human/language_display_block.html" %}
+            {% elif object.creation_status == 7 %}
+                {% include "characters/core/human/human_language_block_form.html" %}
+            {% endif %}
+        {% endblock languages %}
+        {% block specialties_form %}
+            {% if object.creation_status == 8 %}
+                {% include "characters/changeling/changeling/specialties_form.html" %}
+            {% endif %}
+        {% endblock specialties_form %}
     {% else %}
         {% include "characters/core/character/not_owner.html" %}
     {% endif %}

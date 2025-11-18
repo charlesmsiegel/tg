@@ -1,0 +1,134 @@
+{% load dots %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Arts & Realms</h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Arts</h3>
+    </div>
+</div>
+<div class="row">
+    {% if object.autumn > 0 %}
+        <div class="col-sm-3">Autumn</div>
+        <div class="col-sm-3">{{ object.autumn|dots }}</div>
+    {% endif %}
+    {% if object.chicanery > 0 %}
+        <div class="col-sm-3">Chicanery</div>
+        <div class="col-sm-3">{{ object.chicanery|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.chronos > 0 %}
+        <div class="col-sm-3">Chronos</div>
+        <div class="col-sm-3">{{ object.chronos|dots }}</div>
+    {% endif %}
+    {% if object.contract > 0 %}
+        <div class="col-sm-3">Contract</div>
+        <div class="col-sm-3">{{ object.contract|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.dragons_ire > 0 %}
+        <div class="col-sm-3">Dragon's Ire</div>
+        <div class="col-sm-3">{{ object.dragons_ire|dots }}</div>
+    {% endif %}
+    {% if object.legerdemain > 0 %}
+        <div class="col-sm-3">Legerdemain</div>
+        <div class="col-sm-3">{{ object.legerdemain|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.metamorphosis > 0 %}
+        <div class="col-sm-3">Metamorphosis</div>
+        <div class="col-sm-3">{{ object.metamorphosis|dots }}</div>
+    {% endif %}
+    {% if object.naming > 0 %}
+        <div class="col-sm-3">Naming</div>
+        <div class="col-sm-3">{{ object.naming|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.oneiromancy > 0 %}
+        <div class="col-sm-3">Oneiromancy</div>
+        <div class="col-sm-3">{{ object.oneiromancy|dots }}</div>
+    {% endif %}
+    {% if object.primal > 0 %}
+        <div class="col-sm-3">Primal</div>
+        <div class="col-sm-3">{{ object.primal|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.pyretics > 0 %}
+        <div class="col-sm-3">Pyretics</div>
+        <div class="col-sm-3">{{ object.pyretics|dots }}</div>
+    {% endif %}
+    {% if object.skycraft > 0 %}
+        <div class="col-sm-3">Skycraft</div>
+        <div class="col-sm-3">{{ object.skycraft|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.soothsay > 0 %}
+        <div class="col-sm-3">Soothsay</div>
+        <div class="col-sm-3">{{ object.soothsay|dots }}</div>
+    {% endif %}
+    {% if object.sovereign > 0 %}
+        <div class="col-sm-3">Sovereign</div>
+        <div class="col-sm-3">{{ object.sovereign|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.spring > 0 %}
+        <div class="col-sm-3">Spring</div>
+        <div class="col-sm-3">{{ object.spring|dots }}</div>
+    {% endif %}
+    {% if object.summer > 0 %}
+        <div class="col-sm-3">Summer</div>
+        <div class="col-sm-3">{{ object.summer|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.wayfare > 0 %}
+        <div class="col-sm-3">Wayfare</div>
+        <div class="col-sm-3">{{ object.wayfare|dots }}</div>
+    {% endif %}
+    {% if object.winter > 0 %}
+        <div class="col-sm-3">Winter</div>
+        <div class="col-sm-3">{{ object.winter|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Realms</h3>
+    </div>
+</div>
+<div class="row">
+    {% if object.actor > 0 %}
+        <div class="col-sm-3">Actor</div>
+        <div class="col-sm-3">{{ object.actor|dots }}</div>
+    {% endif %}
+    {% if object.fae > 0 %}
+        <div class="col-sm-3">Fae</div>
+        <div class="col-sm-3">{{ object.fae|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.nature_realm > 0 %}
+        <div class="col-sm-3">Nature</div>
+        <div class="col-sm-3">{{ object.nature_realm|dots }}</div>
+    {% endif %}
+    {% if object.prop > 0 %}
+        <div class="col-sm-3">Prop</div>
+        <div class="col-sm-3">{{ object.prop|dots }}</div>
+    {% endif %}
+</div>
+<div class="row">
+    {% if object.scene > 0 %}
+        <div class="col-sm-3">Scene</div>
+        <div class="col-sm-3">{{ object.scene|dots }}</div>
+    {% endif %}
+    {% if object.time > 0 %}
+        <div class="col-sm-3">Time</div>
+        <div class="col-sm-3">{{ object.time|dots }}</div>
+    {% endif %}
+</div>
