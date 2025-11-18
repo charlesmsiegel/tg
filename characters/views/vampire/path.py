@@ -12,7 +12,8 @@ class PathCreateView(CreateView):
     fields = [
         "name",
         "description",
-        "virtues_required",
+        "requires_conviction",
+        "requires_instinct",
         "ethics",
     ]
     template_name = "characters/vampire/path/form.html"
@@ -23,7 +24,8 @@ class PathUpdateView(UpdateView):
     fields = [
         "name",
         "description",
-        "virtues_required",
+        "requires_conviction",
+        "requires_instinct",
         "ethics",
     ]
     template_name = "characters/vampire/path/form.html"

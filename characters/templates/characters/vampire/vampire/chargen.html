@@ -116,7 +116,7 @@
                         <div class="tg-card">
                             <div class="tg-card-header">
                                 <h5 class="tg-card-title {{ object.get_heading }}">Virtues</h5>
-                                <p class="tg-card-subtitle">Spend 7 dots on Virtues{% if uses_path %} (Conviction, Instinct, Courage){% else %} (Conscience, Self-Control, Courage){% endif %}</p>
+                                <p class="tg-card-subtitle">Spend 7 dots on Virtues ({{ object.active_virtue_1_name }}, {{ object.active_virtue_2_name }}, Courage)</p>
                             </div>
                             <div class="tg-card-body">
                                 {% csrf_token %}
@@ -133,13 +133,8 @@
                                 <h5 class="tg-card-title {{ object.get_heading }}">Virtues</h5>
                             </div>
                             <div class="tg-card-body">
-                                {% if object.path %}
-                                    <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">Conviction</span><span>{{ object.conviction|dots }}</span></div>
-                                    <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">Instinct</span><span>{{ object.instinct|dots }}</span></div>
-                                {% else %}
-                                    <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">Conscience</span><span>{{ object.conscience|dots }}</span></div>
-                                    <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">Self-Control</span><span>{{ object.self_control|dots }}</span></div>
-                                {% endif %}
+                                <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">{{ object.active_virtue_1_name }}</span><span>{{ object.active_virtue_1|dots }}</span></div>
+                                <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">{{ object.active_virtue_2_name }}</span><span>{{ object.active_virtue_2|dots }}</span></div>
                                 <div style="margin-bottom: 8px;"><span style="font-weight: 600; margin-right: 12px;">Courage</span><span>{{ object.courage|dots }}</span></div>
                             </div>
                         </div>

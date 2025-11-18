@@ -107,6 +107,16 @@ class Vampire(VtMHuman):
     valeren = models.IntegerField(default=0)
     visceratika = models.IntegerField(default=0)
 
+    # Virtue selection - determines which virtues are active
+    has_conviction = models.BooleanField(
+        default=False,
+        help_text="If True, uses Conviction; if False, uses Conscience"
+    )
+    has_instinct = models.BooleanField(
+        default=False,
+        help_text="If True, uses Instinct; if False, uses Self-Control"
+    )
+
     # Virtues (Camarilla)
     conscience = models.IntegerField(default=1)
     self_control = models.IntegerField(default=1)
@@ -174,8 +184,13 @@ class Vampire(VtMHuman):
             ]
 
     def save(self, *args, **kwargs):
-        """Override save to update generation-dependent values."""
+        """Override save to update generation-dependent values and handle path changes."""
         self.update_generation_values()
+
+        # If a path is set, ensure virtues match the path's requirements
+        if self.path:
+            self.path.update_character_virtues(self)
+
         super().save(*args, **kwargs)
 
     def get_disciplines(self):
@@ -280,3 +295,39 @@ class Vampire(VtMHuman):
         self.path_rating += 1
         self.freebies -= cost
         return "Path Rating", self.path_rating, cost
+
+    @property
+    def active_virtue_1(self):
+        """Return the rating of the first active virtue (Conviction or Conscience)."""
+        return self.conviction if self.has_conviction else self.conscience
+
+    @property
+    def active_virtue_1_name(self):
+        """Return the name of the first active virtue."""
+        return "Conviction" if self.has_conviction else "Conscience"
+
+    @property
+    def active_virtue_2(self):
+        """Return the rating of the second active virtue (Instinct or Self-Control)."""
+        return self.instinct if self.has_instinct else self.self_control
+
+    @property
+    def active_virtue_2_name(self):
+        """Return the name of the second active virtue."""
+        return "Instinct" if self.has_instinct else "Self-Control"
+
+    def get_active_virtues(self):
+        """Return a dict of active virtues with their ratings."""
+        return {
+            self.active_virtue_1_name: self.active_virtue_1,
+            self.active_virtue_2_name: self.active_virtue_2,
+            "Courage": self.courage,
+        }
+
+    def set_virtue_by_name(self, virtue_name, value):
+        """Set a virtue value by name (case-insensitive)."""
+        virtue_name = virtue_name.lower()
+        if virtue_name in ["conscience", "conviction", "self_control", "instinct", "courage"]:
+            setattr(self, virtue_name, value)
+        else:
+            raise ValueError(f"Unknown virtue: {virtue_name}")
