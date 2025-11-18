@@ -1,0 +1,23 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="tg-card" data-gameline="wta">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">Starting Gifts</h5>
+            </div>
+            <div class="tg-card-body">
+                {% if object.gifts.all %}
+                    <div class="list-group">
+                        {% for gift in object.gifts.all %}
+                            <div class="list-group-item">
+                                <strong>{{ gift.name }}</strong> (Rank {{ gift.rank }}): {{ gift.description }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No gifts selected yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

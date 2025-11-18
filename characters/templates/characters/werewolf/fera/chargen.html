@@ -1,0 +1,128 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Fera
+{% endblock creation_title %}
+{% block contents %}
+    {% if is_approved_user %}
+        {% block name %}
+            <div class="row">
+                <div class="col-sm {{ object.get_heading }}">
+                    <h1>{{ object.name }}</h1>
+                </div>
+            </div>
+        {% endblock name %}
+
+        {% block basics %}
+            {% include "characters/werewolf/fera/basics_display_include.html" %}
+        {% endblock basics %}
+
+        {% block breed_faction %}
+            {% if object.creation_status == 1 %}
+                {% include "characters/werewolf/fera/breed_faction_form.html" %}
+            {% elif object.creation_status > 1 %}
+                {% include "characters/werewolf/fera/breed_faction_display.html" %}
+            {% endif %}
+        {% endblock breed_faction %}
+
+        {% block attributes %}
+            {% if object.creation_status == 2 %}
+                {% include "characters/core/attribute_block/form.html" %}
+            {% elif object.creation_status > 2 %}
+                {% include "characters/core/attribute_block/detail.html" %}
+            {% endif %}
+        {% endblock attributes %}
+
+        {% block abilities %}
+            {% if object.creation_status == 3 %}
+                {% include "characters/werewolf/wtahuman/ability_block_form.html" %}
+            {% elif object.creation_status > 3 %}
+                {% include "characters/werewolf/wtahuman/ability_block_display.html" %}
+            {% endif %}
+        {% endblock abilities %}
+
+        {% block backgrounds %}
+            {% if object.creation_status == 4 %}
+                {% include "characters/core/background_block/form.html" %}
+            {% elif object.creation_status > 4 %}
+                {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+            {% endif %}
+        {% endblock backgrounds %}
+
+        {% block gifts %}
+            {% if object.creation_status == 5 %}
+                {% include "characters/werewolf/fera/gifts_form.html" %}
+            {% elif object.creation_status > 5 %}
+                {% include "characters/werewolf/fera/gifts_display.html" %}
+            {% endif %}
+        {% endblock gifts %}
+
+        {% block first_change %}
+            {% if object.creation_status == 6 %}
+                {% include "characters/werewolf/fera/history_form.html" %}
+            {% elif object.creation_status > 6 %}
+                {% include "characters/werewolf/fera/history_display.html" %}
+            {% endif %}
+        {% endblock first_change %}
+
+        {% block extras %}
+            {% if object.creation_status == 7 %}
+                {% include "characters/werewolf/fera/extras_form.html" %}
+            {% elif object.creation_status > 7 %}
+                {% include "characters/werewolf/fera/extras_display.html" %}
+            {% endif %}
+        {% endblock extras %}
+
+        {% block advantages %}
+            {% if object.creation_status > 7 %}
+                {% include "characters/core/human/advantages_display.html" %}
+            {% endif %}
+        {% endblock advantages %}
+
+        {% block mfs %}
+            {% if object.creation_status >= 7 %}
+                {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+            {% endif %}
+        {% endblock mfs %}
+
+        {% block freebies %}
+            {% if object.creation_status == 8 and object.freebies_approved %}
+                {% include "characters/werewolf/fera/freebies_form.html" %}
+            {% elif object.creation_status == 8 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Waiting on ST to Assign Freebie Total</h2>
+                </div>
+            {% endif %}
+        {% endblock freebies %}
+
+        {% block languages %}
+            {% if object.creation_status > 9 %}
+                {% include "characters/core/human/language_display_block.html" %}
+            {% elif object.creation_status == 9 %}
+                {% include "characters/core/human/human_language_block_form.html" %}
+            {% endif %}
+        {% endblock languages %}
+
+        {% block allies %}
+            {% if object.creation_status == 10 %}
+                {% include "characters/core/human/allies_form.html" %}
+            {% elif object.creation_status > 10 %}
+                {% include "characters/core/human/allies_display.html" %}
+            {% endif %}
+        {% endblock allies %}
+
+        {% block specialties_form %}
+            {% if object.creation_status == 11 %}
+                {% include "characters/werewolf/fera/specialties_form.html" %}
+            {% endif %}
+        {% endblock specialties_form %}
+    {% else %}
+        {% include "characters/core/character/not_owner.html" %}
+    {% endif %}
+{% endblock contents %}
+{% block buttons %}
+    {% if object.creation_status == object.freebie_step and not object.freebies_approved %}
+    {% elif not is_approved_user %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock buttons %}

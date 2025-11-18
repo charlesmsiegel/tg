@@ -1,0 +1,48 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="tg-card" data-gameline="wta">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">Basic Information</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Type
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.type|title }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Concept
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.concept|default:"Not set" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if object.chronicle %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                    Chronicle
+                                </div>
+                                <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                    {{ object.chronicle.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

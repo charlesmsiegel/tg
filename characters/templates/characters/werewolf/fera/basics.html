@@ -1,0 +1,116 @@
+{% extends "core/form.html" %}
+
+{% block title %}
+    Create Fera Character
+{% endblock title %}
+
+{% block creation_title %}
+    Create Fera
+{% endblock creation_title %}
+
+{% block content_title %}
+    Create Fera
+{% endblock content_title %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tg-card" data-gameline="wta">
+                    <div class="tg-card-header">
+                        <h2 class="tg-card-title wta_heading">Create New Fera Character</h2>
+                    </div>
+                    <div class="tg-card-body">
+                        <p class="mb-4">
+                            Fera are the Changing Breeds - shapeshifters who serve Gaia alongside (or sometimes against) the Garou.
+                            Each type has its own unique culture, abilities, and role in the world.
+                        </p>
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.fera_type.id_for_label }}" class="form-label">
+                                    {{ form.fera_type.label }}
+                                </label>
+                                {{ form.fera_type }}
+                                {% if form.fera_type.help_text %}
+                                    <div class="form-text">{{ form.fera_type.help_text }}</div>
+                                {% endif %}
+                                {% if form.fera_type.errors %}
+                                    <div class="text-danger">{{ form.fera_type.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    {{ form.name.label }}
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.concept.id_for_label }}" class="form-label">
+                                    {{ form.concept.label }}
+                                </label>
+                                {{ form.concept }}
+                                {% if form.concept.errors %}
+                                    <div class="text-danger">{{ form.concept.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.chronicle.id_for_label }}" class="form-label">
+                                    {{ form.chronicle.label }}
+                                </label>
+                                {{ form.chronicle }}
+                                {% if form.chronicle.errors %}
+                                    <div class="text-danger">{{ form.chronicle.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if storyteller %}
+                                <div class="mb-3">
+                                    <label for="{{ form.npc.id_for_label }}" class="form-label">
+                                        {{ form.npc.label }}
+                                    </label>
+                                    {{ form.npc }}
+                                    {% if form.npc.errors %}
+                                        <div class="text-danger">{{ form.npc.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.image.id_for_label }}" class="form-label">
+                                    {{ form.image.label }}
+                                </label>
+                                {{ form.image }}
+                                {% if form.image.help_text %}
+                                    <div class="form-text">{{ form.image.help_text }}</div>
+                                {% endif %}
+                                {% if form.image.errors %}
+                                    <div class="text-danger">{{ form.image.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Create Character</button>
+                                <a href="{% url 'characters:index' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -18,4 +18,9 @@ urls = [
         views.werewolf.fomor.FomorFreebieFormPopulationView.as_view(),
         name="load_fomor_examples",
     ),
+    path(
+        "load_fera_examples/",
+        views.werewolf.fera.FeraFreebieFormPopulationView.as_view(),
+        name="load_fera_examples",
+    ),
 ]

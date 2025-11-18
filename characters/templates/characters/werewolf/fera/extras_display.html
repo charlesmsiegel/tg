@@ -1,0 +1,80 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="tg-card" data-gameline="wta">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">Character Details</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Age
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.age|default:"Not set" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Apparent Age
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.apparent_age|default:"Not set" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Date of Birth
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.date_of_birth|default:"Not set" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if object.description %}
+                    <div class="mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                                Description
+                            </div>
+                            <div style="color: var(--theme-text-primary); line-height: 1.6;">
+                                {{ object.description|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if object.history %}
+                    <div class="mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                                History
+                            </div>
+                            <div style="color: var(--theme-text-primary); line-height: 1.6;">
+                                {{ object.history|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if object.goals %}
+                    <div class="mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                                Goals
+                            </div>
+                            <div style="color: var(--theme-text-primary); line-height: 1.6;">
+                                {{ object.goals|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="tg-card" data-gameline="wta">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">Breed and Faction</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Breed
+                            </div>
+                            <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                {{ object.breed|title }}
+                            </div>
+                        </div>
+                    </div>
+                    {% if object.faction %}
+                        <div class="col-md-6 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                    Faction
+                                </div>
+                                <div style="font-weight: 600; color: var(--theme-text-primary);">
+                                    {{ object.faction|title }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Gnosis
+                            </div>
+                            <div style="font-weight: 700; font-size: 1.2rem; color: var(--theme-text-primary);">
+                                {{ object.gnosis }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Rage
+                            </div>
+                            <div style="font-weight: 700; font-size: 1.2rem; color: var(--theme-text-primary);">
+                                {{ object.rage }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">
+                                Willpower
+                            </div>
+                            <div style="font-weight: 700; font-size: 1.2rem; color: var(--theme-text-primary);">
+                                {{ object.willpower }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

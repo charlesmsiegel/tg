@@ -1,0 +1,32 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="tg-card" data-gameline="wta">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title wta_heading">First Change</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                            Age of First Change
+                        </div>
+                        <div style="font-weight: 600; color: var(--theme-text-primary); margin-bottom: 16px;">
+                            {{ object.age_of_first_change }}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                            First Change Story
+                        </div>
+                        <div style="color: var(--theme-text-primary); line-height: 1.6;">
+                            {{ object.first_change|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

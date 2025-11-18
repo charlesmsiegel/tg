@@ -11,6 +11,12 @@ from .charm import (
     SpiritCharmListView,
     SpiritCharmUpdateView,
 )
+from .fera import (
+    FeraBasicsView,
+    FeraCharacterCreationView,
+    FeraDetailView,
+    FeraUpdateView,
+)
 from .fomor import (
     FomorAbilityView,
     FomorAttributeView,
