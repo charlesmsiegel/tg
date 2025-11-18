@@ -192,6 +192,43 @@
             </div>
         </div>
     {% endif %}
+    {% if object.rituals.all %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Rituals</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for ritual in object.rituals.all %}
+                            <div class="row mb-3">
+                                <div class="col-sm-12">
+                                    <strong><a href="{{ ritual.get_absolute_url }}">{{ ritual.name }}</a></strong>
+                                    <span class="badge bg-secondary ms-2">{{ ritual.base_cost }} XP</span>
+                                </div>
+                                <div class="col-sm-12 mt-1">
+                                    <div style="font-size: 0.875rem;">
+                                        <strong>Primary:</strong> {{ ritual.get_primary_lore_display }}
+                                        {% if ritual.get_secondary_lore_display %}
+                                            | <strong>Secondary:</strong>
+                                            {% for sec_lore in ritual.get_secondary_lore_display %}
+                                                {{ sec_lore }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if ritual.minimum_casting_time %}
+                                        <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">
+                                            <strong>Casting Time:</strong> {{ ritual.minimum_casting_time }} minutes
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock powers %}
 {% block equipment %}
     {% include "characters/core/human/equipment_block.html" %}
