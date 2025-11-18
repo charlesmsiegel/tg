@@ -1,0 +1,59 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Wraith
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="wraithForm"
+    action=""
+    novalidate
+    enctype="multipart/form-data"
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-sm">Decide identity, motivation, and Guild; choose concept and Archetypes.</div>
+    </div>
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-sm">Character Portrait</div>
+            <div class="col-sm">{{ form.image }}</div>
+            <div class="col-sm"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Name</div>
+            <div class="col-sm-2">{{ form.name }}</div>
+            <div class="col-sm-2">Nature</div>
+            <div class="col-sm-2">{{ form.nature }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Chronicle</div>
+            <div class="col-sm-2">{{ form.chronicle }}</div>
+            <div class="col-sm-2">Demeanor</div>
+            <div class="col-sm-2">{{ form.demeanor }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Concept</div>
+            <div class="col-sm-2">{{ form.concept }}</div>
+            <div class="col-sm-2">Guild</div>
+            <div class="col-sm-2">{{ form.guild }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            {% if storyteller %}
+                <div class="col-sm-2">NPC</div>
+                <div class="col-sm-2">{{ form.npc }}</div>
+            {% else %}
+                <div class="col-sm-2"></div>
+                <div class="col-sm-2"></div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

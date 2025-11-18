@@ -1,0 +1,253 @@
+{% extends "core/form.html" %}
+{% load sanitize_text dots %}
+{% block creation_title %}
+    Create Wraith
+{% endblock creation_title %}
+{% block contents %}
+    {% if is_approved_user %}
+        {% block name %}
+            <div class="row">
+                <div class="col-sm {{ object.get_heading }}">
+                    <h1>{{ object.name }}</h1>
+                </div>
+            </div>
+        {% endblock name %}
+        {% block basics %}
+            <div class="row">
+                <div class="col-sm">
+                    <strong>Guild:</strong> {{ object.guild.name|default:"None" }}
+                </div>
+                <div class="col-sm">
+                    <strong>Nature:</strong> {{ object.nature.name|default:"None" }}
+                </div>
+                <div class="col-sm">
+                    <strong>Demeanor:</strong> {{ object.demeanor.name|default:"None" }}
+                </div>
+            </div>
+        {% endblock basics %}
+        {% block attributes %}
+            {% if object.creation_status == 1 %}
+                {% include "characters/core/attribute_block/form.html" %}
+            {% elif object.creation_status > 1 %}
+                {% include "characters/core/attribute_block/detail.html" %}
+            {% endif %}
+        {% endblock attributes %}
+        {% block abilities %}
+            {% if object.creation_status == 2 %}
+                {% include "characters/wraith/wtohuman/ability_block_form.html" %}
+            {% elif object.creation_status > 2 %}
+                {% include "characters/wraith/wtohuman/ability_block_display.html" %}
+            {% endif %}
+        {% endblock abilities %}
+        {% block backgrounds %}
+            {% if object.creation_status == 3 %}
+                {% include "characters/core/background_block/form.html" %}
+            {% elif object.creation_status > 3 %}
+                {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+            {% endif %}
+        {% endblock backgrounds %}
+        {% block arcanoi %}
+            {% if object.creation_status == 4 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Arcanoi (Select 5 dots)</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+            {% elif object.creation_status > 4 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Arcanoi</h2>
+                </div>
+                <div class="row">
+                    {% for arcanos, rating in object.get_arcanoi.items %}
+                        {% if rating > 0 %}
+                            <div class="col-md-4">
+                                <strong>{{ arcanos|title }}:</strong> {{ rating|dots }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endblock arcanoi %}
+        {% block shadow %}
+            {% if object.creation_status == 5 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Shadow</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Your Shadow is the dark reflection of your Psyche, embodying suppressed emotions and drives. Choose a Shadow Archetype that represents your character's inner darkness.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if shadow_archetypes %}
+                    <div class="row">
+                        <div class="col-sm">
+                            <h3>Available Shadow Archetypes</h3>
+                            {% for archetype in shadow_archetypes %}
+                                <div class="tg-card mb-3">
+                                    <div class="tg-card-body">
+                                        <h5 class="tg-card-title">{{ archetype.name }}</h5>
+                                        <p><strong>Core Function:</strong> {{ archetype.core_function|sanitize_html }}</p>
+                                        <p><strong>Modus Operandi:</strong> {{ archetype.modus_operandi|sanitize_html }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% elif object.creation_status > 5 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Shadow</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <strong>Shadow Archetype:</strong> {{ object.shadow_archetype.name|default:"None" }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock shadow %}
+        {% block passions %}
+            {% if object.creation_status == 6 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Passions ({{ passion_points_spent }}/{{ passion_points_total }})</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Passions are the emotional drives that keep you anchored to the world. You have {{ passion_points_remaining }} points remaining.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if object.passions.all %}
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <h4>Current Passions:</h4>
+                            {% for passion in object.passions.all %}
+                                <div class="mb-2">
+                                    <strong>{{ passion.emotion }}:</strong> {{ passion.description }} ({{ passion.rating|dots }})
+                                    {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% elif object.creation_status > 6 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Passions</h2>
+                </div>
+                <div class="row">
+                    {% for passion in object.passions.all %}
+                        <div class="col-md-6 mb-2">
+                            <strong>{{ passion.emotion }}:</strong> {{ passion.description }} ({{ passion.rating|dots }})
+                            {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endblock passions %}
+        {% block fetters %}
+            {% if object.creation_status == 7 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Fetters ({{ fetter_points_spent }}/{{ fetter_points_total }})</h2>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>Fetters are your anchors to the mortal world - people, places, and things that tie you to existence. You have {{ fetter_points_remaining }} points remaining.</p>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                </div>
+                {% if object.fetters.all %}
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <h4>Current Fetters:</h4>
+                            {% for fetter in object.fetters.all %}
+                                <div class="mb-2">
+                                    <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }} ({{ fetter.rating|dots }})
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% elif object.creation_status > 7 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Fetters</h2>
+                </div>
+                <div class="row">
+                    {% for fetter in object.fetters.all %}
+                        <div class="col-md-6 mb-2">
+                            <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }} ({{ fetter.rating|dots }})
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endblock fetters %}
+        {% block wraith_stats %}
+            {% if object.creation_status > 4 %}
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <strong>Corpus:</strong> {{ object.corpus }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Pathos:</strong> {{ object.pathos }}/{{ object.pathos_permanent }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Angst:</strong> {{ object.angst }}/{{ object.angst_permanent }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock wraith_stats %}
+        {% block appearance %}
+            {% if object.creation_status == 8 %}
+                {% include "characters/wraith/wraith/history_block_form.html" %}
+            {% elif object.creation_status > 8 %}
+                {% include "characters/wraith/wraith/history_block_display.html" %}
+            {% endif %}
+        {% endblock appearance %}
+        {% block mfs %}
+            {% if object.creation_status >= 8 %}
+                {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+            {% endif %}
+        {% endblock mfs %}
+        {% block languages %}
+            {% if object.creation_status > 10 %}
+                {% include "characters/core/human/language_display_block.html" %}
+            {% elif object.creation_status == 10 %}
+                {% include "characters/core/human/human_language_block_form.html" %}
+            {% endif %}
+        {% endblock languages %}
+        {% block freebies %}
+            {% if object.creation_status == 9 and object.freebies_approved %}
+                {% include "characters/wraith/wraith/freebies_form.html" %}
+            {% elif object.creation_status == 9 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Waiting on ST to Assign Freebie Total</h2>
+                </div>
+            {% endif %}
+        {% endblock freebies %}
+        {% block ally %}
+            {% if object.creation_status == 11 %}
+                {% include "characters/core/ally/form_include.html" %}
+            {% endif %}
+        {% endblock ally %}
+        {% block specialties_form %}
+            {% if object.creation_status == 12 %}
+                {% include "characters/wraith/wraith/specialties_block_form.html" %}
+            {% endif %}
+        {% endblock specialties_form %}
+    {% else %}
+        {% include "characters/core/character/not_owner.html" %}
+    {% endif %}
+{% endblock contents %}
+{% block buttons %}
+    {% if object.creation_status == object.freebie_step and not object.freebies_approved %}
+    {% elif not is_approved_user %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock buttons %}

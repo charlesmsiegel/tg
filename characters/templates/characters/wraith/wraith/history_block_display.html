@@ -1,0 +1,52 @@
+{% load sanitize_text %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">History and Death</h2>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <strong>Date of Birth:</strong> {{ object.date_of_birth|default:"Not specified" }}
+    </div>
+    <div class="col-sm-6">
+        <strong>Age at Death:</strong> {{ object.age_at_death }}
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm">
+        <h4>Death Description</h4>
+        <p>{{ object.death_description|sanitize_html }}</p>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm">
+        <h4>Description</h4>
+        <p>{{ object.description|sanitize_html }}</p>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm">
+        <h4>History</h4>
+        <p>{{ object.history|sanitize_html }}</p>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm">
+        <h4>Goals</h4>
+        <p>{{ object.goals|sanitize_html }}</p>
+    </div>
+</div>
+{% if object.public_info %}
+    <div class="row mt-3">
+        <div class="col-sm">
+            <h4>Public Information</h4>
+            <p>{{ object.public_info|sanitize_html }}</p>
+        </div>
+    </div>
+{% endif %}
+{% if object.notes %}
+    <div class="row mt-3">
+        <div class="col-sm">
+            <h4>Notes</h4>
+            <p>{{ object.notes|sanitize_html }}</p>
+        </div>
+    </div>
+{% endif %}

@@ -573,6 +573,91 @@ class Wraith(WtOHuman):
             "willpower": self.willpower,
         }
 
+    # Freebie spending methods
+
+    def arcanos_freebies(self, form):
+        """Spend freebies to increase an arcanos."""
+        arcanos_name = form.cleaned_data["example"]
+        cost = 7
+        value = getattr(self, arcanos_name, 0) + 1
+
+        # Add the arcanos
+        self.add_arcanos(arcanos_name)
+        self.freebies -= cost
+
+        # Record the spend
+        self.spent_freebies.append(
+            self.freebie_spend_record(
+                arcanos_name.replace("_", " ").title(), arcanos_name, value, cost
+            )
+        )
+        return True
+
+    def pathos_freebies(self, form):
+        """Spend freebies to increase permanent pathos."""
+        trait = "Pathos"
+        cost = 1
+        value = self.pathos_permanent + 1
+
+        # Add pathos
+        self.add_pathos()
+        self.freebies -= cost
+
+        # Update current pathos to match permanent
+        self.pathos = self.pathos_permanent
+
+        # Record the spend
+        self.spent_freebies.append(
+            self.freebie_spend_record(trait, "pathos", value, cost)
+        )
+        return True
+
+    def passion_freebies(self, form):
+        """Spend freebies to add a new passion."""
+        # Passions cost 2 freebies per dot
+        cost = 2
+        rating = 1  # New passions start at rating 1
+
+        # This is handled via the passion form, so we just decrement freebies
+        self.freebies -= cost
+
+        # Record the spend
+        self.spent_freebies.append(
+            self.freebie_spend_record("New Passion", "passion", rating, cost)
+        )
+        return True
+
+    def fetter_freebies(self, form):
+        """Spend freebies to add a new fetter."""
+        # Fetters cost 1 freebie per dot
+        cost = 1
+        rating = 1  # New fetters start at rating 1
+
+        # This is handled via the fetter form, so we just decrement freebies
+        self.freebies -= cost
+
+        # Record the spend
+        self.spent_freebies.append(
+            self.freebie_spend_record("New Fetter", "fetter", rating, cost)
+        )
+        return True
+
+    def corpus_freebies(self, form):
+        """Spend freebies to increase corpus."""
+        trait = "Corpus"
+        cost = 1
+        value = self.corpus + 1
+
+        # Add corpus
+        self.add_corpus()
+        self.freebies -= cost
+
+        # Record the spend
+        self.spent_freebies.append(
+            self.freebie_spend_record(trait, "corpus", value, cost)
+        )
+        return True
+
 
 class ThornRating(models.Model):
     wraith = models.ForeignKey(Wraith, on_delete=models.CASCADE)

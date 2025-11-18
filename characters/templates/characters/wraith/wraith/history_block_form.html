@@ -1,0 +1,55 @@
+{% csrf_token %}
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">History and Death</h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        <p>Describe your wraith's mortal life and the circumstances of their death.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        {{ form.date_of_birth.label_tag }}
+        {{ form.date_of_birth }}
+    </div>
+    <div class="col-sm-6">
+        {{ form.age_at_death.label_tag }}
+        {{ form.age_at_death }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.death_description.label_tag }}
+        {{ form.death_description }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.history.label_tag }}
+        {{ form.history }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.goals.label_tag }}
+        {{ form.goals }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.public_info.label_tag }}
+        {{ form.public_info }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        {{ form.notes.label_tag }}
+        {{ form.notes }}
+    </div>
+</div>
