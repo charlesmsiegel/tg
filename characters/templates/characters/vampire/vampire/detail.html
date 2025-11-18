@@ -1,0 +1,60 @@
+{% extends "characters/vampire/vtmhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block creation_title %}
+    Vampire Character Sheet
+{% endblock creation_title %}
+{% block basics %}
+    {% include "characters/vampire/vampire/basics_display_include.html" %}
+{% endblock basics %}
+{% block advantages %}
+    {% include "characters/vampire/vampire/vampire_advantage_display.html" %}
+{% endblock advantages %}
+{% block backgrounds %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+{% endblock backgrounds %}
+{% block powers %}
+    {% include "characters/vampire/vampire/vampire_powers_block_display.html" %}
+{% endblock powers %}
+{% block equipment %}
+    {% include "characters/core/human/equipment_block.html" %}
+{% endblock equipment %}
+{% block appearance %}
+    {% include "characters/vampire/vtmhuman/appearance_block_display.html" %}
+{% endblock appearance %}
+{% block history %}
+    {% include "characters/vampire/vtmhuman/history_block_display.html" %}
+{% endblock history %}
+{% block freebies %}
+    {% if object.status == "Sub" %}
+        {% include "characters/vampire/vampire/freebies_form.html" %}
+    {% endif %}
+{% endblock freebies %}
+{% block xp %}
+    {% if object.needs_specialties %}
+        <div class="row">
+            <h2 class="col-sm {{ object.get_heading }}">Choose Specialties</h2>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                Choose specialties. Recall that we use the Well-Skilled Craftsman rules so some Abilities require specialties before the 4th dot.
+            </div>
+        </div>
+        <form action="" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            {% for field in spec_form %}
+                <div class="row">
+                    <div class="col-sm">{{ field.label }}</div>
+                    <div class="col-sm">{{ field }}</div>
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-sm">
+                    <input type="submit" name="specialties" value="Add Specialties" />
+                </div>
+            </div>
+        </form>
+    {% endif %}
+{% endblock xp %}
+{% block description %}
+{% endblock description %}

@@ -1,0 +1,163 @@
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Freebie Spend</h2>
+</div>
+{% if object.freebies > 0 %}
+    <div class="row">
+        <div class="col-sm">Spend Freebie points. The costs are as follows:</div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">
+            <b>Trait</b>
+        </div>
+        <div class="col-sm-3 border">
+            <b>Cost</b>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Attribute</div>
+        <div class="col-sm-3 border">5</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Ability</div>
+        <div class="col-sm-3 border">2</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Background</div>
+        <div class="col-sm-3 border">1</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Willpower</div>
+        <div class="col-sm-3 border">1</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Merits/Flaws</div>
+        <div class="col-sm-3 border">Rating</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Discipline (In-Clan)</div>
+        <div class="col-sm-3 border">7</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Discipline (Out of Clan)</div>
+        <div class="col-sm-3 border">10</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Virtue</div>
+        <div class="col-sm-3 border">2</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Humanity/Path</div>
+        <div class="col-sm-3 border">1</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm {{ object.get_heading }}">Freebies Remaining</h3>
+        <h3 class="col-sm {{ object.get_heading }}">{{ object.freebies }}</h3>
+    </div>
+{% endif %}
+<div class="row">
+    <div class="col-sm">{{ form.category }}</div>
+    <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
+    <div class="col-sm d-none" id="value_wrap">{{ form.value }}</div>
+    <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
+    <div class="col-sm d-none" id="pooled_wrap">Pooled? {{ form.pooled }}</div>
+</div>
+{% for item in object.spent_freebies %}
+    <div class="row">
+        <div class="col-sm">{{ item.trait }} {{ item.value }}</div>
+        <div class="col-sm">{{ item.cost }} freebies</div>
+    </div>
+{% endfor %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const categorySelectMenu = document.getElementById("id_category");
+        const exampleSelectMenu = document.getElementById("id_example")
+        const exampleElement = document.getElementById("example_wrap");
+        const valueElement = document.getElementById("value_wrap");
+        const noteElement = document.getElementById("note_wrap");
+        const pooled_wrap = document.getElementById("pooled_wrap");
+
+        var isGroupMember = {{ object.is_group_member|lower }};
+
+        categorySelectMenu.addEventListener("change", function() {
+            const selectedValue = this.value;
+
+            // Update the class of the element
+            if(["Willpower", "-----", "Humanity", "Path Rating"].includes(this.value)){
+                exampleElement.classList.add("d-none");
+                valueElement.classList.add("d-none");
+                noteElement.classList.add("d-none");
+                pooled_wrap.classList.add("d-none");
+            } else {
+                exampleElement.classList.remove("d-none");
+                valueElement.classList.add("d-none");
+                noteElement.classList.add("d-none");
+                pooled_wrap.classList.add("d-none");
+            }
+            if(this.value == "MeritFlaw"){
+                valueElement.classList.remove("d-none");
+                noteElement.classList.add("d-none");
+                pooled_wrap.classList.add("d-none");
+            }
+            if(this.value == "New Background"){
+                exampleElement.classList.remove("d-none");
+                noteElement.classList.remove("d-none");
+                valueElement.classList.add("d-none");
+                if (isGroupMember) {
+                    pooled_wrap.classList.remove("d-none");
+                } else {
+                    pooled_wrap.classList.add("d-none");
+                }
+            }
+
+            // Make the AJAX call
+            $.ajax({                       // initialize an AJAX request
+                url: '{% url 'characters:vampire:ajax:load_vampire_examples' %}',
+                data: {
+                'category': this.value,
+                'object': {{object.id}}
+                },
+                success: function (data) {
+                $("#id_example").html(data);
+                $("#id_value").html('<option value="">---</option>');
+                }
+            });
+        });
+
+        exampleSelectMenu.addEventListener("change", function() {
+            const selectedValue = this.value;
+            if(categorySelectMenu.value == "MeritFlaw"){
+                $.ajax({
+                    url: '{% url 'characters:ajax:load_values' %}',
+                    data: {
+                        'example': this.value,
+                        'object': {{object.id}}
+                    },
+                    success: function (data) {
+                        $("#id_value").html(data);
+                    }
+                });
+            }
+        });
+    });
+
+</script>

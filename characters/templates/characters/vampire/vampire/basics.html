@@ -1,0 +1,65 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Vampire
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="vampireForm"
+    action=""
+    novalidate
+    enctype="multipart/form-data"
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-sm">Decide identity and motivation; choose concept, Clan, Sect, and Archetypes.</div>
+    </div>
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm"></div>
+            <div class="col-sm">Character Portrait</div>
+            <div class="col-sm">{{ form.image }}</div>
+            <div class="col-sm"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Name</div>
+            <div class="col-sm-2">{{ form.name }}</div>
+            <div class="col-sm-2">Nature</div>
+            <div class="col-sm-2">{{ form.nature }}</div>
+            <div class="col-sm-2">Clan</div>
+            <div class="col-sm-2">{{ form.clan }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Chronicle</div>
+            <div class="col-sm-2">{{ form.chronicle }}</div>
+            <div class="col-sm-2">Demeanor</div>
+            <div class="col-sm-2">{{ form.demeanor }}</div>
+            <div class="col-sm-2">Sect</div>
+            <div class="col-sm-2">{{ form.sect }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">Sire</div>
+            <div class="col-sm-2">{{ form.sire }}</div>
+            <div class="col-sm-2">Concept</div>
+            <div class="col-sm-2">{{ form.concept }}</div>
+            <div class="col-sm-2">Path</div>
+            <div class="col-sm-2">{{ form.path }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-2"></div>
+            {% if storyteller %}
+                <div class="col-sm-2">NPC</div>
+                <div class="col-sm-2">{{ form.npc }}</div>
+            {% else %}
+                <div class="col-sm-2"></div>
+                <div class="col-sm-2"></div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}
