@@ -13,6 +13,7 @@ from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 from items.models.mage.talisman import Talisman
+from items.models.vampire import Bloodstone, VampireArtifact
 from items.models.werewolf.fetish import Fetish
 
 
@@ -63,3 +64,14 @@ class FetishAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SorcererArtifact)
+
+
+# Vampire items
+@admin.register(VampireArtifact)
+class VampireArtifactAdmin(admin.ModelAdmin):
+    list_display = ("name", "power_level", "background_cost", "is_cursed", "is_unique")
+
+
+@admin.register(Bloodstone)
+class BloodstoneAdmin(admin.ModelAdmin):
+    list_display = ("name", "blood_stored", "max_blood", "is_active")

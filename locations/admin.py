@@ -7,6 +7,7 @@ from locations.models.mage.reality_zone import RealityZone, ZoneRating
 from locations.models.mage.realm import HorizonRealm
 from locations.models.mage.sanctum import Sanctum
 from locations.models.mage.sector import Sector
+from locations.models.vampire import Domain, Elysium, Haven, HavenMeritFlawRating, Rack
 from locations.models.werewolf.caern import Caern
 from locations.models.wraith.haunt import Haunt
 from locations.models.wraith.necropolis import Necropolis
@@ -69,3 +70,27 @@ class HauntAdmin(admin.ModelAdmin):
 class NecropolisAdmin(admin.ModelAdmin):
     list_display = ("name", "region", "population", "deathlord")
     list_filter = ("region",)
+
+
+# Vampire locations
+@admin.register(Haven)
+class HavenAdmin(admin.ModelAdmin):
+    list_display = ("name", "size", "security", "location", "total_rating")
+
+
+@admin.register(Domain)
+class DomainAdmin(admin.ModelAdmin):
+    list_display = ("name", "size", "population", "control", "total_rating")
+
+
+@admin.register(Elysium)
+class ElysiumAdmin(admin.ModelAdmin):
+    list_display = ("name", "prestige", "elysium_type", "keeper_name")
+
+
+@admin.register(Rack)
+class RackAdmin(admin.ModelAdmin):
+    list_display = ("name", "quality", "population_density", "risk_level")
+
+
+admin.site.register(HavenMeritFlawRating)
