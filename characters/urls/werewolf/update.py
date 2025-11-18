@@ -63,14 +63,14 @@ urls = [
         name="fomor_full",
     ),
     path(
-        "werewolf/<pk>/",
-        views.werewolf.WerewolfUpdateView.as_view(),
-        name="werewolf",
-    ),
-    path(
         "werewolf/full/<pk>/",
         views.werewolf.WerewolfUpdateView.as_view(),
         name="werewolf_full",
+    ),
+    path(
+        "werewolf/<pk>/",
+        views.werewolf.WerewolfCharacterCreationView.as_view(),
+        name="werewolf",
     ),
     path(
         "kinfolk/<pk>/",
