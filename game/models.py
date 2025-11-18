@@ -520,6 +520,64 @@ def message_processing(character, message):
             message = m
         else:
             raise ValueError("Command does not match the expected format.")
+    elif "/stat" in message:
+        text, roll = message.split("/stat")
+        text = text.strip()
+        roll = roll.strip()
+        # Pattern for stat-based roll: "Dexterity + Firearms" or "Strength + Brawl + 2" difficulty 6
+        if match := re.match(
+            r"^(?P<stats>[a-zA-Z0-9\s+]+?)(?:\s+difficulty\s+(?P<difficulty>\d+))?(?:\s+(?P<specialty>\S+))?$",
+            roll,
+            re.IGNORECASE,
+        ):
+            stats_string = match.group("stats").strip()
+            difficulty = (
+                int(match.group("difficulty")) if match.group("difficulty") else 6
+            )
+            specialty_str = match.group("specialty")
+            specialty = specialty_str.lower() == "true" if specialty_str else False
+
+            # Parse the stats (e.g., "Dexterity + Firearms" or "Strength + Brawl + 2")
+            stat_parts = [s.strip() for s in stats_string.split("+")]
+            num_dice = 0
+            stat_display_parts = []
+
+            for stat in stat_parts:
+                # Check if it's a number (flat modifier)
+                if stat.isdigit():
+                    num_dice += int(stat)
+                    stat_display_parts.append(stat)
+                else:
+                    # Convert to lowercase for attribute lookup
+                    stat_lower = stat.lower().replace(" ", "_")
+                    stat_value = getattr(character, stat_lower, None)
+                    if stat_value is None:
+                        raise ValueError(f"Stat '{stat}' not found on character")
+                    num_dice += stat_value
+                    stat_display_parts.append(f"{stat.title()} ({stat_value})")
+
+            if num_dice <= 0:
+                raise ValueError("Dice pool must be at least 1")
+
+            r = roll_once(
+                num_dice,
+                difficulty=difficulty,
+                specialty=specialty,
+                willpower=wp_spend,
+            )
+            pool_description = " + ".join(stat_display_parts)
+            roll_description = f"roll of {pool_description} = {num_dice} dice at difficulty {difficulty}"
+            if specialty:
+                roll_description += " with relevant specialty"
+            m = ""
+            if text:
+                m += text + ": "
+            if expenditures:
+                m += expenditures + ": "
+            m += roll_description + ": " + r
+            message = m
+        else:
+            raise ValueError("Command does not match the expected format.")
     elif "/roll" in message:
         text, roll = message.split("/roll")
         text = text.strip()
