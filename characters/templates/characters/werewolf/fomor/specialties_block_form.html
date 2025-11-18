@@ -1,0 +1,14 @@
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Choose Specialties</h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        Choose specialties. Recall that we use the Well-Skilled Craftsman rules so some Abilities require specialties before the 4th dot.
+    </div>
+</div>
+{% for field in form %}
+    <div class="row">
+        <div class="col-sm">{{ field.label }}</div>
+        <div class="col-sm">{{ field }}</div>
+    </div>
+{% endfor %}

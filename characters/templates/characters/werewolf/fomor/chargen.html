@@ -1,4 +1,5 @@
 {% extends "core/form.html" %}
+{% load dots %}
 {% block creation_title %}
     Fomor
 {% endblock creation_title %}
@@ -35,6 +36,114 @@
                 {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
             {% endif %}
         {% endblock backgrounds %}
+        {% block powers %}
+            {% if object.creation_status == 4 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h3 class="tg-card-title {{ object.get_heading }}">Fomori Powers</h3>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="form-group">
+                                    {{ form.rage.label_tag }}
+                                    {{ form.rage }}
+                                    {% if form.rage.help_text %}
+                                        <small class="form-text text-muted">{{ form.rage.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.gnosis.label_tag }}
+                                    {{ form.gnosis }}
+                                    {% if form.gnosis.help_text %}
+                                        <small class="form-text text-muted">{{ form.gnosis.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.powers.label_tag }}
+                                    {{ form.powers }}
+                                    {% if form.powers.help_text %}
+                                        <small class="form-text text-muted">{{ form.powers.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif object.creation_status > 4 %}
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h3 class="tg-card-title {{ object.get_heading }}">Fomori Powers</h3>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <strong>Rage:</strong> {{ object.rage|dots }}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <strong>Gnosis:</strong> {{ object.gnosis|dots }}
+                                    </div>
+                                </div>
+                                {% if object.powers.all %}
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <strong>Powers:</strong>
+                                            <ul>
+                                                {% for power in object.powers.all %}
+                                                    <li><a href="{{ power.get_absolute_url }}">{{ power.name }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock powers %}
+        {% block mfs %}
+            {% if object.creation_status >= 5 %}
+                {% include "characters/core/meritflaw/display_includes/meritflaw_block.html" %}
+            {% endif %}
+        {% endblock mfs %}
+        {% block appearance %}
+            {% if object.creation_status == 5 %}
+                {% include "characters/werewolf/fomor/appearance_block_form.html" %}
+            {% elif object.creation_status > 5 %}
+                {% include "characters/werewolf/fomor/appearance_block_display.html" %}
+            {% endif %}
+        {% endblock appearance %}
+        {% block history %}
+            {% if object.creation_status == 5 %}
+                {% include "characters/werewolf/fomor/history_block_form.html" %}
+            {% elif object.creation_status > 5 %}
+                {% include "characters/werewolf/fomor/history_block_display.html" %}
+            {% endif %}
+        {% endblock history %}
+        {% block freebies %}
+            {% if object.creation_status == 6 and object.freebies_approved %}
+                {% include "characters/werewolf/fomor/freebies_form.html" %}
+            {% elif object.creation_status == 6 %}
+                <div class="row">
+                    <h2 class="col-sm {{ object.get_heading }}">Waiting on ST to Assign Freebie Total</h2>
+                </div>
+            {% endif %}
+        {% endblock freebies %}
+        {% block languages %}
+            {% if object.creation_status > 7 %}
+                {% include "characters/core/human/language_display_block.html" %}
+            {% elif object.creation_status == 7 %}
+                {% include "characters/core/human/human_language_block_form.html" %}
+            {% endif %}
+        {% endblock languages %}
+        {% block specialties_form %}
+            {% if object.creation_status == 8 %}
+                {% include "characters/werewolf/fomor/specialties_block_form.html" %}
+            {% endif %}
+        {% endblock specialties_form %}
     {% else %}
         {% include "characters/core/character/not_owner.html" %}
     {% endif %}

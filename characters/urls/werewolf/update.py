@@ -54,7 +54,7 @@ urls = [
     ),
     path(
         "fomor/<pk>/",
-        views.werewolf.FomorUpdateView.as_view(),
+        views.werewolf.FomorCharacterCreationView.as_view(),
         name="fomor",
     ),
     path(

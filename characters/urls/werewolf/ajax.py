@@ -13,4 +13,9 @@ urls = [
         views.werewolf.kinfolk.KinfolkFreebieFormPopulationView.as_view(),
         name="load_kinfolk_examples",
     ),
+    path(
+        "load_fomor_examples/",
+        views.werewolf.fomor.FomorFreebieFormPopulationView.as_view(),
+        name="load_fomor_examples",
+    ),
 ]
