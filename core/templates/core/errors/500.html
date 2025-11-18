@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Server Error - 500
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title">
+                            <i class="fas fa-exclamation-circle"></i> Server Error
+                        </h1>
+                        <p class="tg-card-subtitle">Error 500 - Internal Server Error</p>
+                    </div>
+                    <div class="tg-card-body" style="padding: 32px;">
+                        <div class="text-center mb-4">
+                            <p style="font-size: 1.1rem; line-height: 1.6;">
+                                Something went wrong on our end. We're sorry for the inconvenience.
+                            </p>
+                        </div>
+                        <div class="alert alert-danger" role="alert">
+                            <strong>What does this mean?</strong>
+                            <p class="mb-0">
+                                An unexpected error occurred while processing your request. This has been logged
+                                and our team will look into it. Please try again later, or contact support if the
+                                problem persists.
+                            </p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="javascript:history.back()" class="btn btn-secondary btn-lg mr-3">
+                                <i class="fas fa-arrow-left"></i> Go Back
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home"></i> Go to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Authentication Required - 401
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title">
+                            <i class="fas fa-lock"></i> Authentication Required
+                        </h1>
+                        <p class="tg-card-subtitle">Error 401 - Unauthorized</p>
+                    </div>
+                    <div class="tg-card-body" style="padding: 32px;">
+                        <div class="text-center mb-4">
+                            <p style="font-size: 1.1rem; line-height: 1.6;">You need to be logged in to access this page.</p>
+                        </div>
+                        <div class="alert alert-info" role="alert">
+                            <strong>What does this mean?</strong>
+                            <p class="mb-0">
+                                This page requires you to be logged in to your account. Please log in to continue, or create a new account if you don't have one yet.
+                            </p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-lg mr-3">
+                                <i class="fas fa-sign-in-alt"></i> Log In
+                            </a>
+                            <a href="{% url 'signup' %}" class="btn btn-secondary btn-lg mr-3">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home"></i> Go to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
