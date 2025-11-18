@@ -7,6 +7,8 @@ from characters.models.mage.focus import (
     SpecializedPractice,
     Tenet,
 )
+from characters.models.mage.mage import Mage, PracticeRating
+from django.contrib.auth.models import User
 from django.test import TestCase
 
 
@@ -564,3 +566,87 @@ class TestGenericCharacterDetailViews(TestCase):
         self.assertTemplateUsed(
             response, "characters/mage/specialized_practice/detail.html"
         )
+
+
+class TestPracticeRatingTenetBonus(TestCase):
+    def setUp(self):
+        # Create a user and mage
+        self.user = User.objects.create_user(username="testuser")
+        self.mage = Mage.objects.create(name="Test Mage", owner=self.user)
+
+        # Create tenets
+        self.metaphysical_tenet = Tenet.objects.create(
+            name="Metaphysical Tenet", tenet_type="met"
+        )
+        self.personal_tenet = Tenet.objects.create(
+            name="Personal Tenet", tenet_type="per"
+        )
+        self.ascension_tenet = Tenet.objects.create(
+            name="Ascension Tenet", tenet_type="asc"
+        )
+        self.other_tenet = Tenet.objects.create(name="Other Tenet", tenet_type="oth")
+
+        # Create practices
+        self.practice_only_associated = Practice.objects.create(
+            name="Practice Only Associated"
+        )
+        self.practice_only_limited = Practice.objects.create(name="Practice Only Limited")
+        self.practice_both = Practice.objects.create(name="Practice Both")
+        self.practice_neither = Practice.objects.create(name="Practice Neither")
+
+        # Set up tenet relationships
+        self.metaphysical_tenet.associated_practices.add(self.practice_only_associated)
+        self.personal_tenet.limited_practices.add(self.practice_only_limited)
+        self.ascension_tenet.associated_practices.add(self.practice_both)
+        self.ascension_tenet.limited_practices.add(self.practice_both)
+
+        # Assign tenets to mage
+        self.mage.metaphysical_tenet = self.metaphysical_tenet
+        self.mage.personal_tenet = self.personal_tenet
+        self.mage.ascension_tenet = self.ascension_tenet
+        self.mage.save()
+
+    def test_only_associated_practice_bonus(self):
+        pr = PracticeRating.objects.create(
+            mage=self.mage, practice=self.practice_only_associated, rating=1
+        )
+        self.assertEqual(pr.get_tenet_bonus(), 1)
+
+    def test_only_limited_practice_penalty(self):
+        pr = PracticeRating.objects.create(
+            mage=self.mage, practice=self.practice_only_limited, rating=1
+        )
+        self.assertEqual(pr.get_tenet_bonus(), -1)
+
+    def test_both_associated_and_limited_practice(self):
+        pr = PracticeRating.objects.create(
+            mage=self.mage, practice=self.practice_both, rating=1
+        )
+        self.assertEqual(pr.get_tenet_bonus(), 0)
+
+    def test_neither_associated_nor_limited_practice(self):
+        pr = PracticeRating.objects.create(
+            mage=self.mage, practice=self.practice_neither, rating=1
+        )
+        self.assertEqual(pr.get_tenet_bonus(), 0)
+
+    def test_multiple_tenets_same_practice_associated(self):
+        # Add the practice to another tenet's associated practices
+        self.other_tenet.associated_practices.add(self.practice_only_associated)
+        self.mage.other_tenets.add(self.other_tenet)
+
+        pr = PracticeRating.objects.create(
+            mage=self.mage, practice=self.practice_only_associated, rating=1
+        )
+        # Should still be +1 (only associated)
+        self.assertEqual(pr.get_tenet_bonus(), 1)
+
+    def test_no_mage_returns_zero(self):
+        pr = PracticeRating.objects.create(
+            mage=None, practice=self.practice_only_associated, rating=1
+        )
+        self.assertEqual(pr.get_tenet_bonus(), 0)
+
+    def test_no_practice_returns_zero(self):
+        pr = PracticeRating.objects.create(mage=self.mage, practice=None, rating=1)
+        self.assertEqual(pr.get_tenet_bonus(), 0)

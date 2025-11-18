@@ -43,6 +43,11 @@
                                 <div class="px-3 py-2">
                                     <a href="{{ pr.practice.get_absolute_url }}" style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">{{ pr.practice }}:</a>
                                     <span class="dots" style="font-weight: 700; color: var(--theme-text-primary);">{{ pr.rating|dots }}</span>
+                                    {% if pr.get_tenet_bonus != 0 %}
+                                        <span style="font-weight: 600; font-size: 0.75rem; margin-left: 8px; {% if pr.get_tenet_bonus > 0 %}color: #28a745;{% else %}color: #dc3545;{% endif %}">
+                                            ({% if pr.get_tenet_bonus > 0 %}+{% endif %}{{ pr.get_tenet_bonus }})
+                                        </span>
+                                    {% endif %}
                                 </div>
                             {% endfor %}
                         </div>
