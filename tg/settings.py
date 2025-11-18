@@ -62,6 +62,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "core.middleware.UserListMiddleware",
+    "core.middleware.auth_error_handler.AuthErrorHandlerMiddleware",
 ]
 
 ROOT_URLCONF = "tg.urls"
@@ -139,6 +140,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static/"
 STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
 
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "user"
 LOGOUT_REDIRECT_URL = "home"
 

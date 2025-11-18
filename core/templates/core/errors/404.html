@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Page Not Found - 404
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title">
+                            <i class="fas fa-exclamation-triangle"></i> Page Not Found
+                        </h1>
+                        <p class="tg-card-subtitle">Error 404 - Not Found</p>
+                    </div>
+                    <div class="tg-card-body" style="padding: 32px;">
+                        <div class="text-center mb-4">
+                            <p style="font-size: 1.1rem; line-height: 1.6;">
+                                The page you're looking for doesn't exist.
+                            </p>
+                        </div>
+                        <div class="alert alert-info" role="alert">
+                            <strong>What does this mean?</strong>
+                            <p class="mb-0">
+                                The URL you entered might be incorrect, or the page may have been moved or deleted.
+                                Please check the address and try again.
+                            </p>
+                        </div>
+                        <div class="text-center mt-4">
+                            {% if user.is_authenticated %}
+                                <a href="{{ user.profile.get_absolute_url }}" class="btn btn-primary btn-lg mr-3">
+                                    <i class="fas fa-user"></i> Go to My Profile
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home"></i> Go to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

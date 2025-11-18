@@ -1,0 +1,49 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Access Forbidden - 403
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title">
+                            <i class="fas fa-ban"></i> Access Forbidden
+                        </h1>
+                        <p class="tg-card-subtitle">Error 403 - Forbidden</p>
+                    </div>
+                    <div class="tg-card-body" style="padding: 32px;">
+                        <div class="text-center mb-4">
+                            <p style="font-size: 1.1rem; line-height: 1.6;">
+                                You don't have permission to access this page.
+                            </p>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            <strong>What does this mean?</strong>
+                            <p class="mb-0">
+                                While you're logged in, you don't have the necessary permissions to view or modify this content.
+                                This could be because:
+                            </p>
+                            <ul class="mt-2 mb-0">
+                                <li>You're trying to access content that belongs to another user</li>
+                                <li>This action requires Storyteller privileges</li>
+                                <li>The content has restricted access</li>
+                            </ul>
+                        </div>
+                        <div class="text-center mt-4">
+                            {% if user.is_authenticated %}
+                                <a href="{{ user.profile.get_absolute_url }}" class="btn btn-primary btn-lg mr-3">
+                                    <i class="fas fa-user"></i> Go to My Profile
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home"></i> Go to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

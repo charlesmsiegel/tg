@@ -32,3 +32,8 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Custom error handlers
+handler403 = "core.views.errors.error_403"
+handler404 = "core.views.errors.error_404"
+handler500 = "core.views.errors.error_500"
