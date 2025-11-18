@@ -33,6 +33,7 @@ class Demon(LoreBlock, DtFHuman):
         "paragon",
         "resources",
         "retainers",
+        "ritual_knowledge",
         "status_background",
     ]
 
@@ -78,6 +79,11 @@ class Demon(LoreBlock, DtFHuman):
     )
 
     # Lores inherited from LoreBlock
+
+    # Learned rituals
+    rituals = models.ManyToManyField(
+        "Ritual", blank=True, related_name="demons_who_know"
+    )
 
     # Apocalyptic form (select 8 traits)
     apocalyptic_form = models.ManyToManyField(
@@ -242,6 +248,71 @@ class Demon(LoreBlock, DtFHuman):
             remaining_points = self.apocalyptic_form_points_remaining()
             return available.filter(cost__lte=remaining_points)
         return None
+
+    # Ritual methods
+    def get_rituals(self):
+        """Get all rituals this demon knows."""
+        return self.rituals.all().order_by("house__name", "name")
+
+    def knows_ritual(self, ritual):
+        """Check if demon knows a specific ritual."""
+        return ritual in self.rituals.all()
+
+    def add_ritual(self, ritual):
+        """Learn a new ritual."""
+        if ritual in self.rituals.all():
+            return False
+        self.rituals.add(ritual)
+        return True
+
+    def remove_ritual(self, ritual):
+        """Forget a ritual."""
+        if ritual in self.rituals.all():
+            self.rituals.remove(ritual)
+            return True
+        return False
+
+    def get_available_rituals(self):
+        """
+        Get rituals available to learn based on house and lore knowledge.
+        Returns rituals not yet learned that the demon has the primary lore for.
+        """
+        from characters.models.demon.ritual import Ritual
+
+        if not self.house:
+            return Ritual.objects.none()
+
+        # Get rituals demon doesn't know yet
+        unknown_rituals = Ritual.objects.exclude(
+            id__in=self.rituals.values_list("id", flat=True)
+        )
+
+        # Filter to house rituals
+        house_rituals = unknown_rituals.filter(house=self.house)
+
+        # Filter to rituals where demon has sufficient primary lore
+        available = []
+        for ritual in house_rituals:
+            if ritual.primary_lore:
+                lore_attr = f"lore_of_{ritual.primary_lore.property_name}"
+                if (
+                    hasattr(self, lore_attr)
+                    and getattr(self, lore_attr) >= ritual.primary_lore_rating
+                ):
+                    available.append(ritual.id)
+
+        return house_rituals.filter(id__in=available)
+
+    def ritual_knowledge_xp_cost(self):
+        """Get starting rituals based on Ritual Knowledge background."""
+        from characters.models.core.background_block import BackgroundRating
+
+        ritual_knowledge_ratings = BackgroundRating.objects.filter(
+            char=self, bg__property_name="ritual_knowledge"
+        )
+        total = sum(r.rating for r in ritual_knowledge_ratings)
+        # Each dot provides 6 XP worth of rituals
+        return total * 6
 
     def has_demon_history(self):
         """Check if demon has celestial name and history."""

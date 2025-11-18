@@ -108,3 +108,6 @@ Background.objects.get_or_create(name="Pacts", property_name="pacts")[0].add_sou
 Background.objects.get_or_create(name="Paragon", property_name="paragon")[0].add_source(
     "Demon: the Fallen", 157
 )
+Background.objects.get_or_create(
+    name="Ritual Knowledge", property_name="ritual_knowledge"
+)[0].add_source("Demon Players Guide", 179)

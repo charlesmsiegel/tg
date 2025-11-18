@@ -6,5 +6,6 @@ from .faction import DemonFaction
 from .house import DemonHouse
 from .lore import Lore
 from .pact import Pact
+from .ritual import Ritual
 from .thrall import Thrall
 from .visage import Visage
