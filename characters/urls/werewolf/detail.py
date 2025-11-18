@@ -40,4 +40,39 @@ urls = [
         views.werewolf.FomoriPowerDetailView.as_view(),
         name="fomoripower",
     ),
+    path(
+        "fera/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="fera",
+    ),
+    path(
+        "ratkin/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="ratkin",
+    ),
+    path(
+        "mokole/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="mokole",
+    ),
+    path(
+        "bastet/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="bastet",
+    ),
+    path(
+        "corax/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="corax",
+    ),
+    path(
+        "nuwisha/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="nuwisha",
+    ),
+    path(
+        "gurahl/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="gurahl",
+    ),
 ]

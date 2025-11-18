@@ -83,6 +83,16 @@ urls = [
         name="kinfolk_full",
     ),
     path(
+        "fera/<pk>/",
+        views.werewolf.FeraCharacterCreationView.as_view(),
+        name="fera",
+    ),
+    path(
+        "fera/full/<pk>/",
+        views.werewolf.FeraUpdateView.as_view(),
+        name="fera_full",
+    ),
+    path(
         "camps/<pk>/",
         views.werewolf.CampUpdateView.as_view(),
         name="camp",
