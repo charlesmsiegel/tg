@@ -137,10 +137,6 @@ class Vampire(VtMHuman):
     )
     path_rating = models.IntegerField(default=0)
 
-    # Willpower (may already be in Human, but including here for clarity)
-    willpower = models.IntegerField(default=3)
-    current_willpower = models.IntegerField(default=3)
-
     # Titles
     titles = models.ManyToManyField(VampireTitle, blank=True, related_name="holders")
 

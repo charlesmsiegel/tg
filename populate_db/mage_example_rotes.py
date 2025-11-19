@@ -7,40 +7,10 @@ from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 
-# Get common attributes
-perception = Attribute.objects.get(property_name="perception")
-intelligence = Attribute.objects.get(property_name="intelligence")
-wits = Attribute.objects.get(property_name="wits")
-manipulation = Attribute.objects.get(property_name="manipulation")
-dexterity = Attribute.objects.get(property_name="dexterity")
-stamina = Attribute.objects.get(property_name="stamina")
+from populate_db.attributes import perception, intelligence, wits, manipulation, dexterity, stamina
+from populate_db.abilities import awareness, occult, cosmology, brawl, athletics, science, technology, crafts, medicine, expression, subterfuge
 
-# Get common abilities
-awareness = Ability.objects.get(property_name="awareness")
-esoterica = Ability.objects.get(property_name="esoterica")
-occult = Ability.objects.get(property_name="occult")
-cosmology = Ability.objects.get(property_name="cosmology")
-brawl = Ability.objects.get(property_name="brawl")
-athletics = Ability.objects.get(property_name="athletics")
-science = Ability.objects.get(property_name="science")
-technology = Ability.objects.get(property_name="technology")
-crafts = Ability.objects.get(property_name="crafts")
-medicine = Ability.objects.get(property_name="medicine")
-expression = Ability.objects.get(property_name="expression")
-subterfuge = Ability.objects.get(property_name="subterfuge")
-
-# Get practices
-highritualmagick = Practice.objects.get(name="High Ritual Magick")
-martialarts = Practice.objects.get(name="Martial Arts")
-faith = Practice.objects.get(name="Faith")
-shamanism = Practice.objects.get(name="Shamanism")
-witchcraft = Practice.objects.get(name="Witchcraft")
-alchemy = Practice.objects.get(name="Alchemy")
-weirdscience = Practice.objects.get(name="Weird Science")
-realityhacking = Practice.objects.get(name="Reality Hacking")
-crazywisdom = Practice.objects.get(name="Crazy Wisdom")
-yoga = Practice.objects.get(name="Yoga")
-medicinework = Practice.objects.get(name="Medicine-Work")
+from populate_db.practices_INC import highritualmagick, martialarts, faith, shamanism, witchcraft, alchemy, weirdscience, realityhacking, crazywisdom, yoga, medicinework
 
 # ===== AKASHIC BROTHERHOOD ROTES =====
 
@@ -219,12 +189,12 @@ rote = Rote.objects.get_or_create(
     effect=effect,
     practice=yoga,
     attribute=perception,
-    ability=esoterica,
+    ability=occult,
 )[0]
 rote.description = "The mage perceives and manipulates the threads of fate and destiny."
 rote.add_source("Lore of the Traditions", 108)
 
-effect = Effect.objects.get(name="Sense Fate and Fortune")
+effect = Effect.objects.get_or_create(name="Sense Fate and Fortune", entropy=1)[0]
 rote = Rote.objects.get_or_create(
     name="Read the Tapestry",
     effect=effect,
@@ -426,10 +396,10 @@ rote = Rote.objects.get_or_create(
     effect=effect,
     practice=highritualmagick,
     attribute=perception,
-    ability=esoterica,
+    ability=occult,
 )[0]
 rote.description = "Read the surface thoughts and immediate intentions of a target."
-rote.add_source("M20 Core", 519)
+rote.add_source("Mage: the Ascension 20th Anniversary Edition", 519)
 
 effect = Effect.objects.get(name="Force Shield")
 rote = Rote.objects.get_or_create(
@@ -440,7 +410,7 @@ rote = Rote.objects.get_or_create(
     ability=occult,
 )[0]
 rote.description = "Create a barrier of solidified force energy for protection."
-rote.add_source("M20 Core", 517)
+rote.add_source("Mage: the Ascension 20th Anniversary Edition", 517)
 
 effect = Effect.objects.get(name="See Spirits")
 rote = Rote.objects.get_or_create(
@@ -451,7 +421,7 @@ rote = Rote.objects.get_or_create(
     ability=awareness,
 )[0]
 rote.description = "Perceive spirits and the Penumbra while in the material world."
-rote.add_source("M20 Core", 521)
+rote.add_source("Mage: the Ascension 20th Anniversary Edition", 521)
 
 effect = Effect.objects.get(name="Curse of Bad Luck")
 rote = Rote.objects.get_or_create(
@@ -462,7 +432,7 @@ rote = Rote.objects.get_or_create(
     ability=occult,
 )[0]
 rote.description = "Curse a target with persistent bad luck and misfortune."
-rote.add_source("M20 Core", 516)
+rote.add_source("Mage: the Ascension 20th Anniversary Edition", 516)
 
 effect = Effect.objects.get(name="Create Portal (Temporary)")
 rote = Rote.objects.get_or_create(
@@ -495,4 +465,4 @@ rote = Rote.objects.get_or_create(
     ability=occult,
 )[0]
 rote.description = "Channel Quintessence from a Node or Tass for magical use."
-rote.add_source("M20 Core", 520)
+rote.add_source("Mage: the Ascension 20th Anniversary Edition", 520)

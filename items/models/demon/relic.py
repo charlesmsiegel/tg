@@ -32,7 +32,7 @@ class Relic(ItemModel):
 
     # House association (for house-specific relics)
     house = models.ForeignKey(
-        "characters.House",
+        "characters.DemonHouse",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -108,7 +108,7 @@ class Wraith(WtOHuman):
         blank=True,
         related_name="wraiths",
     )
-    thorns = models.ManyToManyField(Thorn, blank=True, through="ThoronRating")
+    thorns = models.ManyToManyField(Thorn, blank=True, through="ThornRating")
 
     # Catharsis and Harrowing Tracking
     in_catharsis = models.BooleanField(default=False)

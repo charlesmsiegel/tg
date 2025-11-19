@@ -3,13 +3,7 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
 
 # Get the houses
-devils = DemonHouse.objects.get(name="Devils")
-scourges = DemonHouse.objects.get(name="Scourges")
-malefactors = DemonHouse.objects.get(name="Malefactors")
-fiends = DemonHouse.objects.get(name="Fiends")
-defilers = DemonHouse.objects.get(name="Defilers")
-devourers = DemonHouse.objects.get(name="Devourers")
-slayers = DemonHouse.objects.get(name="Slayers")
+from populate_db.demon_houses import defilers, devourers, devils, fiends, malefactors, scourges, slayers
 
 ApocalypticFormTrait.objects.get_or_create(name="Armor", cost=4, house=None)[
     0
@@ -18,10 +12,7 @@ ApocalypticFormTrait.objects.get_or_create(
     name="Casts No Reflection", cost=2, house=None
 )[0].add_source("Demon Players Guide", 98)
 ApocalypticFormTrait.objects.get_or_create(
-    name="Claws", cost=1, house=None, high_torment_only=True
-)[0].add_source("Demon Players Guide", 98)
-ApocalypticFormTrait.objects.get_or_create(
-    name="Teeth", cost=1, house=None, high_torment_only=True
+    name="Claws/Teeth", cost=1, house=None, high_torment_only=True
 )[0].add_source("Demon Players Guide", 98)
 ApocalypticFormTrait.objects.get_or_create(
     name="Damage Resistance", cost=3, house=None
@@ -566,7 +557,7 @@ anshar.high_torment_traits.set(
         ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=scourges),
         ApocalypticFormTrait.objects.get(name="Multiple Eyes", house=scourges),
         ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Claws", house=scourges),
+        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
     ]
 )
 
@@ -591,7 +582,7 @@ ellil.low_torment_traits.set(
 )
 ellil.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws", house=scourges),
+        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
         ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
         ApocalypticFormTrait.objects.get(name="Quills", house=scourges),
         ApocalypticFormTrait.objects.get(name="Caustic Bile", house=scourges),
@@ -806,7 +797,7 @@ adad.low_torment_traits.set(
 )
 adad.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Teeth", house=defilers),
+        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
         ApocalypticFormTrait.objects.get(name="Spines", house=defilers),
         ApocalypticFormTrait.objects.get(name="Shark Hide", house=defilers),
         ApocalypticFormTrait.objects.get(name="Ink Cloud", house=defilers),

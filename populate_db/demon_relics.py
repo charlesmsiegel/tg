@@ -1,13 +1,8 @@
 from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
-
-# Get the houses
-devils = DemonHouse.objects.get(name="Devils")
-scourges = DemonHouse.objects.get(name="Scourges")
-malefactors = DemonHouse.objects.get(name="Malefactors")
+from populate_db.demon_houses import defilers, devourers, devils, malefactors, scourges, slayers
 
 # Devil House Relics
-
 pyrestone = Relic.objects.get_or_create(
     name="Pyrestone (Frozen Flames)",
     house=devils,

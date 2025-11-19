@@ -1,37 +1,8 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 
-# Get parent clans
-lasombra = VampireClan.objects.get(name="Lasombra")
-giovanni = VampireClan.objects.get(name="Giovanni")
-brujah = VampireClan.objects.get(name="Brujah")
-gangrel = VampireClan.objects.get(name="Gangrel")
-nosferatu = VampireClan.objects.get(name="Nosferatu")
-tzimisce = VampireClan.objects.get(name="Tzimisce")
-toreador = VampireClan.objects.get(name="Toreador")
-ventrue = VampireClan.objects.get(name="Ventrue")
-malkavian = VampireClan.objects.get(name="Malkavian")
-
-# Get disciplines
-daimoinon = Discipline.objects.get(name="Daimoinon")
-obfuscate = Discipline.objects.get(name="Obfuscate")
-presence = Discipline.objects.get(name="Presence")
-fortitude = Discipline.objects.get(name="Fortitude")
-melpominee = Discipline.objects.get(name="Melpominee")
-auspex = Discipline.objects.get(name="Auspex")
-flight = Discipline.objects.get(name="Flight")
-potence = Discipline.objects.get(name="Potence")
-visceratika = Discipline.objects.get(name="Visceratika")
-protean = Discipline.objects.get(name="Protean")
-necromancy = Discipline.objects.get(name="Necromancy")
-serpentis = Discipline.objects.get(name="Serpentis")
-dominate = Discipline.objects.get(name="Dominate")
-mytherceria = Discipline.objects.get(name="Mytherceria")
-obtenebration = Discipline.objects.get(name="Obtenebration")
-obeah = Discipline.objects.get(name="Obeah")
-valeren = Discipline.objects.get(name="Valeren")
-thanatosis = Discipline.objects.get(name="Thanatosis")
-temporis = Discipline.objects.get(name="Temporis")
+from populate_db.vampire_clans import lasombra, giovanni, brujah, gangrel, nosferatu, tzimisce, toreador, ventrue, malkavian
+from populate_db.vampire_disciplines import daimoinon, obfuscate, presence, fortitude, melpominee, auspex, flight, potence, visceratika, protean, necromancy, serpentis, dominate, mytherceria, obtenebration, obeah, valeren, thanatosis, temporis, animalism
 
 # BAALI
 baali = VampireClan.objects.get_or_create(

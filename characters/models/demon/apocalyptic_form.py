@@ -16,7 +16,7 @@ class ApocalypticFormTrait(Model):
 
     # Associated house (optional - some traits might be universal)
     house = models.ForeignKey(
-        "House",
+        "DemonHouse",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -6,39 +6,40 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get all houses
-defilers = DemonHouse.objects.get(name="Defilers")
-devils = DemonHouse.objects.get(name="Devils")
-devourers = DemonHouse.objects.get(name="Devourers")
-fiends = DemonHouse.objects.get(name="Fiends")
-malefactors = DemonHouse.objects.get(name="Malefactors")
-scourges = DemonHouse.objects.get(name="Scourges")
-slayers = DemonHouse.objects.get(name="Slayers")
-
-# Get all lores for reference
-lore_awakening = Lore.objects.get(property_name="awakening")
-lore_beast = Lore.objects.get(property_name="beast")
-lore_celestials = Lore.objects.get(property_name="celestials")
-lore_death = Lore.objects.get(property_name="death")
-lore_earth = Lore.objects.get(property_name="earth")
-lore_flame = Lore.objects.get(property_name="flame")
-lore_firmament = Lore.objects.get(property_name="firmament")
-lore_flesh = Lore.objects.get(property_name="flesh")
-lore_forge = Lore.objects.get(property_name="forge")
-lore_fundament = Lore.objects.get(property_name="fundament")
-lore_humanity = Lore.objects.get(property_name="humanity")
-lore_light = Lore.objects.get(property_name="light")
-lore_longing = Lore.objects.get(property_name="longing")
-lore_paths = Lore.objects.get(property_name="paths")
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_portals = Lore.objects.get(property_name="portals")
-lore_radiance = Lore.objects.get(property_name="radiance")
-lore_realms = Lore.objects.get(property_name="realms")
-lore_spirit = Lore.objects.get(property_name="spirit")
-lore_storms = Lore.objects.get(property_name="storms")
-lore_transfiguration = Lore.objects.get(property_name="transfiguration")
-lore_wild = Lore.objects.get(property_name="wild")
-lore_winds = Lore.objects.get(property_name="winds")
+from populate_db.demon_houses import (
+    defilers,
+    devourers,
+    devils,
+    fiends,
+    malefactors,
+    scourges,
+    slayers,
+)
+from populate_db.demon_lores import (
+    lore_of_awakening,
+    lore_of_the_beast,
+    lore_of_the_celestials,
+    lore_of_death,
+    lore_of_the_earth,
+    lore_of_flame,
+    lore_of_the_firmament,
+    lore_of_the_flesh,
+    lore_of_the_forge,
+    lore_of_the_fundament,
+    lore_of_humanity,
+    lore_of_light,
+    lore_of_longing,
+    lore_of_paths,
+    lore_of_patterns,
+    lore_of_portals,
+    lore_of_radiance,
+    lore_of_the_realms,
+    lore_of_the_spirit,
+    lore_of_storms,
+    lore_of_the_winds,
+    lore_of_transfiguration,
+    lore_of_the_wild
+)
 
 # ============================================================================
 # DEFILER RITUALS
@@ -48,10 +49,10 @@ hadrisel_libation = Ritual.objects.get_or_create(
     name="Hadrisel's Libation",
     house=defilers,
 )[0]
-hadrisel_libation.primary_lore = lore_storms
-hadrisel_libation.primary_lore_rating = 2
-hadrisel_libation.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 1},
+hadrisel_libation.primary_lore = lore_of_storms
+hadrisel_libation.primary_lore_of_rating = 2
+hadrisel_libation.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 1},
 ]
 hadrisel_libation.base_cost = 6
 hadrisel_libation.minimum_casting_time = 9
@@ -67,15 +68,17 @@ sirens_song = Ritual.objects.get_or_create(
     name="Siren's Song",
     house=defilers,
 )[0]
-sirens_song.primary_lore = lore_longing
-sirens_song.primary_lore_rating = 3
-sirens_song.secondary_lore_requirements = [
-    {"lore_id": lore_radiance.id, "rating": 2},
-    {"lore_id": lore_humanity.id, "rating": 1},
+sirens_song.primary_lore = lore_of_longing
+sirens_song.primary_lore_of_rating = 3
+sirens_song.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_radiance.id, "rating": 2},
+    {"lore_of_id": lore_of_humanity.id, "rating": 1},
 ]
 sirens_song.base_cost = 18
 sirens_song.minimum_casting_time = 36
-sirens_song.restrictions = "This ritual must be performed at the edge of a large body of water."
+sirens_song.restrictions = (
+    "This ritual must be performed at the edge of a large body of water."
+)
 sirens_song.system = """Roll Manipulation + Performance. The number of successes determines the radius of the ritual's effect in 100-yard increments, measured from the center of the sigil. If the Ankida's player rolls five successes, the ritual affects every living being within a 500-yard radius. Any mortals caught within this radius will stop what they are doing and make their way toward the ritual sigil unless a successful Willpower roll (difficulty 8) is made. Affected individuals will walk in the most direct path toward the sigil regardless of potential danger. Victims have been known to walk over cliffs, drown themselves in lakes and stagger onto the blades of their enemies. While affected by the ritual, victims can take no other action, even to defend themselves. Once successfully cast, the ritual continues as long as the ritual members continue to sing. Make Stamina + Performance rolls (difficulty 6) for every ritual participant each turn to see if they can continue to maintain the song."""
 sirens_song.torment_effect = """The high-Torment version of this song fills the mind of a listener with visions of madness and anguish. Make a Willpower roll (difficulty 8) for any mortal or demon caught within the area of effect. If the roll fails, the victim is overcome with visions of the Abyss and falls to the ground, writhing in pain and fear. Affected individuals can take no actions of any kind as long as the song continues. If the Willpower roll botches, a mortal victim gains a temporary derangement as well. A demon gains one point of temporary Torment."""
 sirens_song.variations = "Legend speaks of a version of this ritual that could be centered on distant locations far removed from the casting sigil. Add Firmament •• to the ritual's secondary lore."
@@ -87,12 +90,12 @@ fiery_vision = Ritual.objects.get_or_create(
     name="Fiery Vision",
     house=defilers,
 )[0]
-fiery_vision.primary_lore = lore_longing
-fiery_vision.primary_lore_rating = 3
-fiery_vision.secondary_lore_requirements = [
-    {"lore_id": lore_light.id, "rating": 2},
-    {"lore_id": lore_radiance.id, "rating": 2},
-    {"lore_id": lore_humanity.id, "rating": 1},
+fiery_vision.primary_lore = lore_of_longing
+fiery_vision.primary_lore_of_rating = 3
+fiery_vision.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_light.id, "rating": 2},
+    {"lore_of_id": lore_of_radiance.id, "rating": 2},
+    {"lore_of_id": lore_of_humanity.id, "rating": 1},
 ]
 fiery_vision.base_cost = 32
 fiery_vision.minimum_casting_time = 64
@@ -112,10 +115,10 @@ baptism_of_faith = Ritual.objects.get_or_create(
     name="Baptism of Faith",
     house=devils,
 )[0]
-baptism_of_faith.primary_lore = lore_celestials
-baptism_of_faith.primary_lore_rating = 2
-baptism_of_faith.secondary_lore_requirements = [
-    {"lore_id": lore_longing.id, "rating": 2},
+baptism_of_faith.primary_lore = lore_of_the_celestials
+baptism_of_faith.primary_lore_of_rating = 2
+baptism_of_faith.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_longing.id, "rating": 2},
 ]
 baptism_of_faith.base_cost = 8
 baptism_of_faith.minimum_casting_time = 16
@@ -131,10 +134,10 @@ firestorm = Ritual.objects.get_or_create(
     name="Firestorm",
     house=devils,
 )[0]
-firestorm.primary_lore = lore_flame
-firestorm.primary_lore_rating = 4
-firestorm.secondary_lore_requirements = [
-    {"lore_id": lore_winds.id, "rating": 4},
+firestorm.primary_lore = lore_of_flame
+firestorm.primary_lore_of_rating = 4
+firestorm.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_winds.id, "rating": 4},
 ]
 firestorm.base_cost = 16
 firestorm.minimum_casting_time = 64
@@ -152,12 +155,12 @@ create_elemental_defiler = Ritual.objects.get_or_create(
     name="Create Elemental (Water)",
     house=defilers,
 )[0]
-create_elemental_defiler.primary_lore = lore_storms
-create_elemental_defiler.primary_lore_rating = 3
-create_elemental_defiler.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_celestials.id, "rating": 2},
-    {"lore_id": lore_fundament.id, "rating": 2},
+create_elemental_defiler.primary_lore = lore_of_storms
+create_elemental_defiler.primary_lore_of_rating = 3
+create_elemental_defiler.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 create_elemental_defiler.base_cost = 36
 create_elemental_defiler.minimum_casting_time = 81
@@ -173,12 +176,12 @@ storms_fury = Ritual.objects.get_or_create(
     name="Storm's Fury",
     house=defilers,
 )[0]
-storms_fury.primary_lore = lore_storms
-storms_fury.primary_lore_rating = 4
-storms_fury.secondary_lore_requirements = [
-    {"lore_id": lore_firmament.id, "rating": 3},
-    {"lore_id": lore_winds.id, "rating": 2},
-    {"lore_id": lore_humanity.id, "rating": 2},
+storms_fury.primary_lore = lore_of_storms
+storms_fury.primary_lore_of_rating = 4
+storms_fury.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
+    {"lore_of_id": lore_of_the_winds.id, "rating": 2},
+    {"lore_of_id": lore_of_humanity.id, "rating": 2},
 ]
 storms_fury.base_cost = 44
 storms_fury.minimum_casting_time = 121
@@ -194,11 +197,11 @@ part_the_waters = Ritual.objects.get_or_create(
     name="Part the Waters",
     house=defilers,
 )[0]
-part_the_waters.primary_lore = lore_storms
-part_the_waters.primary_lore_rating = 4
-part_the_waters.secondary_lore_requirements = [
-    {"lore_id": lore_fundament.id, "rating": 3},
-    {"lore_id": lore_paths.id, "rating": 2},
+part_the_waters.primary_lore = lore_of_storms
+part_the_waters.primary_lore_of_rating = 4
+part_the_waters.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 3},
+    {"lore_of_id": lore_of_paths.id, "rating": 2},
 ]
 part_the_waters.base_cost = 27
 part_the_waters.minimum_casting_time = 81
@@ -214,12 +217,12 @@ river_of_blood = Ritual.objects.get_or_create(
     name="River of Blood",
     house=defilers,
 )[0]
-river_of_blood.primary_lore = lore_storms
-river_of_blood.primary_lore_rating = 4
-river_of_blood.secondary_lore_requirements = [
-    {"lore_id": lore_flesh.id, "rating": 3},
-    {"lore_id": lore_portals.id, "rating": 3},
-    {"lore_id": lore_transfiguration.id, "rating": 2},
+river_of_blood.primary_lore = lore_of_storms
+river_of_blood.primary_lore_of_rating = 4
+river_of_blood.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 3},
+    {"lore_of_id": lore_of_portals.id, "rating": 3},
+    {"lore_of_id": lore_of_transfiguration.id, "rating": 2},
 ]
 river_of_blood.base_cost = 48
 river_of_blood.minimum_casting_time = 144
@@ -237,10 +240,10 @@ defeat_scry = Ritual.objects.get_or_create(
     name="Defeat Scry",
     house=devils,
 )[0]
-defeat_scry.primary_lore = lore_celestials
-defeat_scry.primary_lore_rating = 3
-defeat_scry.secondary_lore_requirements = [
-    {"lore_id": lore_firmament.id, "rating": 1},
+defeat_scry.primary_lore = lore_of_the_celestials
+defeat_scry.primary_lore_of_rating = 3
+defeat_scry.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 1},
 ]
 defeat_scry.base_cost = 8
 defeat_scry.minimum_casting_time = 16
@@ -248,7 +251,9 @@ defeat_scry.restrictions = "The protected area is defined by the size of the sig
 defeat_scry.system = """Roll Perception + Alertness. The number of successes rolled is subtracted from any attempt to cast the Scry evocation (Firmament ••) on any object or person within the specified area. If the Scry attempt still succeeds, the target of the evocation glows a pale blue. If an object or a person that is already the focus of a Scry attempt enters the protected area, the subject glows blue as well. The protection lasts 12 hours per point of Faith."""
 defeat_scry.torment_effect = """The high-Torment effect of this ritual inflicts one health level of bashing damage each turn against individuals attempting to scry into the affected area (this damage can not be soaked). They can still view what is going on, but it's like getting an eyeful of tear gas when they do."""
 defeat_scry.variations = "Rumors abound that a ritual could be cast that interferes with scrying attempts, making it appear that the area was empty or that a specifically programmed action was happening within it. Add Light ••••."
-defeat_scry.flavor_text = "This ritual creates an area that is protected from scrying attempts."
+defeat_scry.flavor_text = (
+    "This ritual creates an area that is protected from scrying attempts."
+)
 defeat_scry.source_page = "DPG 191"
 defeat_scry.save()
 
@@ -256,10 +261,10 @@ resist_fire = Ritual.objects.get_or_create(
     name="Resist Fire",
     house=devils,
 )[0]
-resist_fire.primary_lore = lore_flame
-resist_fire.primary_lore_rating = 2
-resist_fire.secondary_lore_requirements = [
-    {"lore_id": lore_flesh.id, "rating": 2},
+resist_fire.primary_lore = lore_of_flame
+resist_fire.primary_lore_of_rating = 2
+resist_fire.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
 ]
 resist_fire.base_cost = 8
 resist_fire.minimum_casting_time = 16
@@ -275,11 +280,11 @@ faith_of_steel = Ritual.objects.get_or_create(
     name="Faith of Steel",
     house=devils,
 )[0]
-faith_of_steel.primary_lore = lore_radiance
-faith_of_steel.primary_lore_rating = 2
-faith_of_steel.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_longing.id, "rating": 2},
+faith_of_steel.primary_lore = lore_of_radiance
+faith_of_steel.primary_lore_of_rating = 2
+faith_of_steel.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_longing.id, "rating": 2},
 ]
 faith_of_steel.base_cost = 18
 faith_of_steel.minimum_casting_time = 36
@@ -295,12 +300,12 @@ create_elemental_devil = Ritual.objects.get_or_create(
     name="Create Elemental (Fire)",
     house=devils,
 )[0]
-create_elemental_devil.primary_lore = lore_flame
-create_elemental_devil.primary_lore_rating = 3
-create_elemental_devil.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_celestials.id, "rating": 2},
-    {"lore_id": lore_fundament.id, "rating": 2},
+create_elemental_devil.primary_lore = lore_of_flame
+create_elemental_devil.primary_lore_of_rating = 3
+create_elemental_devil.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 create_elemental_devil.base_cost = 36
 create_elemental_devil.minimum_casting_time = 81
@@ -316,12 +321,12 @@ hopes_true_flame = Ritual.objects.get_or_create(
     name="Hope's True Flame",
     house=devils,
 )[0]
-hopes_true_flame.primary_lore = lore_celestials
-hopes_true_flame.primary_lore_rating = 2
-hopes_true_flame.secondary_lore_requirements = [
-    {"lore_id": lore_flame.id, "rating": 2},
-    {"lore_id": lore_longing.id, "rating": 2},
-    {"lore_id": lore_radiance.id, "rating": 2},
+hopes_true_flame.primary_lore = lore_of_the_celestials
+hopes_true_flame.primary_lore_of_rating = 2
+hopes_true_flame.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_flame.id, "rating": 2},
+    {"lore_of_id": lore_of_longing.id, "rating": 2},
+    {"lore_of_id": lore_of_radiance.id, "rating": 2},
 ]
 hopes_true_flame.base_cost = 32
 hopes_true_flame.minimum_casting_time = 64
@@ -341,10 +346,10 @@ fruit_of_perfection = Ritual.objects.get_or_create(
     name="Fruit of Perfection",
     house=devourers,
 )[0]
-fruit_of_perfection.primary_lore = lore_wild
-fruit_of_perfection.primary_lore_rating = 2
-fruit_of_perfection.secondary_lore_requirements = [
-    {"lore_id": lore_radiance.id, "rating": 2},
+fruit_of_perfection.primary_lore = lore_of_the_wild
+fruit_of_perfection.primary_lore_of_rating = 2
+fruit_of_perfection.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_radiance.id, "rating": 2},
 ]
 fruit_of_perfection.base_cost = 8
 fruit_of_perfection.minimum_casting_time = 16
@@ -360,15 +365,17 @@ bountiful_harvest = Ritual.objects.get_or_create(
     name="Bountiful Harvest",
     house=devourers,
 )[0]
-bountiful_harvest.primary_lore = lore_wild
-bountiful_harvest.primary_lore_rating = 2
-bountiful_harvest.secondary_lore_requirements = [
-    {"lore_id": lore_earth.id, "rating": 1},
-    {"lore_id": lore_storms.id, "rating": 1},
+bountiful_harvest.primary_lore = lore_of_the_wild
+bountiful_harvest.primary_lore_of_rating = 2
+bountiful_harvest.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_earth.id, "rating": 1},
+    {"lore_of_id": lore_of_storms.id, "rating": 1},
 ]
 bountiful_harvest.base_cost = 12
 bountiful_harvest.minimum_casting_time = 16
-bountiful_harvest.restrictions = "A small quantity of loam must be placed in the center of the sigil."
+bountiful_harvest.restrictions = (
+    "A small quantity of loam must be placed in the center of the sigil."
+)
 bountiful_harvest.system = """Roll Stamina + Survival. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled and centered on the sigil. A lush garden blooms into life within the affected area, with thick grass, small streams and tall, fruit-bearing trees. This garden can sprout in an area where one couldn't normally exist — in deserts, snow fields, parking lots or toxic waste dumps. The water, vegetables and fruit created by the ritual are normal and nutritious in every way. The garden exists for a single scene. At the end of that time the water dries up and the plants wither into dust. If the Ankida wishes, however, the garden can be made permanent by spending a temporary Willpower point. It must be tended like any other garden afterward if it is to survive, though."""
 bountiful_harvest.torment_effect = """The high-Torment version of this ritual does not create gardens, but lifeless wastelands. All water and vegetation within the affected area dries up and withers away, not to return again until the next blooming season. By spending a temporary Willpower point the effects of this ritual become permanent, creating a blighted area where nothing will ever grow."""
 bountiful_harvest.variations = ""
@@ -380,10 +387,10 @@ heart_of_stone = Ritual.objects.get_or_create(
     name="Heart of Stone",
     house=devourers,
 )[0]
-heart_of_stone.primary_lore = lore_flesh
-heart_of_stone.primary_lore_rating = 3
-heart_of_stone.secondary_lore_requirements = [
-    {"lore_id": lore_earth.id, "rating": 2},
+heart_of_stone.primary_lore = lore_of_the_flesh
+heart_of_stone.primary_lore_of_rating = 3
+heart_of_stone.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_earth.id, "rating": 2},
 ]
 heart_of_stone.base_cost = 10
 heart_of_stone.minimum_casting_time = 25
@@ -399,12 +406,12 @@ beast_of_babel = Ritual.objects.get_or_create(
     name="Beast of Babel",
     house=devourers,
 )[0]
-beast_of_babel.primary_lore = lore_beast
-beast_of_babel.primary_lore_rating = 3
-beast_of_babel.secondary_lore_requirements = [
-    {"lore_id": lore_flesh.id, "rating": 2},
-    {"lore_id": lore_firmament.id, "rating": 2},
-    {"lore_id": lore_humanity.id, "rating": 2},
+beast_of_babel.primary_lore = lore_of_the_beast
+beast_of_babel.primary_lore_of_rating = 3
+beast_of_babel.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
+    {"lore_of_id": lore_of_humanity.id, "rating": 2},
 ]
 beast_of_babel.base_cost = 36
 beast_of_babel.minimum_casting_time = 81
@@ -420,10 +427,10 @@ defeat_path = Ritual.objects.get_or_create(
     name="Defeat Path",
     house=devourers,
 )[0]
-defeat_path.primary_lore = lore_wild
-defeat_path.primary_lore_rating = 4
-defeat_path.secondary_lore_requirements = [
-    {"lore_id": lore_celestials.id, "rating": 3},
+defeat_path.primary_lore = lore_of_the_wild
+defeat_path.primary_lore_of_rating = 4
+defeat_path.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 3},
 ]
 defeat_path.base_cost = 14
 defeat_path.minimum_casting_time = 49
@@ -439,15 +446,17 @@ forest_ward = Ritual.objects.get_or_create(
     name="Forest Ward",
     house=devourers,
 )[0]
-forest_ward.primary_lore = lore_wild
-forest_ward.primary_lore_rating = 3
-forest_ward.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_paths.id, "rating": 2},
+forest_ward.primary_lore = lore_of_the_wild
+forest_ward.primary_lore_of_rating = 3
+forest_ward.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_paths.id, "rating": 2},
 ]
 forest_ward.base_cost = 21
 forest_ward.minimum_casting_time = 49
-forest_ward.restrictions = "This ritual must be performed within a forest or other area of dense vegetation."
+forest_ward.restrictions = (
+    "This ritual must be performed within a forest or other area of dense vegetation."
+)
 forest_ward.system = """Roll Wits + Survival. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled and centered on the sigil. Within the affected area, the forest's paths shift from moment to moment, appearing or disappearing in a manner designed to lure the Ankida's enemies back in the direction they came. Players of enemies of the Ankida who move through the affected area must roll Intelligence + Survival (difficulty 9) to move in the intended direction. If the roll fails, the characters are led in a roundabout fashion back the way they came. A roll can be made for the pursuers each turn to see if they can return to their intended course. If any roll botches, the pursuers have become hopelessly lost. They will be led back in the direction they came, and no further rolls may be made. The effects of this ritual last for the duration of a single scene."""
 forest_ward.torment_effect = """The high-Torment effect of this ritual infuses the vegetation with malevolent life, causing it to lash out at the Ankida's enemies with branch, thorn and vine. The number of successes rolled becomes a bashing damage pool that is rolled for each of the Ankida's enemies each turn they remain in the affected area."""
 forest_ward.variations = ""
@@ -459,12 +468,12 @@ wind_of_years = Ritual.objects.get_or_create(
     name="Wind of Years",
     house=devourers,
 )[0]
-wind_of_years.primary_lore = lore_flesh
-wind_of_years.primary_lore_rating = 4
-wind_of_years.secondary_lore_requirements = [
-    {"lore_id": lore_winds.id, "rating": 3},
-    {"lore_id": lore_death.id, "rating": 2},
-    {"lore_id": lore_fundament.id, "rating": 2},
+wind_of_years.primary_lore = lore_of_the_flesh
+wind_of_years.primary_lore_of_rating = 4
+wind_of_years.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_winds.id, "rating": 3},
+    {"lore_of_id": lore_of_death.id, "rating": 2},
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 wind_of_years.base_cost = 44
 wind_of_years.minimum_casting_time = 121
@@ -484,14 +493,16 @@ disarm = Ritual.objects.get_or_create(
     name="Disarm",
     house=malefactors,
 )[0]
-disarm.primary_lore = lore_forge
-disarm.primary_lore_rating = 3
-disarm.secondary_lore_requirements = [
-    {"lore_id": lore_fundament.id, "rating": 2},
+disarm.primary_lore = lore_of_the_forge
+disarm.primary_lore_of_rating = 3
+disarm.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 disarm.base_cost = 10
 disarm.minimum_casting_time = 25
-disarm.restrictions = "A piece of magnetized iron must be placed in the center of the sigil."
+disarm.restrictions = (
+    "A piece of magnetized iron must be placed in the center of the sigil."
+)
 disarm.system = """Roll Strength + Technology. The number of successes determines the complexity of the weapons affected by the ritual. One success renders high-tech weapons that use electronic components inoperable. Two successes render complex mechanical weapons such as automatic rifles and machine guns inoperable. Three successes render basic mechanical weapons such as revolvers or crossbows inoperable. Four or more successes render the most basic weapons such as knives and axes unable to function. If used, they will automatically miss their target. This ritual affects an area in a radius of 100-yard increments equal to the Ankida's Faith score at the time the ritual is successfully cast, and its effects last for the duration of the scene."""
 disarm.torment_effect = """The high-Torment effect of this ritual allows weapons to function within the affected area but increases the chance for catastrophic accidents. Each success rolled increases the range of numbers that cause a botch on a weapon's to-hit roll. Therefore, if the effect roll netted four successes, any weapons used within the area of effect would botch on a roll of 1, 2, 3, 4 or 5. If a to-hit roll botches, the weapon hits its wielder or the wielder's nearest friend or ally instead."""
 disarm.variations = ""
@@ -503,11 +514,11 @@ age_landscape = Ritual.objects.get_or_create(
     name="Age Landscape",
     house=malefactors,
 )[0]
-age_landscape.primary_lore = lore_earth
-age_landscape.primary_lore_rating = 3
-age_landscape.secondary_lore_requirements = [
-    {"lore_id": lore_wild.id, "rating": 3},
-    {"lore_id": lore_death.id, "rating": 2},
+age_landscape.primary_lore = lore_of_the_earth
+age_landscape.primary_lore_of_rating = 3
+age_landscape.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_wild.id, "rating": 3},
+    {"lore_of_id": lore_of_death.id, "rating": 2},
 ]
 age_landscape.base_cost = 24
 age_landscape.minimum_casting_time = 64
@@ -523,12 +534,12 @@ create_elemental_malefactor = Ritual.objects.get_or_create(
     name="Create Elemental (Earth)",
     house=malefactors,
 )[0]
-create_elemental_malefactor.primary_lore = lore_earth
-create_elemental_malefactor.primary_lore_rating = 3
-create_elemental_malefactor.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_celestials.id, "rating": 2},
-    {"lore_id": lore_fundament.id, "rating": 2},
+create_elemental_malefactor.primary_lore = lore_of_the_earth
+create_elemental_malefactor.primary_lore_of_rating = 3
+create_elemental_malefactor.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 create_elemental_malefactor.base_cost = 36
 create_elemental_malefactor.minimum_casting_time = 81
@@ -544,15 +555,17 @@ local_interference = Ritual.objects.get_or_create(
     name="Local Interference",
     house=malefactors,
 )[0]
-local_interference.primary_lore = lore_forge
-local_interference.primary_lore_rating = 4
-local_interference.secondary_lore_requirements = [
-    {"lore_id": lore_fundament.id, "rating": 3},
-    {"lore_id": lore_portals.id, "rating": 2},
+local_interference.primary_lore = lore_of_the_forge
+local_interference.primary_lore_of_rating = 4
+local_interference.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 3},
+    {"lore_of_id": lore_of_portals.id, "rating": 2},
 ]
 local_interference.base_cost = 27
 local_interference.minimum_casting_time = 81
-local_interference.restrictions = "The ritual must be performed outdoors in direct sunlight."
+local_interference.restrictions = (
+    "The ritual must be performed outdoors in direct sunlight."
+)
 local_interference.system = """Roll Wits + Occult. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled and centered on the sigil. The effect lasts for two hours per point of the Ankida's Faith score. Within the affected area, all electrical equipment will cease to function. Motors will run erratically or not at all, power lines will fail, and electromagnetic communications cannot pass through the area in either direction (radio, TV, cellular signals and wireless internet will not work). Mechanical equipment such as cars, guns and other complex devices will continue to work. Note that on a botch, electrical equipment in the affected area is destroyed. The donation of five temporary Willpower from the ritual members makes the effect permanent."""
 local_interference.torment_effect = """The high-Torment version of this ritual goes a step further, affecting mechanical equipment as well as electrical. Engines fail to run, guns cannot fire, locks cannot open and so on. The effect is so powerful that even simple tools refuse to work while in the affected area, though the level of failure is up to the Storyteller. At best, a hammer will refuse to hit a nail; at worst, a belt buckle will not close."""
 local_interference.variations = ""
@@ -564,15 +577,17 @@ rain_of_brimstone = Ritual.objects.get_or_create(
     name="Rain of Brimstone",
     house=malefactors,
 )[0]
-rain_of_brimstone.primary_lore = lore_earth
-rain_of_brimstone.primary_lore_rating = 4
-rain_of_brimstone.secondary_lore_requirements = [
-    {"lore_id": lore_flame.id, "rating": 3},
-    {"lore_id": lore_firmament.id, "rating": 3},
+rain_of_brimstone.primary_lore = lore_of_the_earth
+rain_of_brimstone.primary_lore_of_rating = 4
+rain_of_brimstone.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_flame.id, "rating": 3},
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
 ]
 rain_of_brimstone.base_cost = 30
 rain_of_brimstone.minimum_casting_time = 100
-rain_of_brimstone.restrictions = "The sigil is drawn on bare rock under the light of the sun."
+rain_of_brimstone.restrictions = (
+    "The sigil is drawn on bare rock under the light of the sun."
+)
 rain_of_brimstone.system = """Roll Stamina + Survival. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled. The rain of stones will last for one turn per point of the Ankida's Faith score. All individuals within the rain's area of effect who can't find shelter suffer one level of lethal damage each turn. The Storyteller makes Dexterity + Athletics rolls (difficulty 7) for individuals affected by the rain. Each success reduces the amount of damage inflicted that turn by one. Botches are particularly unfortunate. The rain of brimstone is centered on a point within the Ankida's line of sight, not necessarily on the ritual sigil."""
 rain_of_brimstone.torment_effect = """The high-Torment version of this ritual rains down sulfurous rock that seems to target specific individuals, friend or foe. The damage pool for each individual becomes two dice per point of the Ankida's Torment score, and successes rolled on Dexterity + Athletics don't reduce the damage. Instead they must be matched one-for-one with lethal damage dice. If, for example, the Ankida's Torment score is 6, 12 dice are rolled against each individual in the area. A victim makes a Dexterity + Athletics roll and gets four successes. Those four successes cancel four dice, so the remaining eight dice are rolled for damage against the victim."""
 rain_of_brimstone.variations = ""
@@ -584,10 +599,10 @@ seal_area = Ritual.objects.get_or_create(
     name="Seal Area",
     house=malefactors,
 )[0]
-seal_area.primary_lore = lore_fundament
-seal_area.primary_lore_rating = 4
-seal_area.secondary_lore_requirements = [
-    {"lore_id": lore_portals.id, "rating": 3},
+seal_area.primary_lore = lore_of_the_fundament
+seal_area.primary_lore_of_rating = 4
+seal_area.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_portals.id, "rating": 3},
 ]
 seal_area.base_cost = 14
 seal_area.minimum_casting_time = 49
@@ -607,14 +622,16 @@ micaraels_sight = Ritual.objects.get_or_create(
     name="Micarael's Sight",
     house=scourges,
 )[0]
-micaraels_sight.primary_lore = lore_firmament
-micaraels_sight.primary_lore_rating = 2
-micaraels_sight.secondary_lore_requirements = [
-    {"lore_id": lore_realms.id, "rating": 2},
+micaraels_sight.primary_lore = lore_of_the_firmament
+micaraels_sight.primary_lore_of_rating = 2
+micaraels_sight.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
 ]
 micaraels_sight.base_cost = 8
 micaraels_sight.minimum_casting_time = 16
-micaraels_sight.restrictions = "The ritual must be performed in an area lit well enough to read by."
+micaraels_sight.restrictions = (
+    "The ritual must be performed in an area lit well enough to read by."
+)
 micaraels_sight.system = """Roll Perception + Crafts. The Ankida can see through solid, non-living matter as though it were clear glass. Each success applies the effect to a cubic foot of matter whose perceived volume can be distributed as needed (for example, a six inch x two foot x one foot pane in a brick wall that is six inches thick), anywhere within the Ankida's sight. The effect lasts for a number of turns equal to the Ankida's Faith score."""
 micaraels_sight.torment_effect = """The high-Torment effect of this ritual causes the Ankida to see hallucinations that feed the character's paranoia. The demon might see a group of Earthbound thralls laying an ambush for her, or she might see one of her thralls meeting secretly with her worst rival. The Storyteller should choose a hallucination appropriate to the character's personality and the situation, and present the vision as though the character were really seeing it."""
 micaraels_sight.variations = "With the addition of Longing ••, this ritual works as a warning, extending to an area 50 feet beyond the perimeter of the sigil. Whenever anyone who wishes the Ankida harm comes into this area, any solid matter between them becomes transparent to her sight, the window moving as required. As many as one enemy can be viewed per success rolled, and the effect lasts half an hour per Faith point."
@@ -626,11 +643,11 @@ rain_of_frogs = Ritual.objects.get_or_create(
     name="Rain of Frogs",
     house=scourges,
 )[0]
-rain_of_frogs.primary_lore = lore_winds
-rain_of_frogs.primary_lore_rating = 3
-rain_of_frogs.secondary_lore_requirements = [
-    {"lore_id": lore_beast.id, "rating": 3},
-    {"lore_id": lore_awakening.id, "rating": 2},
+rain_of_frogs.primary_lore = lore_of_the_winds
+rain_of_frogs.primary_lore_of_rating = 3
+rain_of_frogs.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_beast.id, "rating": 3},
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
 ]
 rain_of_frogs.base_cost = 24
 rain_of_frogs.minimum_casting_time = 64
@@ -646,12 +663,12 @@ create_elemental_scourge = Ritual.objects.get_or_create(
     name="Create Elemental (Air)",
     house=scourges,
 )[0]
-create_elemental_scourge.primary_lore = lore_winds
-create_elemental_scourge.primary_lore_rating = 3
-create_elemental_scourge.secondary_lore_requirements = [
-    {"lore_id": lore_awakening.id, "rating": 2},
-    {"lore_id": lore_celestials.id, "rating": 2},
-    {"lore_id": lore_fundament.id, "rating": 2},
+create_elemental_scourge.primary_lore = lore_of_the_winds
+create_elemental_scourge.primary_lore_of_rating = 3
+create_elemental_scourge.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_awakening.id, "rating": 2},
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
+    {"lore_of_id": lore_of_the_fundament.id, "rating": 2},
 ]
 create_elemental_scourge.base_cost = 36
 create_elemental_scourge.minimum_casting_time = 81
@@ -667,11 +684,11 @@ dust_swarm = Ritual.objects.get_or_create(
     name="Dust Swarm",
     house=scourges,
 )[0]
-dust_swarm.primary_lore = lore_winds
-dust_swarm.primary_lore_rating = 4
-dust_swarm.secondary_lore_requirements = [
-    {"lore_id": lore_firmament.id, "rating": 3},
-    {"lore_id": lore_earth.id, "rating": 2},
+dust_swarm.primary_lore = lore_of_the_winds
+dust_swarm.primary_lore_of_rating = 4
+dust_swarm.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
+    {"lore_of_id": lore_of_the_earth.id, "rating": 2},
 ]
 dust_swarm.base_cost = 27
 dust_swarm.minimum_casting_time = 81
@@ -687,11 +704,11 @@ vacuum = Ritual.objects.get_or_create(
     name="Vacuum",
     house=scourges,
 )[0]
-vacuum.primary_lore = lore_winds
-vacuum.primary_lore_rating = 4
-vacuum.secondary_lore_requirements = [
-    {"lore_id": lore_death.id, "rating": 3},
-    {"lore_id": lore_flesh.id, "rating": 2},
+vacuum.primary_lore = lore_of_the_winds
+vacuum.primary_lore_of_rating = 4
+vacuum.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_death.id, "rating": 3},
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
 ]
 vacuum.base_cost = 27
 vacuum.minimum_casting_time = 81
@@ -707,11 +724,11 @@ plague_of_boils = Ritual.objects.get_or_create(
     name="Plague of Boils",
     house=scourges,
 )[0]
-plague_of_boils.primary_lore = lore_awakening
-plague_of_boils.primary_lore_rating = 4
-plague_of_boils.secondary_lore_requirements = [
-    {"lore_id": lore_flesh.id, "rating": 3},
-    {"lore_id": lore_firmament.id, "rating": 2},
+plague_of_boils.primary_lore = lore_of_awakening
+plague_of_boils.primary_lore_of_rating = 4
+plague_of_boils.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 3},
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
 ]
 plague_of_boils.base_cost = 27
 plague_of_boils.minimum_casting_time = 81
@@ -731,14 +748,16 @@ shadow_dark = Ritual.objects.get_or_create(
     name="Shadow Dark",
     house=slayers,
 )[0]
-shadow_dark.primary_lore = lore_realms
-shadow_dark.primary_lore_rating = 2
-shadow_dark.secondary_lore_requirements = [
-    {"lore_id": lore_light.id, "rating": 2},
+shadow_dark.primary_lore = lore_of_the_realms
+shadow_dark.primary_lore_of_rating = 2
+shadow_dark.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_light.id, "rating": 2},
 ]
 shadow_dark.base_cost = 8
 shadow_dark.minimum_casting_time = 16
-shadow_dark.restrictions = "If the ritual is not cast at dawn or twilight, the difficulty increases by one."
+shadow_dark.restrictions = (
+    "If the ritual is not cast at dawn or twilight, the difficulty increases by one."
+)
 shadow_dark.system = """Roll Perception + Awareness. The ritual affects an area with a radius of three yards times the Ankida's Faith score, centered around a point within the Ankida's line of sight. The effect lasts three minutes per point of the Ankida's Faith score. Anyone within the area suffers a modifier of +3 to the difficulty of all actions that interact with physical objects. A successful Willpower roll (difficulty 8) means the person has resisted the distractions of the environment (assuming they think to do so) for up to three turns, and the penalty decreases to +2. Conversely, a blind person or a person trained in Blind Fighting can further reduce this penalty by one (+1 normally, no penalty if a subsequent Willpower roll succeeds), when trying to perform a familiar task. If participants in the ritual donate three points of temporary Willpower, the effect becomes permanent."""
 shadow_dark.torment_effect = ""
 shadow_dark.variations = "By adding Transfiguration ••, it is said that the ritual can make people within it lose awareness of their own bodily form, which seems to shift and distort with everything else. This adds another +2 to the difficulty of actions (the same Willpower role halves this modifier)."
@@ -750,14 +769,16 @@ spirit_garden = Ritual.objects.get_or_create(
     name="Spirit Garden",
     house=slayers,
 )[0]
-spirit_garden.primary_lore = lore_spirit
-spirit_garden.primary_lore_rating = 2
-spirit_garden.secondary_lore_requirements = [
-    {"lore_id": lore_wild.id, "rating": 2},
+spirit_garden.primary_lore = lore_of_the_spirit
+spirit_garden.primary_lore_of_rating = 2
+spirit_garden.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_wild.id, "rating": 2},
 ]
 spirit_garden.base_cost = 8
 spirit_garden.minimum_casting_time = 16
-spirit_garden.restrictions = "A recently dead body, a garden in which the flower can grow, and nightfall."
+spirit_garden.restrictions = (
+    "A recently dead body, a garden in which the flower can grow, and nightfall."
+)
 spirit_garden.system = """Roll Charisma + Survival. If the number of successes is greater than the target's Willpower, her spirit is caught within the garden, blooming as a flower. The effect remains as long as the flower is in bloom, but if it is plucked or it wilts, then the soul is lost. Each Faith point gives the flower an extra day of life, but after that, nature takes its course (so it is more effective cast in spring than winter). Note that the effect cannot be made permanent (like Spirit ••••), but it can defer matters until a better solution is found. The exact type of flower depends upon the individual (at Storyteller's discretion)."""
 spirit_garden.torment_effect = """The flower is black and poisonous, leaching all sustenance from the soil around it and slowly wilting plant-life within a radius of one yard per Faith point."""
 spirit_garden.variations = "A rather different use of this ritual can be made with the addition of Death •. If the flower is eaten by a demon, then the last hours of the human's life can be viewed (one hour per Faith point), and the spirit is lost. The resistance of the spirit to this process adds one to the difficulty of the Charisma + Survival roll."
@@ -769,15 +790,17 @@ incarnate_spirit = Ritual.objects.get_or_create(
     name="Incarnate Spirit",
     house=slayers,
 )[0]
-incarnate_spirit.primary_lore = lore_spirit
-incarnate_spirit.primary_lore_rating = 3
-incarnate_spirit.secondary_lore_requirements = [
-    {"lore_id": lore_flesh.id, "rating": 2},
-    {"lore_id": lore_realms.id, "rating": 2},
+incarnate_spirit.primary_lore = lore_of_the_spirit
+incarnate_spirit.primary_lore_of_rating = 3
+incarnate_spirit.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_flesh.id, "rating": 2},
+    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
 ]
 incarnate_spirit.base_cost = 21
 incarnate_spirit.minimum_casting_time = 49
-incarnate_spirit.restrictions = "This ritual can be performed only on the night of the new moon."
+incarnate_spirit.restrictions = (
+    "This ritual can be performed only on the night of the new moon."
+)
 incarnate_spirit.system = """Roll Intelligence + Occult. The number of successes required depends on the thickness of the barrier between the realms in the ritual area. A relatively weak area, such as a graveyard or a church, might require only one success, while a relatively strong area such as a science lab might require as many as four successes. If the roll succeeds the Ankida can incarnate as many spirits as her Faith score. These spirits can be seen and communicated with, and they can even interact with the physical world as though they were flesh and blood, though they are physically weak and frail. Each incarnate spirit has effectively one dot in each of her Physical Attributes, though her Mental and Social Attributes are the same as they were when she was alive (as determined by the Storyteller). If the incarnate spirit suffers a single health level of damage, be it bashing, lethal or aggravated, the body discorporates. In this quasi-physical form, the spirit cannot use any supernatural powers it possesses."""
 incarnate_spirit.torment_effect = """The high-Torment version of this ritual infuses the incarnate spirit with some of the Ankida's hate and malevolence, causing it to behave maliciously toward mortals in its presence. If communicated with, it is intentionally hurtful and deceitful, and will try to find ways to injure or kill living beings in its proximity."""
 incarnate_spirit.variations = ""
@@ -789,11 +812,11 @@ visit_soul_prison = Ritual.objects.get_or_create(
     name="Visit Soul Prison",
     house=slayers,
 )[0]
-visit_soul_prison.primary_lore = lore_spirit
-visit_soul_prison.primary_lore_rating = 3
-visit_soul_prison.secondary_lore_requirements = [
-    {"lore_id": lore_realms.id, "rating": 2},
-    {"lore_id": lore_death.id, "rating": 2},
+visit_soul_prison.primary_lore = lore_of_the_spirit
+visit_soul_prison.primary_lore_of_rating = 3
+visit_soul_prison.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
+    {"lore_of_id": lore_of_death.id, "rating": 2},
 ]
 visit_soul_prison.base_cost = 21
 visit_soul_prison.minimum_casting_time = 49
@@ -809,11 +832,11 @@ prison_of_flesh = Ritual.objects.get_or_create(
     name="Prison of Flesh",
     house=slayers,
 )[0]
-prison_of_flesh.primary_lore = lore_flesh
-prison_of_flesh.primary_lore_rating = 4
-prison_of_flesh.secondary_lore_requirements = [
-    {"lore_id": lore_spirit.id, "rating": 3},
-    {"lore_id": lore_realms.id, "rating": 2},
+prison_of_flesh.primary_lore = lore_of_the_flesh
+prison_of_flesh.primary_lore_of_rating = 4
+prison_of_flesh.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_spirit.id, "rating": 3},
+    {"lore_of_id": lore_of_the_realms.id, "rating": 2},
 ]
 prison_of_flesh.base_cost = 27
 prison_of_flesh.minimum_casting_time = 81
@@ -829,11 +852,11 @@ create_specter = Ritual.objects.get_or_create(
     name="Create Specter",
     house=slayers,
 )[0]
-create_specter.primary_lore = lore_death
-create_specter.primary_lore_rating = 4
-create_specter.secondary_lore_requirements = [
-    {"lore_id": lore_spirit.id, "rating": 3},
-    {"lore_id": lore_realms.id, "rating": 3},
+create_specter.primary_lore = lore_of_death
+create_specter.primary_lore_of_rating = 4
+create_specter.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_spirit.id, "rating": 3},
+    {"lore_of_id": lore_of_the_realms.id, "rating": 3},
 ]
 create_specter.base_cost = 30
 create_specter.minimum_casting_time = 100
@@ -849,12 +872,12 @@ fate_of_firstborn = Ritual.objects.get_or_create(
     name="Fate of the Firstborn",
     house=slayers,
 )[0]
-fate_of_firstborn.primary_lore = lore_death
-fate_of_firstborn.primary_lore_rating = 5
-fate_of_firstborn.secondary_lore_requirements = [
-    {"lore_id": lore_spirit.id, "rating": 4},
-    {"lore_id": lore_firmament.id, "rating": 3},
-    {"lore_id": lore_humanity.id, "rating": 3},
+fate_of_firstborn.primary_lore = lore_of_death
+fate_of_firstborn.primary_lore_of_rating = 5
+fate_of_firstborn.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_spirit.id, "rating": 4},
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 3},
+    {"lore_of_id": lore_of_humanity.id, "rating": 3},
 ]
 fate_of_firstborn.base_cost = 75
 fate_of_firstborn.minimum_casting_time = 225
@@ -874,15 +897,17 @@ prophetic_dream = Ritual.objects.get_or_create(
     name="Prophetic Dream",
     house=fiends,
 )[0]
-prophetic_dream.primary_lore = lore_patterns
-prophetic_dream.primary_lore_rating = 4
-prophetic_dream.secondary_lore_requirements = [
-    {"lore_id": lore_firmament.id, "rating": 2},
-    {"lore_id": lore_spirit.id, "rating": 1},
+prophetic_dream.primary_lore = lore_of_patterns
+prophetic_dream.primary_lore_of_rating = 4
+prophetic_dream.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
+    {"lore_of_id": lore_of_the_spirit.id, "rating": 1},
 ]
 prophetic_dream.base_cost = 21
 prophetic_dream.minimum_casting_time = 49
-prophetic_dream.restrictions = "The subject of the ritual must sit or lie in the center of the sigil."
+prophetic_dream.restrictions = (
+    "The subject of the ritual must sit or lie in the center of the sigil."
+)
 prophetic_dream.system = """Roll Perception + Intuition. The ritual grants the recipient the effects of the Causal Influence evocation presented in the Demon core rules, but using the ritual effect roll to determine the extent of the information gained. The ritual can be focused on a specific person (difficulty 6), place (difficulty 7) or upcoming event (difficulty 9). Spend one Faith point and roll Perception + Intuition. The number of successes rolled determines how many days into the future the recipient can view regarding her subject. It also determines how many questions the player can ask the Storyteller about what the character sees. The evocation fills the recipient's mind with a torrent of images, showing the most likely fate of a specific person, place or event, barring any outside interference. The Storyteller describes the course of events as though the recipient were an outside observer. She isn't privy to the thoughts of the individuals involved, and she must decide the context and meaning of relationships and actions herself."""
 prophetic_dream.torment_effect = """The high-Torment version of this ritual shows the recipient where the subject (be it a person, place or event) is at risk of suffering an accident or other misfortune, and it shows the best way to cause the tragic circumstances to occur."""
 prophetic_dream.variations = ""
@@ -894,10 +919,10 @@ centarnels_portal = Ritual.objects.get_or_create(
     name="Centarnel's Portal",
     house=fiends,
 )[0]
-centarnels_portal.primary_lore = lore_portals
-centarnels_portal.primary_lore_rating = 4
-centarnels_portal.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 3},
+centarnels_portal.primary_lore = lore_of_portals
+centarnels_portal.primary_lore_of_rating = 4
+centarnels_portal.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_patterns.id, "rating": 3},
 ]
 centarnels_portal.base_cost = 14
 centarnels_portal.minimum_casting_time = 49
@@ -913,15 +938,17 @@ shooting_star = Ritual.objects.get_or_create(
     name="Shooting Star",
     house=fiends,
 )[0]
-shooting_star.primary_lore = lore_light
-shooting_star.primary_lore_rating = 3
-shooting_star.secondary_lore_requirements = [
-    {"lore_id": lore_celestials.id, "rating": 2},
-    {"lore_id": lore_firmament.id, "rating": 2},
+shooting_star.primary_lore = lore_of_light
+shooting_star.primary_lore_of_rating = 3
+shooting_star.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 2},
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 2},
 ]
 shooting_star.base_cost = 21
 shooting_star.minimum_casting_time = 49
-shooting_star.restrictions = "This ritual must be performed outdoors under a clear night sky."
+shooting_star.restrictions = (
+    "This ritual must be performed outdoors under a clear night sky."
+)
 shooting_star.system = """Roll Charisma + Occult. The ritual creates a brilliant streak of light across the sky that can be seen for hundreds of miles. The shooting star appears to originate from the ritual site and travels in a direction chosen by the Ankida. The number of successes determines how bright and long-lasting the phenomenon is. With one success, the light is visible for a few seconds; with five successes, it burns brightly for several minutes. The Ankida can encode a simple message into the pattern of the light (a specific number of pulses, a particular color, etc.) that can be recognized by allies who know what to look for. The ritual was commonly used as a signal during the war, visible across vast distances."""
 shooting_star.torment_effect = """The high-Torment version of this ritual creates a falling star that appears to crash to earth at a location chosen by the Ankida within her line of sight. When the "star" impacts, it creates an explosion with a radius of 10 yards times the number of successes rolled. Everyone within the blast radius suffers a number of dice of lethal damage equal to the Ankida's Torment score. The explosion is obviously supernatural in nature and leaves behind scorched earth and a lingering sense of dread."""
 shooting_star.variations = ""
@@ -933,11 +960,11 @@ tapestry_of_light = Ritual.objects.get_or_create(
     name="Tapestry of Light",
     house=fiends,
 )[0]
-tapestry_of_light.primary_lore = lore_light
-tapestry_of_light.primary_lore_rating = 4
-tapestry_of_light.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 3},
-    {"lore_id": lore_radiance.id, "rating": 2},
+tapestry_of_light.primary_lore = lore_of_light
+tapestry_of_light.primary_lore_of_rating = 4
+tapestry_of_light.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_patterns.id, "rating": 3},
+    {"lore_of_id": lore_of_radiance.id, "rating": 2},
 ]
 tapestry_of_light.base_cost = 27
 tapestry_of_light.minimum_casting_time = 81
@@ -953,11 +980,11 @@ time_watch = Ritual.objects.get_or_create(
     name="Time Watch",
     house=fiends,
 )[0]
-time_watch.primary_lore = lore_patterns
-time_watch.primary_lore_rating = 5
-time_watch.secondary_lore_requirements = [
-    {"lore_id": lore_firmament.id, "rating": 4},
-    {"lore_id": lore_celestials.id, "rating": 3},
+time_watch.primary_lore = lore_of_patterns
+time_watch.primary_lore_of_rating = 5
+time_watch.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_firmament.id, "rating": 4},
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 3},
 ]
 time_watch.base_cost = 48
 time_watch.minimum_casting_time = 144
@@ -973,11 +1000,11 @@ replicate = Ritual.objects.get_or_create(
     name="Replicate",
     house=fiends,
 )[0]
-replicate.primary_lore = lore_transfiguration
-replicate.primary_lore_rating = 4
-replicate.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 3},
-    {"lore_id": lore_forge.id, "rating": 2},
+replicate.primary_lore = lore_of_transfiguration
+replicate.primary_lore_of_rating = 4
+replicate.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_patterns.id, "rating": 3},
+    {"lore_of_id": lore_of_the_forge.id, "rating": 2},
 ]
 replicate.base_cost = 27
 replicate.minimum_casting_time = 81
@@ -993,11 +1020,11 @@ darkness_eternal = Ritual.objects.get_or_create(
     name="Darkness Eternal",
     house=fiends,
 )[0]
-darkness_eternal.primary_lore = lore_light
-darkness_eternal.primary_lore_rating = 5
-darkness_eternal.secondary_lore_requirements = [
-    {"lore_id": lore_celestials.id, "rating": 4},
-    {"lore_id": lore_realms.id, "rating": 3},
+darkness_eternal.primary_lore = lore_of_light
+darkness_eternal.primary_lore_of_rating = 5
+darkness_eternal.secondary_lore_of_requirements = [
+    {"lore_of_id": lore_of_the_celestials.id, "rating": 4},
+    {"lore_of_id": lore_of_the_realms.id, "rating": 3},
 ]
 darkness_eternal.base_cost = 48
 darkness_eternal.minimum_casting_time = 144
@@ -1008,6 +1035,3 @@ darkness_eternal.variations = ""
 darkness_eternal.flavor_text = "This is one of the most feared rituals ever created by the fallen, a manifestation of absolute darkness that devours light itself. Its use during the war was so devastating that even Lucifer himself forbade its casting after witnessing its effects."
 darkness_eternal.source_page = "DPG 199"
 darkness_eternal.save()
-
-print("Created comprehensive ritual database")
-print(f"Total rituals created: {Ritual.objects.count()}")

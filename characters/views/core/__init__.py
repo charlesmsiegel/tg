@@ -25,9 +25,9 @@ from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.charm import SpiritCharm
 from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.totem import Totem
-from characters.views.changeling.changeling import ChangelingCharacterCreationView
-from characters.views.changeling.ctdhuman import CtDHumanCharacterCreationView
-from characters.views.changeling.motley import MotleyDetailView
+# from characters.views.changeling.changeling import ChangelingCharacterCreationView
+# from characters.views.changeling.ctdhuman import CtDHumanCharacterCreationView
+# from characters.views.changeling.motley import MotleyDetailView
 from core.views.generic import DictView
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import redirect, render
@@ -38,22 +38,29 @@ from .group import GroupDetailView
 
 
 class GenericCharacterDetailView(DictView):
-    from characters.views import changeling, mage, vampire, werewolf, wraith
+    from characters.views import changeling, mage, vampire, werewolf, wraith, demon
 
     view_mapping = {
+        "vtm_human": vampire.VtMHumanCharacterCreationView,
+        "vampire": vampire.VampireCharacterCreationView,
+        "wta_human": werewolf.WtAHumanCharacterCreationView,
+        "werewolf": werewolf.WerewolfCharacterCreationView,
         "spirit_character": werewolf.SpiritDetailView,
+        "kinfolk": werewolf.KinfolkCharacterCreationView,
+        "fomor": werewolf.FomorCharacterCreationView,
+        "fera": werewolf.FeraCharacterCreationView,
         "mta_human": mage.MtAHumanCharacterCreationView,
         "mage": mage.MageCharacterCreationView,
-        "vtm_human": vampire.VtMHumanCharacterCreationView,
-        "wto_human": wraith.WtOHumanCharacterCreationView,
-        "wta_human": werewolf.WtAHumanCharacterCreationView,
-        "kinfolk": werewolf.KinfolkCharacterCreationView,
-        "werewolf": werewolf.WerewolfCharacterCreationView,
-        "fomor": werewolf.FomorCharacterCreationView,
-        "changeling": ChangelingCharacterCreationView,
-        "ctd_human": CtDHumanCharacterCreationView,
         "companion": mage.CopanionCharacterCreationView,
         "sorcerer": mage.SorcererCharacterCreationView,
+        "ctd_human": changeling.CtDHumanCharacterCreationView,
+        "changeling": changeling.ChangelingCharacterCreationView,
+        "wto_human": wraith.WtOHumanCharacterCreationView,
+        "wraith": wraith.WraithCharacterCreationView,
+        "dtf_human": demon.DtFHumanCharacterCreationView,
+        "demon": demon.DemonCharacterCreationView,
+        "thrall": demon.ThrallCharacterCreationView,
+        
     }
     model_class = Character
     key_property = "type"
@@ -61,13 +68,16 @@ class GenericCharacterDetailView(DictView):
 
 
 class GenericGroupDetailView(DictView):
-    from characters.views import changeling, mage, vampire, werewolf, wraith
+    from characters.views import changeling, mage, vampire, werewolf, wraith, demon
 
     view_mapping = {
         "group": GroupDetailView,
-        "cabal": mage.CabalDetailView,
         "pack": werewolf.PackDetailView,
-        "motley": MotleyDetailView,
+        "cabal": mage.CabalDetailView,
+        "motley": changeling.MotleyDetailView,
+        "coterie": vampire.CoterieDetailView,
+        "circle": wraith.CircleDetailView,
+        "conclave": demon.ConclaveDetailView,
     }
     model_class = Group
     key_property = "type"

@@ -23,7 +23,7 @@ tracking.add_ratings([1, 2, 3])
 flexibility = Advantage.objects.get(name="Flexibility")
 wings = Advantage.objects.get_or_create(name="Wings")[0]
 wings.add_ratings([2, 4, 6])
-empathic_bond = Advantage.objects.get(name="Empathic Bond")
+empathic_bond = Advantage.objects.get_or_create(name="Empathic Bond")[0]
 human_speech = Advantage.objects.get_or_create(name="Human Speech")[0]
 human_speech.add_ratings([2])
 

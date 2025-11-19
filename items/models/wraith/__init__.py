@@ -1,2 +1,2 @@
-from .artifact import Artifact
+from .artifact import WraithArtifact
 from .relic import WraithRelic

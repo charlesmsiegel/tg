@@ -19,7 +19,6 @@ class Necropolis(LocationModel):
     )
     population = models.IntegerField(default=0)
     deathlord = models.CharField(max_length=100, default="", blank=True)
-    description = models.TextField(default="")
 
     class Meta:
         verbose_name = "Necropolis"

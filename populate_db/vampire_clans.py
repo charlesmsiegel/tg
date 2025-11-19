@@ -1,24 +1,7 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 
-# Get all disciplines
-celerity = Discipline.objects.get(name="Celerity")
-fortitude = Discipline.objects.get(name="Fortitude")
-potence = Discipline.objects.get(name="Potence")
-auspex = Discipline.objects.get(name="Auspex")
-dominate = Discipline.objects.get(name="Dominate")
-dementation = Discipline.objects.get(name="Dementation")
-presence = Discipline.objects.get(name="Presence")
-animalism = Discipline.objects.get(name="Animalism")
-protean = Discipline.objects.get(name="Protean")
-obfuscate = Discipline.objects.get(name="Obfuscate")
-chimerstry = Discipline.objects.get(name="Chimerstry")
-necromancy = Discipline.objects.get(name="Necromancy")
-obtenebration = Discipline.objects.get(name="Obtenebration")
-quietus = Discipline.objects.get(name="Quietus")
-serpentis = Discipline.objects.get(name="Serpentis")
-thaumaturgy = Discipline.objects.get(name="Thaumaturgy")
-vicissitude = Discipline.objects.get(name="Vicissitude")
+from populate_db.vampire_disciplines import celerity, fortitude, potence, auspex, dominate, dementation, presence, animalism, protean, obfuscate, chimerstry, necromancy, obtenebration, quietus, serpentis, thaumaturgy, vicissitude
 
 # Create the 13 Main Clans
 

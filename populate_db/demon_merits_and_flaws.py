@@ -47,7 +47,7 @@ mf = MeritFlaw.objects.get_or_create(name="Famous Liege")[0]
 mf.add_ratings([2])
 mf.allowed_types.add(demon)
 mf.description = "Your character is the vassal of a legendary lord of the infernal host, which grants your character an aura of authority and influence beyond her own accomplishments. Most low-ranking demons will be eager to curry your character's favor, hoping to be remembered later when her dark lord has returned in triumph. Upon learning your character's identity, most low-ranking demons will treat you with a certain degree of deference and respect, giving you the benefit of the doubt in most questionable situations. Note that this Merit is separate and in addition to the Eminence Background, which reflects your character's personal rank and influence. The character who possesses both is able to open doors and gain respect in any growing demonic court by virtue of their identity. The Storyteller is the final arbiter as to how much influence and respect your character can command based on the needs of her chronicle."
-mf.add_source("Demon Players Guide", "76-77")
+mf.add_source("Demon Players Guide", 76)
 mf.save()
 
 # PHYSICAL MERITS - Related to the mortal host's physical capabilities
@@ -148,7 +148,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "It's not that your character is ugly. It's just that, well, people's eyes tend to slide over her. She's of average height and build, unremarkable looks and run-of-the-mill dress. People have problems remembering her appearance after they meet her, unless she has talked with them for a long time. Certainly, people won't be able to give a useful description of her if they only see her briefly. Your character must have an Appearance of 2 or 3 and a Charisma no higher than 3 to take this Merit. If either of those Attributes moves outside that range through play, you lose this Merit. This Merit applies solely to your character's physical appearance. She might have a dreadful credit rating, a police file as thick as the phone book and a sexual history that would make a porn star blush, but people just don't remember her on the street."
-mf.add_source("Demon Players Guide", "77-78")
+mf.add_source("Demon Players Guide", 77)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Good Night Vision")[0]
@@ -249,7 +249,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "Your character has fallen for someone (or her mortal host had), and the feeling is reciprocated. The world seems a better place. Colors are brighter, music is more enchanting, and life just seems less desperate. Even the slightest success boosts your confidence. Regain two Willpower instead of one when your character wakes up each morning."
-mf.add_source("Demon Players Guide", "78-79")
+mf.add_source("Demon Players Guide", 78)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Media Junkie")[0]
@@ -449,7 +449,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "There's a knack to dealing with the media, and your character has it. She's learned what journalists want, and she does her best to provide it in a way that best suits her. She can create, suppress and redirect stories with a fair amount of effectiveness, just by the spin she puts on them. Most of the time, she tries to set up situations so the media reads them the way she wants. Add two dice to any Social rolls in which your character deals with journalists or reporters."
-mf.add_source("Demon Players Guide", "80-81")
+mf.add_source("Demon Players Guide", 80)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Supportive Family")[0]
@@ -776,7 +776,7 @@ mf = MeritFlaw.objects.get_or_create(name="Flashbacks")[0]
 mf.add_ratings([-3])
 mf.allowed_types.add(demon)
 mf.description = "Like veterans of many mortal wars, the sights your character witnessed during the War of Wrath haunt her still, filling her dreams with visions of horror and destruction and occasionally overtaking her during moments of stress. When the character is under intense pressure or involved in combat, your character might experience powerful flashbacks of ancient battles. The Storyteller can call for a Willpower roll (difficulty 8) at appropriate moments. If the roll fails, the character thinks she's back in the war as she is caught up in a hallucinatory episode of incredible vividness and detail. As soon as the threat or source of stress is gone, you may begin making Willpower rolls (difficulty 7) for the character each turn to see if she can emerge from the visions of the past."
-mf.add_source("Demon Players Guide", "84-85")
+mf.add_source("Demon Players Guide", 84)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Hunted")[0]
@@ -946,7 +946,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "Your character's mortal host looks like she did in high school. She always gets carded at bars and often has to produce identification to buy even cigarettes. In order to gain entry to clubs, concerts and bars, or to purchase alcohol, your character needs to present a valid-looking ID."
-mf.add_source("Demon Players Guide", "86-87")
+mf.add_source("Demon Players Guide", 86)
 mf.save()
 
 # PHYSICAL FLAWS - Part 2 (18-33) - Continued physical limitations
@@ -1412,7 +1412,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "Your character can't help but put her personal spin on the truth. She doesn't necessarily do so out of spite or maliciousness; she might even come to genuinely believe the tall tales she tells (especially when she spins them often enough). This trait is especially troublesome when other demons rely on your character for information. You might have to spend a Willpower point to force your character to be honest, especially if it means publicly revealing a previous lie."
-mf.add_source("Demon Players Guide", "90-91")
+mf.add_source("Demon Players Guide", 90)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Conspicuous Consumer")[0]
@@ -1501,7 +1501,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "Your character's mortal host was severely intimidated by computers and other technology. Therefore, your character never uses an ATM if a teller is available, and she gets nervous at the sight of a keyboard. You must make an Intelligence roll (difficulty 6) for your character to perform even simple tasks on a computer, ATM or similar device. Increase the difficulty of any Computer or Technology roll by two."
-mf.add_source("Demon Players Guide", "91-92")
+mf.add_source("Demon Players Guide", 91)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Greedy")[0]
@@ -1656,7 +1656,7 @@ mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
 mf.description = "Your character's mortal host was spectacularly bad at something. Unfortunately, your character is the only person around who doesn't know this fact. Pick a single Ability. Your character believes that she has the proficiency of three dots in that trait, when in reality she almost always messes up any attempt at it. When you try to use the Ability, treat the outcome as if you rolled a botch."
-mf.add_source("Demon Players Guide", "93-94")
+mf.add_source("Demon Players Guide", 93)
 mf.save()
 
 mf = MeritFlaw.objects.get_or_create(name="Low Self-Esteem")[0]

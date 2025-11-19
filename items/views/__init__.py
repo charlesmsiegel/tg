@@ -1,1 +1,1 @@
-from . import core, mage, werewolf
+from . import core, mage, werewolf, vampire
