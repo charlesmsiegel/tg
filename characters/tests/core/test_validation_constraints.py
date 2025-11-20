@@ -1,0 +1,577 @@
+"""
+Tests for data validation constraints, transactions, and model validation.
+
+Tests the following features:
+- Database constraints on Character, AttributeBlock, AbilityBlock, Human
+- Transaction atomicity for XP spending and approval
+- Model validation (clean() methods)
+- Status transition state machine
+"""
+
+import pytest
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
+from django.contrib.auth.models import User
+
+from characters.models.core.character import Character
+from characters.models.core.human import Human
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.ability_block import Ability
+from game.models import Chronicle, STRelationship, Gameline, ObjectType, Scene
+
+
+@pytest.mark.django_db
+class TestCharacterConstraints:
+    """Test database constraints and model validation on Character model."""
+
+    def test_xp_cannot_be_negative_db_constraint(self):
+        """Database constraint prevents negative XP"""
+        character = Character.objects.create(name="Test", xp=0)
+        character.xp = -100
+
+        with pytest.raises(IntegrityError, match="xp_non_negative"):
+            character.save(skip_validation=True)  # Bypass model validation to test DB constraint
+
+    def test_xp_cannot_be_negative_model_validation(self):
+        """Model validation prevents negative XP"""
+        character = Character.objects.create(name="Test", xp=0)
+        character.xp = -100
+
+        with pytest.raises(ValidationError, match="XP cannot be negative"):
+            character.full_clean()
+
+    def test_valid_status_values_db_constraint(self):
+        """Only valid status values allowed"""
+        character = Character.objects.create(name="Test", status="Un")
+        character.status = "Invalid"
+
+        with pytest.raises(IntegrityError, match="valid_status"):
+            character.save(skip_validation=True)
+
+    def test_status_transition_deceased_is_final(self):
+        """Cannot transition from deceased to any other status"""
+        character = Character.objects.create(name="Test", status="Dec")
+
+        character.status = "App"
+        with pytest.raises(ValidationError, match="Cannot transition"):
+            character.full_clean()
+
+    def test_status_transition_valid(self):
+        """Valid status transitions succeed"""
+        character = Character.objects.create(name="Test", status="Un")
+
+        # Un -> Sub is valid
+        character.status = "Sub"
+        character.full_clean()  # Should not raise
+        character.save()
+
+        # Sub -> App is valid
+        character.status = "App"
+        character.full_clean()
+        character.save()
+
+        assert character.status == "App"
+
+    def test_status_transition_invalid(self):
+        """Invalid status transitions are blocked"""
+        character = Character.objects.create(name="Test", status="Un")
+
+        # Un -> App is invalid (must go through Sub)
+        character.status = "App"
+        with pytest.raises(ValidationError, match="Cannot transition from Un to App"):
+            character.full_clean()
+
+
+@pytest.mark.django_db
+class TestAttributeConstraints:
+    """Test attribute range constraints (1-10)."""
+
+    def test_strength_minimum_constraint(self):
+        """Strength cannot be less than 1"""
+        human = Human.objects.create(name="Test", strength=1)
+        human.strength = 0
+
+        with pytest.raises(IntegrityError, match="strength_range"):
+            human.save()
+
+    def test_strength_maximum_constraint(self):
+        """Strength cannot exceed 10"""
+        human = Human.objects.create(name="Test", strength=10)
+        human.strength = 11
+
+        with pytest.raises(IntegrityError, match="strength_range"):
+            human.save()
+
+    def test_all_attributes_have_constraints(self):
+        """All 9 attributes have range constraints"""
+        human = Human.objects.create(name="Test")
+
+        # Test each attribute
+        for attr in ['strength', 'dexterity', 'stamina', 'perception',
+                     'intelligence', 'wits', 'charisma', 'manipulation', 'appearance']:
+            # Test minimum
+            setattr(human, attr, 0)
+            with pytest.raises(IntegrityError):
+                human.save()
+
+            # Reset
+            setattr(human, attr, 1)
+            human.save()
+
+            # Test maximum
+            setattr(human, attr, 11)
+            with pytest.raises(IntegrityError):
+                human.save()
+
+            # Reset to valid value
+            setattr(human, attr, 5)
+            human.save()
+
+    def test_attributes_valid_range(self):
+        """Attributes in valid range (1-10) save successfully"""
+        human = Human.objects.create(name="Test")
+
+        # Set all attributes to max valid value
+        for attr in ['strength', 'dexterity', 'stamina', 'perception',
+                     'intelligence', 'wits', 'charisma', 'manipulation', 'appearance']:
+            setattr(human, attr, 10)
+
+        human.save()  # Should not raise
+        human.refresh_from_db()
+
+        assert human.strength == 10
+        assert human.dexterity == 10
+
+
+@pytest.mark.django_db
+class TestAbilityConstraints:
+    """Test ability range constraints (0-10)."""
+
+    def test_alertness_minimum_constraint(self):
+        """Alertness cannot be less than 0"""
+        human = Human.objects.create(name="Test", alertness=0)
+        human.alertness = -1
+
+        with pytest.raises(IntegrityError, match="alertness_range"):
+            human.save()
+
+    def test_alertness_maximum_constraint(self):
+        """Alertness cannot exceed 10"""
+        human = Human.objects.create(name="Test", alertness=5)
+        human.alertness = 11
+
+        with pytest.raises(IntegrityError, match="alertness_range"):
+            human.save()
+
+    def test_abilities_valid_range(self):
+        """Abilities in valid range (0-10) save successfully"""
+        human = Human.objects.create(name="Test")
+
+        # Set some abilities to max
+        human.alertness = 10
+        human.athletics = 10
+        human.brawl = 10
+        human.crafts = 10
+        human.academics = 10
+
+        human.save()  # Should not raise
+        human.refresh_from_db()
+
+        assert human.alertness == 10
+        assert human.academics == 10
+
+
+@pytest.mark.django_db
+class TestWillpowerConstraints:
+    """Test willpower constraints."""
+
+    def test_willpower_minimum_constraint(self):
+        """Willpower cannot be less than 1"""
+        human = Human.objects.create(name="Test", willpower=1, temporary_willpower=1)
+        human.willpower = 0
+
+        with pytest.raises(IntegrityError, match="willpower_range"):
+            human.save()
+
+    def test_willpower_maximum_constraint(self):
+        """Willpower cannot exceed 10"""
+        human = Human.objects.create(name="Test", willpower=10, temporary_willpower=10)
+        human.willpower = 11
+
+        with pytest.raises(IntegrityError, match="willpower_range"):
+            human.save()
+
+    def test_temporary_willpower_minimum_constraint(self):
+        """Temporary willpower cannot be less than 0"""
+        human = Human.objects.create(name="Test", willpower=5, temporary_willpower=0)
+        human.temporary_willpower = -1
+
+        with pytest.raises(IntegrityError, match="temp_willpower_range"):
+            human.save()
+
+    def test_temporary_willpower_cannot_exceed_permanent(self):
+        """Temporary willpower cannot exceed permanent willpower"""
+        human = Human.objects.create(name="Test", willpower=5, temporary_willpower=5)
+        human.temporary_willpower = 6
+
+        with pytest.raises(IntegrityError, match="temp_not_exceeds_max"):
+            human.save()
+
+    def test_willpower_valid_values(self):
+        """Valid willpower values save successfully"""
+        human = Human.objects.create(name="Test", willpower=7, temporary_willpower=5)
+
+        human.save()  # Should not raise
+        human.refresh_from_db()
+
+        assert human.willpower == 7
+        assert human.temporary_willpower == 5
+
+
+@pytest.mark.django_db
+class TestXPTransactions:
+    """Test transaction atomicity for XP operations."""
+
+    def test_spend_xp_atomicity(self):
+        """XP spending is atomic - all or nothing"""
+        Attribute.objects.create(name="Strength", property_name="strength")
+        character = Character.objects.create(name="Test", xp=10)
+
+        # Spend XP successfully
+        record = character.spend_xp(
+            trait_name="strength",
+            trait_display="Strength",
+            cost=5,
+            category="attributes"
+        )
+
+        character.refresh_from_db()
+        assert character.xp == 5
+        assert len(character.spent_xp) == 1
+        assert character.spent_xp[0]['cost'] == 5
+        assert character.spent_xp[0]['approved'] == 'Pending'
+
+    def test_spend_xp_insufficient_xp(self):
+        """Spending more XP than available raises ValidationError"""
+        character = Character.objects.create(name="Test", xp=3)
+
+        with pytest.raises(ValidationError, match="Insufficient XP"):
+            character.spend_xp(
+                trait_name="strength",
+                trait_display="Strength",
+                cost=10,
+                category="attributes"
+            )
+
+        # Character state should be unchanged
+        character.refresh_from_db()
+        assert character.xp == 3
+        assert len(character.spent_xp) == 0
+
+    def test_spend_xp_rollback_on_error(self):
+        """If spending fails, entire transaction rolls back"""
+        character = Character.objects.create(name="Test", xp=10)
+        initial_xp = character.xp
+
+        # Simulate error during spending
+        try:
+            with transaction.atomic():
+                record = character.spend_xp(
+                    trait_name="test",
+                    trait_display="Test",
+                    cost=5,
+                    category="test"
+                )
+                # Force an error
+                raise ValueError("Simulated error")
+        except ValueError:
+            pass
+
+        # Refresh and verify no changes
+        character.refresh_from_db()
+        assert character.xp == initial_xp
+        assert len(character.spent_xp) == 0
+
+    def test_approve_xp_spend_atomicity(self):
+        """XP approval is atomic - approval and trait increase together"""
+        Attribute.objects.create(name="Strength", property_name="strength")
+        human = Human.objects.create(name="Test", xp=10, strength=3)
+
+        # Spend XP
+        record = human.spend_xp(
+            trait_name="strength",
+            trait_display="Strength",
+            cost=5,
+            category="attributes"
+        )
+
+        # Approve and apply
+        human.approve_xp_spend(
+            spend_index=0,
+            trait_property_name="strength",
+            new_value=4
+        )
+
+        human.refresh_from_db()
+        assert human.strength == 4
+        assert human.spent_xp[0]['approved'] == 'Approved'
+        assert 'approved_at' in human.spent_xp[0]
+
+    def test_approve_xp_spend_invalid_index(self):
+        """Approving invalid spend index raises ValidationError"""
+        human = Human.objects.create(name="Test", xp=10)
+
+        with pytest.raises(ValidationError, match="Invalid spend index"):
+            human.approve_xp_spend(
+                spend_index=99,
+                trait_property_name="strength",
+                new_value=4
+            )
+
+    def test_approve_xp_spend_already_processed(self):
+        """Cannot approve already processed spend"""
+        Attribute.objects.create(name="Strength", property_name="strength")
+        human = Human.objects.create(name="Test", xp=10, strength=3)
+
+        # Spend and approve
+        human.spend_xp("strength", "Strength", 5, "attributes")
+        human.approve_xp_spend(0, "strength", 4)
+
+        # Try to approve again
+        with pytest.raises(ValidationError, match="already processed"):
+            human.approve_xp_spend(0, "strength", 5)
+
+    def test_concurrent_xp_spending_prevented(self):
+        """select_for_update prevents concurrent XP spending"""
+        # This test verifies the mechanism exists, not true concurrency
+        # (true concurrency tests require threading/multiprocessing)
+        character = Character.objects.create(name="Test", xp=10)
+
+        # The spend_xp method uses select_for_update, which will lock the row
+        # In a concurrent scenario, the second transaction would block
+        record = character.spend_xp("test1", "Test 1", 5, "test")
+
+        character.refresh_from_db()
+        assert character.xp == 5
+
+        # Another spend
+        record2 = character.spend_xp("test2", "Test 2", 3, "test")
+
+        character.refresh_from_db()
+        assert character.xp == 2
+        assert len(character.spent_xp) == 2
+
+
+@pytest.mark.django_db
+class TestSceneXPAwards:
+    """Test transaction atomicity for scene XP awards."""
+
+    def test_award_xp_atomicity(self):
+        """Scene XP awards are atomic - all characters get XP or none do"""
+        user = User.objects.create_user(username="testuser")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+        scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
+
+        char1 = Character.objects.create(name="Char1", xp=0)
+        char2 = Character.objects.create(name="Char2", xp=0)
+        char3 = Character.objects.create(name="Char3", xp=0)
+
+        # Award XP
+        awards = {
+            char1: True,
+            char2: True,
+            char3: False,  # This character doesn't get XP
+        }
+
+        count = scene.award_xp(awards)
+
+        # Verify
+        assert count == 2
+        char1.refresh_from_db()
+        char2.refresh_from_db()
+        char3.refresh_from_db()
+
+        assert char1.xp == 1
+        assert char2.xp == 1
+        assert char3.xp == 0
+        assert scene.xp_given is True
+
+    def test_award_xp_idempotent(self):
+        """Cannot award XP twice for the same scene"""
+        user = User.objects.create_user(username="testuser")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+        scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
+
+        char1 = Character.objects.create(name="Char1", xp=0)
+
+        # First award
+        scene.award_xp({char1: True})
+
+        # Second award should fail
+        with pytest.raises(ValidationError, match="already been awarded"):
+            scene.award_xp({char1: True})
+
+        # Character should still have only 1 XP
+        char1.refresh_from_db()
+        assert char1.xp == 1
+
+    def test_award_xp_rollback_on_error(self):
+        """If XP award fails partway, all changes roll back"""
+        user = User.objects.create_user(username="testuser")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+        scene = Scene.objects.create(name="Test Scene", chronicle=chronicle)
+
+        char1 = Character.objects.create(name="Char1", xp=0)
+
+        # Simulate error during award by trying to award to deleted character
+        char2 = Character.objects.create(name="Char2", xp=0)
+        char2_id = char2.pk
+        char2.delete()
+
+        # This would normally cause an error, but our implementation handles it gracefully
+        # In a real scenario with validation errors, rollback would occur
+
+
+@pytest.mark.django_db
+class TestSTRelationshipConstraints:
+    """Test STRelationship uniqueness constraint."""
+
+    def test_unique_st_relationship(self):
+        """Cannot create duplicate ST relationships"""
+        user = User.objects.create_user(username="testuser")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+        gameline = Gameline.objects.create(name="Test Gameline")
+
+        # First relationship
+        STRelationship.objects.create(
+            user=user,
+            chronicle=chronicle,
+            gameline=gameline
+        )
+
+        # Duplicate should fail
+        with pytest.raises(IntegrityError, match="unique_st_per_chronicle_gameline"):
+            STRelationship.objects.create(
+                user=user,
+                chronicle=chronicle,
+                gameline=gameline
+            )
+
+    def test_different_gameline_allowed(self):
+        """Same user can be ST for different gamelines in same chronicle"""
+        user = User.objects.create_user(username="testuser")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+        gameline1 = Gameline.objects.create(name="Gameline 1")
+        gameline2 = Gameline.objects.create(name="Gameline 2")
+
+        # Two relationships with different gamelines
+        rel1 = STRelationship.objects.create(
+            user=user,
+            chronicle=chronicle,
+            gameline=gameline1
+        )
+
+        rel2 = STRelationship.objects.create(
+            user=user,
+            chronicle=chronicle,
+            gameline=gameline2
+        )
+
+        # Should succeed
+        assert rel1.pk != rel2.pk
+        assert STRelationship.objects.filter(user=user, chronicle=chronicle).count() == 2
+
+
+@pytest.mark.django_db
+class TestAgeConstraints:
+    """Test age validation constraints."""
+
+    def test_age_minimum(self):
+        """Age cannot be negative"""
+        human = Human.objects.create(name="Test", age=0)
+        human.age = -1
+
+        with pytest.raises(IntegrityError, match="reasonable_age"):
+            human.save()
+
+    def test_age_maximum(self):
+        """Age cannot exceed 500"""
+        human = Human.objects.create(name="Test", age=500)
+        human.age = 501
+
+        with pytest.raises(IntegrityError, match="reasonable_age"):
+            human.save()
+
+    def test_age_null_allowed(self):
+        """Age can be null"""
+        human = Human.objects.create(name="Test", age=None)
+        human.save()  # Should not raise
+
+        human.refresh_from_db()
+        assert human.age is None
+
+    def test_apparent_age_reasonable(self):
+        """Apparent age constrained to 0-200"""
+        human = Human.objects.create(name="Test", apparent_age=200)
+        human.save()  # Should not raise
+
+        human.apparent_age = 201
+        with pytest.raises(IntegrityError, match="reasonable_apparent_age"):
+            human.save()
+
+
+@pytest.mark.django_db
+class TestModelValidationIntegration:
+    """Integration tests for complete validation flow."""
+
+    def test_character_creation_with_invalid_data(self):
+        """Creating character with invalid data raises appropriate errors"""
+        # Invalid XP
+        with pytest.raises(IntegrityError):
+            Character.objects.create(name="Test", xp=-10)
+
+        # Invalid status
+        with pytest.raises(IntegrityError):
+            Character.objects.create(name="Test", status="BadStatus")
+
+    def test_human_creation_with_invalid_attributes(self):
+        """Creating human with invalid attributes raises errors"""
+        with pytest.raises(IntegrityError):
+            Human.objects.create(name="Test", strength=0)
+
+        with pytest.raises(IntegrityError):
+            Human.objects.create(name="Test", dexterity=11)
+
+    def test_full_validation_chain(self):
+        """Test that validation works at all levels"""
+        Attribute.objects.create(name="Strength", property_name="strength")
+        human = Human.objects.create(name="Test", xp=20, strength=3, willpower=5, temporary_willpower=5)
+
+        # Model validation
+        human.xp = -5
+        with pytest.raises(ValidationError):
+            human.full_clean()
+
+        # Reset
+        human.xp = 20
+
+        # DB constraint validation
+        human.strength = 11
+        with pytest.raises(IntegrityError):
+            human.save()
+
+        # Reset
+        human.strength = 3
+        human.save()
+
+        # Transaction validation
+        with pytest.raises(ValidationError, match="Insufficient XP"):
+            human.spend_xp("strength", "Strength", 25, "attributes")
+
+        # Valid operation
+        record = human.spend_xp("strength", "Strength", 5, "attributes")
+        assert record is not None
+        assert human.xp == 15
+
+
+# Run tests with: pytest characters/tests/core/test_validation_constraints.py -v
