@@ -36,8 +36,10 @@ from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.forms import ValidationError
@@ -716,7 +718,7 @@ class MageDetailView(HumanDetailView):
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
-class MageCreateView(CreateView):
+class MageCreateView(MessageMixin, CreateView):
     model = Mage
     fields = [
         "name",
@@ -852,6 +854,8 @@ class MageCreateView(CreateView):
         "public_info",
     ]
     template_name = "characters/mage/mage/form.html"
+    success_message = "Mage '{name}' created successfully!"
+    error_message = "Failed to create mage. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -861,7 +865,7 @@ class MageCreateView(CreateView):
         return form
 
 
-class MageUpdateView(SpecialUserMixin, UpdateView):
+class MageUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "name",
@@ -997,6 +1001,8 @@ class MageUpdateView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/mage/form.html"
+    success_message = "Mage '{name}' updated successfully!"
+    error_message = "Failed to update mage. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1026,7 +1032,18 @@ class MageBasicsView(LoginRequiredMixin, FormView):
         self.object = form.save()
         self.object.willpower = 5
         self.object.save()
+        messages.success(
+            self.request,
+            f"Mage '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
