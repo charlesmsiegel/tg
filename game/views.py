@@ -3,6 +3,8 @@ import itertools
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import OuterRef, Subquery
@@ -86,21 +88,23 @@ class ChronicleDetailView(LoginRequiredMixin, View):
 
         # Check if user is a storyteller for this chronicle
         if not request.user.profile.is_st():
+            messages.error(request, "Only storytellers can create stories and scenes.")
             raise PermissionDenied("Only storytellers can create stories and scenes")
 
         create_story_flag = request.POST.get("create_story")
         create_scene_flag = request.POST.get("create_scene")
         if create_story_flag is not None:
-            Story.objects.create(name=request.POST["name"])
+            story = Story.objects.create(name=request.POST["name"])
+            messages.success(request, f"Story '{story.name}' created successfully!")
         if create_scene_flag is not None:
             location = get_object_or_404(LocationModel, pk=request.POST["location"])
-            return redirect(
-                chronicle.add_scene(
-                    request.POST["name"],
-                    location,
-                    date_of_scene=request.POST["date_of_scene"],
-                )
+            scene = chronicle.add_scene(
+                request.POST["name"],
+                location,
+                date_of_scene=request.POST["date_of_scene"],
             )
+            messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
+            return redirect(scene)
         return render(request, "game/chronicle/detail.html", context)
 
 
@@ -141,16 +145,20 @@ class SceneDetailView(LoginRequiredMixin, View):
         if "close_scene" in request.POST.keys():
             # Only storytellers can close scenes
             if not request.user.profile.is_st():
+                messages.error(request, "Only storytellers can close scenes.")
                 raise PermissionDenied("Only storytellers can close scenes")
             context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.close()
+            messages.success(request, f"Scene '{scene.name}' closed successfully!")
         elif "character_to_add" in request.POST.keys():
             c = get_object_or_404(CharacterModel, pk=request.POST["character_to_add"])
             # Check that user owns the character
             if c.owner != request.user:
+                messages.error(request, "You can only add your own characters.")
                 raise PermissionDenied("You can only add your own characters")
             context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.add_character(c)
+            messages.success(request, f"Character '{c.name}' added to scene!")
         elif "message" in request.POST.keys():
             context["post_form"] = context["post_form"](
                 request.POST, user=request.user, scene=scene
@@ -164,15 +172,20 @@ class SceneDetailView(LoginRequiredMixin, View):
                     )
                 # Check that user owns the character
                 if character.owner != request.user:
+                    messages.error(request, "You can only post as your own characters.")
                     raise PermissionDenied("You can only post as your own characters")
                 try:
                     message = self.straighten_quotes(request.POST["message"])
                     scene.add_post(character, request.POST["display_name"], message)
+                    messages.success(request, "Post added successfully!")
                     context["post_form"] = PostForm(user=request.user, scene=scene)
                 except ValueError:
                     context["post_form"].add_error(
                         None, "Command does not match the expected format."
                     )
+                    messages.error(request, "Command does not match the expected format.")
+            else:
+                messages.error(request, "Failed to create post. Please check your input.")
         context = self.get_context(kwargs["pk"], request.user)
         context["post_form"] = context["post_form"](
             user=request.user, scene=context["object"]
@@ -272,6 +285,9 @@ class JournalDetailView(SpecialUserMixin, DetailView):
             f = JournalEntryForm(request.POST, instance=self.object)
             if f.is_valid():
                 f.save()
+                messages.success(request, "Journal entry added successfully!")
+            else:
+                messages.error(request, "Failed to add journal entry. Please check your input.")
         if submit_response is not None:
             tmp = [x for x in request.POST.keys() if "entry" in x][0]
             tmp = tmp.split("-")[1]
@@ -282,6 +298,9 @@ class JournalDetailView(SpecialUserMixin, DetailView):
             )
             if f.is_valid():
                 f.save()
+                messages.success(request, "ST response added successfully!")
+            else:
+                messages.error(request, "Failed to add ST response. Please check your input.")
         return render(
             request, "game/journal/detail.html", self.get_context_data(**kwargs)
         )
@@ -316,19 +335,23 @@ class StoryListView(ListView):
     template_name = "game/story/list.html"
 
 
-class StoryCreateView(CreateView):
+class StoryCreateView(MessageMixin, CreateView):
     model = Story
     fields = ["name"]
     template_name = "game/story/form.html"
+    success_message = "Story '{name}' created successfully!"
+    error_message = "Failed to create story. Please correct the errors below."
 
     def get_success_url(self):
         return reverse("game:story:detail", kwargs={"pk": self.object.pk})
 
 
-class StoryUpdateView(UpdateView):
+class StoryUpdateView(MessageMixin, UpdateView):
     model = Story
     fields = ["name"]
     template_name = "game/story/form.html"
+    success_message = "Story '{name}' updated successfully!"
+    error_message = "Failed to update story. Please correct the errors below."
 
     def get_success_url(self):
         return reverse("game:story:detail", kwargs={"pk": self.object.pk})

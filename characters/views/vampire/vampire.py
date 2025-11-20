@@ -2,6 +2,7 @@ from typing import Any
 
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.human import HumanDetailView
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 
@@ -20,7 +21,7 @@ class VampireDetailView(HumanDetailView):
         return context
 
 
-class VampireCreateView(CreateView):
+class VampireCreateView(MessageMixin, CreateView):
     model = Vampire
     fields = [
         "name",
@@ -37,9 +38,11 @@ class VampireCreateView(CreateView):
         "path",
     ]
     template_name = "characters/vampire/vampire/form.html"
+    success_message = "Vampire '{name}' created successfully!"
+    error_message = "Failed to create vampire. Please correct the errors below."
 
 
-class VampireUpdateView(UpdateView):
+class VampireUpdateView(MessageMixin, UpdateView):
     model = Vampire
     fields = [
         "name",
@@ -92,6 +95,8 @@ class VampireUpdateView(UpdateView):
         "visceratika",
     ]
     template_name = "characters/vampire/vampire/form.html"
+    success_message = "Vampire '{name}' updated successfully!"
+    error_message = "Failed to update vampire. Please correct the errors below."
 
 
 class VampireListView(ListView):

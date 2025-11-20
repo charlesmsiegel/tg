@@ -23,7 +23,9 @@ from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -55,7 +57,18 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         else:
             self.object.path_rating = 0
         self.object.save()
+        messages.success(
+            self.request,
+            f"Vampire '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -156,6 +169,10 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
             form.add_error(
                 None, f"You must spend exactly 3 dots on Disciplines. Currently: {total_disciplines}"
             )
+            messages.error(
+                self.request,
+                f"Discipline allocation error: You must spend exactly 3 dots. You have {total_disciplines}."
+            )
             return self.form_invalid(form)
 
         # Verify all disciplines are in-clan
@@ -170,10 +187,15 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
                         field,
                         f"You can only spend starting dots on clan Disciplines."
                     )
+                    messages.error(
+                        self.request,
+                        "You can only allocate starting dots to your clan's Disciplines."
+                    )
                     return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Disciplines allocated successfully!")
         return super().form_valid(form)
 
 
@@ -233,6 +255,10 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
 
         if total != 7:
             form.add_error(None, f"Virtues must total 7 dots. Currently: {total}")
+            messages.error(
+                self.request,
+                f"Virtue allocation error: You must spend exactly 7 dots. You have {total}."
+            )
             return self.form_invalid(form)
 
         # Update dependent values
@@ -249,6 +275,7 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Virtues allocated successfully!")
         return super().form_valid(form)
 
 
@@ -290,6 +317,7 @@ class VampireExtrasView(SpecialUserMixin, UpdateView):
     def form_valid(self, form):
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
 
 
