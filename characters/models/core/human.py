@@ -13,6 +13,8 @@ from characters.models.core.specialty import Specialty
 from core.models import Language
 from core.utils import add_dot
 from django.db import models
+from django.db.models import CheckConstraint, Q, F
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Human(
@@ -82,12 +84,26 @@ class Human(
 
     languages = models.ManyToManyField(Language, blank=True)
 
-    willpower = models.IntegerField(default=3)
-    temporary_willpower = models.IntegerField(default=3)
+    willpower = models.IntegerField(
+        default=3,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    temporary_willpower = models.IntegerField(
+        default=3,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
     derangements = models.ManyToManyField("Derangement", blank=True)
 
-    age = models.IntegerField(blank=True, null=True)
-    apparent_age = models.IntegerField(blank=True, null=True)
+    age = models.IntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(500)]
+    )
+    apparent_age = models.IntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(200)]
+    )
     date_of_birth = models.DateField(blank=True, null=True)
 
     history = models.TextField(default="", blank=True, null=True)
@@ -101,6 +117,38 @@ class Human(
         verbose_name = "Human"
         verbose_name_plural = "Humans"
         ordering = ["name"]
+        constraints = [
+            # Willpower must be between 1 and 10
+            CheckConstraint(
+                check=Q(willpower__gte=1, willpower__lte=10),
+                name='characters_human_willpower_range',
+                violation_error_message="Willpower must be between 1 and 10"
+            ),
+            # Temporary willpower must be between 0 and 10
+            CheckConstraint(
+                check=Q(temporary_willpower__gte=0, temporary_willpower__lte=10),
+                name='characters_human_temp_willpower_range',
+                violation_error_message="Temporary willpower must be between 0 and 10"
+            ),
+            # Temporary willpower cannot exceed permanent willpower
+            CheckConstraint(
+                check=Q(temporary_willpower__lte=F('willpower')),
+                name='characters_human_temp_not_exceeds_max',
+                violation_error_message="Temporary willpower cannot exceed permanent willpower"
+            ),
+            # Age must be reasonable if provided
+            CheckConstraint(
+                check=Q(age__isnull=True) | Q(age__gte=0, age__lte=500),
+                name='characters_human_reasonable_age',
+                violation_error_message="Age must be between 0 and 500"
+            ),
+            # Apparent age must be reasonable if provided
+            CheckConstraint(
+                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=200),
+                name='characters_human_reasonable_apparent_age',
+                violation_error_message="Apparent age must be between 0 and 200"
+            ),
+        ]
 
     def total_freebies(self):
         return self.freebies + sum([x["cost"] for x in self.spent_freebies])

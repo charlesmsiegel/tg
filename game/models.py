@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from core.utils import dice
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Max, OuterRef, Subquery
 from django.urls import reverse
 from django.utils.timezone import (  # ensure timezone-aware now if using TIME_ZONE settings
@@ -165,6 +165,13 @@ class STRelationship(models.Model):
 
     class Meta:
         ordering = ["gameline__id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'chronicle', 'gameline'],
+                name='unique_st_per_chronicle_gameline',
+                violation_error_message="User is already a storyteller for this gameline in this chronicle"
+            ),
+        ]
 
 
 class Story(models.Model):
@@ -372,18 +379,46 @@ class Scene(models.Model):
     def most_recent_post(self):
         return Post.objects.filter(scene=self).order_by("-datetime_created").first()
 
+    @transaction.atomic
     def award_xp(self, character_awards):
         """Award XP to characters based on dict of {character: bool}.
+
+        This operation is atomic - either all characters receive XP or none do.
 
         Args:
             character_awards: Dict mapping Character objects to bool indicating
                              whether they should receive XP.
+
+        Raises:
+            ValidationError: If XP has already been awarded for this scene
         """
-        self.xp_given = True
+        from django.core.exceptions import ValidationError
+
+        # Lock the scene to prevent concurrent awards
+        scene = Scene.objects.select_for_update().get(pk=self.pk)
+
+        if scene.xp_given:
+            raise ValidationError(
+                "XP has already been awarded for this scene",
+                code='xp_already_given'
+            )
+
+        # Award to all characters atomically
+        from characters.models import Character
+        awarded_count = 0
         for char, should_award in character_awards.items():
             if should_award:
-                char.add_xp(1)
-        self.save()
+                # Lock each character row to prevent race conditions
+                locked_char = Character.objects.select_for_update().get(pk=char.pk)
+                locked_char.xp += 1
+                locked_char.save(update_fields=['xp'])
+                awarded_count += 1
+
+        # Mark scene as complete
+        scene.xp_given = True
+        scene.save(update_fields=['xp_given'])
+
+        return awarded_count
 
 
 class UserSceneReadStatus(models.Model):
