@@ -2,6 +2,37 @@
 
 This document describes the custom Django management commands available in this project.
 
+## Quick Reference
+
+**Database Management & Seeding**
+- `populate_gamedata` - Load game data from populate_db/
+- `reset_demo_data` - Reset to demo/test state ⚠️
+- `populate_test_chronicle` - Create test data for chronicle
+
+**Character & Data Maintenance**
+- `validate_character_data` - Validate character integrity
+- `audit_xp_spending` - Audit XP calculations
+- `find_duplicate_objects` - Find duplicate objects
+- `sync_character_status` - Sync status with organizations
+- `cleanup_orphaned_data` - Remove orphaned data
+- `cleanup_old_weeks` - Clean up old Week objects
+
+**Chronicle & Campaign Management**
+- `export_chronicle` - Export chronicle to JSON
+- `import_chronicle` - Import chronicle from JSON
+- `archive_inactive_chronicles` - Identify/archive inactive chronicles
+- `generate_chronicle_summary` - Generate statistics report
+
+**XP & Approval Workflows**
+- `process_weekly_xp` - Process weekly XP awards
+- `approve_pending_items` - Bulk approve pending items
+
+**Reporting & Analytics**
+- `generate_st_report` - Generate ST dashboard report
+- `audit_user_permissions` - Audit user permissions
+
+---
+
 ## Database Management & Seeding
 
 ### populate_gamedata
@@ -240,6 +271,274 @@ python manage.py process_weekly_xp --notify
 4. Optionally auto-approves and awards XP
 5. Can send notifications to Storytellers
 
+### sync_character_status
+
+Sync character status and remove retired/deceased from organizations.
+
+**Usage**:
+```bash
+# Sync all retired/deceased characters
+python manage.py sync_character_status
+
+# Sync characters in specific chronicle
+python manage.py sync_character_status --chronicle 1
+
+# Also remove from active scenes
+python manage.py sync_character_status --remove-from-scenes
+
+# Fix all characters regardless of status
+python manage.py sync_character_status --fix-all
+
+# Dry run to preview changes
+python manage.py sync_character_status --dry-run
+```
+
+**Removes from**:
+- Groups and leadership positions
+- Chantry memberships and roles
+- Ambassador/investigator/guardian/teacher positions
+- Optionally: active scenes
+
+---
+
+### approve_pending_items
+
+Bulk approve pending items for storytellers.
+
+**Usage**:
+```bash
+# List all pending items
+python manage.py approve_pending_items --list-only
+
+# Approve all pending items
+python manage.py approve_pending_items
+
+# Approve only characters
+python manage.py approve_pending_items --type characters
+
+# Approve only images
+python manage.py approve_pending_items --type images
+
+# Approve items in specific chronicle
+python manage.py approve_pending_items --chronicle 1
+
+# Approve items from specific user
+python manage.py approve_pending_items --owner username
+
+# Auto-approve all images
+python manage.py approve_pending_items --auto-approve-images
+
+# Dry run
+python manage.py approve_pending_items --dry-run
+```
+
+**Approves**:
+- Characters (Sub → App)
+- Images
+- Freebie spends
+- XP spends
+- Weekly/Story XP requests
+
+---
+
+### cleanup_orphaned_data
+
+Clean up orphaned and unused data.
+
+**Usage**:
+```bash
+# Clean up orphaned objects (default: 30 days old)
+python manage.py cleanup_orphaned_data
+
+# Custom age threshold
+python manage.py cleanup_orphaned_data --days 60
+
+# Also clean empty scenes
+python manage.py cleanup_orphaned_data --include-scenes
+
+# Also clean unused setting elements
+python manage.py cleanup_orphaned_data --include-setting-elements
+
+# Dry run
+python manage.py cleanup_orphaned_data --dry-run
+```
+
+**Removes**:
+- Orphaned characters/items/locations (no owner, unfinished, old)
+- Empty scenes (no posts, no participants)
+- Unused setting elements
+- Orphaned XP requests
+
+---
+
+### archive_inactive_chronicles
+
+Identify and archive inactive chronicles.
+
+**Usage**:
+```bash
+# List inactive chronicles (default: 90 days)
+python manage.py archive_inactive_chronicles --list-only
+
+# Custom inactivity threshold
+python manage.py archive_inactive_chronicles --days 180
+
+# Export before archiving
+python manage.py archive_inactive_chronicles --export-before-archive
+
+# Mark as archived
+python manage.py archive_inactive_chronicles --mark-inactive
+```
+
+**Considers inactive if**:
+- No scenes for X days
+- No active scenes
+- No active characters
+
+---
+
+### generate_chronicle_summary
+
+Generate comprehensive chronicle statistics and summary.
+
+**Usage**:
+```bash
+# Generate text summary
+python manage.py generate_chronicle_summary 1
+
+# Save to file
+python manage.py generate_chronicle_summary 1 --output summary.txt
+
+# Generate HTML report
+python manage.py generate_chronicle_summary 1 --format html --output report.html
+
+# Generate Markdown
+python manage.py generate_chronicle_summary 1 --format markdown --output summary.md
+```
+
+**Includes**:
+- Scene statistics
+- Character participation rates
+- XP statistics
+- Player engagement metrics
+- Top active characters
+
+---
+
+### cleanup_old_weeks
+
+Clean up old Week objects to prevent unbounded growth.
+
+**Usage**:
+```bash
+# Delete weeks older than 6 months
+python manage.py cleanup_old_weeks
+
+# Custom threshold
+python manage.py cleanup_old_weeks --months 12
+
+# Keep weeks with pending XP requests
+python manage.py cleanup_old_weeks --keep-with-pending
+
+# Dry run
+python manage.py cleanup_old_weeks --dry-run
+```
+
+---
+
+### audit_user_permissions
+
+Audit user permissions and ST relationships.
+
+**Usage**:
+```bash
+# Basic audit
+python manage.py audit_user_permissions
+
+# Include profile data check
+python manage.py audit_user_permissions --check-profiles
+
+# Export to CSV
+python manage.py audit_user_permissions --export user_audit.csv
+```
+
+**Reports on**:
+- ST relationships by chronicle
+- STs with no active chronicles
+- Profile data completeness (lines/veils/discord)
+
+---
+
+### generate_st_report
+
+Generate dashboard-style report for Storytellers.
+
+**Usage**:
+```bash
+# Report for all chronicles
+python manage.py generate_st_report
+
+# Report for specific ST
+python manage.py generate_st_report --st-username username
+
+# Report for specific chronicle
+python manage.py generate_st_report --chronicle 1
+
+# Save to file
+python manage.py generate_st_report --output st_report.txt
+```
+
+**Shows**:
+- Pending approvals count
+- Active scenes
+- Recent XP requests
+- Character status breakdown
+
+---
+
+## Development & Testing
+
+### reset_demo_data
+
+Reset database to demo/test state. **WARNING: Deletes existing data!**
+
+**Usage**:
+```bash
+# Reset with confirmation
+python manage.py reset_demo_data --confirm
+
+# Preserve user accounts
+python manage.py reset_demo_data --confirm --preserve-users
+```
+
+**Creates**:
+- Demo ST user (demo_st / demo123)
+- Demo player user (demo_player / demo123)
+- Demo chronicle
+
+---
+
+### populate_test_chronicle
+
+Populate a test chronicle with realistic data.
+
+**Usage**:
+```bash
+# Populate with defaults (10 characters, 15 scenes)
+python manage.py populate_test_chronicle --chronicle 1
+
+# Custom amounts
+python manage.py populate_test_chronicle --chronicle 1 --characters 20 --scenes 30
+
+# Specify gameline
+python manage.py populate_test_chronicle --chronicle 1 --gameline mta
+```
+
+**Creates**:
+- Test characters with various statuses
+- Test scenes with participants
+- Test user (test_player / test123)
+
 ---
 
 ## Common Workflows
@@ -276,7 +575,16 @@ python manage.py find_duplicate_objects
 # 2. Delete empty duplicates
 python manage.py find_duplicate_objects --delete-empty
 
-# 3. Validate remaining data
+# 3. Clean orphaned data
+python manage.py cleanup_orphaned_data --include-scenes --include-setting-elements
+
+# 4. Sync character statuses
+python manage.py sync_character_status
+
+# 5. Clean old weeks
+python manage.py cleanup_old_weeks --months 6
+
+# 6. Validate remaining data
 python manage.py validate_character_data
 ```
 
@@ -284,6 +592,39 @@ python manage.py validate_character_data
 ```bash
 # Export chronicle with all data
 python manage.py export_chronicle CHRONICLE_ID --pretty --include-users --output backup_$(date +%Y%m%d).json
+```
+
+### Storyteller Workflow
+```bash
+# 1. Generate ST dashboard
+python manage.py generate_st_report --st-username YOUR_USERNAME
+
+# 2. Review pending approvals
+python manage.py approve_pending_items --list-only
+
+# 3. Approve characters
+python manage.py approve_pending_items --type characters --chronicle YOUR_CHRONICLE_ID
+
+# 4. Approve XP requests
+python manage.py approve_pending_items --type xp-requests
+
+# 5. Generate chronicle summary
+python manage.py generate_chronicle_summary YOUR_CHRONICLE_ID --format html --output summary.html
+```
+
+### Monthly Maintenance
+```bash
+# 1. Archive inactive chronicles
+python manage.py archive_inactive_chronicles --days 90 --list-only
+
+# 2. Clean orphaned data
+python manage.py cleanup_orphaned_data --days 60
+
+# 3. Audit users
+python manage.py audit_user_permissions --check-profiles --export user_audit.csv
+
+# 4. Clean old weeks
+python manage.py cleanup_old_weeks --months 6 --keep-with-pending
 ```
 
 ---
