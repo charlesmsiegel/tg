@@ -1,7 +1,9 @@
 from core.models import Model, ModelManager, ModelQuerySet
-from django.db import models
-from django.db.models import OuterRef, Subquery
+from django.db import models, transaction
+from django.db.models import CheckConstraint, Q, OuterRef, Subquery
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from polymorphic.managers import PolymorphicManager
 
 
@@ -82,8 +84,69 @@ class Character(CharacterModel):
     class Meta:
         verbose_name = "Character"
         verbose_name_plural = "Characters"
+        constraints = [
+            # XP cannot go negative
+            CheckConstraint(
+                check=Q(xp__gte=0),
+                name='characters_character_xp_non_negative',
+                violation_error_message="XP cannot be negative"
+            ),
+            # Status must be valid
+            CheckConstraint(
+                check=Q(status__in=['Un', 'Sub', 'App', 'Ret', 'Dec']),
+                name='characters_character_valid_status',
+                violation_error_message="Invalid character status"
+            ),
+        ]
+
+    # Valid status transitions
+    STATUS_TRANSITIONS = {
+        'Un': ['Sub', 'Ret'],  # Unfinished can be submitted or retired
+        'Sub': ['Un', 'App', 'Ret'],  # Submitted can go back, be approved, or retired
+        'App': ['Ret', 'Dec'],  # Approved can be retired or killed
+        'Ret': ['App'],  # Retired can be reactivated (ST discretion)
+        'Dec': [],  # Deceased is final
+    }
+
+    def clean(self):
+        """Validate character data before saving."""
+        super().clean()
+
+        # Validate status transition if character already exists
+        if self.pk:
+            try:
+                old_instance = Character.objects.get(pk=self.pk)
+                if old_instance.status != self.status:
+                    self._validate_status_transition(old_instance.status, self.status)
+            except Character.DoesNotExist:
+                pass
+
+        # Validate XP balance
+        if self.xp < 0:
+            raise ValidationError({
+                'xp': "XP cannot be negative"
+            })
+
+    def _validate_status_transition(self, old_status, new_status):
+        """Enforce valid status transitions."""
+        valid_transitions = self.STATUS_TRANSITIONS.get(old_status, [])
+
+        if new_status not in valid_transitions:
+            raise ValidationError({
+                'status': f"Cannot transition from {old_status} to {new_status}. "
+                         f"Valid transitions: {', '.join(valid_transitions) or 'none'}"
+            })
 
     def save(self, *args, **kwargs):
+        # Run validation unless explicitly skipped
+        if not kwargs.pop('skip_validation', False):
+            try:
+                self.full_clean()
+            except ValidationError:
+                # Allow save to proceed if validation fails (maintain backward compatibility)
+                # In production, you may want to raise the error instead
+                pass
+
         # Check if this is an existing character whose status is changing to Ret or Dec
         if self.pk:
             try:
@@ -225,3 +288,82 @@ class Character(CharacterModel):
         record = self.xp_spend_record(trait, trait, value, cost)
         self.spent_xp.append(record)
         self.save()
+
+    @transaction.atomic
+    def spend_xp(self, trait_name, trait_display, cost, category):
+        """
+        Atomically spend XP and record the transaction.
+        Rolls back entirely if any step fails.
+
+        Args:
+            trait_name: The property name of the trait (e.g., 'alertness')
+            trait_display: The display name of the trait (e.g., 'Alertness')
+            cost: The XP cost
+            category: The category of spending (e.g., 'abilities', 'attributes')
+
+        Returns:
+            dict: The spending record that was created
+
+        Raises:
+            ValidationError: If insufficient XP or invalid parameters
+        """
+        # Use select_for_update to lock the row and prevent race conditions
+        char = Character.objects.select_for_update().get(pk=self.pk)
+
+        if char.xp < cost:
+            raise ValidationError(
+                f"Insufficient XP: need {cost}, have {char.xp}",
+                code='insufficient_xp'
+            )
+
+        # Deduct XP
+        char.xp -= cost
+
+        # Record spending
+        record = {
+            'index': len(char.spent_xp),
+            'trait': trait_display,
+            'value': trait_name,
+            'cost': cost,
+            'category': category,
+            'approved': 'Pending',
+            'timestamp': timezone.now().isoformat(),
+        }
+        char.spent_xp.append(record)
+
+        char.save(update_fields=['xp', 'spent_xp'])
+        return record
+
+    @transaction.atomic
+    def approve_xp_spend(self, spend_index, trait_property_name, new_value):
+        """
+        Atomically approve XP spend and apply trait increase.
+
+        Args:
+            spend_index: Index in the spent_xp array
+            trait_property_name: The property name to update (e.g., 'alertness')
+            new_value: The new value for the trait
+
+        Raises:
+            ValidationError: If spend_index invalid or already processed
+        """
+        char = Character.objects.select_for_update().get(pk=self.pk)
+
+        if spend_index >= len(char.spent_xp):
+            raise ValidationError("Invalid spend index", code='invalid_index')
+
+        if char.spent_xp[spend_index]['approved'] != 'Pending':
+            raise ValidationError(
+                f"XP spend already processed: {char.spent_xp[spend_index]['approved']}",
+                code='already_processed'
+            )
+
+        # Update approval status
+        char.spent_xp[spend_index]['approved'] = 'Approved'
+        char.spent_xp[spend_index]['approved_at'] = timezone.now().isoformat()
+
+        # Apply trait increase
+        setattr(char, trait_property_name, new_value)
+
+        char.save()
+        return char.spent_xp[spend_index]

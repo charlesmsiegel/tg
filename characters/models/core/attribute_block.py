@@ -1,6 +1,8 @@
 from characters.models.core.statistic import Statistic
 from core.utils import add_dot
 from django.db import models
+from django.db.models import CheckConstraint, Q
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Attribute(Statistic):
@@ -8,18 +10,93 @@ class Attribute(Statistic):
 
 
 class AttributeBlock(models.Model):
-    strength = models.IntegerField(default=1)
-    dexterity = models.IntegerField(default=1)
-    stamina = models.IntegerField(default=1)
-    perception = models.IntegerField(default=1)
-    intelligence = models.IntegerField(default=1)
-    wits = models.IntegerField(default=1)
-    charisma = models.IntegerField(default=1)
-    manipulation = models.IntegerField(default=1)
-    appearance = models.IntegerField(default=1)
+    strength = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    dexterity = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    stamina = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    perception = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    intelligence = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    wits = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    charisma = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    manipulation = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    appearance = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
 
     class Meta:
         abstract = True
+        constraints = [
+            # All attributes must be between 1 and 10
+            CheckConstraint(
+                check=Q(strength__gte=1, strength__lte=10),
+                name='%(app_label)s_%(class)s_strength_range',
+                violation_error_message="Strength must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(dexterity__gte=1, dexterity__lte=10),
+                name='%(app_label)s_%(class)s_dexterity_range',
+                violation_error_message="Dexterity must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(stamina__gte=1, stamina__lte=10),
+                name='%(app_label)s_%(class)s_stamina_range',
+                violation_error_message="Stamina must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(perception__gte=1, perception__lte=10),
+                name='%(app_label)s_%(class)s_perception_range',
+                violation_error_message="Perception must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(intelligence__gte=1, intelligence__lte=10),
+                name='%(app_label)s_%(class)s_intelligence_range',
+                violation_error_message="Intelligence must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(wits__gte=1, wits__lte=10),
+                name='%(app_label)s_%(class)s_wits_range',
+                violation_error_message="Wits must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(charisma__gte=1, charisma__lte=10),
+                name='%(app_label)s_%(class)s_charisma_range',
+                violation_error_message="Charisma must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(manipulation__gte=1, manipulation__lte=10),
+                name='%(app_label)s_%(class)s_manipulation_range',
+                violation_error_message="Manipulation must be between 1 and 10"
+            ),
+            CheckConstraint(
+                check=Q(appearance__gte=1, appearance__lte=10),
+                name='%(app_label)s_%(class)s_appearance_range',
+                violation_error_message="Appearance must be between 1 and 10"
+            ),
+        ]
 
     def add_attribute(self, attribute, maximum=5):
         return add_dot(self, attribute, maximum)
