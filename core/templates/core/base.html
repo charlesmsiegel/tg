@@ -312,19 +312,25 @@
                 </div>
             </div>
         </nav>
+
+        <!-- Message Display Area -->
+        {% if messages %}
+            {% load sanitize_text %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="tg-message {{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message|sanitize_html }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.5rem; line-height: 1; opacity: 0.5; cursor: pointer;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block content %}
         {% endblock content %}
         {% block footer %}
-            {% load sanitize_text %}
-            {% if messages %}
-                <div class="container py-3">
-                    {% for message in messages %}
-                        <div class="tg-message {{ message.tags }}">
-                            {{ message|sanitize_html }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
         {% endblock footer %}
         {% block extrascripts %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
