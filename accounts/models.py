@@ -116,9 +116,7 @@ class Profile(models.Model):
         Returns a dict mapping Chronicle objects to lists of STRelationship objects.
         Optimized to avoid N+1 query issues.
         """
-        relationships = STRelationship.objects.filter(user=self.user).select_related(
-            "chronicle", "gameline"
-        )
+        relationships = STRelationship.objects.for_user_optimized(self.user)
 
         d = {}
         for rel in relationships:
@@ -128,20 +126,16 @@ class Profile(models.Model):
         return d
 
     def my_characters(self):
-        return Character.objects.filter(owner=self.user)
+        return Character.objects.owned_by(self.user)
 
     def my_locations(self):
-        return LocationModel.objects.filter(owner=self.user)
+        return LocationModel.objects.owned_by(self.user)
 
     def my_items(self):
-        return ItemModel.objects.filter(owner=self.user)
+        return ItemModel.objects.owned_by(self.user)
 
     def xp_requests(self):
-        return Scene.objects.filter(
-            chronicle__in=self.user.chronicle_set.all(),
-            finished=True,
-            xp_given=False,
-        )
+        return Scene.objects.awaiting_xp().for_user_chronicles(self.user)
 
     def xp_story(self):
         return Story.objects.filter(xp_given=False)
@@ -150,22 +144,13 @@ class Profile(models.Model):
         return Week.objects.filter(xp_given=False)
 
     def characters_to_approve(self):
-        return Character.objects.filter(
-            status__in=["Sub"],
-            chronicle__in=self.user.chronicle_set.all(),
-        ).order_by("name")
+        return Character.objects.pending_approval_for_user(self.user)
 
     def items_to_approve(self):
-        return ItemModel.objects.filter(
-            status__in=["Un", "Sub"],
-            chronicle__in=self.user.chronicle_set.all(),
-        ).order_by("name")
+        return ItemModel.objects.pending_approval_for_user(self.user)
 
     def locations_to_approve(self):
-        return LocationModel.objects.filter(
-            status__in=["Un", "Sub"],
-            chronicle__in=self.user.chronicle_set.all(),
-        ).order_by("name")
+        return LocationModel.objects.pending_approval_for_user(self.user)
 
     def rotes_to_approve(self):
         """Get rotes pending approval with their associated mages.
@@ -199,19 +184,13 @@ class Profile(models.Model):
         return f
 
     def character_images_to_approve(self):
-        return Character.objects.filter(
-            chronicle__in=self.user.chronicle_set.all(), image_status="sub"
-        ).exclude(image="")
+        return Character.objects.with_pending_images().for_user_chronicles(self.user)
 
     def location_images_to_approve(self):
-        return LocationModel.objects.filter(
-            chronicle__in=self.user.chronicle_set.all(), image_status="sub"
-        ).exclude(image="")
+        return LocationModel.objects.with_pending_images().for_user_chronicles(self.user)
 
     def item_images_to_approve(self):
-        return ItemModel.objects.filter(
-            chronicle__in=self.user.chronicle_set.all(), image_status="sub"
-        ).exclude(image="")
+        return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
 
     def __str__(self):
         return self.user.username

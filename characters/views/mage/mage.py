@@ -855,7 +855,7 @@ class MageCreateView(CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["affiliation"].queryset = MageFaction.objects.filter(parent=None)
+        form.fields["affiliation"].queryset = MageFaction.objects.top_level()
         form.fields["faction"].queryset = MageFaction.objects.none()
         form.fields["subfaction"].queryset = MageFaction.objects.none()
         return form

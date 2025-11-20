@@ -34,7 +34,7 @@ class SceneAdmin(admin.ModelAdmin):
     list_filter = ("chronicle", "finished", "xp_given", "waiting_for_st")
 
     def num_pcs(self, obj):
-        return obj.characters.filter(npc=False).count()
+        return obj.characters.player_characters().count()
 
     def total_posts(self, obj):
         return obj.total_posts()
