@@ -1,8 +1,25 @@
 from characters.models.core import CharacterModel
-from core.models import Model
+from core.models import Model, ModelManager
 from django.db import models
 from django.urls import reverse
 from game.models import Scene
+
+
+class LocationModelManager(ModelManager):
+    """Custom manager for LocationModel with specialized query patterns."""
+
+    def top_level(self):
+        """Top-level locations (no parent)"""
+        return self.filter(parent=None)
+
+    def pending_approval_for_user(self, user):
+        """Locations awaiting approval in user's chronicles (optimized)"""
+        # Locations use status in ['Un', 'Sub'], different from characters
+        return (
+            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            .select_related("chronicle", "owner")
+            .order_by("name")
+        )
 
 
 class LocationModel(Model):
@@ -23,6 +40,8 @@ class LocationModel(Model):
     shroud = models.IntegerField(default=7)
     dimension_barrier = models.IntegerField(default=6)
     creation_status = models.IntegerField(default=1)
+
+    objects = LocationModelManager()
 
     class Meta:
         verbose_name = "Location"

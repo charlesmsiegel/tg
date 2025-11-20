@@ -1,12 +1,58 @@
-from core.models import Model
+from core.models import Model, ModelManager
 from django.db import models
+from django.db.models import OuterRef, Subquery
 from django.urls import reverse
+
+
+class CharacterManager(ModelManager):
+    """Custom manager for Character with specialized query patterns."""
+
+    def npcs(self):
+        """Non-player characters"""
+        return self.filter(npc=True)
+
+    def player_characters(self):
+        """Player characters (not NPCs)"""
+        return self.filter(npc=False)
+
+    def with_group_ordering(self):
+        """
+        Annotate characters with first group membership and apply standard ordering.
+
+        This complex query is used across multiple character list views to ensure
+        consistent ordering by chronicle, then by first group membership, then by name.
+        """
+        # Import here to avoid circular imports
+        from characters.models.core.group import Group
+
+        CharacterGroup = Group.members.through
+        first_group_id = Subquery(
+            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
+            .order_by("group_id")
+            .values("group_id")[:1]
+        )
+        return (
+            self.annotate(first_group_id=first_group_id)
+            .select_related("chronicle")
+            .order_by("chronicle__id", "-first_group_id", "name")
+        )
+
+    def pending_approval_for_user(self, user):
+        """Characters awaiting approval in user's chronicles (optimized for items vs characters)"""
+        # Characters use status='Sub' only, items use status in ['Un', 'Sub']
+        return (
+            self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
+            .select_related("chronicle", "owner")
+            .order_by("name")
+        )
 
 
 class CharacterModel(Model):
     npc = models.BooleanField(default=False)
 
     gameline = "wod"
+
+    objects = CharacterManager()
 
     class Meta:
         verbose_name = "Character Model"

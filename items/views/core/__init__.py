@@ -127,7 +127,10 @@ class ItemIndexView(View):
 
         chron_dict = {}
         for chron in list(Chronicle.objects.all()) + [None]:
-            c = ItemModel.objects.filter(chronicle=chron).order_by("name")
+            if chron:
+                c = ItemModel.objects.for_chronicle(chron).order_by("name")
+            else:
+                c = ItemModel.objects.filter(chronicle=chron).order_by("name")
             items = [x for x in c if x.type in game_items_types]
 
             c = ItemModel.objects.filter(

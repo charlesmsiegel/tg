@@ -118,25 +118,7 @@ class CharacterIndexView(ListView):
     }
 
     def get_queryset(self):
-        CharacterGroup = Character.group_set.through
-
-        # Subquery to get the first group id for each character
-        first_group_id = Subquery(
-            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
-            .order_by(
-                "group_id"
-            )  # Assuming ordering by 'group_id', adjust if different
-            .values("group_id")[:1]
-        )
-
-        # Annotating the queryset with the first group id
-        characters = (
-            Character.objects.annotate(first_group_id=first_group_id)
-            .select_related("chronicle")
-            .order_by("chronicle__id", "-first_group_id", "name")
-        )
-
-        return characters
+        return Character.objects.with_group_ordering()
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
@@ -186,32 +168,24 @@ class CharacterIndexView(ListView):
         chron_dict = {}
         for chron in list(Chronicle.objects.all()) + [None]:
             chron_dict[chron] = {
-                "active": [
-                    char
-                    for char in self.get_queryset().filter(
+                "active": list(
+                    self.get_queryset().filter(
                         chronicle=chron, status__in=["Un", "Sub", "App"], npc=False
-                    )
-                    if char.display
-                ],
-                "retired": [
-                    char
-                    for char in self.get_queryset().filter(
+                    ).visible()
+                ),
+                "retired": list(
+                    self.get_queryset().filter(
                         chronicle=chron, status="Ret"
-                    )
-                    if char.display
-                ],
-                "deceased": [
-                    char
-                    for char in self.get_queryset().filter(
+                    ).visible()
+                ),
+                "deceased": list(
+                    self.get_queryset().filter(
                         chronicle=chron, status="Dec"
-                    )
-                    if char.display
-                ],
-                "npc": [
-                    char
-                    for char in self.get_queryset().filter(chronicle=chron, npc=True)
-                    if char.display
-                ],
+                    ).visible()
+                ),
+                "npc": list(
+                    self.get_queryset().filter(chronicle=chron, npc=True).visible()
+                ),
             }
 
         context["chron_dict"] = chron_dict
@@ -223,24 +197,7 @@ class RetiredCharacterIndex(ListView):
     template_name = "characters/charlist.html"
 
     def get_queryset(self):
-        CharacterGroup = Character.group_set.through
-
-        # Subquery to get the first group id for each character
-        first_group_id = Subquery(
-            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
-            .order_by(
-                "group_id"
-            )  # Assuming ordering by 'group_id', adjust if different
-            .values("group_id")[:1]
-        )
-
-        # Annotating the queryset with the first group id
-        characters = (
-            Human.objects.filter(status="Ret")
-            .annotate(first_group_id=first_group_id)
-            .select_related("chronicle")
-            .order_by("chronicle__id", "-first_group_id", "name")
-        )
+        characters = Human.objects.retired().with_group_ordering()
 
         chron_pk = self.kwargs.get("pk")
         if chron_pk is not None:
@@ -260,24 +217,7 @@ class DeceasedCharacterIndex(ListView):
     template_name = "characters/charlist.html"
 
     def get_queryset(self):
-        CharacterGroup = Character.group_set.through
-
-        # Subquery to get the first group id for each character
-        first_group_id = Subquery(
-            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
-            .order_by(
-                "group_id"
-            )  # Assuming ordering by 'group_id', adjust if different
-            .values("group_id")[:1]
-        )
-
-        # Annotating the queryset with the first group id
-        characters = (
-            Human.objects.filter(status="Dec")
-            .annotate(first_group_id=first_group_id)
-            .select_related("chronicle")
-            .order_by("chronicle__id", "-first_group_id", "name")
-        )
+        characters = Human.objects.deceased().with_group_ordering()
 
         chron_pk = self.kwargs.get("pk")
         if chron_pk is not None:
@@ -297,24 +237,7 @@ class NPCCharacterIndex(ListView):
     template_name = "characters/charlist.html"
 
     def get_queryset(self):
-        CharacterGroup = Character.group_set.through
-
-        # Subquery to get the first group id for each character
-        first_group_id = Subquery(
-            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
-            .order_by(
-                "group_id"
-            )  # Assuming ordering by 'group_id', adjust if different
-            .values("group_id")[:1]
-        )
-
-        # Annotating the queryset with the first group id
-        characters = (
-            Human.objects.filter(npc=True)
-            .annotate(first_group_id=first_group_id)
-            .select_related("chronicle")
-            .order_by("chronicle__id", "-first_group_id", "name")
-        )
+        characters = Human.objects.npcs().with_group_ordering()
 
         chron_pk = self.kwargs.get("pk")
         if chron_pk is not None:
