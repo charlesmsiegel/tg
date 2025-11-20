@@ -95,7 +95,7 @@ def notification_count(request):
                 # Count scenes needing attention
                 from game.models import Scene
 
-                scenes_attention = Scene.objects.filter(waiting_for_st=True).count()
+                scenes_attention = Scene.objects.waiting_for_st().count()
                 if scenes_attention > 0:
                     breakdown["Scenes Needing Attention"] = scenes_attention
                     count += scenes_attention

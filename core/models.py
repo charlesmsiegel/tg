@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from game.models import Chronicle
 from polymorphic.models import PolymorphicModel
+from polymorphic.managers import PolymorphicManager
 
 
 class Book(models.Model):
@@ -57,6 +58,64 @@ class BookReference(models.Model):
         return f"<i>{self.book}</i> p. {self.page}"
 
 
+class ModelManager(PolymorphicManager):
+    """Custom manager for Model with common query patterns."""
+
+    def submitted(self):
+        """Objects with status='Sub' (Submitted for approval)"""
+        return self.filter(status="Sub")
+
+    def pending_approval(self):
+        """Objects with status in ['Un', 'Sub'] (awaiting approval)"""
+        return self.filter(status__in=["Un", "Sub"])
+
+    def approved(self):
+        """Objects with status='App' (Approved)"""
+        return self.filter(status="App")
+
+    def retired(self):
+        """Objects with status='Ret' (Retired)"""
+        return self.filter(status="Ret")
+
+    def deceased(self):
+        """Objects with status='Dec' (Deceased)"""
+        return self.filter(status="Dec")
+
+    def active(self):
+        """Objects not retired or deceased"""
+        return self.exclude(status__in=["Dec", "Ret"])
+
+    def visible(self):
+        """Objects with display=True"""
+        return self.filter(display=True)
+
+    def for_chronicle(self, chronicle):
+        """Objects in a specific chronicle"""
+        return self.filter(chronicle=chronicle).select_related("chronicle")
+
+    def for_user_chronicles(self, user):
+        """Objects in any of the user's chronicles"""
+        return self.filter(chronicle__in=user.chronicle_set.all()).select_related(
+            "chronicle"
+        )
+
+    def owned_by(self, user):
+        """Objects owned by a specific user"""
+        return self.filter(owner=user).select_related("owner")
+
+    def with_pending_images(self):
+        """Objects with images awaiting approval"""
+        return self.filter(image_status="sub").exclude(image="")
+
+    def pending_approval_for_user(self, user):
+        """Objects awaiting approval in user's chronicles (optimized)"""
+        return (
+            self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
+            .select_related("chronicle", "owner")
+            .order_by("name")
+        )
+
+
 class Model(PolymorphicModel):
     type = "model"
 
@@ -66,6 +125,8 @@ class Model(PolymorphicModel):
     chronicle = models.ForeignKey(
         Chronicle, blank=True, null=True, on_delete=models.SET_NULL
     )
+
+    objects = ModelManager()
 
     status_keys = ["Un", "Sub", "App", "Ret", "Dec"]
     statuses = [

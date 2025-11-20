@@ -38,7 +38,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["scenes_waiting"] = []
         if self.object.is_st():
-            context["scenes_waiting"] = Scene.objects.filter(waiting_for_st=True)
+            context["scenes_waiting"] = Scene.objects.waiting_for_st()
         context["scenexp_forms"] = [
             SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in self.object.xp_requests()
         ]

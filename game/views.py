@@ -42,36 +42,16 @@ class ChronicleDetailView(LoginRequiredMixin, View):
 
     def get_context(self, pk):
         chronicle = get_object_or_404(Chronicle, pk=pk)
-        top_locations = LocationModel.objects.filter(
-            chronicle=chronicle, parent=None
-        ).order_by("name")
-        CharacterGroup = Character.group_set.through
-
-        # Subquery to get the first group id for each character
-        first_group_id = Subquery(
-            CharacterGroup.objects.filter(character_id=OuterRef("pk"))
-            .order_by(
-                "group_id"
-            )  # Assuming ordering by 'group_id', adjust if different
-            .values("group_id")[:1]
-        )
-
-        # Annotating the queryset with the first group id
-        characters = (
-            Character.objects.exclude(status__in=["Dec", "Ret"])
-            .exclude(npc=True)
-            .annotate(first_group_id=first_group_id)
-            .select_related("chronicle")
-            .order_by("chronicle__id", "-first_group_id", "name")
-        )
+        top_locations = LocationModel.objects.top_level().for_chronicle(chronicle).order_by("name")
+        characters = Character.objects.active().player_characters().with_group_ordering()
 
         return {
             "object": chronicle,
             "character_list": characters.filter(chronicle=chronicle),
-            "items": ItemModel.objects.filter(chronicle=chronicle).order_by("name"),
+            "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
             "form": SceneCreationForm(chronicle=chronicle),
             "top_locations": top_locations,
-            "active_scenes": Scene.objects.filter(chronicle=chronicle, finished=False),
+            "active_scenes": Scene.objects.active_for_chronicle(chronicle),
             "story_form": StoryForm(),
             "header": chronicle.headings,
         }
@@ -114,16 +94,16 @@ class SceneDetailView(LoginRequiredMixin, View):
             num_chars = (a.fields["character_to_add"].queryset).count()
             return {
                 "object": scene,
-                "posts": Post.objects.filter(scene=scene).select_related("character"),
+                "posts": Post.objects.for_scene_optimized(scene),
                 "add_char_form": a,
                 "num_chars": num_chars,
-                "num_logged_in_chars": scene.characters.filter(owner=user).count(),
-                "first_char": scene.characters.filter(owner=user).first(),
+                "num_logged_in_chars": scene.characters.owned_by(user).count(),
+                "first_char": scene.characters.owned_by(user).first(),
                 "post_form": PostForm,
             }
         return {
             "object": scene,
-            "posts": Post.objects.filter(scene=scene).select_related("character"),
+            "posts": Post.objects.for_scene_optimized(scene),
         }
 
     def get(self, request, *args, **kwargs):
@@ -227,7 +207,7 @@ class ChronicleScenesDetailView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         chronicle = get_object_or_404(Chronicle, pk=kwargs["pk"])
-        scenes = Scene.objects.filter(chronicle=chronicle).select_related("location")
+        scenes = Scene.objects.for_chronicle(chronicle).with_location()
 
         # Group scenes by year and month
         scenes_grouped = [

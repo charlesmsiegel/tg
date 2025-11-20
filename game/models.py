@@ -148,10 +148,20 @@ class Chronicle(models.Model):
         return s
 
 
+class STRelationshipManager(models.Manager):
+    """Custom manager for STRelationship with optimized queries."""
+
+    def for_user_optimized(self, user):
+        """Get ST relationships for a user with related data pre-fetched"""
+        return self.filter(user=user).select_related("chronicle", "gameline")
+
+
 class STRelationship(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     chronicle = models.ForeignKey(Chronicle, on_delete=models.SET_NULL, null=True)
     gameline = models.ForeignKey(Gameline, on_delete=models.SET_NULL, null=True)
+
+    objects = STRelationshipManager()
 
     class Meta:
         ordering = ["gameline__id"]
@@ -217,6 +227,42 @@ class Week(models.Model):
         )
 
 
+class SceneManager(models.Manager):
+    """Custom manager for Scene with status-based queries."""
+
+    def active(self):
+        """Scenes that are not finished"""
+        return self.filter(finished=False)
+
+    def finished(self):
+        """Scenes that are finished"""
+        return self.filter(finished=True)
+
+    def awaiting_xp(self):
+        """Finished scenes that haven't had XP awarded yet"""
+        return self.filter(finished=True, xp_given=False)
+
+    def waiting_for_st(self):
+        """Scenes waiting for storyteller response"""
+        return self.filter(waiting_for_st=True)
+
+    def with_location(self):
+        """Scenes with location pre-fetched"""
+        return self.select_related("location")
+
+    def for_chronicle(self, chronicle):
+        """Scenes in a specific chronicle"""
+        return self.filter(chronicle=chronicle)
+
+    def active_for_chronicle(self, chronicle):
+        """Active scenes in a specific chronicle"""
+        return self.filter(chronicle=chronicle, finished=False)
+
+    def for_user_chronicles(self, user):
+        """Scenes in any of the user's chronicles"""
+        return self.filter(chronicle__in=user.chronicle_set.all())
+
+
 class Scene(models.Model):
     name = models.CharField(max_length=100, default="")
     chronicle = models.ForeignKey(
@@ -237,6 +283,8 @@ class Scene(models.Model):
     waiting_for_st = models.BooleanField(default=False)
     st_message = models.CharField(max_length=300, default="")
     date_of_scene = models.DateField(default=now, null=True, blank=True)
+
+    objects = SceneManager()
 
     class Meta:
         verbose_name = "Scene"
@@ -343,6 +391,14 @@ class UserSceneReadStatus(models.Model):
         return f"{self.user}-{self.scene}: {self.read}"
 
 
+class PostManager(models.Manager):
+    """Custom manager for Post with optimized queries."""
+
+    def for_scene_optimized(self, scene):
+        """Get posts for a scene with character data pre-fetched"""
+        return self.filter(scene=scene).select_related("character")
+
+
 class Post(models.Model):
     character = models.ForeignKey(
         "characters.CharacterModel", on_delete=models.SET_NULL, null=True
@@ -351,6 +407,8 @@ class Post(models.Model):
     scene = models.ForeignKey("game.Scene", on_delete=models.SET_NULL, null=True)
     message = models.TextField(default="")
     datetime_created = models.DateTimeField(default=now, db_index=True)
+
+    objects = PostManager()
 
     class Meta:
         verbose_name = "Post"

@@ -98,7 +98,7 @@ class SceneXP(forms.Form):
     def __init__(self, *args, **kwargs):
         self.scene = kwargs.pop("scene")
         super().__init__(*args, **kwargs)
-        for character in self.scene.characters.filter(npc=False):
+        for character in self.scene.characters.player_characters():
             self.fields[f"{character.name}"] = forms.BooleanField(required=False)
 
     def save(self):
