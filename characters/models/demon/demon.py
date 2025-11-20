@@ -7,7 +7,7 @@ from characters.models.demon.lore import Lore
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
 from core.utils import add_dot
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 
 
@@ -358,56 +358,68 @@ class Demon(LoreBlock, DtFHuman):
             "virtue": 3,
         }
 
+    @transaction.atomic
     def spend_xp(self, trait):
-        """Spend XP on a trait."""
+        """
+        Spend XP on a trait atomically.
+
+        All XP spending is wrapped in a transaction to prevent race conditions.
+        """
         output = super().spend_xp(trait)
         if output in [True, False]:
             return output
 
+        # Lock the row to prevent concurrent spending
+        demon = Demon.objects.select_for_update().get(pk=self.pk)
+
         # Faith
         if trait == "faith":
-            cost = self.xp_cost("faith") * self.faith
-            if cost <= self.xp:
-                if self.add_faith():
-                    self.xp -= cost
-                    self.add_to_spend(trait, self.faith, cost)
+            cost = demon.xp_cost("faith") * demon.faith
+            if cost <= demon.xp:
+                if demon.add_faith():
+                    demon.xp -= cost
+                    demon.add_to_spend(trait, demon.faith, cost)
+                    demon.save(update_fields=['xp', 'faith', 'spent_xp'])
                     return True
             return False
 
         # Lores
-        if trait in self.get_lores():
-            current_rating = getattr(self, trait)
-            if self.house and trait in [
-                f"lore_of_{lore.property_name}" for lore in self.house.lores.all()
+        if trait in demon.get_lores():
+            current_rating = getattr(demon, trait)
+            if demon.house and trait in [
+                f"lore_of_{lore.property_name}" for lore in demon.house.lores.all()
             ]:
-                cost = self.xp_cost("house_lore") * (current_rating + 1)
+                cost = demon.xp_cost("house_lore") * (current_rating + 1)
             else:
-                cost = self.xp_cost("other_lore") * (current_rating + 1)
+                cost = demon.xp_cost("other_lore") * (current_rating + 1)
 
-            if cost <= self.xp:
-                if self.add_lore(trait):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
+            if cost <= demon.xp:
+                if demon.add_lore(trait):
+                    demon.xp -= cost
+                    demon.add_to_spend(trait, getattr(demon, trait), cost)
+                    demon.save()
                     return True
             return False
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = self.xp_cost("virtue") * getattr(self, trait)
-            if cost <= self.xp:
-                if add_dot(self, trait, 5):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
+            cost = demon.xp_cost("virtue") * getattr(demon, trait)
+            if cost <= demon.xp:
+                if add_dot(demon, trait, 5):
+                    demon.xp -= cost
+                    demon.add_to_spend(trait, getattr(demon, trait), cost)
+                    demon.save()
                     return True
             return False
 
         # Torment reduction
         if trait == "reduce_torment":
-            cost = self.xp_cost("reduce_torment")
-            if cost <= self.xp:
-                if self.reduce_torment():
-                    self.xp -= cost
-                    self.add_to_spend("torment reduction", self.torment, cost)
+            cost = demon.xp_cost("reduce_torment")
+            if cost <= demon.xp:
+                if demon.reduce_torment():
+                    demon.xp -= cost
+                    demon.add_to_spend("torment reduction", demon.torment, cost)
+                    demon.save()
                     return True
             return False
 

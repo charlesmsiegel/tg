@@ -1,6 +1,6 @@
 from characters.models.demon.dtf_human import DtFHuman
 from core.utils import add_dot
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
 
 
@@ -119,30 +119,40 @@ class Thrall(DtFHuman):
             "virtue": 5,
         }
 
+    @transaction.atomic
     def spend_xp(self, trait):
-        """Spend XP on a trait."""
+        """
+        Spend XP on a trait atomically.
+
+        All XP spending is wrapped in a transaction to prevent race conditions.
+        """
         output = super().spend_xp(trait)
         if output in [True, False]:
             return output
 
+        # Lock the row to prevent concurrent spending
+        thrall = Thrall.objects.select_for_update().get(pk=self.pk)
+
         # Faith Potential
         if trait == "faith_potential":
-            cost = self.xp_cost("faith_potential") * self.faith_potential
-            if cost <= self.xp:
-                if self.add_faith_potential():
-                    self.xp -= cost
-                    self.calculate_daily_faith()
-                    self.add_to_spend(trait, self.faith_potential, cost)
+            cost = thrall.xp_cost("faith_potential") * thrall.faith_potential
+            if cost <= thrall.xp:
+                if thrall.add_faith_potential():
+                    thrall.xp -= cost
+                    thrall.calculate_daily_faith()
+                    thrall.add_to_spend(trait, thrall.faith_potential, cost)
+                    thrall.save()
                     return True
             return False
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = self.xp_cost("virtue") * getattr(self, trait)
-            if cost <= self.xp:
-                if add_dot(self, trait, 5):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
+            cost = thrall.xp_cost("virtue") * getattr(thrall, trait)
+            if cost <= thrall.xp:
+                if add_dot(thrall, trait, 5):
+                    thrall.xp -= cost
+                    thrall.add_to_spend(trait, getattr(thrall, trait), cost)
+                    thrall.save()
                     return True
             return False
 

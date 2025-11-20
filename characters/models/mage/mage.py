@@ -15,7 +15,7 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.utils import add_dot, weighted_choice
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 from items.models.core.item import ItemModel
 from locations.models.mage.library import Library
@@ -515,53 +515,66 @@ class Mage(MtAHuman):
             "rote points": 2,
         }
 
+    @transaction.atomic
     def spend_xp(self, trait):
+        """
+        Spend XP on a trait atomically.
+
+        All XP spending is wrapped in a transaction to prevent race conditions.
+        """
         output = super().spend_xp(trait)
         if output in [True, False]:
             return output
+
+        # Lock the row to prevent concurrent spending
+        mage = Mage.objects.select_for_update().get(pk=self.pk)
+
         if trait == "arete":
-            cost = self.xp_cost("arete") * getattr(self, trait)
-            if cost <= self.xp:
-                if self.add_arete():
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
+            cost = mage.xp_cost("arete") * getattr(mage, trait)
+            if cost <= mage.xp:
+                if mage.add_arete():
+                    mage.xp -= cost
+                    mage.add_to_spend(trait, getattr(mage, trait), cost)
+                    mage.save()
                     return True
                 return False
             return False
-        if trait in self.get_spheres():
-            if self.affinity_sphere == trait:
-                cost = self.xp_cost("affinity sphere") * getattr(self, trait)
+        if trait in mage.get_spheres():
+            if mage.affinity_sphere == trait:
+                cost = mage.xp_cost("affinity sphere") * getattr(mage, trait)
             else:
-                cost = self.xp_cost("sphere") * getattr(self, trait)
+                cost = mage.xp_cost("sphere") * getattr(mage, trait)
             if cost == 0:
                 cost = 10
-            if self.merits_and_flaws.filter(
+            if mage.merits_and_flaws.filter(
                 name=f"Sphere Natural - {trait.title()}"
             ).exists():
                 cost *= 0.7
                 if cost % 1 != 0:
                     cost += 1
                 cost = int(cost)
-            if self.merits_and_flaws.filter(
+            if mage.merits_and_flaws.filter(
                 name=f"Sphere Inept - {trait.title()}"
             ).exists():
                 cost *= 1.3
                 if cost % 1 != 0:
                     cost += 1
                 cost = int(cost)
-            if cost <= self.xp:
-                if self.add_sphere(trait):
-                    self.xp -= cost
-                    self.add_to_spend(trait, getattr(self, trait), cost)
+            if cost <= mage.xp:
+                if mage.add_sphere(trait):
+                    mage.xp -= cost
+                    mage.add_to_spend(trait, getattr(mage, trait), cost)
+                    mage.save()
                     return True
                 return False
             return False
         if trait == "rote points":
-            cost = self.xp_cost("rote points")
-            if cost <= self.xp:
-                self.rote_points += 3
-                self.xp -= cost
-                self.add_to_spend(trait, getattr(self, trait.replace(" ", "_")), cost)
+            cost = mage.xp_cost("rote points")
+            if cost <= mage.xp:
+                mage.rote_points += 3
+                mage.xp -= cost
+                mage.add_to_spend(trait, getattr(mage, trait.replace(" ", "_")), cost)
+                mage.save()
                 return True
             return False
         return trait
