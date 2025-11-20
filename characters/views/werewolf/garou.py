@@ -23,7 +23,9 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -43,7 +45,7 @@ class WerewolfDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class WerewolfUpdateView(SpecialUserMixin, UpdateView):
+class WerewolfUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = [
         "name",
@@ -122,6 +124,8 @@ class WerewolfUpdateView(SpecialUserMixin, UpdateView):
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/garou/form.html"
+    success_message = "Werewolf '{name}' updated successfully!"
+    error_message = "Failed to update werewolf. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -131,7 +135,7 @@ class WerewolfUpdateView(SpecialUserMixin, UpdateView):
         return context
 
 
-class WerewolfCreateView(CreateView):
+class WerewolfCreateView(MessageMixin, CreateView):
     model = Werewolf
     fields = [
         "name",
@@ -210,6 +214,8 @@ class WerewolfCreateView(CreateView):
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/garou/form.html"
+    success_message = "Werewolf '{name}' created successfully!"
+    error_message = "Failed to create werewolf. Please correct the errors below."
 
 
 class WerewolfBasicsView(LoginRequiredMixin, FormView):
@@ -230,7 +236,18 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         self.object = form.save()
+        messages.success(
+            self.request,
+            f"Werewolf '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -342,10 +359,15 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
                 "gifts",
                 "You must select exactly one Gift from your Breed, one from your Auspice, and one from your Tribe.",
             )
+            messages.error(
+                self.request,
+                "You must select one Gift from each category: Breed, Auspice, and Tribe."
+            )
             return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Gifts selected successfully!")
         return super().form_valid(form)
 
 
@@ -385,6 +407,7 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
 
         if not first_change or first_change.strip() == "":
             form.add_error("first_change", "You must describe your First Change.")
+            messages.error(self.request, "Please describe your First Change.")
             return self.form_invalid(form)
 
         if age_of_first_change <= 0:
@@ -392,6 +415,7 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
                 "age_of_first_change",
                 "Age of First Change must be greater than 0.",
             )
+            messages.error(self.request, "Age of First Change must be greater than 0.")
             return self.form_invalid(form)
 
         if age_of_first_change >= self.object.age:
@@ -399,10 +423,12 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
                 "age_of_first_change",
                 "Age of First Change must be less than current age.",
             )
+            messages.error(self.request, f"Age of First Change must be less than current age ({self.object.age}).")
             return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "First Change details saved successfully!")
         return super().form_valid(form)
 
 
@@ -430,6 +456,7 @@ class WerewolfExtrasView(SpecialUserMixin, UpdateView):
     def form_valid(self, form):
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
 
     def get_form(self, form_class=None):
