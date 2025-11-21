@@ -10,9 +10,3 @@ def create_user_profile(sender, instance, created, **kwargs):
         from accounts.models import Profile
 
         Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    """Save the Profile whenever the User is saved."""
-    instance.profile.save()
