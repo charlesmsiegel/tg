@@ -203,12 +203,22 @@
                                    sortedTotals.length === TARGETS.length &&
                                    sortedTotals.every((val, idx) => val === TARGETS[idx]);
 
+        // Debug logging
+        console.log('Totals:', totals);
+        console.log('Sorted totals:', sortedTotals);
+        console.log('TARGETS:', TARGETS);
+        console.log('Points remaining:', pointsRemaining);
+        console.log('Is valid distribution:', isValidDistribution);
+        console.log('Submit button found:', !!submitButton);
+
         // Control submit button visibility
         if (submitButton) {
             if (isValidDistribution) {
+                console.log('Showing submit button');
                 submitButton.style.display = 'inline-block';
                 submitButton.disabled = false;
             } else {
+                console.log('Hiding submit button');
                 submitButton.style.display = 'none';
                 submitButton.disabled = true;
             }
