@@ -9,7 +9,7 @@ from .ctdhuman import (
     CtDHumanCharacterCreationView,
     CtDHumanDetailView as CtDHumanCharacterDetailView,
     CtDHumanCreateView as CtDHumanCharacterListView,
-    # CtDHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    CtDHumanTemplateSelectView,
     CtDHumanUpdateView as CtDHumanCharacterUpdateView,
 )
 from .house_faction import (

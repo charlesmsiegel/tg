@@ -1,19 +1,18 @@
 from characters import views
 from characters.views.mage import (
     MtAHumanCharacterCreationView,
-    # MtAHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    MtAHumanTemplateSelectView,
 )
 from django.urls import path
 
 app_name = "mage:detail"
 urls = [
     # MtAHuman character creation paths
-    # TODO: Uncomment when CharacterTemplate model is implemented
-    # path(
-    #     "mtahuman/<int:pk>/template/",
-    #     MtAHumanTemplateSelectView.as_view(),
-    #     name="mtahuman_template",
-    # ),
+    path(
+        "mtahuman/<int:pk>/template/",
+        MtAHumanTemplateSelectView.as_view(),
+        name="mtahuman_template",
+    ),
     path(
         "mtahuman/<int:pk>/creation/",
         MtAHumanCharacterCreationView.as_view(),

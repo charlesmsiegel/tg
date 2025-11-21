@@ -20,6 +20,6 @@ from .wtohuman import (
     WtOHumanCharacterCreationView,
     WtOHumanCreateView,
     WtOHumanDetailView,
-    # WtOHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    WtOHumanTemplateSelectView,
     WtOHumanUpdateView,
 )

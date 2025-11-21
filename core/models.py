@@ -412,3 +412,198 @@ class HouseRule(models.Model):
         self.sources.add(bookref)
         return self
 
+
+class CharacterTemplate(models.Model):
+    """
+    Pre-configured character templates for quick character creation.
+    Stores character data as JSON and can apply it to new characters.
+    """
+    # Basic Info
+    name = models.CharField(max_length=200)
+    gameline = models.CharField(
+        max_length=3,
+        choices=[
+            ("wod", "World of Darkness"),
+            ("vtm", "Vampire: the Masquerade"),
+            ("wta", "Werewolf: the Apocalypse"),
+            ("mta", "Mage: the Ascension"),
+            ("wto", "Wraith: the Oblivion"),
+            ("ctd", "Changeling: the Dreaming"),
+            ("dtf", "Demon: the Fallen"),
+        ],
+        default="wod",
+    )
+    character_type = models.CharField(
+        max_length=50,
+        help_text="e.g., 'mage', 'vampire', 'werewolf', 'changeling', 'wraith', 'demon'"
+    )
+    concept = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+    source_book = models.CharField(max_length=200, blank=True, help_text="e.g., 'Mage 20th Anniversary, p. 42'")
+
+    # Character Data (stored as JSON)
+    basic_info = models.JSONField(default=dict, blank=True, help_text="Nature, demeanor, concept, etc.")
+    attributes = models.JSONField(default=dict, blank=True, help_text="Strength, dexterity, etc.")
+    abilities = models.JSONField(default=dict, blank=True, help_text="Alertness, investigation, etc.")
+    backgrounds = models.JSONField(default=list, blank=True, help_text="List of {name, rating} dicts")
+    powers = models.JSONField(default=dict, blank=True, help_text="Disciplines, spheres, gifts, etc.")
+    merits_flaws = models.JSONField(default=list, blank=True, help_text="List of {name, rating} dicts")
+    specialties = models.JSONField(default=list, blank=True, help_text="List of 'Ability (Specialty)' strings")
+    languages = models.JSONField(default=list, blank=True, help_text="List of language names")
+    equipment = models.TextField(blank=True, help_text="Starting gear description")
+    suggested_freebie_spending = models.JSONField(default=dict, blank=True, help_text="Suggested allocation")
+
+    # Metadata
+    is_official = models.BooleanField(default=True, help_text="Official WW template vs user-created")
+    is_public = models.BooleanField(default=True, help_text="Available to all users")
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_templates"
+    )
+    times_used = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Character Template"
+        verbose_name_plural = "Character Templates"
+        unique_together = [["gameline", "character_type", "name"]]
+        indexes = [
+            models.Index(fields=["gameline", "character_type"]),
+            models.Index(fields=["is_public"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_gameline_display()})"
+
+    def apply_to_character(self, character):
+        """
+        Apply this template to a character instance.
+        Handles FK resolution, attribute setting, and related object creation.
+        """
+        # Import here to avoid circular imports
+        from characters.models.core.archetype import Archetype
+        from characters.models.core.background_block import Background, BackgroundRating
+        from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
+
+        # 1. Apply basic info (nature, demeanor, etc.)
+        for field, value in self.basic_info.items():
+            if value and isinstance(value, str) and value.startswith("FK:"):
+                # Resolve foreign key: "FK:Model:Name"
+                _, model_name, obj_name = value.split(":")
+                if model_name == "Archetype":
+                    try:
+                        obj = Archetype.objects.get(name=obj_name)
+                        setattr(character, field, obj)
+                    except Archetype.DoesNotExist:
+                        pass
+            elif hasattr(character, field):
+                setattr(character, field, value)
+
+        # 2. Apply attributes
+        for attr_name, rating in self.attributes.items():
+            if hasattr(character, attr_name):
+                setattr(character, attr_name, rating)
+
+        # 3. Apply abilities
+        for ability_name, rating in self.abilities.items():
+            if hasattr(character, ability_name):
+                setattr(character, ability_name, rating)
+
+        # 4. Apply backgrounds
+        for bg_data in self.backgrounds:
+            try:
+                background = Background.objects.get(name=bg_data["name"])
+                BackgroundRating.objects.get_or_create(
+                    character=character,
+                    bg=background,
+                    defaults={"rating": bg_data.get("rating", 0)}
+                )
+            except Background.DoesNotExist:
+                pass
+
+        # 5. Apply powers (disciplines, spheres, gifts, etc.)
+        for power_name, rating in self.powers.items():
+            if hasattr(character, power_name):
+                setattr(character, power_name, rating)
+
+        # 6. Apply merits/flaws
+        for mf_data in self.merits_flaws:
+            try:
+                merit_flaw = MeritFlaw.objects.get(name=mf_data["name"])
+                MeritFlawRating.objects.get_or_create(
+                    character=character,
+                    mf=merit_flaw,
+                    defaults={"rating": mf_data.get("rating", 0)}
+                )
+            except MeritFlaw.DoesNotExist:
+                pass
+
+        # 7. Apply languages
+        for lang_name in self.languages:
+            try:
+                language = Language.objects.get(name=lang_name)
+                character.languages.add(language)
+            except Language.DoesNotExist:
+                pass
+
+        # 8. Apply specialties
+        from characters.models.core.specialty import Specialty
+        from characters.models.core.ability_block import Ability
+        for specialty_str in self.specialties:
+            # Format: "Ability (Specialty)"
+            if "(" in specialty_str and ")" in specialty_str:
+                ability_name = specialty_str.split("(")[0].strip()
+                specialty_name = specialty_str.split("(")[1].split(")")[0].strip()
+                try:
+                    ability = Ability.objects.get(name=ability_name)
+                    Specialty.objects.get_or_create(
+                        character=character,
+                        skill=ability,
+                        defaults={"name": specialty_name}
+                    )
+                except Ability.DoesNotExist:
+                    pass
+
+        # Save character
+        character.save()
+
+        # 9. Create application record
+        TemplateApplication.objects.create(
+            character=character,
+            template=self
+        )
+
+        # 10. Increment usage counter
+        self.times_used += 1
+        self.save(update_fields=["times_used"])
+
+
+class TemplateApplication(models.Model):
+    """
+    Tracks when a template is applied to a character.
+    Used for statistics and auditing.
+    """
+    character = models.ForeignKey(
+        "characters.Character",
+        on_delete=models.CASCADE,
+        related_name="template_applications"
+    )
+    template = models.ForeignKey(
+        CharacterTemplate,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="applications"
+    )
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Template Application"
+        verbose_name_plural = "Template Applications"
+
+    def __str__(self):
+        return f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
+

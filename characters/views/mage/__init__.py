@@ -61,7 +61,7 @@ from .mtahuman import (
     MtAHumanCharacterCreationView,
     MtAHumanCreateView,
     MtAHumanDetailView,
-    # MtAHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    MtAHumanTemplateSelectView,
     MtAHumanUpdateView,
 )
 from .resonance import (

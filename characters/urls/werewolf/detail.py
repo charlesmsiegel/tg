@@ -75,12 +75,11 @@ urls = [
         views.werewolf.FeraDetailView.as_view(),
         name="gurahl",
     ),
-    # TODO: Uncomment when CharacterTemplate model is implemented
-    # path(
-    #     "wtahuman/<int:pk>/template/",
-    #     views.werewolf.WtAHumanTemplateSelectView.as_view(),
-    #     name="wtahuman_template",
-    # ),
+    path(
+        "wtahuman/<int:pk>/template/",
+        views.werewolf.WtAHumanTemplateSelectView.as_view(),
+        name="wtahuman_template",
+    ),
     path(
         "wtahuman/<int:pk>/creation/",
         views.werewolf.WtAHumanCharacterCreationView.as_view(),

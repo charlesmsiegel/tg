@@ -9,7 +9,7 @@ from .dtfhuman_chargen import (
     DtFHumanBasicsView,
     DtFHumanCharacterCreationView,
     DtFHumanFreebieFormPopulationView,
-    # DtFHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    DtFHumanTemplateSelectView,
 )
 from .faction import (
     DemonFactionCreateView,

@@ -70,6 +70,6 @@ from .wtahuman import (
     WtAHumanCharacterCreationView,
     WtAHumanCreateView,
     WtAHumanDetailView,
-    # WtAHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    WtAHumanTemplateSelectView,
     WtAHumanUpdateView,
 )

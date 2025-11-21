@@ -5,7 +5,7 @@ from characters.views.demon import (
     DemonHouseDetailView,
     DtFHumanCharacterCreationView,
     DtFHumanDetailView,
-    # DtFHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    DtFHumanTemplateSelectView,
     LoreDetailView,
     PactDetailView,
     ThrallCharacterCreationView,
@@ -39,12 +39,11 @@ urls = [
         ThrallCharacterCreationView.as_view(),
         name="thrall_chargen",
     ),
-    # TODO: Uncomment when CharacterTemplate model is implemented
-    # path(
-    #     "dtfhuman/<int:pk>/template/",
-    #     DtFHumanTemplateSelectView.as_view(),
-    #     name="dtfhuman_template",
-    # ),
+    path(
+        "dtfhuman/<int:pk>/template/",
+        DtFHumanTemplateSelectView.as_view(),
+        name="dtfhuman_template",
+    ),
     path(
         "dtfhuman/<int:pk>/creation/",
         DtFHumanCharacterCreationView.as_view(),
