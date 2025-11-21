@@ -9,6 +9,7 @@ from .dtfhuman_chargen import (
     DtFHumanBasicsView,
     DtFHumanCharacterCreationView,
     DtFHumanFreebieFormPopulationView,
+    DtFHumanTemplateSelectView,
 )
 from .faction import (
     DemonFactionCreateView,

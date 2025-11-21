@@ -5,9 +5,11 @@ from .changeling import (
     ChangelingUpdateView as ChangelingCharacterUpdateView,
 )
 from .ctdhuman import (
+    CtDHumanBasicsView,
     CtDHumanCharacterCreationView,
     CtDHumanDetailView as CtDHumanCharacterDetailView,
     CtDHumanCreateView as CtDHumanCharacterListView,
+    CtDHumanTemplateSelectView,
     CtDHumanUpdateView as CtDHumanCharacterUpdateView,
 )
 from .house_faction import (

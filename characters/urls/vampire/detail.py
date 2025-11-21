@@ -49,4 +49,14 @@ urls = [
         views.vampire.GhoulCharacterCreationView.as_view(),
         name="ghoul_chargen",
     ),
+    path(
+        "vtmhuman/<int:pk>/template/",
+        views.vampire.VtMHumanTemplateSelectView.as_view(),
+        name="vtmhuman_template",
+    ),
+    path(
+        "vtmhuman/<int:pk>/creation/",
+        views.vampire.VtMHumanCharacterCreationView.as_view(),
+        name="vtmhuman_creation",
+    ),
 ]

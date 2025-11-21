@@ -5,6 +5,7 @@ from characters.views.demon import (
     DemonHouseDetailView,
     DtFHumanCharacterCreationView,
     DtFHumanDetailView,
+    DtFHumanTemplateSelectView,
     LoreDetailView,
     PactDetailView,
     ThrallCharacterCreationView,
@@ -37,5 +38,15 @@ urls = [
         "thrall/<int:pk>/chargen/",
         ThrallCharacterCreationView.as_view(),
         name="thrall_chargen",
+    ),
+    path(
+        "dtfhuman/<int:pk>/template/",
+        DtFHumanTemplateSelectView.as_view(),
+        name="dtfhuman_template",
+    ),
+    path(
+        "dtfhuman/<int:pk>/creation/",
+        DtFHumanCharacterCreationView.as_view(),
+        name="dtfhuman_creation",
     ),
 ]

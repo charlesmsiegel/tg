@@ -59,5 +59,6 @@ from .vtmhuman import (
     VtMHumanCharacterCreationView,
     VtMHumanCreateView,
     VtMHumanDetailView,
+    VtMHumanTemplateSelectView,
     VtMHumanUpdateView,
 )
