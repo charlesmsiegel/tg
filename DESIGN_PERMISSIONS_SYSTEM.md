@@ -1,9 +1,9 @@
 # Django Permissions System Design
 ## World of Darkness Character Management Application
 
-**Version:** 1.0
+**Version:** 1.1
 **Date:** 2025-11-20
-**Status:** Design Document
+**Status:** Design Document - REVISED
 
 ---
 
@@ -34,6 +34,33 @@ This document describes a comprehensive permissions system for controlling acces
 - Object-level permissions with efficient querying
 - Polymorphic model support
 - Chronicle/game-aware permission contexts
+- **Restricted owner permissions** - owners cannot directly modify stats, must use XP/freebie spending system
+- **Hierarchical ST structure** - Chronicle Head STs (full control) vs Game STs (read-only)
+
+### Revision Notes (v1.1)
+
+**Critical Changes from Initial Design:**
+
+1. **Owner Permissions Significantly Restricted**
+   - Owners can NO LONGER directly edit character stats (e.g., cannot change Strength 3→4)
+   - Owners can ONLY: create characters, spend XP/freebies through the spending system, edit notes/journals
+   - New permissions: `SPEND_XP` and `SPEND_FREEBIES` separate from general `EDIT` permission
+
+2. **Chronicle ST Hierarchy Clarified**
+   - **Chronicle Head ST**: Primary ST with full edit control over all chronicle objects
+   - **Game ST**: Subordinate ST for specific games within a chronicle
+   - Game STs have FULL VIEW access but NO EDIT permissions (read-only for most objects)
+   - Multiple games can exist within one chronicle, each with their own Game STs
+
+3. **Permission Types Expanded**
+   - `EDIT` split into `EDIT_FULL` (direct stat modification) and `EDIT_LIMITED` (notes/journals only)
+   - Added `SPEND_XP` - for purchasing stat increases via XP system
+   - Added `SPEND_FREEBIES` - for allocating freebie points during creation
+
+4. **Status-Based XP/Freebie Restrictions**
+   - Unfinished (Un): Can spend freebies, cannot spend XP
+   - Approved (App): Can spend XP, cannot spend freebies
+   - Submitted/Retired/Deceased: Owner cannot spend either
 
 ---
 
@@ -128,7 +155,8 @@ Roles are **context-specific** - a user may have different roles for different o
 - **Determined by:** `object.owner == user` or `object.user == user`
 - **Scope:** Single object
 - **Inherits from:** None
-- **Priority:** Highest (for that object)
+- **Priority:** Medium (for that object)
+- **Special Permissions:** Can spend freebies/XP, edit notes/journals, but CANNOT directly modify stats (e.g., cannot change Strength from 3→4 directly - must go through XP spending system)
 
 #### 2. **ADMIN**
 - **Definition:** Site administrator with full privileges
@@ -137,20 +165,22 @@ Roles are **context-specific** - a user may have different roles for different o
 - **Inherits from:** All roles
 - **Priority:** Highest (global)
 
-#### 3. **CHRONICLE_ST**
-- **Definition:** Storyteller of the chronicle the object belongs to
-- **Determined by:** `user in object.chronicle.storytellers.all()`
+#### 3. **CHRONICLE_HEAD_ST**
+- **Definition:** Primary/head storyteller of the chronicle (has full control)
+- **Determined by:** `object.chronicle.head_st == user` or `user in object.chronicle.head_storytellers.all()`
 - **Scope:** All objects in their chronicle(s)
 - **Inherits from:** None
-- **Priority:** High
+- **Priority:** Highest
+- **Permissions:** Full edit access to all characters, items, locations in the chronicle. Can approve, modify stats directly, manage all aspects.
 
 #### 4. **GAME_ST**
-- **Definition:** Storyteller assigned to a specific game/scene
-- **Determined by:** `user in object.game.storytellers.all()` or similar
-- **Scope:** Objects in specific games they ST
+- **Definition:** Storyteller for a specific game within a chronicle (subordinate to head ST)
+- **Determined by:** `user in object.chronicle.game_storytellers.all()` or via Game model relationship
+- **Scope:** Can view all objects in the chronicle
 - **Inherits from:** None
 - **Priority:** High
-- **Note:** Currently, there's no explicit "game" model separate from Chronicle. This may refer to Chronicle ST or could be added.
+- **Permissions:** Can VIEW everything in the chronicle (full visibility), but CANNOT edit most aspects. May have limited edit permissions for game-specific items (scenes, journals, etc.) but not character stats/items/locations.
+- **Note:** Multiple games can exist within a single chronicle, each with their own GMs/STs.
 
 #### 5. **PLAYER**
 - **Definition:** Player in the same chronicle/game as the object
@@ -185,15 +215,25 @@ Roles are **context-specific** - a user may have different roles for different o
 
 A user may have **multiple roles** for a single object. Permission checks should:
 1. Collect all applicable roles
-2. Apply the most permissive rule (union of permissions)
-3. For editing, require at least OWNER, CHRONICLE_ST, or ADMIN
+2. For **view** permissions, apply the most permissive rule (union of permissions)
+3. For **edit** permissions, check specific permission rules per role
 
 **Example:**
-- User Alice owns a character
-- That character is in Bob's chronicle
+- User Alice owns a character in Chronicle "Dark Nights"
 - Alice has roles: [OWNER, PLAYER, AUTHENTICATED]
-- Bob (ST) has roles: [CHRONICLE_ST, AUTHENTICATED]
-- Charlie (admin) has roles: [ADMIN, AUTHENTICATED]
+  - Can view full character sheet
+  - Can spend XP/freebies, edit notes
+  - CANNOT directly modify stats
+- Bob is the head ST of "Dark Nights" chronicle
+- Bob has roles: [CHRONICLE_HEAD_ST, AUTHENTICATED]
+  - Can view everything, edit everything, approve characters
+- Carol is a Game ST for one of the games in "Dark Nights"
+- Carol has roles: [GAME_ST, AUTHENTICATED]
+  - Can view everything (full visibility)
+  - CANNOT edit characters/items/locations (read-only for most objects)
+- David is an admin
+- David has roles: [ADMIN, AUTHENTICATED]
+  - Full access to everything site-wide
 
 ---
 
@@ -203,62 +243,78 @@ A user may have **multiple roles** for a single object. Permission checks should
 
 | Permission | Description | Allows |
 |-----------|-------------|--------|
-| `view_full` | View complete object | All fields, including private notes, secrets |
+| `view_full` | View complete object | All fields, including private notes, secrets, XP |
 | `view_partial` | View public object data | Name, basic stats, public background |
-| `edit` | Modify object | Update fields, change status |
+| `edit_full` | Full modification rights | Update any field, including stats, status, everything |
+| `edit_limited` | Limited modification rights | Owner rights: spend XP/freebies, edit notes/journals only |
+| `spend_xp` | Spend experience points | Purchase stat increases via XP system |
+| `spend_freebies` | Spend freebie points | Allocate freebies during character creation |
 | `delete` | Remove object | Permanent deletion |
 | `approve` | Approve submissions | Change status from SUB → APP |
 | `manage_observers` | Add/remove observers | Grant observer access |
 
 ### Role → Permission Mapping
 
-| Role | view_full | view_partial | edit | delete | approve | manage_observers |
-|------|-----------|--------------|------|--------|---------|------------------|
-| OWNER | ✓ | ✓ | ✓ | ✓ | — | ✓ |
-| ADMIN | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| CHRONICLE_ST | ✓ | ✓ | ✓* | — | ✓ | ✓ |
-| GAME_ST | ✓ | ✓ | ✓* | — | ✓ | — |
-| PLAYER | — | ✓ | — | — | — | — |
-| OBSERVER | — | ✓ | — | — | — | — |
-| AUTHENTICATED | — | — | — | — | — | — |
-| ANONYMOUS | — | — | — | — | — | — |
+| Role | view_full | view_partial | edit_full | edit_limited | spend_xp | spend_freebies | delete | approve | manage_observers |
+|------|-----------|--------------|-----------|--------------|----------|----------------|--------|---------|------------------|
+| OWNER | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ | — | ✓ |
+| ADMIN | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| CHRONICLE_HEAD_ST | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓* | ✓ | ✓ |
+| GAME_ST | ✓ | ✓ | — | — | — | — | — | — | — |
+| PLAYER | — | ✓ | — | — | — | — | — | — | — |
+| OBSERVER | — | ✓ | — | — | — | — | — | — | — |
+| AUTHENTICATED | — | — | — | — | — | — | — | — | — |
+| ANONYMOUS | — | — | — | — | — | — | — | — | — |
 
 **Notes:**
-- `✓*` = Conditional edit rights (e.g., STs can edit characters in their chronicle, but may be restricted by status)
+- `✓` = Has permission
+- `✓*` = Conditional permission (Chronicle Head ST may not be able to delete certain system objects)
 - `—` = No permission
-- OWNER cannot approve their own submissions (requires ST/ADMIN)
+- **OWNER** has very limited edit rights: can spend XP/freebies, edit notes/journals, but CANNOT directly modify stats
+- **GAME_ST** has full view access but NO edit permissions (read-only)
+- **CHRONICLE_HEAD_ST** has full control over their chronicle
+- OWNER cannot approve their own submissions (requires CHRONICLE_HEAD_ST/ADMIN)
 
 ### Status-Based Restrictions
 
 Character status affects permissions:
 
-| Status | Owner Can Edit | ST Can Edit | Visible to Players |
-|--------|----------------|-------------|-------------------|
-| Un (Unfinished) | ✓ | ✓ | — |
-| Sub (Submitted) | — | ✓ | — |
-| App (Approved) | Limited* | ✓ | ✓ |
-| Ret (Retired) | — | ✓ | ✓ |
-| Dec (Deceased) | — | — | ✓ |
+| Status | Owner Can Edit | Owner Can Spend XP/Freebies | Head ST Can Edit | Game ST Can View | Visible to Players |
+|--------|----------------|----------------------------|------------------|------------------|-------------------|
+| Un (Unfinished) | Limited (notes/journals) | ✓ (freebies only) | ✓ | ✓ (full) | — |
+| Sub (Submitted) | — | — | ✓ | ✓ (full) | — |
+| App (Approved) | Limited (notes/journals) | ✓ (XP only) | ✓ | ✓ (full) | ✓ (partial) |
+| Ret (Retired) | — | — | ✓ | ✓ (full) | ✓ (partial) |
+| Dec (Deceased) | — | — | ✓* | ✓ (full) | ✓ (partial) |
 
-*Limited editing when Approved: Owner can edit notes, spend XP, update journals, but not change core stats without ST approval.
+**Key Points:**
+- **Owner** can NEVER directly edit stats (Strength, Dexterity, etc.) - must use XP spending system
+- **Owner** can spend freebies during character creation (Un status)
+- **Owner** can spend XP once character is approved (App status)
+- **Game ST** has read-only access (full visibility) but cannot edit
+- **Chronicle Head ST** can always edit (except deceased characters may be locked*)
+- `✓*` = May be configurable to lock deceased characters entirely
 
 ---
 
 ## Visibility Tiers
 
 ### Tier 1: Full Visibility
-**Who:** OWNER, ADMIN, CHRONICLE_ST, GAME_ST
+**Who:** OWNER, ADMIN, CHRONICLE_HEAD_ST, GAME_ST
 
 **Includes:**
 - All character attributes, abilities, backgrounds
-- Private notes, journals
-- Experience points (earned, spent, pending)
+- Private notes, journals (owner's and ST's)
+- Experience points (earned, spent, pending, approval history)
 - Secrets, flaws, derangements
 - ST notes and approval history
 - Complete equipment and inventory
 - All relationships and connections
+- Freebie point allocation breakdown
 
 **Implementation:** Return complete object serialization
+
+**Note:** GAME_ST receives full visibility for informational purposes but cannot edit most fields (read-only access).
 
 ### Tier 2: Partial Visibility
 **Who:** PLAYER, OBSERVER
@@ -386,11 +442,31 @@ class PermissionMixin(models.Model):
 class Chronicle(Model):
     # ... existing fields ...
 
-    # Make storytellers explicit many-to-many
-    storytellers = models.ManyToManyField(
+    # Head storyteller (primary ST with full control)
+    # Option 1: Single head ST
+    head_st = models.ForeignKey(
         User,
-        related_name='chronicles_as_st',
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
+        related_name='chronicles_as_head_st',
+        help_text="Primary storyteller with full chronicle control"
+    )
+
+    # Option 2: Multiple head STs (if preferred)
+    # head_storytellers = models.ManyToManyField(
+    #     User,
+    #     related_name='chronicles_as_head_st',
+    #     blank=True,
+    #     help_text="Primary storytellers with full chronicle control"
+    # )
+
+    # Game storytellers (subordinate STs with view-only access)
+    game_storytellers = models.ManyToManyField(
+        User,
+        related_name='chronicles_as_game_st',
+        blank=True,
+        help_text="Game STs can view all chronicle data but cannot edit most objects"
     )
 
     # Add players helper property
@@ -400,6 +476,19 @@ class Chronicle(Model):
         return User.objects.filter(
             characters__chronicle=self
         ).distinct()
+
+    # Helper methods
+    def is_head_st(self, user):
+        """Check if user is head ST of this chronicle."""
+        if hasattr(self, 'head_st'):
+            return self.head_st == user
+        elif hasattr(self, 'head_storytellers'):
+            return self.head_storytellers.filter(id=user.id).exists()
+        return False
+
+    def is_game_st(self, user):
+        """Check if user is a game ST in this chronicle."""
+        return self.game_storytellers.filter(id=user.id).exists()
 ```
 
 ---
@@ -421,7 +510,7 @@ from django.contrib.contenttypes.models import ContentType
 class Role(Enum):
     OWNER = "owner"
     ADMIN = "admin"
-    CHRONICLE_ST = "chronicle_st"
+    CHRONICLE_HEAD_ST = "chronicle_head_st"
     GAME_ST = "game_st"
     PLAYER = "player"
     OBSERVER = "observer"
@@ -436,7 +525,10 @@ class VisibilityTier(Enum):
 class Permission(Enum):
     VIEW_FULL = "view_full"
     VIEW_PARTIAL = "view_partial"
-    EDIT = "edit"
+    EDIT_FULL = "edit_full"
+    EDIT_LIMITED = "edit_limited"
+    SPEND_XP = "spend_xp"
+    SPEND_FREEBIES = "spend_freebies"
     DELETE = "delete"
     APPROVE = "approve"
     MANAGE_OBSERVERS = "manage_observers"
@@ -449,30 +541,38 @@ class PermissionManager:
         Role.OWNER: {
             Permission.VIEW_FULL,
             Permission.VIEW_PARTIAL,
-            Permission.EDIT,
+            Permission.EDIT_LIMITED,  # Can edit notes/journals only
+            Permission.SPEND_XP,
+            Permission.SPEND_FREEBIES,
             Permission.DELETE,
             Permission.MANAGE_OBSERVERS,
         },
         Role.ADMIN: {
             Permission.VIEW_FULL,
             Permission.VIEW_PARTIAL,
-            Permission.EDIT,
+            Permission.EDIT_FULL,
+            Permission.EDIT_LIMITED,
+            Permission.SPEND_XP,
+            Permission.SPEND_FREEBIES,
             Permission.DELETE,
             Permission.APPROVE,
             Permission.MANAGE_OBSERVERS,
         },
-        Role.CHRONICLE_ST: {
+        Role.CHRONICLE_HEAD_ST: {
             Permission.VIEW_FULL,
             Permission.VIEW_PARTIAL,
-            Permission.EDIT,
+            Permission.EDIT_FULL,  # Can edit everything
+            Permission.EDIT_LIMITED,
+            Permission.SPEND_XP,
+            Permission.SPEND_FREEBIES,
+            Permission.DELETE,
             Permission.APPROVE,
             Permission.MANAGE_OBSERVERS,
         },
         Role.GAME_ST: {
-            Permission.VIEW_FULL,
+            Permission.VIEW_FULL,  # Full view access
             Permission.VIEW_PARTIAL,
-            Permission.EDIT,
-            Permission.APPROVE,
+            # No edit permissions - read-only
         },
         Role.PLAYER: {
             Permission.VIEW_PARTIAL,
@@ -516,10 +616,19 @@ class PermissionManager:
         elif hasattr(obj, 'user') and obj.user == user:
             roles.add(Role.OWNER)
 
-        # Chronicle ST check
+        # Chronicle Head ST check
         if hasattr(obj, 'chronicle') and obj.chronicle:
-            if obj.chronicle.storytellers.filter(id=user.id).exists():
-                roles.add(Role.CHRONICLE_ST)
+            # Check if user is head ST of the chronicle
+            if hasattr(obj.chronicle, 'head_st') and obj.chronicle.head_st == user:
+                roles.add(Role.CHRONICLE_HEAD_ST)
+            elif hasattr(obj.chronicle, 'head_storytellers'):
+                if obj.chronicle.head_storytellers.filter(id=user.id).exists():
+                    roles.add(Role.CHRONICLE_HEAD_ST)
+
+            # Check if user is a game ST in the chronicle
+            if hasattr(obj.chronicle, 'game_storytellers'):
+                if obj.chronicle.game_storytellers.filter(id=user.id).exists():
+                    roles.add(Role.GAME_ST)
 
             # Player check - user has a character in same chronicle
             if user.characters.filter(chronicle=obj.chronicle).exists():
@@ -588,23 +697,44 @@ class PermissionManager:
         """Apply status-based permission restrictions."""
         status = obj.status
 
-        # Deceased characters are read-only for everyone except admins
+        # Deceased characters are read-only for everyone except admins and head STs
         if status == 'Dec':
-            if permission in [Permission.EDIT, Permission.DELETE]:
-                return Role.ADMIN in roles
+            if permission in [Permission.EDIT_FULL, Permission.EDIT_LIMITED,
+                            Permission.DELETE, Permission.SPEND_XP]:
+                return (Role.ADMIN in roles or
+                       Role.CHRONICLE_HEAD_ST in roles)
 
-        # Submitted characters can't be edited by owner
+        # Submitted characters: owners have no permissions, only head ST/admin
         if status == 'Sub':
-            if permission == Permission.EDIT and Role.OWNER in roles:
-                # Owner cannot edit, but ST/Admin can
-                return Role.CHRONICLE_ST in roles or Role.ADMIN in roles
+            if permission in [Permission.EDIT_LIMITED, Permission.SPEND_XP,
+                            Permission.SPEND_FREEBIES]:
+                if Role.OWNER in roles:
+                    return False
+                return (Role.CHRONICLE_HEAD_ST in roles or
+                       Role.ADMIN in roles)
 
-        # Approved characters have limited owner editing
-        if status == 'App':
-            if permission == Permission.EDIT and Role.OWNER in roles:
-                # Would need additional logic to determine what fields
-                # owner can edit - could be handled at form/serializer level
+        # Unfinished: Owner can spend freebies only (not XP yet)
+        if status == 'Un':
+            if permission == Permission.SPEND_XP and Role.OWNER in roles:
+                # Can't spend XP until approved
+                return False
+            if permission == Permission.SPEND_FREEBIES:
                 return True
+
+        # Approved: Owner can spend XP (not freebies) and edit limited fields
+        if status == 'App':
+            if permission == Permission.SPEND_FREEBIES and Role.OWNER in roles:
+                # Can't spend freebies after approval
+                return False
+            if permission in [Permission.SPEND_XP, Permission.EDIT_LIMITED]:
+                return True
+
+        # Retired: Owner cannot make any changes
+        if status == 'Ret':
+            if permission in [Permission.EDIT_LIMITED, Permission.SPEND_XP,
+                            Permission.SPEND_FREEBIES]:
+                if Role.OWNER in roles:
+                    return False
 
         return True
 
@@ -645,9 +775,27 @@ class PermissionManager:
 
     @staticmethod
     def user_can_edit(user: User, obj) -> bool:
-        """Simplified edit check."""
+        """
+        Simplified edit check.
+        Returns True if user has EDIT_FULL permission.
+        For limited editing (owner), use user_has_permission(EDIT_LIMITED).
+        """
         return PermissionManager.user_has_permission(
-            user, obj, Permission.EDIT
+            user, obj, Permission.EDIT_FULL
+        )
+
+    @staticmethod
+    def user_can_spend_xp(user: User, obj) -> bool:
+        """Check if user can spend XP on this object."""
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.SPEND_XP
+        )
+
+    @staticmethod
+    def user_can_spend_freebies(user: User, obj) -> bool:
+        """Check if user can spend freebie points on this object."""
+        return PermissionManager.user_has_permission(
+            user, obj, Permission.SPEND_FREEBIES
         )
 
     @staticmethod
@@ -676,9 +824,17 @@ class PermissionManager:
         if queryset.model._meta.get_field('owner'):
             filters |= Q(owner=user)
 
-        # Objects in chronicles user STs
+        # Objects in chronicles where user is head ST
         if hasattr(queryset.model, 'chronicle'):
-            filters |= Q(chronicle__storytellers=user)
+            filters |= Q(chronicle__head_st=user)
+            # Or if using M2M for head storytellers
+            if hasattr(queryset.model, 'chronicle__head_storytellers'):
+                filters |= Q(chronicle__head_storytellers=user)
+
+        # Objects in chronicles where user is game ST (can view all)
+        if hasattr(queryset.model, 'chronicle'):
+            if hasattr(queryset.model, 'chronicle__game_storytellers'):
+                filters |= Q(chronicle__game_storytellers=user)
 
         # Objects in chronicles user plays in
         if hasattr(queryset.model, 'chronicle'):
@@ -1426,7 +1582,8 @@ class TestPermissionManager:
         """Create test users."""
         return {
             'owner': User.objects.create_user('owner', 'owner@test.com'),
-            'st': User.objects.create_user('st', 'st@test.com'),
+            'head_st': User.objects.create_user('head_st', 'head_st@test.com'),
+            'game_st': User.objects.create_user('game_st', 'game_st@test.com'),
             'player': User.objects.create_user('player', 'player@test.com'),
             'observer': User.objects.create_user('observer', 'observer@test.com'),
             'stranger': User.objects.create_user('stranger', 'stranger@test.com'),
@@ -1438,8 +1595,12 @@ class TestPermissionManager:
     @pytest.fixture
     def chronicle(self, users):
         """Create test chronicle."""
-        chron = Chronicle.objects.create(name="Test Chronicle")
-        chron.storytellers.add(users['st'])
+        chron = Chronicle.objects.create(
+            name="Test Chronicle",
+            head_st=users['head_st']  # Set head ST
+        )
+        # Add game ST
+        chron.game_storytellers.add(users['game_st'])
         return chron
 
     @pytest.fixture
@@ -1470,10 +1631,15 @@ class TestPermissionManager:
         roles = PermissionManager.get_user_roles(users['owner'], character)
         assert Role.OWNER in roles
 
-    def test_role_detection_st(self, users, character):
-        """Test that chronicle ST role is detected."""
-        roles = PermissionManager.get_user_roles(users['st'], character)
-        assert Role.CHRONICLE_ST in roles
+    def test_role_detection_head_st(self, users, character):
+        """Test that chronicle head ST role is detected."""
+        roles = PermissionManager.get_user_roles(users['head_st'], character)
+        assert Role.CHRONICLE_HEAD_ST in roles
+
+    def test_role_detection_game_st(self, users, character):
+        """Test that game ST role is detected."""
+        roles = PermissionManager.get_user_roles(users['game_st'], character)
+        assert Role.GAME_ST in roles
 
     def test_role_detection_player(self, users, character):
         """Test that player role is detected."""
@@ -1489,7 +1655,8 @@ class TestPermissionManager:
         """Test that stranger has no special roles."""
         roles = PermissionManager.get_user_roles(users['stranger'], character)
         assert Role.OWNER not in roles
-        assert Role.CHRONICLE_ST not in roles
+        assert Role.CHRONICLE_HEAD_ST not in roles
+        assert Role.GAME_ST not in roles
         assert Role.PLAYER not in roles
         assert Role.OBSERVER not in roles
         assert Role.AUTHENTICATED in roles
@@ -1500,22 +1667,70 @@ class TestPermissionManager:
             users['owner'], character, Permission.VIEW_FULL
         )
 
-    def test_owner_can_edit(self, users, character):
-        """Test owner has edit permission."""
-        assert PermissionManager.user_has_permission(
-            users['owner'], character, Permission.EDIT
+    def test_owner_cannot_edit_full(self, users, character):
+        """Test owner does NOT have full edit permission."""
+        assert not PermissionManager.user_has_permission(
+            users['owner'], character, Permission.EDIT_FULL
         )
 
-    def test_st_can_view_full(self, users, character):
-        """Test ST has full view permission."""
+    def test_owner_can_edit_limited(self, users, character):
+        """Test owner has limited edit permission (notes/journals)."""
         assert PermissionManager.user_has_permission(
-            users['st'], character, Permission.VIEW_FULL
+            users['owner'], character, Permission.EDIT_LIMITED
         )
 
-    def test_st_can_approve(self, users, character):
-        """Test ST has approve permission."""
+    def test_owner_can_spend_xp_when_approved(self, users, character):
+        """Test owner can spend XP on approved character."""
+        character.status = 'App'
         assert PermissionManager.user_has_permission(
-            users['st'], character, Permission.APPROVE
+            users['owner'], character, Permission.SPEND_XP
+        )
+
+    def test_owner_cannot_spend_xp_when_unfinished(self, users, character):
+        """Test owner cannot spend XP on unfinished character."""
+        character.status = 'Un'
+        assert not PermissionManager.user_has_permission(
+            users['owner'], character, Permission.SPEND_XP
+        )
+
+    def test_owner_can_spend_freebies_when_unfinished(self, users, character):
+        """Test owner can spend freebies on unfinished character."""
+        character.status = 'Un'
+        assert PermissionManager.user_has_permission(
+            users['owner'], character, Permission.SPEND_FREEBIES
+        )
+
+    def test_head_st_can_view_full(self, users, character):
+        """Test head ST has full view permission."""
+        assert PermissionManager.user_has_permission(
+            users['head_st'], character, Permission.VIEW_FULL
+        )
+
+    def test_head_st_can_edit_full(self, users, character):
+        """Test head ST has full edit permission."""
+        assert PermissionManager.user_has_permission(
+            users['head_st'], character, Permission.EDIT_FULL
+        )
+
+    def test_game_st_can_view_full(self, users, character):
+        """Test game ST has full view permission."""
+        assert PermissionManager.user_has_permission(
+            users['game_st'], character, Permission.VIEW_FULL
+        )
+
+    def test_game_st_cannot_edit(self, users, character):
+        """Test game ST does NOT have edit permission (read-only)."""
+        assert not PermissionManager.user_has_permission(
+            users['game_st'], character, Permission.EDIT_FULL
+        )
+        assert not PermissionManager.user_has_permission(
+            users['game_st'], character, Permission.EDIT_LIMITED
+        )
+
+    def test_head_st_can_approve(self, users, character):
+        """Test head ST has approve permission."""
+        assert PermissionManager.user_has_permission(
+            users['head_st'], character, Permission.APPROVE
         )
 
     def test_player_can_view_partial(self, users, character):
@@ -1533,7 +1748,10 @@ class TestPermissionManager:
     def test_player_cannot_edit(self, users, character):
         """Test player cannot edit."""
         assert not PermissionManager.user_has_permission(
-            users['player'], character, Permission.EDIT
+            users['player'], character, Permission.EDIT_FULL
+        )
+        assert not PermissionManager.user_has_permission(
+            users['player'], character, Permission.EDIT_LIMITED
         )
 
     def test_observer_can_view_partial(self, users, character):
@@ -1558,7 +1776,7 @@ class TestPermissionManager:
             admin, character, Permission.VIEW_FULL
         )
         assert PermissionManager.user_has_permission(
-            admin, character, Permission.EDIT
+            admin, character, Permission.EDIT_FULL
         )
         assert PermissionManager.user_has_permission(
             admin, character, Permission.DELETE
@@ -1572,6 +1790,11 @@ class TestPermissionManager:
         tier = PermissionManager.get_visibility_tier(users['owner'], character)
         assert tier == VisibilityTier.FULL
 
+    def test_visibility_tier_game_st(self, users, character):
+        """Test game ST gets FULL visibility tier (but can't edit)."""
+        tier = PermissionManager.get_visibility_tier(users['game_st'], character)
+        assert tier == VisibilityTier.FULL
+
     def test_visibility_tier_player(self, users, character):
         """Test player gets PARTIAL visibility tier."""
         tier = PermissionManager.get_visibility_tier(users['player'], character)
@@ -1583,34 +1806,43 @@ class TestPermissionManager:
         assert tier == VisibilityTier.NONE
 
     def test_status_restriction_submitted(self, users, character):
-        """Test owner cannot edit submitted character."""
+        """Test owner cannot spend XP/freebies on submitted character."""
         character.status = 'Sub'
         character.save()
 
         assert not PermissionManager.user_has_permission(
-            users['owner'], character, Permission.EDIT
+            users['owner'], character, Permission.SPEND_XP
+        )
+        assert not PermissionManager.user_has_permission(
+            users['owner'], character, Permission.SPEND_FREEBIES
         )
 
-        # But ST still can
+        # But head ST still can
         assert PermissionManager.user_has_permission(
-            users['st'], character, Permission.EDIT
+            users['head_st'], character, Permission.EDIT_FULL
         )
 
     def test_status_restriction_deceased(self, users, character):
-        """Test no one except admin can edit deceased character."""
+        """Test owner cannot edit deceased character, but head ST and admin can."""
         character.status = 'Dec'
         character.save()
 
+        # Owner cannot edit
         assert not PermissionManager.user_has_permission(
-            users['owner'], character, Permission.EDIT
+            users['owner'], character, Permission.SPEND_XP
         )
         assert not PermissionManager.user_has_permission(
-            users['st'], character, Permission.EDIT
+            users['owner'], character, Permission.EDIT_LIMITED
         )
 
-        # But admin still can
+        # Head ST can still edit (configurable)
         assert PermissionManager.user_has_permission(
-            users['admin'], character, Permission.EDIT
+            users['head_st'], character, Permission.EDIT_FULL
+        )
+
+        # Admin can still edit
+        assert PermissionManager.user_has_permission(
+            users['admin'], character, Permission.EDIT_FULL
         )
 ```
 
