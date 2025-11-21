@@ -107,6 +107,10 @@ class ModelManager(PolymorphicManager):
         """Objects with images awaiting approval"""
         return self.filter(image_status="sub").exclude(image="")
 
+    def top_level(self):
+        """Objects with no parent (top-level in hierarchy)"""
+        return self.filter(parent=None)
+
     def pending_approval_for_user(self, user):
         """Objects awaiting approval in user's chronicles (optimized)"""
         return (
