@@ -5,20 +5,21 @@
 <div class="row">
     <div class="col-sm">
         Prioritize primary, secondary, and tertiary Attribute categories and add {{ primary }}/{{ secondary }}/{{ tertiary }} dots
+        <div id="total-remaining" style="font-weight: 600; color: var(--theme-text-secondary); margin-top: 8px;"></div>
     </div>
 </div>
 <div class="row">
     <div class="col-sm">
         <h3 class="{{ object.get_heading }}">Physical</h3>
-        <div id="physical-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+        <div id="physical-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
     </div>
     <div class="col-sm">
         <h3 class="{{ object.get_heading }}">Social</h3>
-        <div id="social-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+        <div id="social-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
     </div>
     <div class="col-sm">
         <h3 class="{{ object.get_heading }}">Mental</h3>
-        <div id="mental-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+        <div id="mental-status" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
     </div>
 </div>
 <div class="row">
@@ -56,9 +57,10 @@
     const BASE = 3; // Each category starts with 3 points (1 per attribute)
     const MAX_ATTRIBUTE = 5;
     const MIN_ATTRIBUTE = 1;
+    const TOTAL_POINTS = BASE * 3 + PRIMARY + SECONDARY + TERTIARY; // 3+3+3 + 7+5+3 = 24
 
-    // Target totals for each category
-    const TARGETS = [BASE + PRIMARY, BASE + SECONDARY, BASE + TERTIARY].sort(); // [6, 8, 10]
+    // Target totals for each category - order doesn't matter, any category can be any target
+    const TARGETS = [BASE + TERTIARY, BASE + SECONDARY, BASE + PRIMARY]; // [6, 8, 10]
 
     // Attribute groupings
     const CATEGORIES = {
@@ -94,33 +96,43 @@
         };
     }
 
-    function findBestAllocation(totals) {
-        const values = [totals.physical, totals.social, totals.mental];
-        const sortedValues = [...values].sort((a, b) => a - b);
+    function getTotalPoints() {
+        const totals = getCurrentTotals();
+        return totals.physical + totals.social + totals.mental;
+    }
 
-        // Calculate remaining points for each possible target
-        const remaining = {
-            physical: null,
-            social: null,
-            mental: null
-        };
+    // Check if a given distribution can still reach a valid [6,8,10] assignment
+    function isValidState(physTotal, socTotal, menTotal) {
+        // Try all 6 permutations of assigning TARGETS to the three categories
+        const permutations = [
+            [physTotal, socTotal, menTotal],
+        ];
 
-        // Try to match current totals to target totals
-        // The logic: we need the three categories to eventually equal [6, 8, 10]
-        // We calculate how many more points are needed for each category to reach
-        // one of these targets
+        // Check if the current totals can fit into any permutation of TARGETS
+        // Each category total must be <= some target, and we must be able to assign targets 1-to-1
+        const currentTotals = [physTotal, socTotal, menTotal];
 
-        const categoryNames = ['physical', 'social', 'mental'];
-        const currentSorted = [...values].map((val, idx) => ({ val, name: categoryNames[idx] }))
-            .sort((a, b) => a.val - b.val);
+        // Generate all permutations of TARGETS
+        const targetPermutations = [
+            [TARGETS[0], TARGETS[1], TARGETS[2]],
+            [TARGETS[0], TARGETS[2], TARGETS[1]],
+            [TARGETS[1], TARGETS[0], TARGETS[2]],
+            [TARGETS[1], TARGETS[2], TARGETS[0]],
+            [TARGETS[2], TARGETS[0], TARGETS[1]],
+            [TARGETS[2], TARGETS[1], TARGETS[0]],
+        ];
 
-        // Match smallest to smallest target, etc.
-        currentSorted.forEach((item, idx) => {
-            const targetTotal = TARGETS[idx];
-            remaining[item.name] = targetTotal - item.val;
-        });
+        // Check if any permutation works
+        for (const targetPerm of targetPermutations) {
+            if (currentTotals[0] <= targetPerm[0] &&
+                currentTotals[1] <= targetPerm[1] &&
+                currentTotals[2] <= targetPerm[2]) {
+                // This permutation could work
+                return true;
+            }
+        }
 
-        return remaining;
+        return false;
     }
 
     function canIncreaseAttribute(attrName) {
@@ -148,36 +160,73 @@
         // Simulate increasing this attribute
         totals[category] += 1;
 
-        // Check if the new totals can still form a valid [6, 8, 10] distribution
-        const values = [totals.physical, totals.social, totals.mental];
-        const sorted = [...values].sort((a, b) => a - b);
+        // Check if the new state is still valid
+        return isValidState(totals.physical, totals.social, totals.mental);
+    }
 
-        // Each value must be <= its corresponding target
-        // (we can't have a category that exceeds its maximum possible target)
-        if (sorted[0] > TARGETS[0] || sorted[1] > TARGETS[1] || sorted[2] > TARGETS[2]) {
-            return false;
+    // Find the maximum value this category can reach while maintaining validity
+    function getMaxCategoryValue(categoryName) {
+        const totals = getCurrentTotals();
+        const currentValue = totals[categoryName];
+
+        // Try increasing until we hit the limit
+        for (let testValue = currentValue + 1; testValue <= TARGETS[TARGETS.length - 1]; testValue++) {
+            const testTotals = { ...totals };
+            testTotals[categoryName] = testValue;
+
+            if (!isValidState(testTotals.physical, testTotals.social, testTotals.mental)) {
+                return testValue - 1;
+            }
         }
 
-        return true;
+        return TARGETS[TARGETS.length - 1]; // Maximum possible
     }
 
     function updateDisplay() {
         const totals = getCurrentTotals();
-        const remaining = findBestAllocation(totals);
+        const totalPoints = getTotalPoints();
+        const pointsRemaining = TOTAL_POINTS - totalPoints;
 
-        // Update remaining point displays
-        for (const [category, points] of Object.entries(remaining)) {
-            const element = document.getElementById(`${category}-remaining`);
-            if (element) {
-                if (points > 0) {
-                    element.textContent = `${points} point${points !== 1 ? 's' : ''} remaining`;
-                    element.style.color = 'var(--theme-text-secondary)';
-                } else if (points === 0) {
-                    element.textContent = 'Complete';
-                    element.style.color = '#28a745';
+        // Update total remaining points
+        const totalElement = document.getElementById('total-remaining');
+        if (totalElement) {
+            if (pointsRemaining > 0) {
+                totalElement.textContent = `${pointsRemaining} point${pointsRemaining !== 1 ? 's' : ''} remaining to allocate`;
+                totalElement.style.color = 'var(--theme-text-secondary)';
+            } else if (pointsRemaining === 0) {
+                // Check if it's a valid distribution
+                if (isValidState(totals.physical, totals.social, totals.mental)) {
+                    const sortedTotals = [totals.physical, totals.social, totals.mental].sort((a,b) => a-b);
+                    if (JSON.stringify(sortedTotals) === JSON.stringify(TARGETS)) {
+                        totalElement.textContent = 'Complete! Valid distribution achieved.';
+                        totalElement.style.color = '#28a745';
+                    } else {
+                        totalElement.textContent = 'All points allocated - verify distribution is correct';
+                        totalElement.style.color = '#ffc107';
+                    }
                 } else {
-                    element.textContent = `${Math.abs(points)} point${Math.abs(points) !== 1 ? 's' : ''} over`;
-                    element.style.color = '#dc3545';
+                    totalElement.textContent = 'All points allocated - but distribution is invalid';
+                    totalElement.style.color = '#dc3545';
+                }
+            } else {
+                totalElement.textContent = `${Math.abs(pointsRemaining)} point${Math.abs(pointsRemaining) !== 1 ? 's' : ''} over limit!`;
+                totalElement.style.color = '#dc3545';
+            }
+        }
+
+        // Update per-category status
+        for (const [categoryName, currentTotal] of Object.entries(totals)) {
+            const element = document.getElementById(`${categoryName}-status`);
+            if (element) {
+                const maxValue = getMaxCategoryValue(categoryName);
+                const canAdd = maxValue - currentTotal;
+
+                if (canAdd > 0) {
+                    element.textContent = `Total: ${currentTotal} (can add ${canAdd} more)`;
+                    element.style.color = 'var(--theme-text-secondary)';
+                } else {
+                    element.textContent = `Total: ${currentTotal} (at maximum for valid distribution)`;
+                    element.style.color = '#17a2b8';
                 }
             }
         }
@@ -193,12 +242,14 @@
                 Array.from(input.options).forEach(option => {
                     const optionValue = parseInt(option.value);
                     if (optionValue > currentValue) {
-                        // This is an increase option
-                        if (!canIncreaseAttribute(attrName)) {
-                            option.disabled = true;
-                        } else {
-                            option.disabled = false;
-                        }
+                        // This is an increase option - check if we can increase
+                        // Temporarily set to this value and check validity
+                        const originalValue = input.value;
+                        input.value = optionValue;
+                        const canIncrease = canIncreaseAttribute(attrName);
+                        input.value = originalValue;
+
+                        option.disabled = !canIncrease;
                     } else {
                         // Always allow decreasing or staying the same
                         option.disabled = false;
@@ -206,25 +257,19 @@
                 });
             } else if (input.tagName === 'INPUT' && input.type === 'number') {
                 // Handle number inputs - set max attribute dynamically
-                const maxAllowed = canIncreaseAttribute(attrName) ? MAX_ATTRIBUTE : currentValue;
-                input.max = maxAllowed;
                 input.min = MIN_ATTRIBUTE;
 
-                // Add validation on input
-                const validateInput = function(e) {
-                    const val = parseInt(this.value);
-                    if (val > maxAllowed) {
-                        this.value = maxAllowed;
-                    }
-                    if (val < MIN_ATTRIBUTE) {
-                        this.value = MIN_ATTRIBUTE;
-                    }
+                // Store original value, test increase, restore
+                const testIncrease = () => {
+                    const originalValue = input.value;
+                    input.value = Math.min(MAX_ATTRIBUTE, parseInt(input.value) + 1);
+                    const canIncrease = canIncreaseAttribute(attrName);
+                    input.value = originalValue;
+                    return canIncrease;
                 };
 
-                // Remove old listener if exists
-                input.removeEventListener('blur', input._validateInput);
-                input._validateInput = validateInput;
-                input.addEventListener('blur', validateInput);
+                const maxAllowed = testIncrease() ? MAX_ATTRIBUTE : currentValue;
+                input.max = maxAllowed;
             }
         });
     }
