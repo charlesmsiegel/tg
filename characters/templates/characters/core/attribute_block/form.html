@@ -135,15 +135,13 @@
         return false;
     }
 
-    function canIncreaseAttribute(attrName) {
-        const currentValue = parseInt(inputs[attrName]?.value) || MIN_ATTRIBUTE;
-
-        // Can't exceed maximum
-        if (currentValue >= MAX_ATTRIBUTE) {
+    function isAttributeValueValid(attrName, targetValue) {
+        // Can't exceed maximum or go below minimum
+        if (targetValue > MAX_ATTRIBUTE || targetValue < MIN_ATTRIBUTE) {
             return false;
         }
 
-        // Check if increasing would make valid distribution impossible
+        // Calculate what the totals would be with this attribute at targetValue
         const totals = getCurrentTotals();
 
         // Find which category this attribute belongs to
@@ -157,11 +155,19 @@
 
         if (!category) return false;
 
-        // Simulate increasing this attribute
-        totals[category] += 1;
+        // Get current value of this attribute
+        const currentValue = parseInt(inputs[attrName]?.value) || MIN_ATTRIBUTE;
+
+        // Adjust the category total to reflect the new value
+        totals[category] = totals[category] - currentValue + targetValue;
 
         // Check if the new state is still valid
         return isValidState(totals.physical, totals.social, totals.mental);
+    }
+
+    function canIncreaseAttribute(attrName) {
+        const currentValue = parseInt(inputs[attrName]?.value) || MIN_ATTRIBUTE;
+        return isAttributeValueValid(attrName, currentValue + 1);
     }
 
     // Find the maximum value this category can reach while maintaining validity
@@ -241,34 +247,24 @@
                 // Handle select dropdowns
                 Array.from(input.options).forEach(option => {
                     const optionValue = parseInt(option.value);
-                    if (optionValue > currentValue) {
-                        // This is an increase option - check if we can increase
-                        // Temporarily set to this value and check validity
-                        const originalValue = input.value;
-                        input.value = optionValue;
-                        const canIncrease = canIncreaseAttribute(attrName);
-                        input.value = originalValue;
-
-                        option.disabled = !canIncrease;
-                    } else {
-                        // Always allow decreasing or staying the same
-                        option.disabled = false;
-                    }
+                    // Check if this specific value would be valid
+                    const isValid = isAttributeValueValid(attrName, optionValue);
+                    option.disabled = !isValid;
                 });
             } else if (input.tagName === 'INPUT' && input.type === 'number') {
                 // Handle number inputs - set max attribute dynamically
                 input.min = MIN_ATTRIBUTE;
 
-                // Store original value, test increase, restore
-                const testIncrease = () => {
-                    const originalValue = input.value;
-                    input.value = Math.min(MAX_ATTRIBUTE, parseInt(input.value) + 1);
-                    const canIncrease = canIncreaseAttribute(attrName);
-                    input.value = originalValue;
-                    return canIncrease;
-                };
+                // Find the maximum valid value for this attribute
+                let maxAllowed = currentValue;
+                for (let testValue = currentValue + 1; testValue <= MAX_ATTRIBUTE; testValue++) {
+                    if (isAttributeValueValid(attrName, testValue)) {
+                        maxAllowed = testValue;
+                    } else {
+                        break;
+                    }
+                }
 
-                const maxAllowed = testIncrease() ? MAX_ATTRIBUTE : currentValue;
                 input.max = maxAllowed;
             }
         });
