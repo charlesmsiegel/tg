@@ -1,5 +1,7 @@
 from characters.models.core import MeritFlaw
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from locations.models.core import LocationModel
 
@@ -94,7 +96,17 @@ class HavenMeritFlawRating(models.Model):
 
     haven = models.ForeignKey(Haven, on_delete=models.CASCADE)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+    )
 
     class Meta:
         unique_together = ("haven", "mf")
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=-10, rating__lte=10),
+                name='locations_havenmeritflawrating_rating_range',
+                violation_error_message="Haven merit/flaw rating must be between -10 and 10"
+            ),
+        ]

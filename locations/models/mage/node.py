@@ -2,7 +2,8 @@ from characters.models.core import MeritFlaw
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F, Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from game.models import ObjectType
 from locations.models.core import LocationModel
@@ -28,14 +29,20 @@ class RatioChoices(models.IntegerChoices):
 class Node(LocationModel):
     type = "node"
 
-    rank = models.IntegerField(default=0)
+    rank = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
 
     size = models.IntegerField(default=SizeChoices.NORMAL, choices=SizeChoices.choices)
     ratio = models.IntegerField(
         default=RatioChoices.NORMAL, choices=RatioChoices.choices
     )
 
-    points = models.IntegerField(default=0)
+    points = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
     merits_and_flaws = models.ManyToManyField(
         MeritFlaw, blank=True, through="NodeMeritFlawRating"
     )
@@ -43,8 +50,14 @@ class Node(LocationModel):
         "characters.Resonance", blank=True, through="NodeResonanceRating"
     )
 
-    quintessence_per_week = models.IntegerField(default=0)
-    tass_per_week = models.IntegerField(default=0)
+    quintessence_per_week = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    tass_per_week = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
     tass_form = models.CharField(default="", max_length=100)
     quintessence_form = models.CharField(default="", max_length=100)
     reality_zone = models.ForeignKey(
@@ -54,6 +67,28 @@ class Node(LocationModel):
     class Meta:
         verbose_name = "Node"
         verbose_name_plural = "Nodes"
+        constraints = [
+            CheckConstraint(
+                check=Q(rank__gte=0, rank__lte=10),
+                name='locations_node_rank_range',
+                violation_error_message="Node rank must be between 0 and 10"
+            ),
+            CheckConstraint(
+                check=Q(points__gte=0, points__lte=100),
+                name='locations_node_points_range',
+                violation_error_message="Node points must be between 0 and 100"
+            ),
+            CheckConstraint(
+                check=Q(quintessence_per_week__gte=0, quintessence_per_week__lte=100),
+                name='locations_node_quintessence_range',
+                violation_error_message="Quintessence per week must be between 0 and 100"
+            ),
+            CheckConstraint(
+                check=Q(tass_per_week__gte=0, tass_per_week__lte=100),
+                name='locations_node_tass_range',
+                violation_error_message="Tass per week must be between 0 and 100"
+            ),
+        ]
 
     def get_update_url(self):
         return reverse("locations:mage:update:node", args=[str(self.id)])
@@ -226,21 +261,41 @@ class Node(LocationModel):
 class NodeMeritFlawRating(models.Model):
     node = models.ForeignKey(Node, on_delete=models.SET_NULL, null=True)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Node Merit or Flaw Rating"
         verbose_name_plural = "Node Merits and Flaws Rating"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=-10, rating__lte=10),
+                name='locations_nodemeritflawrating_rating_range',
+                violation_error_message="Node merit/flaw rating must be between -10 and 10"
+            ),
+        ]
 
 
 class NodeResonanceRating(models.Model):
     node = models.ForeignKey(Node, on_delete=models.SET_NULL, null=True)
     resonance = models.ForeignKey(Resonance, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Node Resonance Rating"
         verbose_name_plural = "Node Resonance Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=0, rating__lte=10),
+                name='locations_noderesonancerating_rating_range',
+                violation_error_message="Node resonance rating must be between 0 and 10"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.node}: {self.resonance} {self.rating}"

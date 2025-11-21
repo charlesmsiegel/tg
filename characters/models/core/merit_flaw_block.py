@@ -1,7 +1,8 @@
 from core.models import Model, Number
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F, Q, CheckConstraint
 from django.urls import reverse
+from django.core.validators import MinValueValidator, MaxValueValidator
 from game.models import ObjectType
 
 
@@ -76,11 +77,21 @@ class MeritFlaw(Model):
 class MeritFlawRating(models.Model):
     character = models.ForeignKey("Human", on_delete=models.SET_NULL, null=True)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Merit or Flaw Rating"
         verbose_name_plural = "Merit and Flaw Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=-10, rating__lte=10),
+                name='characters_meritflawrating_rating_range',
+                violation_error_message="Merit/Flaw rating must be between -10 and 10"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.mf}: {self.rating}"

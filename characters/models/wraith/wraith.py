@@ -6,6 +6,8 @@ from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
 from core.utils import add_dot
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 
 
@@ -803,11 +805,21 @@ class Wraith(WtOHuman):
 class ThornRating(models.Model):
     wraith = models.ForeignKey(Wraith, on_delete=models.CASCADE)
     thorn = models.ForeignKey(Thorn, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Thorn Rating"
         verbose_name_plural = "Thorn Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=0, rating__lte=10),
+                name='characters_wraith_thornrating_rating_range',
+                violation_error_message="Thorn rating must be between 0 and 10"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.wraith.name}: {self.thorn.name} ({self.rating})"

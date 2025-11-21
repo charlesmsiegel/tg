@@ -2,6 +2,8 @@ from characters.models.core.background_block import Background, BackgroundBlock
 from characters.models.core.human import Human
 from characters.models.mage.effect import Effect
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from locations.models.core.location import LocationModel
 
@@ -323,7 +325,10 @@ class ChantryBackgroundRating(models.Model):
         null=True,
         related_name="backgrounds",
     )
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
     note = models.CharField(default="", max_length=100)
     url = models.CharField(default="", max_length=500)
     complete = models.BooleanField(default=False)
@@ -331,6 +336,13 @@ class ChantryBackgroundRating(models.Model):
 
     class Meta:
         ordering = ["bg__name"]
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=0, rating__lte=10),
+                name='locations_chantrybackgroundrating_rating_range',
+                violation_error_message="Chantry background rating must be between 0 and 10"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.bg} ({self.note})"
