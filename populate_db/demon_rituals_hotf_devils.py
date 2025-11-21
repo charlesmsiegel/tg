@@ -8,13 +8,11 @@ from populate_db.demon_houses import devils
 from populate_db.demon_lores import (
     lore_of_the_celestials as lore_celestials,
     lore_of_flame as lore_flame,
-    lore_of_the_firmament as lore_firmament,
     lore_of_humanity,
     lore_of_light,
     lore_of_longing,
     lore_of_radiance,
     lore_of_the_realms as lore_realms,
-    lore_of_the_fundament as lore_fundament,
 )
 
 # =============================================================================

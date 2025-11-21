@@ -8,14 +8,11 @@ from characters.models.demon.ritual import Ritual
 from populate_db.demon_houses import scourges
 from populate_db.demon_lores import (
     lore_of_awakening as lore_awakening,
-    lore_of_the_beast as lore_beast,
     lore_of_the_fundament as lore_fundament,
     lore_of_humanity,
-    lore_of_paths as lore_paths,
     lore_of_patterns,
     lore_of_storms,
     lore_of_the_winds as lore_winds,
-    lore_of_the_wild as lore_wild,
 )
 
 # Lore of Survival not found in demon_lores.py

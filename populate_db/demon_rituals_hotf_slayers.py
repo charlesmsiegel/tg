@@ -6,11 +6,8 @@ from characters.models.demon.ritual import Ritual
 
 from populate_db.demon_houses import slayers
 from populate_db.demon_lores import (
-    lore_of_awakening as lore_awakening,
     lore_of_death,
     lore_of_the_earth as lore_earth,
-    lore_of_flame,
-    lore_of_patterns,
     lore_of_portals as lore_portals,
     lore_of_the_realms as lore_realms,
     lore_of_the_spirit as lore_spirit,
