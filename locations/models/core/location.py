@@ -12,14 +12,7 @@ class LocationModelManager(ModelManager):
         """Top-level locations (no parent)"""
         return self.filter(parent=None)
 
-    def pending_approval_for_user(self, user):
-        """Locations awaiting approval in user's chronicles (optimized)"""
-        # Locations use status in ['Un', 'Sub'], different from characters
-        return (
-            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
-            .select_related("chronicle", "owner")
-            .order_by("name")
-        )
+    # Inherits pending_approval_for_user from ModelManager base class
 
 
 class LocationModel(Model):

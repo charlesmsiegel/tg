@@ -41,8 +41,12 @@ class CharacterQuerySet(ModelQuerySet):
         )
 
     def pending_approval_for_user(self, user):
-        """Characters awaiting approval in user's chronicles (optimized for items vs characters)"""
-        # Characters use status='Sub' only, items use status in ['Un', 'Sub']
+        """
+        Characters awaiting approval in user's chronicles (optimized).
+
+        Overrides base ModelQuerySet implementation to use stricter status filter.
+        Characters use status='Sub' only, while Items/Locations use ['Un', 'Sub'].
+        """
         return (
             self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
             .select_related("chronicle", "owner")
