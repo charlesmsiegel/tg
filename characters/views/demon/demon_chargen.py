@@ -1,6 +1,10 @@
 from typing import Any
 
 from characters.forms.core.ally import AllyForm
+from characters.forms.core.contact import ContactForm
+from characters.forms.core.follower import FollowerForm
+from characters.forms.core.mentor import MentorForm
+from characters.forms.core.retainer import RetainerForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
@@ -371,14 +375,38 @@ class DemonLanguagesView(HumanLanguagesView):
 
 
 class DemonAlliesView(GenericBackgroundView):
-    model = Demon
+    primary_object_class = Demon
+    background_name = "allies"
     template_name = "characters/demon/demon/chargen.html"
     form_class = AllyForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["bg_name"] = "allies"
-        return context
+
+class DemonMentorView(GenericBackgroundView):
+    primary_object_class = Demon
+    background_name = "mentor"
+    template_name = "characters/demon/demon/chargen.html"
+    form_class = MentorForm
+
+
+class DemonContactsView(GenericBackgroundView):
+    primary_object_class = Demon
+    background_name = "contacts"
+    template_name = "characters/demon/demon/chargen.html"
+    form_class = ContactForm
+
+
+class DemonRetainersView(GenericBackgroundView):
+    primary_object_class = Demon
+    background_name = "retainers"
+    template_name = "characters/demon/demon/chargen.html"
+    form_class = RetainerForm
+
+
+class DemonFollowersView(GenericBackgroundView):
+    primary_object_class = Demon
+    background_name = "followers"
+    template_name = "characters/demon/demon/chargen.html"
+    form_class = FollowerForm
 
 
 class DemonSpecialtiesView(HumanSpecialtiesView):
@@ -413,7 +441,11 @@ class DemonCharacterCreationView(HumanCharacterCreationView):
         8: DemonFreebiesView,
         9: DemonLanguagesView,
         10: DemonAlliesView,
-        11: DemonSpecialtiesView,
+        11: DemonMentorView,
+        12: DemonContactsView,
+        13: DemonRetainersView,
+        14: DemonFollowersView,
+        15: DemonSpecialtiesView,
     }
     model_class = Demon
     key_property = "creation_status"

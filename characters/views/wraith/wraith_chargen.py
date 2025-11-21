@@ -1,6 +1,8 @@
 from typing import Any
 
 from characters.forms.core.ally import AllyForm
+from characters.forms.core.contact import ContactForm
+from characters.forms.core.mentor import MentorForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.wraith.fetter import FetterForm
 from characters.forms.wraith.freebies import WraithFreebiesForm
@@ -570,6 +572,20 @@ class WraithAlliesView(GenericBackgroundView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
+class WraithMentorView(GenericBackgroundView):
+    primary_object_class = Wraith
+    background_name = "mentor"
+    form_class = MentorForm
+    template_name = "characters/wraith/wraith/chargen.html"
+
+
+class WraithContactsView(GenericBackgroundView):
+    primary_object_class = Wraith
+    background_name = "contacts"
+    form_class = ContactForm
+    template_name = "characters/wraith/wraith/chargen.html"
+
+
 class WraithSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wraith/chargen.html"
@@ -617,7 +633,9 @@ class WraithCharacterCreationView(HumanCharacterCreationView):
         9: WraithFreebiesView,
         10: WraithLanguagesView,
         11: WraithAlliesView,
-        12: WraithSpecialtiesView,
+        12: WraithMentorView,
+        13: WraithContactsView,
+        14: WraithSpecialtiesView,
     }
     model_class = Wraith
     key_property = "creation_status"

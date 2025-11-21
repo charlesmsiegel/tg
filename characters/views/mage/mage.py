@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.db import transaction
 
 from characters.forms.core.ally import AllyForm
+from characters.forms.core.contact import ContactForm
+from characters.forms.core.mentor import MentorForm
+from characters.forms.core.retainer import RetainerForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
@@ -1536,6 +1539,27 @@ class MageAlliesView(GenericBackgroundView):
     template_name = "characters/mage/mage/chargen.html"
 
 
+class MageMentorView(GenericBackgroundView):
+    primary_object_class = Mage
+    background_name = "mentor"
+    form_class = MentorForm
+    template_name = "characters/mage/mage/chargen.html"
+
+
+class MageContactsView(GenericBackgroundView):
+    primary_object_class = Mage
+    background_name = "contacts"
+    form_class = ContactForm
+    template_name = "characters/mage/mage/chargen.html"
+
+
+class MageRetainersView(GenericBackgroundView):
+    primary_object_class = Mage
+    background_name = "retainers"
+    form_class = RetainerForm
+    template_name = "characters/mage/mage/chargen.html"
+
+
 class MageEnhancementView(MtAEnhancementView):
     template_name = "characters/mage/mage/chargen.html"
 
@@ -1650,8 +1674,11 @@ class MageCharacterCreationView(HumanCharacterCreationView):
         14: MageEnhancementView,
         15: MageSanctumView,
         16: MageAlliesView,
-        17: MageChantryView,
-        18: MageSpecialtiesView,
+        17: MageMentorView,
+        18: MageContactsView,
+        19: MageRetainersView,
+        20: MageChantryView,
+        21: MageSpecialtiesView,
     }
     model_class = Mage
     key_property = "creation_status"

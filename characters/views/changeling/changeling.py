@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.forms.changeling.changeling import ChangelingCreationForm
+from characters.forms.core.ally import AllyForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.changeling import Changeling
@@ -602,6 +603,13 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
         return context
 
 
+class ChangelingAlliesView(GenericBackgroundView):
+    primary_object_class = Changeling
+    background_name = "allies"
+    form_class = AllyForm
+    template_name = "characters/changeling/changeling/chargen.html"
+
+
 class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/changeling/changeling/chargen.html"
@@ -642,7 +650,8 @@ class ChangelingCharacterCreationView(HumanCharacterCreationView):
         5: ChangelingExtrasView,
         6: ChangelingFreebiesView,
         7: ChangelingLanguagesView,
-        8: ChangelingSpecialtiesView,
+        8: ChangelingAlliesView,
+        9: ChangelingSpecialtiesView,
     }
     model_class = Changeling
     key_property = "creation_status"
