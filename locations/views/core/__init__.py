@@ -90,7 +90,7 @@ class LocationIndexView(View):
         chron_dict = {}
         for chron in list(Chronicle.objects.all()) + [None]:
             if chron:
-                chron_dict[chron] = LocationModel.objects.top_level().for_chronicle(chron).order_by("name")
+                chron_dict[chron] = LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
             else:
                 chron_dict[chron] = LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
         context["form"] = LocationCreationForm(user=self.request.user)

@@ -44,7 +44,7 @@ class ChronicleDetailView(LoginRequiredMixin, View):
 
     def get_context(self, pk):
         chronicle = get_object_or_404(Chronicle, pk=pk)
-        top_locations = LocationModel.objects.top_level().for_chronicle(chronicle).order_by("name")
+        top_locations = LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
         characters = Character.objects.active().player_characters().with_group_ordering()
 
         return {
