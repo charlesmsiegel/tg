@@ -1,11 +1,7 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
-from characters.forms.core.contact_enhanced import ContactEnhancedForm
-from characters.forms.core.follower_enhanced import FollowerEnhancedForm
-from characters.forms.core.mentor_enhanced import MentorEnhancedForm
-from characters.forms.core.retainer_enhanced import RetainerEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
 from characters.models.core.specialty import Specialty
@@ -378,35 +374,35 @@ class DemonAlliesView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "allies"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
 
 
 class DemonMentorView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "mentor"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = MentorEnhancedForm
+    form_class = LinkedNPCForm
 
 
 class DemonContactsView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "contacts"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = ContactEnhancedForm
+    form_class = LinkedNPCForm
 
 
 class DemonRetainersView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "retainers"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = RetainerEnhancedForm
+    form_class = LinkedNPCForm
 
 
 class DemonFollowersView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "followers"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = FollowerEnhancedForm
+    form_class = LinkedNPCForm
 
 
 class DemonSpecialtiesView(HumanSpecialtiesView):

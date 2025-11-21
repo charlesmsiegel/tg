@@ -1,9 +1,8 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
-from characters.forms.core.contact_enhanced import ContactEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fomor import FomorCreationForm
 from characters.models.core import Human
 from characters.models.core.specialty import Specialty
@@ -360,14 +359,14 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
 class FomorAlliesView(GenericBackgroundView):
     primary_object_class = Fomor
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
 class FomorContactsView(GenericBackgroundView):
     primary_object_class = Fomor
     background_name = "contacts"
-    form_class = ContactEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
 

@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.werewolf.bastet import Bastet
@@ -559,7 +559,7 @@ class FeraLanguagesView(HumanLanguagesView):
 class FeraAlliesView(GenericBackgroundView):
     primary_object_class = Fera
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/fera/chargen.html"
 
 

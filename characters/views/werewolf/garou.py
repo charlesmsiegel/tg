@@ -1,10 +1,8 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
-from characters.forms.core.contact_enhanced import ContactEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.mentor_enhanced import MentorEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.garou import WerewolfCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
@@ -494,21 +492,21 @@ class WerewolfLanguagesView(HumanLanguagesView):
 class WerewolfAlliesView(GenericBackgroundView):
     primary_object_class = Werewolf
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/garou/chargen.html"
 
 
 class WerewolfMentorView(GenericBackgroundView):
     primary_object_class = Werewolf
     background_name = "mentor"
-    form_class = MentorEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/garou/chargen.html"
 
 
 class WerewolfContactsView(GenericBackgroundView):
     primary_object_class = Werewolf
     background_name = "contacts"
-    form_class = ContactEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/garou/chargen.html"
 
 

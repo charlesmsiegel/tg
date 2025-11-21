@@ -4,11 +4,8 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db import transaction
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
-from characters.forms.core.contact_enhanced import ContactEnhancedForm
-from characters.forms.core.mentor_enhanced import MentorEnhancedForm
-from characters.forms.core.retainer_enhanced import RetainerEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
 from characters.forms.mage.mage import MageCreationForm
@@ -1535,28 +1532,28 @@ class MageRoteView(SpecialUserMixin, CreateView):
 class MageAlliesView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageMentorView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "mentor"
-    form_class = MentorEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageContactsView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "contacts"
-    form_class = ContactEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageRetainersView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "retainers"
-    form_class = RetainerEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/mage/mage/chargen.html"
 
 

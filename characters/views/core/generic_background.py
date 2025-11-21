@@ -36,6 +36,14 @@ class GenericBackgroundView(EditPermissionMixin, FormView):
         self.current_background.save()
         return HttpResponseRedirect(primary_object.get_absolute_url())
 
+    def get_form_kwargs(self):
+        """Add obj and npc_role to form kwargs for LinkedNPCForm."""
+        kwargs = super().get_form_kwargs()
+        obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
+        kwargs['obj'] = obj
+        kwargs['npc_role'] = self.background_name
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = get_object_or_404(
@@ -57,6 +65,12 @@ class GenericBackgroundView(EditPermissionMixin, FormView):
             bg__property_name=self.background_name, complete=False
         ).first()
         form = super().get_form(form_class)
+
+        # Pass the background_name as npc_role to LinkedNPCForm
+        if hasattr(form, 'npc_role'):
+            form.npc_role = self.background_name
+
+        # Set initial rank if the form has a rank field
         if "rank" in form.fields.keys():
             form.fields["rank"].initial = self.current_background.rating
             form.fields["rank"].widget.attrs.update(
