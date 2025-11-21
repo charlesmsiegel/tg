@@ -3,6 +3,12 @@ from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
 
+from populate_db.effects_INC import (
+    effect_channel_quintessence,
+    effect_harm_ghost,
+    effect_summon_spirit_minor,
+)
+
 Artifact.objects.get_or_create(display=False, name="'O'ole Tatu", background_cost=6)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -2859,7 +2865,7 @@ Artifact.objects.get_or_create(
 
 # Dragon Pearls - Use existing Channel Quintessence effect
 dragon_pearls = Artifact.objects.get_or_create(name="Dragon Pearls")[0]
-dragon_pearls.power = Effect.objects.get_or_create(name="Channel Quintessence")[0]
+dragon_pearls.power = effect_channel_quintessence
 dragon_pearls.save()
 
 # Antaratma - Quiet resistance talisman
@@ -3231,7 +3237,7 @@ whistle = Charm.objects.get_or_create(
     quintessence_max=5,
     arete=2,
 )[0]
-whistle.power = Effect.objects.get_or_create(name="Summon Spirit (Minor)")
+whistle.power = effect_summon_spirit_minor
 whistle.description = (
     "A carved bone whistle that summons friendly spirits when blown. "
     "Contains a minor air spirit."
@@ -3248,7 +3254,7 @@ ghostblade = Charm.objects.get_or_create(
     quintessence_max=8,
     arete=3,
 )[0]
-ghostblade.power = Effect.objects.get_or_create(name="Harm Ghost")[0]
+ghostblade.power = effect_harm_ghost
 ghostblade.description = (
     "A sword bound with a spirit that allows it to harm incorporeal entities. "
     "Deals aggravated damage to ghosts and spirits."

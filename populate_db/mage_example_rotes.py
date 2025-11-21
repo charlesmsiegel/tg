@@ -51,10 +51,9 @@ from populate_db.practices_INC import highritualmagick, martialarts, faith, sham
 
 # ===== AKASHIC BROTHERHOOD ROTES =====
 
-effect = effect_do_strike_akashic
 rote = Rote.objects.get_or_create(
     name="Striking Fist of Dragon",
-    effect=effect,
+    effect=effect_do_strike_akashic,
     practice=martialarts,
     attribute=dexterity,
     ability=brawl,
@@ -65,10 +64,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 28)
 
-effect = effect_chi_healing
 rote = Rote.objects.get_or_create(
     name="Breath of Life Restoration",
-    effect=effect,
+    effect=effect_chi_healing,
     practice=medicinework,
     attribute=stamina,
     ability=medicine,
@@ -78,10 +76,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 28)
 
-effect = effect_increase_speed
 rote = Rote.objects.get_or_create(
     name="Seven League Stride",
-    effect=effect,
+    effect=effect_increase_speed,
     practice=martialarts,
     attribute=dexterity,
     ability=athletics,
@@ -93,10 +90,9 @@ rote.add_source("Lore of the Traditions", 29)
 
 # ===== CELESTIAL CHORUS ROTES =====
 
-effect = effect_holy_fire
 rote = Rote.objects.get_or_create(
     name="Pillar of Divine Flame",
-    effect=effect,
+    effect=effect_holy_fire,
     practice=faith,
     attribute=stamina,
     ability=expression,
@@ -107,10 +103,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 48)
 
-effect = effect_blessing_of_the_one
 rote = Rote.objects.get_or_create(
     name="Grace of the Divine",
-    effect=effect,
+    effect=effect_blessing_of_the_one,
     practice=faith,
     attribute=manipulation,
     ability=expression,
@@ -118,10 +113,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The mage channels divine grace to bless and strengthen allies."
 rote.add_source("Lore of the Traditions", 48)
 
-effect = effect_heal_living_being_complex
 rote = Rote.objects.get_or_create(
     name="Laying On of Hands",
-    effect=effect,
+    effect=effect_heal_living_being_complex,
     practice=faith,
     attribute=stamina,
     ability=medicine,
@@ -131,10 +125,9 @@ rote.add_source("Lore of the Traditions", 49)
 
 # ===== CULT OF ECSTASY ROTES =====
 
-effect = effect_temporal_fugue
 rote = Rote.objects.get_or_create(
     name="Dance of the Eternal Moment",
-    effect=effect,
+    effect=effect_temporal_fugue,
     practice=crazywisdom,
     attribute=dexterity,
     ability=expression,
@@ -145,10 +138,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 68)
 
-effect = effect_ecstatic_vision
 rote = Rote.objects.get_or_create(
     name="Vision Quest",
-    effect=effect,
+    effect=effect_ecstatic_vision,
     practice=crazywisdom,
     attribute=perception,
     ability=awareness,
@@ -156,10 +148,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Through ecstatic trance, the mage gains visions of past or future."
 rote.add_source("Lore of the Traditions", 68)
 
-effect = effect_influence_mood
 rote = Rote.objects.get_or_create(
     name="Empathic Wave",
-    effect=effect,
+    effect=effect_influence_mood,
     practice=crazywisdom,
     attribute=manipulation,
     ability=expression,
@@ -169,10 +160,9 @@ rote.add_source("Lore of the Traditions", 69)
 
 # ===== DREAMSPEAKER ROTES =====
 
-effect = effect_spirit_journey
 rote = Rote.objects.get_or_create(
     name="Walk Between Worlds",
-    effect=effect,
+    effect=effect_spirit_journey,
     practice=shamanism,
     attribute=stamina,
     ability=cosmology,
@@ -182,10 +172,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 88)
 
-effect = effect_call_totem_spirit
 rote = Rote.objects.get_or_create(
     name="Summon the Great Spirit",
-    effect=effect,
+    effect=effect_call_totem_spirit,
     practice=shamanism,
     attribute=manipulation,
     ability=occult,
@@ -193,10 +182,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The Dreamspeaker calls upon a powerful totem spirit for aid."
 rote.add_source("Lore of the Traditions", 88)
 
-effect = effect_medicine_work_healing
 rote = Rote.objects.get_or_create(
     name="Spirit Medicine",
-    effect=effect,
+    effect=effect_medicine_work_healing,
     practice=medicinework,
     attribute=stamina,
     ability=medicine,
@@ -206,10 +194,9 @@ rote.add_source("Lore of the Traditions", 89)
 
 # ===== EUTHANATOS ROTES =====
 
-effect = effect_good_death
 rote = Rote.objects.get_or_create(
     name="The Merciful End",
-    effect=effect,
+    effect=effect_good_death,
     practice=yoga,
     attribute=stamina,
     ability=medicine,
@@ -220,10 +207,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 108)
 
-effect = effect_wheel_of_fate
 rote = Rote.objects.get_or_create(
     name="Spin the Wheel",
-    effect=effect,
+    effect=effect_wheel_of_fate,
     practice=yoga,
     attribute=perception,
     ability=occult,
@@ -231,10 +217,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The mage perceives and manipulates the threads of fate and destiny."
 rote.add_source("Lore of the Traditions", 108)
 
-effect = effect_sense_fate_and_fortune
 rote = Rote.objects.get_or_create(
     name="Read the Tapestry",
-    effect=effect,
+    effect=effect_sense_fate_and_fortune,
     practice=yoga,
     attribute=perception,
     ability=awareness,
@@ -246,10 +231,9 @@ rote.add_source("Lore of the Traditions", 109)
 
 # ===== ORDER OF HERMES ROTES =====
 
-effect = effect_hermetic_circle_of_protection
 rote = Rote.objects.get_or_create(
     name="Ward of Solomon",
-    effect=effect,
+    effect=effect_hermetic_circle_of_protection,
     practice=highritualmagick,
     attribute=intelligence,
     ability=occult,
@@ -259,10 +243,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 128)
 
-effect = effect_summon_elemental
 rote = Rote.objects.get_or_create(
     name="Conjuration of the Four Quarters",
-    effect=effect,
+    effect=effect_summon_elemental,
     practice=highritualmagick,
     attribute=manipulation,
     ability=occult,
@@ -270,10 +253,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Hermetic ritual to summon and bind elemental spirits."
 rote.add_source("Lore of the Traditions", 128)
 
-effect = effect_alchemical_transmutation
 rote = Rote.objects.get_or_create(
     name="The Philosopher's Work",
-    effect=effect,
+    effect=effect_alchemical_transmutation,
     practice=alchemy,
     attribute=intelligence,
     ability=science,
@@ -281,10 +263,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Classical alchemical transmutation of base metals into gold."
 rote.add_source("Lore of the Traditions", 129)
 
-effect = effect_lightning_bolt
 rote = Rote.objects.get_or_create(
     name="Bolt of Zeus",
-    effect=effect,
+    effect=effect_lightning_bolt,
     practice=highritualmagick,
     attribute=dexterity,
     ability=occult,
@@ -294,10 +275,9 @@ rote.add_source("Lore of the Traditions", 129)
 
 # ===== SONS OF ETHER ROTES =====
 
-effect = effect_ether_ray
 rote = Rote.objects.get_or_create(
     name="Etheric Disruptor Beam",
-    effect=effect,
+    effect=effect_ether_ray,
     practice=weirdscience,
     attribute=dexterity,
     ability=science,
@@ -307,10 +287,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 148)
 
-effect = effect_dimensional_portal_device
 rote = Rote.objects.get_or_create(
     name="Portable Tesseract Gate",
-    effect=effect,
+    effect=effect_dimensional_portal_device,
     practice=weirdscience,
     attribute=intelligence,
     ability=science,
@@ -318,10 +297,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "A device that opens portals through higher-dimensional space."
 rote.add_source("Lore of the Traditions", 148)
 
-effect = effect_flying_forces
 rote = Rote.objects.get_or_create(
     name="Anti-Gravity Harness",
-    effect=effect,
+    effect=effect_flying_forces,
     practice=weirdscience,
     attribute=dexterity,
     ability=technology,
@@ -331,10 +309,9 @@ rote.add_source("Lore of the Traditions", 149)
 
 # ===== VERBENA ROTES =====
 
-effect = effect_blood_magic_ritual
 rote = Rote.objects.get_or_create(
     name="The Blood Offering",
-    effect=effect,
+    effect=effect_blood_magic_ritual,
     practice=witchcraft,
     attribute=stamina,
     ability=occult,
@@ -342,10 +319,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Verbena ritual using blood as a focus for powerful life magic."
 rote.add_source("Lore of the Traditions", 168)
 
-effect = effect_primal_transformation
 rote = Rote.objects.get_or_create(
     name="Beast Within",
-    effect=effect,
+    effect=effect_primal_transformation,
     practice=witchcraft,
     attribute=stamina,
     ability=occult,
@@ -353,10 +329,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The witch transforms into an animal form, embracing primal nature."
 rote.add_source("Lore of the Traditions", 168)
 
-effect = effect_call_the_wild_hunt
 rote = Rote.objects.get_or_create(
     name="Summon the Horned Lord's Hunt",
-    effect=effect,
+    effect=effect_call_the_wild_hunt,
     practice=witchcraft,
     attribute=manipulation,
     ability=occult,
@@ -366,10 +341,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 169)
 
-effect = effect_heal_living_being_complex
 rote = Rote.objects.get_or_create(
     name="Herbal Remedy",
-    effect=effect,
+    effect=effect_heal_living_being_complex,
     practice=witchcraft,
     attribute=stamina,
     ability=medicine,
@@ -379,10 +353,9 @@ rote.add_source("Lore of the Traditions", 169)
 
 # ===== VIRTUAL ADEPT ROTES =====
 
-effect = effect_reality_hack
 rote = Rote.objects.get_or_create(
     name="Root Access to Reality",
-    effect=effect,
+    effect=effect_reality_hack,
     practice=realityhacking,
     attribute=intelligence,
     ability=technology,
@@ -392,10 +365,9 @@ rote.description = (
 )
 rote.add_source("Lore of the Traditions", 188)
 
-effect = effect_digital_avatar
 rote = Rote.objects.get_or_create(
     name="Upload Consciousness",
-    effect=effect,
+    effect=effect_digital_avatar,
     practice=realityhacking,
     attribute=intelligence,
     ability=technology,
@@ -403,10 +375,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The mage projects their consciousness into the Digital Web."
 rote.add_source("Lore of the Traditions", 188)
 
-effect = effect_information_overload
 rote = Rote.objects.get_or_create(
     name="Denial of Service Attack",
-    effect=effect,
+    effect=effect_information_overload,
     practice=realityhacking,
     attribute=intelligence,
     ability=technology,
@@ -416,10 +387,9 @@ rote.add_source("Lore of the Traditions", 189)
 
 # ===== COMMON/UTILITY ROTES =====
 
-effect = effect_teleport_self_short_range
 rote = Rote.objects.get_or_create(
     name="Blink Step",
-    effect=effect,
+    effect=effect_teleport_self_short_range,
     practice=highritualmagick,
     attribute=dexterity,
     ability=athletics,
@@ -427,10 +397,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Instant short-range teleportation for tactical advantage."
 rote.add_source("How Do You Do That", 127)
 
-effect = effect_read_surface_thoughts
 rote = Rote.objects.get_or_create(
     name="Peer Into Mind",
-    effect=effect,
+    effect=effect_read_surface_thoughts,
     practice=highritualmagick,
     attribute=perception,
     ability=occult,
@@ -438,10 +407,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Read the surface thoughts and immediate intentions of a target."
 rote.add_source("Mage: the Ascension 20th Anniversary Edition", 519)
 
-effect = effect_force_shield
 rote = Rote.objects.get_or_create(
     name="Wall of Force",
-    effect=effect,
+    effect=effect_force_shield,
     practice=highritualmagick,
     attribute=stamina,
     ability=occult,
@@ -449,10 +417,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Create a barrier of solidified force energy for protection."
 rote.add_source("Mage: the Ascension 20th Anniversary Edition", 517)
 
-effect = effect_see_spirits
 rote = Rote.objects.get_or_create(
     name="Spirit Sight",
-    effect=effect,
+    effect=effect_see_spirits,
     practice=shamanism,
     attribute=perception,
     ability=awareness,
@@ -460,10 +427,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Perceive spirits and the Penumbra while in the material world."
 rote.add_source("Mage: the Ascension 20th Anniversary Edition", 521)
 
-effect = effect_curse_of_bad_luck
 rote = Rote.objects.get_or_create(
     name="Jinx",
-    effect=effect,
+    effect=effect_curse_of_bad_luck,
     practice=witchcraft,
     attribute=manipulation,
     ability=occult,
@@ -471,10 +437,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Curse a target with persistent bad luck and misfortune."
 rote.add_source("Mage: the Ascension 20th Anniversary Edition", 516)
 
-effect = effect_create_portal_temporary
 rote = Rote.objects.get_or_create(
     name="Gateway Between Spaces",
-    effect=effect,
+    effect=effect_create_portal_temporary,
     practice=highritualmagick,
     attribute=intelligence,
     ability=cosmology,
@@ -482,10 +447,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Open a temporary portal connecting two locations."
 rote.add_source("How Do You Do That", 128)
 
-effect = effect_shapeshift_into_animal_self
 rote = Rote.objects.get_or_create(
     name="Beast Form",
-    effect=effect,
+    effect=effect_shapeshift_into_animal_self,
     practice=witchcraft,
     attribute=stamina,
     ability=occult,
@@ -493,10 +457,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "Transform into an animal shape while retaining human mind."
 rote.add_source("How Do You Do That", 34)
 
-effect = effect_channel_quintessence
 rote = Rote.objects.get_or_create(
     name="Draw Upon the Wellspring",
-    effect=effect,
+    effect=effect_channel_quintessence,
     practice=highritualmagick,
     attribute=stamina,
     ability=occult,
