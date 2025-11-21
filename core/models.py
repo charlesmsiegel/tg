@@ -413,13 +413,17 @@ class HouseRule(models.Model):
         return self
 
 
-class CharacterTemplate(models.Model):
+class CharacterTemplate(Model):
     """
     Pre-configured character templates for quick character creation.
     Stores character data as JSON and can apply it to new characters.
+
+    Inherits from Model to get: name, description, sources (via add_source()),
+    owner, chronicle, status, and permission system.
     """
-    # Basic Info
-    name = models.CharField(max_length=200)
+    type = "character_template"
+
+    # Template-specific fields
     gameline = models.CharField(
         max_length=3,
         choices=[
@@ -438,8 +442,6 @@ class CharacterTemplate(models.Model):
         help_text="e.g., 'mage', 'vampire', 'werewolf', 'changeling', 'wraith', 'demon'"
     )
     concept = models.CharField(max_length=200, blank=True)
-    description = models.TextField(blank=True)
-    source_book = models.CharField(max_length=200, blank=True, help_text="e.g., 'Mage 20th Anniversary, p. 42'")
 
     # Character Data (stored as JSON)
     basic_info = models.JSONField(default=dict, blank=True, help_text="Nature, demeanor, concept, etc.")
@@ -456,13 +458,6 @@ class CharacterTemplate(models.Model):
     # Metadata
     is_official = models.BooleanField(default=True, help_text="Official WW template vs user-created")
     is_public = models.BooleanField(default=True, help_text="Available to all users")
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="created_templates"
-    )
     times_used = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

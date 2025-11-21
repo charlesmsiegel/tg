@@ -247,16 +247,23 @@ Copy and modify `characters/templates/characters/mage/mtahuman/template_select.h
 
 ## Template Data Structure
 
-Templates are stored in the `CharacterTemplate` model with:
+Templates are stored in the `CharacterTemplate` model (inherits from `Model` class) with:
 
 ```python
 {
+    # Inherited from Model class
     "name": "Template Name",
+    "description": "Description text",
+    "owner": User,  # Who created this template
+    "chronicle": Chronicle,  # Optional: chronicle-specific template
+    "status": "App",  # Approval status
+    "visibility": "PUB",  # Public/Private/Chronicle/Custom
+    # Use add_source("Book Name", page_number) method for sources
+
+    # Template-specific fields
     "gameline": "mta",  # vtm, wta, mta, wto, ctd, dtf
     "character_type": "mage",  # vampire, werewolf, etc.
     "concept": "Concept Name",
-    "description": "Description text",
-    "source_book": "Book Name, p. XX",
 
     # Character Data (JSONFields)
     "basic_info": {
@@ -273,6 +280,11 @@ Templates are stored in the `CharacterTemplate` model with:
     "languages": ["English", "Latin"],
     "equipment": "Starting gear description",
     "suggested_freebie_spending": {"disciplines": 5, "willpower": 3},
+
+    # Metadata
+    "is_official": True,  # Official WW template vs user-created
+    "is_public": True,  # Available to all users
+    "times_used": 0,  # Auto-incremented when applied
 }
 ```
 
@@ -301,7 +313,7 @@ Features:
 
 from core.models import CharacterTemplate
 
-CharacterTemplate.objects.create(
+template = CharacterTemplate.objects.create(
     name="My Custom Template",
     gameline="vtm",
     character_type="vampire",
@@ -310,6 +322,10 @@ CharacterTemplate.objects.create(
     is_official=False,  # Mark as user-created
     is_public=True,  # Make available to all
 )
+
+# Add sources using the inherited add_source() method
+template.add_source("Vampire: The Masquerade", 42)
+template.add_source("Guide to the Camarilla", 156)
 ```
 
 ## Template Application Logic
