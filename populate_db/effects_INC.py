@@ -1,90 +1,96 @@
 # M20 Jumpstart Common Magickal Effects
 from characters.models.mage.effect import Effect
 
-Effect.objects.get_or_create(name="Adapt to Environment (Self)", life=2)
-Effect.objects.get_or_create(name="Adapt to Environment (Other)", life=3)
-Effect.objects.get_or_create(name="Animate Corpse or Parts", life=2, prime=2)
-Effect.objects.get_or_create(name="Cause Disease (Self)", life=2)
-Effect.objects.get_or_create(name="Cure Disease (Self)", life=2)
-Effect.objects.get_or_create(name="Cause Disease (Other)", life=3)
-Effect.objects.get_or_create(name="Cure Disease (Other)", life=3)
-Effect.objects.get_or_create(name="Cosmetic Alteration", life=3)
-Effect.objects.get_or_create(name="Create Body (Simple)", life=2, prime=2)
-Effect.objects.get_or_create(name="Create Body (Complex)", life=5, prime=2)
-Effect.objects.get_or_create(name="Duplicate Body", life=5, prime=2)
-Effect.objects.get_or_create(name="Grow New Limbs or Other Features (Self)", life=3)
-Effect.objects.get_or_create(name="Grow New Limbs or Other Features (Other)", life=4)
-Effect.objects.get_or_create(name="Harm Living Being (Simple)", life=2)
-Effect.objects.get_or_create(name="Heal Living Being (Simple)", life=2)
-Effect.objects.get_or_create(name="Harm Living Being (Complex)", life=3)
-Effect.objects.get_or_create(name="Heal Living Being (Complex)", life=3)
-Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)
-Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)
-Effect.objects.get_or_create(name="Heal Vampire", life=3, matter=2)
-Effect.objects.get_or_create(name="Harm Vampire", life=3, matter=2)
-Effect.objects.get_or_create(name="Heal Werecreature", life=3, spirit=2)
-Effect.objects.get_or_create(name="Harm Werecreature", life=3, spirit=2)
-Effect.objects.get_or_create(name="Increase Physique/Traits (Self)", life=3)
-Effect.objects.get_or_create(name="Increase Physique/Traits (Other)", life=4)
-Effect.objects.get_or_create(name="Increase Speed", time=3)
-Effect.objects.get_or_create(name="Reduce Speed", time=3)
-Effect.objects.get_or_create(name="Revive Recently Dead", life=4, spirit=4, prime=3)
-Effect.objects.get_or_create(name="Rot Body (Entropy)", entropy=4)
-Effect.objects.get_or_create(name="Rot Body (Life)", life=4)
-Effect.objects.get_or_create(name="Shapeshift (Self)", life=4)
-Effect.objects.get_or_create(name="Shapeshift (Other)", life=5)
-Effect.objects.get_or_create(name="Soak Aggravated Damage", life=3)
-Effect.objects.get_or_create(
+
+effect_adapt_to_environment_self = Effect.objects.get_or_create(name="Adapt to Environment (Self)", life=2)
+effect_adapt_to_environment_other = Effect.objects.get_or_create(name="Adapt to Environment (Other)", life=3)
+effect_animate_corpse_or_parts = Effect.objects.get_or_create(name="Animate Corpse or Parts", life=2, prime=2)
+effect_cause_disease_self = Effect.objects.get_or_create(name="Cause Disease (Self)", life=2)
+effect_cure_disease_self = Effect.objects.get_or_create(name="Cure Disease (Self)", life=2)
+effect_cause_disease_other = Effect.objects.get_or_create(name="Cause Disease (Other)", life=3)
+effect_cure_disease_other = Effect.objects.get_or_create(name="Cure Disease (Other)", life=3)
+effect_cosmetic_alteration = Effect.objects.get_or_create(name="Cosmetic Alteration", life=3)
+effect_create_body_simple = Effect.objects.get_or_create(name="Create Body (Simple)", life=2, prime=2)
+effect_create_body_complex = Effect.objects.get_or_create(name="Create Body (Complex)", life=5, prime=2)
+effect_duplicate_body = Effect.objects.get_or_create(name="Duplicate Body", life=5, prime=2)
+effect_grow_new_limbs_or_other_features_self = Effect.objects.get_or_create(name="Grow New Limbs or Other Features (Self)", life=3)
+effect_grow_new_limbs_or_other_features_other = Effect.objects.get_or_create(name="Grow New Limbs or Other Features (Other)", life=4)
+effect_harm_living_being_simple = Effect.objects.get_or_create(name="Harm Living Being (Simple)", life=2)
+effect_heal_living_being_simple = Effect.objects.get_or_create(name="Heal Living Being (Simple)", life=2)
+effect_harm_living_being_complex = Effect.objects.get_or_create(name="Harm Living Being (Complex)", life=3)
+effect_heal_living_being_complex = Effect.objects.get_or_create(name="Heal Living Being (Complex)", life=3)
+effect_heal_fae = Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)
+effect_harm_fae = Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)
+effect_heal_vampire = Effect.objects.get_or_create(name="Heal Vampire", life=3, matter=2)
+effect_harm_vampire = Effect.objects.get_or_create(name="Harm Vampire", life=3, matter=2)
+effect_heal_werecreature = Effect.objects.get_or_create(name="Heal Werecreature", life=3, spirit=2)
+effect_harm_werecreature = Effect.objects.get_or_create(name="Harm Werecreature", life=3, spirit=2)
+effect_increase_physique_traits_self = Effect.objects.get_or_create(name="Increase Physique/Traits (Self)", life=3)
+effect_increase_physique_traits_other = Effect.objects.get_or_create(name="Increase Physique/Traits (Other)", life=4)
+effect_increase_speed = Effect.objects.get_or_create(name="Increase Speed", time=3)
+effect_reduce_speed = Effect.objects.get_or_create(name="Reduce Speed", time=3)
+effect_revive_recently_dead = Effect.objects.get_or_create(name="Revive Recently Dead", life=4, spirit=4, prime=3)
+effect_rot_body_entropy = Effect.objects.get_or_create(name="Rot Body (Entropy)", entropy=4)
+effect_rot_body_life = Effect.objects.get_or_create(name="Rot Body (Life)", life=4)
+effect_shapeshift_self = Effect.objects.get_or_create(name="Shapeshift (Self)", life=4)
+effect_shapeshift_other = Effect.objects.get_or_create(name="Shapeshift (Other)", life=5)
+effect_soak_aggravated_damage = Effect.objects.get_or_create(name="Soak Aggravated Damage", life=3)
+effect_transform_into_element_earth_metal_water = Effect.objects.get_or_create(
     name="Transform into Element (Earth, Metal, Water)", life=3, matter=3
 )[0]
-Effect.objects.get_or_create(name="Transform into Element (Wood)", life=3)
-Effect.objects.get_or_create(
+)[0]
+effect_transform_into_element_wood = Effect.objects.get_or_create(name="Transform into Element (Wood)", life=3)
+effect_transform_into_element_air_fire = Effect.objects.get_or_create(
     name="Transform into Element (Air, Fire)", life=3, forces=3
 )
-Effect.objects.get_or_create(name="Alter Probability", entropy=2)
-Effect.objects.get_or_create(name="Bless", entropy=3, life=3)
-Effect.objects.get_or_create(name="Curse", entropy=3, life=3)
-Effect.objects.get_or_create(name="Cause Decay", entropy=3)[0]  # entropy 3+ variants
+)
+effect_alter_probability = Effect.objects.get_or_create(name="Alter Probability", entropy=2)
+effect_bless = Effect.objects.get_or_create(name="Bless", entropy=3, life=3)
+effect_curse = Effect.objects.get_or_create(name="Curse", entropy=3, life=3)
+effect_cause_decay = Effect.objects.get_or_create(name="Cause Decay", entropy=3)[0]  # entropy 3+ variants
 effect, _ = Effect.objects.get_or_create(name="Spot Flaws", entropy=1)
 effect.description = "Basic Entropy senses allow the mage to find the most disordered point in a structure, effectively finding the weakest spot to attack it."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 192)
 effect.add_source("Mage: The Ascension (Second Edition)", 193)
 effect.add_source("Mage: The Ascension (Revised)", 162)
-Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)
-Effect.objects.get_or_create(name="Conjure Element (Fire, Wind)", forces=3, prime=2)
-Effect.objects.get_or_create(
+effect_call_storm = Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)
+effect_conjure_element_fire_wind = Effect.objects.get_or_create(name="Conjure Element (Fire, Wind)", forces=3, prime=2)
+effect_conjure_element_earth_metal_water = Effect.objects.get_or_create(
     name="Conjure Element (Earth, Metal, Water)", matter=3, prime=2
 )
-Effect.objects.get_or_create(name="Conjure Element (Wood)", life=3, prime=2)
-Effect.objects.get_or_create(name="Conjure New Object", matter=3, prime=2)[
+)
+effect_conjure_element_wood = Effect.objects.get_or_create(name="Conjure Element (Wood)", life=3, prime=2)
+effect_conjure_new_object = Effect.objects.get_or_create(name="Conjure New Object", matter=3, prime=2)[
     0
 ]  # matter 3+ variants
 Effect.objects.get_or_create(name='Conjure "Physical" Illusion', forces=2, prime=2)[
     0
 ]  # forces 2+ variants
-Effect.objects.get_or_create(name="Direct Existing Elements", forces=2)[
+effect_direct_existing_elements = Effect.objects.get_or_create(name="Direct Existing Elements", forces=2)[
     0
 ]  # forces 2+ variants
-Effect.objects.get_or_create(name="Disintegrate Object (Matter)", matter=3)
-Effect.objects.get_or_create(
+effect_disintegrate_object_matter = Effect.objects.get_or_create(name="Disintegrate Object (Matter)", matter=3)
+effect_disintegrate_object_entropy_time = Effect.objects.get_or_create(
     name="Disintegrate Object (Entropy/Time)", entropy=3, time=3
 )
-Effect.objects.get_or_create(name="Invisibility Field", forces=2)
-Effect.objects.get_or_create(name="Silence Field", forces=2)
-Effect.objects.get_or_create(name="Invisibility on Living Being", forces=2, life=2)
-Effect.objects.get_or_create(name="Levitation (Forces)", forces=2)
-Effect.objects.get_or_create(
+)
+effect_invisibility_field = Effect.objects.get_or_create(name="Invisibility Field", forces=2)
+effect_silence_field = Effect.objects.get_or_create(name="Silence Field", forces=2)
+effect_invisibility_on_living_being = Effect.objects.get_or_create(name="Invisibility on Living Being", forces=2, life=2)
+effect_levitation_forces = Effect.objects.get_or_create(name="Levitation (Forces)", forces=2)
+effect_levitation_correspondence = Effect.objects.get_or_create(
     name="Levitation (Correspondence)", correspondence=3, matter=2
 )
-Effect.objects.get_or_create(name="Flying (Forces)", forces=2)
-Effect.objects.get_or_create(name="Flying (Correspondence)", correspondence=3, life=2)
-Effect.objects.get_or_create(name="Speed Velocity", forces=2)[0]  # forces 2+ variants
-Effect.objects.get_or_create(name="Slow Velocity", forces=2)[0]  # forces 2+ variants
-Effect.objects.get_or_create(name="Transform Objects", matter=2)[
+)
+effect_flying_forces = Effect.objects.get_or_create(name="Flying (Forces)", forces=2)
+effect_flying_correspondence = Effect.objects.get_or_create(name="Flying (Correspondence)", correspondence=3, life=2)
+effect_speed_velocity = Effect.objects.get_or_create(name="Speed Velocity", forces=2)[0]  # forces 2+ variants
+effect_slow_velocity = Effect.objects.get_or_create(name="Slow Velocity", forces=2)[0]  # forces 2+ variants
+effect_transform_objects = Effect.objects.get_or_create(name="Transform Objects", matter=2)[
     0
 ]  # matter 2+ variants and other target thing spheres
-Effect.objects.get_or_create(name="Transform Forces", forces=3)[
+effect_transform_forces = Effect.objects.get_or_create(name="Transform Forces", forces=3)[
     0
 ]  # forces 3+ variants and other target thing spheres
 effect, _ = Effect.objects.get_or_create(name="Astral Projection", mind=4)
@@ -92,42 +98,42 @@ effect.description = "Astral Projection releases the mage's mind, free of the bo
 effect.save()
 effect.add_source("Dead Magic 2", 103)
 effect.add_source("Mage: The Ascension (Revised)", 178)
-Effect.objects.get_or_create(name="Clairvoyance", correspondence=2)[
+effect_clairvoyance = Effect.objects.get_or_create(name="Clairvoyance", correspondence=2)[
     0
 ]  # Mind 3/Corr 2 variant, why?
-Effect.objects.get_or_create(name="Conceal Aura (Mind)", mind=1)
-Effect.objects.get_or_create(name="Conceal Aura (Prime)", mind=2)
-Effect.objects.get_or_create(name="Alter Aura (Mind)", mind=1)
-Effect.objects.get_or_create(name="Alter Aura (Prime)", mind=2)
-Effect.objects.get_or_create(name="Conceal Avatar", spirit=2, mind=1)
-Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)
-Effect.objects.get_or_create(name="Conjure Mental Illusions", mind=2)[
+effect_conceal_aura_mind = Effect.objects.get_or_create(name="Conceal Aura (Mind)", mind=1)
+effect_conceal_aura_prime = Effect.objects.get_or_create(name="Conceal Aura (Prime)", mind=2)
+effect_alter_aura_mind = Effect.objects.get_or_create(name="Alter Aura (Mind)", mind=1)
+effect_alter_aura_prime = Effect.objects.get_or_create(name="Alter Aura (Prime)", mind=2)
+effect_conceal_avatar = Effect.objects.get_or_create(name="Conceal Avatar", spirit=2, mind=1)
+effect_conceal_thoughts = Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)
+effect_conjure_mental_illusions = Effect.objects.get_or_create(name="Conjure Mental Illusions", mind=2)[
     0
 ]  # Mind 2+ variants
-Effect.objects.get_or_create(name="Influence Mood", mind=2)
-Effect.objects.get_or_create(name="Influence Subconscious", mind=3)[
+effect_influence_mood = Effect.objects.get_or_create(name="Influence Mood", mind=2)
+effect_influence_subconscious = Effect.objects.get_or_create(name="Influence Subconscious", mind=3)[
     0
 ]  # Mind 3+ variants
-Effect.objects.get_or_create(name="Mind Control", mind=4)
-Effect.objects.get_or_create(name="Prophecy", time=2)[0]  # why mind 2/time 2?
-Effect.objects.get_or_create(name="Hindsight", time=2)[0]  # why mind 2/time 2?
-Effect.objects.get_or_create(name="Scramble Thoughts", mind=3)
-Effect.objects.get_or_create(name="See Through Another's Eyes", mind=3)
-Effect.objects.get_or_create(name="Sense Energies (Correspondence)", correspondence=1)
-Effect.objects.get_or_create(name="Sense Energies (Time)", time=1)
-Effect.objects.get_or_create(name="Sense Energies (Spirit)", spirit=1)
-Effect.objects.get_or_create(name="Sense Energies (Matter)", matter=1)
-Effect.objects.get_or_create(name="Sense Energies (Forces)", forces=1)
-Effect.objects.get_or_create(name="Sense Energies (Life)", life=1)
-Effect.objects.get_or_create(name="Sense Energies (Entropy)", entropy=1)
-Effect.objects.get_or_create(name="Sense Energies (Mind)", mind=1)
-Effect.objects.get_or_create(name="Sense Energies (Prime)", prime=1)
-Effect.objects.get_or_create(name="Share Perception", mind=1)[
+effect_mind_control = Effect.objects.get_or_create(name="Mind Control", mind=4)
+effect_prophecy = Effect.objects.get_or_create(name="Prophecy", time=2)[0]  # why mind 2/time 2?
+effect_hindsight = Effect.objects.get_or_create(name="Hindsight", time=2)[0]  # why mind 2/time 2?
+effect_scramble_thoughts = Effect.objects.get_or_create(name="Scramble Thoughts", mind=3)
+effect_see_through_another_s_eyes = Effect.objects.get_or_create(name="See Through Another's Eyes", mind=3)
+effect_sense_energies_correspondence = Effect.objects.get_or_create(name="Sense Energies (Correspondence)", correspondence=1)
+effect_sense_energies_time = Effect.objects.get_or_create(name="Sense Energies (Time)", time=1)
+effect_sense_energies_spirit = Effect.objects.get_or_create(name="Sense Energies (Spirit)", spirit=1)
+effect_sense_energies_matter = Effect.objects.get_or_create(name="Sense Energies (Matter)", matter=1)
+effect_sense_energies_forces = Effect.objects.get_or_create(name="Sense Energies (Forces)", forces=1)
+effect_sense_energies_life = Effect.objects.get_or_create(name="Sense Energies (Life)", life=1)
+effect_sense_energies_entropy = Effect.objects.get_or_create(name="Sense Energies (Entropy)", entropy=1)
+effect_sense_energies_mind = Effect.objects.get_or_create(name="Sense Energies (Mind)", mind=1)
+effect_sense_energies_prime = Effect.objects.get_or_create(name="Sense Energies (Prime)", prime=1)
+effect_share_perception = Effect.objects.get_or_create(name="Share Perception", mind=1)[
     0
 ]  # separate variants for other spheres?
-Effect.objects.get_or_create(name="Shield Mind (Other)", mind=2)
-Effect.objects.get_or_create(name="Tear Mind Apart", mind=3)
-Effect.objects.get_or_create(name="Tear Mind Apart (Aggravated)", mind=3, life=3)
+effect_shield_mind_other = Effect.objects.get_or_create(name="Shield Mind (Other)", mind=2)
+effect_tear_mind_apart = Effect.objects.get_or_create(name="Tear Mind Apart", mind=3)
+effect_tear_mind_apart_aggravated = Effect.objects.get_or_create(name="Tear Mind Apart (Aggravated)", mind=3, life=3)
 effect, _ = Effect.objects.get_or_create(name="Telepathy", mind=3)
 effect.description = (
     "The mage is able to communicate directly with the target, mind-to-mind."
@@ -136,126 +142,143 @@ effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 206)
 effect.add_source("Mage: The Ascension (Second Edition)", 210)
 effect.add_source("Mage: The Ascension (Revised)", 178)
-Effect.objects.get_or_create(name="Telekinesis", forces=2)[0]  # forces 2+ variants
-Effect.objects.get_or_create(name="Translate Languages", mind=3)
-Effect.objects.get_or_create(name="Translate Languages (Group)", mind=3, forces=2)
-Effect.objects.get_or_create(name="Absorb Quintessence", prime=3)
-Effect.objects.get_or_create(name="Channel Quintessence", prime=3)
-Effect.objects.get_or_create(name="Destroy by Draining Quintessence (Object)", prime=4)
-Effect.objects.get_or_create(
+effect_telekinesis = Effect.objects.get_or_create(name="Telekinesis", forces=2)[0]  # forces 2+ variants
+effect_translate_languages = Effect.objects.get_or_create(name="Translate Languages", mind=3)
+effect_translate_languages_group = Effect.objects.get_or_create(name="Translate Languages (Group)", mind=3, forces=2)
+effect_absorb_quintessence = Effect.objects.get_or_create(name="Absorb Quintessence", prime=3)
+effect_channel_quintessence = Effect.objects.get_or_create(name="Channel Quintessence", prime=3)
+effect_destroy_by_draining_quintessence_object = Effect.objects.get_or_create(name="Destroy by Draining Quintessence (Object)", prime=4)
+effect_destroy_by_draining_quintessence_creature = Effect.objects.get_or_create(
     name="Destroy by Draining Quintessence (Creature)", prime=5
 )
-Effect.objects.get_or_create(name="Drain Node", prime=4)
-Effect.objects.get_or_create(name="Drain Quintessence", prime=3)
-Effect.objects.get_or_create(name="Fuel New Pattern", prime=2)[
+)
+effect_drain_node = Effect.objects.get_or_create(name="Drain Node", prime=4)
+effect_drain_quintessence = Effect.objects.get_or_create(name="Drain Quintessence", prime=3)
+effect_fuel_new_pattern = Effect.objects.get_or_create(name="Fuel New Pattern", prime=2)[
     0
 ]  # variants add appropriate spheres
-Effect.objects.get_or_create(name="Share/Exchange Quintessence", prime=3)
-Effect.objects.get_or_create(name="Command Spirit", mind=4, spirit=4)
-Effect.objects.get_or_create(name="Conjure Spirit", spirit=3)
-Effect.objects.get_or_create(name="Drain Spirit's Essence", prime=4, spirit=4)
-Effect.objects.get_or_create(name="Harm Spirit/Wraith", spirit=3)
-Effect.objects.get_or_create(name="Open Gateway", spirit=4)
-Effect.objects.get_or_create(name="Close Gateway", spirit=4)
-Effect.objects.get_or_create(name="See Spirits", spirit=1)
-Effect.objects.get_or_create(name="Speak to Spirits", spirit=2)
-Effect.objects.get_or_create(name="Step Sideways", spirit=3)
-Effect.objects.get_or_create(name="Touch Spirit", spirit=2)
-Effect.objects.get_or_create(name="Affect Distant Object/Being", correspondence=2)[
+effect_share_exchange_quintessence = Effect.objects.get_or_create(name="Share/Exchange Quintessence", prime=3)
+effect_command_spirit = Effect.objects.get_or_create(name="Command Spirit", mind=4, spirit=4)
+effect_conjure_spirit = Effect.objects.get_or_create(name="Conjure Spirit", spirit=3)
+effect_drain_spirit_s_essence = Effect.objects.get_or_create(name="Drain Spirit's Essence", prime=4, spirit=4)
+effect_harm_spirit_wraith = Effect.objects.get_or_create(name="Harm Spirit/Wraith", spirit=3)
+effect_open_gateway = Effect.objects.get_or_create(name="Open Gateway", spirit=4)
+effect_close_gateway = Effect.objects.get_or_create(name="Close Gateway", spirit=4)
+effect_see_spirits = Effect.objects.get_or_create(name="See Spirits", spirit=1)
+effect_speak_to_spirits = Effect.objects.get_or_create(name="Speak to Spirits", spirit=2)
+effect_step_sideways = Effect.objects.get_or_create(name="Step Sideways", spirit=3)
+effect_touch_spirit = Effect.objects.get_or_create(name="Touch Spirit", spirit=2)
+effect_affect_distant_object_being = Effect.objects.get_or_create(name="Affect Distant Object/Being", correspondence=2)[
     0
 ]  # Correspondence 2+ variants
-Effect.objects.get_or_create(name="Aging (Living Being)", time=3, life=4)[
+effect_aging_living_being = Effect.objects.get_or_create(name="Aging (Living Being)", time=3, life=4)[
     0
 ]  # Time 3+ variants
-Effect.objects.get_or_create(name="Reversing Age (Living Being)", time=3, life=4)[
+effect_reversing_age_living_being = Effect.objects.get_or_create(name="Reversing Age (Living Being)", time=3, life=4)[
     0
 ]  # Time 3+ variants
-Effect.objects.get_or_create(name="Aging (Object)", time=3, matter=2)[
+effect_aging_object = Effect.objects.get_or_create(name="Aging (Object)", time=3, matter=2)[
     0
 ]  # Time 3+ variants
-Effect.objects.get_or_create(name="Reversing Age (Object)", time=3, matter=2)[
+effect_reversing_age_object = Effect.objects.get_or_create(name="Reversing Age (Object)", time=3, matter=2)[
     0
 ]  # Time 3+ variants
-Effect.objects.get_or_create(name="Conjure Earthly Being", correspondence=4, life=2)
-Effect.objects.get_or_create(
+effect_conjure_earthly_being = Effect.objects.get_or_create(name="Conjure Earthly Being", correspondence=4, life=2)
+effect_create_multiple_images_correspondence = Effect.objects.get_or_create(
     name="Create Multiple Images (Correspondence)", correspondence=3, prime=2
 )[0]
-Effect.objects.get_or_create(name="Create Multiple Images (Forces)", forces=2, prime=2)[
+)[0]
+effect_create_multiple_images_forces = Effect.objects.get_or_create(name="Create Multiple Images (Forces)", forces=2, prime=2)[
     0
 ]  # forces 2+ variants
-Effect.objects.get_or_create(
+effect_create_multiple_objects = Effect.objects.get_or_create(
     name="Create Multiple Objects", correspondence=5, matter=3, prime=2
 )[0]
-Effect.objects.get_or_create(name="Open Gateway Between Locations", correspondence=4)
-Effect.objects.get_or_create(name="Rewind Time", time=3)
-Effect.objects.get_or_create(name="Set Time Trigger", time=4)
-Effect.objects.get_or_create(name="Teleport (Self)", correspondence=3)
-Effect.objects.get_or_create(name="Teleport (Other)", correspondence=4)
-Effect.objects.get_or_create(name="Time Travel", time=5)
+)[0]
+effect_open_gateway_between_locations = Effect.objects.get_or_create(name="Open Gateway Between Locations", correspondence=4)
+effect_rewind_time = Effect.objects.get_or_create(name="Rewind Time", time=3)
+effect_set_time_trigger = Effect.objects.get_or_create(name="Set Time Trigger", time=4)
+effect_teleport_self = Effect.objects.get_or_create(name="Teleport (Self)", correspondence=3)
+effect_teleport_other = Effect.objects.get_or_create(name="Teleport (Other)", correspondence=4)
+effect_time_travel = Effect.objects.get_or_create(name="Time Travel", time=5)
 
 # M20 Effects
-Effect.objects.get_or_create(name="Bullet-Catch", time=3, forces=2, life=2)
-Effect.objects.get_or_create(name="Astral Sojourn", mind=4, spirit=3, prime=2)
-Effect.objects.get_or_create(name="Agama Re", entropy=4, life=2, spirit=3)
-Effect.objects.get_or_create(name="Agama Te", entropy=4, life=3, spirit=4)
-Effect.objects.get_or_create(name="Astral Agama", entropy=5, mind=5, spirit=3)
-Effect.objects.get_or_create(name="Suggest Sleep", mind=2)
-Effect.objects.get_or_create(name="Compel Sleep", mind=4)
-Effect.objects.get_or_create(name="Make Tired", life=3)
-Effect.objects.get_or_create(name="Create Wonder", prime=4)
-Effect.objects.get_or_create(name="Create Fetish (Willing)", prime=4)
-Effect.objects.get_or_create(name="Create Fetish (Unwilling)", spirit=4)
-Effect.objects.get_or_create(name="Create Periapt", matter=4)
-Effect.objects.get_or_create(name="Create Souflower", life=5, prime=3)
-Effect.objects.get_or_create(name="Creat Trinket", prime=2)
-Effect.objects.get_or_create(name="Mental Illusions that Inflict Damage", mind=3)
-Effect.objects.get_or_create(name="Immersive Illusions", forces=4, mind=4, prime=4)
-Effect.objects.get_or_create(name="Awaken Object's Spirit", spirit=3)
-Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)
-Effect.objects.get_or_create(name="Perfect Object", matter=3)
-Effect.objects.get_or_create(name="Consecrate", prime=2)
-Effect.objects.get_or_create(name="Ward/Ban", correspondence=2, prime=2)[
+effect_bullet_catch = Effect.objects.get_or_create(name="Bullet-Catch", time=3, forces=2, life=2)
+effect_astral_sojourn = Effect.objects.get_or_create(name="Astral Sojourn", mind=4, spirit=3, prime=2)
+effect_agama_re = Effect.objects.get_or_create(name="Agama Re", entropy=4, life=2, spirit=3)
+effect_agama_te = Effect.objects.get_or_create(name="Agama Te", entropy=4, life=3, spirit=4)
+effect_astral_agama = Effect.objects.get_or_create(name="Astral Agama", entropy=5, mind=5, spirit=3)
+effect_suggest_sleep = Effect.objects.get_or_create(name="Suggest Sleep", mind=2)
+effect_compel_sleep = Effect.objects.get_or_create(name="Compel Sleep", mind=4)
+effect_make_tired = Effect.objects.get_or_create(name="Make Tired", life=3)
+effect_create_wonder = Effect.objects.get_or_create(name="Create Wonder", prime=4)
+effect_create_fetish_willing = Effect.objects.get_or_create(name="Create Fetish (Willing)", prime=4)
+effect_create_fetish_unwilling = Effect.objects.get_or_create(name="Create Fetish (Unwilling)", spirit=4)
+effect_create_periapt = Effect.objects.get_or_create(name="Create Periapt", matter=4)
+effect_create_souflower = Effect.objects.get_or_create(name="Create Souflower", life=5, prime=3)
+effect_creat_trinket = Effect.objects.get_or_create(name="Creat Trinket", prime=2)
+effect_mental_illusions_that_inflict_damage = Effect.objects.get_or_create(name="Mental Illusions that Inflict Damage", mind=3)
+effect_immersive_illusions = Effect.objects.get_or_create(name="Immersive Illusions", forces=4, mind=4, prime=4)
+effect_awaken_object_s_spirit = Effect.objects.get_or_create(name="Awaken Object's Spirit", spirit=3)
+effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)
+effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)
+effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)
+effect_ward_ban = Effect.objects.get_or_create(name="Ward/Ban", correspondence=2, prime=2)[
     0
 ]  # Corr/PRime 2+ variant, plus appropriate spheres at 2+
-Effect.objects.get_or_create(name="Astral Body of Light", mind=4, spirit=3, prime=2)
-Effect.objects.get_or_create(name="Enter a Dream", mind=3)
-Effect.objects.get_or_create(name="See Avatar", mind=3, prime=2, spirit=1)
-Effect.objects.get_or_create(name="See Through Mental Illusions", mind=4)
-Effect.objects.get_or_create(name="Shield Mind (Self)", mind=1)
-Effect.objects.get_or_create(name="Create New Node", prime=5)
-Effect.objects.get_or_create(name="Create Quintessence Weapon", prime=3)
-Effect.objects.get_or_create(name="Employ Periapt", prime=2)
-Effect.objects.get_or_create(name="Enchant Object", prime=2)
-Effect.objects.get_or_create(name="Energize Periapt", prime=3)
-Effect.objects.get_or_create(name="Nullify Paradox", prime=5)
-Effect.objects.get_or_create(name="Refine Tass", prime=4)
-Effect.objects.get_or_create(name="Tap Wellspring", prime=4)
-Effect.objects.get_or_create(name="Body of Light", prime=2)
+effect_astral_body_of_light = Effect.objects.get_or_create(name="Astral Body of Light", mind=4, spirit=3, prime=2)
+effect_enter_a_dream = Effect.objects.get_or_create(name="Enter a Dream", mind=3)
+effect_see_avatar = Effect.objects.get_or_create(name="See Avatar", mind=3, prime=2, spirit=1)
+effect_see_through_mental_illusions = Effect.objects.get_or_create(name="See Through Mental Illusions", mind=4)
+effect_shield_mind_self = Effect.objects.get_or_create(name="Shield Mind (Self)", mind=1)
+effect_create_new_node = Effect.objects.get_or_create(name="Create New Node", prime=5)
+effect_create_quintessence_weapon = Effect.objects.get_or_create(name="Create Quintessence Weapon", prime=3)
+effect_employ_periapt = Effect.objects.get_or_create(name="Employ Periapt", prime=2)
+effect_enchant_object = Effect.objects.get_or_create(name="Enchant Object", prime=2)
+effect_energize_periapt = Effect.objects.get_or_create(name="Energize Periapt", prime=3)
+effect_nullify_paradox = Effect.objects.get_or_create(name="Nullify Paradox", prime=5)
+effect_refine_tass = Effect.objects.get_or_create(name="Refine Tass", prime=4)
+effect_tap_wellspring = Effect.objects.get_or_create(name="Tap Wellspring", prime=4)
+effect_body_of_light = Effect.objects.get_or_create(name="Body of Light", prime=2)
 
 # How Do You DO That?
 # Book of Secrets
-Effect.objects.get_or_create(
+effect_the_branding_effect = Effect.objects.get_or_create(
     name="The Branding Effect", spirit=3, life=3, mind=2, prime=3
 )
-Effect.objects.get_or_create(
+)
+effect_the_branding_effect_expirating = Effect.objects.get_or_create(
     name="The Branding Effect (Expirating)", spirit=3, life=3, mind=2, prime=3, time=4
 )[0]
-Effect.objects.get_or_create(
+)[0]
+effect_the_branding_effect_avatar_brand = Effect.objects.get_or_create(
     name="The Branding Effect (Avatar Brand)", spirit=4, life=3, mind=2, prime=3
 )[0]
-Effect.objects.get_or_create(
+)[0]
+effect_the_branding_effect_glowing = Effect.objects.get_or_create(
     name="The Branding Effect (Glowing)", spirit=3, life=3, mind=2, prime=3, forces=3
 )[0]
+)[0]
 
-Effect.objects.get_or_create(name="Gilgul", spirit=5, entropy=5, mind=5, prime=5)
-Effect.objects.get_or_create(
+effect_gilgul = Effect.objects.get_or_create(name="Gilgul", spirit=5, entropy=5, mind=5, prime=5)
+effect_gilgul_aggravated_damage = Effect.objects.get_or_create(
     name="Gilgul (Aggravated Damage)", spirit=5, entropy=5, mind=5, prime=5, life=3
 )[0]
-Effect.objects.get_or_create(
+)[0]
+effect_gilgul_body_to_dust = Effect.objects.get_or_create(
     name="Gilgul (Body to Dust)", spirit=5, entropy=5, mind=5, prime=5, life=5
 )[0]
-Effect.objects.get_or_create(
+)[0]
+effect_gilgul_scattered_body_to_dust = Effect.objects.get_or_create(
     name="Gilgul (Scattered Body to Dust)",
+    spirit=5,
+    entropy=5,
+    mind=5,
+    prime=5,
+    life=5,
+    forces=3,
+    correspondence=5,
+)[0]
     spirit=5,
     entropy=5,
     mind=5,
@@ -288,6 +311,7 @@ effect.add_source("Mage: The Sorcerer's Crusade", 271)
 effect, _ = Effect.objects.get_or_create(
     name="Luck's Blessing/Curse", spirit=3, entropy=2
 )
+)
 effect.description = "The shaman awakens the spirit of a location (size determines number of successes required) and leaves some kind of object or symbol for the spirit. This object causes the spirit to either help or hinder those who are there for the duration of the effect. For a longer duration, the spirit must be negotiated with directly."
 effect.save()
 effect.add_source("The Spirit Ways", 90)
@@ -297,6 +321,7 @@ effect.save()
 effect.add_source("Book of Crafts", 119)
 effect, _ = Effect.objects.get_or_create(
     name="Nanburbu", correspondence=2, spirit=3, life=2, entropy=4, prime=3
+)
 )
 effect.description = "This ritual doesn't read the omens like Adad, Istar, Samas, Sin and Anunnaku. Instead, it allows the mage to reduce the severity of bad fates. First, the mage and any assistants must seclude themselves from the world, either literally or symbolically (in a Magic Circle). Then, everyone involved must shave and wash while inhaling tamarisk incense to become pure. Then the leader sacrifices a goat and rings a copper bell. Finally, food and incense are offered to the gods as the participants request help preventing the omen from coming true."
 effect.save()
@@ -326,11 +351,13 @@ effect.add_source("Mage: The Ascension (Revised)", 163)
 effect, _ = Effect.objects.get_or_create(
     name="Bless the Heavenly Flower", spirit=4, life=4, entropy=5
 )
+)
 effect.description = "The Wu-Keng are tightly bound to the families in the communities they serve. By entering a deep trance, the mage may travel to the Heavenly Flower Garden and cultivate the flowers of benevolence for the family of a ghost. Once they have bloomed sufficiently, that family will give birth to a baby for whom that ghost will act as a guardian. In extreme cases, that baby will in fact be that ghost reborn."
 effect.save()
 effect.add_source("Dragons of the East", 68)
 effect, _ = Effect.objects.get_or_create(
     name="Bum a Dollar From the Universe", matter=2, entropy=2
+)
 )
 effect.description = "The Hollow One who uses this rote will just happen to come across money. Not a lot of it, but just enough for what they need."
 effect.save()
@@ -341,6 +368,7 @@ effect.save()
 effect.add_source("Guide to the Technocracy", 209)
 effect, _ = Effect.objects.get_or_create(
     name="Caesar's Due", correspondence=3, entropy=2, prime=2
+)
 )
 effect.description = "It's a rare thing for a Hermetic to be able to hold down a day job, so they tend to come up with creative ways to pay the bills. The Hermetic sets up a circle of seven bank cards (that don't need to be active or even theirs), with Enochian sigils inscribed on them, and puts their monthly bills in the center. Prime creates an aetheric matrix for insubstantial things to pass through (namely electronic money), and then Correspondence covers an area for Entropy to move the money around in. The Forces 3 version is more brute force, and directly sends signals that the bills have been paid. It is much riskier, but possible, to use this to make money rather than just to pay bills."
 effect.save()
@@ -359,6 +387,7 @@ effect.add_source("Mage: The Ascension (Revised)", 163)
 effect, _ = Effect.objects.get_or_create(
     name="Luck Be a Lady Tonight", spirit=2, entropy=1
 )
+)
 effect.description = "Summons a spirit of luck to assist the mage."
 effect.save()
 effect.add_source("Fallen Tower: Las Vegas", 120)
@@ -373,6 +402,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 195)
 effect.add_source("Mage: The Ascension (Revised)", 164)
 effect, _ = Effect.objects.get_or_create(
     name="Nobody Dies in Vegas", correspondence=4, entropy=4
+)
 )
 effect.description = "There is an unspoken rule that any trouble stays out of Las Vegas to avoid disrupting business. So, if a mage is actively leaving Las Vegas, this rote gives a +1 penalty to difficulty per success to all attempts to stop them from escaping. This protection lasts until the user escapes from the geographic boundary that is important to their pursuit, whether it be the city limits, the county line or the state of Nevada."
 effect.save()
@@ -416,17 +446,20 @@ effect.add_source("Orphan's Survival Guide", 127)
 effect, _ = Effect.objects.get_or_create(
     name="Learn-It", correspondence=2, time=2, entropy=2, prime=3
 )
+)
 effect.description = "An instructional rote, of sorts, it's also a stealth weapon against the Technocracy. The Virtual Adept using it tags the target and this causes enemies and challenges 'appropriate to the target's current power level.' Every success causes the target to become a magnet for one skill-appropriate challenge per session. This number can be modified by the original user, or by someone with Prime 2, though they cannot reduce it below one. To negate it completely requires Prime 3 and Entropy 3."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 62)
 effect, _ = Effect.objects.get_or_create(
     name="Rival's Curse", correspondence=2, entropy=4
 )
+)
 effect.description = "A long-distance Entropy-based attack on an enemy. This attack usually takes the form of such bad luck that it seems that everything is out to kill the target, doing damage based on the number of successes."
 effect.save()
 effect.add_source("Order of Reason", 108)
 effect, _ = Effect.objects.get_or_create(
     name="Sha'ir's Sentence", life=2, entropy=3, mind=2
+)
 )
 effect.description = "The Taftani first composes a poem about the target which evokes their weaknesses and then recites the poem at the target. This concludes with giving the target a nickname which captures these weaknesses. This rote then causes the nickname to stick and for it to become increasingly true over time. This can be very slow, often a gradual change over the course of years, but it can cause 'Camel Face' to lose Appearance and 'Stumblefoot' to lose Dexterity. The same technique works in the other direction: a poem highlighting strengths can emphasize strengths. Giving someone the title 'the Clever' can gain them Mental Attributes, for instance. A new nickname given with this rote will override an old one."
 effect.save()
@@ -446,11 +479,13 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Brand (the Rawhide Effect)", forces=2, entropy=2, prime=2
 )
+)
 effect.description = "A method of branding a Digital Web icon so that the brand stays visible despite any changes of form. Adding Time guarantees that the Brand lasts until the punishment is over."
 effect.save()
 effect.add_source("Digital Web 2.0", 112)
 effect, _ = Effect.objects.get_or_create(
     name="Create Virtual Object/Create Daemon", forces=3, prime=2
+)
 )
 effect.description = "This rote can create an inanimate object inside the Digital Web. The advanced version, Create Daemon, allows the mage to create a simple AI rather than an inanimate object."
 effect.save()
@@ -469,6 +504,7 @@ effect.add_source("Digital Web", 98)
 effect, _ = Effect.objects.get_or_create(
     name="Encode", correspondence=2, life=2, prime=2
 )
+)
 effect.description = (
     "This rote allows a Cyberpunk to store an object in virtual space for later use."
 )
@@ -476,6 +512,7 @@ effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Energy Transformation", correspondence=1, life=4, forces=4
+)
 )
 effect.description = "This allows a mage to physically enter the Digital Web."
 effect.save()
@@ -487,11 +524,13 @@ effect.add_source("Digital Web 2.0", 115)
 effect, _ = Effect.objects.get_or_create(
     name="FIRP", life=3, forces=3, entropy=4, mind=5, prime=2
 )
+)
 effect.description = "FIRP, or Fractal Interference Removal Procedure, is one of the more brutal rotes that can be found among Digital Web users, it blasts energy or projectiles in a fractal pattern, fracturing the target's consciousness, scattering their icon and energy, and then using Life to bring the attack into the physical world. Effectively this causes a Chaos Dump, splitting the target's consciousness between their body and their broken icon, and largely considered a fate worse than death."
 effect.save()
 effect.add_source("Digital Web 2.0", 155)
 effect, _ = Effect.objects.get_or_create(
     name="Fractal Encryption", forces=2, entropy=3, prime=2
+)
 )
 effect.description = "This rote encrypts data as a three-dimensional fractal sculpture in the Digital Web. It can only be decrypted with the same rote. Failure on either the encryption or decryption side destroys the information."
 effect.save()
@@ -503,11 +542,13 @@ effect.add_source("Digital Web", 98)
 effect, _ = Effect.objects.get_or_create(
     name="Information Superhighway", correspondence=2, time=3
 )
+)
 effect.description = "Using this, the mage can travel more quickly along routes within the Digital Web, with Time speeding up time around them and Correspondence allowing them to follow the natural conduits and routes."
 effect.save()
 effect.add_source("Digital Web", 99)
 effect, _ = Effect.objects.get_or_create(
     name="Instant Offline", correspondence=3, forces=2
+)
 )
 effect.description = "Soft de-razzes the user, getting them out of the Digital Web instantly. Usually, this is used as a sort of 'panic button.'"
 effect.save()
@@ -515,6 +556,7 @@ effect.add_source("Digital Web", 98)
 effect.add_source("Digital Web 2.0", 115)
 effect, _ = Effect.objects.get_or_create(
     name="Online Virus Transmitter Program", correspondence=2, life=2, forces=2, prime=2
+)
 )
 effect.description = "This rote allows a mage to craft a virus that infects another user's icon and then uses that connection to infect the user with a disease."
 effect.save()
@@ -526,6 +568,7 @@ effect.add_source("Digital Web", 99)
 effect, _ = Effect.objects.get_or_create(
     name="Parallax", correspondence=4, forces=2, mind=1
 )
+)
 effect.description = "Powerful Virtual Adepts often need to be in multiple places at once, and when online, this rote handle that. The digital version of Polyappearance, with Forces 2 and Mind 1 added in the mage can not only be in several places simultaneously but can act independently in each of them."
 effect.save()
 effect.add_source("Digital Web 2.0", 115)
@@ -536,6 +579,7 @@ effect.add_source("Digital Web", 99)
 effect, _ = Effect.objects.get_or_create(
     name="TechnoVision", correspondence=1, forces=1, entropy=1, mind=1, prime=1
 )
+)
 effect.description = "Pulling up a readout window, the Digital Web user has a running basic analysis and scan of their surroundings."
 effect.save()
 effect.add_source("Digital Web", 98)
@@ -543,11 +587,13 @@ effect.add_source("Digital Web 2.0", 112)
 effect, _ = Effect.objects.get_or_create(
     name="Virtual Talisman Transmogrification", matter=3, forces=2, prime=3
 )
+)
 effect.description = "This allows the mage to transfer a Talisman into the Digital Web just as a person can physically enter it."
 effect.save()
 effect.add_source("Digital Web", 98)
 effect, _ = Effect.objects.get_or_create(
     name="Webcrawlers", correspondence=3, forces=3, prime=2
+)
 )
 effect.description = "Nexplorers use this rote to create energy-arachnids in virtual space that can follow simple commands. Most often, they act as information retrieval systems, or defensive walls of force. A Webcrawler is created with 3 health levels and the ability to follow simple commands. More successes create more Webcrawlers rather than more powerful ones. There is an alternate version of this rote using Spirit instead of Prime, which leads to speculation as to whether it is creating the Webcrawlers or calling them from another place."
 effect.save()
@@ -563,17 +609,20 @@ effect.add_source("Book of Shadows", 145)
 effect, _ = Effect.objects.get_or_create(
     name="FOR NEXT Loop", correspondence=4, life=4, forces=2
 )
+)
 effect.description = "This Virtual Adept technique converts the target to energy and puts them into a computer and then breaks them by pushing them through various circuit boards. The victim rolls Willpower (difficulty 10-Intelligence) to escape. Each success causes the victim to lose a point of Willpower, but a failure gives them another chance to escape."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 220)
 effect, _ = Effect.objects.get_or_create(
     name="Red Button", forces=3, entropy=3, prime=2
 )
+)
 effect.description = "When raiding the laboratories of rogue Technomages, this allows the New World Order to find the weaknesses in their machinery and use them to destroy the equipment."
 effect.save()
 effect.add_source("Technocracy: New World Order", 49)
 effect, _ = Effect.objects.get_or_create(
     name="System Crash", correspondence=2, forces=2, prime=2
+)
 )
 effect.description = "A mage who is on the Digital Web can crash a Sleeper system. Successes go towards defeating security and the size of the system."
 effect.save()
@@ -586,11 +635,13 @@ effect.add_source("Mage: The Ascension (Second Edition)", 198)
 effect, _ = Effect.objects.get_or_create(
     name="That Rascal Puff", correspondence=2, life=3, forces=3, prime=2
 )
+)
 effect.description = "A Marauder encountered by Dante detonated a room full of computers by breathing fire on one after connecting them. Correspondence links them, and Life allows the Marauder to breathe the fireball from Forces 3 and Prime 2, which travels through the connection causing a larger detonation."
 effect.save()
 effect.add_source("Hidden Lore", 51)
 effect, _ = Effect.objects.get_or_create(
     name="Black Card/Little Black Box", correspondence=2, forces=2, mind=2
+)
 )
 effect.description = "Using some kind of black box or security card, the mage can attempt to hack a system that they normally could never reach. The controls must be networked to the system they are attaching the box to."
 effect.save()
@@ -602,11 +653,13 @@ effect.add_source("Digital Web", 99)
 effect, _ = Effect.objects.get_or_create(
     name="Core Dump", correspondence=2, time=2, forces=3
 )
+)
 effect.description = "This allows the Virtual Adept to load a massive amount of useless data into a computer via Forces or a person via Mind. This overwhelms them to the point where they are unable to initiate an action for three rounds. If more successes than target's Willpower, the computer will crash, or the person will enter a temporary coma (they will recover after a successful Willpower roll, rolled once a day)."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Disk-Doctor", forces=1, entropy=3, mind=2
+)
 )
 effect.description = "This rote has been essential for maintaining the secrecy of the Knights Templar. With it, a Templar can scan any piece of computer storage media for given data and delete it."
 effect.save()
@@ -627,6 +680,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 210)
 effect, _ = Effect.objects.get_or_create(
     name="Hacker's Glance", correspondence=1, entropy=2
 )
+)
 effect.description = "This rote analyzes massive amounts of data to increase the odds that the mage will find what they are looking for. Successes add to a subsequent data retrieval roll."
 effect.save()
 effect.add_source("Digital Web", 98)
@@ -637,17 +691,20 @@ effect.add_source("Guide to the Technocracy", 206)
 effect, _ = Effect.objects.get_or_create(
     name="Mental Interface", correspondence=2, forces=2, mind=2
 )
+)
 effect.description = "This rote allows the Virtual Adept to use their computer to see what is being actively done on another. This rote doesn't allow the mage to control the system."
 effect.save()
 effect.add_source("Hidden Lore", 19)
 effect, _ = Effect.objects.get_or_create(
     name="Remote Access", correspondence=2, forces=2
 )
+)
 effect.description = "Allows the mage to access a network from a distance."
 effect.save()
 effect.add_source("Digital Web 2.0", 113)
 effect, _ = Effect.objects.get_or_create(
     name="Virtual Lockpick", correspondence=1, time=3, forces=2, mind=1
+)
 )
 effect.description = "This rote compresses time inside the computer and makes many, many educated guesses about what the password may be. To use this, the mage needs to already know a login ID."
 effect.save()
@@ -659,17 +716,20 @@ effect.add_source("Mage: The Ascension (Second Edition)", 211)
 effect, _ = Effect.objects.get_or_create(
     name="Audience of Inanna", correspondence=2, time=1, matter=2
 )
+)
 effect.description = "Originally used to prevent impotence by placing a figurine of Inanna, a fertility goddess, at the head of a bed, Virtual Adepts have adapted it to avoid obsolescence: old hardware can run as effectively as new, and with enough successes, can convert a laptop into a supercomputer."
 effect.save()
 effect.add_source("Dead Magic", 57)
 effect, _ = Effect.objects.get_or_create(
     name="Personal Assistant Software", mind=5, prime=2
 )
+)
 effect.description = "This procedure creates a digital assistant based on the Technocrat's personality. The assistant controls their phone or computer's operation, assisting the agent in using it efficiently."
 effect.save()
 effect.add_source("Convention Book: New World Order (Revised)", 86)
 effect, _ = Effect.objects.get_or_create(
     name="Psychic Interface", correspondence=2, forces=2, mind=3
+)
 )
 effect.description = "In short, this effect allows a mage to access their computers remotely, directly from their minds. When this is active, meditation may be used in place of computers and IT gear as an instrument. This often still involves some sort of technological instrument, such as implants, glass-tech or the like, though those with cybernetics can work directly."
 effect.save()
@@ -681,6 +741,7 @@ effect.add_source("Technocracy: Iteration X", 47)
 effect, _ = Effect.objects.get_or_create(
     name="Book of Whispers", time=3, matter=3, mind=2
 )
+)
 effect.description = "A common rote among the Bonisagus, this rote binds a blank book to a person. Then, the book fills with the person's surface thoughts. The book must be in the subject's immediate vicinity to work, but it doesn't need to be obvious (it may be disguised among other books)."
 effect.save()
 effect.add_source("Blood Treachery", 88)
@@ -691,11 +752,13 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 62)
 effect, _ = Effect.objects.get_or_create(
     name="Eavesdropper", correspondence=2, forces=2
 )
+)
 effect.description = "A Technomage using this rote picks up a phone, dials a long sequence of digits, and can listen in on anything said near another working telephone."
 effect.save()
 effect.add_source("Hidden Lore", 19)
 effect, _ = Effect.objects.get_or_create(
     name="High-Definition", correspondence=2, mind=2
+)
 )
 effect.description = "By accessing a communication line, generally cable TV or Internet, this allows the Agent to see through any modern (LCD, plasma, etc.) television."
 effect.save()
@@ -707,6 +770,7 @@ effect.add_source("Technocracy: New World Order", 45)
 effect, _ = Effect.objects.get_or_create(
     name="Nearest and Dearest", correspondence=2, time=2, mind=3
 )
+)
 effect.description = "By going through a wallet or a database, a Syndicate Enforcer can find out detailed information about their target's family and loved ones."
 effect.save()
 effect.add_source("Hidden Lore", 54)
@@ -717,11 +781,13 @@ effect.add_source("Technocracy: New World Order", 49)
 effect, _ = Effect.objects.get_or_create(
     name="PIN Drop", correspondence=2, time=2, forces=2, mind=2
 )
+)
 effect.description = "By hacking an ATM or similar device, a Syndicate Agent can acquire a target's personal identification number, and use it to obtain all linked information, usually including social security number, address, bank account numbers, etc."
 effect.save()
 effect.add_source("Technocracy: Syndicate", 47)
 effect, _ = Effect.objects.get_or_create(
     name="Squaring the Circle", correspondence=2, mind=1
+)
 )
 effect.description = "A mage can use this rote to spy on conversations occurring in a place where the mage cannot go. Correspondence is used to access the location and Mind to discern the conversations. It is more difficult depending on how vigilant against spies the targets are."
 effect.save()
@@ -741,11 +807,13 @@ effect.add_source("Guide to the Technocracy", 205)
 effect, _ = Effect.objects.get_or_create(
     name="Adad", correspondence=2, spirit=1, entropy=2
 )
+)
 effect.description = "By reading in the stars, Babylonian mages could determine the general fate of an area and the people within. Very detailed readings are almost impossible with this rote, but general things like 'prosperity' or even 'a break in the walls' for a major event can be determined with varying numbers of successes."
 effect.save()
 effect.add_source("Dead Magic", 53)
 effect, _ = Effect.objects.get_or_create(
     name="Chaos Butterfly", spirit=2, entropy=2, prime=2
+)
 )
 effect.description = "Houses Thig and Fortunae use this rote by inscribing a sigil and focusing their intent on some larger effect they wish to cause. This summons a minor Umbrood, a butterfly with wings of fire. The mage then must forget about the desired effect and let the butterfly flutter away. At some point in the future, likely in a very unexpected way, the effect that the mage desired comes to pass. In fact, this effect should always take the character (and the player) by surprise."
 effect.save()
@@ -761,17 +829,20 @@ effect.add_source("Dead Magic", 27)
 effect, _ = Effect.objects.get_or_create(
     name="Find the Lost", correspondence=1, entropy=2
 )
+)
 effect.description = "Choristers often use this rote to find people who are troubled and in need of help. Correspondence 2 is needed if searching for someone beyond line of sight. Mind detects them based on their thoughts and emotions; Entropy manipulates luck to bring the mage to the person."
 effect.save()
 effect.add_source("Tradition Book: Celestial Chorus (Revised)", 57)
 effect, _ = Effect.objects.get_or_create(
     name="Istar", correspondence=3, spirit=3, entropy=4
 )
+)
 effect.description = "By reading the signs of Istar in the sky, the mage may gain insight into the fates of nations and their leaders. The results of reading these fates are very metaphorical and broad, rarely are individual events predicted, but the general sense of what will happen can be determined."
 effect.save()
 effect.add_source("Dead Magic", 54)
 effect, _ = Effect.objects.get_or_create(
     name="Laying on of Hands", time=2, life=1, entropy=1
+)
 )
 effect.description = "The mage touches the subject and can see which wounds they are likely to take during an upcoming battle. This is useful for attempting to avoid those wounds, with armor, magick or other means."
 effect.save()
@@ -791,11 +862,13 @@ effect.add_source("Dead Magic", 54)
 effect, _ = Effect.objects.get_or_create(
     name="Search Engine", correspondence=2, entropy=1, prime=1
 )
+)
 effect.description = "This rote puts the Virtual Adept in touch with someone who matches their needs, or someone who knows someone who does. Each success gives a 20% chance of finding a person of the type they need."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Silent Promise of the Spring Tortoise", entropy=1
+)
 )
 effect.description = "By adopting a turtle and raising it for a week, and then boiling and eating it, a Wu-Keng may divine the odds of their next undertaking from the way the shell cracks."
 effect.save()
@@ -806,6 +879,7 @@ effect.save()
 effect.add_source("Dead Magic", 54)
 effect, _ = Effect.objects.get_or_create(
     name="Wyrd Visions", correspondence=2, time=2, entropy=1
+)
 )
 effect.description = "The mage attunes themselves to the threads of fate, seeking an understanding of the past, present and future."
 effect.save()
@@ -840,6 +914,7 @@ effect.add_source("Dead Magic 2", 101)
 effect, _ = Effect.objects.get_or_create(
     name="Sparrow's Fall", time=4, entropy=3, prime=2
 )
+)
 effect.description = "Like The Branding Rote, Sparrow's Fall marks someone with a forbidden act and attacks them if they commit it, for instance, marking a suspected Vampire to be harmed if it drinks blood. Three successes are needed to create the mark, and successes beyond that are used for damage. The three variants use Prime 2, Life 3 and Mind 4 to cause the damage."
 effect.save()
 effect.add_source("Order of Reason", 110)
@@ -853,6 +928,7 @@ effect.save()
 effect.add_source("Dead Magic", 54)
 effect, _ = Effect.objects.get_or_create(
     name="Biometric Holographic Recreation", time=2, forces=2
+)
 )
 effect.description = "With a half hour spent scanning and detailed investigation of the scene of an incident, the Progenitor investigator can create a perfect holographic replica of it down to the last speck of dust."
 effect.save()
@@ -875,6 +951,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (Revised)", 192)
 effect, _ = Effect.objects.get_or_create(
     name="Don't Cross the Streams", correspondence=2, time=2
+)
 )
 effect.description = "This rote developed by Chaoticians gives a warning about a specific place, and the more successes the more specific the warning about a potential danger will be."
 effect.save()
@@ -899,6 +976,7 @@ effect.save()
 effect.add_source("Convention Book: New World Order (Revised)", 86)
 effect, _ = Effect.objects.get_or_create(
     name="Long-Range Eyes", correspondence=2, time=2, mind=1
+)
 )
 effect.description = "The mage can look at any given place or time and follow a given target forward or backwards."
 effect.save()
@@ -935,17 +1013,20 @@ effect.add_source("Hidden Lore", 14)
 effect, _ = Effect.objects.get_or_create(
     name="Quo Vadis? (Whither Goest Thou?)", correspondence=2, time=2, mind=2
 )
+)
 effect.description = "This rote gives a Templar an approximate idea of the target's planned route, where they will be going in the near future."
 effect.save()
 effect.add_source("Book of Crafts", 103)
 effect, _ = Effect.objects.get_or_create(
     name="Reading the Umbral Skein", time=2, spirit=2, mind=1
 )
+)
 effect.description = "Functionally identical to usual Time magic scrying, this rote gives access to the history (not the future!) of a portion of the Umbra corresponding to the user's location (or elsewhere with Correspondence). The temporal distance that can be seen is 21 times the usual amount, allowing the mage to see into the deep past of the Umbra, and Mind is used to allow the mage to remember every bit of the often-bizarre information gained this way."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (Revised)", 70)
 effect, _ = Effect.objects.get_or_create(
     name="Running Scenarios", time=2, entropy=2, mind=4
+)
 )
 effect.description = "This rote requires at least one level of the Dream background. Using the information available from the Dream background and the flexibility of dreams, the mage runs through huge numbers of scenarios and possibilities. When they wake up, they will have an accurate assessment of the probabilities of various actions related to the problem they were dreaming about, and some relevant skills (as per Dream)."
 effect.save()
@@ -968,6 +1049,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 223)
 effect, _ = Effect.objects.get_or_create(
     name="Strategic Inefficiency Analysis", time=2, entropy=2
 )
+)
 effect.description = "Via precise statistical modeling, a Technocrat can predict what a given organization is planning, though several successes are needed to determine anything other than the absolute basics."
 effect.save()
 effect.add_source("Guide to the Technocracy", 209)
@@ -978,11 +1060,13 @@ effect.add_source("Mage: The Ascension (First Edition)", 228)
 effect, _ = Effect.objects.get_or_create(
     name="Turning the Wheel of Ages", time=2, spirit=1, mind=3
 )
+)
 effect.description = "This rote allows an Akashic to experience the past of other mages, including their past lives. Mind 3 suffices for willing targets and other Akashics, Mind 4 is necessary otherwise."
 effect.save()
 effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 77)
 effect, _ = Effect.objects.get_or_create(
     name="View the Scattered Lotus Petals", time=2, entropy=1
+)
 )
 effect.description = "Using Entropy, the Euthanatos can follow several threads of fate and see multiple possible futures, with each success revealing one possibility."
 effect.save()
@@ -994,6 +1078,7 @@ effect.add_source("Technocracy: Void Engineers", 41)
 effect, _ = Effect.objects.get_or_create(
     name="Auric Trail", correspondence=1, spirit=1, prime=1
 )
+)
 effect.description = "This rote allows a mage to track a mage or spirit (with Spirit 2) wherever they go, on Earth or in the Umbra. This tracks the target by its resonance and is easier if the target has particularly strong resonance. The rote is much harder on Earth as resonance fades more quickly there than in the Umbra. Correspondence 2 is required if the target reforms elsewhere (spirits) or teleports (mages)."
 effect.save()
 effect.add_source("Infinite Tapestry", 181)
@@ -1003,6 +1088,7 @@ effect.save()
 effect.add_source("Technocracy: New World Order", 43)
 effect, _ = Effect.objects.get_or_create(
     name="Correspondence Sensing", correspondence=2
+)
 )
 effect.description = "This rote allows the mage to build a connection between their senses and a desired location. This can take the form of scrying: where the mage can view a location remotely. It can also take the form of an active defense, where the mage watches for others attempting to build connections to the location and prepares to counter their efforts."
 effect.save()
@@ -1031,6 +1117,7 @@ effect.add_source("Artisan's Handbook", 51)
 effect, _ = Effect.objects.get_or_create(
     name="Heat Seeking", correspondence=2, life=1, forces=1
 )
+)
 effect.description = "With the aid of surveillance devices that can track people by temperature, the New World Order can track people inside a building, determine the number of individuals in the group."
 effect.save()
 effect.add_source("Technocracy: New World Order", 48)
@@ -1041,6 +1128,7 @@ effect.add_source("Hidden Lore", 17)
 effect, _ = Effect.objects.get_or_create(
     name="Map the True Way", correspondence=2, matter=2
 )
+)
 effect.description = "By entering a trance and drawing a map, an Ahl-i-Batin mage can find a person, place, or object."
 effect.save()
 effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 43)
@@ -1050,6 +1138,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (Second Edition)", 189)
 effect, _ = Effect.objects.get_or_create(
     name="Scan Non-Local Universe", correspondence=2, spirit=2
+)
 )
 effect.description = (
     "This allows the Void Engineers to perceive any location in the Umbra."
@@ -1080,6 +1169,7 @@ effect.add_source("Hidden Lore", 17)
 effect, _ = Effect.objects.get_or_create(
     name="Cycle of the Five Agents", matter=2, forces=3, prime=2
 )
+)
 effect.description = "The Wu Lung can create or destroy any of the five elements according to their cycle. A flame can be converted to soil, for example. This allows general elemental transmutation, though in the Wu Lung paradigm, only along the cycle of creation or destruction."
 effect.save()
 effect.add_source("Dragons of the East", 59)
@@ -1094,11 +1184,13 @@ effect.add_source("Book of Crafts", 89)
 effect, _ = Effect.objects.get_or_create(
     name="Rouse the Dragon", spirit=4, matter=5, forces=5, prime=4
 )
+)
 effect.description = "By burning hundreds of charms and appeasing their ancestors with a feast, a Wu Lung creates a dragon of jade, paper, or gold. They paint red dots on the eyes to awaken it. This turns the very landscape against the Wu Lung's enemies, it may cause a tidal wave, earthquake, volcanic eruption, or hurricane, depending on the dragon being awoken, not just the figuring, but the sleeping dragon inhabiting the geography of the area."
 effect.save()
 effect.add_source("Dragons of the East", 58)
 effect, _ = Effect.objects.get_or_create(
     name="Yao Su Dragon Thunder", spirit=2, forces=3, prime=2
+)
 )
 effect.description = "This rote allows a Wu Lung to make a direct attack at anything, physical or ephemera, using some element, such as a fireball, a thunderbolt, a shower of molten metal, etc."
 effect.save()
@@ -1116,6 +1208,7 @@ effect.add_source("Mage: The Ascension (Revised)", 167)
 effect, _ = Effect.objects.get_or_create(
     name="Pele Wai'ula (Pele's Blood)", correspondence=3, matter=2, forces=3
 )
+)
 effect.description = "Polynesian mages have a deep familiarity with the forces of volcanism. With Forces 3, they can open a volcanic fissure, while Forces 4 allows them to cause a full-scale volcanic eruption."
 effect.save()
 effect.add_source("Dead Magic 2", 29)
@@ -1125,6 +1218,7 @@ effect.save()
 effect.add_source("Book of Crafts", 74)
 effect, _ = Effect.objects.get_or_create(
     name="TWACI", correspondence=3, forces=3, mind=2
+)
 )
 effect.description = "Short for 'The Walls Are Closing In' and pronounced 'th-whacky,' the Reality Coder uses this rote to warp gravity and space, and to create a sense of creeping doom in the target. This rote paralyzes the target with fear, makes the walls appear to literally be closing in, and causes cumulative damage of one die of bashing damage up to a maximum of 10 dice."
 effect.save()
@@ -1150,17 +1244,20 @@ effect.add_source("Mage: The Ascension (Revised)", 166)
 effect, _ = Effect.objects.get_or_create(
     name="Lightning Gateway", correspondence=2, forces=3, prime=2
 )
+)
 effect.description = "This rote is similar to Ignis, it conjures a Forces attack from nothing, but it also can ignore barriers, striking hidden targets."
 effect.save()
 effect.add_source("Tradition Book: Order of Hermes (First Edition)", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Pulse of the Electro-Stream", forces=3, prime=2
 )
+)
 effect.description = "This rote creates a strong electrical pulse and directs it at the target. Humans take standard damage, electronics overload."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 223)
 effect, _ = Effect.objects.get_or_create(
     name="Akua Kumu Haka (Guided Fireball)", spirit=3, forces=3, prime=2
+)
 )
 effect.description = "Summons a fire spirit and a fireball for it to inhabit. The spirit guides the fireball to its target at high speed."
 effect.save()
@@ -1176,6 +1273,7 @@ effect.add_source("Infernalism: The Path of Screams", 86)
 effect, _ = Effect.objects.get_or_create(
     name="Ball of Abysmal Flames", time=4, matter=3, forces=5, prime=4
 )
+)
 effect.description = "One of the most powerful combat rotes in the Hermetic arsenal, Ball of Abysmal Flames leeches Quintessence from the surrounding area and ignites it, fueling a flame that sucks in the air surrounding it and grows stronger until it explodes in a firestorm. Prime 5 allows it to draw fuel from living beings, not just inanimate objects as with Prime 4, Matter compresses it into a small ball of flames and Time releases that ball's destructive capacity at a chosen time, hopefully allowing the mage time to get to safety. It was not an exaggeration when certain modern Hermetics nicknamed this rote 'The Nuke.'"
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 223)
@@ -1183,11 +1281,13 @@ effect.add_source("Tradition Book: Order of Hermes (First Edition)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Betrayal of the Burning Arrow", correspondence=1, forces=3
 )
+)
 effect.description = "By breaking a glass or crystal arrowhead inscribed with the Enochian symbol for the number 8, an ill-omened number according to many Hermetics, a Hermetic mage chooses a bullet in a gun within line of sight and converts kinetic energy to heat. When the bullet is fired, it explodes turning into a Forces attack on the holder of the gun."
 effect.save()
 effect.add_source("Tradition Book: Order of Hermes (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Devouring Gullet of Flame", forces=4, prime=2
+)
 )
 effect.description = "The Taftani most often trigger this effect by forging a ring of copper and brass and then throwing it at their enemies while speaking the trigger word. This causes the ring itself to turn into a tunnel of flame, sucking the Taftani's enemies into it. Evading this tunnel without magick requires a difficulty 9 Dexterity+Athletics roll. Forces damage is assessed each turn that the target is within the tunnel, which for each success is five feet in diameter and five feet deep."
 effect.save()
@@ -1211,11 +1311,13 @@ effect.add_source("Mage: The Ascension (Revised)", 166)
 effect, _ = Effect.objects.get_or_create(
     name="Gabriel's Embrace", correspondence=2, matter=2, forces=3, prime=2
 )
+)
 effect.description = "This rote converts the air around the target (Matter) or the target's flesh itself (Life) into a burning flame. The mage calls upon Gabriel, the Archangel of Fire, and keys the pentacle of Mercury to the victim (via some Correspondence connection)."
 effect.save()
 effect.add_source("Blood Treachery", 88)
 effect, _ = Effect.objects.get_or_create(
     name="Hermes' Brand", time=4, forces=3, entropy=1, prime=2
+)
 )
 effect.description = "A Hermetic uses Entropy 1 and Time 4 to enchant their (or another's) blood creating a hanging Prime 2/Forces 3 effect which takes place a fixed amount of time after the blood is ingested by a Vampire. Each blood point consumed from the target of this rote bursts into flame inside the Vampire for two health levels of aggravated damage, and if the Vampire survives, they lose a blood point for each point that exploded (and those are also lost)."
 effect.save()
@@ -1235,12 +1337,14 @@ effect.add_source("Book of Crafts", 119)
 effect, _ = Effect.objects.get_or_create(
     name="Phlogiston Manipulation", life=3, forces=3, prime=2
 )
+)
 effect.description = "Though phlogiston has been discredited by mainstream scientists, Hermetics can manipulate it in the living (with Life) and in inanimate objects (with Matter) to either ignite an object (extracting the phlogiston) or to restore something that has been burned (inserting new phlogiston)."
 effect.save()
 effect.add_source("Tradition Book: Order of Hermes (First Edition)", 66)
-Effect.objects.get_or_create(name="Phlogiston Flux", matter=2)[0]
+effect_phlogiston_flux = Effect.objects.get_or_create(name="Phlogiston Flux", matter=2)[0]
 effect, _ = Effect.objects.get_or_create(
     name="Pop Goes the Weasel", life=3, forces=2, prime=2
+)
 )
 effect.description = "The mage immobilizes the victim and makes an extended roll. The target suffers extreme pain as their body is heated up. At the end of the effect, all the damage is applied as aggravated damage, usually killing the victim in a burst of flame."
 effect.save()
@@ -1252,11 +1356,13 @@ effect.add_source("The Spirit Ways", 88)
 effect, _ = Effect.objects.get_or_create(
     name="Proof Against Immolation", matter=3, prime=2
 )
+)
 effect.description = "An alchemist can develop a smoke they can inhale which protects their body from flame and heat."
 effect.save()
 effect.add_source("Book of Crafts", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Shih-Huang-Ti's Marvelous Game", life=3, forces=2
+)
 )
 effect.description = "The Wu-Keng usually reserve this attack for their enemies, the Wu Lung, but sometimes use it on others. This rote boils the victim alive in their skin."
 effect.save()
@@ -1285,6 +1391,7 @@ effect.add_source("Order of Reason", 72)
 effect, _ = Effect.objects.get_or_create(
     name="Glorious Sword of Heaven", correspondence=2, forces=2
 )
+)
 effect.description = "From the minor and odd House Castrovinci, this rote uses an Enochian supplication to Michael the warrior Archangel and patron of the Sun, along with pentacles of Mars, to direct a lance of sunlight from somewhere on Earth to a Vampire. The rank 2 version of this rote summons a focused beam of sunlight that must target a Vampire's exposed flesh, but the rank 4 version can draw sunlight into an area as large as a city block, which almost certainly will destroy Vampires in that area."
 effect.save()
 effect.add_source("Blood Treachery", 89)
@@ -1299,17 +1406,20 @@ effect.add_source("Technocracy: Void Engineers", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Tsuiho - The Fires of Heaven", correspondence=4
 )
+)
 effect.description = "The Wu Lung can truly show their enemies the power of heaven."
 effect.save()
 effect.add_source("Dragons of the East", 60)
 effect, _ = Effect.objects.get_or_create(
     name="'Ahiu Nalu (Rogue Wave)", forces=2, entropy=2
 )
+)
 effect.description = "Mighty Polynesian mages would dual on the ocean, and a common weapon was the water itself, used as a big wave, created either by tampering with probability, with the forces to form a wave, or the water directly."
 effect.save()
 effect.add_source("Dead Magic 2", 26)
 effect, _ = Effect.objects.get_or_create(
     name="Calling the Wind Lords", spirit=2, forces=2
+)
 )
 effect.description = "The Verbena summons spirits of the winds, who then influence the weather for them. More successes allow for greater changes to the weather."
 effect.save()
@@ -1324,6 +1434,7 @@ effect.save()
 effect.add_source("Tradition Book: Verbena (First Edition)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Dowsing", correspondence=2, matter=1, forces=2
+)
 )
 effect.description = "With Dowsing, nothing is hidden from the mage. When searching for a substance, particularly water, this rote finds it and brings it (or any other liquid) to the surface."
 effect.save()
@@ -1362,6 +1473,7 @@ effect.add_source("Mage: The Ascension Revised", 167)
 effect.add_source("Dead Magic 2", 103)
 effect, _ = Effect.objects.get_or_create(
     name="Cold Water's Blessing", matter=2, prime=2
+)
 )
 effect.description = "Clean water supports life and acts as a protection against evil. By hitting the target with cold water (including tricking them into entering a river), the mage channels the water's power to support life and washes away evil magick, unweaving any malign magic on the target."
 effect.save()
@@ -1403,6 +1515,7 @@ effect.add_source("Mage: The Ascension Revised", 182)
 effect, _ = Effect.objects.get_or_create(
     name="Awaken the Sleeping Earth", matter=3, prime=3
 )
+)
 effect.description = "When a mage finds a Node that is dormant, they can tap it. This rote opens a channel into the Node and allows the Quintessence to flow from it into some vessel."
 effect.save()
 effect.add_source("Book of Chantries", 149)
@@ -1425,11 +1538,13 @@ effect.add_source("Guide to the Traditions", 280)
 effect, _ = Effect.objects.get_or_create(
     name="Primal Credit Rating", correspondence=3, entropy=2, prime=3
 )
+)
 effect.description = "The Syndicate agent can make the target have a hard time drawing Primal Energy from technological sources. For the duration, each success devoted to this effect prevents the absorption of one point of Primal Energy every time the target might collect it from a source that has Rank 1 Data sympathy."
 effect.save()
 effect.add_source("Convention Book: Syndicate (Revised)", 75)
 effect, _ = Effect.objects.get_or_create(
     name="Prime Location", correspondence=1, prime=1
+)
 )
 effect.description = "Mages understand how important location is, almost as much as realtors. This rote allows the mage to find the specific location of a Node. With Correspondence 1, it must be nearby, with Correspondence 2 it can be anywhere."
 effect.save()
@@ -1461,6 +1576,7 @@ effect.add_source("Mage: The Ascension Revised", 183)
 effect, _ = Effect.objects.get_or_create(
     name="The Burning Lotus", forces=3, entropy=4, prime=5
 )
+)
 effect.description = "A suicide maneuver that is rarely used, the Euthanatos pulls all the Quintessence they can, from their body, the surrounding area, anything at all. This Quintessence then fuels a massive storm of elemental fury that consumes and degrades anything in its path for 20 feet per success. With Spirit, this rote can be sent across the Gauntlet and with Mind the mage sends out a final message before being consumed."
 effect.save()
 effect.add_source("Tradition Book: Euthanatos (First Edition)", 68)
@@ -1491,11 +1607,13 @@ effect.add_source("Mage: The Ascension Revised", 185)
 effect, _ = Effect.objects.get_or_create(
     name="The Hand of the Siphoner", matter=1, prime=3
 )
+)
 effect.description = "By touching the physical object tied to a Node, the mage can draw Quintessence from it at one point per success. This does not work on dormant Nodes."
 effect.save()
 effect.add_source("Book of Chantries", 149)
 effect, _ = Effect.objects.get_or_create(
     name="Hymn of Beatific Harmony", correspondence=3, prime=3
+)
 )
 effect.description = "This rote allows Quintessence to be sent anywhere on Earth."
 effect.save()
@@ -1512,6 +1630,7 @@ effect.add_source("Technocracy: Progenitors", 46)
 effect.add_source("Convention Book: Progenitors (Revised)", 74)
 effect, _ = Effect.objects.get_or_create(
     name="Radiate Prime Energy", entropy=2, prime=3
+)
 )
 effect.description = "This rote allows the mage to force Quintessence out of a target (limited by the target's avatar rating)."
 effect.save()
@@ -1540,11 +1659,13 @@ effect.add_source("Mage: The Ascension Second Edition", 214)
 effect, _ = Effect.objects.get_or_create(
     name="Spinning Thread", spirit=2, forces=3, prime=2
 )
+)
 effect.description = 'Allows the Weaver to pull esoteric things, such as "the shriek of a thrice cursed ifrit" and convert it into a physical form, Tass.'
 effect.save()
 effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 91)
 effect, _ = Effect.objects.get_or_create(
     name="Delay Paradox", time=3, spirit=3, prime=3
+)
 )
 effect.description = "The Taftani tend to accrue large amounts of paradox. Their very survival has depended on being able to find ways to mitigate the damage that it does. With this rote, the Taftani can delay the full backlash, and cause their Paradox to accrue at a rate of at most one per day, with a number of days equal to the number of successes in between points. This spreads out the damage and allows the Taftani to avoid a single, large paradox backlash."
 effect.save()
@@ -1574,6 +1695,7 @@ effect.add_source("Mage: The Ascension Revised", 185)
 effect, _ = Effect.objects.get_or_create(
     name="Penance for the Sicarii", correspondence=3, prime=4
 )
+)
 effect.description = "In Chorister legends, there are two groups of monks, White and Red. The Red Monks brought justice and righteousness to the world without fear, because the White Monks took the paradox intended for them. This rote allows a mage to take on another's paradox as it hits. With Time, the effect can be cast well in advance rather than needing to cast it at the time."
 effect.save()
 effect.add_source("Tradition Book: Celestial Chorus (Revised)", 58)
@@ -1590,13 +1712,14 @@ effect, _ = Effect.objects.get_or_create(name="Balancing the Furies", prime=3)
 effect.description = "This allows the Akashic to temporarily change the mage's Resonance, or at Prime 5, pass it along to another being."
 effect.save()
 effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 71)
-Effect.objects.get_or_create(name="Charge the Resonance", matter=2, mind=2)[0]
+effect_charge_the_resonance = Effect.objects.get_or_create(name="Charge the Resonance", matter=2, mind=2)[0]
 effect, _ = Effect.objects.get_or_create(name="Node Spike", mind=2, prime=3)
 effect.description = "By performing a symbolically painful or poisonous act at a Node, the mage can turn that concentrated pain or hate into a Resonance for the Node that makes it much more difficult to use. Successes are split between duration and strength, with the strength acting as an empathic attack, causing anyone trying to use the Node to feel intense pain, nausea and disorientation if they fail a Willpower roll. With Mind 3, it becomes an actual mental attack, causing damage to anyone trying to use the Node."
 effect.save()
 effect.add_source("Guide to the Traditions", 281)
 effect, _ = Effect.objects.get_or_create(
     name="Occlude the Seal of Power", matter=2, mind=2, prime=4
+)
 )
 effect.description = "A rote originating among House Bonisagus but spreading to the rest of the Order quickly, this allows the mage to temporarily storing their resonance in an object. The mage lights four pieces of frankincense, breathes deeply 10 times while exhaling onto an object made of some precious substance and speaks the Enochian names of the spheres. At the end, they pass a point of Quintessence into the object, and for the duration of the effect one point of their resonance is on that object."
 effect.save()
@@ -1622,6 +1745,7 @@ effect.add_source("Dead Magic", 76)
 effect, _ = Effect.objects.get_or_create(
     name="Blood for the Gods", spirit=3, life=2, prime=1
 )
+)
 effect.description = "Unlike Heart for Huitzilopochtli, Blood for the Gods makes a sacrifice dedicated to an appropriate deity in exchange for a boost of two to some Attribute or Talent for the duration of the effect. This is a boon from a spirit, bound into the mage with Life rather than acquired through the Better Body rote."
 effect.save()
 effect.add_source("Dead Magic", 75)
@@ -1635,6 +1759,7 @@ effect.save()
 effect.add_source("Dead Magic", 77)
 effect, _ = Effect.objects.get_or_create(
     name="Heart for Huitzilopochtli", spirit=5, life=5, prime=5
+)
 )
 effect.description = "For one of any number of possible reasons, the Aztecs engaged in regular human sacrifice. This rote allows a mage who sacrifices a victim and tears out their heart to generate three points of Quintessence for each success. With five or more successes, the avatar itself of the victim is destroyed to create this Quintessence. The mage gains Entropic synergy: often Death, but if used as part of a fertility ritual, it could be Renewal."
 effect.save()
@@ -1668,6 +1793,7 @@ effect.add_source("Tradition Book: Verbena (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Crowdsourced Combat", correspondence=2, forces=1, mind=1
 )
+)
 effect.description = "Filtering the fighting techniques of recorded MMA fights, martial arts training videos, military manuals and police reports through Progenitor biomechanical analyses and Iteration X tactical simulations, this Procedure matches the technique to the situation at hand for a Syndicate agent. Each success reduces the difficulty of combat rolls for one ability of the Syndicate Agent's by 1, and successes are divided between combat abilities and then duration."
 effect.save()
 effect.add_source("Convention Book: Syndicate (Revised)", 72)
@@ -1682,11 +1808,13 @@ effect.add_source("Order of Reason", 70)
 effect, _ = Effect.objects.get_or_create(
     name="Sense the Echo of the Dragon", time=2, mind=3
 )
+)
 effect.description = "By meditating on an upcoming fight and the opponent's style, this rote allows a mage to predict their opponent's movements in combat. In particular, it gives additional dice on defensive maneuvers."
 effect.save()
 effect.add_source("Mage: The Ascension First Edition", 226)
 effect, _ = Effect.objects.get_or_create(
     name="Spearcatcher Rune", correspondence=1, time=3
+)
 )
 effect.description = "This rune slows down time as the mage sees a spear coming for them, and they become acutely aware of the location of each projectile. Each success allows them to pluck one projectile from the air. Forces must be used to do this with bullets, to dissipate the heat from the bullets, or else use heat-resistant gloves."
 effect.save()
@@ -1704,11 +1832,13 @@ effect.add_source("Artisan's Handbook", 46)
 effect, _ = Effect.objects.get_or_create(
     name="Time-Motion Study", correspondence=1, time=1
 )
+)
 effect.description = "This Procedure allows an Iterator to analyze their movements and determine the most efficient way to accomplish a task. It gives a bonus of one per success of their next initiative roll."
 effect.save()
 effect.add_source("Technocracy: Iteration X", 49)
 effect, _ = Effect.objects.get_or_create(
     name="Wearing the Bear Shirt", spirit=4, life=3, mind=1
+)
 )
 effect.description = "Also known as berserking, the mage becomes terrifying in battle. The mage channels the spirit of a bear, borrowing its strength, stamina, and ferocity. For each success, the mage adds one dot to Strength or Stamina or may ignore a level of wound penalties for the scene. Attributes may be increased to legendary levels with this, but at the cost of Permanent Paradox during the duration of the rote."
 effect.save()
@@ -1720,11 +1850,13 @@ effect.add_source("Order of Reason", 82)
 effect, _ = Effect.objects.get_or_create(
     name="Battle Rune", correspondence=3, life=4, mind=3
 )
+)
 effect.description = "This rune turns a group of people into a coordinated and formidable battle group. Each success adds a person to the effect, bringing them to peak physical health, healing all bashing damage at the end of each turn, and halving damage penalties from lethal damage. They also have their temporary Willpower replenished until the end of the scene, at which point they return to their previous level and then lose one."
 effect.save()
 effect.add_source("Dead Magic 2", 99)
 effect, _ = Effect.objects.get_or_create(
     name="Coordinated Fire", correspondence=1, time=1, mind=2
+)
 )
 effect.description = "By linking several peoples' equipment together and giving good information to their leader, Void Engineers can combine their fire into a single attack. Each success from the team leader allows one more person to be involved in the effect, and then combine their Dexterity + Firearms or Energy Weapons into a single massive dice pool (burst and fully automatic bonuses are only added once), if the target can soak, it may soak once for each weapon used."
 effect.save()
@@ -1748,11 +1880,13 @@ effect.add_source("Dead Magic", 107)
 effect, _ = Effect.objects.get_or_create(
     name="108 Plum Blossoms", correspondence=2, forces=2
 )
+)
 effect.description = "By practicing the 108 Plum Blossoms stances, the Wu Lung can obtain preternatural balance. They will only lose their balance on a frictionless surface."
 effect.save()
 effect.add_source("Dragons of the East", 59)
 effect, _ = Effect.objects.get_or_create(
     name="Arashi-Waza", correspondence=2, time=3, forces=2
+)
 )
 effect.description = "This rote allows an Akashic to move quickly, spinning to gather speed and power and then unleashing their attack on enemies within range. Successes either are spent to increase effective combat dice or allow targets that are usually unreachable to be targeted, but otherwise the mage uses standard multiple-action rules."
 effect.save()
@@ -1772,11 +1906,13 @@ effect.add_source("Dragons of the East", 50)
 effect, _ = Effect.objects.get_or_create(
     name="The Final Blow", life=3, entropy=4, mind=5, prime=3
 )
+)
 effect.description = "One of the most famous applications of Do, this rote allows the Akashic using it to keep standing beyond the point where they should have died in order to complete a battle. Each success adds an extra health level which, in addition to the spending of a Willpower point, allows the Akashic to continue fighting, even after death. Additional successes are spent on duration."
 effect.save()
 effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 68)
 effect, _ = Effect.objects.get_or_create(
     name="Flying Dragon Kick", correspondence=1, forces=4
+)
 )
 effect.description = "With this maneuver, an Akashic can stay aloft even for several minutes of long-distance flight to deliver a flying kick to a target, so long as the target was in sight (including Correspondence) and the mage travels a straight line."
 effect.save()
@@ -1794,6 +1930,7 @@ effect.add_source("Mage: The Ascension 20th Anniversary Edition", 601)
 effect, _ = Effect.objects.get_or_create(
     name="Long Fist", correspondence=4, forces=3, prime=2
 )
+)
 effect.description = "This technique focuses the Akashic's Chi to strike additional targets at a rate of one per success. This attack does Forces damage rather than regular punching damage, and the targets may be out of normal reach (up to 3 yards per level of Do) and may punch through objects without damaging them."
 effect.save()
 effect.add_source("Book of Shadows", 148)
@@ -1807,6 +1944,7 @@ effect.save()
 effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Repeating Blow", correspondence=3, forces=3, mind=1, prime=2
+)
 )
 effect.description = "The Akashic spends several rounds attacking and pulling back a blow, storing the energy that they had put into it. For each turn spent this way, the difficulty increases. Up to a maximum of five, each success acts as a multiplier to the damage dice pool when the final blow actually lands. Due to the near impossibility of hitting a moving target with this rote, it is most useful for destroying barriers, vehicles, and other stationary targets."
 effect.save()
@@ -1830,6 +1968,7 @@ effect.add_source("Tradition Book: Akashic Brotherhood (First Edition)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Blade Sense", correspondence=1, matter=1, life=1
 )
+)
 effect.description = "A combination of extra-spatial awareness, physical precision, and a bond with the blade, this gives the fencer a bonus to difficulty on the next parry or attack roll."
 effect.save()
 effect.add_source("The Swashbuckler's Handbook", 94)
@@ -1840,11 +1979,17 @@ effect.add_source("The Swashbuckler's Handbook", 91)
 effect, _ = Effect.objects.get_or_create(
     name="Iron Snake", correspondence=2, forces=2, mind=3
 )
+)
 effect.description = "Only extremely skilled melee fighters among the Akashics (six dice in Dexterity + Melee) can attempt this rote. With any flexible weapon, such as a chain, rope, or cloth, the mage can entrance their enemy and strike in unexpected ways. This causes the opponent's melee dice pools to decrease by one per success."
 effect.save()
 effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Jabarut (The Darwishim Battle Trance)",
+    correspondence=1,
+    time=3,
+    life=3,
+    prime=3,
+)
     correspondence=1,
     time=3,
     life=3,
@@ -1864,6 +2009,7 @@ effect.save()
 effect.add_source("Dead Magic 2", 98)
 effect, _ = Effect.objects.get_or_create(
     name="Wind-Water Skein", correspondence=3, matter=3, forces=2, prime=2
+)
 )
 effect.description = "The Wu-Keng creates a bridal gown with a ragged edge with threads still on the needles. By donning the gown, they gain the ability to control these needles. They can go virtually anywhere, and the Wu-Keng has enough control over them to attack, throw, reel-in or immobilize the target. This silk is nearly indestructible."
 effect.save()
@@ -1910,6 +2056,7 @@ effect.add_source("Tradition Book: Euthanatos (Revised)", 61)
 effect, _ = Effect.objects.get_or_create(
     name="Ricochet", correspondence=1, time=1, matter=1, forces=1
 )
+)
 effect.description = "When defending against an incoming missile attack slower than a bullet, the successes are subtracted before determining if it hits. The Akashic is using Do to track the attack and deflect it. If the number of successes is greater than that of the attacker, the Akashic has the choice to try to deflect the attack back at the source."
 effect.save()
 effect.add_source("Hidden Lore", 12)
@@ -1934,6 +2081,7 @@ effect.add_source("Order of Reason", 72)
 effect, _ = Effect.objects.get_or_create(
     name="Trickshot", correspondence=1, forces=1, entropy=1, mind=1
 )
+)
 effect.description = "With Trickshot, the mage can arrange nearly impossible shots effectively. Successes subtract from the difficulty of the next shot the mage fires."
 effect.save()
 effect.add_source("Initiates of the Art", 81)
@@ -1943,6 +2091,7 @@ effect.save()
 effect.add_source("Tradition Book: Verbena (First Edition)", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Conclave Wellness Works", life=1, entropy=2, mind=2
+)
 )
 effect.description = "At the start of a season, the Sisters of Hippolyta burn incense and sing to welcome it and extend their perceptions to the whole community, sensing the health and mental state of everyone. This alerts them to any problems or illnesses."
 effect.save()
@@ -1980,6 +2129,7 @@ effect.add_source("Guide to the Technocracy", 212)
 effect, _ = Effect.objects.get_or_create(
     name="Drug Enhancement", matter=2, life=2, prime=1
 )
+)
 effect.description = "Progenitors can get more out of even mundane drugs, and this rote doubles the benefits without changing the drawbacks of them."
 effect.save()
 effect.add_source("Technocracy: Progenitors", 44)
@@ -1995,6 +2145,7 @@ effect.add_source("Orphan's Survival Guide", 124)
 effect, _ = Effect.objects.get_or_create(
     name="Manufacture Enlightened Drugs", matter=3, life=3, prime=3
 )
+)
 effect.description = 'This allows the creation of enlightened drugs. Each dose requires five points of Prime Energy which are transferred to the user. For common examples see "Enlightened Drugs" in Convention Book: Progenitors (Revised) on page 73.'
 effect.save()
 effect.add_source("Technocracy: Progenitors", 44)
@@ -2005,6 +2156,7 @@ effect.save()
 effect.add_source("Technocracy: Progenitors", 44)
 effect, _ = Effect.objects.get_or_create(
     name="Persephone's Nectar", correspondence=3, matter=2, life=3
+)
 )
 effect.description = "A signature of the Golden Chalice, this rote turns any ordinary liquid into a poison specific to the target of the effect. Some variants may mystically age targets, put them to sleep, or induce visions, but the most common use is to kill the target. Correspondence is used to tie it to the Pattern of the specific target, so that it cannot harm anyone else."
 effect.save()
@@ -2036,6 +2188,7 @@ effect.add_source("Hidden Lore", 52)
 effect, _ = Effect.objects.get_or_create(
     name="Taking Poison for the Enemy", correspondence=2, matter=2, life=2
 )
+)
 effect.description = "The Batini can build upon the similarities between them and their victim so that poison that they ingest affects the target instead."
 effect.save()
 effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 44)
@@ -2058,11 +2211,13 @@ effect.add_source("World of Darkness: Outcasts", 90)
 effect, _ = Effect.objects.get_or_create(
     name="Ana'ana (The Death Prayer)", correspondence=3, life=3
 )
+)
 effect.description = "By chanting out why they want a target to die while drumming a martial rhythm, Polynesian mages cause them to become ill, and badly enough that they only have a limited time to persuade the mage to call off the attack, whether direct of via a spirit."
 effect.save()
 effect.add_source("Dead Magic 2", 27)
 effect, _ = Effect.objects.get_or_create(
     name="Blight of Aging", life=4, entropy=4, prime=3
+)
 )
 effect.description = "Subtle versions of this effect can cause old wounds to reopen, the target to fall victim to diseases or even fall into a coma. More blatant versions cause them to age instantly."
 effect.save()
@@ -2071,6 +2226,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 195)
 effect.add_source("Mage: The Ascension (Revised)", 164)
 effect, _ = Effect.objects.get_or_create(
     name="Bone Twisting Palm", life=4, entropy=4, prime=3
+)
 )
 effect.description = "This rote has two forms. Both twist the target's bones until they break, harming the target and often leaving them disabled without magical healing. One version is attempting to cause as much damage as possible, and it does aggravated damage. The other is instead attempting to cause permanent disability, in which case lethal damage is done, but for the duration of the effect, the limbs being twisted are useless."
 effect.save()
@@ -2081,6 +2237,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 222)
 effect, _ = Effect.objects.get_or_create(
     name="Destructive Genegineering", life=3, entropy=3
+)
 )
 effect.description = "Quick and dirty genetic engineering allows the Progenitor to inflict the target with genetic disorders. Each day, the target rolls Stamina at difficulty 7. Success rejects the mutation. Otherwise, all activities that could be hampered by the mutation have difficulty 2 higher."
 effect.save()
@@ -2113,11 +2270,13 @@ effect.add_source("Mage: The Ascension (Revised)", 171)
 effect, _ = Effect.objects.get_or_create(
     name="Simulate Inborn Errors of Metabolism", life=4, entropy=4
 )
+)
 effect.description = "The Genegineer can cause someone to contract a temporary and severe genetic disease, which lasts for one hour per success. Virtually any genetic disease can be created in this way."
 effect.save()
 effect.add_source("Technocracy: Progenitors", 44)
 effect, _ = Effect.objects.get_or_create(
     name="Spy's Stigmata", correspondence=1, life=2, prime=2
+)
 )
 effect.description = "Causes a target that is attempting to spy on the mage to get a rash in some mark of the mage's choice. This rash is visible and remains until healed with Life 2."
 effect.save()
@@ -2138,6 +2297,7 @@ effect.add_source("Order of Reason", 74)
 effect, _ = Effect.objects.get_or_create(
     name="Distill the Azoth Elixir", matter=2, life=5, prime=3
 )
+)
 effect.description = "A closely guarded secret, this rote allows Hermetics to create Azoth, a liquid that captures the pure essence of life. Azoth can heal any injury, cure any disease, and even restore the recently dead to life. It can be bottled and stored for up to a week before it loses its potency. For each success, the mage must spend one Quintessence to distill one dram of Azoth. Each dose can heal three levels of aggravated damage, ten doses can restore a person who died recently (what this means is a judgment call for the Storyteller), though a person resurrected this way is just a husk. It is rumored that with Mind and Spirit magick, a greater Azoth could be distilled that solves this problem, but many consider this to just be a legend."
 effect.save()
 effect.add_source("Tradition Book: Order of Hermes (First Edition)", 67)
@@ -2147,6 +2307,7 @@ effect.save()
 effect.add_source("Book of Crafts", 89)
 effect, _ = Effect.objects.get_or_create(
     name="Hajjaj", correspondence=3, life=3, mind=2
+)
 )
 effect.description = "This rote, in general, allows the Batini to steal the health of others, and is considered an extreme and unpopular technique. The normal use causes the target to start wasting away, and whenever they lose a health level, the Batini gains one. With Time 4 to trigger it, the rote can also be used to frustrate a Vampire: whenever they draw blood from the mage, it immediately returns, preventing them from feeding or embracing the mage."
 effect.save()
@@ -2172,6 +2333,7 @@ effect.save()
 effect.add_source("Dead Magic", 29)
 effect, _ = Effect.objects.get_or_create(
     name="Healing Slumber", spirit=2, life=3, mind=2
+)
 )
 effect.description = "The simplest version heals the target and gives them good dreams and good spirit energy. With Mind 4, mental illness can be healed, and with Spirit 4 possession can be healed."
 effect.save()
@@ -2206,6 +2368,7 @@ effect.save()
 effect.add_source("Order of Reason", 74)
 effect, _ = Effect.objects.get_or_create(
     name="Trauma Transmission", correspondence=2, life=4
+)
 )
 effect.description = 'Darkly referred to as "Rip the Clone Body," this Procedure relies on the common DNA between a Technocrat and their clone, this displaces all injuries from the Technocrat onto all existing clones of the Technocrat. Adding Prime makes the damage aggravated and Dimensional Science is necessary to target any off-world clones.'
 effect.save()
@@ -2245,6 +2408,7 @@ effect.add_source("Dead Magic", 27)
 effect, _ = Effect.objects.get_or_create(
     name="The Curse of Consequences", spirit=1, mind=3
 )
+)
 effect.description = "Given the damage that their enemies do, often in ignorance, the Dreamspeakers developed this rote to force them to understand the consequences of their actions. The target makes a Willpower roll of difficulty 5 + the Dreamspeaker's arete in order to do anything other than suffer as they are forced to, all at once, experience the misery that their actions have caused to various spirits."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (Revised)", 66)
@@ -2254,6 +2418,7 @@ effect.save()
 effect.add_source("Tradition Book: Verbena (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Degree Absolute", correspondence=4, mind=5
+)
 )
 effect.description = "This Procedure places a captured target into a lifelike virtual reality, tailored to the needs of the Agent performing the procedure."
 effect.save()
@@ -2327,6 +2492,7 @@ effect.add_source("Dead Magic II", 65)
 effect, _ = Effect.objects.get_or_create(
     name="The Incredible Shrunken Machine", matter=5, forces=3, prime=2
 )
+)
 effect.description = "This allows an Etherite to take a fully functioning machine and shrink it down to nanotechnology. The machine will continue to function based on how many effects are spent on duration."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 224)
@@ -2352,6 +2518,7 @@ effect.add_source("Mage: The Ascension (Revised)", 173)
 effect, _ = Effect.objects.get_or_create(
     name="Semi Auto CAD CAM", correspondence=5, matter=3
 )
+)
 effect.description = "Through computer modeling, a mage can combine two guns into a single weapon that mixes their styles and their abilities. Choose one gun as the base. For each success, the mage can change one of Difficulty, Damage, Range, Rate, Clip and Conceal on it to the stat of the other."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 221)
@@ -2362,6 +2529,7 @@ effect.add_source("Mage: The Ascension (First Edition)", 204)
 effect.add_source("Mage: The Ascension (Second Edition)", 207)
 effect, _ = Effect.objects.get_or_create(
     name="Transephemeration Ray Projector", matter=3, life=3
+)
 )
 effect.description = "Targeting both a person and an inanimate object with beams of light, this rote causes the person and object to no longer interact, just passing through one another."
 effect.save()
@@ -2388,6 +2556,7 @@ effect.add_source("Technocracy: Iteration X", 50)
 effect, _ = Effect.objects.get_or_create(
     name="Perfection of the Tools", matter=1, mind=1
 )
+)
 effect.description = "An Artisan using this effect gets a minus one difficulty per success on any task that they plan out carefully and ensure that they have the proper tools for."
 effect.save()
 effect.add_source("Artisan's Handbook", 47)
@@ -2405,6 +2574,7 @@ effect.add_source("Mage: The Ascension (Revised)", 159)
 effect, _ = Effect.objects.get_or_create(
     name="Kiss of the Virtuous Maiden", correspondence=2, forces=2
 )
+)
 effect.description = "The Wu-Keng rarely kill, themselves. However, when they must, they write a brief poem declaring their faithfulness to their demon lord. They then burn the poem and conceals a weapon nearby. When in combat, they can then produce the weapon, catching their opponent by surprise. Often, Correspondence is used to hide it in an unlikely location, such as the mage's mouth."
 effect.save()
 effect.add_source("Dragons of the East", 66)
@@ -2419,11 +2589,13 @@ effect.add_source("Mage: The Ascension (First Edition)", 186)
 effect, _ = Effect.objects.get_or_create(
     name="Spatial Sheath", correspondence=2, matter=1
 )
+)
 effect.description = "As carrying around swords is frowned upon in modern society, this Templar rote pushes all but the entry point of a scabbard to another location, allowing them to store a sword with only the hilt needing to be hidden directly on them."
 effect.save()
 effect.add_source("Book of Crafts", 103)
 effect, _ = Effect.objects.get_or_create(
     name="Summon Weapon", correspondence=2, matter=1
+)
 )
 effect.description = "Instantaneously causes a weapon to appear in the mage's hands. If a weapon cannot be summoned from elsewhere, the mage can use the second form to create a duplicate of a known weapon."
 effect.save()
@@ -2443,6 +2615,7 @@ effect.add_source("Tradition Book: Sons of Ether (Revised)", 61)
 effect, _ = Effect.objects.get_or_create(
     name="Exotic Matter - Primium", matter=5, prime=3
 )
+)
 effect.description = "Among the only groups that know how to make Primium are Iteration X and the Society of Ether. It's an alchemically perfect alloy of gold and silver. Expensive alchemy or nuclear furnaces, not to mention base materials, go into its creation, keeping it far out of reach of anyone without Resources 5. Additionally, it requires quintessence: each success needs to be backed by a point of quintessence. Just to create Primium requires 15 successes, and only after that can successes be spent on mass and potency. Primium itself has a near perfect sheen and is a very strong material. However, its real value is its potency against the supernatural. A Primium weapon will cause aggravated damage, and it provides permanent countermagick: two dice per success spent on it, though no more than 10 dice against any given effect. This countermagick has a radius of about two yards, and if the Primium is used as a weapon, these dice are rolled against any supernatural defenses."
 effect.save()
 effect.add_source("Technocracy: Iteration X", 48)
@@ -2454,17 +2627,20 @@ effect.add_source("Order of Reason", 76)
 effect, _ = Effect.objects.get_or_create(
     name="Inscribe Amulet", time=4, matter=1, entropy=1
 )
+)
 effect.description = 'This creates an object with a hanging effect on it which will be triggered under some circumstance predetermined by the user. These circumstances may include "not in front of Sleepers" and "if reality permits it" to avoid Witnesses and even Vulgarity.'
 effect.save()
 effect.add_source("Mage Storyteller's Companion", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Jury Rig", correspondence=2, matter=2, mind=1, prime=2
 )
+)
 effect.description = "By careful examination of a broken machine, an Etherite may determine exactly what needs to be done to repair it and then proceed to do so using whatever techniques they prefer. The worse condition the machine is in, the more successes are required to do the repair."
 effect.save()
 effect.add_source("Book of Shadows", 142)
 effect, _ = Effect.objects.get_or_create(
     name="Na Kua's Gift", matter=3, forces=3, mind=3, prime=2
+)
 )
 effect.description = "By mimicking the creation of humanity by Na Kua, the Wu-Keng can create a servitor. Using Matter to shape it and Forces and Mind to animate it, the creature has a dot of Strength and Stamina for each success and the creator's Dexterity."
 effect.save()
@@ -2480,17 +2656,20 @@ effect.add_source("Guide to the Technocracy", 212)
 effect, _ = Effect.objects.get_or_create(
     name="Spear of my Fathers", spirit=3, matter=3, prime=2
 )
+)
 effect.description = "The shaman can convert ephemera directly into matter, with more successes necessary for larger and more complex objects."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (First Edition)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Spontaneous Material Construction", matter=2, prime=2
 )
+)
 effect.description = "This allows the mage to create small objects made of a single substance from pure Quintessence. More successes allow the object to be large or more intricate. With Matter 4, composite objects can be created."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 225)
 effect, _ = Effect.objects.get_or_create(
     name="Temple Pillars", matter=3, forces=4, prime=2
+)
 )
 effect.description = "This rote raises a structure from the ground, creating it out of the local material as it rises, transmuting it as needed. The larger the structure, the more successes are needed."
 effect.save()
@@ -2527,11 +2706,13 @@ effect.add_source("Mage: The Ascension (Revised)", 163)
 effect, _ = Effect.objects.get_or_create(
     name="Tulugaak's Harpoon", matter=3, forces=3, prime=2
 )
+)
 effect.description = "Following in the footsteps of Tulugaak, the mage hurls an object (traditionally a harpoon) which strikes with enough force to cause whatever it hits to explode outward. The fragments scatter and multiply over a wide area."
 effect.save()
 effect.add_source("Dead Magic", 132)
 effect, _ = Effect.objects.get_or_create(
     name="Beads on a String", correspondence=2, spirit=2, matter=2, entropy=2, mind=2
+)
 )
 effect.description = "This hard to verify effect is often included on powerful wonders and talismans owned by a mage. It causes them to find their way to the mage in their next incarnation."
 effect.save()
@@ -2585,11 +2766,19 @@ effect, _ = Effect.objects.get_or_create(
     mind=1,
     prime=1,
 )
+    correspondence=1,
+    spirit=1,
+    matter=1,
+    entropy=1,
+    mind=1,
+    prime=1,
+)
 effect.description = "This effect helps the mage find objects with some magic to them. It gives no information on what the object is, so it can be anything from a lucky penny to a Wraith's fetter or a Werewolf's weapon."
 effect.save()
 effect.add_source("Mage Storyteller's Companion", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Talisman Tattoos", matter=4, life=3, prime=3
+)
 )
 effect.description = "Converts a nonliving and nonmagical object into a tattoo on the mage's body at the cost of a point of Quintessence. The tattoo can be released from the mage's body by using this rote and spending a point of Quintessence."
 effect.save()
@@ -2597,11 +2786,13 @@ effect.add_source("World of Darkness: Outcasts", 91)
 effect, _ = Effect.objects.get_or_create(
     name="Talisman Transmogrification", matter=3, prime=3
 )
+)
 effect.description = "With a number of successes beating the Talisman's rating, this rote allows a mage to reshape a Talisman."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 225)
 effect, _ = Effect.objects.get_or_create(
     name="Walking Chair", spirit=4, matter=4, prime=2
+)
 )
 effect.description = "This rote animates inanimate objects. It summons spirits who can possess them and gives them the ability to move around."
 effect.save()
@@ -2635,6 +2826,7 @@ effect.add_source("Dead Magic", 57)
 effect, _ = Effect.objects.get_or_create(
     name="Caffeine Plus", time=2, spirit=1, life=3, mind=1
 )
+)
 effect.description = "Through the Synthetic Ritual technique, a Progenitor can break down caffeine molecules and rebuild them into a far more potent version of the compound. Each dose includes one of the following benefits: sleep is no longer necessary for the duration concentration is easier so Empower Mind has a -2 difficulty; the ability to see other Dimensions; tasks taking half the time but at a +2 difficulty. It also comes with one of the following drawbacks: the user is edge and disturbed. Willpower rolls are at +2 difficulty, +3 specifically related to emotional outbursts; the user burns off one point of Primal Energy per hour, losing health levels when they run out of stored energy; the user is unconscious for twice the duration after the Procedure ends."
 effect.save()
 effect.add_source("Guide to the Technocracy", 211)
@@ -2655,6 +2847,7 @@ effect.save()
 effect.add_source("Dead Magic", 77)
 effect, _ = Effect.objects.get_or_create(
     name="Penny Dreadful's Bright New Penny", time=2, matter=3, prime=2
+)
 )
 effect.description = "Penny Dreadful designed this rote to restore old items to new condition, making her a rather effective antiquer. The Matter 3 version restores, the Matter 4 version recreates fully the object at an earlier point in its timeline."
 effect.save()
@@ -2678,6 +2871,7 @@ effect.save()
 effect.add_source("Order of Reason", 82)
 effect, _ = Effect.objects.get_or_create(
     name="Back to the Earth", matter=4, life=3, prime=2
+)
 )
 effect.description = "Vulgar enough that few non-Marauders would try it, this rote transforms inorganic matter into living wood."
 effect.save()
@@ -2718,6 +2912,7 @@ effect.add_source("Dead Magic", 131)
 effect, _ = Effect.objects.get_or_create(
     name="Degrade Order", correspondence=2, time=3, entropy=2
 )
+)
 effect.description = 'This rote causes things to fall apart. More specifically, it inserts chaos into a system with Entropy and then speeds up the decay with Time and uses Correspondence to bound the effect so that the affected thing becomes a closed system, and the disorder can\'t "escape."'
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (First Edition)", 61)
@@ -2735,6 +2930,7 @@ effect.save()
 effect.add_source("Technocracy: Void Engineers", 48)
 effect, _ = Effect.objects.get_or_create(
     name="Ebon Dragon's Tale", matter=2, life=3, entropy=4, prime=2
+)
 )
 effect.description = "By digging a deep pit and petitioning for the release of the dark waters brought by the ancient black dragon, a Wu-Keng can bring about a stream that rots flesh, actively drowns those caught in it, and ruins the Earth where it passes."
 effect.save()
@@ -2762,11 +2958,13 @@ effect.add_source("Mage: The Ascension (Revised)", 164)
 effect, _ = Effect.objects.get_or_create(
     name="Night Battle", spirit=2, forces=3, mind=4, prime=2
 )
+)
 effect.description = "The shaman enters a deep trance and allows their spirit to roam separately from their body. The spirit takes the form of a large predator and can only be perceived by mages with Spirit sight and others with similar perceptions. The target of this attack will seem to have been attacked by a large predator, specifically whichever one the mage's spirit form took. At least two successes must be spent to ensure that this effect lasts for a scene, and Correspondence magick must be used to locate any target the mage doesn't already know the whereabouts of. Further successes are spent on Forces damage to the target."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (Revised)", 69)
 effect, _ = Effect.objects.get_or_create(
     name="Shango's Grave", matter=2, forces=5, entropy=3, prime=2
+)
 )
 effect.description = "This rote creates a storm over a battlefield. The storm specifically makes it impossible to remove the bodies, including lightning striking anyone who does try to remove them. Thanks to Matter, this can even create such a storm in a dry place, creating the moisture and the winds from nothing."
 effect.save()
@@ -2777,6 +2975,7 @@ effect.save()
 effect.add_source("Book of Shadows", 139)
 effect, _ = Effect.objects.get_or_create(
     name="Unleash Nanotech Destruction", correspondence=3, entropy=3
+)
 )
 effect.description = "A kill-switch included in every DEI, if an Iterator with a DEI defects, they can be remotely terminated by a nanotech virus that will attack their biomechanisms and disrupt any machines that they try to use."
 effect.save()
@@ -2808,6 +3007,7 @@ effect.add_source("Infinite Tapestry", 183)
 effect, _ = Effect.objects.get_or_create(
     name="Remote Piloting Override", matter=1, forces=3, prime=2
 )
+)
 effect.description = "Iteration X has developed this technique to take remote control of any mundane motor vehicle. The driver/pilot can roll Strength + Drive at difficulty 7 to resist this effect."
 effect.save()
 effect.add_source("Hidden Lore", 53)
@@ -2818,17 +3018,20 @@ effect.add_source("Convention Book: Void Engineers (Revised)", 87)
 effect, _ = Effect.objects.get_or_create(
     name="Wayfarer's Reckoning", correspondence=2, matter=1, forces=1
 )
+)
 effect.description = "This rote allows the mage to get the lay of the land (or air for Skyriggers) around them. With Correspondence giving the general notion, Matter providing a map of physical obstacles and Forces mapping the moving elements, such as weather, fires, rivers, etc."
 effect.save()
 effect.add_source("Mage: The Sorcerer's Crusade", 271)
 effect, _ = Effect.objects.get_or_create(
     name="We'll Get There", correspondence=1, entropy=2
 )
+)
 effect.description = "Combining good luck with good direction sense, this guarantees that a Hollow One will get where they want to go, even if they don't know precisely where it is."
 effect.save()
 effect.add_source("Tradition Book: Hollow Ones (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Ala Wai (Short Waters)", correspondence=3
+)
 )
 effect.description = "Early Polynesian wayfinders were able to travel great distances over the water, making their boats move five miles with each paddle stroke."
 effect.save()
@@ -2839,6 +3042,7 @@ effect.save()
 effect.add_source("Tradition Book: Verbena (First Edition)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="The Seven-League Stride", correspondence=3
+)
 )
 effect.description = "This rote allows the mage to step from one place to another nearly instantly. Depending on specifics of the mage's paradigm, the mage may disappear in one place and appear in another, or may be seen to blur past, moving between places at incredible speed."
 effect.save()
@@ -2851,6 +3055,7 @@ effect.save()
 effect.add_source("Order of Reason", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Internalize Ephemeral Object", spirit=4, mind=1, prime=3
+)
 )
 effect.description = "A mage employing an Astral Sojourn can use this effect to bring an object back from the Umbra into the physical world. First, the mage uses Mind 1 to Mentally Empower themselves so that they can study every aspect of the object. When the mage returns to his body, the object's Pattern is stored in the mage's mind, and needs to find an appropriate physical object to use the Prime and Spirit spheres, as well as any other necessary for the object's effects, to invest the essence of the Pattern into the new object."
 effect.save()
@@ -2866,6 +3071,7 @@ effect.add_source("Mage: The Ascension (First Edition)", 207)
 effect.add_source("Mage: The Ascension (Second Edition)", 211)
 effect, _ = Effect.objects.get_or_create(
     name='Amon Maat, "Hidden Justice"', correspondence=3, life=2
+)
 )
 effect.description = "The Hem-Ka Sobk mage mixes some of their blood into cold water and wash their feet, sprinkle it on a door or windowsill, and whisper a chant to their protector. This allows them to bypass the door and enter a home while the occupants sleep. Furthermore, they can sense everything in the house. Correspondence and Life do this directly (including keeping the people asleep), Spirit enters via the Umbra and summons a spirit to keep the residents asleep."
 effect.save()
@@ -2889,11 +3095,13 @@ effect.add_source("Hidden Lore", 16)
 effect, _ = Effect.objects.get_or_create(
     name="Thief in the Night", correspondence=1, forces=1
 )
+)
 effect.description = "The Knights Templar developed this effect to defeat electronic alarm systems. It allows them to detect the presence of such a system and how it is activated. With Entropy and Forces 2, the Templar can disrupt such systems. If Matter is substituted for Forces, it can detect mechanical traps instead."
 effect.save()
 effect.add_source("Book of Crafts", 102)
 effect, _ = Effect.objects.get_or_create(
     name="Chain of Whispers", correspondence=2, mind=3
+)
 )
 effect.description = "The mage speaks a rumor (truth doesn't matter) and this effect causes that rumor to spread rapidly. Those who hear it have a magickal compulsion to spread the rumor so long as they believe it, and it will pass through two people per success."
 effect.save()
@@ -2906,17 +3114,20 @@ effect.add_source("Order of Reason", 79)
 effect, _ = Effect.objects.get_or_create(
     name="Death Song", time=2, life=2, mind=1, prime=1
 )
+)
 effect.description = "Using Life to gain the time needed before death, the Chorister processes their memories and composing them into a final song, recording their stories and often including a final prophecy. When this rote is finished, the mage dies."
 effect.save()
 effect.add_source("Tradition Book: Celestial Chorus", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Dreamcry", correspondence=2, spirit=2, mind=2
 )
+)
 effect.description = "The Dreamspeaker can send a vision into the dreams of someone they know. With Correspondence 3, they can contact more than one person simultaneously."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (First Edition)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Dreamline", correspondence=2, time=2, mind=2
+)
 )
 effect.description = "There is a bond that all Cultists share. With this rote, a mage can reach through this bond. They can send an empathic impression (Mind 2) or a specific message (Mind 3) to other Cultists, Time 3 permits many messages to be sent in a short time period. The variant with Spirit sends a spirit to deliver the message rather than relying on this bond."
 effect.save()
@@ -2932,11 +3143,13 @@ effect.add_source("Book of Shadows", 144)
 effect, _ = Effect.objects.get_or_create(
     name="Pirated Media Blitz", correspondence=3, forces=2, mind=4
 )
+)
 effect.description = "Over an area determined by number of successes, this procedure is used by the New World Order to hijack television, radio, etc. signals and transmit 'emergency bulletins' regarding 'dangerous criminals.' If the procedure succeeds, the viewers will believe that the transmission is real, and become convinced that the people described are dangerous criminals."
 effect.save()
 effect.add_source("Technocracy: New World Order", 49)
 effect, _ = Effect.objects.get_or_create(
     name="Point-to-Point Narrow-Band Transmission", correspondence=2, forces=2
+)
 )
 effect.description = "Forces 2/Correspondence 2 allows the mage to transmit to an active device, hijacking or altering the signal. Adding Forces 3/Prime 2 allows them to transmit to a device that is currently off."
 effect.save()
@@ -2944,11 +3157,13 @@ effect.add_source("Hidden Lore", 18)
 effect, _ = Effect.objects.get_or_create(
     name="Public Posting", correspondence=2, mind=2, prime=2
 )
+)
 effect.description = "A Virtual Adept can fire off a broadcast to all mages, whether at computers or not, with this rote. Usually a short message or emotional sentiment. With Mind 3, the message can be detailed and specific."
 effect.save()
 effect.add_source("Hidden Lore", 20)
 effect, _ = Effect.objects.get_or_create(
     name="Sound/Thought Transfer", forces=2, mind=3
+)
 )
 effect.description = "Hollow Ones can evoke certain thoughts and emotions using sounds and do so by recording the information and playing it underneath music or other sounds, so as to remain hidden from those who aren't supposed to hear it."
 effect.save()
@@ -2963,17 +3178,20 @@ effect.add_source("Mage: The Ascension (Second Edition)", 210)
 effect, _ = Effect.objects.get_or_create(
     name="Subliminal Transmission", correspondence=2, mind=2
 )
+)
 effect.description = "From the Digital Web, the mage can send subliminal messages to people watching a screen, one with Correspondence 2, but many screens with Correspondence 3. Mind 2 only allows emotional manipulation as in Subliminal Impulse, whereas Mind 4 allows full Possession."
 effect.save()
 effect.add_source("Digital Web 2.0", 113)
 effect, _ = Effect.objects.get_or_create(
     name="Temper Viasilicos", correspondence=2, mind=1
 )
+)
 effect.description = "This allows the mage to use a Viasilicos, a geometrically perfect crystal created by the Order of Reason, to transmit a message to another Viasilicos. One success beyond distance charts allows for a single sentence, two successes allows for a paragraph and three allows for a conversation."
 effect.save()
 effect.add_source("Order of Reason", 107)
 effect, _ = Effect.objects.get_or_create(
     name="Thunder's Gauntlet", correspondence=3, forces=3, mind=3, prime=2
+)
 )
 effect.description = "Originating in House Tytalus, this ancient Hermetic rote allows the mage to issue a Certamen challenge, no matter how far the opponent is. The original version used Pentacles of Mars and invocations to Gabriel and delivered the call with a painful thunderclap, but modern mages have adapted it to allow for spikes erupting from the ground (via Matter) or internal hemorrhaging (Life)."
 effect.save()
@@ -3011,11 +3229,13 @@ effect.add_source("Tradition Book: Celestial Chorus (Revised)", 59)
 effect, _ = Effect.objects.get_or_create(
     name="Tower of Babel/Speak in Tongues", forces=2, mind=2
 )
+)
 effect.description = "Two related rotes from an obscure Hermetic House, Tower of Babel inserts chaos into speech with Entropy to cause the sounds to come out as complete gibberish. In contrast, Speak in Tongues uses Mind to allow the target to speak any language that the mage does through similar techniques of altering the sound itself."
 effect.save()
 effect.add_source("Tradition Book: Order of Hermes (First Edition)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="What Did You Say?", correspondence=2, mind=2
+)
 )
 effect.description = "One of the most basic and useful Nephandi tricks is this mystical form of gaslighting. The target is caused to mishear perfectly ordinary conversation to be vaguely ominous and hostile."
 effect.save()
@@ -3030,6 +3250,7 @@ effect.save()
 effect.add_source("Technocracy: Void Engineers", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Create Horizon Realm Construct", spirit=5, matter=4, prime=4
+)
 )
 effect.description = "With a huge amount of planning, a Void Engineer (usually with a backup team) can create a Horizon Realm and build the Construct within it. This can require huge numbers of successes, to the point where large Horizon Realms can require hundreds of construction specialists to build."
 effect.save()
@@ -3053,11 +3274,13 @@ effect.add_source("Fallen Tower: Las Vegas", 119)
 effect, _ = Effect.objects.get_or_create(
     name="Unravelling the Text", matter=2, entropy=2, prime=2
 )
+)
 effect.description = "An active defense for Hermetic texts from outsiders, this rote causes someone attempting to read a book to start losing their place, to jump around the page, and be unable to focus."
 effect.save()
 effect.add_source("Book of Shadows", 142)
 effect, _ = Effect.objects.get_or_create(
     name="Unseen Nomenclature", matter=2, mind=2, prime=2
+)
 )
 effect.description = "Hermetics often need to hide their teachings in plain sight. This rote allows them to do so in a book. mages who read it will be able to tell that there is something hidden, but only those who know how to parse it or who succeed at Wits + Intelligence difficulty 8 roll. The more distinct from the printed text the message is, the more successes are needed to hide it."
 effect.save()
@@ -3069,12 +3292,14 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Agama Re Sojourn/Agama Te Sojourn", spirit=3, life=2, entropy=4
 )
+)
 effect.description = "This rote allows the Euthanatos to fall to the cusp of death and lets them mimic a Wraith and enter the Underworld, and to bring companions with them if they have Spirit 4. It has a threshold of seven successes, before duration is considered. Entropy and Life give the mage the mystical attributes of death, and Spirit allows the mage to cross the Shroud. The mage exists for all purposes as a Wraith, inhabiting a corpus with 10 health levels and no wound penalties. If the mage loses all their Health levels, the mage gains a new Entropy Synergy trait and is then drawn into a Harrowing."
 effect.save()
 effect.add_source("Tradition Book: Euthanatos (First Edition)", 67)
 effect.add_source("Tradition Book: Euthanatos (Revised)", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Death's Passage", spirit=3, life=2, entropy=4
+)
 )
 effect.description = "An extreme technique for bypassing walls, this allows the mage to step into the Underworld in order to get around. Of course, travel through the Underworld isn't safe, and the mage still must get across and return. The mage also acquires Jhor from this trip."
 effect.save()
@@ -3098,17 +3323,20 @@ effect.add_source("Dead Magic 2", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Presentation of the Passage Stick", spirit=3
 )
+)
 effect.description = "The mage sends out a spiritual call into the Dreamtime introducing themselves to anyone or anything who is aware of such things, such as the local Aboriginal mages. It is considered to be extremely rude to cross into another family's territory without doing this."
 effect.save()
 effect.add_source("Dead Magic 2", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Sense the Dreamsong", correspondence=1, spirit=1
 )
+)
 effect.description = "This allows the mage to ascertain the boundaries and strength of the Dreamtime where they are."
 effect.save()
 effect.add_source("Dead Magic 2", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Sing the Dreaming Earth", spirit=5, mind=3, prime=5
+)
 )
 effect.description = "This allows the mage to create a variant of a shallowing called a Sleeping Land (rules in Dead Magic 2, page 54-55), with area determined by the number of successes. This is a type of Shallow Realm, a minor realm that is very close to the world and don't form accidentally."
 effect.save()
@@ -3128,6 +3356,7 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 61)
 effect, _ = Effect.objects.get_or_create(
     name="Daedalus Gateway", correspondence=4, mind=3
 )
+)
 effect.description = "This procedure teleports a target but leaves them not realizing that they've been teleported. It can be defeated by Correspondence senses or expenditure of Willpower to overcome the Mind aspect."
 effect.save()
 effect.add_source("Technocracy: New World Order", 49)
@@ -3141,6 +3370,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 188)
 effect, _ = Effect.objects.get_or_create(
     name="Heaven's Tumbling Pebbles", correspondence=3, entropy=2
+)
 )
 effect.description = "By crushing a bluestone in a blue porcelain bowl, a Wu-Keng can flee to a safe location. Entropy 2 makes the location random, but safe. Correspondence 3 takes the Wu-Keng there, 4 lets them take a group, but 5 randomly overlays many different locations into a chaotic mess, so that no one knows which location they will end up attached to when it ends."
 effect.save()
@@ -3200,6 +3430,7 @@ effect.add_source("Convention Book: Void Engineers (Revised)", 87)
 effect, _ = Effect.objects.get_or_create(
     name="Detect the Dream Gateway", correspondence=1, spirit=1
 )
+)
 effect.description = (
     "This rote allows the mage to find places where the Gauntlet is unusually weak."
 )
@@ -3212,11 +3443,13 @@ effect.add_source("Mage: The Ascension (First Edition)", 227)
 effect, _ = Effect.objects.get_or_create(
     name="Dreamquest", spirit=3, entropy=2, mind=2, prime=2
 )
+)
 effect.description = "Shamans have long known that making changes in the spirit world can change the physical world. Drawing upon that connection, this rote lets the shaman know what needs to be done to accomplish their goal, though it does so by giving them a quest to accomplish, with difficulty generally scaling with the alterations to reality that they want to make. The resulting effects occur purely coincidentally, outside the control of the characters. This rote in fact begins the effect, with Spirit 3 required to enter the Umbra and begin, 4 to bring companions with them, and Mind 4 to use Untether to enter the Umbra themselves."
 effect.save()
 effect.add_source("The Spirit Ways", 92)
 effect, _ = Effect.objects.get_or_create(
     name="Gateway Transport", correspondence=5, spirit=5
+)
 )
 effect.description = "One of the most powerful transportation procedures that the Void Engineers have developed, this opens a gate to a point in the Deep Universe, one large enough to pilot a Voidship through."
 effect.save()
@@ -3232,11 +3465,13 @@ effect.add_source("Dead Magic 2", 81)
 effect, _ = Effect.objects.get_or_create(
     name="Leap Sideways", correspondence=3, spirit=3
 )
+)
 effect.description = "An improved version of Stepping Sideways, Leap Sideways allows the mage to not only enter or exit the Umbra, but also to transport themselves anywhere on Earth or the Near Umbra."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 227)
 effect, _ = Effect.objects.get_or_create(
     name="Long-Distance Universal Travel", spirit=5
+)
 )
 effect.description = "This allows the Void Engineer to travel the Deep Universe freely, and even breach Horizon Realms without using the proper entrance. This rote is also sometimes called Puncture Reality Barrier, as that is the name that some Void Engineers give to the Horizon."
 effect.save()
@@ -3268,6 +3503,7 @@ effect.add_source("Tradition Book: Dreamspeakers (First Edition)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Spirit Journey", correspondence=2, spirit=2
 )
+)
 effect.description = "This rote allows the shaman to enter a deep trance and sends their perceptions off into the Umbra. They cannot affect anything, but they can view any location on Earth or the Umbra and communicate with spirits they encounter."
 effect.save()
 effect.add_source("The Spirit Ways", 88)
@@ -3287,6 +3523,7 @@ effect.add_source("Mage: The Ascension (Revised)", 167)
 effect, _ = Effect.objects.get_or_create(
     name="Sucking Gate", spirit=4, forces=4, prime=2
 )
+)
 effect.description = "Sometimes, a fight really, REALLY requires a change of venue. For Dreamspeakers, that is often a move into the Umbra. With this rote, they not only Breach the Gauntlet, but also cause those near it to be sucked through. Particularly effective in the age of the Avatar Storm."
 effect.save()
 effect.add_source("Book of Shadows", 141)
@@ -3296,6 +3533,7 @@ effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (First Edition)", 67)
 effect, _ = Effect.objects.get_or_create(
     name="Umbral Visions", correspondence=2, spirit=2, mind=1
+)
 )
 effect.description = "After a lengthy, meditative ritual, the shaman goes into a deep trance and projects their senses into the Umbra. They do not enter physically, which keeps them safe from the Avatar Storm. Not only can they project their senses to any place that they know (Correspondence 2) or to any object or person they know (Correspondence 3), but they can also communicate with any spirits or other beings there."
 effect.save()
@@ -3307,6 +3545,7 @@ effect.add_source("Technocracy: Void Engineers", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Walking the Open Path", spirit=2, prime=1
 )
+)
 effect.description = "An enhanced version of Moving the World Walls, Walking the Open Path decreases the Gauntlet to zero at a Node, creating a temporary Shallowing and allowing entrance into the Umbra."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (Revised)", 66)
@@ -3317,11 +3556,13 @@ effect.add_source("Convention Book: Void Engineers (Revised)", 87)
 effect, _ = Effect.objects.get_or_create(
     name="The Barrel of Iskander", matter=2, forces=1
 )
+)
 effect.description = "With a barrel made of iron and glass, it becomes airtight and allows a clear view of its surroundings, no matter how deep it is submerged underwater. With Life 2, the user will be comfortable in the confined space for longer."
 effect.save()
 effect.add_source("Artisan's Handbook", 52)
 effect, _ = Effect.objects.get_or_create(
     name="Format Space", correspondence=5, spirit=4
+)
 )
 effect.description = "A team of Void Engineers mark the boundaries of an area that they will use to simulate space, with at least four reference points at the vertices of a tetrahedron. The first successes go to making contact with these points, followed by duration. Afterwards, each success can be used to raise the Gauntlet for Spirit magic by one and decrease it for Dimensional Science by one, to a maximum of 10 and 0, respectively, five successes can be spent to make all mystic magick vulgar, and all Technocratic Procedures coincidental, with exceptions only those that are vulgar everywhere, such as Format Space, and five successes to force the local physics to conform to the consensus."
 effect.save()
@@ -3398,11 +3639,13 @@ effect.add_source("Book of Crafts", 73)
 effect, _ = Effect.objects.get_or_create(
     name="Information Glut", correspondence=2, time=2, mind=1
 )
+)
 effect.description = "This rote amps up one sense, allowing the mage to perceive things they normally couldn't. Each success gives +1 to Perception for the scene or -1 to Alertness checks."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (First Edition)", 62)
 effect, _ = Effect.objects.get_or_create(
     name="Information Overload", correspondence=2, mind=2
+)
 )
 effect.description = "This rote vastly increases the target's perceptive abilities. If the Reality Coder chooses, it can be an enlightening experience, making virtual space seem every bit as real as real space, but it can also cause significant harm by breaking the normal filters that allow people to deal with their senses."
 effect.save()
@@ -3415,6 +3658,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 189)
 effect.add_source("Mage: The Ascension (Revised)", 159)
 effect, _ = Effect.objects.get_or_create(
     name="Lay of the Land", correspondence=2, life=2
+)
 )
 effect.description = "A Verbena can gain information about an area by communing with the plants and animals in it. One success establishes the connection, additional successes increase the range and duration."
 effect.save()
@@ -3477,6 +3721,7 @@ effect.add_source("Mage: The Ascension (Revised)", 162)
 effect, _ = Effect.objects.get_or_create(
     name="See the Soul's Burn", spirit=1, entropy=2, mind=1
 )
+)
 effect.description = "Though not able to see the details, this rote allows a Euthanatos to see whether the target is guilty, in general terms."
 effect.save()
 effect.add_source("Tradition Book: Euthanatos (First Edition)", 66)
@@ -3533,6 +3778,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 201)
 effect, _ = Effect.objects.get_or_create(
     name="Genome Mapping", correspondence=3, life=2
 )
+)
 effect.description = "With just a DNA sample, a New World Order agent can establish a Data connection to the person whose sample it is. Each success adds a level of separation from the DNA to the subject where it will still work, for example, three successes are needed if the sample comes from the target's great-grandfather."
 effect.save()
 effect.add_source("Convention Book: New World Order (Revised)", 85)
@@ -3580,6 +3826,7 @@ effect.add_source("Fallen Tower: Las Vegas", 120)
 effect, _ = Effect.objects.get_or_create(
     name="Instant Measurement", correspondence=1, matter=1, mind=1
 )
+)
 effect.description = "This popular Etherite rote allows the user to find hidden spaces, and, especially, to find any that have someone hiding in them."
 effect.save()
 effect.add_source("Hidden Lore", 18)
@@ -3589,6 +3836,7 @@ effect.save()
 effect.add_source("The Swashbuckler's Handbook", 92)
 effect, _ = Effect.objects.get_or_create(
     name='Aai-ab "Washing the Heart"', spirit=1, mind=2
+)
 )
 effect.description = "By holding a feather (representing Ma'at), a Hem-Ka Sobk traces the scars over their heart and then can see a symbolic manifestation of their target based on their spiritual nature and thoughts. This is a combination of aura reading and reading surface thoughts."
 effect.save()
@@ -3612,11 +3860,13 @@ effect.add_source("Initiates of the Art", 81)
 effect, _ = Effect.objects.get_or_create(
     name="I Know Your Cousin", correspondence=3, life=1, mind=2
 )
+)
 effect.description = "This rote allows a mage to determine basic facts about the nearest relative of the target. At three successes spent on strength of the effect, the mage gets a familiar name, and each success beyond that gives a minor fact."
 effect.save()
 effect.add_source("Fallen Tower: Las Vegas", 120)
 effect, _ = Effect.objects.get_or_create(
     name="Ishin Den Shin", correspondence=2, mind=2
+)
 )
 effect.description = (
     "Allows the Akashic to sense the emotions and mental state of those affected."
@@ -3634,6 +3884,7 @@ effect.add_source("Technocracy: Progenitors", 42)
 effect.add_source("Mage: The Ascension (Revised)", 176)
 effect, _ = Effect.objects.get_or_create(
     name="Mindfulness of Wrong Thought", life=1, mind=2
+)
 )
 effect.description = "While meditating, this rote protects the Akashic. It gives them the ability to detect a hostile being in the vicinity. With Matter instead of Life, it can detect traps near the meditating Akashic."
 effect.save()
@@ -3664,6 +3915,7 @@ effect.add_source("Tradition Book: Cult of Ecstasy (Revised)", 70)
 effect, _ = Effect.objects.get_or_create(
     name="Detect Reality Deviation", spirit=2, prime=1
 )
+)
 effect.description = "This allows the Agent to detect and identify Reality Deviants, with different non-human groups requiring different techniques to discover. For example, Life 2 will allow the detection of Vampires, but, for unknown reasons, Dimensional Science is needed to identify Werewolves."
 effect.save()
 effect.add_source("Technocracy: New World Order", 48)
@@ -3687,11 +3939,13 @@ effect.add_source("Order of Reason", 80)
 effect, _ = Effect.objects.get_or_create(
     name="Lore Rune", correspondence=1, spirit=1, matter=1, life=1, mind=1, prime=1
 )
+)
 effect.description = "This rune grants the ability to identify any supernatural in their vicinity. One success allows them to tell that that someone is not human, more are required to tell them apart, and with large numbers their basic powers can be discerned."
 effect.save()
 effect.add_source("Dead Magic 2", 100)
 effect, _ = Effect.objects.get_or_create(
     name="Patterns of the Long Count", spirit=1, prime=1
+)
 )
 effect.description = "By reading the Long Count of the Mayan calendar, understanding the patterns in it, the mage can lower the difficulty of effects involving one Sphere by one. This only applies to mages who believe in the Long Count."
 effect.save()
@@ -3699,11 +3953,13 @@ effect.add_source("Dead Magic", 78)
 effect, _ = Effect.objects.get_or_create(
     name="Spot the Man", correspondence=1, matter=1, life=1, prime=1
 )
+)
 effect.description = "When successful, the Hollow One will be able to detect any Technomagickal implants or Primium in the target to be viewed."
 effect.save()
 effect.add_source("Tradition Book: Hollow Ones (Revised)", 63)
 effect, _ = Effect.objects.get_or_create(
     name='Hersh, "To Be Patient"', correspondence=1, spirit=1, mind=1
+)
 )
 effect.description = "The Hem-Ka Sobk enters a meditative trance clearing away doubt and hesitation to reach an emotionless, calm place. This sharpens senses and allows them to feel the Sekhem of Sobk flow through them, and they become one with the crocodile. Without this rote, they are denied access to many of their powers."
 effect.save()
@@ -3725,6 +3981,7 @@ effect.add_source("Mage: The Ascension (Revised)", 187)
 effect, _ = Effect.objects.get_or_create(
     name='Utchatti, "The Two Divine Eyes"', correspondence=1, spirit=1
 )
+)
 effect.description = "By touching scar patterns around their eyes with wet fingers, the Hem-Ka Sobk can sense objects near them that have been touched by Sekhem."
 effect.save()
 effect.add_source("Book of Crafts", 56)
@@ -3738,6 +3995,7 @@ effect.save()
 effect.add_source("Technocracy: New World Order", 48)
 effect, _ = Effect.objects.get_or_create(
     name="Evaluate Fourth Dimensional Fabric", time=1
+)
 )
 effect.description = (
     "This allows a Void Engineer to determine if time has been tampered with."
@@ -3775,17 +4033,20 @@ effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 87)
 effect, _ = Effect.objects.get_or_create(
     name="Mark of the Beast", correspondence=3, life=1, prime=3
 )
+)
 effect.description = "This rote marks the blood in a human with Quintessence so that it can be tracked. This lets a mage find the person, and any Vampire who drinks their blood."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 226)
 effect, _ = Effect.objects.get_or_create(
     name="Smart Drink", time=1, spirit=1, life=2, mind=2, prime=1
 )
+)
 effect.description = "Also called the Elixir of Enlightenment by the Children of Knowledge, Smart Drink allows a Sleeper to see the world how it really is, according to them. A Cultists have a similar effect that works through drugs, rather than a drink. The subject gets an energizing boost from Life, the ability to see magick and spirits through Prime and Spirit, Mind opens them up to these new perceptions, and Time lets them perceive the imperfections in the flow of time."
 effect.save()
 effect.add_source("Book of Crafts", 41)
 effect, _ = Effect.objects.get_or_create(
     name="Blood from a Stone", spirit=4, life=3, mind=4
+)
 )
 effect.description = "The Hollow One needs to first create a Fetter Ball connected to a Wraith that they know, and then pierces it with a needle. This causes the Wraith's Angst to turn to blood and drip out of the ball, leaving the Wraith much calmer after, despite it often objecting in advance to the ritual."
 effect.save()
@@ -3801,11 +4062,13 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Voice Across the Void", correspondence=2, spirit=3, mind=3
 )
+)
 effect.description = "A Hollow One who has a Fetter Ball for a Wraith can use this rote to communicate with them no matter where they are. Even one success creates two-way communication regardless of distance."
 effect.save()
 effect.add_source("Tradition Book: Hollow Ones (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Voice of the Jade Ancestors", spirit=2, mind=2
+)
 )
 effect.description = "Given an item of value to the deceased (a Fetter, in Wraith: The Oblivion terms), a member of the Wu Lung can summon them (if they are available) for advice."
 effect.save()
@@ -3817,11 +4080,13 @@ effect.add_source("Artisan's Handbook", 52)
 effect, _ = Effect.objects.get_or_create(
     name="Shadow Sight", correspondence=1, spirit=1, entropy=1, mind=1
 )
+)
 effect.description = "This allows Hollow One necromancers to not only see ghosts, but to see the Shadowlands how the Wraiths see it: morbid black-and-white, the weak points of everything completely obvious, the auras of living things giving away that they are, in fact, alive. By focusing on an individual Wraith, the Hollow One can even see its Shadow."
 effect.save()
 effect.add_source("Tradition Book: Hollow Ones (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Shelter from the Storm", spirit=4, entropy=1, prime=4
+)
 )
 effect.description = "This rote allows the mage to turn a room or building into a Haunt (one level per success) and must last for at least a scene. This provides many benefits, but most notably it protects from the Maelstrom."
 effect.save()
@@ -3832,6 +4097,7 @@ effect.save()
 effect.add_source("Dead Magic", 30)
 effect, _ = Effect.objects.get_or_create(
     name="Soul-Forging", spirit=4, matter=3, prime=3
+)
 )
 effect.description = "For more detail, see pages 87-89 of Infernalism: The Path of Screams. This rote allows a mage to perform the terrible act of Soul-Forging, transforming a Wraith into an object."
 effect.save()
@@ -3847,11 +4113,13 @@ effect.add_source("Dead Magic", 57)
 effect, _ = Effect.objects.get_or_create(
     name="Lichedom", spirit=4, matter=4, life=4, entropy=4, mind=1, prime=3
 )
+)
 effect.description = "Lichedom is, in some sense, the easy route to immortality. It is the only route that doesn't require a Master, for instance. However, it is forbidden in the strongest terms, and virtually all mages will unite to destroy a Liche if one is found. The mage surrounds themselves with the trappings of their life and their magic, and ritually severs the connection between their avatar and their body. To finish the ritual, the mage kills himself while invoking the final piece of magic, binding their avatar back to their own body right as they reach the point between life and death, freezing themselves there. As such, the Liche becomes a sort of undead, hovering on the edge of death but not crossing over. This is, overall, an extremely complex rite with many requirements, almost every single one of which is criminal in the eyes of most mages. For every detail, see Dead Magic pages 109-112."
 effect.save()
 effect.add_source("Dead Magic", 109)
 effect, _ = Effect.objects.get_or_create(
     name="Song of Orpheus", matter=2, life=4, mind=2, prime=2
+)
 )
 effect.description = "This rote restores the dead to life. But it isn't that simple. The Pattern spheres and Prime are needed to restore the body, and Time is needed to make sure it is correct, viewing the precise Pattern in the past. Spirit is needed to call the soul/avatar back. Of course, this assumes that it is free to return. In most cases, both the soul and the avatar must be found first, and often the soul has moved on and the avatar has been reborn. This rote should never be used as an easy 'get out of death free' card, but instead should always require multiple sessions, often multiple stories, of work to prepare."
 effect.save()
@@ -3862,6 +4130,7 @@ effect.save()
 effect.add_source("Dead Magic", 30)
 effect, _ = Effect.objects.get_or_create(
     name="Eternal Discipline of the Family", spirit=4, entropy=2, mind=2, prime=4
+)
 )
 effect.description = "Joins a Wu-Keng to a Wraith as parent or spouse. The mage enacts the ritual as though adopting, being adopted by, or marrying a living human, but with their altar burning candles, red-ink charms, and gold and silver paper to symbolize the Wraith. This turns the mage into a Fetter for a Wraith, though the Wraith must be willing, essentially serving their proper part in the ceremony."
 effect.save()
@@ -3905,6 +4174,7 @@ effect.add_source("Convention Book: Syndicate (Revised)", 73)
 effect, _ = Effect.objects.get_or_create(
     name="Encrypt Thoughts", life=1, mind=1, prime=2
 )
+)
 effect.description = "By running their thoughts through an encryption algorithm, the Virtual Adept makes them harder to read. Each success subtracts from any outside party's attempts to read the Adept's mind, beyond countermagick."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (First Edition)", 61)
@@ -3915,6 +4185,7 @@ effect.add_source("Technocracy: New World Order", 45)
 effect, _ = Effect.objects.get_or_create(
     name="Secure the Scene", matter=1, forces=1, mind=2
 )
+)
 effect.description = "Technocrats need to score at least three successes to Secure a Scene, and more successes are needed the larger the area to secure is. Mind discourages anyone from entering the area (avoidance with 2, driving them away with 3), while Forces and Matter are used to catalog the evidence that needs to be cleaned up. Forces 3 can be added to create a blackout effect rendering the area dark, to avoid anyone seeing the cleanup process."
 effect.save()
 effect.add_source("Mage: The Ascension (20th Anniversary Edition)", 604)
@@ -3924,6 +4195,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (Second Edition)", 210)
 effect, _ = Effect.objects.get_or_create(
     name="Soul Cloak", spirit=3, entropy=2, mind=2, prime=2
+)
 )
 effect.description = "An essential tool for any mage who needs to mask their aura, it is rarely found outside of Infernalists and the Fallen. This effect confuses the aura perceptions of others, hiding the hues that reveal the evil of the mage behind kindly shimmering hues."
 effect.save()
@@ -3943,6 +4215,11 @@ effect, _ = Effect.objects.get_or_create(
     mind=2,
     prime=4,
 )
+    correspondence=4,
+    spirit=3,
+    mind=2,
+    prime=4,
+)
 effect.description = "This not only allows the Batini to gain temporary Occult, but to make it permanent and increase Occult beyond 5 (see Lost Paths: Ahl-i-Batin and Taftani page 39 for details). Each dot of Arcane costs two successes, and each success spent lasts for one lunar year (approximately 336 days). Furthermore, if the mage accidentally reaches Arcane 11, they disappear, the Tellurian itself forgetting that they exist."
 effect.save()
 effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 43)
@@ -3957,11 +4234,13 @@ effect.add_source("Hidden Lore", 18)
 effect, _ = Effect.objects.get_or_create(
     name="Selective Edit", correspondence=2, entropy=2
 )
+)
 effect.description = "This Procedure gives an operative a temporary Cloaking background, hiding them effectively from electronic surveillance, causing them to not appear in video feeds, etc."
 effect.save()
 effect.add_source("Guide to the Technocracy", 206)
 effect, _ = Effect.objects.get_or_create(
     name='Sjonhverfing ("Deceiving of the Sight")[0]', mind=2
+)
 )
 effect.description = "With this magic, the mage can cloud the minds of men. The most basic version allows the mage to strike fear into all those in their presence. A more advanced version allows them to instill illusions into those minds, making them see what the mage wishes them to. With Entropy, they can destroy the target's sense of up and down, or even summon a mist. This is dispelled if the mage is blindfolded."
 effect.save()
@@ -3989,6 +4268,7 @@ effect.add_source("Tradition Book: Hollow Ones (Revised)", 62)
 effect, _ = Effect.objects.get_or_create(
     name="Dreamer's Shroud from Day", correspondence=4
 )
+)
 effect.description = "This rote allows the mage to warp space around them so that they are hidden from sight, making them effectively invisible."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 186)
@@ -3998,6 +4278,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (Revised)", 166)
 effect, _ = Effect.objects.get_or_create(
     name='Huli Shjalmr ("Helmet of Hiding")[0]', forces=2, prime=2
+)
 )
 effect.description = "The Huli Shjalmr grants the power of invisibility, by either warping light around them, hiding themselves from the Minds of those around them, or destroying the very concept of them in those minds."
 effect.save()
@@ -4043,6 +4324,7 @@ effect.add_source("Mage: The Ascension (First Edition)", 223)
 effect, _ = Effect.objects.get_or_create(
     name="Ariadne's Thread", correspondence=1, matter=1
 )
+)
 effect.description = "The mage who uses this rote is always capable of backtracking. This gives them a perfect recollection of the actual locations in space that they have passed through. Regardless of if every landmark along the way changes, they will be able to find their way back."
 effect.save()
 effect.add_source("Book of Shadows", 144)
@@ -4074,6 +4356,7 @@ effect.add_source("Mage: The Ascension (Revised)", 160)
 effect, _ = Effect.objects.get_or_create(
     name="Conference Call", correspondence=4, forces=4, prime=2
 )
+)
 effect.description = "Using a specially arrange conference room that includes hard-light projectors, high-speed internet connections and proper computers, a Syndicate agent can be in multiple meetings at once."
 effect.save()
 effect.add_source("Technocracy: Syndicate", 49)
@@ -4085,6 +4368,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 191)
 effect.add_source("Mage: The Ascension (Revised)", 160)
 effect, _ = Effect.objects.get_or_create(
     name="Simon's Petition", correspondence=4, mind=1
+)
 )
 effect.description = "The legendary Simon of Ghita was able to address many visitors to his tower simultaneously from different windows. This effect allows a mage to be in multiple places at once and hold independent conversations."
 effect.save()
@@ -4105,11 +4389,13 @@ effect.add_source("Mage: The Ascension (Revised)", 193)
 effect, _ = Effect.objects.get_or_create(
     name="Establish and Exchange Temporal Event Fields", time=5
 )
+)
 effect.description = "This allows the Void Engineer to create a 'Temporal Event Field' around a distant point in time. By using Establish Local Temporal Event Field around the Chrononaut, the two fields can have their contents exchange, essentially time travel."
 effect.save()
 effect.add_source("Technocracy: Void Engineers", 47)
 effect, _ = Effect.objects.get_or_create(
     name="Establish Local Temporal Event Field", time=4
+)
 )
 effect.description = "This procedure pauses time around an individual or an object."
 effect.save()
@@ -4117,11 +4403,13 @@ effect.add_source("Technocracy: Void Engineers", 46)
 effect, _ = Effect.objects.get_or_create(
     name="The Frenzy of the Spinning Wheels", time=3
 )
+)
 effect.description = "Allows the user to operate machinery that requires many simultaneous actions by themselves."
 effect.save()
 effect.add_source("Artisan's Handbook", 52)
 effect, _ = Effect.objects.get_or_create(
     name="The Moment that Stretches", time=3, mind=1
+)
 )
 effect.description = "The mage can alter their sense of time, allowing them to subjectively experience a much longer period's time than occurs. Note, this doesn't give extra actions and no other magick may be done during this, but mental processes move much more quickly. Mind 4 is needed to include others."
 effect.save()
@@ -4129,11 +4417,13 @@ effect.add_source("Hidden Lore", 14)
 effect, _ = Effect.objects.get_or_create(
     name="Nick of Time", correspondence=3, time=2, entropy=3
 )
+)
 effect.description = "This rote gives the Reality Hacker excellent timing, just right for whatever it is they need to do in a situation. Often, this helps find jobs, being online at the right time, or at the next table to someone who needs to hire a person like them."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 64)
 effect, _ = Effect.objects.get_or_create(
     name="Quantum Temporal Travel", correspondence=3, time=3, entropy=4
+)
 )
 effect.description = "Rather than attempting 'true' time travel, some Etherites have developed a technique for traveling to the pasts and futures of alternate timelines. This cannot change the present, but it can still be useful: visiting a Utopian future for inspiration, for instance. Some Ethernauts even explore these universes out of pure curiosity, venturing into strange alternate realities. Correspondence 3 transports one person, 4 can transport a group, Time 4 allows very short hops (one round/success) while Time 5 is needed for extended journeys, and Time combined with Entropy allows the mage to travel to an alternate timeline rather than the 'true' one."
 effect.save()
@@ -4141,12 +4431,14 @@ effect.add_source("Tradition Book: Sons of Ether (Revised)", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Serenity of the Stone", time=5, life=3, entropy=4, mind=3, prime=5
 )
+)
 effect.description = "Rather than actively making a mage younger, some opt to slow the process of aging to the point where it is barely happening at all. Maintaining it requires that the mage expend a point of Quintessence every week, or else take a Lethal damage per day and begin aging rapidly to at least (often more) than their actual age. This effect usually causes a mage to age by a single year for every fifty that they experience."
 effect.save()
 effect.add_source("Horizon: Stronghold of Hope", 115)
 effect.add_source("Masters of the Art", 76)
 effect, _ = Effect.objects.get_or_create(
     name="Shed the Years", time=2, life=3, entropy=4, mind=2, prime=5
+)
 )
 effect.description = "Potions of Youth, Phoenix Engines, and other techniques for decreasing age all fall under this rote. With it, the mage can return their body to the state it was in nine years prior. It requires at least five successes and is vulgar everywhere on Earth and only safely used in an appropriate Horizon Realm."
 effect.save()
@@ -4179,11 +4471,13 @@ effect.add_source("Mage: The Ascension (Revised)", 193)
 effect, _ = Effect.objects.get_or_create(
     name="Tune In, Turn On, Drop Out", time=4, life=3
 )
+)
 effect.description = "This rote freezes time for the mage's Pattern, causing them to fake death. For each hour in this state, the mage takes one level of Lethal damage. The mage has frozen time for their brain as well, so they have no awareness of the time passing or what is going on around them."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 228)
 effect, _ = Effect.objects.get_or_create(
     name="Zen and the Art of Panhandling", time=5, prime=3
+)
 )
 effect.description = "The mage can 'borrow' Quintessence from their future self, but they cannot be sure how far into the future. They may gain one Quintessence for each success, and at some point, in the future, the Storyteller informs them that they have lost an equivalent amount of Quintessence."
 effect.save()
@@ -4231,11 +4525,13 @@ effect.add_source("Order of Reason", 85)
 effect, _ = Effect.objects.get_or_create(
     name="Sharing the Outsider's Gaze", spirit=3, mind=4, prime=1
 )
+)
 effect.description = "This allows the mage to share in a Spirit's senses. Spirits often have senses completely alien to humans (tasting quintessence, experiencing emotions as tangible, etc.). Each success gives access to a sense that is analogous to a human sense but attuned to something else (such as seeing destiny), two successes allows access to a truly alien sense (i.e., four-dimensional perception) though this requires a Willpower roll with difficulty at least 7. Success means that the mage can effectively use the sense, failure or, worse, botching, risks pushing the mage into Quiet."
 effect.save()
 effect.add_source("Infinite Tapestry", 183)
 effect, _ = Effect.objects.get_or_create(
     name="Spirit Eating", spirit=2, mind=3, prime=3
+)
 )
 effect.description = "The Dreamspeaker empowers a weapon to attack a spirit, as in Spirit Slaying. Unlike Spirit Slaying, the mage doesn't only attack the spirit, but siphons off its Prime energy and its knowledge, consuming them. The spirit destroyed this way is gone forever. Each level of damage done with this rote gives the user a point of Quintessence and reduces the spirit's Power by 5 points. If the spirit's Power reaches 0, it is destroyed forever. Successes on this effect also go into absorbing the memories of the spirit. One success gives a few memories, two gives access to the most recent memories, three give most memories and four or more give access to virtually all memories."
 effect.save()
@@ -4264,11 +4560,13 @@ effect.add_source("Dead Magic 2", 126)
 effect, _ = Effect.objects.get_or_create(
     name="Bottle of Djinn", spirit=4, matter=3, prime=2
 )
+)
 effect.description = "Using techniques going back to Suleiman the Wise himself, the Taftani is no longer at the mercy of Djinni, but rather can control them. By creating a container and a trigger phrase, a djinn can be sucked into the bottle, and the mage has three turns to seal the bottle so that the djinn cannot escape."
 effect.save()
 effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 88)
 effect, _ = Effect.objects.get_or_create(
     name="Circle of Binding", correspondence=4, spirit=4, prime=4
+)
 )
 effect.description = "The Order of Hermes has always had powerful techniques for summoning and binding spirits. Most of these techniques have, at their core, a Circle of Binding. This takes the form of a circle inlaid on the floor (often in a precious metal) and graven with sigils and signs. This rote summons the spirit and traps it within wards, permitting spirits in but not out of the Circle. The usage of Prime accrues successes to resist any mystical effect that the spirit uses within the Circle."
 effect.save()
@@ -4290,6 +4588,7 @@ effect.add_source("Tradition Book: Akashic Brotherhood (Revised)", 69)
 effect, _ = Effect.objects.get_or_create(
     name="Ensure the Endless Sleep", spirit=2, matter=2, mind=3
 )
+)
 effect.description = "It is essential that Dreamtime spirits stay asleep (see Dreamborn Rising for some consequences if they do not). This rote allows mages to guarantee that such spirits stay in a deep slumber."
 effect.save()
 effect.add_source("Dead Magic 2", 64)
@@ -4309,6 +4608,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 218)
 effect, _ = Effect.objects.get_or_create(
     name="Halt the Nagloper", time=2, matter=2, life=2
 )
+)
 effect.description = "By placing a false club at the entrance to a home, it causes a nagloper who tries to enter to freeze so long as no one speaks within its hearing."
 effect.save()
 effect.add_source("Dead Magic", 28)
@@ -4323,6 +4623,7 @@ effect.add_source("Mage: The Ascension (First Edition)", 224)
 effect, _ = Effect.objects.get_or_create(
     name="Lesser Binding of Spirits", spirit=2, prime=2
 )
+)
 effect.description = "While higher levels of Spirit are needed to directly compel spirits to do a mage's bidding, this rote summons a spirit and immediately encloses it in a cage of primal energy. Another success creates the primal cage capable of causing two levels of aggravated damage at any time the mage wills it, two additional successes can make the effect last for up to a day (or until used) and cause four levels of damage instead of two. With Mind 2, the mage creates a sensation of the futility of resistance in the spirit."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (Revised)", 66)
@@ -4333,17 +4634,20 @@ effect.add_source("Mage: The Ascension (Second Edition)", 219)
 effect, _ = Effect.objects.get_or_create(
     name="Lull the Waking Dreamborn", spirit=2, mind=3
 )
+)
 effect.description = "This long ritual is used by Aboriginal Australians to lull a spirit into slumber. The ritual gathers successes opposed by the spirit's Willpower roll. If the mage is a child of a specific Dreamborn who is being lulled back to sleep, the difficulty of the ritual is at -2. If the spirit loses, it falls into Slumber."
 effect.save()
 effect.add_source("Dead Magic 2", 65)
 effect, _ = Effect.objects.get_or_create(
     name="Physical Exorcism", spirit=4, life=3, prime=2
 )
+)
 effect.description = "Sometimes, an invasive spirit needs to be destroyed. This rote not only expels it from whoever or whatever it is possessing, but also binds it into a newly created physical form that can be killed."
 effect.save()
 effect.add_source("The Spirit Ways", 91)
 effect, _ = Effect.objects.get_or_create(
     name="Weaver's Retribution", correspondence=3, spirit=4, forces=3, mind=2, prime=2
+)
 )
 effect.description = "This rote is rarely taught, and even more rarely used. It is largely considered a suicide maneuver only to be used in the most desperate circumstances. The Taftani first expands their senses to find every djinn within several kilometers, then simultaneously unseals all of them. The djinni then proceed to do whatever they want, which is usually wanton and undirected destruction, killing the mage, their enemies, and whatever else is nearby."
 effect.save()
@@ -4356,17 +4660,20 @@ effect.add_source("Mage: The Ascension (Revised)", 187)
 effect, _ = Effect.objects.get_or_create(
     name="Evaluate Gauntlet/Scan Locality", spirit=1
 )
+)
 effect.description = "This allows the Void Engineer to check the strength of the Gauntlet in a given location."
 effect.save()
 effect.add_source("Technocracy: Void Engineers", 41)
 effect, _ = Effect.objects.get_or_create(
     name="Sense the Demon's Weakness", spirit=1, entropy=1
 )
+)
 effect.description = "This allows a Wu Lung to focus on a demon and determine the essential weakness of its nature."
 effect.save()
 effect.add_source("Book of Crafts", 135)
 effect, _ = Effect.objects.get_or_create(
     name="Sense the Nagloper", time=2, matter=1, life=2
+)
 )
 effect.description = "The mage makes a shallow cut in the subject and rubs in a magickal powder. If a nagloper approaches, this burns and itches, awakening the subject so that they may defend themselves."
 effect.save()
@@ -4378,11 +4685,13 @@ effect.add_source("Book of Shadows", 143)
 effect, _ = Effect.objects.get_or_create(
     name='Ap-Sobk "The Last Judgment of Sobk"', spirit=4
 )
+)
 effect.description = "For a high-ranking member of the Hem-Ka Sobk, they can spit on their palms, rub them together, and petition Sobk for assistance. If they succeed, it is equivalent to Living Bridge, causing the mage to be possessed by the crocodile god itself. Misuse of this rote results in the spirit killing the mage."
 effect.save()
 effect.add_source("Book of Crafts", 58)
 effect, _ = Effect.objects.get_or_create(
     name="Call Forth the Forgotten", spirit=2, life=5, prime=2
+)
 )
 effect.description = "The mage calls forth a creature of myth, summoning an appropriate spirit to inhabit a newly created form. If the creature is to have any powers other than just a body, the mage needs to include other Spheres (such as Forces for flight or fire-breathing, in the case of a dragon)."
 effect.save()
@@ -4402,17 +4711,20 @@ effect.add_source("Dead Magic 2", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Conjure the Jade Warrior", spirit=5, matter=3, prime=3
 )
+)
 effect.description = "This rote is used by the Wu Lung to create a giant warrior clad in ancient, jade armor. This warrior is then inhabited by a warrior spirit and exists both physically and in the spirit realm simultaneously."
 effect.save()
 effect.add_source("Book of Crafts", 135)
 effect, _ = Effect.objects.get_or_create(
     name="Dreamborn Rising", spirit=2, matter=4, life=4, mind=3
 )
+)
 effect.description = "This rote can rouse a quiescent Dreamborn spirit. As this only can affect the most powerful such spirits and they emerge ravenous for Quintessence and life form with no sense of who they are, this rote is forbidden. This is in direct opposition to Ensure the Endless Sleep."
 effect.save()
 effect.add_source("Dead Magic 2", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Drums of Elemental Fire", spirit=2, matter=2, forces=2
+)
 )
 effect.description = "Drums are a well-known and long venerated instrument for spirit magic. With this rote, a drummer can bring forth an elemental spirit. Of course, this doesn't guarantee that the elemental will be friendly."
 effect.save()
@@ -4432,6 +4744,7 @@ effect.add_source("Hidden Lore", 15)
 effect, _ = Effect.objects.get_or_create(
     name="Here Kitty, Kitty", correspondence=3, time=3, mind=3
 )
+)
 effect.description = "Created by a Virtual Adept named Zer0 Effect, this rote summons something that hates your opponent... though there's no guarantee that it won't ALSO hate you. Mind draws something from your opponent's fears, and Correspondence and Time open coincidental means for that thing to show up in a timely manner."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (Revised)", 62)
@@ -4450,17 +4763,20 @@ effect.add_source("Hidden Lore", 52)
 effect, _ = Effect.objects.get_or_create(
     name="Protection of the Golden Race", spirit=5, prime=2
 )
+)
 effect.description = "The Golden Race are the first humans in Greek mythology, the ones who lived during the Golden Age. This rote summons a member of the Golden Race to protect the mage from an opponent. It is always vulgar and may require many successes, but if the member of the Golden Race appears, there is a flash of golden light as it harms the attacker in some appropriate manner."
 effect.save()
 effect.add_source("Dead Magic", 108)
 effect, _ = Effect.objects.get_or_create(
     name="Pygmalion's Paradigm", spirit=2, matter=4, life=3, prime=2
 )
+)
 effect.description = "The mage crafts a body out of high-quality materials to be inhabited by a Familiar. The number of successes determines how powerful a Familiar can be housed in this body."
 effect.save()
 effect.add_source("Book of Shadows", 146)
 effect, _ = Effect.objects.get_or_create(
     name="Satan's Song", spirit=2, forces=2, mind=2, prime=3
+)
 )
 effect.description = "Although Prime is the highest ranked sphere, this is primarily a Mind and Spirit effect. The mage begins a musical performance, and uses it to summon demons, and to cause hallucinations in the audience. The Song inflames whatever lusts the audience is feeling, and can quickly, with enough successes, bring absolute mayhem to wherever the Song is being performed. With further Pattern spheres added in, the Song will raise the dead, bringing undead into the chaotic and unconstrained revelry along with the hallucinations and the demons."
 effect.save()
@@ -4472,6 +4788,7 @@ effect.add_source("Dead Magic", 131)
 effect, _ = Effect.objects.get_or_create(
     name="Spirit Roster", correspondence=2, spirit=1
 )
+)
 effect.description = "This rote finds any nearby spirits and, with Spirit 2, allows the mage to speak with them."
 effect.save()
 effect.add_source("Hidden Lore", 15)
@@ -4482,11 +4799,13 @@ effect.add_source("Technocracy: New World Order", 49)
 effect, _ = Effect.objects.get_or_create(
     name="Summon the Earthly Gods", correspondence=4, spirit=4, mind=4
 )
+)
 effect.description = "The Wu Lung claim a Heavenly authority over Eastern supernatural beings. This rote allows them to summon a Kuei-Jin, Hengeyokai or Hsien for an audience, where they cannot harm the mage. This requires 2 successes plus a number equal to the target's permanent Willpower to force the target to travel the swiftest way it can to the Wu Lung's location, though with two additional successes the target is teleported before the mage immediately."
 effect.save()
 effect.add_source("Dragons of the East", 59)
 effect, _ = Effect.objects.get_or_create(
     name="Visionary Bloodletting", spirit=2, mind=1
+)
 )
 effect.description = "Through bloodletting (at least two lethal damage) in a spiritually significant location on the mage's body, they can commune with gods and spirits and receive visions from them. Spirit calls to the spirit or god and allows the mage to see their message, Mind filters it through appropriate symbols for the mage to interpret."
 effect.save()
@@ -4512,11 +4831,13 @@ effect.add_source("Convention Book: New World Order (Revised)", 87)
 effect, _ = Effect.objects.get_or_create(
     name="Defense Screen vs. Higher Lifeforms", life=3
 )
+)
 effect.description = "Like Defense Screen Versus Lower Lifeforms, but it repels more complex life, such as sharks, dolphins or even people, though people can overcome it with a Willpower roll."
 effect.save()
 effect.add_source("Technocracy: Void Engineers", 43)
 effect, _ = Effect.objects.get_or_create(
     name="Defense Screen vs. Lower Lifeforms", life=2
+)
 )
 effect.description = "This Procedure uses chemical pheromones and ultrasonic vibrations to repel lower lifeforms."
 effect.save()
@@ -4540,6 +4861,7 @@ effect.add_source("Mage Storyteller's Companion", 63)
 effect, _ = Effect.objects.get_or_create(
     name="Protection Song", correspondence=4, forces=2
 )
+)
 effect.description = "This rote combines Ward and Energy Shield and with Spirit, extends to the Umbra as well."
 effect.save()
 effect.add_source("Dead Magic 2", 126)
@@ -4555,6 +4877,7 @@ effect.add_source("Dead Magic", 79)
 effect, _ = Effect.objects.get_or_create(
     name="Quantum Interference Shielding", correspondence=2
 )
+)
 effect.description = "When encountering Extra Dimensional Entities, every Technocrat learns the importance of defense. This procedure allows the Technocrat to strengthen the Gauntlet. With Prime, this shielding also provides countermagick against any attempts to cross or attacks across the Gauntlet."
 effect.save()
 effect.add_source("Guide to the Technocracy", 207)
@@ -4564,6 +4887,7 @@ effect.save()
 effect.add_source("Technocracy: Void Engineers", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Repel the Hungry Dead", spirit=4, prime=2
+)
 )
 effect.description = (
     "This creates a spiritual barrier around the Wu Lung that prevents possession."
@@ -4577,11 +4901,13 @@ effect.add_source("Dragons of the East", 59)
 effect, _ = Effect.objects.get_or_create(
     name="Safe Little World", correspondence=4, life=3
 )
+)
 effect.description = "The effect protects the mage's things, so that no one can tamper with them. It prevents anyone or anything from entering without the mage's knowledge. The simplest version prevents human trespassers. With Spirit 3, it can prevent spirits from entering. The Spirit 3/Mind 2 can post a spirit as a guard on the area, and it can attack anyone who enters the area. A simple Mind 3, Life 1, Correspondence 2 effect will let the mage know if anyone enters the area without preventing them from doing so."
 effect.save()
 effect.add_source("Orphan's Survival Guide", 129)
 effect, _ = Effect.objects.get_or_create(
     name="Salt on the Earth", correspondence=4, entropy=1
+)
 )
 effect.description = "This rote wards an area against Entropic energies. The most common application is to create a circle of salt and use it to block ghosts from entering an area."
 effect.save()
@@ -4589,11 +4915,18 @@ effect.add_source("Tradition Book: Euthanatos (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Secret Labyrinth", spirit=4, mind=3, prime=2
 )
+)
 effect.description = "Creates a maze around a location designed particularly to trap spirits by strengthening the Gauntlet. The spirit may roll Willpower with difficulty 7, and on more successes than the mage, may refuse to enter the labyrinth. Otherwise, they may roll Intelligence + Enigmas once per day to escape the maze."
 effect.save()
 effect.add_source("Artisan's Handbook", 53)
 effect, _ = Effect.objects.get_or_create(
     name="The Seven Golden Swords of the Tiger",
+    correspondence=4,
+    spirit=3,
+    matter=3,
+    forces=2,
+    prime=2,
+)
     correspondence=4,
     spirit=3,
     matter=3,
@@ -4622,17 +4955,20 @@ effect.add_source("Mage: The Ascension (Revised)", 192)
 effect, _ = Effect.objects.get_or_create(
     name="Twisted Yarrow Stalks", correspondence=4, entropy=2, mind=3
 )
+)
 effect.description = "The Wu-Keng prefer not to announce their power when warding themselves. Using techniques from the I, Ching, the Wu-Keng not only creates a Ward, but creates random impressions of what is there, rather than leaving a more traditional blank space announcing the presence of something of interest."
 effect.save()
 effect.add_source("Dragons of the East", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Wall of Mirrors", correspondence=4, forces=3
 )
+)
 effect.description = "A purely defensive rote, that, in fact, prevents attacks from being used effectively, the Wall of Mirrors causes all attacks targeting the Chorister to lose successes (depending on strength) as they are deflected through teleportation and alteration of kinetic energy to miss, ricocheting off things, bouncing off a wall, etc."
 effect.save()
 effect.add_source("Book of Shadows", 140)
 effect, _ = Effect.objects.get_or_create(
     name="War of the Inner Sanctum", correspondence=4, life=3
+)
 )
 effect.description = (
     "This warding effect prevents any living thing from entering a demarcated region."
@@ -4667,6 +5003,7 @@ effect.add_source("Book of Crafts", 57)
 effect, _ = Effect.objects.get_or_create(
     name="Jivitamarana (Death in Life)[0] Yoga", life=4, entropy=4
 )
+)
 effect.description = "This effect creates a state of living near-death for the mage. For the duration, the mage can soak lethal damage, halves all bashing damage (before soaking), and ignores wound penalties. Life effects targeting the mage are at +1 difficulty as well. However, the mage automatically fails any touch-based Perception tests and gains an additional Entropic Synergy trait for the duration."
 effect.save()
 effect.add_source("Tradition Book: Euthanatos (Revised)", 67)
@@ -4684,6 +5021,7 @@ effect.save()
 effect.add_source("Order of Reason", 73)
 effect, _ = Effect.objects.get_or_create(
     name="Uther's Butchered Visage", life=3, mind=1
+)
 )
 effect.description = "By cutting away their own flesh, the mage can transform into a perfect physical duplicate of anyone whose Pattern they have had the opportunity to examine."
 effect.save()
@@ -4703,6 +5041,7 @@ effect.add_source("Technocracy: Progenitors", 43)
 effect, _ = Effect.objects.get_or_create(
     name="Attach Biomechanism", matter=5, life=3, prime=3
 )
+)
 effect.description = "Once a biomechanism has been made through Craft Biomechanism, it must be attached to the user. The Life Pattern of the person and the Matter Pattern of the mechanism must be carefully joined together through surgery."
 effect.save()
 effect.add_source("Technocracy: Iteration X", 50)
@@ -4721,11 +5060,13 @@ effect.add_source("Technocracy: Progenitors", 43)
 effect, _ = Effect.objects.get_or_create(
     name="Graft Alien Bio-Matter Between Aliens", life=3
 )
+)
 effect.description = "FACADE Engineers at this level can graft parts between animals of different species. The Progenitor takes a characteristic from one species and gives it to another. Examples include snake fangs for a guard dog, a scorpion tail for a cat, or the coloring of one snake for another."
 effect.save()
 effect.add_source("Technocracy: Progenitors", 41)
 effect, _ = Effect.objects.get_or_create(
     name="Graft Alien Bio-Matter to Humans", life=4
+)
 )
 effect.description = "Similar to Graft Alien Bio-Matter Between Animals, this Procedure grafts animal characteristics onto humans. This includes limbs and organs, additional human parts or genetically alien matter. Examples include adding additional fingers or limbs, claws, feathers, or additional organs. This Procedure can be very vulgar."
 effect.save()
@@ -4737,11 +5078,13 @@ effect.add_source("Book of Crafts", 88)
 effect, _ = Effect.objects.get_or_create(
     name="Higher Lifeform Grafting and Recombination", life=4
 )
+)
 effect.description = "The Progenitor may make large scale alterations to humans and higher lifeforms (gorillas, wolves, etc.). This includes adding or subtracting limbs, adding or removing organs (like the appendix), or adding animal traits to humans. The Progenitor could give themselves claws, fangs, or functional wings."
 effect.save()
 effect.add_source("Technocracy: Progenitors", 40)
 effect, _ = Effect.objects.get_or_create(
     name="Limited Grafting and Recombination", life=3
+)
 )
 effect.description = "The Progenitor can now manipulate their own body, performing Pattern alterations. This includes altering the muscles in their leg for a jump, change the structure of their ears to hear better, change skin pigment, alter finger prints, etc. These are generally small changes, though they can have major effects on the body's function."
 effect.save()
@@ -4753,17 +5096,20 @@ effect.add_source("Technocracy: Progenitors", 40)
 effect, _ = Effect.objects.get_or_create(
     name="Major Environmental Alteration", matter=3
 )
+)
 effect.description = "Similar to Minor Environmental Alteration, but the Engineer can now take on larger challenges. They may alter a single asteroid's trajectory to mine it for materials. They may alter the course of a planet's rotation, but only by a factor of degrees. Of course, even degrees may have major effects on the planet's ecosystem."
 effect.save()
 effect.add_source("Technocracy: Void Engineers", 44)
 effect, _ = Effect.objects.get_or_create(
     name="Minor Environmental Alteration", matter=2
 )
+)
 effect.description = "The Void Engineer at this point can make simple changes to various environments. This includes such tasks as changing the color of soil from one shade to another, making minor changes in the geography of an area (adding or subtracting mass), or altering the composition of certain types of rock. This power is limited to fairly small areas, such as rooms or small asteroids."
 effect.save()
 effect.add_source("Technocracy: Void Engineers", 44)
 effect, _ = Effect.objects.get_or_create(
     name="Mokupuni Palahalaha Wiki", time=3, life=2, prime=3
+)
 )
 effect.description = "Polynesian mages often want their own islands and reefs away from prying eyes. This rote, whose name translates to Coral Island Bloom, fast-forwards the growth cycle of coral, allowing them to grow entire reefs in days, rather than centuries."
 effect.save()
@@ -4776,11 +5122,13 @@ effect.add_source("Mage: The Ascension (Second Edition)", 202)
 effect, _ = Effect.objects.get_or_create(
     name="Personal Compression", correspondence=5, life=3
 )
+)
 effect.description = "By warping space in dramatic ways, the mage is capable to shrinking, and dramatically so. Each success allows the mage to decrease their size and mass by up to 15%, and seven successes allows them to take any size that they want. With Matter, they can bring possessions along with them."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 220)
 effect, _ = Effect.objects.get_or_create(
     name="Phosphoric Marker", correspondence=1, life=3, forces=3
+)
 )
 effect.description = "Also called 'Greek Life-Fire', this causes every living thing in the area to glow like a firefly. The mage can omit any specific beings that they want, often making it easier for them and their allies to hide during a firefight."
 effect.save()
@@ -4796,11 +5144,13 @@ effect.add_source("Technocracy: Progenitors", 40)
 effect, _ = Effect.objects.get_or_create(
     name="Courtesan's Draught/Blessed Heir", life=2
 )
+)
 effect.description = "Life 2 for self, 3 for others, this rote allows the user to control the target's fertility, either increasing or decreasing it. Correspondence can be added to target at a distance."
 effect.save()
 effect.add_source("The Swashbuckler's Handbook", 90)
 effect, _ = Effect.objects.get_or_create(
     name="Fatherless Birth", spirit=5, life=5, entropy=5, prime=5
+)
 )
 effect.description = "One of the most difficult rotes, but capable of creating a future great hero, Fatherless Births actually have a spirit for a father, in general. The target must never have conceived a child nor have a chance to otherwise become pregnant. The mage summons the spirit to be the father, uses Life and Prime to create the seed of the magical child that the woman must consume. Entropy both guarantees that the seed leads to pregnancy and that the child will have a great destiny."
 effect.save()
@@ -4812,6 +5162,7 @@ effect.add_source("Mage: The Ascension (First Edition)", 224)
 effect, _ = Effect.objects.get_or_create(
     name="The Foundling", correspondence=2, spirit=4, matter=2, life=5, mind=3
 )
+)
 effect.description = "Used by a Master who knows that they are about to die, this ties the mage's avatar to their most prized possession as a phylactery, teleports it somewhere on Earth to a couple that is desperate for a child, and creates the body of a newborn to hold their spirit. The couple are influenced to hold the phylactery and keep it safe for the child until it is older, and when the child is ready to make their way into the world, the Memento Mori effect triggers, prompting Awakening and returning the mage's memories of their previous life."
 effect.save()
 effect.add_source("Mage Storyteller's Companion", 63)
@@ -4822,6 +5173,7 @@ effect.add_source("Technocracy: Progenitors", 43)
 effect, _ = Effect.objects.get_or_create(
     name="Oak of Sanguine Root", correspondence=2, matter=3, life=3, prime=2
 )
+)
 effect.description = "This Hermetic rote causes an oak tree to sprout and quickly grow inside a Vampire's body. It feeds on the undead corpse and the power of its blood, dealing standard Life effect damage to the Vampire as well as piercing its heart with a wooden stake. Finally, removing the tree, which is almost certain to die quickly, will likely also cause damage to the Vampire, as it is intertwined among the Vampire's organs and bones."
 effect.save()
 effect.add_source("Blood Treachery", 89)
@@ -4831,6 +5183,7 @@ effect.save()
 effect.add_source("Dead Magic", 108)
 effect, _ = Effect.objects.get_or_create(
     name="Supporting the Brain", matter=2, life=4, mind=2, prime=2
+)
 )
 effect.description = "Using Pattern spheres to handle the physical issues and Mind to handle the mental ones, this rote allows an Etherite to keep a brain alive outside of its body, whether just in a jar or in a new, better body. A robot body."
 effect.save()
@@ -4860,6 +5213,7 @@ effect.add_source("Tradition Book: Verbena (Revised)", 66)
 effect, _ = Effect.objects.get_or_create(
     name="Deity Form", spirit=2, life=4, forces=3, prime=4
 )
+)
 effect.description = "This rote allows the mage to become an Avatar of a god, though at the cost of paradox as it is always vulgar. The mage gains the benefits of Friction Curse, Telekinesis and Better Body, they take on the aspect of the deity via Mutate Form and use Wellspring to replenish power. Spirit calls to the deity who permits this transformation. Optionally, Entropy 5 can be added to renew the deity's worship, reinvigorating the idea of the deity in those who see its avatar."
 effect.save()
 effect.add_source("Dead Magic 2", 80)
@@ -4878,12 +5232,14 @@ effect.add_source("Ascension", 197)
 effect, _ = Effect.objects.get_or_create(
     name="Iron Avatar", matter=3, life=3, mind=2, prime=2
 )
+)
 effect.description = "This rote merges the visages of Kali and Shiva to turn the caster into a four-armed killer. The user of the rote becomes 10 feet tall; their skin turns the color of wrought iron, and their four hands end in talons, each holding a menacing weapon. Usually, these weapons are swords, though variants with other weapons exist."
 effect.save()
 effect.add_source("Tradition Book: Euthanatos (First Edition)", 67)
 effect.add_source("Tradition Book: Euthanatos (Revised)", 60)
 effect, _ = Effect.objects.get_or_create(
     name="Jaguar Cloak", spirit=2, matter=3, life=5, prime=3
+)
 )
 effect.description = "This effect enchants a jaguar skin and attunes it to a specific wearer. When worn, the user can transform into a jaguar. With particularly strong will, the warrior can manage partial transformation. Life transforms, Matter binds the skin to the wearer, and Prime and Spirit recharge the enchantment as the wearer kills their enemies in combat."
 effect.save()
@@ -4904,6 +5260,7 @@ effect.add_source("Mage: The Ascension (Second Edition)", 203)
 effect.add_source("Mage: The Ascension (Revised)", 171)
 effect, _ = Effect.objects.get_or_create(
     name="The Notorious Vampiric Lawnchair", matter=5, life=5
+)
 )
 effect.description = "Often conjectured, rarely performed, this exceptionally difficult effect transforms a Vampire into some inanimate object. To succeed, this requires a massive number of successes, and even if successful, there are numerous ways for it to go badly for the mage."
 effect.save()
@@ -4940,11 +5297,13 @@ effect.add_source("Technocracy: Progenitors", 40)
 effect, _ = Effect.objects.get_or_create(
     name="Storm of Crows", correspondence=3, life=5, mind=1, prime=2
 )
+)
 effect.description = "When cornered, powerful Infernalists have been known to be able to transform into a flock of crows, a swarm of rats or another collection of smaller animals, including insects. This effect allows them to do that, splitting their consciousness among all the creatures. Should one of them be caught, it can be disintegrated by the mage, though a quick opponent may be able to use it as a correspondence link to the whole of the Infernalist. This requires some piece of the animal to be transformed into."
 effect.save()
 effect.add_source("Infernalism: The Path of Screams", 89)
 effect, _ = Effect.objects.get_or_create(
     name="Vulcan's Hammer", matter=3, life=4, forces=3
+)
 )
 effect.description = "It is important for a Hermetic mage to be capable of subtlety. Sometimes, however, a Hermetic needs to be the most blatant person on the planet. The mage sculpts a statuette of themselves out of iron-rich clay, inscribing their True Name onto it ten times, kneading it into the clay before firing it. With this clay statuette, the mage can assume the shape of Vulcan's Hammer, a grossly vulgar war form made from iron. In this form, the mage gets +3 Strength, -2 Dexterity (minimum 1), 4 Stamina, fails all Social Attribute rolls automatically (other than intimidation), and anyone who comes into physical contact with the mage takes standard Forces damage from this effect. With Prime 2, the mage deals aggravated damage with hand-to-hand attacks."
 effect.save()
@@ -5022,12 +5381,14 @@ effect.add_source("Mage: The Ascension (Second Edition)", 209)
 effect, _ = Effect.objects.get_or_create(
     name="Nanotech Integration", matter=2, life=4, prime=5
 )
+)
 effect.description = "This Procedure, from collaboration with Iteration X, injects nanotech into the subject to make them more resilient. The recipient gains three dots of Stamina and regenerates a health level every turn. They also have immunity to mundane drugs, diseases and poisons, whether they like it or not. Only a Master of Life, Entropy or Matter can destroy the nanobots without otherwise harming the recipient."
 effect.save()
 effect.add_source("Technocracy: Progenitors", 45)
 effect.add_source("Convention Book: Progenitors (Revised)", 74)
 effect, _ = Effect.objects.get_or_create(
     name="Our Enemies are Delicious", spirit=3, life=3
+)
 )
 effect.description = "If a mage sacrifices a person, they can ensure that anyone who eats the flesh will have their Physical Attributes increased by one and their Social Attributes decreased by one for the duration of the effect. Each day after, one Physical dot gained is lost and one social dot is regained."
 effect.save()
@@ -5078,6 +5439,7 @@ effect.add_source("Order of Reason", 79)
 effect, _ = Effect.objects.get_or_create(
     name="Pass Calmly", correspondence=2, life=1, mind=2
 )
+)
 effect.description = "Although of no use in combat, many Akashics find this rote useful to calm all Sleepers sufficiently close to them, within about two yards per success."
 effect.save()
 effect.add_source("Hidden Lore", 13)
@@ -5099,6 +5461,7 @@ effect.save()
 effect.add_source("Dead Magic", 108)
 effect, _ = Effect.objects.get_or_create(
     name='Abh-t-ab, "Biting the Heart"', correspondence=2, mind=2
+)
 )
 effect.description = "The Hem-Ka Sobk causes the subject to experience an acute fear response, usually resulting in them fleeing or freezing."
 effect.save()
@@ -5137,6 +5500,7 @@ effect.save()
 effect.add_source("Hidden Lore", 50)
 effect, _ = Effect.objects.get_or_create(
     name="Kuoha (The Passion Prayer)", correspondence=3, life=2, mind=2
+)
 )
 effect.description = "By wearing only fragrant floral leis and beating out a primal rhythm on a drum, a Polynesian mage can incite passion in a person of their choosing."
 effect.save()
@@ -5244,6 +5608,7 @@ effect.add_source("Technocracy: Iteration X", 48)
 effect, _ = Effect.objects.get_or_create(
     name="Strains of Laughter, Sleep and Sorrow", mind=2
 )
+)
 effect.description = "The Bards and Skalds of the Verbena know how to use music and story to influence those who listen to it. This rote uses music to cause an audience to feel some emotion of the Verbena's choosing. Up to three successes causes them to feel it, more than that and they feel it intensely enough to act on it. Spending a point of temporary Willpower will allow them to ignore the Effect briefly, but it will return if the mage keeps performing."
 effect.save()
 effect.add_source("Tradition Book: Verbena (Revised)", 67)
@@ -5276,17 +5641,20 @@ effect.add_source("The Swashbuckler's Handbook", 91)
 effect, _ = Effect.objects.get_or_create(
     name="Mono Kahea 'Ai (Shark Call)", correspondence=3, mind=2
 )
+)
 effect.description = "With this rote, a mage can summon a shark from the surrounding waters to come as close to the mage as it is possible for them to safely swim."
 effect.save()
 effect.add_source("Dead Magic II", 29)
 effect, _ = Effect.objects.get_or_create(
     name="Ratstorm", correspondence=2, life=2, mind=2
 )
+)
 effect.description = "With this rote, this mage can call a swarm of small animals to attack a target, with whichever sorts of animals are common in the area, such as rats in a city and dogs in a desert."
 effect.save()
 effect.add_source("Orphan's Survival Guide", 125)
 effect, _ = Effect.objects.get_or_create(
     name="Sedna's Blessing", correspondence=2, mind=2
+)
 )
 effect.description = "An Inuit shaman takes advantage of the gift of the woman Sedna, who created seals and whales. She is said to live at the bottom of the ocean after a failed rescue attempt from the husband she was tricked into marrying. The shaman dives into the sea and 'combs her hair,' the brambles and kelp of the ocean floor. This sends out a wave of calm, summoning seals and whales to the mage."
 effect.save()
@@ -5304,6 +5672,7 @@ effect.add_source("Mage: The Sorcerer's Crusade", 270)
 effect, _ = Effect.objects.get_or_create(
     name="Fifteen Minutes", correspondence=3, mind=2
 )
+)
 effect.description = "The Agent chooses a target and temporarily gives them Fame for the duration, at one day per success. The Fame is usually due to something like a doctored video spreading across social media."
 effect.save()
 effect.add_source("Convention Book: New World Order (Revised)", 85)
@@ -5313,6 +5682,7 @@ effect.save()
 effect.add_source("Convention Book: New World Order (Revised)", 86)
 effect, _ = Effect.objects.get_or_create(
     name="An Uncompromising Commitment to Excellence", life=3, mind=4, prime=3
+)
 )
 effect.description = "Targets of this procedure work harder than they've ever worked before. Successes are spent first up to the highest willpower of all targets, then to duration. Each success after that decreases difficulties in a single Attribute + Ability pool by 1. For every hour spent in this state, each target takes a level of aggravated damage from the physical and psychological strain of working beyond capacity. If one of the workers dies, the Technocrat gains 5 points of Primal Energy. Targets can roll Willpower at difficulty 8 to resist each time they suffer damage or are asked to do something blatantly self-destructive or Nature-defying."
 effect.save()
@@ -5345,11 +5715,13 @@ effect.add_source("Lost Paths: Ahl-i-Batin and Taftani", 42)
 effect, _ = Effect.objects.get_or_create(
     name="Magdeline's Dynamic Mind", entropy=2, mind=3
 )
+)
 effect.description = "Causes thoughts in the target to become random and incoherent."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 222)
 effect, _ = Effect.objects.get_or_create(
     name="The Trip", correspondence=2, time=2, entropy=1, mind=4
+)
 )
 effect.description = "The Cultist can use this rote to seize control of a target's mind and cause them to relive some moment of their lives where they were confused, deluded or had significant misconceptions. Correspondence and Time allow the Cultist to see the incident involved directly, both confusing the target and giving the Cultist valuable information."
 effect.save()
@@ -5377,6 +5749,7 @@ effect.add_source("Hidden Lore", 49)
 effect, _ = Effect.objects.get_or_create(
     name="Holographic Projector", correspondence=2, forces=3, mind=3, prime=2
 )
+)
 effect.description = "With this rote, a Virtual Adept can project a holograph of themselves. Forces creates the visual and auditory effects and Mind creates other sensory inputs."
 effect.save()
 effect.add_source("Tradition Book: Virtual Adepts (First Edition)", 62)
@@ -5391,11 +5764,13 @@ effect.add_source("Technocracy: New World Order", 49)
 effect, _ = Effect.objects.get_or_create(
     name="Painting the War Dance", matter=2, mind=2
 )
+)
 effect.description = "Using hand-mixed paints to draw images of a story, the mage channels their own thoughts (Mind) or the past (Time) and the images begin to move, playing out the story being told."
 effect.save()
 effect.add_source("Dead Magic", 29)
 effect, _ = Effect.objects.get_or_create(
     name="Behavior Modification Device", entropy=3, mind=4
+)
 )
 effect.description = "This Procedure allows the Void Engineers to alter and delete selected memories in the subject."
 effect.save()
@@ -5460,6 +5835,7 @@ effect.add_source("Technocracy: New World Order", 51)
 effect, _ = Effect.objects.get_or_create(
     name="The Blissful Discipline", forces=3, mind=4, prime=2
 )
+)
 effect.description = "This rote is used to shock a target (see Discharge Static) whenever they think a certain thought."
 effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 226)
@@ -5483,6 +5859,7 @@ effect.add_source("Convention Book: Void Engineers (Revised)", 85)
 effect, _ = Effect.objects.get_or_create(
     name="Destructive Paranoia", entropy=2, mind=4, prime=2
 )
+)
 effect.description = "After extended indoctrination (at least a week), the subject believes that they are dramatically more persecuted than they actually are, leading to paranoid delusions and further complications of mental illness."
 effect.save()
 effect.add_source("Technocracy: New World Order", 50)
@@ -5497,6 +5874,7 @@ effect.save()
 effect.add_source("Guide to the Technocracy", 215)
 effect, _ = Effect.objects.get_or_create(
     name="Internal Obligation", time=4, mind=4, prime=3
+)
 )
 effect.description = "Using acupuncture, the Akashic ensures that the target will experience a specific response whenever a certain event occurs. The target must do what the conditions require whenever this event occurs, whether it's controlling actions and memories through Mind or directly manipulating the body with Life."
 effect.save()
@@ -5557,6 +5935,7 @@ effect.add_source("Book of Crafts", 103)
 effect, _ = Effect.objects.get_or_create(
     name="Re-education Mode", time=3, mind=4, prime=2
 )
+)
 effect.description = "A Technocratic variant on The Moment that Stretches, the New World Order performs this procedure on an unwilling victim. They can use it to paralyze the victim and force them to experience long stretches of mind-numbing boredom in a much shorter period of actual time."
 effect.save()
 effect.add_source("Hidden Lore", 53)
@@ -5584,6 +5963,7 @@ effect.add_source("World of Darkness: Outcasts", 90)
 effect, _ = Effect.objects.get_or_create(
     name="Temple Gongs", matter=4, life=3, forces=4, mind=4, prime=2
 )
+)
 effect.description = "This rote rings a gong loudly and then transforms people nearby into monks via Life and Mind brainwashing."
 effect.save()
 effect.add_source("Hidden Lore", 52)
@@ -5600,65 +5980,97 @@ effect.description = "Verbena often believe that so long as a person does no har
 effect.save()
 effect.add_source("Tradition Book: Verbena (Revised)", 69)
 
-Effect.objects.get_or_create(name="Palimpsest", matter=3, time=2, prime=2)[
+effect_palimpsest = Effect.objects.get_or_create(name="Palimpsest", matter=3, time=2, prime=2)[
     0
 ].add_source("Lore of the Traditions", 45)
-Effect.objects.get_or_create(
+effect_dismiss_the_discordant = Effect.objects.get_or_create(
     name="Dismiss the Discordant", mind=2, correspondence=2, entropy=2, prime=2
 )[0].add_source("Lore of the Traditions", 45)
+)[0].add_source("Lore of the Traditions", 45)
 
-Effect.objects.get_or_create(
+effect_bullet_rider_s_blessing = Effect.objects.get_or_create(
     name="Bullet-Rider's Blessing", entropy=1, matter=3, spirit=3
 )[0].add_source("Lore of the Traditions", 82)
-Effect.objects.get_or_create(name="Dwennimmen", mind=4, spirit=4)[0].add_source(
+)[0].add_source("Lore of the Traditions", 82)
+effect_dwennimmen = Effect.objects.get_or_create(name="Dwennimmen", mind=4, spirit=4)[0].add_source(
     "Lore of the Traditions", 82
 )
-Effect.objects.get_or_create(name="Blood for the Ghosts", entropy=2, prime=2, spirit=2)[
+)
+effect_blood_for_the_ghosts = Effect.objects.get_or_create(name="Blood for the Ghosts", entropy=2, prime=2, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 97)
-Effect.objects.get_or_create(name="The Last Sacrifice", entropy=4, spirit=2)[
+effect_the_last_sacrifice = Effect.objects.get_or_create(name="The Last Sacrifice", entropy=4, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 97)
-Effect.objects.get_or_create(
+effect_nfts_non_fungible_tass_talismans = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans)", mind=3, prime=2
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(
+)[0].add_source("Lore of the Traditions", 162)
+effect_nfts_non_fungible_tass_talismans_time_tamper_protection = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans) (Time Tamper Protection)",
     mind=3,
     prime=2,
     time=4,
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(
+    mind=3,
+    prime=2,
+    time=4,
+)[0].add_source("Lore of the Traditions", 162)
+effect_nfts_non_fungible_tass_talismans_entropy_tamper_protection = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans) (Entropy Tamper Protection)",
     mind=3,
     prime=2,
     entropy=3,
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(
+    mind=3,
+    prime=2,
+    entropy=3,
+)[0].add_source("Lore of the Traditions", 162)
+effect_nfts_non_fungible_tass_talismans_tracking = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans) (Tracking)",
     correspondence=2,
     mind=3,
     prime=2,
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(
+    correspondence=2,
+    mind=3,
+    prime=2,
+)[0].add_source("Lore of the Traditions", 162)
+effect_nfts_non_fungible_tass_talismans_time_tamper_protection_tracking = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans) (Time Tamper Protection, Tracking)",
     correspondence=2,
     mind=3,
     prime=2,
     time=4,
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(
+    correspondence=2,
+    mind=3,
+    prime=2,
+    time=4,
+)[0].add_source("Lore of the Traditions", 162)
+effect_nfts_non_fungible_tass_talismans_entropy_tamper_protection_tracking = Effect.objects.get_or_create(
     name="NFTs (Non-Fungible Tass/Talismans) (Entropy Tamper Protection, Tracking)",
     correspondence=2,
     mind=3,
     prime=2,
     entropy=3,
 )[0].add_source("Lore of the Traditions", 162)
-Effect.objects.get_or_create(name="Save State", mind=3, time=2, prime=2)[0].add_source(
+    correspondence=2,
+    mind=3,
+    prime=2,
+    entropy=3,
+)[0].add_source("Lore of the Traditions", 162)
+effect_save_state = Effect.objects.get_or_create(name="Save State", mind=3, time=2, prime=2)[0].add_source(
     "Lore of the Traditions", 162
 )
-Effect.objects.get_or_create(
+)
+effect_locate_geospatial_nodal_point = Effect.objects.get_or_create(
     name="Locate Geospatial Nodal Point",
+    forces=4,
+    entropy=3,
+    correspondence=3,
+    matter=3,
+)[0].add_source("Lore of the Traditions", 162)
     forces=4,
     entropy=3,
     correspondence=3,
@@ -5667,304 +6079,355 @@ Effect.objects.get_or_create(
 from characters.models.mage.effect import Effect
 
 # ===== NECROMANCY & DEATH MAGIC =====
-Effect.objects.get_or_create(name="Summon Ghost", spirit=2)[0].add_source(
+effect_summon_ghost = Effect.objects.get_or_create(name="Summon Ghost", spirit=2)[0].add_source(
     "How Do You Do That", 142
 )
-
-Effect.objects.get_or_create(name="Summon Powerful Ghost", spirit=3)[0].add_source(
-    "How Do You Do That", 142
 )
 
-Effect.objects.get_or_create(name="See Into Shadowlands", spirit=1, entropy=1)[
+effect_summon_powerful_ghost = Effect.objects.get_or_create(name="Summon Powerful Ghost", spirit=3)[0].add_source(
+    "How Do You Do That", 142
+)
+)
+
+effect_see_into_shadowlands = Effect.objects.get_or_create(name="See Into Shadowlands", spirit=1, entropy=1)[
     0
 ].add_source("How Do You Do That", 142)
 
-Effect.objects.get_or_create(name="Step Sideways to Shadowlands", spirit=3)[
+effect_step_sideways_to_shadowlands = Effect.objects.get_or_create(name="Step Sideways to Shadowlands", spirit=3)[
     0
 ].add_source("How Do You Do That", 142)
 
-Effect.objects.get_or_create(name="Speak with Dead", spirit=2, mind=1)[0].add_source(
+effect_speak_with_dead = Effect.objects.get_or_create(name="Speak with Dead", spirit=2, mind=1)[0].add_source(
     "How Do You Do That", 142
 )
-
-Effect.objects.get_or_create(name="Bind Ghost", spirit=4)[0].add_source(
-    "How Do You Do That", 143
 )
 
-Effect.objects.get_or_create(name="Banish Ghost", spirit=3, prime=2)[0].add_source(
+effect_bind_ghost = Effect.objects.get_or_create(name="Bind Ghost", spirit=4)[0].add_source(
     "How Do You Do That", 143
 )
+)
 
-Effect.objects.get_or_create(name="Create Zombie (Simple)", life=3, matter=2, prime=2)[
+effect_banish_ghost = Effect.objects.get_or_create(name="Banish Ghost", spirit=3, prime=2)[0].add_source(
+    "How Do You Do That", 143
+)
+)
+
+effect_create_zombie_simple = Effect.objects.get_or_create(name="Create Zombie (Simple)", life=3, matter=2, prime=2)[
     0
 ].add_source("How Do You Do That", 144)
 
-Effect.objects.get_or_create(
+effect_create_zombie_complex = Effect.objects.get_or_create(
     name="Create Zombie (Complex)", life=4, matter=2, prime=2, mind=1
 )[0].add_source("How Do You Do That", 144)
+)[0].add_source("How Do You Do That", 144)
 
-Effect.objects.get_or_create(
+effect_restore_recently_dead_to_life = Effect.objects.get_or_create(
     name="Restore Recently Dead to Life", life=5, prime=2, spirit=4
 )[0].add_source("How Do You Do That", 145)
-
-Effect.objects.get_or_create(
-    name="Restore Long Dead to Life", life=5, prime=3, spirit=5, time=3
 )[0].add_source("How Do You Do That", 145)
 
-Effect.objects.get_or_create(
+effect_restore_long_dead_to_life = Effect.objects.get_or_create(
+    name="Restore Long Dead to Life", life=5, prime=3, spirit=5, time=3
+)[0].add_source("How Do You Do That", 145)
+)[0].add_source("How Do You Do That", 145)
+
+effect_create_lich_self = Effect.objects.get_or_create(
     name="Create Lich (Self)", life=5, spirit=4, prime=3, entropy=3
+)[0].add_source("How Do You Do That", 146)
 )[0].add_source("How Do You Do That", 146)
 
 # ===== TIME MANIPULATION =====
-Effect.objects.get_or_create(name="Sense Time Flow", time=1)[0].add_source(
+effect_sense_time_flow = Effect.objects.get_or_create(name="Sense Time Flow", time=1)[0].add_source(
     "How Do You Do That", 154
 )
-
-Effect.objects.get_or_create(name="See Past (Recent)", time=2)[0].add_source(
-    "How Do You Do That", 154
 )
 
-Effect.objects.get_or_create(name="See Future (Near)", time=2)[0].add_source(
+effect_see_past_recent = Effect.objects.get_or_create(name="See Past (Recent)", time=2)[0].add_source(
     "How Do You Do That", 154
 )
+)
 
-Effect.objects.get_or_create(name="See Past (Distant)", time=3, correspondence=2)[
+effect_see_future_near = Effect.objects.get_or_create(name="See Future (Near)", time=2)[0].add_source(
+    "How Do You Do That", 154
+)
+)
+
+effect_see_past_distant = Effect.objects.get_or_create(name="See Past (Distant)", time=3, correspondence=2)[
     0
 ].add_source("How Do You Do That", 154)
 
-Effect.objects.get_or_create(name="See Future (Distant)", time=3)[0].add_source(
+effect_see_future_distant = Effect.objects.get_or_create(name="See Future (Distant)", time=3)[0].add_source(
     "How Do You Do That", 154
 )
-
-Effect.objects.get_or_create(name="Slow Time (Local)", time=3)[0].add_source(
-    "How Do You Do That", 155
 )
 
-Effect.objects.get_or_create(name="Speed Time (Local)", time=3)[0].add_source(
+effect_slow_time_local = Effect.objects.get_or_create(name="Slow Time (Local)", time=3)[0].add_source(
     "How Do You Do That", 155
 )
-
-Effect.objects.get_or_create(name="Freeze Time (Small Area)", time=4)[0].add_source(
-    "How Do You Do That", 155
 )
 
-Effect.objects.get_or_create(name="Stop Time (Large Area)", time=5)[0].add_source(
+effect_speed_time_local = Effect.objects.get_or_create(name="Speed Time (Local)", time=3)[0].add_source(
     "How Do You Do That", 155
 )
+)
 
-Effect.objects.get_or_create(name="Rewind Time (Seconds)", time=5, prime=2)[
+effect_freeze_time_small_area = Effect.objects.get_or_create(name="Freeze Time (Small Area)", time=4)[0].add_source(
+    "How Do You Do That", 155
+)
+)
+
+effect_stop_time_large_area = Effect.objects.get_or_create(name="Stop Time (Large Area)", time=5)[0].add_source(
+    "How Do You Do That", 155
+)
+)
+
+effect_rewind_time_seconds = Effect.objects.get_or_create(name="Rewind Time (Seconds)", time=5, prime=2)[
     0
 ].add_source("How Do You Do That", 156)
 
-Effect.objects.get_or_create(name="Travel Through Time", time=5, spirit=4, prime=3)[
+effect_travel_through_time = Effect.objects.get_or_create(name="Travel Through Time", time=5, spirit=4, prime=3)[
     0
 ].add_source("How Do You Do That", 156)
 
-Effect.objects.get_or_create(name="Create Time Loop", time=4, prime=2)[0].add_source(
+effect_create_time_loop = Effect.objects.get_or_create(name="Create Time Loop", time=4, prime=2)[0].add_source(
     "How Do You Do That", 156
+)
 )
 
 # ===== ADVANCED CORRESPONDENCE =====
-Effect.objects.get_or_create(
+effect_teleport_self_short_range = Effect.objects.get_or_create(
     name="Teleport Self (Short Range)", correspondence=3, life=2
 )[0].add_source("How Do You Do That", 127)
-
-Effect.objects.get_or_create(
-    name="Teleport Self (Long Range)", correspondence=4, life=2
 )[0].add_source("How Do You Do That", 127)
 
-Effect.objects.get_or_create(name="Teleport Others", correspondence=4, life=3)[
+effect_teleport_self_long_range = Effect.objects.get_or_create(
+    name="Teleport Self (Long Range)", correspondence=4, life=2
+)[0].add_source("How Do You Do That", 127)
+)[0].add_source("How Do You Do That", 127)
+
+effect_teleport_others = Effect.objects.get_or_create(name="Teleport Others", correspondence=4, life=3)[
     0
 ].add_source("How Do You Do That", 127)
 
-Effect.objects.get_or_create(
+effect_create_portal_temporary = Effect.objects.get_or_create(
     name="Create Portal (Temporary)", correspondence=4, spirit=2
 )[0].add_source("How Do You Do That", 128)
-
-Effect.objects.get_or_create(
-    name="Create Portal (Permanent)", correspondence=4, spirit=2, prime=2
 )[0].add_source("How Do You Do That", 128)
 
-Effect.objects.get_or_create(
+effect_create_portal_permanent = Effect.objects.get_or_create(
+    name="Create Portal (Permanent)", correspondence=4, spirit=2, prime=2
+)[0].add_source("How Do You Do That", 128)
+)[0].add_source("How Do You Do That", 128)
+
+effect_co_location_be_in_two_places = Effect.objects.get_or_create(
     name="Co-Location (Be In Two Places)", correspondence=5, life=3, mind=3
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
 
-Effect.objects.get_or_create(name="Fold Space", correspondence=5)[0].add_source(
+effect_fold_space = Effect.objects.get_or_create(name="Fold Space", correspondence=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 515
 )
+)
 
-Effect.objects.get_or_create(
+effect_ward_against_teleportation = Effect.objects.get_or_create(
     name="Ward Against Teleportation", correspondence=3, prime=2
+)[0].add_source("How Do You Do That", 128)
 )[0].add_source("How Do You Do That", 128)
 
 # ===== ADVANCED LIFE MAGIC =====
-Effect.objects.get_or_create(name="Shapeshift into Animal (Self)", life=4)[
+effect_shapeshift_into_animal_self = Effect.objects.get_or_create(name="Shapeshift into Animal (Self)", life=4)[
     0
 ].add_source("How Do You Do That", 34)
 
-Effect.objects.get_or_create(name="Shapeshift into Animal (Others)", life=5)[
+effect_shapeshift_into_animal_others = Effect.objects.get_or_create(name="Shapeshift into Animal (Others)", life=5)[
     0
 ].add_source("How Do You Do That", 34)
 
-Effect.objects.get_or_create(name="Shapeshift into Hybrid Form", life=4, prime=2)[
+effect_shapeshift_into_hybrid_form = Effect.objects.get_or_create(name="Shapeshift into Hybrid Form", life=4, prime=2)[
     0
 ].add_source("How Do You Do That", 34)
 
-Effect.objects.get_or_create(name="Create Homunculus", life=5, prime=3, mind=2)[
+effect_create_homunculus = Effect.objects.get_or_create(name="Create Homunculus", life=5, prime=3, mind=2)[
     0
 ].add_source("Book of Secrets", 79)
 
-Effect.objects.get_or_create(name="Clone Body", life=5, prime=2, mind=1)[0].add_source(
+effect_clone_body = Effect.objects.get_or_create(name="Clone Body", life=5, prime=2, mind=1)[0].add_source(
     "Book of Secrets", 79
 )
+)
 
-Effect.objects.get_or_create(
+effect_enhance_physical_attribute_permanent = Effect.objects.get_or_create(
     name="Enhance Physical Attribute (Permanent)", life=4, prime=2
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
-Effect.objects.get_or_create(name="Grant Regeneration", life=4, prime=2)[0].add_source(
+effect_grant_regeneration = Effect.objects.get_or_create(name="Grant Regeneration", life=4, prime=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
 )
-
-Effect.objects.get_or_create(name="Age/De-Age Target", life=4, time=2)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 518
 )
 
-Effect.objects.get_or_create(name="Cure Poison/Disease (Aggravated)", life=4)[
+effect_age_de_age_target = Effect.objects.get_or_create(name="Age/De-Age Target", life=4, time=2)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 518
+)
+)
+
+effect_cure_poison_disease_aggravated = Effect.objects.get_or_create(name="Cure Poison/Disease (Aggravated)", life=4)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
 # ===== ADVANCED MIND MAGIC =====
-Effect.objects.get_or_create(name="Read Surface Thoughts", mind=2)[0].add_source(
+effect_read_surface_thoughts = Effect.objects.get_or_create(name="Read Surface Thoughts", mind=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-
-Effect.objects.get_or_create(name="Read Deep Thoughts/Memories", mind=3)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 519
 )
 
-Effect.objects.get_or_create(name="Implant False Memory", mind=4)[0].add_source(
+effect_read_deep_thoughts_memories = Effect.objects.get_or_create(name="Read Deep Thoughts/Memories", mind=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
+)
 
-Effect.objects.get_or_create(name="Mind Control (Simple Command)", mind=3)[
+effect_implant_false_memory = Effect.objects.get_or_create(name="Implant False Memory", mind=4)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 519
+)
+)
+
+effect_mind_control_simple_command = Effect.objects.get_or_create(name="Mind Control (Simple Command)", mind=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 519)
 
-Effect.objects.get_or_create(name="Mind Control (Complex)", mind=4)[0].add_source(
+effect_mind_control_complex = Effect.objects.get_or_create(name="Mind Control (Complex)", mind=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
+)
 
-# Effect.objects.get_or_create(name="Possession", mind=4, life=3)[0].add_source(
+effect_possession = # Effect.objects.get_or_create(name="Possession", mind=4, life=3)[0].add_source(
 #     "How Do You Do That", 164
 # )
+# )
 
-Effect.objects.get_or_create(name="Astral Quest", mind=5, spirit=3)[0].add_source(
+effect_astral_quest = Effect.objects.get_or_create(name="Astral Quest", mind=5, spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-
-Effect.objects.get_or_create(name="Shatter Mind", mind=5)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 519
 )
 
-Effect.objects.get_or_create(name="Create Permanent Mental Illusion", mind=4, prime=2)[
+effect_shatter_mind = Effect.objects.get_or_create(name="Shatter Mind", mind=5)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 519
+)
+)
+
+effect_create_permanent_mental_illusion = Effect.objects.get_or_create(name="Create Permanent Mental Illusion", mind=4, prime=2)[
     0
 ].add_source("How Do You Do That", 162)
 
-Effect.objects.get_or_create(name="Mass Telepathy", mind=3, correspondence=2)[
+effect_mass_telepathy = Effect.objects.get_or_create(name="Mass Telepathy", mind=3, correspondence=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 519)
 
 # ===== ADVANCED FORCES =====
-Effect.objects.get_or_create(name="Lightning Bolt", forces=3)[0].add_source(
+effect_lightning_bolt = Effect.objects.get_or_create(name="Lightning Bolt", forces=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
-
-Effect.objects.get_or_create(name="Fireball", forces=3)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 517
 )
 
-Effect.objects.get_or_create(name="Force Shield", forces=3)[0].add_source(
+effect_fireball = Effect.objects.get_or_create(name="Fireball", forces=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
+)
 
-Effect.objects.get_or_create(name="Flight (Self)", forces=2, life=2)[0].add_source(
+effect_force_shield = Effect.objects.get_or_create(name="Force Shield", forces=3)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 517
+)
+)
+
+effect_flight_self = Effect.objects.get_or_create(name="Flight (Self)", forces=2, life=2)[0].add_source(
     "How Do You Do That", 126
 )
+)
 
-Effect.objects.get_or_create(name="Flight (Others)", forces=3, life=2)[0].add_source(
+effect_flight_others = Effect.objects.get_or_create(name="Flight (Others)", forces=3, life=2)[0].add_source(
     "How Do You Do That", 126
+)
 )
 
 # Duplicate of line 49 - removed
 
-Effect.objects.get_or_create(
+effect_control_weather_major = Effect.objects.get_or_create(
     name="Control Weather (Major)", forces=5, life=2, matter=2, prime=2
 )[0].add_source("How Do You Do That", 49)
+)[0].add_source("How Do You Do That", 49)
 
-Effect.objects.get_or_create(name="Laser Blast", forces=3, matter=2)[0].add_source(
+effect_laser_blast = Effect.objects.get_or_create(name="Laser Blast", forces=3, matter=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
-
-Effect.objects.get_or_create(name="EMP Pulse", forces=3, matter=2)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 517
 )
 
-Effect.objects.get_or_create(name="Nuclear Blast", forces=5, prime=4)[0].add_source(
+effect_emp_pulse = Effect.objects.get_or_create(name="EMP Pulse", forces=3, matter=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
+)
+)
+
+effect_nuclear_blast = Effect.objects.get_or_create(name="Nuclear Blast", forces=5, prime=4)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 517
+)
 )
 
 # ===== ADVANCED MATTER =====
-Effect.objects.get_or_create(name="Transmute Base Metals to Gold", matter=3)[
+effect_transmute_base_metals_to_gold = Effect.objects.get_or_create(name="Transmute Base Metals to Gold", matter=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
-Effect.objects.get_or_create(name="Create Matter from Nothing", matter=4, prime=2)[
+effect_create_matter_from_nothing = Effect.objects.get_or_create(name="Create Matter from Nothing", matter=4, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
-Effect.objects.get_or_create(name="Alter Fundamental Properties", matter=5)[
+effect_alter_fundamental_properties = Effect.objects.get_or_create(name="Alter Fundamental Properties", matter=5)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
-Effect.objects.get_or_create(name="Phase Through Matter", matter=3, life=2)[
+effect_phase_through_matter = Effect.objects.get_or_create(name="Phase Through Matter", matter=3, life=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
 
-Effect.objects.get_or_create(name="Disintegrate Object", matter=4)[0].add_source(
+effect_disintegrate_object = Effect.objects.get_or_create(name="Disintegrate Object", matter=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
 )
+)
 
-Effect.objects.get_or_create(name="Turn to Stone", matter=3, life=3)[0].add_source(
+effect_turn_to_stone = Effect.objects.get_or_create(name="Turn to Stone", matter=3, life=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
+)
 )
 
 # ===== ADVANCED ENTROPY =====
-Effect.objects.get_or_create(name="Curse of Bad Luck", entropy=3)[0].add_source(
+effect_curse_of_bad_luck = Effect.objects.get_or_create(name="Curse of Bad Luck", entropy=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 516
 )
-
-Effect.objects.get_or_create(name="Blessing of Good Fortune", entropy=3)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 516
 )
 
-Effect.objects.get_or_create(name="Age Object Rapidly", entropy=3, time=2)[
+effect_blessing_of_good_fortune = Effect.objects.get_or_create(name="Blessing of Good Fortune", entropy=3)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 516
+)
+)
+
+effect_age_object_rapidly = Effect.objects.get_or_create(name="Age Object Rapidly", entropy=3, time=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 516)
 
-Effect.objects.get_or_create(name="Rot Living Being", entropy=4, life=2)[0].add_source(
+effect_rot_living_being = Effect.objects.get_or_create(name="Rot Living Being", entropy=4, life=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 516
 )
-
-Effect.objects.get_or_create(name="Shatter Pattern", entropy=5, prime=2)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 516
 )
 
-Effect.objects.get_or_create(name="Control Probability (Major)", entropy=4)[
+effect_shatter_pattern = Effect.objects.get_or_create(name="Shatter Pattern", entropy=5, prime=2)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 516
+)
+)
+
+effect_control_probability_major = Effect.objects.get_or_create(name="Control Probability (Major)", entropy=4)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 516)
 
-# Effect.objects.get_or_create(name="Death Curse", entropy=5, life=4, spirit=3)[
+effect_death_curse = # Effect.objects.get_or_create(name="Death Curse", entropy=5, life=4, spirit=3)[
 #     0
 # ].add_source("Mage: The Ascension 20th Anniversary Edition", 516)
 
@@ -5973,657 +6436,776 @@ Effect.objects.get_or_create(name="Control Probability (Major)", entropy=4)[
 
 # "Channel Quintessence" - duplicate of line 127, removed
 
-Effect.objects.get_or_create(name="Enchant Talisman", prime=3)[0].add_source(
+effect_enchant_talisman = Effect.objects.get_or_create(name="Enchant Talisman", prime=3)[0].add_source(
     "Book of Secrets", 82
 )
+)
 
-# Effect.objects.get_or_create(name="Create Wonder", prime=5)[0].add_source(
+effect_create_wonder = # Effect.objects.get_or_create(name="Create Wonder", prime=5)[0].add_source(
 #     "Book of Secrets", 82
 # )
+# )
 
-Effect.objects.get_or_create(name="Disenchant Wonder", prime=4)[0].add_source(
+effect_disenchant_wonder = Effect.objects.get_or_create(name="Disenchant Wonder", prime=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-
-Effect.objects.get_or_create(name="Nullify Magic", prime=3)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 520
 )
 
-Effect.objects.get_or_create(name="Permanently Enhance Pattern", prime=5)[0].add_source(
+effect_nullify_magic = Effect.objects.get_or_create(name="Nullify Magic", prime=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
+)
 
-Effect.objects.get_or_create(name="Fuel Pattern with Quintessence", prime=2)[
+effect_permanently_enhance_pattern = Effect.objects.get_or_create(name="Permanently Enhance Pattern", prime=5)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 520
+)
+)
+
+effect_fuel_pattern_with_quintessence = Effect.objects.get_or_create(name="Fuel Pattern with Quintessence", prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 520)
 
-Effect.objects.get_or_create(name="Create Tass", prime=3)[0].add_source(
+effect_create_tass = Effect.objects.get_or_create(name="Create Tass", prime=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
+)
 
-Effect.objects.get_or_create(name="Open/Seal Node", prime=4, spirit=2)[0].add_source(
+effect_open_seal_node = Effect.objects.get_or_create(name="Open/Seal Node", prime=4, spirit=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
+)
 )
 
 # ===== ADVANCED SPIRIT =====
 # "See Spirits" - duplicate of line 144, removed
 
-Effect.objects.get_or_create(name="Touch Spirit Matter", spirit=2)[0].add_source(
+effect_touch_spirit_matter = Effect.objects.get_or_create(name="Touch Spirit Matter", spirit=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
+)
 
-Effect.objects.get_or_create(name="Step Sideways to Umbra", spirit=3)[0].add_source(
+effect_step_sideways_to_umbra = Effect.objects.get_or_create(name="Step Sideways to Umbra", spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
+)
 
-Effect.objects.get_or_create(name="Reach Into Umbra", spirit=3)[0].add_source(
+effect_reach_into_umbra = Effect.objects.get_or_create(name="Reach Into Umbra", spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-
-Effect.objects.get_or_create(name="Summon Spirit (Minor)", spirit=2)[0].add_source(
-    "How Do You Do That", 148
 )
 
-Effect.objects.get_or_create(name="Summon Spirit (Powerful)", spirit=3)[0].add_source(
+effect_summon_spirit_minor = Effect.objects.get_or_create(name="Summon Spirit (Minor)", spirit=2)[0].add_source(
     "How Do You Do That", 148
 )
-
-Effect.objects.get_or_create(name="Bind Spirit", spirit=4)[0].add_source(
-    "How Do You Do That", 148
 )
 
-Effect.objects.get_or_create(name="Create Spirit Gate", spirit=4, prime=2)[
+effect_summon_spirit_powerful = Effect.objects.get_or_create(name="Summon Spirit (Powerful)", spirit=3)[0].add_source(
+    "How Do You Do That", 148
+)
+)
+
+effect_bind_spirit = Effect.objects.get_or_create(name="Bind Spirit", spirit=4)[0].add_source(
+    "How Do You Do That", 148
+)
+)
+
+effect_create_spirit_gate = Effect.objects.get_or_create(name="Create Spirit Gate", spirit=4, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
 
-# Effect.objects.get_or_create(name="Create Fetish", spirit=4, prime=2)[0].add_source(
+effect_create_fetish = # Effect.objects.get_or_create(name="Create Fetish", spirit=4, prime=2)[0].add_source(
 #     "Mage: The Ascension 20th Anniversary Edition", 521
 # )
+# )
 
-Effect.objects.get_or_create(name="Strengthen/Weaken Gauntlet", spirit=4)[0].add_source(
+effect_strengthen_weaken_gauntlet = Effect.objects.get_or_create(name="Strengthen/Weaken Gauntlet", spirit=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-
-Effect.objects.get_or_create(name="Create Spirit", spirit=5, prime=4)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 521
 )
 
-Effect.objects.get_or_create(name="Permanently Destroy Spirit", spirit=5, prime=3)[
+effect_create_spirit = Effect.objects.get_or_create(name="Create Spirit", spirit=5, prime=4)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 521
+)
+)
+
+effect_permanently_destroy_spirit = Effect.objects.get_or_create(name="Permanently Destroy Spirit", spirit=5, prime=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
 
 # ===== CROSS-SPLAT EFFECTS =====
-Effect.objects.get_or_create(
+effect_break_blood_bond = Effect.objects.get_or_create(
     name="Break Blood Bond", life=4, mind=3, entropy=3, prime=1
 )[0].add_source("Book of Secrets", 86)
+)[0].add_source("Book of Secrets", 86)
 
-Effect.objects.get_or_create(name="Harm Vampire", life=3, matter=2)[0].add_source(
+effect_harm_vampire = Effect.objects.get_or_create(name="Harm Vampire", life=3, matter=2)[0].add_source(
     "Gods & Monsters", 58
 )
+)
 
-Effect.objects.get_or_create(name="Heal Vampire", life=3, matter=2)[0].add_source(
+effect_heal_vampire = Effect.objects.get_or_create(name="Heal Vampire", life=3, matter=2)[0].add_source(
     "Gods & Monsters", 58
 )
+)
 
-Effect.objects.get_or_create(name="Harm Werewolf", life=3, spirit=3)[0].add_source(
+effect_harm_werewolf = Effect.objects.get_or_create(name="Harm Werewolf", life=3, spirit=3)[0].add_source(
     "Gods & Monsters", 75
 )
+)
 
-Effect.objects.get_or_create(name="Heal Werewolf", life=3, spirit=2)[0].add_source(
+effect_heal_werewolf = Effect.objects.get_or_create(name="Heal Werewolf", life=3, spirit=2)[0].add_source(
     "Gods & Monsters", 75
 )
-
-Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)[0].add_source(
-    "Gods & Monsters", 104
 )
 
-Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)[0].add_source(
+effect_harm_fae = Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)[0].add_source(
     "Gods & Monsters", 104
 )
-
-Effect.objects.get_or_create(name="Counter Fae Glamour", prime=2, mind=2)[0].add_source(
-    "Gods & Monsters", 104
 )
 
-Effect.objects.get_or_create(name="Harm Ghost", prime=2, entropy=3)[0].add_source(
+effect_heal_fae = Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)[0].add_source(
+    "Gods & Monsters", 104
+)
+)
+
+effect_counter_fae_glamour = Effect.objects.get_or_create(name="Counter Fae Glamour", prime=2, mind=2)[0].add_source(
+    "Gods & Monsters", 104
+)
+)
+
+effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", prime=2, entropy=3)[0].add_source(
     "Gods & Monsters", 120
 )
+)
 
-Effect.objects.get_or_create(name="Strengthen Ghost", spirit=3, prime=2)[0].add_source(
+effect_strengthen_ghost = Effect.objects.get_or_create(name="Strengthen Ghost", spirit=3, prime=2)[0].add_source(
     "Gods & Monsters", 120
+)
 )
 
 # ===== PARADIGM-SPECIFIC EFFECTS =====
 # Akashic Brotherhood
-Effect.objects.get_or_create(name="Do Strike (Akashic)", life=2, mind=1, prime=1)[
+effect_do_strike_akashic = Effect.objects.get_or_create(name="Do Strike (Akashic)", life=2, mind=1, prime=1)[
     0
 ].add_source("Lore of the Traditions", 28)
 
-Effect.objects.get_or_create(name="Dragon Pearl Meditation", prime=3, mind=2)[
+effect_dragon_pearl_meditation = Effect.objects.get_or_create(name="Dragon Pearl Meditation", prime=3, mind=2)[
     0
 ].add_source("Lore of the Traditions", 28)
 
-Effect.objects.get_or_create(name="Chi Healing", life=3, prime=1)[0].add_source(
+effect_chi_healing = Effect.objects.get_or_create(name="Chi Healing", life=3, prime=1)[0].add_source(
     "Lore of the Traditions", 28
+)
 )
 
 # Celestial Chorus
-Effect.objects.get_or_create(name="Holy Fire", forces=3, prime=2)[0].add_source(
+effect_holy_fire = Effect.objects.get_or_create(name="Holy Fire", forces=3, prime=2)[0].add_source(
     "Lore of the Traditions", 48
 )
+)
 
-Effect.objects.get_or_create(name="Blessing of the One", prime=2, mind=2, life=1)[
+effect_blessing_of_the_one = Effect.objects.get_or_create(name="Blessing of the One", prime=2, mind=2, life=1)[
     0
 ].add_source("Lore of the Traditions", 48)
 
-Effect.objects.get_or_create(name="Call Divine Intervention", prime=4, spirit=3)[
+effect_call_divine_intervention = Effect.objects.get_or_create(name="Call Divine Intervention", prime=4, spirit=3)[
     0
 ].add_source("Lore of the Traditions", 48)
 
 # Cult of Ecstasy
-Effect.objects.get_or_create(name="Temporal Fugue", time=3, mind=2)[0].add_source(
+effect_temporal_fugue = Effect.objects.get_or_create(name="Temporal Fugue", time=3, mind=2)[0].add_source(
     "Lore of the Traditions", 68
 )
+)
 
-Effect.objects.get_or_create(name="Ecstatic Vision", mind=2, time=1)[0].add_source(
+effect_ecstatic_vision = Effect.objects.get_or_create(name="Ecstatic Vision", mind=2, time=1)[0].add_source(
     "Lore of the Traditions", 68
+)
 )
 
 # Dreamspeakers
-# Effect.objects.get_or_create(name="Spirit Journey", spirit=3, mind=1)[0].add_source(
+effect_spirit_journey = # Effect.objects.get_or_create(name="Spirit Journey", spirit=3, mind=1)[0].add_source(
 #     "Lore of the Traditions", 88
 # )
+# )
 
-Effect.objects.get_or_create(name="Call Totem Spirit", spirit=4)[0].add_source(
+effect_call_totem_spirit = Effect.objects.get_or_create(name="Call Totem Spirit", spirit=4)[0].add_source(
     "Lore of the Traditions", 88
 )
+)
 
-Effect.objects.get_or_create(name="Medicine Work Healing", life=3, spirit=1)[
+effect_medicine_work_healing = Effect.objects.get_or_create(name="Medicine Work Healing", life=3, spirit=1)[
     0
 ].add_source("Lore of the Traditions", 88)
 
 # Euthanatos
-Effect.objects.get_or_create(name="Good Death", entropy=3, life=3, spirit=2)[
+effect_good_death = Effect.objects.get_or_create(name="Good Death", entropy=3, life=3, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 108)
 
-Effect.objects.get_or_create(name="Wheel of Fate", entropy=4, time=2)[0].add_source(
+effect_wheel_of_fate = Effect.objects.get_or_create(name="Wheel of Fate", entropy=4, time=2)[0].add_source(
     "Lore of the Traditions", 108
+)
 )
 
 # Order of Hermes
-Effect.objects.get_or_create(
+effect_hermetic_circle_of_protection = Effect.objects.get_or_create(
     name="Hermetic Circle of Protection", prime=2, forces=2, mind=1
 )[0].add_source("Lore of the Traditions", 128)
+)[0].add_source("Lore of the Traditions", 128)
 
-Effect.objects.get_or_create(name="Summon Elemental", forces=4, spirit=3, prime=2)[
+effect_summon_elemental = Effect.objects.get_or_create(name="Summon Elemental", forces=4, spirit=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 128)
 
-Effect.objects.get_or_create(name="Alchemical Transmutation", matter=3, prime=2)[
+effect_alchemical_transmutation = Effect.objects.get_or_create(name="Alchemical Transmutation", matter=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 128)
 
 # Sons of Ether
-Effect.objects.get_or_create(name="Ether Ray", forces=3, matter=2, prime=1)[
+effect_ether_ray = Effect.objects.get_or_create(name="Ether Ray", forces=3, matter=2, prime=1)[
     0
 ].add_source("Lore of the Traditions", 148)
 
-Effect.objects.get_or_create(
+effect_dimensional_portal_device = Effect.objects.get_or_create(
     name="Dimensional Portal Device", correspondence=4, matter=3, prime=2
+)[0].add_source("Lore of the Traditions", 148)
 )[0].add_source("Lore of the Traditions", 148)
 
 # Verbena
-Effect.objects.get_or_create(name="Blood Magic Ritual", life=3, prime=2)[0].add_source(
+effect_blood_magic_ritual = Effect.objects.get_or_create(name="Blood Magic Ritual", life=3, prime=2)[0].add_source(
     "Lore of the Traditions", 168
 )
+)
 
-Effect.objects.get_or_create(name="Primal Transformation", life=4, spirit=2)[
+effect_primal_transformation = Effect.objects.get_or_create(name="Primal Transformation", life=4, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 168)
 
-Effect.objects.get_or_create(name="Call the Wild Hunt", spirit=4, life=2, mind=2)[
+effect_call_the_wild_hunt = Effect.objects.get_or_create(name="Call the Wild Hunt", spirit=4, life=2, mind=2)[
     0
 ].add_source("Lore of the Traditions", 168)
 
 # Virtual Adepts
-Effect.objects.get_or_create(name="Reality Hack", correspondence=3, forces=2, prime=1)[
+effect_reality_hack = Effect.objects.get_or_create(name="Reality Hack", correspondence=3, forces=2, prime=1)[
     0
 ].add_source("Lore of the Traditions", 188)
 
-Effect.objects.get_or_create(name="Digital Avatar", correspondence=3, mind=3, prime=2)[
+effect_digital_avatar = Effect.objects.get_or_create(name="Digital Avatar", correspondence=3, mind=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 188)
 
-# Effect.objects.get_or_create(
+effect_information_overload = # Effect.objects.get_or_create(
 #     name="Information Overload", forces=3, mind=3, correspondence=2
+# )[0].add_source("Lore of the Traditions", 188)
 # )[0].add_source("Lore of the Traditions", 188)
 
 # ===== TECHNOCRATIC PROCEDURES =====
-Effect.objects.get_or_create(
+effect_hit_mark_activation_primium_construct = Effect.objects.get_or_create(
     name="HIT Mark Activation (Primium Construct)", matter=4, life=2, prime=3
 )[0].add_source("Technocracy Reloaded", 201)
+)[0].add_source("Technocracy Reloaded", 201)
 
-Effect.objects.get_or_create(name="Mind Wipe (Flashy Thing)", mind=3)[0].add_source(
+effect_mind_wipe_flashy_thing = Effect.objects.get_or_create(name="Mind Wipe (Flashy Thing)", mind=3)[0].add_source(
     "Technocracy Reloaded", 225
 )
+)
 
-Effect.objects.get_or_create(name="Biometric Scan", life=2, correspondence=1)[
+effect_biometric_scan = Effect.objects.get_or_create(name="Biometric Scan", life=2, correspondence=1)[
     0
 ].add_source("Technocracy Reloaded", 216)
 
-Effect.objects.get_or_create(name="Genetic Modification", life=4, matter=2, prime=2)[
+effect_genetic_modification = Effect.objects.get_or_create(name="Genetic Modification", life=4, matter=2, prime=2)[
     0
 ].add_source("Technocracy Reloaded", 158)
 
-Effect.objects.get_or_create(name="Dimensional Backdoor", correspondence=4, spirit=5)[
+effect_dimensional_backdoor = Effect.objects.get_or_create(name="Dimensional Backdoor", correspondence=4, spirit=5)[
     0
 ].add_source("Technocracy Reloaded", 227)
 
-Effect.objects.get_or_create(
+effect_paws_taser_anti_shapeshifter = Effect.objects.get_or_create(
     name="PAWS Taser (Anti-Shapeshifter)", forces=3, life=4, spirit=3, prime=2
 )[0].add_source("Technocracy Reloaded", 224)
+)[0].add_source("Technocracy Reloaded", 224)
 
-Effect.objects.get_or_create(name="Sleepteacher Accelerated Learning", mind=3, time=2)[
+effect_sleepteacher_accelerated_learning = Effect.objects.get_or_create(name="Sleepteacher Accelerated Learning", mind=3, time=2)[
     0
 ].add_source("Technocracy Reloaded", 230)
 
 # ===== NEPHANDI/MARAUDER EFFECTS =====
-Effect.objects.get_or_create(name="Infernal Pact", prime=4, spirit=4, entropy=3)[
+effect_infernal_pact = Effect.objects.get_or_create(name="Infernal Pact", prime=4, spirit=4, entropy=3)[
     0
 ].add_source("Book of the Fallen", 145)
 
-Effect.objects.get_or_create(name="Corrupt Pattern", entropy=4, life=3, prime=2)[
+effect_corrupt_pattern = Effect.objects.get_or_create(name="Corrupt Pattern", entropy=4, life=3, prime=2)[
     0
 ].add_source("Book of the Fallen", 148)
 
-Effect.objects.get_or_create(name="Summon Demon", spirit=4, prime=3, entropy=2)[
+effect_summon_demon = Effect.objects.get_or_create(name="Summon Demon", spirit=4, prime=3, entropy=2)[
     0
 ].add_source("Book of the Fallen", 150)
 
-Effect.objects.get_or_create(name="Reality Cancer", prime=5, entropy=5)[0].add_source(
+effect_reality_cancer = Effect.objects.get_or_create(name="Reality Cancer", prime=5, entropy=5)[0].add_source(
     "Book of the Fallen", 155
+)
 )
 
 # ===== UTILITY & MISCELLANEOUS =====
-Effect.objects.get_or_create(name="Permanent Enchantment", prime=5)[0].add_source(
+effect_permanent_enchantment = Effect.objects.get_or_create(name="Permanent Enchantment", prime=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-
-Effect.objects.get_or_create(name="Counterspell (Basic)", prime=2)[0].add_source(
-    "Mage: The Ascension 20th Anniversary Edition", 542
 )
 
-Effect.objects.get_or_create(name="Counterspell (Advanced)", prime=3)[0].add_source(
+effect_counterspell_basic = Effect.objects.get_or_create(name="Counterspell (Basic)", prime=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 542
 )
+)
 
-Effect.objects.get_or_create(name="Dispel Paradox", prime=3, entropy=2)[0].add_source(
+effect_counterspell_advanced = Effect.objects.get_or_create(name="Counterspell (Advanced)", prime=3)[0].add_source(
+    "Mage: The Ascension 20th Anniversary Edition", 542
+)
+)
+
+effect_dispel_paradox = Effect.objects.get_or_create(name="Dispel Paradox", prime=3, entropy=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 548
 )
+)
 
-Effect.objects.get_or_create(name="Absorb Quintessence from Living", prime=5, life=3)[
+effect_absorb_quintessence_from_living = Effect.objects.get_or_create(name="Absorb Quintessence from Living", prime=5, life=3)[
     0
 ].add_source("Book of Secrets", 102)
 
-Effect.objects.get_or_create(
+effect_create_horizon_realm = Effect.objects.get_or_create(
     name="Create Horizon Realm", correspondence=5, spirit=5, prime=5
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 612)
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 612)
 
-Effect.objects.get_or_create(
+effect_ward_against_scrying = Effect.objects.get_or_create(
     name="Ward Against Scrying", correspondence=3, mind=2, prime=1
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
 
-Effect.objects.get_or_create(name="Ward Against Spirits", spirit=3, prime=2)[
+effect_ward_against_spirits = Effect.objects.get_or_create(name="Ward Against Spirits", spirit=3, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
 
-Effect.objects.get_or_create(
+effect_mass_teleportation = Effect.objects.get_or_create(
     name="Mass Teleportation", correspondence=5, life=3, mind=2
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
 
-Effect.objects.get_or_create(name="Destroy Pattern Permanently", prime=5, entropy=4)[
+effect_destroy_pattern_permanently = Effect.objects.get_or_create(name="Destroy Pattern Permanently", prime=5, entropy=4)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 520)
 
 # Effects from mage_advanced_effects.py
-Effect.objects.get_or_create(name="Summon Ghost", spirit=2)[0].add_source(
+effect_summon_ghost = Effect.objects.get_or_create(name="Summon Ghost", spirit=2)[0].add_source(
     "How Do You Do That", 142
 )
-Effect.objects.get_or_create(name="Summon Powerful Ghost", spirit=3)[0].add_source(
+)
+effect_summon_powerful_ghost = Effect.objects.get_or_create(name="Summon Powerful Ghost", spirit=3)[0].add_source(
     "How Do You Do That", 142
 )
-Effect.objects.get_or_create(name="See Into Shadowlands", spirit=1, entropy=1)[
+)
+effect_see_into_shadowlands = Effect.objects.get_or_create(name="See Into Shadowlands", spirit=1, entropy=1)[
     0
 ].add_source("How Do You Do That", 142)
-Effect.objects.get_or_create(name="Step Sideways to Shadowlands", spirit=3)[
+effect_step_sideways_to_shadowlands = Effect.objects.get_or_create(name="Step Sideways to Shadowlands", spirit=3)[
     0
 ].add_source("How Do You Do That", 142)
-Effect.objects.get_or_create(name="Speak with Dead", spirit=2, mind=1)[0].add_source(
+effect_speak_with_dead = Effect.objects.get_or_create(name="Speak with Dead", spirit=2, mind=1)[0].add_source(
     "How Do You Do That", 142
 )
-Effect.objects.get_or_create(name="Bind Ghost", spirit=4)[0].add_source(
+)
+effect_bind_ghost = Effect.objects.get_or_create(name="Bind Ghost", spirit=4)[0].add_source(
     "How Do You Do That", 143
 )
-Effect.objects.get_or_create(name="Banish Ghost", spirit=3, prime=2)[0].add_source(
+)
+effect_banish_ghost = Effect.objects.get_or_create(name="Banish Ghost", spirit=3, prime=2)[0].add_source(
     "How Do You Do That", 143
 )
-Effect.objects.get_or_create(name="Create Zombie (Simple)", life=3, matter=2, prime=2)[
+)
+effect_create_zombie_simple = Effect.objects.get_or_create(name="Create Zombie (Simple)", life=3, matter=2, prime=2)[
     0
 ].add_source("How Do You Do That", 144)
-Effect.objects.get_or_create(
+effect_create_zombie_complex = Effect.objects.get_or_create(
     name="Create Zombie (Complex)", life=4, matter=2, prime=2, mind=1
 )[0].add_source("How Do You Do That", 144)
-Effect.objects.get_or_create(
+)[0].add_source("How Do You Do That", 144)
+effect_restore_recently_dead_to_life = Effect.objects.get_or_create(
     name="Restore Recently Dead to Life", life=5, prime=2, spirit=4
 )[0].add_source("How Do You Do That", 145)
-Effect.objects.get_or_create(
+)[0].add_source("How Do You Do That", 145)
+effect_restore_long_dead_to_life = Effect.objects.get_or_create(
     name="Restore Long Dead to Life", life=5, prime=3, spirit=5, time=3
 )[0].add_source("How Do You Do That", 145)
-Effect.objects.get_or_create(
+)[0].add_source("How Do You Do That", 145)
+effect_create_lich_self = Effect.objects.get_or_create(
     name="Create Lich (Self)", life=5, spirit=4, prime=3, entropy=3
 )[0].add_source("How Do You Do That", 146)
-Effect.objects.get_or_create(name="Sense Time Flow", time=1)[0].add_source(
+)[0].add_source("How Do You Do That", 146)
+effect_sense_time_flow = Effect.objects.get_or_create(name="Sense Time Flow", time=1)[0].add_source(
     "How Do You Do That", 154
 )
-Effect.objects.get_or_create(name="See Past (Recent)", time=2)[0].add_source(
+)
+effect_see_past_recent = Effect.objects.get_or_create(name="See Past (Recent)", time=2)[0].add_source(
     "How Do You Do That", 154
 )
-Effect.objects.get_or_create(name="See Future (Near)", time=2)[0].add_source(
+)
+effect_see_future_near = Effect.objects.get_or_create(name="See Future (Near)", time=2)[0].add_source(
     "How Do You Do That", 154
 )
-Effect.objects.get_or_create(name="See Past (Distant)", time=3, correspondence=2)[
+)
+effect_see_past_distant = Effect.objects.get_or_create(name="See Past (Distant)", time=3, correspondence=2)[
     0
 ].add_source("How Do You Do That", 154)
-Effect.objects.get_or_create(name="See Future (Distant)", time=3)[0].add_source(
+effect_see_future_distant = Effect.objects.get_or_create(name="See Future (Distant)", time=3)[0].add_source(
     "How Do You Do That", 154
 )
-Effect.objects.get_or_create(name="Slow Time (Local)", time=3)[0].add_source(
+)
+effect_slow_time_local = Effect.objects.get_or_create(name="Slow Time (Local)", time=3)[0].add_source(
     "How Do You Do That", 155
 )
-Effect.objects.get_or_create(name="Speed Time (Local)", time=3)[0].add_source(
+)
+effect_speed_time_local = Effect.objects.get_or_create(name="Speed Time (Local)", time=3)[0].add_source(
     "How Do You Do That", 155
 )
-Effect.objects.get_or_create(name="Freeze Time (Small Area)", time=4)[0].add_source(
+)
+effect_freeze_time_small_area = Effect.objects.get_or_create(name="Freeze Time (Small Area)", time=4)[0].add_source(
     "How Do You Do That", 155
 )
-Effect.objects.get_or_create(name="Rewind Time (Seconds)", time=5, prime=2)[
+)
+effect_rewind_time_seconds = Effect.objects.get_or_create(name="Rewind Time (Seconds)", time=5, prime=2)[
     0
 ].add_source("How Do You Do That", 156)
-Effect.objects.get_or_create(name="Travel Through Time", time=5, spirit=4, prime=3)[
+effect_travel_through_time = Effect.objects.get_or_create(name="Travel Through Time", time=5, spirit=4, prime=3)[
     0
 ].add_source("How Do You Do That", 156)
-Effect.objects.get_or_create(name="Create Time Loop", time=4, prime=2)[0].add_source(
+effect_create_time_loop = Effect.objects.get_or_create(name="Create Time Loop", time=4, prime=2)[0].add_source(
     "How Do You Do That", 156
 )
-Effect.objects.get_or_create(
+)
+effect_co_location_be_in_two_places = Effect.objects.get_or_create(
     name="Co-Location (Be In Two Places)", correspondence=5, life=3, mind=3
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
-Effect.objects.get_or_create(name="Fold Space", correspondence=5)[0].add_source(
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
+effect_fold_space = Effect.objects.get_or_create(name="Fold Space", correspondence=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 515
 )
-Effect.objects.get_or_create(
+)
+effect_ward_against_teleportation = Effect.objects.get_or_create(
     name="Ward Against Teleportation", correspondence=3, prime=2
 )[0].add_source("How Do You Do That", 128)
-Effect.objects.get_or_create(name="Shapeshift into Hybrid Form", life=4, prime=2)[
+)[0].add_source("How Do You Do That", 128)
+effect_shapeshift_into_hybrid_form = Effect.objects.get_or_create(name="Shapeshift into Hybrid Form", life=4, prime=2)[
     0
 ].add_source("How Do You Do That", 34)
-Effect.objects.get_or_create(name="Create Homunculus", life=5, prime=3, mind=2)[
+effect_create_homunculus = Effect.objects.get_or_create(name="Create Homunculus", life=5, prime=3, mind=2)[
     0
 ].add_source("Book of Secrets", 79)
-Effect.objects.get_or_create(name="Clone Body", life=5, prime=2, mind=1)[0].add_source(
+effect_clone_body = Effect.objects.get_or_create(name="Clone Body", life=5, prime=2, mind=1)[0].add_source(
     "Book of Secrets", 79
 )
-Effect.objects.get_or_create(
+)
+effect_enhance_physical_attribute_permanent = Effect.objects.get_or_create(
     name="Enhance Physical Attribute (Permanent)", life=4, prime=2
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
-Effect.objects.get_or_create(name="Grant Regeneration", life=4, prime=2)[0].add_source(
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
+effect_grant_regeneration = Effect.objects.get_or_create(name="Grant Regeneration", life=4, prime=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
 )
-Effect.objects.get_or_create(name="Age/De-Age Target", life=4, time=2)[0].add_source(
+)
+effect_age_de_age_target = Effect.objects.get_or_create(name="Age/De-Age Target", life=4, time=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
 )
-Effect.objects.get_or_create(name="Cure Poison/Disease (Aggravated)", life=4)[
+)
+effect_cure_poison_disease_aggravated = Effect.objects.get_or_create(name="Cure Poison/Disease (Aggravated)", life=4)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
-Effect.objects.get_or_create(name="Read Deep Thoughts/Memories", mind=3)[0].add_source(
+effect_read_deep_thoughts_memories = Effect.objects.get_or_create(name="Read Deep Thoughts/Memories", mind=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-Effect.objects.get_or_create(name="Implant False Memory", mind=4)[0].add_source(
+)
+effect_implant_false_memory = Effect.objects.get_or_create(name="Implant False Memory", mind=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-Effect.objects.get_or_create(name="Mind Control (Simple Command)", mind=3)[
+)
+effect_mind_control_simple_command = Effect.objects.get_or_create(name="Mind Control (Simple Command)", mind=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 519)
-Effect.objects.get_or_create(name="Astral Quest", mind=5, spirit=3)[0].add_source(
+effect_astral_quest = Effect.objects.get_or_create(name="Astral Quest", mind=5, spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-Effect.objects.get_or_create(name="Shatter Mind", mind=5)[0].add_source(
+)
+effect_shatter_mind = Effect.objects.get_or_create(name="Shatter Mind", mind=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 519
 )
-Effect.objects.get_or_create(name="Create Permanent Mental Illusion", mind=4, prime=2)[
+)
+effect_create_permanent_mental_illusion = Effect.objects.get_or_create(name="Create Permanent Mental Illusion", mind=4, prime=2)[
     0
 ].add_source("How Do You Do That", 162)
-Effect.objects.get_or_create(name="Mass Telepathy", mind=3, correspondence=2)[
+effect_mass_telepathy = Effect.objects.get_or_create(name="Mass Telepathy", mind=3, correspondence=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 519)
-Effect.objects.get_or_create(name="Laser Blast", forces=3, matter=2)[0].add_source(
+effect_laser_blast = Effect.objects.get_or_create(name="Laser Blast", forces=3, matter=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
-Effect.objects.get_or_create(name="EMP Pulse", forces=3, matter=2)[0].add_source(
+)
+effect_emp_pulse = Effect.objects.get_or_create(name="EMP Pulse", forces=3, matter=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
-Effect.objects.get_or_create(name="Nuclear Blast", forces=5, prime=4)[0].add_source(
+)
+effect_nuclear_blast = Effect.objects.get_or_create(name="Nuclear Blast", forces=5, prime=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 517
 )
-Effect.objects.get_or_create(name="Transmute Base Metals to Gold", matter=3)[
+)
+effect_transmute_base_metals_to_gold = Effect.objects.get_or_create(name="Transmute Base Metals to Gold", matter=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
-Effect.objects.get_or_create(name="Create Matter from Nothing", matter=4, prime=2)[
+effect_create_matter_from_nothing = Effect.objects.get_or_create(name="Create Matter from Nothing", matter=4, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
-Effect.objects.get_or_create(name="Phase Through Matter", matter=3, life=2)[
+effect_phase_through_matter = Effect.objects.get_or_create(name="Phase Through Matter", matter=3, life=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 518)
-Effect.objects.get_or_create(name="Turn to Stone", matter=3, life=3)[0].add_source(
+effect_turn_to_stone = Effect.objects.get_or_create(name="Turn to Stone", matter=3, life=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 518
 )
-Effect.objects.get_or_create(name="Age Object Rapidly", entropy=3, time=2)[
+)
+effect_age_object_rapidly = Effect.objects.get_or_create(name="Age Object Rapidly", entropy=3, time=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 516)
-Effect.objects.get_or_create(name="Rot Living Being", entropy=4, life=2)[0].add_source(
+effect_rot_living_being = Effect.objects.get_or_create(name="Rot Living Being", entropy=4, life=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 516
 )
-Effect.objects.get_or_create(name="Shatter Pattern", entropy=5, prime=2)[0].add_source(
+)
+effect_shatter_pattern = Effect.objects.get_or_create(name="Shatter Pattern", entropy=5, prime=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 516
 )
-Effect.objects.get_or_create(name="Control Probability (Major)", entropy=4)[
+)
+effect_control_probability_major = Effect.objects.get_or_create(name="Control Probability (Major)", entropy=4)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 516)
-Effect.objects.get_or_create(name="Enchant Talisman", prime=3)[0].add_source(
+effect_enchant_talisman = Effect.objects.get_or_create(name="Enchant Talisman", prime=3)[0].add_source(
     "Book of Secrets", 82
 )
-Effect.objects.get_or_create(name="Disenchant Wonder", prime=4)[0].add_source(
+)
+effect_disenchant_wonder = Effect.objects.get_or_create(name="Disenchant Wonder", prime=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Nullify Magic", prime=3)[0].add_source(
+)
+effect_nullify_magic = Effect.objects.get_or_create(name="Nullify Magic", prime=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Permanently Enhance Pattern", prime=5)[0].add_source(
+)
+effect_permanently_enhance_pattern = Effect.objects.get_or_create(name="Permanently Enhance Pattern", prime=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Fuel Pattern with Quintessence", prime=2)[
+)
+effect_fuel_pattern_with_quintessence = Effect.objects.get_or_create(name="Fuel Pattern with Quintessence", prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 520)
-Effect.objects.get_or_create(name="Create Tass", prime=3)[0].add_source(
+effect_create_tass = Effect.objects.get_or_create(name="Create Tass", prime=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Open/Seal Node", prime=4, spirit=2)[0].add_source(
+)
+effect_open_seal_node = Effect.objects.get_or_create(name="Open/Seal Node", prime=4, spirit=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Touch Spirit Matter", spirit=2)[0].add_source(
+)
+effect_touch_spirit_matter = Effect.objects.get_or_create(name="Touch Spirit Matter", spirit=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-Effect.objects.get_or_create(name="Step Sideways to Umbra", spirit=3)[0].add_source(
+)
+effect_step_sideways_to_umbra = Effect.objects.get_or_create(name="Step Sideways to Umbra", spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-Effect.objects.get_or_create(name="Reach Into Umbra", spirit=3)[0].add_source(
+)
+effect_reach_into_umbra = Effect.objects.get_or_create(name="Reach Into Umbra", spirit=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-Effect.objects.get_or_create(name="Summon Spirit (Minor)", spirit=2)[0].add_source(
+)
+effect_summon_spirit_minor = Effect.objects.get_or_create(name="Summon Spirit (Minor)", spirit=2)[0].add_source(
     "How Do You Do That", 148
 )
-Effect.objects.get_or_create(name="Summon Spirit (Powerful)", spirit=3)[0].add_source(
+)
+effect_summon_spirit_powerful = Effect.objects.get_or_create(name="Summon Spirit (Powerful)", spirit=3)[0].add_source(
     "How Do You Do That", 148
 )
-Effect.objects.get_or_create(name="Bind Spirit", spirit=4)[0].add_source(
+)
+effect_bind_spirit = Effect.objects.get_or_create(name="Bind Spirit", spirit=4)[0].add_source(
     "How Do You Do That", 148
 )
-Effect.objects.get_or_create(name="Create Spirit Gate", spirit=4, prime=2)[
+)
+effect_create_spirit_gate = Effect.objects.get_or_create(name="Create Spirit Gate", spirit=4, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
-Effect.objects.get_or_create(name="Strengthen/Weaken Gauntlet", spirit=4)[0].add_source(
+effect_strengthen_weaken_gauntlet = Effect.objects.get_or_create(name="Strengthen/Weaken Gauntlet", spirit=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-Effect.objects.get_or_create(name="Create Spirit", spirit=5, prime=4)[0].add_source(
+)
+effect_create_spirit = Effect.objects.get_or_create(name="Create Spirit", spirit=5, prime=4)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 521
 )
-Effect.objects.get_or_create(name="Permanently Destroy Spirit", spirit=5, prime=3)[
+)
+effect_permanently_destroy_spirit = Effect.objects.get_or_create(name="Permanently Destroy Spirit", spirit=5, prime=3)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
-Effect.objects.get_or_create(
+effect_break_blood_bond = Effect.objects.get_or_create(
     name="Break Blood Bond", life=4, mind=3, entropy=3, prime=1
 )[0].add_source("Book of Secrets", 86)
-Effect.objects.get_or_create(name="Harm Werewolf", life=3, spirit=3)[0].add_source(
+)[0].add_source("Book of Secrets", 86)
+effect_harm_werewolf = Effect.objects.get_or_create(name="Harm Werewolf", life=3, spirit=3)[0].add_source(
     "Gods & Monsters", 75
 )
-Effect.objects.get_or_create(name="Heal Werewolf", life=3, spirit=2)[0].add_source(
+)
+effect_heal_werewolf = Effect.objects.get_or_create(name="Heal Werewolf", life=3, spirit=2)[0].add_source(
     "Gods & Monsters", 75
 )
-Effect.objects.get_or_create(name="Counter Fae Glamour", prime=2, mind=2)[0].add_source(
+)
+effect_counter_fae_glamour = Effect.objects.get_or_create(name="Counter Fae Glamour", prime=2, mind=2)[0].add_source(
     "Gods & Monsters", 104
 )
-Effect.objects.get_or_create(name="Strengthen Ghost", spirit=3, prime=2)[0].add_source(
+)
+effect_strengthen_ghost = Effect.objects.get_or_create(name="Strengthen Ghost", spirit=3, prime=2)[0].add_source(
     "Gods & Monsters", 120
 )
-Effect.objects.get_or_create(name="Do Strike (Akashic)", life=2, mind=1, prime=1)[
+)
+effect_do_strike_akashic = Effect.objects.get_or_create(name="Do Strike (Akashic)", life=2, mind=1, prime=1)[
     0
 ].add_source("Lore of the Traditions", 28)
-Effect.objects.get_or_create(name="Dragon Pearl Meditation", prime=3, mind=2)[
+effect_dragon_pearl_meditation = Effect.objects.get_or_create(name="Dragon Pearl Meditation", prime=3, mind=2)[
     0
 ].add_source("Lore of the Traditions", 28)
-Effect.objects.get_or_create(name="Chi Healing", life=3, prime=1)[0].add_source(
+effect_chi_healing = Effect.objects.get_or_create(name="Chi Healing", life=3, prime=1)[0].add_source(
     "Lore of the Traditions", 28
 )
-Effect.objects.get_or_create(name="Blessing of the One", prime=2, mind=2, life=1)[
+)
+effect_blessing_of_the_one = Effect.objects.get_or_create(name="Blessing of the One", prime=2, mind=2, life=1)[
     0
 ].add_source("Lore of the Traditions", 48)
-Effect.objects.get_or_create(name="Call Divine Intervention", prime=4, spirit=3)[
+effect_call_divine_intervention = Effect.objects.get_or_create(name="Call Divine Intervention", prime=4, spirit=3)[
     0
 ].add_source("Lore of the Traditions", 48
 )
-Effect.objects.get_or_create(name="Ecstatic Vision", mind=2, time=1)[0].add_source(
+effect_ecstatic_vision = Effect.objects.get_or_create(name="Ecstatic Vision", mind=2, time=1)[0].add_source(
     "Lore of the Traditions", 68
 )
-Effect.objects.get_or_create(name="Call Totem Spirit", spirit=4)[0].add_source(
+)
+effect_call_totem_spirit = Effect.objects.get_or_create(name="Call Totem Spirit", spirit=4)[0].add_source(
     "Lore of the Traditions", 88
 )
-Effect.objects.get_or_create(name="Medicine Work Healing", life=3, spirit=1)[
+)
+effect_medicine_work_healing = Effect.objects.get_or_create(name="Medicine Work Healing", life=3, spirit=1)[
     0
 ].add_source("Lore of the Traditions", 88)
-Effect.objects.get_or_create(name="Good Death", entropy=3, life=3, spirit=2)[
+effect_good_death = Effect.objects.get_or_create(name="Good Death", entropy=3, life=3, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 108)
-Effect.objects.get_or_create(name="Wheel of Fate", entropy=4, time=2)[0].add_source(
+effect_wheel_of_fate = Effect.objects.get_or_create(name="Wheel of Fate", entropy=4, time=2)[0].add_source(
     "Lore of the Traditions", 108
 )
-Effect.objects.get_or_create(
+)
+effect_hermetic_circle_of_protection = Effect.objects.get_or_create(
     name="Hermetic Circle of Protection", prime=2, forces=2, mind=1
 )[0].add_source("Lore of the Traditions", 128)
-Effect.objects.get_or_create(name="Summon Elemental", forces=4, spirit=3, prime=2)[
+)[0].add_source("Lore of the Traditions", 128)
+effect_summon_elemental = Effect.objects.get_or_create(name="Summon Elemental", forces=4, spirit=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 128)
-Effect.objects.get_or_create(name="Alchemical Transmutation", matter=3, prime=2)[
+effect_alchemical_transmutation = Effect.objects.get_or_create(name="Alchemical Transmutation", matter=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 128)
-Effect.objects.get_or_create(name="Ether Ray", forces=3, matter=2, prime=1)[
+effect_ether_ray = Effect.objects.get_or_create(name="Ether Ray", forces=3, matter=2, prime=1)[
     0
 ].add_source("Lore of the Traditions", 148)
-Effect.objects.get_or_create(
+effect_dimensional_portal_device = Effect.objects.get_or_create(
     name="Dimensional Portal Device", correspondence=4, matter=3, prime=2
 )[0].add_source("Lore of the Traditions", 148)
-Effect.objects.get_or_create(name="Blood Magic Ritual", life=3, prime=2)[0].add_source(
+)[0].add_source("Lore of the Traditions", 148)
+effect_blood_magic_ritual = Effect.objects.get_or_create(name="Blood Magic Ritual", life=3, prime=2)[0].add_source(
     "Lore of the Traditions", 168
 )
-Effect.objects.get_or_create(name="Primal Transformation", life=4, spirit=2)[
+)
+effect_primal_transformation = Effect.objects.get_or_create(name="Primal Transformation", life=4, spirit=2)[
     0
 ].add_source("Lore of the Traditions", 168)
-Effect.objects.get_or_create(name="Call the Wild Hunt", spirit=4, life=2, mind=2)[
+effect_call_the_wild_hunt = Effect.objects.get_or_create(name="Call the Wild Hunt", spirit=4, life=2, mind=2)[
     0
 ].add_source("Lore of the Traditions", 168)
-Effect.objects.get_or_create(name="Reality Hack", correspondence=3, forces=2, prime=1)[
+effect_reality_hack = Effect.objects.get_or_create(name="Reality Hack", correspondence=3, forces=2, prime=1)[
     0
 ].add_source("Lore of the Traditions", 188)
-Effect.objects.get_or_create(name="Digital Avatar", correspondence=3, mind=3, prime=2)[
+effect_digital_avatar = Effect.objects.get_or_create(name="Digital Avatar", correspondence=3, mind=3, prime=2)[
     0
 ].add_source("Lore of the Traditions", 188)
-Effect.objects.get_or_create(
+effect_hit_mark_activation_primium_construct = Effect.objects.get_or_create(
     name="HIT Mark Activation (Primium Construct)", matter=4, life=2, prime=3
 )[0].add_source("Technocracy Reloaded", 201)
-Effect.objects.get_or_create(name="Mind Wipe (Flashy Thing)", mind=3)[0].add_source(
+)[0].add_source("Technocracy Reloaded", 201)
+effect_mind_wipe_flashy_thing = Effect.objects.get_or_create(name="Mind Wipe (Flashy Thing)", mind=3)[0].add_source(
     "Technocracy Reloaded", 225
 )
-Effect.objects.get_or_create(name="Biometric Scan", life=2, correspondence=1)[
+)
+effect_biometric_scan = Effect.objects.get_or_create(name="Biometric Scan", life=2, correspondence=1)[
     0
 ].add_source("Technocracy Reloaded", 216)
-Effect.objects.get_or_create(name="Genetic Modification", life=4, matter=2, prime=2)[
+effect_genetic_modification = Effect.objects.get_or_create(name="Genetic Modification", life=4, matter=2, prime=2)[
     0
 ].add_source("Technocracy Reloaded", 158)
-Effect.objects.get_or_create(name="Dimensional Backdoor", correspondence=4, spirit=5)[
+effect_dimensional_backdoor = Effect.objects.get_or_create(name="Dimensional Backdoor", correspondence=4, spirit=5)[
     0
 ].add_source("Technocracy Reloaded", 227)
-Effect.objects.get_or_create(
+effect_paws_taser_anti_shapeshifter = Effect.objects.get_or_create(
     name="PAWS Taser (Anti-Shapeshifter)", forces=3, life=4, spirit=3, prime=2
 )[0].add_source("Technocracy Reloaded", 224)
-Effect.objects.get_or_create(name="Sleepteacher Accelerated Learning", mind=3, time=2)[
+)[0].add_source("Technocracy Reloaded", 224)
+effect_sleepteacher_accelerated_learning = Effect.objects.get_or_create(name="Sleepteacher Accelerated Learning", mind=3, time=2)[
     0
 ].add_source("Technocracy Reloaded", 230)
-Effect.objects.get_or_create(name="Infernal Pact", prime=4, spirit=4, entropy=3)[
+effect_infernal_pact = Effect.objects.get_or_create(name="Infernal Pact", prime=4, spirit=4, entropy=3)[
     0
 ].add_source("Book of the Fallen", 145)
-Effect.objects.get_or_create(name="Corrupt Pattern", entropy=4, life=3, prime=2)[
+effect_corrupt_pattern = Effect.objects.get_or_create(name="Corrupt Pattern", entropy=4, life=3, prime=2)[
     0
 ].add_source("Book of the Fallen", 148)
-Effect.objects.get_or_create(name="Summon Demon", spirit=4, prime=3, entropy=2)[
+effect_summon_demon = Effect.objects.get_or_create(name="Summon Demon", spirit=4, prime=3, entropy=2)[
     0
 ].add_source("Book of the Fallen", 150)
-Effect.objects.get_or_create(name="Reality Cancer", prime=5, entropy=5)[0].add_source(
+effect_reality_cancer = Effect.objects.get_or_create(name="Reality Cancer", prime=5, entropy=5)[0].add_source(
     "Book of the Fallen", 155
 )
-Effect.objects.get_or_create(name="Permanent Enchantment", prime=5)[0].add_source(
+)
+effect_permanent_enchantment = Effect.objects.get_or_create(name="Permanent Enchantment", prime=5)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 520
 )
-Effect.objects.get_or_create(name="Counterspell (Basic)", prime=2)[0].add_source(
+)
+effect_counterspell_basic = Effect.objects.get_or_create(name="Counterspell (Basic)", prime=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 542
 )
-Effect.objects.get_or_create(name="Counterspell (Advanced)", prime=3)[0].add_source(
+)
+effect_counterspell_advanced = Effect.objects.get_or_create(name="Counterspell (Advanced)", prime=3)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 542
 )
-Effect.objects.get_or_create(name="Dispel Paradox", prime=3, entropy=2)[0].add_source(
+)
+effect_dispel_paradox = Effect.objects.get_or_create(name="Dispel Paradox", prime=3, entropy=2)[0].add_source(
     "Mage: The Ascension 20th Anniversary Edition", 548
 )
-Effect.objects.get_or_create(name="Absorb Quintessence from Living", prime=5, life=3)[
+)
+effect_absorb_quintessence_from_living = Effect.objects.get_or_create(name="Absorb Quintessence from Living", prime=5, life=3)[
     0
 ].add_source("Book of Secrets", 102)
-Effect.objects.get_or_create(
+effect_create_horizon_realm = Effect.objects.get_or_create(
     name="Create Horizon Realm", correspondence=5, spirit=5, prime=5
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 612)
-Effect.objects.get_or_create(
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 612)
+effect_ward_against_scrying = Effect.objects.get_or_create(
     name="Ward Against Scrying", correspondence=3, mind=2, prime=1
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
-Effect.objects.get_or_create(name="Ward Against Spirits", spirit=3, prime=2)[
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
+effect_ward_against_spirits = Effect.objects.get_or_create(name="Ward Against Spirits", spirit=3, prime=2)[
     0
 ].add_source("Mage: The Ascension 20th Anniversary Edition", 521)
-Effect.objects.get_or_create(
+effect_mass_teleportation = Effect.objects.get_or_create(
     name="Mass Teleportation", correspondence=5, life=3, mind=2
+)[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
 )[0].add_source("Mage: The Ascension 20th Anniversary Edition", 515)
