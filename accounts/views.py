@@ -43,12 +43,17 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context["scenes_waiting"] = []
         if self.object.is_st():
             context["scenes_waiting"] = Scene.objects.waiting_for_st()
+
+        # Optimize queries with select_related
+        scenes = self.object.xp_requests().select_related('chronicle', 'location', 'st')
+        characters = self.object.freebies_to_approve().select_related('owner', 'chronicle')
+
         context["scenexp_forms"] = [
-            SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in self.object.xp_requests()
+            SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in scenes
         ]
         context["freebie_forms"] = [
             FreebieAwardForm(character=character)
-            for character in self.object.freebies_to_approve()
+            for character in characters
         ]
         if "weekly_xp_request_forms" not in context:
             context["weekly_xp_request_forms"] = [

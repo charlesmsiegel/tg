@@ -231,7 +231,7 @@ class Model(PermissionMixin, PolymorphicModel):
         "Deceased",
     ]
     status = models.CharField(
-        max_length=3, choices=zip(status_keys, statuses), default="Un"
+        max_length=3, choices=zip(status_keys, statuses), default="Un", db_index=True
     )
     display = models.BooleanField(default=True)
     sources = models.ManyToManyField(BookReference, blank=True)

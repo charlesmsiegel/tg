@@ -20,9 +20,13 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["scenes"] = Scene.objects.filter(characters=context["object"]).order_by(
-            "-date_of_scene"
-        )
+        context["scenes"] = Scene.objects.filter(
+            characters=context["object"]
+        ).select_related(
+            "chronicle", "location", "st"
+        ).prefetch_related(
+            "characters", "participants"
+        ).order_by("-date_of_scene")
         # Backward compatibility: is_approved_user now means "can edit"
         context["is_approved_user"] = PermissionManager.user_can_edit(
             self.request.user, self.object

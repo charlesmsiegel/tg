@@ -362,9 +362,9 @@ class MageDetailView(HumanDetailView):
         context["spec_form"] = SpecialtiesForm(
             object=self.object, specialties_needed=self.object.needed_specialties()
         )
-        context["resonance"] = ResRating.objects.filter(mage=self.object).order_by(
-            "resonance__name"
-        )
+        context["resonance"] = ResRating.objects.filter(
+            mage=self.object
+        ).select_related("resonance").order_by("resonance__name")
         return context
 
     def post(self, request, *args, **kwargs):

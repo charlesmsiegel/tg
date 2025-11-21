@@ -78,11 +78,11 @@ class Character(CharacterModel):
 
     gameline = "wod"
 
-    concept = models.CharField(max_length=100)
+    concept = models.CharField(max_length=100, db_index=True)
     creation_status = models.IntegerField(default=1)
 
     notes = models.TextField(default="", blank=True, null=True)
-    xp = models.IntegerField(default=0)
+    xp = models.IntegerField(default=0, db_index=True)
     spent_xp = models.JSONField(default=list)
 
     class Meta:
