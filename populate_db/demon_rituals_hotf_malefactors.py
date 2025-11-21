@@ -6,17 +6,19 @@ from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
 from populate_db.demon_houses import malefactors
+from populate_db.demon_lores import (
+    lore_of_the_celestials as lore_celestials,
+    lore_of_the_earth as lore_earth,
+    lore_of_the_firmament as lore_firmament,
+    lore_of_flame,
+    lore_of_the_forge as lore_forge,
+    lore_of_the_fundament as lore_fundament,
+    lore_of_paths as lore_paths,
+    lore_of_portals as lore_portals,
+    lore_of_the_realms as lore_realms,
+)
 
-# Get all lores for reference
-lore_celestials = Lore.objects.get_or_create(property_name="celestials")[0]
-lore_earth = Lore.objects.get_or_create(property_name="earth")[0]
-lore_firmament = Lore.objects.get_or_create(property_name="firmament")[0]
-lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
-lore_forge = Lore.objects.get_or_create(property_name="forge")[0]
-lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
-lore_paths = Lore.objects.get_or_create(property_name="paths")[0]
-lore_portals = Lore.objects.get_or_create(property_name="portals")[0]
-lore_realms = Lore.objects.get_or_create(property_name="realms")[0]
+# Lore of Survival not found in demon_lores.py
 lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
 
 # =============================================================================

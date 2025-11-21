@@ -6,18 +6,20 @@ from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
 from populate_db.demon_houses import scourges
+from populate_db.demon_lores import (
+    lore_of_awakening as lore_awakening,
+    lore_of_the_beast as lore_beast,
+    lore_of_the_fundament as lore_fundament,
+    lore_of_humanity,
+    lore_of_paths as lore_paths,
+    lore_of_patterns,
+    lore_of_storms,
+    lore_of_the_winds as lore_winds,
+    lore_of_the_wild as lore_wild,
+)
 
-# Get all lores for reference
-lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
-lore_beast = Lore.objects.get_or_create(property_name="beast")[0]
-lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
-lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
-lore_paths = Lore.objects.get_or_create(property_name="paths")[0]
-lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
-lore_storms = Lore.objects.get_or_create(property_name="storms")[0]
+# Lore of Survival not found in demon_lores.py
 lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
-lore_winds = Lore.objects.get_or_create(property_name="winds")[0]
-lore_wild = Lore.objects.get_or_create(property_name="wild")[0]
 
 # =============================================================================
 # SCOURGE RITUALS - HOUSES OF THE FALLEN
