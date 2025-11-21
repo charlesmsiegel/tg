@@ -1,7 +1,9 @@
 {% extends "core/object.html" %}
 {% block contents %}
     {% include "characters/core/group/display_includes/members.html" %}
-    {% include "characters/core/background_block/detail.html" with backgrounds=object.pooled_backgrounds %}
+    {% if object.pooled_backgrounds.exists %}
+        {% include "characters/core/background_block/detail.html" with backgrounds=object.pooled_backgrounds %}
+    {% endif %}
     {% include "characters/core/group/display_includes/public_info.html" %}
 {% endblock contents %}
 {% block update %}
