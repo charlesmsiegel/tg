@@ -70,9 +70,6 @@
         mental: ['perception', 'intelligence', 'wits']
     };
 
-    // Find the submit button (it's hidden by template until valid distribution achieved)
-    const submitButton = document.querySelector('button[type="submit"]');
-
     // Get all attribute input fields
     const inputs = {};
     Object.values(CATEGORIES).flat().forEach(attr => {
@@ -202,27 +199,6 @@
         const isValidDistribution = pointsRemaining === 0 &&
                                    sortedTotals.length === TARGETS.length &&
                                    sortedTotals.every((val, idx) => val === TARGETS[idx]);
-
-        // Debug logging
-        console.log('Totals:', totals);
-        console.log('Sorted totals:', sortedTotals);
-        console.log('TARGETS:', TARGETS);
-        console.log('Points remaining:', pointsRemaining);
-        console.log('Is valid distribution:', isValidDistribution);
-        console.log('Submit button found:', !!submitButton);
-
-        // Control submit button visibility
-        if (submitButton) {
-            if (isValidDistribution) {
-                console.log('Showing submit button');
-                submitButton.style.removeProperty('display');
-                submitButton.disabled = false;
-            } else {
-                console.log('Hiding submit button');
-                submitButton.style.display = 'none';
-                submitButton.disabled = true;
-            }
-        }
 
         // Update total remaining points
         const totalElement = document.getElementById('total-remaining');
