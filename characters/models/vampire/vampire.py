@@ -327,3 +327,220 @@ class Vampire(VtMHuman):
             setattr(self, virtue_name, value)
         else:
             raise ValueError(f"Unknown virtue: {virtue_name}")
+
+    def xp_frequencies(self):
+        """Return frequency distribution for XP spending (for random character generation)."""
+        return {
+            "attribute": 16,
+            "ability": 20,
+            "background": 13,
+            "willpower": 1,
+            "discipline": 35,
+            "virtue": 3,
+            "humanity": 1,
+            "path_rating": 1,
+        }
+
+    def xp_cost(self, trait_type, trait_value=None):
+        """Return XP cost for vampire-specific traits."""
+        from collections import defaultdict
+
+        costs = defaultdict(
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            {
+                "new_discipline": 10,
+                "clan_discipline": 5,
+                "out_of_clan_discipline": 7,
+                "virtue": 2,
+                "humanity": 1,
+                "path_rating": 1,
+            },
+        )
+
+        # Handle discipline trait types
+        if trait_type in ["discipline", "clan_discipline", "out_of_clan_discipline"]:
+            if trait_value is not None:
+                return costs[trait_type] * trait_value
+            return costs[trait_type]
+
+        # Handle virtue/morality traits
+        if trait_type in ["virtue", "humanity", "path_rating"]:
+            if trait_value is not None:
+                return costs[trait_type] * trait_value
+            return costs[trait_type]
+
+        return costs[trait_type]
+
+    def spend_xp(self, trait):
+        """Spend XP on a trait."""
+        output = super().spend_xp(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is a discipline
+        discipline_fields = [
+            "celerity", "fortitude", "potence", "auspex", "dominate", "dementation",
+            "presence", "animalism", "protean", "obfuscate", "chimerstry",
+            "necromancy", "obtenebration", "quietus", "serpentis", "thaumaturgy",
+            "vicissitude", "daimoinon", "melpominee", "mytherceria", "obeah",
+            "temporis", "thanatosis", "valeren", "visceratika"
+        ]
+
+        if trait in discipline_fields:
+            current_value = getattr(self, trait)
+
+            # Determine if it's clan or out-of-clan
+            from characters.models.vampire.discipline import Discipline
+            try:
+                discipline_obj = Discipline.objects.get(property_name=trait)
+                is_clan = self.is_clan_discipline(discipline_obj)
+
+                if current_value == 0:
+                    cost = self.xp_cost("new_discipline")
+                elif is_clan:
+                    cost = self.xp_cost("clan_discipline", current_value + 1)
+                else:
+                    cost = self.xp_cost("out_of_clan_discipline", current_value + 1)
+
+                if cost <= self.xp:
+                    from core.utils import add_dot
+                    if add_dot(self, trait, 5):
+                        self.xp -= cost
+                        self.add_to_spend(trait, getattr(self, trait), cost)
+                        return True
+                    return False
+                return False
+            except:
+                return False
+
+        # Handle virtues
+        if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
+            current_value = getattr(self, trait)
+            cost = self.xp_cost("virtue", current_value + 1)
+            if cost <= self.xp:
+                from core.utils import add_dot
+                if add_dot(self, trait, 5):
+                    self.xp -= cost
+                    self.add_to_spend(trait, getattr(self, trait), cost)
+                    return True
+                return False
+            return False
+
+        # Handle humanity
+        if trait == "humanity":
+            cost = self.xp_cost("humanity", self.humanity + 1)
+            if cost <= self.xp:
+                from core.utils import add_dot
+                if add_dot(self, "humanity", 10):
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.humanity, cost)
+                    return True
+                return False
+            return False
+
+        # Handle path rating
+        if trait == "path_rating":
+            cost = self.xp_cost("path_rating", self.path_rating + 1)
+            if cost <= self.xp:
+                from core.utils import add_dot
+                if add_dot(self, "path_rating", 10):
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.path_rating, cost)
+                    return True
+                return False
+            return False
+
+        return trait
+
+    def freebie_frequencies(self):
+        """Return frequency distribution for freebie spending (for random character generation)."""
+        return {
+            "attribute": 15,
+            "ability": 8,
+            "background": 10,
+            "willpower": 1,
+            "meritflaw": 20,
+            "discipline": 30,
+            "virtue": 8,
+            "humanity": 4,
+            "path_rating": 4,
+        }
+
+    def freebie_costs(self):
+        """Return a dictionary of freebie costs for vampire traits."""
+        costs = super().freebie_costs()
+        costs.update({
+            "discipline": 7,
+            "out_of_clan_discipline": 10,
+            "virtue": 2,
+            "humanity": 1,
+            "path_rating": 1,
+        })
+        return costs
+
+    def spend_freebies(self, trait):
+        """Spend freebie points on a trait."""
+        output = super().spend_freebies(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is a discipline
+        discipline_fields = [
+            "celerity", "fortitude", "potence", "auspex", "dominate", "dementation",
+            "presence", "animalism", "protean", "obfuscate", "chimerstry",
+            "necromancy", "obtenebration", "quietus", "serpentis", "thaumaturgy",
+            "vicissitude", "daimoinon", "melpominee", "mytherceria", "obeah",
+            "temporis", "thanatosis", "valeren", "visceratika"
+        ]
+
+        if trait in discipline_fields:
+            from characters.models.vampire.discipline import Discipline
+            try:
+                discipline_obj = Discipline.objects.get(property_name=trait)
+                is_clan = self.is_clan_discipline(discipline_obj)
+                cost = 7 if is_clan else 10
+
+                if cost <= self.freebies:
+                    from core.utils import add_dot
+                    if add_dot(self, trait, 5):
+                        self.freebies -= cost
+                        return True
+                    return False
+                return False
+            except:
+                return False
+
+        # Handle virtues
+        if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
+            cost = self.freebie_cost("virtue")
+            if cost <= self.freebies:
+                from core.utils import add_dot
+                if add_dot(self, trait, 5):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle humanity
+        if trait == "humanity":
+            cost = self.freebie_cost("humanity")
+            if cost <= self.freebies:
+                from core.utils import add_dot
+                if add_dot(self, "humanity", 10):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle path rating
+        if trait == "path_rating":
+            cost = self.freebie_cost("path_rating")
+            if cost <= self.freebies:
+                from core.utils import add_dot
+                if add_dot(self, "path_rating", 10):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        return trait

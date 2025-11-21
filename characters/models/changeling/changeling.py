@@ -321,3 +321,186 @@ class Changeling(CtDHuman):
         self.freebies -= cost
         self.spent_freebies.append(self.freebie_spend_record(trait, "glamour", value, cost))
         return True
+
+    def xp_frequencies(self):
+        """Return frequency distribution for XP spending (for random character generation)."""
+        return {
+            "attribute": 16,
+            "ability": 20,
+            "background": 13,
+            "willpower": 1,
+            "art": 30,
+            "realm": 15,
+            "glamour": 3,
+            "banality": 1,
+        }
+
+    def xp_cost(self, trait_type, trait_value=None):
+        """Return XP cost for changeling-specific traits."""
+        from collections import defaultdict
+
+        costs = defaultdict(
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            {
+                "art": 8,
+                "realm": 5,
+                "glamour": 3,
+                "banality": 2,
+            },
+        )
+
+        if trait_type in ["art", "realm", "glamour", "banality"]:
+            if trait_value is not None:
+                return costs[trait_type] * trait_value
+            return costs[trait_type]
+
+        return costs[trait_type]
+
+    def spend_xp(self, trait):
+        """Spend XP on a trait."""
+        output = super().spend_xp(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is an art
+        arts_list = list(self.get_arts().keys())
+
+        if trait in arts_list:
+            current_value = getattr(self, trait)
+            cost = self.xp_cost("art", current_value + 1)
+
+            if cost <= self.xp:
+                if self.add_art(trait):
+                    self.xp -= cost
+                    self.add_to_spend(trait, getattr(self, trait), cost)
+                    return True
+                return False
+            return False
+
+        # Check if trait is a realm
+        realms_list = list(self.get_realms().keys())
+
+        if trait in realms_list:
+            current_value = getattr(self, trait)
+            cost = self.xp_cost("realm", current_value + 1)
+
+            if cost <= self.xp:
+                if self.add_realm(trait):
+                    self.xp -= cost
+                    self.add_to_spend(trait, getattr(self, trait), cost)
+                    return True
+                return False
+            return False
+
+        # Handle glamour
+        if trait == "glamour":
+            cost = self.xp_cost("glamour", self.glamour + 1)
+            if cost <= self.xp:
+                if self.add_glamour():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.glamour, cost)
+                    return True
+                return False
+            return False
+
+        # Handle banality
+        if trait == "banality":
+            cost = self.xp_cost("banality", self.banality + 1)
+            if cost <= self.xp:
+                if self.add_banality():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.banality, cost)
+                    return True
+                return False
+            return False
+
+        return trait
+
+    def freebie_frequencies(self):
+        """Return frequency distribution for freebie spending (for random character generation)."""
+        return {
+            "attribute": 15,
+            "ability": 8,
+            "background": 10,
+            "willpower": 1,
+            "meritflaw": 20,
+            "art": 25,
+            "realm": 15,
+            "glamour": 5,
+            "banality": 1,
+        }
+
+    def freebie_costs(self):
+        """Return a dictionary of freebie costs for changeling traits."""
+        costs = super().freebie_costs()
+        costs.update({
+            "art": 5,
+            "realm": 3,
+            "glamour": 3,
+            "banality": 2,
+        })
+        return costs
+
+    def freebie_cost(self, trait_type):
+        """Return freebie cost for changeling-specific traits."""
+        changeling_costs = {
+            "art": 5,
+            "realm": 3,
+            "glamour": 3,
+            "banality": 2,
+        }
+        if trait_type in changeling_costs.keys():
+            return changeling_costs[trait_type]
+        return super().freebie_cost(trait_type)
+
+    def spend_freebies(self, trait):
+        """Spend freebie points on a trait."""
+        output = super().spend_freebies(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is an art
+        arts_list = list(self.get_arts().keys())
+
+        if trait in arts_list:
+            cost = self.freebie_cost("art")
+            if cost <= self.freebies:
+                if self.add_art(trait):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Check if trait is a realm
+        realms_list = list(self.get_realms().keys())
+
+        if trait in realms_list:
+            cost = self.freebie_cost("realm")
+            if cost <= self.freebies:
+                if self.add_realm(trait):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle glamour
+        if trait == "glamour":
+            cost = self.freebie_cost("glamour")
+            if cost <= self.freebies:
+                if self.add_glamour():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle banality
+        if trait == "banality":
+            cost = self.freebie_cost("banality")
+            if cost <= self.freebies:
+                if self.add_banality():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        return trait

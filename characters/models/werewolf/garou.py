@@ -395,3 +395,186 @@ class Werewolf(WtAHuman):
 
     def total_fetish_rating(self):
         return sum(x.rank for x in self.fetishes_owned.all())
+
+    def xp_frequencies(self):
+        """Return frequency distribution for XP spending (for random character generation)."""
+        return {
+            "attribute": 16,
+            "ability": 20,
+            "background": 13,
+            "willpower": 1,
+            "gift": 30,
+            "rite": 5,
+            "rage": 2,
+            "gnosis": 3,
+            "renown": 10,
+        }
+
+    def xp_cost(self, trait_type, trait_value=None):
+        """Return XP cost for werewolf-specific traits."""
+        from collections import defaultdict
+
+        costs = defaultdict(
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            {
+                "gift": 3,
+                "rite": 1,
+                "rage": 1,
+                "gnosis": 2,
+                "glory": 1,
+                "honor": 1,
+                "wisdom": 1,
+            },
+        )
+
+        if trait_type in ["gift", "rite", "rage", "gnosis", "glory", "honor", "wisdom"]:
+            if trait_value is not None:
+                return costs[trait_type] * trait_value
+            return costs[trait_type]
+
+        return costs[trait_type]
+
+    def spend_xp(self, trait):
+        """Spend XP on a trait."""
+        output = super().spend_xp(trait)
+        if output in [True, False]:
+            return output
+
+        # Handle gifts
+        if trait == "gift":
+            # This would require a gift object to be passed,
+            # so we'll just return trait for now
+            return trait
+
+        # Handle rites
+        if trait == "rite":
+            # This would require a rite object to be passed,
+            # so we'll just return trait for now
+            return trait
+
+        # Handle rage
+        if trait == "rage":
+            cost = self.xp_cost("rage", self.rage + 1)
+            if cost <= self.xp:
+                if self.add_rage():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.rage, cost)
+                    return True
+                return False
+            return False
+
+        # Handle gnosis
+        if trait == "gnosis":
+            cost = self.xp_cost("gnosis", self.gnosis + 1)
+            if cost <= self.xp:
+                if self.add_gnosis():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.gnosis, cost)
+                    return True
+                return False
+            return False
+
+        # Handle renown (glory, honor, wisdom)
+        if trait in ["glory", "honor", "wisdom"]:
+            cost = self.xp_cost(trait, getattr(self, trait) + 1)
+            if cost <= self.xp:
+                current = getattr(self, trait)
+                setattr(self, trait, current + 1)
+                self.xp -= cost
+                self.add_to_spend(trait, getattr(self, trait), cost)
+                self.save()
+                return True
+            return False
+
+        return trait
+
+    def freebie_frequencies(self):
+        """Return frequency distribution for freebie spending (for random character generation)."""
+        return {
+            "attribute": 15,
+            "ability": 8,
+            "background": 10,
+            "willpower": 1,
+            "meritflaw": 20,
+            "gift": 25,
+            "rite": 3,
+            "rage": 5,
+            "gnosis": 8,
+            "renown": 5,
+        }
+
+    def freebie_costs(self):
+        """Return a dictionary of freebie costs for werewolf traits."""
+        costs = super().freebie_costs()
+        costs.update({
+            "gift": 5,
+            "rite": 1,
+            "rage": 1,
+            "gnosis": 2,
+            "glory": 1,
+            "honor": 1,
+            "wisdom": 1,
+        })
+        return costs
+
+    def freebie_cost(self, trait_type):
+        """Return freebie cost for werewolf-specific traits."""
+        werewolf_costs = {
+            "gift": 5,
+            "rite": 1,
+            "rage": 1,
+            "gnosis": 2,
+            "glory": 1,
+            "honor": 1,
+            "wisdom": 1,
+        }
+        if trait_type in werewolf_costs.keys():
+            return werewolf_costs[trait_type]
+        return super().freebie_cost(trait_type)
+
+    def spend_freebies(self, trait):
+        """Spend freebie points on a trait."""
+        output = super().spend_freebies(trait)
+        if output in [True, False]:
+            return output
+
+        # Handle gifts (would need Gift object)
+        if trait == "gift":
+            return trait
+
+        # Handle rites (would need Rite object)
+        if trait == "rite":
+            return trait
+
+        # Handle rage
+        if trait == "rage":
+            cost = self.freebie_cost("rage")
+            if cost <= self.freebies:
+                if self.add_rage():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle gnosis
+        if trait == "gnosis":
+            cost = self.freebie_cost("gnosis")
+            if cost <= self.freebies:
+                if self.add_gnosis():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle renown (glory, honor, wisdom)
+        if trait in ["glory", "honor", "wisdom"]:
+            cost = self.freebie_cost(trait)
+            if cost <= self.freebies:
+                current = getattr(self, trait)
+                setattr(self, trait, current + 1)
+                self.freebies -= cost
+                self.save()
+                return True
+            return False
+
+        return trait
