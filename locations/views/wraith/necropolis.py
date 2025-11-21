@@ -1,7 +1,7 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from locations.models.wraith.necropolis import Necropolis
 
 
@@ -25,7 +25,7 @@ class NecropolisCreateView(MessageMixin, CreateView):
     error_message = "Failed to create necropolis. Please correct the errors below."
 
 
-class NecropolisUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class NecropolisUpdateView(EditPermissionMixin, UpdateView):
     model = Necropolis
     fields = [
         "name",

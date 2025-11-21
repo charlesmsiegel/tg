@@ -1,18 +1,16 @@
 from characters.models.demon import Thrall
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class ThrallDetailView(SpecialUserMixin, DetailView):
+class ThrallDetailView(ViewPermissionMixin, DetailView):
     model = Thrall
     template_name = "characters/demon/thrall/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -93,7 +91,7 @@ class ThrallCreateView(MessageMixin, CreateView):
     template_name = "characters/demon/thrall/form.html"
 
 
-class ThrallUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class ThrallUpdateView(EditPermissionMixin, UpdateView):
     model = Thrall
     success_message = "Thrall updated successfully."
     error_message = "Error updating thrall."
@@ -171,7 +169,5 @@ class ThrallUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context

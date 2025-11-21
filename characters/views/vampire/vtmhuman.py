@@ -18,9 +18,9 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -36,9 +36,7 @@ class VtMHumanDetailView(HumanDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -116,7 +114,7 @@ class VtMHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/vampire/vtmhuman/form.html"
 
 
-class VtMHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class VtMHumanUpdateView(EditPermissionMixin, UpdateView):
     model = VtMHuman
     success_message = "VtM Human updated successfully."
     error_message = "Error updating VtM Human."
@@ -191,9 +189,7 @@ class VtMHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -300,9 +296,7 @@ class VtMHumanAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -336,9 +330,7 @@ class VtMHumanExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -384,7 +376,7 @@ class VtMHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
-class VtMHumanLanguagesView(SpecialUserMixin, FormView):
+class VtMHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
@@ -437,7 +429,7 @@ class VtMHumanAlliesView(GenericBackgroundView):
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
 
-class VtMHumanSpecialtiesView(SpecialUserMixin, FormView):
+class VtMHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
 

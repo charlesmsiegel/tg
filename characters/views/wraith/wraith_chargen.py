@@ -22,7 +22,8 @@ from characters.views.core.human import (
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -78,9 +79,7 @@ class WraithAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -121,9 +120,7 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -179,9 +176,7 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["shadow_archetypes"] = ShadowArchetype.objects.all()
         context["thorns"] = Thorn.objects.all()
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -211,7 +206,7 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithPassionsView(SpecialUserMixin, FormView):
+class WraithPassionsView(EditPermissionMixin, FormView):
     form_class = PassionForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -290,7 +285,7 @@ class WraithPassionsView(SpecialUserMixin, FormView):
         return super().form_invalid(form)
 
 
-class WraithFettersView(SpecialUserMixin, FormView):
+class WraithFettersView(EditPermissionMixin, FormView):
     form_class = FetterForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -386,9 +381,7 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -523,7 +516,7 @@ class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):
         return []
 
 
-class WraithLanguagesView(SpecialUserMixin, FormView):
+class WraithLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -577,7 +570,7 @@ class WraithAlliesView(GenericBackgroundView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithSpecialtiesView(SpecialUserMixin, FormView):
+class WraithSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wraith/chargen.html"
 

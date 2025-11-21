@@ -1,11 +1,12 @@
 from characters.models.core.human import Human
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
-class GenericBackgroundView(SpecialUserMixin, FormView):
+class GenericBackgroundView(EditPermissionMixin, FormView):
     primary_object_class = Human
     background_name = ""
     multiple_ownership = False

@@ -1,18 +1,16 @@
 from characters.models.werewolf.spirit_character import SpiritCharacter
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class SpiritDetailView(SpecialUserMixin, DetailView):
+class SpiritDetailView(ViewPermissionMixin, DetailView):
     model = SpiritCharacter
     template_name = "characters/werewolf/spirit/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -32,7 +30,7 @@ class SpiritCreateView(MessageMixin, CreateView):
         return form
 
 
-class SpiritUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class SpiritUpdateView(EditPermissionMixin, UpdateView):
     model = SpiritCharacter
     fields = ["name", "description", "willpower", "rage", "gnosis", "essence", "owner"]
     template_name = "characters/werewolf/spirit/form.html"
@@ -41,9 +39,7 @@ class SpiritUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def get_form(self, form_class=None):

@@ -18,14 +18,14 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanLanguagesView,
     WtAHumanSpecialtiesView,
 )
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
 
 
-class KinfolkDetailView(SpecialUserMixin, DetailView):
+class KinfolkDetailView(ViewPermissionMixin, DetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 
@@ -52,9 +52,7 @@ class KinfolkDetailView(SpecialUserMixin, DetailView):
             all_gifts[i : i + row_length] for i in range(0, len(all_gifts), row_length)
         ]
         context["gifts"] = all_gifts
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -134,7 +132,7 @@ class KinfolkCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/kinfolk/form.html"
 
 
-class KinfolkUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class KinfolkUpdateView(EditPermissionMixin, UpdateView):
     model = Kinfolk
     success_message = "Kinfolk updated successfully."
     error_message = "Error updating kinfolk."
@@ -211,9 +209,7 @@ class KinfolkUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -251,9 +247,7 @@ class KinfolkAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 

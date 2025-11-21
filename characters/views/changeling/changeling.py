@@ -20,8 +20,8 @@ from characters.views.core.human import (
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -30,7 +30,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, FormView, UpdateView, View
 
 
-class ChangelingDetailView(SpecialUserMixin, DetailView):
+class ChangelingDetailView(ViewPermissionMixin, DetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 
@@ -51,9 +51,7 @@ class ChangelingDetailView(SpecialUserMixin, DetailView):
         context["merits_and_flaws"] = MeritFlawRating.objects.order_by(
             "mf__name"
         ).filter(character=self.object)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -149,7 +147,7 @@ class ChangelingCreateView(MessageMixin, CreateView):
     error_message = "Failed to create changeling. Please correct the errors below."
 
 
-class ChangelingUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class ChangelingUpdateView(EditPermissionMixin, UpdateView):
     model = Changeling
     fields = [
         "name",
@@ -242,9 +240,7 @@ class ChangelingUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -289,9 +285,7 @@ class ChangelingAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -340,9 +334,7 @@ class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -435,9 +427,7 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -568,7 +558,7 @@ class ChangelingFreebieFormPopulationView(HumanFreebieFormPopulationView):
         return []
 
 
-class ChangelingLanguagesView(SpecialUserMixin, FormView):
+class ChangelingLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/changeling/changeling/chargen.html"
 
@@ -612,7 +602,7 @@ class ChangelingLanguagesView(SpecialUserMixin, FormView):
         return context
 
 
-class ChangelingSpecialtiesView(SpecialUserMixin, FormView):
+class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/changeling/changeling/chargen.html"
 

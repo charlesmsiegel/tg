@@ -11,8 +11,9 @@ from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import EditPermissionMixin, SpendFreebiesPermissionMixin
 from core.views.generic import DictView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import View
@@ -21,18 +22,13 @@ from game.models import ObjectType
 
 
 class HumanDetailView(CharacterDetailView):
+    """Detail view for Human characters. Inherits permissions from CharacterDetailView."""
     model = Human
     template_name = "characters/core/human/detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
-        return context
 
-
-class HumanCreateView(CreateView):
+class HumanCreateView(LoginRequiredMixin, CreateView):
+    """Create view for Human characters."""
     model = Human
     fields = [
         "name",
@@ -62,8 +58,18 @@ class HumanCreateView(CreateView):
     ]
     template_name = "characters/core/human/form.html"
 
+    def form_valid(self, form):
+        if not form.instance.owner:
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class HumanUpdateView(SpecialUserMixin, UpdateView):
+
+class HumanUpdateView(EditPermissionMixin, UpdateView):
+    """
+    Update view for Human characters.
+    Only STs and Admins can directly edit character fields.
+    Owners should use the character creation workflow or XP spending.
+    """
     model = Human
     fields = [
         "name",
@@ -95,13 +101,12 @@ class HumanUpdateView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
-class HumanBasicsView(CreateView):
+class HumanBasicsView(LoginRequiredMixin, CreateView):
+    """First step of character creation."""
     model = Human
     fields = [
         "name",
@@ -111,8 +116,17 @@ class HumanBasicsView(CreateView):
     ]
     template_name = "characters/core/human/humanbasics.html"
 
+    def form_valid(self, form):
+        if not form.instance.owner:
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class HumanAttributeView(SpecialUserMixin, UpdateView):
+
+class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
+    """
+    Character creation step: allocating attribute points.
+    Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
+    """
     model = Human
     fields = [
         "strength",
@@ -175,16 +189,14 @@ class HumanAttributeView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
         return context
 
 
-class HumanAbilityView(SpecialUserMixin, UpdateView):
+class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = Human.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -198,9 +210,7 @@ class HumanAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -230,7 +240,7 @@ class HumanAbilityView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class HumanBiographicalInformation(SpecialUserMixin, UpdateView):
+class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = [
         "age",
@@ -249,9 +259,7 @@ class HumanBiographicalInformation(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -404,7 +412,7 @@ class HumanFreebieFormPopulationView(View):
         return examples.filter(id__in=affordable_mfs)
 
 
-class HumanFreebiesView(SpecialUserMixin, UpdateView):
+class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/human/human/chargen.html"
@@ -421,9 +429,7 @@ class HumanFreebiesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -458,7 +464,7 @@ class HumanFreebiesView(SpecialUserMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class HumanLanguagesView(SpecialUserMixin, FormView):
+class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/core/human/chargen.html"
 
@@ -504,7 +510,7 @@ class HumanLanguagesView(SpecialUserMixin, FormView):
         return context
 
 
-class HumanSpecialtiesView(SpecialUserMixin, FormView):
+class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/core/human/chargen.html"
 
