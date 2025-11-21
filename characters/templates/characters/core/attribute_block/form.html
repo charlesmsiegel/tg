@@ -215,7 +215,7 @@
         if (submitButton) {
             if (isValidDistribution) {
                 console.log('Showing submit button');
-                submitButton.style.display = 'inline-block';
+                submitButton.style.removeProperty('display');
                 submitButton.disabled = false;
             } else {
                 console.log('Hiding submit button');
