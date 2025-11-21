@@ -57,10 +57,11 @@
     const BASE = 3; // Each category starts with 3 points (1 per attribute)
     const MAX_ATTRIBUTE = 5;
     const MIN_ATTRIBUTE = 1;
-    const TOTAL_POINTS = BASE * 3 + PRIMARY + SECONDARY + TERTIARY; // 3+3+3 + 7+5+3 = 24
+    const TOTAL_POINTS = BASE * 3 + PRIMARY + SECONDARY + TERTIARY;
 
     // Target totals for each category - order doesn't matter, any category can be any target
-    const TARGETS = [BASE + TERTIARY, BASE + SECONDARY, BASE + PRIMARY]; // [6, 8, 10]
+    // Sort to ensure we always have [smallest, middle, largest] for comparison
+    const TARGETS = [BASE + TERTIARY, BASE + SECONDARY, BASE + PRIMARY].sort((a, b) => a - b);
 
     // Attribute groupings
     const CATEGORIES = {
@@ -199,7 +200,8 @@
         // Check if we have a valid distribution
         const sortedTotals = [totals.physical, totals.social, totals.mental].sort((a,b) => a-b);
         const isValidDistribution = pointsRemaining === 0 &&
-                                   JSON.stringify(sortedTotals) === JSON.stringify(TARGETS);
+                                   sortedTotals.length === TARGETS.length &&
+                                   sortedTotals.every((val, idx) => val === TARGETS[idx]);
 
         // Control submit button visibility
         if (submitButton) {
