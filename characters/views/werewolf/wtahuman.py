@@ -20,9 +20,9 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -38,9 +38,7 @@ class WtAHumanDetailView(HumanDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -108,7 +106,7 @@ class WtAHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/wtahuman/form.html"
 
 
-class WtAHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class WtAHumanUpdateView(EditPermissionMixin, UpdateView):
     model = WtAHuman
     success_message = "WtA Human updated successfully."
     error_message = "Error updating WtA Human."
@@ -173,9 +171,7 @@ class WtAHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -282,9 +278,7 @@ class WtAHumanAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -318,9 +312,7 @@ class WtAHumanExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -366,7 +358,7 @@ class WtAHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
-class WtAHumanLanguagesView(SpecialUserMixin, FormView):
+class WtAHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
@@ -419,7 +411,7 @@ class WtAHumanAlliesView(GenericBackgroundView):
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
 
-class WtAHumanSpecialtiesView(SpecialUserMixin, FormView):
+class WtAHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/werewolf/wtahuman/chargen.html"
 

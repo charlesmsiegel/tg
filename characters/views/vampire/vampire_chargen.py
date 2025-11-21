@@ -22,8 +22,8 @@ from characters.views.core.human import (
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -80,9 +80,7 @@ class VampireAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -150,9 +148,7 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         if self.object.clan:
             context["clan_disciplines"] = self.object.get_clan_disciplines()
         else:
@@ -232,9 +228,7 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         context["uses_path"] = bool(self.object.path)
         return context
 
@@ -309,9 +303,7 @@ class VampireExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):

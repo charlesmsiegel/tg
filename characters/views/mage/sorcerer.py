@@ -37,7 +37,8 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from core.views.generic import MultipleFormsetsMixin
 from core.views.message_mixin import MessageMixin
 from django import forms
@@ -138,7 +139,7 @@ def load_affinities(request):
     )
 
 
-class SorcererUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class SorcererUpdateView(EditPermissionMixin, UpdateView):
     model = Sorcerer
     fields = "__all__"
     template_name = "characters/mage/sorcerer/form.html"
@@ -147,9 +148,7 @@ class SorcererUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -159,9 +158,7 @@ class SorcererDetailView(HumanDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -261,9 +258,7 @@ class SorcererAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -309,9 +304,7 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -360,9 +353,7 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -395,7 +386,7 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         return super().form_valid(form)
 
 
-class SorcererRitualView(SpecialUserMixin, FormView):
+class SorcererRitualView(EditPermissionMixin, FormView):
     form_class = NuminaRitualForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -502,9 +493,7 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -546,9 +535,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         context["ritual_form"] = NuminaRitualForm(pk=self.object.id)
         return context
 
@@ -724,7 +711,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
         return self.form_valid(form)
 
 
-class SorcererLanguagesView(SpecialUserMixin, FormView):
+class SorcererLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -761,7 +748,7 @@ class SorcererLanguagesView(SpecialUserMixin, FormView):
         return context
 
 
-class SorcererSpecialtiesView(SpecialUserMixin, FormView):
+class SorcererSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -867,7 +854,7 @@ class SorcererNodeView(GenericBackgroundView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
-class SorcererArtifactView(SpecialUserMixin, FormView):
+class SorcererArtifactView(EditPermissionMixin, FormView):
     form_class = ArtifactCreateOrSelectForm
     template_name = "characters/mage/sorcerer/chargen.html"
 

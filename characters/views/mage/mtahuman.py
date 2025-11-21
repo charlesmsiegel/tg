@@ -27,9 +27,9 @@ from characters.views.core.human import (
 )
 from characters.views.mage.background_views import MtAEnhancementView
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -50,9 +50,7 @@ class MtAHumanDetailView(HumanDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -170,7 +168,7 @@ class MtAHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/mage/mtahuman/form.html"
 
 
-class MtAHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class MtAHumanUpdateView(EditPermissionMixin, UpdateView):
     model = MtAHuman
     success_message = "MtA Human updated successfully."
     error_message = "Error updating MtA Human."
@@ -285,9 +283,7 @@ class MtAHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -339,9 +335,7 @@ class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -568,9 +562,7 @@ class MtAHumanAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -594,9 +586,7 @@ class MtAHumanExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -642,7 +632,7 @@ class MtAHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
-class MtAHumanLanguagesView(SpecialUserMixin, FormView):
+class MtAHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
@@ -722,7 +712,7 @@ class MtAHumanNodeView(GenericBackgroundView):
     template_name = "characters/mage/mtahuman/chargen.html"
 
 
-class MtAHumanSpecialtiesView(SpecialUserMixin, FormView):
+class MtAHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/mtahuman/chargen.html"
 

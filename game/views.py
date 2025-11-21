@@ -2,9 +2,7 @@ import itertools
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
-from django.contrib import messages
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import OuterRef, Subquery
@@ -241,7 +239,7 @@ class CommandsView(TemplateView):
     template_name = "game/scene/commands.html"
 
 
-class JournalDetailView(SpecialUserMixin, DetailView):
+class JournalDetailView(ViewPermissionMixin, DetailView):
     model = Journal
     template_name = "game/journal/detail.html"
 

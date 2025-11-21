@@ -3,13 +3,14 @@ from typing import Any
 from characters.forms.mage.enhancements import EnhancementForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
-class MtAEnhancementView(SpecialUserMixin, FormView):
+class MtAEnhancementView(EditPermissionMixin, FormView):
     form_class = EnhancementForm
     template_name = "characters/mage/mage/chargen.html"
 

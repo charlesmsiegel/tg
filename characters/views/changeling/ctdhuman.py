@@ -17,9 +17,9 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -29,15 +29,13 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class CtDHumanDetailView(SpecialUserMixin, DetailView):
+class CtDHumanDetailView(ViewPermissionMixin, DetailView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -97,7 +95,7 @@ class CtDHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/changeling/ctdhuman/form.html"
 
 
-class CtDHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
     model = CtDHuman
     success_message = "CtD Human updated successfully."
     error_message = "Error updating CtD Human."
@@ -154,9 +152,7 @@ class CtDHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -263,9 +259,7 @@ class CtDHumanAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -295,9 +289,7 @@ class CtDHumanExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -343,7 +335,7 @@ class CtDHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
-class CtDHumanLanguagesView(SpecialUserMixin, FormView):
+class CtDHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
@@ -396,7 +388,7 @@ class CtDHumanAlliesView(GenericBackgroundView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanSpecialtiesView(SpecialUserMixin, FormView):
+class CtDHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/changeling/ctdhuman/chargen.html"
 

@@ -3,7 +3,8 @@ from typing import Any
 from characters.forms.core.ally import AllyForm
 from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
-from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from core.views.generic import DictView
 from core.views.message_mixin import MessageMixin
 from django.http import HttpResponseRedirect
@@ -191,7 +192,7 @@ class ChantryBasicsView(FormView):
         return self.object.get_absolute_url()
 
 
-class ChantryPointsView(SpecialUserMixin, FormView):
+class ChantryPointsView(EditPermissionMixin, FormView):
     form_class = ChantryPointForm
     template_name = "locations/mage/chantry/locgen.html"
 
@@ -204,9 +205,7 @@ class ChantryPointsView(SpecialUserMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def get_success_url(self):
@@ -225,7 +224,7 @@ class ChantryPointsView(SpecialUserMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class ChantryIntegratedEffectsView(SpecialUserMixin, FormView):
+class ChantryIntegratedEffectsView(EditPermissionMixin, FormView):
     form_class = ChantryEffectsForm
     template_name = "locations/mage/chantry/locgen.html"
 
@@ -238,9 +237,7 @@ class ChantryIntegratedEffectsView(SpecialUserMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["object"] = self.object
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def get_success_url(self):

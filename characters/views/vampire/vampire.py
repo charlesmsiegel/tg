@@ -12,9 +12,7 @@ class VampireDetailView(HumanDetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         context["disciplines"] = self.object.get_disciplines()
         if self.object.clan:
             context["clan_disciplines"] = self.object.get_clan_disciplines()

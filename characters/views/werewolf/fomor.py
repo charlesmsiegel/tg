@@ -17,8 +17,8 @@ from characters.views.core.human import (
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -26,15 +26,13 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class FomorDetailView(SpecialUserMixin, DetailView):
+class FomorDetailView(ViewPermissionMixin, DetailView):
     model = Fomor
     template_name = "characters/werewolf/fomor/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -105,7 +103,7 @@ class FomorCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/fomor/form.html"
 
 
-class FomorUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class FomorUpdateView(EditPermissionMixin, UpdateView):
     model = Fomor
     success_message = "Fomor updated successfully."
     error_message = "Error updating fomor."
@@ -173,9 +171,7 @@ class FomorUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -213,9 +209,7 @@ class FomorAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -246,9 +240,7 @@ class FomorPowersView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -273,9 +265,7 @@ class FomorExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -321,7 +311,7 @@ class FomorFreebieFormPopulationView(HumanFreebieFormPopulationView):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
-class FomorLanguagesView(SpecialUserMixin, FormView):
+class FomorLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
@@ -364,7 +354,7 @@ class FomorLanguagesView(SpecialUserMixin, FormView):
         return context
 
 
-class FomorSpecialtiesView(SpecialUserMixin, FormView):
+class FomorSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/werewolf/fomor/chargen.html"
 

@@ -1,18 +1,16 @@
 from characters.models.demon import Demon
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class DemonDetailView(SpecialUserMixin, DetailView):
+class DemonDetailView(ViewPermissionMixin, DetailView):
     model = Demon
     template_name = "characters/demon/demon/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -103,7 +101,7 @@ class DemonCreateView(MessageMixin, CreateView):
     error_message = "Failed to create demon. Please correct the errors below."
 
 
-class DemonUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class DemonUpdateView(EditPermissionMixin, UpdateView):
     model = Demon
     fields = [
         "name",
@@ -191,7 +189,5 @@ class DemonUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context

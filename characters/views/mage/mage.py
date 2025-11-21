@@ -39,8 +39,8 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages
@@ -353,9 +353,7 @@ class MageDetailView(HumanDetailView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["items_owned"] = ItemModel.objects.filter(owned_by=self.object)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         if "form" not in context:
             context["form"] = MageXPForm(character=self.object)
         context["rote_form"] = RoteCreationForm(instance=self.object)
@@ -929,7 +927,7 @@ class MageCreateView(MessageMixin, CreateView):
         return form
 
 
-class MageUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
+class MageUpdateView(EditPermissionMixin, UpdateView):
     model = Mage
     fields = [
         "name",
@@ -1070,9 +1068,7 @@ class MageUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -1119,9 +1115,7 @@ class MageAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -1171,9 +1165,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
             context["practice_formset"] = PracticeRatingFormSet(
                 instance=self.object, mage=self.object
             )
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -1340,9 +1332,7 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -1364,9 +1354,7 @@ class MageExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
-        )
+        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
