@@ -62,89 +62,123 @@ class BookReference(models.Model):
         return f"<i>{self.book}</i> p. {self.page}"
 
 
-class ModelQuerySet(PolymorphicQuerySet):
-    """Custom queryset for Model with chainable query patterns."""
 
-    def submitted(self):
-        """Objects with status='Sub' (Submitted for approval)"""
-        return self.filter(status="Sub")
+class Observer(models.Model):
+    """
+    Grants specific users observer access to any object.
+    Uses generic foreign key to support Characters, Items, Locations, etc.
+    """
 
-    def pending_approval(self):
-        """Objects with status in ['Un', 'Sub'] (awaiting approval)"""
-        return self.filter(status__in=["Un", "Sub"])
+    # Generic FK to any object
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
-    def approved(self):
-        """Objects with status='App' (Approved)"""
-        return self.filter(status="App")
+    # Who can observe
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='observing'
+    )
 
-    def retired(self):
-        """Objects with status='Ret' (Retired)"""
-        return self.filter(status="Ret")
+    # Metadata
+    granted_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='granted_observer_access'
+    )
+    granted_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
 
-    def deceased(self):
-        """Objects with status='Dec' (Deceased)"""
-        return self.filter(status="Dec")
+    class Meta:
+        unique_together = [['content_type', 'object_id', 'user']]
+        indexes = [
+            models.Index(fields=['content_type', 'object_id']),
+            models.Index(fields=['user']),
+        ]
+        verbose_name = "Observer"
+        verbose_name_plural = "Observers"
 
-    def active(self):
-        """Objects not retired or deceased"""
-        return self.exclude(status__in=["Dec", "Ret"])
+    def __str__(self):
+        return f"{self.user.username} observing {self.content_object}"
 
-    def visible(self):
-        """Objects with display=True"""
-        return self.filter(display=True)
 
-    def for_chronicle(self, chronicle):
-        """Objects in a specific chronicle"""
-        return self.filter(chronicle=chronicle).select_related("chronicle")
+class PermissionMixin(models.Model):
+    """
+    Mixin for permission-controlled objects.
+    Add to Character, ItemModel, LocationModel, etc.
+    """
 
-    def for_user_chronicles(self, user):
-        """Objects in any of the user's chronicles"""
-        return self.filter(chronicle__in=user.chronicle_set.all()).select_related(
-            "chronicle"
+    visibility = models.CharField(
+        max_length=3,
+        choices=[
+            ('PUB', 'Public'),
+            ('PRI', 'Private'),
+            ('CHR', 'Chronicle Only'),
+            ('CUS', 'Custom'),
+        ],
+        default='PRI',
+        help_text="Controls baseline visibility"
+    )
+
+    # Generic relation to observers
+    observers = GenericRelation(
+        'Observer',
+        related_query_name='%(class)s'
+    )
+
+    class Meta:
+        abstract = True
+
+    def get_user_roles(self, user):
+        """Get all roles user has for this object."""
+        from core.permissions import PermissionManager
+        return PermissionManager.get_user_roles(user, self)
+
+    def user_can_view(self, user):
+        """Check if user can view this object."""
+        from core.permissions import PermissionManager
+        return PermissionManager.user_can_view(user, self)
+
+    def user_can_edit(self, user):
+        """Check if user can edit this object (EDIT_FULL)."""
+        from core.permissions import PermissionManager
+        return PermissionManager.user_can_edit(user, self)
+
+    def user_can_spend_xp(self, user):
+        """Check if user can spend XP on this object."""
+        from core.permissions import PermissionManager
+        return PermissionManager.user_can_spend_xp(user, self)
+
+    def user_can_spend_freebies(self, user):
+        """Check if user can spend freebie points on this object."""
+        from core.permissions import PermissionManager
+        return PermissionManager.user_can_spend_freebies(user, self)
+
+    def get_visibility_tier(self, user):
+        """Get visibility tier for user."""
+        from core.permissions import PermissionManager
+        return PermissionManager.get_visibility_tier(user, self)
+
+    def add_observer(self, user, granted_by):
+        """Grant observer access to a user."""
+        Observer.objects.get_or_create(
+            content_object=self,
+            user=user,
+            defaults={'granted_by': granted_by}
         )
 
-    def owned_by(self, user):
-        """Objects owned by a specific user"""
-        return self.filter(owner=user).select_related("owner")
-
-    def with_pending_images(self):
-        """Objects with images awaiting approval"""
-        return self.filter(image_status="sub").exclude(image="")
-
-    def top_level(self):
-        """Objects with no parent (top-level in hierarchy)
-
-        Raises:
-            AttributeError: If the model doesn't have a 'parent' field
-        """
-        # Check if the model has a parent field
-        if not hasattr(self.model, '_meta'):
-            raise AttributeError(f"{self.model.__name__} manager cannot use top_level()")
-
-        try:
-            self.model._meta.get_field('parent')
-        except Exception:
-            raise AttributeError(
-                f"{self.model.__name__} does not have a 'parent' field. "
-                f"top_level() can only be used on models with hierarchical parent relationships."
-            )
-
-        return self.filter(parent=None)
-
-    def pending_approval_for_user(self, user):
-        """Objects awaiting approval in user's chronicles (optimized)"""
-        return (
-            self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
-            .select_related("chronicle", "owner")
-            .order_by("name")
-        )
+    def remove_observer(self, user):
+        """Remove observer access."""
+        self.observers.filter(user=user).delete()
 
 
-# Create ModelManager from the QuerySet to expose all QuerySet methods on the manager
-ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
-
-
-class Model(PolymorphicModel):
+class Model(PermissionMixin, PolymorphicModel):
     type = "model"
 
     name = models.CharField(max_length=100)
@@ -346,117 +380,3 @@ class HouseRule(models.Model):
         self.sources.add(bookref)
         return self
 
-
-class Observer(models.Model):
-    """
-    Grants specific users observer access to any object.
-    Uses generic foreign key to support Characters, Items, Locations, etc.
-    """
-
-    # Generic FK to any object
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE
-    )
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    # Who can observe
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='observing'
-    )
-
-    # Metadata
-    granted_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='granted_observer_access'
-    )
-    granted_at = models.DateTimeField(auto_now_add=True)
-    notes = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = [['content_type', 'object_id', 'user']]
-        indexes = [
-            models.Index(fields=['content_type', 'object_id']),
-            models.Index(fields=['user']),
-        ]
-        verbose_name = "Observer"
-        verbose_name_plural = "Observers"
-
-    def __str__(self):
-        return f"{self.user.username} observing {self.content_object}"
-
-
-class PermissionMixin(models.Model):
-    """
-    Mixin for permission-controlled objects.
-    Add to Character, ItemModel, LocationModel, etc.
-    """
-
-    visibility = models.CharField(
-        max_length=3,
-        choices=[
-            ('PUB', 'Public'),
-            ('PRI', 'Private'),
-            ('CHR', 'Chronicle Only'),
-            ('CUS', 'Custom'),
-        ],
-        default='PRI',
-        help_text="Controls baseline visibility"
-    )
-
-    # Generic relation to observers
-    observers = GenericRelation(
-        'Observer',
-        related_query_name='%(class)s'
-    )
-
-    class Meta:
-        abstract = True
-
-    def get_user_roles(self, user):
-        """Get all roles user has for this object."""
-        from core.permissions import PermissionManager
-        return PermissionManager.get_user_roles(user, self)
-
-    def user_can_view(self, user):
-        """Check if user can view this object."""
-        from core.permissions import PermissionManager
-        return PermissionManager.user_can_view(user, self)
-
-    def user_can_edit(self, user):
-        """Check if user can edit this object (EDIT_FULL)."""
-        from core.permissions import PermissionManager
-        return PermissionManager.user_can_edit(user, self)
-
-    def user_can_spend_xp(self, user):
-        """Check if user can spend XP on this object."""
-        from core.permissions import PermissionManager
-        return PermissionManager.user_can_spend_xp(user, self)
-
-    def user_can_spend_freebies(self, user):
-        """Check if user can spend freebie points on this object."""
-        from core.permissions import PermissionManager
-        return PermissionManager.user_can_spend_freebies(user, self)
-
-    def get_visibility_tier(self, user):
-        """Get visibility tier for user."""
-        from core.permissions import PermissionManager
-        return PermissionManager.get_visibility_tier(user, self)
-
-    def add_observer(self, user, granted_by):
-        """Grant observer access to a user."""
-        Observer.objects.get_or_create(
-            content_object=self,
-            user=user,
-            defaults={'granted_by': granted_by}
-        )
-
-    def remove_observer(self, user):
-        """Remove observer access."""
-        self.observers.filter(user=user).delete()
