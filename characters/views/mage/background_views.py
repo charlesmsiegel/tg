@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
-class MtAEnhancementView(EditPermissionMixin, FormView):
+class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     form_class = EnhancementForm
     template_name = "characters/mage/mage/chargen.html"
 

@@ -1,9 +1,11 @@
 from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
 
-class RealityZoneDetailView(DetailView):
+class RealityZoneDetailView(ViewPermissionMixin, DetailView):
     model = RealityZone
     template_name = "locations/mage/reality_zone/detail.html"
 
@@ -18,7 +20,7 @@ class RealityZoneDetailView(DetailView):
         return context
 
 
-class RealityZoneCreateView(MessageMixin, CreateView):
+class RealityZoneCreateView(LoginRequiredMixin, CreateView):
     model = RealityZone
     fields = ["name", "description", "practices"]
     template_name = "locations/mage/reality_zone/form.html"
@@ -34,7 +36,7 @@ class RealityZoneCreateView(MessageMixin, CreateView):
         return form
 
 
-class RealityZoneUpdateView(MessageMixin, UpdateView):
+class RealityZoneUpdateView(EditPermissionMixin, UpdateView):
     model = RealityZone
     fields = ["name", "description", "practices"]
     template_name = "locations/mage/reality_zone/form.html"

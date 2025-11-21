@@ -22,7 +22,7 @@ from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 
 
-class ChantryDetailView(DetailView):
+class ChantryDetailView(ViewPermissionMixin, DetailView):
     model = Chantry
     template_name = "locations/mage/chantry/detail.html"
 
@@ -46,7 +46,7 @@ class ChantryListView(ListView):
     template_name = "locations/mage/chantry/list.html"
 
 
-class ChantryCreateView(MessageMixin, CreateView):
+class ChantryCreateView(LoginRequiredMixin, CreateView):
     model = Chantry
     fields = [
         "name",
@@ -80,7 +80,7 @@ class ChantryCreateView(MessageMixin, CreateView):
         return form
 
 
-class ChantryUpdateView(MessageMixin, UpdateView):
+class ChantryUpdateView(EditPermissionMixin, UpdateView):
     model = Chantry
     fields = [
         "name",

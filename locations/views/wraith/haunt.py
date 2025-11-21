@@ -5,12 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from locations.models.wraith.haunt import Haunt
 
 
-class HauntDetailView(DetailView):
+class HauntDetailView(ViewPermissionMixin, DetailView):
     model = Haunt
     template_name = "locations/wraith/haunt/detail.html"
 
 
-class HauntCreateView(MessageMixin, CreateView):
+class HauntCreateView(LoginRequiredMixin, CreateView):
     model = Haunt
     fields = [
         "name",

@@ -1,9 +1,11 @@
 from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from locations.models.werewolf.caern import Caern
 
 
-class CaernDetailView(DetailView):
+class CaernDetailView(ViewPermissionMixin, DetailView):
     model = Caern
     template_name = "locations/werewolf/caern/detail.html"
 
@@ -14,7 +16,7 @@ class CaernListView(ListView):
     template_name = "locations/werewolf/caern/list.html"
 
 
-class CaernCreateView(MessageMixin, CreateView):
+class CaernCreateView(LoginRequiredMixin, CreateView):
     model = Caern
     fields = [
         "name",
@@ -37,7 +39,7 @@ class CaernCreateView(MessageMixin, CreateView):
         return form
 
 
-class CaernUpdateView(MessageMixin, UpdateView):
+class CaernUpdateView(EditPermissionMixin, UpdateView):
     model = Caern
     fields = [
         "name",

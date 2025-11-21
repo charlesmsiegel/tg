@@ -5,12 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from locations.models.wraith.necropolis import Necropolis
 
 
-class NecropolisDetailView(DetailView):
+class NecropolisDetailView(ViewPermissionMixin, DetailView):
     model = Necropolis
     template_name = "locations/wraith/necropolis/detail.html"
 
 
-class NecropolisCreateView(MessageMixin, CreateView):
+class NecropolisCreateView(LoginRequiredMixin, CreateView):
     model = Necropolis
     fields = [
         "name",
