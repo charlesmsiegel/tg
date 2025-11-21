@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.dtfhuman import DtFHumanCreationForm
 from characters.forms.demon.freebies import DtFHumanFreebiesForm
@@ -233,7 +233,7 @@ class DtFHumanLanguagesView(HumanLanguagesView):
 class DtFHumanAlliesView(GenericBackgroundView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

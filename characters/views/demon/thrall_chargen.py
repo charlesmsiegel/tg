@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
@@ -210,7 +210,7 @@ class ThrallLanguagesView(HumanLanguagesView):
 class ThrallAlliesView(GenericBackgroundView):
     model = Thrall
     template_name = "characters/demon/thrall/chargen.html"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

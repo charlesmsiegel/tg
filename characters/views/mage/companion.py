@@ -1,4 +1,4 @@
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.freebies import CompanionFreebiesForm
 from characters.models.core.ability_block import Ability
@@ -542,7 +542,7 @@ class CompanionSpecialtiesView(EditPermissionMixin, FormView):
 class CompanionAlliesView(GenericBackgroundView):
     primary_object_class = Companion
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/mage/companion/chargen.html"
 
 

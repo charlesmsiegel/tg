@@ -1,5 +1,7 @@
 from typing import Any
 
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
+from characters.forms.core.contact_enhanced import ContactEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.fomor import FomorCreationForm
@@ -8,6 +10,7 @@ from characters.models.core.specialty import Specialty
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.fomoripower import FomoriPower
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
@@ -356,6 +359,20 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
         return context
 
 
+class FomorAlliesView(GenericBackgroundView):
+    primary_object_class = Fomor
+    background_name = "allies"
+    form_class = AllyEnhancedForm
+    template_name = "characters/werewolf/fomor/chargen.html"
+
+
+class FomorContactsView(GenericBackgroundView):
+    primary_object_class = Fomor
+    background_name = "contacts"
+    form_class = ContactEnhancedForm
+    template_name = "characters/werewolf/fomor/chargen.html"
+
+
 class FomorSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/werewolf/fomor/chargen.html"
@@ -395,7 +412,9 @@ class FomorCharacterCreationView(HumanCharacterCreationView):
         5: FomorExtrasView,
         6: FomorFreebiesView,
         7: FomorLanguagesView,
-        8: FomorSpecialtiesView,
+        8: FomorAlliesView,
+        9: FomorContactsView,
+        10: FomorSpecialtiesView,
     }
     model_class = Fomor
     key_property = "creation_status"

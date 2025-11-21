@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.freebies import GhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
@@ -232,7 +232,7 @@ class GhoulLanguagesView(HumanLanguagesView):
 class GhoulAlliesView(GenericBackgroundView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/chargen.html"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

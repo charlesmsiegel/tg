@@ -1,7 +1,7 @@
 from typing import Any
 
 from characters.forms.changeling.changeling import ChangelingCreationForm
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.changeling import Changeling
@@ -608,7 +608,7 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
 class ChangelingAlliesView(GenericBackgroundView):
     primary_object_class = Changeling
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/changeling/changeling/chargen.html"
 
 
