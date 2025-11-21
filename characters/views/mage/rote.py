@@ -2,6 +2,7 @@ from characters.models.core import Ability, Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -10,16 +11,20 @@ class RoteDetailView(DetailView):
     template_name = "characters/mage/rote/detail.html"
 
 
-class RoteCreateView(CreateView):
+class RoteCreateView(MessageMixin, CreateView):
     model = Rote
     fields = ["name", "description", "effect", "practice", "attribute", "ability"]
     template_name = "characters/mage/rote/form.html"
+    success_message = "Rote created successfully."
+    error_message = "There was an error creating the Rote."
 
 
-class RoteUpdateView(UpdateView):
+class RoteUpdateView(MessageMixin, UpdateView):
     model = Rote
     fields = ["name", "description", "effect", "practice", "attribute", "ability"]
     template_name = "characters/mage/rote/form.html"
+    success_message = "Rote updated successfully."
+    error_message = "There was an error updating the Rote."
 
 
 class RoteListView(ListView):

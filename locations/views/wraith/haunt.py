@@ -1,6 +1,7 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from locations.models.wraith.haunt import Haunt
 
 
@@ -9,7 +10,7 @@ class HauntDetailView(DetailView):
     template_name = "locations/wraith/haunt/detail.html"
 
 
-class HauntCreateView(CreateView):
+class HauntCreateView(MessageMixin, CreateView):
     model = Haunt
     fields = [
         "name",
@@ -23,9 +24,11 @@ class HauntCreateView(CreateView):
         "attracts_ghosts",
     ]
     template_name = "locations/wraith/haunt/form.html"
+    success_message = "Haunt '{name}' created successfully!"
+    error_message = "Failed to create haunt. Please correct the errors below."
 
 
-class HauntUpdateView(SpecialUserMixin, UpdateView):
+class HauntUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Haunt
     fields = [
         "name",
@@ -39,6 +42,8 @@ class HauntUpdateView(SpecialUserMixin, UpdateView):
         "attracts_ghosts",
     ]
     template_name = "locations/wraith/haunt/form.html"
+    success_message = "Haunt '{name}' updated successfully!"
+    error_message = "Failed to update haunt. Please correct the errors below."
 
 
 class HauntListView(ListView):

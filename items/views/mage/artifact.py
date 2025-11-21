@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.mage import WonderResonanceRating
 from items.models.mage.artifact import Artifact
 
@@ -23,7 +25,7 @@ class ArtifactListView(ListView):
     template_name = "items/mage/artifact/list.html"
 
 
-class ArtifactCreateView(CreateView):
+class ArtifactCreateView(MessageMixin, CreateView):
     model = Artifact
     fields = [
         "name",
@@ -34,6 +36,8 @@ class ArtifactCreateView(CreateView):
         "power",
     ]
     template_name = "items/mage/artifact/form.html"
+    success_message = "Artifact '{name}' created successfully!"
+    error_message = "Failed to create Artifact. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -44,7 +48,7 @@ class ArtifactCreateView(CreateView):
         return form
 
 
-class ArtifactUpdateView(UpdateView):
+class ArtifactUpdateView(MessageMixin, UpdateView):
     model = Artifact
     fields = [
         "name",
@@ -55,6 +59,8 @@ class ArtifactUpdateView(UpdateView):
         "power",
     ]
     template_name = "items/mage/artifact/form.html"
+    success_message = "Artifact '{name}' updated successfully!"
+    error_message = "Failed to update Artifact. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

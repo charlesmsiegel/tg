@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.core import RangedWeapon
 
 
@@ -13,7 +15,7 @@ class RangedWeaponListView(ListView):
     template_name = "items/core/rangedweapon/list.html"
 
 
-class RangedWeaponCreateView(CreateView):
+class RangedWeaponCreateView(MessageMixin, CreateView):
     model = RangedWeapon
     fields = [
         "name",
@@ -27,6 +29,8 @@ class RangedWeaponCreateView(CreateView):
         "clip",
     ]
     template_name = "items/core/rangedweapon/form.html"
+    success_message = "Ranged Weapon '{name}' created successfully!"
+    error_message = "Failed to create Ranged Weapon. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -37,7 +41,7 @@ class RangedWeaponCreateView(CreateView):
         return form
 
 
-class RangedWeaponUpdateView(UpdateView):
+class RangedWeaponUpdateView(MessageMixin, UpdateView):
     model = RangedWeapon
     fields = [
         "name",
@@ -51,6 +55,8 @@ class RangedWeaponUpdateView(UpdateView):
         "clip",
     ]
     template_name = "items/core/rangedweapon/form.html"
+    success_message = "Ranged Weapon '{name}' updated successfully!"
+    error_message = "Failed to update Ranged Weapon. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

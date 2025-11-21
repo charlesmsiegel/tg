@@ -39,6 +39,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.generic import MultipleFormsetsMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -54,8 +55,10 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class SorcererBasicsView(LoginRequiredMixin, CreateView):
+class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
     model = Sorcerer
+    success_message = "Sorcerer created successfully."
+    error_message = "Error creating sorcerer."
     fields = [
         "name",
         "nature",
@@ -135,10 +138,12 @@ def load_affinities(request):
     )
 
 
-class SorcererUpdateView(SpecialUserMixin, UpdateView):
+class SorcererUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Sorcerer
     fields = "__all__"
     template_name = "characters/mage/sorcerer/form.html"
+    success_message = "Sorcerer updated successfully."
+    error_message = "Error updating sorcerer."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

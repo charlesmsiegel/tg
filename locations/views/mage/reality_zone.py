@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
@@ -17,10 +18,12 @@ class RealityZoneDetailView(DetailView):
         return context
 
 
-class RealityZoneCreateView(CreateView):
+class RealityZoneCreateView(MessageMixin, CreateView):
     model = RealityZone
     fields = ["name", "description", "practices"]
     template_name = "locations/mage/reality_zone/form.html"
+    success_message = "Reality Zone '{name}' created successfully!"
+    error_message = "Failed to create reality zone. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -31,10 +34,12 @@ class RealityZoneCreateView(CreateView):
         return form
 
 
-class RealityZoneUpdateView(UpdateView):
+class RealityZoneUpdateView(MessageMixin, UpdateView):
     model = RealityZone
     fields = ["name", "description", "practices"]
     template_name = "locations/mage/reality_zone/form.html"
+    success_message = "Reality Zone '{name}' updated successfully!"
+    error_message = "Failed to update reality zone. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

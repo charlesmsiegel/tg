@@ -1,4 +1,5 @@
 from characters.models.werewolf.charm import SpiritCharm
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,10 +8,12 @@ class SpiritCharmDetailView(DetailView):
     template_name = "characters/werewolf/charm/detail.html"
 
 
-class SpiritCharmCreateView(CreateView):
+class SpiritCharmCreateView(MessageMixin, CreateView):
     model = SpiritCharm
     fields = ["name", "description"]
     template_name = "characters/werewolf/charm/form.html"
+    success_message = "Spirit Charm created successfully."
+    error_message = "There was an error creating the Spirit Charm."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -21,10 +24,12 @@ class SpiritCharmCreateView(CreateView):
         return form
 
 
-class SpiritCharmUpdateView(UpdateView):
+class SpiritCharmUpdateView(MessageMixin, UpdateView):
     model = SpiritCharm
     fields = ["name", "description"]
     template_name = "characters/werewolf/charm/form.html"
+    success_message = "Spirit Charm updated successfully."
+    error_message = "There was an error updating the Spirit Charm."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.core import Medium
 
 
@@ -7,10 +9,12 @@ class MediumDetailView(DetailView):
     template_name = "items/core/medium/detail.html"
 
 
-class MediumCreateView(CreateView):
+class MediumCreateView(MessageMixin, CreateView):
     model = Medium
     fields = "__all__"
     template_name = "items/core/medium/form.html"
+    success_message = "Medium '{name}' created successfully!"
+    error_message = "Failed to create Medium. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -20,10 +24,12 @@ class MediumCreateView(CreateView):
         return form
 
 
-class MediumUpdateView(UpdateView):
+class MediumUpdateView(MessageMixin, UpdateView):
     model = Medium
     fields = "__all__"
     template_name = "items/core/medium/form.html"
+    success_message = "Medium '{name}' updated successfully!"
+    error_message = "Failed to update Medium. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.realm import HorizonRealm
 
@@ -13,10 +14,12 @@ class RealmListView(ListView):
     template_name = "locations/mage/realm/list.html"
 
 
-class RealmCreateView(CreateView):
+class RealmCreateView(MessageMixin, CreateView):
     model = HorizonRealm
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/realm/form.html"
+    success_message = "Horizon Realm '{name}' created successfully!"
+    error_message = "Failed to create horizon realm. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -28,10 +31,12 @@ class RealmCreateView(CreateView):
         return form
 
 
-class RealmUpdateView(UpdateView):
+class RealmUpdateView(MessageMixin, UpdateView):
     model = HorizonRealm
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/realm/form.html"
+    success_message = "Horizon Realm '{name}' updated successfully!"
+    error_message = "Failed to update horizon realm. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

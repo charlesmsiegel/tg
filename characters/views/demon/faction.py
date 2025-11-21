@@ -1,4 +1,5 @@
 from characters.models.demon import DemonFaction
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class DemonFactionDetailView(DetailView):
     template_name = "characters/demon/faction/detail.html"
 
 
-class DemonFactionCreateView(CreateView):
+class DemonFactionCreateView(MessageMixin, CreateView):
     model = DemonFaction
     fields = [
         "name",
@@ -18,9 +19,11 @@ class DemonFactionCreateView(CreateView):
         "tactics",
     ]
     template_name = "characters/demon/faction/form.html"
+    success_message = "Demon Faction created successfully."
+    error_message = "There was an error creating the Demon Faction."
 
 
-class DemonFactionUpdateView(UpdateView):
+class DemonFactionUpdateView(MessageMixin, UpdateView):
     model = DemonFaction
     fields = [
         "name",
@@ -31,6 +34,8 @@ class DemonFactionUpdateView(UpdateView):
         "tactics",
     ]
     template_name = "characters/demon/faction/form.html"
+    success_message = "Demon Faction updated successfully."
+    error_message = "There was an error updating the Demon Faction."
 
 
 class DemonFactionListView(ListView):

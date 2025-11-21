@@ -2,6 +2,7 @@ from typing import Any
 
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.human import HumanDetailView
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 
@@ -18,7 +19,7 @@ class GhoulDetailView(HumanDetailView):
         return context
 
 
-class GhoulCreateView(CreateView):
+class GhoulCreateView(MessageMixin, CreateView):
     model = Ghoul
     fields = [
         "name",
@@ -32,9 +33,11 @@ class GhoulCreateView(CreateView):
         "is_independent",
     ]
     template_name = "characters/vampire/ghoul/form.html"
+    success_message = "Ghoul created successfully."
+    error_message = "Error creating ghoul."
 
 
-class GhoulUpdateView(UpdateView):
+class GhoulUpdateView(MessageMixin, UpdateView):
     model = Ghoul
     fields = [
         "name",
@@ -59,6 +62,8 @@ class GhoulUpdateView(UpdateView):
         "presence",
     ]
     template_name = "characters/vampire/ghoul/form.html"
+    success_message = "Ghoul updated successfully."
+    error_message = "Error updating ghoul."
 
 
 class GhoulListView(ListView):

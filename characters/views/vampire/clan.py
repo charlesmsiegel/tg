@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.models.vampire.clan import VampireClan
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -19,7 +20,7 @@ class VampireClanDetailView(DetailView):
         return context
 
 
-class VampireClanCreateView(CreateView):
+class VampireClanCreateView(MessageMixin, CreateView):
     model = VampireClan
     fields = [
         "name",
@@ -31,9 +32,11 @@ class VampireClanCreateView(CreateView):
         "parent_clan",
     ]
     template_name = "characters/vampire/clan/form.html"
+    success_message = "Vampire Clan created successfully."
+    error_message = "There was an error creating the Vampire Clan."
 
 
-class VampireClanUpdateView(UpdateView):
+class VampireClanUpdateView(MessageMixin, UpdateView):
     model = VampireClan
     fields = [
         "name",
@@ -45,6 +48,8 @@ class VampireClanUpdateView(UpdateView):
         "parent_clan",
     ]
     template_name = "characters/vampire/clan/form.html"
+    success_message = "Vampire Clan updated successfully."
+    error_message = "There was an error updating the Vampire Clan."
 
 
 class VampireClanListView(ListView):

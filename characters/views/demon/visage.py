@@ -1,4 +1,5 @@
 from characters.models.demon import Visage
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class VisageDetailView(DetailView):
     template_name = "characters/demon/visage/detail.html"
 
 
-class VisageCreateView(CreateView):
+class VisageCreateView(MessageMixin, CreateView):
     model = Visage
     fields = [
         "name",
@@ -17,9 +18,11 @@ class VisageCreateView(CreateView):
         "high_torment_traits",
     ]
     template_name = "characters/demon/visage/form.html"
+    success_message = "Visage created successfully."
+    error_message = "There was an error creating the Visage."
 
 
-class VisageUpdateView(UpdateView):
+class VisageUpdateView(MessageMixin, UpdateView):
     model = Visage
     fields = [
         "name",
@@ -29,6 +32,8 @@ class VisageUpdateView(UpdateView):
         "high_torment_traits",
     ]
     template_name = "characters/demon/visage/form.html"
+    success_message = "Visage updated successfully."
+    error_message = "There was an error updating the Visage."
 
 
 class VisageListView(ListView):

@@ -1,4 +1,5 @@
 from characters.models.core import Group
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
@@ -7,13 +8,17 @@ class GroupDetailView(DetailView):
     template_name = "characters/core/group/detail.html"
 
 
-class GroupCreateView(CreateView):
+class GroupCreateView(MessageMixin, CreateView):
     model = Group
     fields = ["name", "description", "members", "leader"]
     template_name = "characters/core/group/form.html"
+    success_message = "Group '{name}' created successfully!"
+    error_message = "Failed to create Group. Please correct the errors below."
 
 
-class GroupUpdateView(UpdateView):
+class GroupUpdateView(MessageMixin, UpdateView):
     model = Group
     fields = ["name", "description", "members", "leader"]
     template_name = "characters/core/group/form.html"
+    success_message = "Group '{name}' updated successfully!"
+    error_message = "Failed to update Group. Please correct the errors below."

@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.library import LibraryForm
 from locations.models.mage.library import Library
@@ -14,9 +15,11 @@ class LibraryListView(ListView):
     template_name = "locations/mage/library/list.html"
 
 
-class LibraryCreateView(FormView):
+class LibraryCreateView(MessageMixin, FormView):
     template_name = "locations/mage/library/form.html"
     form_class = LibraryForm
+    success_message = "Library '{name}' created successfully!"
+    error_message = "Failed to create library. Please correct the errors below."
 
     def form_valid(self, form):
         self.object = form.save()
@@ -26,10 +29,12 @@ class LibraryCreateView(FormView):
         return self.object.get_absolute_url()
 
 
-class LibraryUpdateView(UpdateView):
+class LibraryUpdateView(MessageMixin, UpdateView):
     model = Library
     fields = ["name", "description", "parent", "rank", "faction", "books"]
     template_name = "locations/mage/library/form.html"
+    success_message = "Library '{name}' updated successfully!"
+    error_message = "Failed to update library. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

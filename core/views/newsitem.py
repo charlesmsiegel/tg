@@ -1,4 +1,5 @@
 from core.models import NewsItem
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -13,13 +14,17 @@ class NewsItemListView(ListView):
     template_name = "core/newsitem/list.html"
 
 
-class NewsItemCreateView(CreateView):
+class NewsItemCreateView(MessageMixin, CreateView):
     model = NewsItem
     fields = "__all__"
     template_name = "core/newsitem/form.html"
+    success_message = "News item created successfully."
+    error_message = "Error creating news item."
 
 
-class NewsItemUpdateView(UpdateView):
+class NewsItemUpdateView(MessageMixin, UpdateView):
     model = NewsItem
     fields = "__all__"
     template_name = "core/newsitem/form.html"
+    success_message = "News item updated successfully."
+    error_message = "Error updating news item."

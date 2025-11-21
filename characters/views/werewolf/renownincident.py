@@ -1,4 +1,5 @@
 from characters.models.werewolf.renownincident import RenownIncident
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class RenownIncidentDetailView(DetailView):
     template_name = "characters/werewolf/renownincident/detail.html"
 
 
-class RenownIncidentCreateView(CreateView):
+class RenownIncidentCreateView(MessageMixin, CreateView):
     model = RenownIncident
     fields = [
         "name",
@@ -21,9 +22,11 @@ class RenownIncidentCreateView(CreateView):
         "rite",
     ]
     template_name = "characters/werewolf/renownincident/form.html"
+    success_message = "Renown Incident created successfully."
+    error_message = "There was an error creating the Renown Incident."
 
 
-class RenownIncidentUpdateView(UpdateView):
+class RenownIncidentUpdateView(MessageMixin, UpdateView):
     model = RenownIncident
     fields = [
         "name",
@@ -37,6 +40,8 @@ class RenownIncidentUpdateView(UpdateView):
         "rite",
     ]
     template_name = "characters/werewolf/renownincident/form.html"
+    success_message = "Renown Incident updated successfully."
+    error_message = "There was an error updating the Renown Incident."
 
 
 class RenownIncidentListView(ListView):

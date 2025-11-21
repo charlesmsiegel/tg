@@ -2,6 +2,8 @@ from collections import namedtuple
 from typing import Any
 
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.mage.grimoire import Grimoire
 
 EmptyRote = namedtuple("EmptyRote", ["name", "spheres"])
@@ -40,7 +42,7 @@ class GrimoireListView(ListView):
     template_name = "items/mage/grimoire/list.html"
 
 
-class GrimoireCreateView(CreateView):
+class GrimoireCreateView(MessageMixin, CreateView):
     model = Grimoire
     fields = [
         "name",
@@ -62,6 +64,8 @@ class GrimoireCreateView(CreateView):
         "rotes",
     ]
     template_name = "items/mage/grimoire/form.html"
+    success_message = "Grimoire '{name}' created successfully!"
+    error_message = "Failed to create Grimoire. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -72,7 +76,7 @@ class GrimoireCreateView(CreateView):
         return form
 
 
-class GrimoireUpdateView(UpdateView):
+class GrimoireUpdateView(MessageMixin, UpdateView):
     model = Grimoire
     fields = [
         "name",
@@ -93,6 +97,8 @@ class GrimoireUpdateView(UpdateView):
         "rotes",
     ]
     template_name = "items/mage/grimoire/form.html"
+    success_message = "Grimoire '{name}' updated successfully!"
+    error_message = "Failed to update Grimoire. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

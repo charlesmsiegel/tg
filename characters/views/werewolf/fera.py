@@ -24,6 +24,7 @@ from characters.views.core.human import (
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
@@ -42,8 +43,10 @@ class FeraDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class FeraUpdateView(SpecialUserMixin, UpdateView):
+class FeraUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Fera
+    success_message = "Fera updated successfully."
+    error_message = "Error updating fera."
     fields = [
         "name",
         "description",

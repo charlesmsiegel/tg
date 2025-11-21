@@ -10,6 +10,7 @@ from characters.models.mage.focus import (
 )
 from core.utils import display_queryset
 from core.views.generic import DictView
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -18,16 +19,20 @@ class InstrumentDetailView(DetailView):
     template_name = "characters/mage/instrument/detail.html"
 
 
-class InstrumentCreateView(CreateView):
+class InstrumentCreateView(MessageMixin, CreateView):
     model = Instrument
     fields = ["name", "description"]
     template_name = "characters/mage/instrument/form.html"
+    success_message = "Instrument created successfully."
+    error_message = "There was an error creating the Instrument."
 
 
-class InstrumentUpdateView(UpdateView):
+class InstrumentUpdateView(MessageMixin, UpdateView):
     model = Instrument
     fields = ["name", "description"]
     template_name = "characters/mage/instrument/form.html"
+    success_message = "Instrument updated successfully."
+    error_message = "There was an error updating the Instrument."
 
 
 class InstrumentListView(ListView):
@@ -41,16 +46,20 @@ class ParadigmDetailView(DetailView):
     template_name = "characters/mage/paradigm/detail.html"
 
 
-class ParadigmCreateView(CreateView):
+class ParadigmCreateView(MessageMixin, CreateView):
     model = Paradigm
     fields = ["name", "tenets", "description"]
     template_name = "characters/mage/paradigm/form.html"
+    success_message = "Paradigm created successfully."
+    error_message = "There was an error creating the Paradigm."
 
 
-class ParadigmUpdateView(UpdateView):
+class ParadigmUpdateView(MessageMixin, UpdateView):
     model = Paradigm
     fields = ["name", "tenets", "description"]
     template_name = "characters/mage/paradigm/form.html"
+    success_message = "Paradigm updated successfully."
+    error_message = "There was an error updating the Paradigm."
 
 
 class ParadigmListView(ListView):
@@ -74,7 +83,7 @@ class PracticeDetailView(DetailView):
         return context
 
 
-class PracticeCreateView(CreateView):
+class PracticeCreateView(MessageMixin, CreateView):
     model = Practice
     fields = [
         "name",
@@ -86,9 +95,11 @@ class PracticeCreateView(CreateView):
         "description",
     ]
     template_name = "characters/mage/practice/form.html"
+    success_message = "Practice created successfully."
+    error_message = "There was an error creating the Practice."
 
 
-class PracticeUpdateView(UpdateView):
+class PracticeUpdateView(MessageMixin, UpdateView):
     model = Practice
     fields = [
         "name",
@@ -100,6 +111,8 @@ class PracticeUpdateView(UpdateView):
         "description",
     ]
     template_name = "characters/mage/practice/form.html"
+    success_message = "Practice updated successfully."
+    error_message = "There was an error updating the Practice."
 
 
 class PracticeListView(ListView):
@@ -113,7 +126,7 @@ class CorruptedPracticeDetailView(PracticeDetailView):
     template_name = "characters/mage/corrupted_practice/detail.html"
 
 
-class CorruptedPracticeCreateView(CreateView):
+class CorruptedPracticeCreateView(MessageMixin, CreateView):
     model = CorruptedPractice
     fields = [
         "name",
@@ -127,9 +140,11 @@ class CorruptedPracticeCreateView(CreateView):
         "description",
     ]
     template_name = "characters/mage/corrupted_practice/form.html"
+    success_message = "Corrupted Practice created successfully."
+    error_message = "There was an error creating the Corrupted Practice."
 
 
-class CorruptedPracticeUpdateView(UpdateView):
+class CorruptedPracticeUpdateView(MessageMixin, UpdateView):
     model = CorruptedPractice
     fields = [
         "name",
@@ -143,6 +158,8 @@ class CorruptedPracticeUpdateView(UpdateView):
         "description",
     ]
     template_name = "characters/mage/corrupted_practice/form.html"
+    success_message = "Corrupted Practice updated successfully."
+    error_message = "There was an error updating the Corrupted Practice."
 
 
 class SpecializedPracticeDetailView(PracticeDetailView):
@@ -150,7 +167,7 @@ class SpecializedPracticeDetailView(PracticeDetailView):
     template_name = "characters/mage/specialized_practice/detail.html"
 
 
-class SpecializedPracticeCreateView(CreateView):
+class SpecializedPracticeCreateView(MessageMixin, CreateView):
     model = SpecializedPractice
     fields = [
         "name",
@@ -163,9 +180,11 @@ class SpecializedPracticeCreateView(CreateView):
         "description",
     ]
     template_name = "characters/mage/specialized_practice/form.html"
+    success_message = "Specialized Practice created successfully."
+    error_message = "There was an error creating the Specialized Practice."
 
 
-class SpecializedPracticeUpdateView(UpdateView):
+class SpecializedPracticeUpdateView(MessageMixin, UpdateView):
     model = SpecializedPractice
     fields = [
         "name",
@@ -178,6 +197,8 @@ class SpecializedPracticeUpdateView(UpdateView):
         "description",
     ]
     template_name = "characters/mage/specialized_practice/form.html"
+    success_message = "Specialized Practice updated successfully."
+    error_message = "There was an error updating the Specialized Practice."
 
 
 class TenetDetailView(DetailView):
@@ -195,7 +216,7 @@ class TenetDetailView(DetailView):
         return context
 
 
-class TenetCreateView(CreateView):
+class TenetCreateView(MessageMixin, CreateView):
     model = Tenet
     fields = [
         "name",
@@ -205,9 +226,11 @@ class TenetCreateView(CreateView):
         "description",
     ]
     template_name = "characters/mage/tenet/form.html"
+    success_message = "Tenet created successfully."
+    error_message = "There was an error creating the Tenet."
 
 
-class TenetUpdateView(UpdateView):
+class TenetUpdateView(MessageMixin, UpdateView):
     model = Tenet
     fields = [
         "name",
@@ -217,6 +240,8 @@ class TenetUpdateView(UpdateView):
         "description",
     ]
     template_name = "characters/mage/tenet/form.html"
+    success_message = "Tenet updated successfully."
+    error_message = "There was an error updating the Tenet."
 
 
 class TenetListView(ListView):

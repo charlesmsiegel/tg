@@ -1,4 +1,5 @@
 from characters.models.werewolf.tribe import Tribe
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -11,16 +12,20 @@ class TribeDetailView(DetailView):
         return context
 
 
-class TribeCreateView(CreateView):
+class TribeCreateView(MessageMixin, CreateView):
     model = Tribe
     fields = ["name", "willpower", "description"]
     template_name = "characters/werewolf/tribe/form.html"
+    success_message = "Tribe created successfully."
+    error_message = "There was an error creating the Tribe."
 
 
-class TribeUpdateView(UpdateView):
+class TribeUpdateView(MessageMixin, UpdateView):
     model = Tribe
     fields = ["name", "willpower", "description"]
     template_name = "characters/werewolf/tribe/form.html"
+    success_message = "Tribe updated successfully."
+    error_message = "There was an error updating the Tribe."
 
 
 class TribeListView(ListView):
