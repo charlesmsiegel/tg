@@ -573,6 +573,147 @@ class Wraith(WtOHuman):
             "willpower": self.willpower,
         }
 
+    def xp_cost(self, trait_type, trait_value=None):
+        """Return XP cost for wraith-specific traits."""
+        from collections import defaultdict
+
+        costs = defaultdict(
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            {
+                "arcanos": 10,
+                "pathos": 2,
+                "corpus": 1,
+                "angst": 1,
+            },
+        )
+
+        if trait_type in ["arcanos", "pathos", "corpus", "angst"]:
+            if trait_value is not None:
+                return costs[trait_type] * trait_value
+            return costs[trait_type]
+
+        return costs[trait_type]
+
+    def spend_xp(self, trait):
+        """Spend XP on a trait."""
+        output = super().spend_xp(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is an arcanos
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
+
+        if trait in arcanoi_list:
+            current_value = getattr(self, trait)
+            cost = self.xp_cost("arcanos", current_value + 1)
+
+            if cost <= self.xp:
+                if self.add_arcanos(trait):
+                    self.xp -= cost
+                    self.add_to_spend(trait, getattr(self, trait), cost)
+                    return True
+                return False
+            return False
+
+        # Handle pathos
+        if trait == "pathos_permanent" or trait == "pathos":
+            cost = self.xp_cost("pathos", self.pathos_permanent + 1)
+            if cost <= self.xp:
+                if self.add_pathos():
+                    self.xp -= cost
+                    self.pathos = self.pathos_permanent
+                    self.add_to_spend(trait, self.pathos_permanent, cost)
+                    return True
+                return False
+            return False
+
+        # Handle corpus
+        if trait == "corpus":
+            cost = self.xp_cost("corpus", self.corpus + 1)
+            if cost <= self.xp:
+                if self.add_corpus():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.corpus, cost)
+                    return True
+                return False
+            return False
+
+        # Handle angst
+        if trait == "angst_permanent" or trait == "angst":
+            cost = self.xp_cost("angst", self.angst_permanent + 1)
+            if cost <= self.xp:
+                if self.add_angst():
+                    self.xp -= cost
+                    self.angst = self.angst_permanent
+                    self.add_to_spend(trait, self.angst_permanent, cost)
+                    return True
+                return False
+            return False
+
+        return trait
+
+    def freebie_cost(self, trait_type):
+        """Return freebie cost for wraith-specific traits."""
+        wraith_costs = {
+            "arcanos": 7,
+            "pathos": 1,
+            "passion": 2,
+            "fetter": 1,
+            "corpus": 1,
+        }
+        if trait_type in wraith_costs.keys():
+            return wraith_costs[trait_type]
+        return super().freebie_cost(trait_type)
+
+    def spend_freebies(self, trait):
+        """Spend freebie points on a trait."""
+        output = super().spend_freebies(trait)
+        if output in [True, False]:
+            return output
+
+        # Check if trait is an arcanos
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
+
+        if trait in arcanoi_list:
+            cost = self.freebie_cost("arcanos")
+            if cost <= self.freebies:
+                if self.add_arcanos(trait):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle pathos
+        if trait == "pathos_permanent" or trait == "pathos":
+            cost = self.freebie_cost("pathos")
+            if cost <= self.freebies:
+                if self.add_pathos():
+                    self.freebies -= cost
+                    self.pathos = self.pathos_permanent
+                    return True
+                return False
+            return False
+
+        # Handle corpus
+        if trait == "corpus":
+            cost = self.freebie_cost("corpus")
+            if cost <= self.freebies:
+                if self.add_corpus():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle passion (would need Passion object)
+        if trait == "passion":
+            return trait
+
+        # Handle fetter (would need Fetter object)
+        if trait == "fetter":
+            return trait
+
+        return trait
+
     # Freebie spending methods
 
     def arcanos_freebies(self, form):

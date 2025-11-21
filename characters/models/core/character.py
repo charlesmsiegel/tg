@@ -208,3 +208,15 @@ class Character(CharacterModel):
         """
         self.xp += amount
         self.save()
+
+    def add_to_spend(self, trait, value, cost):
+        """Add an XP expenditure record to the spent_xp list.
+
+        Args:
+            trait: Name of the trait being increased (string)
+            value: New value of the trait after spending
+            cost: XP cost of the expenditure
+        """
+        record = self.xp_spend_record(trait, trait, value, cost)
+        self.spent_xp.append(record)
+        self.save()

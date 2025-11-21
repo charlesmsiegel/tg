@@ -288,3 +288,151 @@ class Human(
         existing_specialties = [x.stat for x in self.specialties.all()]
         stats = [x.property_name for x in stats]
         return [x for x in stats if x not in existing_specialties]
+
+    def spend_xp(self, trait):
+        """Spend XP on common human traits (attributes, abilities, backgrounds, willpower).
+
+        This is the base implementation that handles traits common to all character types.
+        Subclasses should call super().spend_xp(trait) first, and if it returns a string
+        (the trait name), then handle their own specific traits.
+
+        Returns:
+            True if spending was successful
+            False if spending failed (insufficient XP, at maximum, etc.)
+            trait (string) if this method doesn't handle this trait (pass to subclass)
+        """
+        # Check if trait is an attribute
+        if hasattr(Attribute.objects, 'filter'):
+            try:
+                attribute = Attribute.objects.filter(property_name=trait).first()
+                if attribute and hasattr(self, trait):
+                    current_value = getattr(self, trait)
+                    cost = self.xp_cost("attribute", current_value + 1)
+
+                    if cost <= self.xp:
+                        if self.add_attribute(trait):
+                            self.xp -= cost
+                            self.add_to_spend(trait, getattr(self, trait), cost)
+                            return True
+                        return False
+                    return False
+            except:
+                pass
+
+        # Check if trait is an ability
+        if hasattr(Ability.objects, 'filter'):
+            try:
+                ability = Ability.objects.filter(property_name=trait).first()
+                if ability and hasattr(self, trait):
+                    current_value = getattr(self, trait)
+
+                    if current_value == 0:
+                        cost = self.xp_cost("new_ability", 0)
+                    else:
+                        cost = self.xp_cost("ability", current_value + 1)
+
+                    if cost <= self.xp:
+                        if self.add_ability(trait):
+                            self.xp -= cost
+                            self.add_to_spend(trait, getattr(self, trait), cost)
+                            return True
+                        return False
+                    return False
+            except:
+                pass
+
+        # Check if trait is a background
+        if trait in self.allowed_backgrounds:
+            current_value = getattr(self, trait)
+
+            if current_value == 0:
+                cost = self.xp_cost("new background", 0)
+            else:
+                cost = self.xp_cost("background", current_value + 1)
+
+            if cost <= self.xp:
+                if self.add_background(trait):
+                    self.xp -= cost
+                    self.add_to_spend(trait, getattr(self, trait), cost)
+                    return True
+                return False
+            return False
+
+        # Handle willpower
+        if trait == "willpower":
+            cost = self.xp_cost("willpower", self.willpower + 1)
+            if cost <= self.xp:
+                if self.add_willpower():
+                    self.xp -= cost
+                    self.add_to_spend(trait, self.willpower, cost)
+                    return True
+                return False
+            return False
+
+        # Return trait name to indicate this method doesn't handle it
+        return trait
+
+    def spend_freebies(self, trait):
+        """Spend freebie points on common human traits.
+
+        This is the base implementation that handles traits common to all character types.
+        Subclasses should call super().spend_freebies(trait) first, and if it returns a string
+        (the trait name), then handle their own specific traits.
+
+        Returns:
+            True if spending was successful
+            False if spending failed (insufficient freebies, at maximum, etc.)
+            trait (string) if this method doesn't handle this trait (pass to subclass)
+        """
+        # Check if trait is an attribute
+        if hasattr(Attribute.objects, 'filter'):
+            try:
+                attribute = Attribute.objects.filter(property_name=trait).first()
+                if attribute and hasattr(self, trait):
+                    cost = self.freebie_cost("attribute")
+                    if cost <= self.freebies:
+                        if self.add_attribute(trait):
+                            self.freebies -= cost
+                            return True
+                        return False
+                    return False
+            except:
+                pass
+
+        # Check if trait is an ability
+        if hasattr(Ability.objects, 'filter'):
+            try:
+                ability = Ability.objects.filter(property_name=trait).first()
+                if ability and hasattr(self, trait):
+                    cost = self.freebie_cost("ability")
+                    if cost <= self.freebies:
+                        if self.add_ability(trait):
+                            self.freebies -= cost
+                            return True
+                        return False
+                    return False
+            except:
+                pass
+
+        # Check if trait is a background
+        if trait in self.allowed_backgrounds:
+            cost = self.freebie_cost("background")
+            if cost <= self.freebies:
+                if self.add_background(trait):
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Handle willpower
+        if trait == "willpower":
+            cost = self.freebie_cost("willpower")
+            if cost <= self.freebies:
+                if self.add_willpower():
+                    self.freebies -= cost
+                    return True
+                return False
+            return False
+
+        # Return trait name to indicate this method doesn't handle it
+        return trait
