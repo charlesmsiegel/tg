@@ -7,15 +7,8 @@ from locations.models.core import LocationModel
 
 class ItemModelManager(ModelManager):
     """Custom manager for ItemModel with specialized query patterns."""
-
-    def pending_approval_for_user(self, user):
-        """Items awaiting approval in user's chronicles (optimized)"""
-        # Items use status in ['Un', 'Sub'], different from characters
-        return (
-            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
-            .select_related("chronicle", "owner")
-            .order_by("name")
-        )
+    # Inherits pending_approval_for_user from ModelManager base class
+    pass
 
 
 class ItemModel(Model):

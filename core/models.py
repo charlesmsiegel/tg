@@ -14,12 +14,34 @@ from polymorphic.query import PolymorphicQuerySet
 
 class ModelQuerySet(PolymorphicQuerySet):
     """Base queryset with common optimizations"""
-    pass
+
+    def pending_approval_for_user(self, user):
+        """
+        Objects awaiting approval in user's chronicles (optimized).
+        Default implementation uses status in ['Un', 'Sub'].
+        Override in subclasses if different status logic is needed.
+        """
+        return (
+            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            .select_related("chronicle", "owner")
+            .order_by("name")
+        )
 
 
 class ModelManager(PolymorphicManager):
     """Base manager with common query methods"""
-    pass
+
+    def pending_approval_for_user(self, user):
+        """
+        Objects awaiting approval in user's chronicles (optimized).
+        Default implementation uses status in ['Un', 'Sub'].
+        Override in subclasses if different status logic is needed.
+        """
+        return (
+            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            .select_related("chronicle", "owner")
+            .order_by("name")
+        )
 
 
 class Book(models.Model):
