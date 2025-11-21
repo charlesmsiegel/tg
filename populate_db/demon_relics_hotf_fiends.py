@@ -3,11 +3,9 @@ Populate database with Fiend (Neberu) relics from Houses of the Fallen.
 These are house-specific relics for the Fourth House.
 """
 
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 
-# Get the Fiends house
-fiends = DemonHouse.objects.get(name="Fiends")
+from populate_db.demon_houses import fiends
 
 # =============================================================================
 # FIEND HOUSE RELICS - HOUSES OF THE FALLEN

@@ -2,23 +2,21 @@
 Populate database with Devil (Namaru) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Devils house
-devils = DemonHouse.objects.get(name="Devils")
+from populate_db.demon_houses import devils
 
 # Get all lores for reference
-lore_celestials = Lore.objects.get(property_name="celestials")
-lore_flame = Lore.objects.get(property_name="flame")
-lore_firmament = Lore.objects.get(property_name="firmament")
-lore_humanity = Lore.objects.get(property_name="humanity")
-lore_light = Lore.objects.get(property_name="light")
-lore_longing = Lore.objects.get(property_name="longing")
-lore_radiance = Lore.objects.get(property_name="radiance")
-lore_realms = Lore.objects.get(property_name="realms")
-lore_fundament = Lore.objects.get(property_name="fundament")
+lore_celestials = Lore.objects.get_or_create(property_name="celestials")[0]
+lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
+lore_firmament = Lore.objects.get_or_create(property_name="firmament")[0]
+lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
+lore_light = Lore.objects.get_or_create(property_name="light")[0]
+lore_longing = Lore.objects.get_or_create(property_name="longing")[0]
+lore_radiance = Lore.objects.get_or_create(property_name="radiance")[0]
+lore_realms = Lore.objects.get_or_create(property_name="realms")[0]
+lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
 
 # =============================================================================
 # DEVIL RITUALS - HOUSES OF THE FALLEN

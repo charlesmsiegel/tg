@@ -2,19 +2,17 @@
 Populate database with Devourer (Rabisu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Devourers house
-devourers = DemonHouse.objects.get(name="Devourers")
+from populate_db.demon_houses import devourers
 
 # Get all lores for reference
-lore_beast = Lore.objects.get(property_name="beast")
-lore_humanity = Lore.objects.get(property_name="humanity")
-lore_paths = Lore.objects.get(property_name="paths")
-lore_survival = Lore.objects.get(property_name="survival")
-lore_wild = Lore.objects.get(property_name="wild")
+lore_beast = Lore.objects.get_or_create(property_name="beast")[0]
+lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
+lore_paths = Lore.objects.get_or_create(property_name="paths")[0]
+lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
+lore_wild = Lore.objects.get_or_create(property_name="wild")[0]
 
 # =============================================================================
 # DEVOURER RITUALS - HOUSES OF THE FALLEN

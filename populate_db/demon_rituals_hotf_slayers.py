@@ -2,24 +2,22 @@
 Populate database with Slayer (Halaku) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Slayers house
-slayers = DemonHouse.objects.get(name="Slayers")
+from populate_db.demon_houses import slayers
 
 # Get all lores for reference
-lore_awakening = Lore.objects.get(property_name="awakening")
-lore_death = Lore.objects.get(property_name="death")
-lore_earth = Lore.objects.get(property_name="earth")
-lore_flame = Lore.objects.get(property_name="flame")
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_portals = Lore.objects.get(property_name="portals")
-lore_realms = Lore.objects.get(property_name="realms")
-lore_spirit = Lore.objects.get(property_name="spirit")
-lore_storms = Lore.objects.get(property_name="storms")
-lore_winds = Lore.objects.get(property_name="winds")
+lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
+lore_death = Lore.objects.get_or_create(property_name="death")[0]
+lore_earth = Lore.objects.get_or_create(property_name="earth")[0]
+lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
+lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
+lore_portals = Lore.objects.get_or_create(property_name="portals")[0]
+lore_realms = Lore.objects.get_or_create(property_name="realms")[0]
+lore_spirit = Lore.objects.get_or_create(property_name="spirit")[0]
+lore_storms = Lore.objects.get_or_create(property_name="storms")[0]
+lore_winds = Lore.objects.get_or_create(property_name="winds")[0]
 
 # =============================================================================
 # SLAYER RITUALS - HOUSES OF THE FALLEN

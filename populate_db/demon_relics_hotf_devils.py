@@ -3,11 +3,9 @@ Populate database with Devil (Namaru) relics from Houses of the Fallen.
 These are house-specific relics for the First House.
 """
 
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 
-# Get the Devils house
-devils = DemonHouse.objects.get(name="Devils")
+from populate_db.demon_houses import devils
 
 # =============================================================================
 # DEVIL HOUSE RELICS - HOUSES OF THE FALLEN

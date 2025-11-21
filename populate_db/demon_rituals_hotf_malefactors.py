@@ -2,24 +2,22 @@
 Populate database with Malefactor (Annunaki) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Malefactors house
-malefactors = DemonHouse.objects.get(name="Malefactors")
+from populate_db.demon_houses import malefactors
 
 # Get all lores for reference
-lore_celestials = Lore.objects.get(property_name="celestials")
-lore_earth = Lore.objects.get(property_name="earth")
-lore_firmament = Lore.objects.get(property_name="firmament")
-lore_flame = Lore.objects.get(property_name="flame")
-lore_forge = Lore.objects.get(property_name="forge")
-lore_fundament = Lore.objects.get(property_name="fundament")
-lore_paths = Lore.objects.get(property_name="paths")
-lore_portals = Lore.objects.get(property_name="portals")
-lore_realms = Lore.objects.get(property_name="realms")
-lore_survival = Lore.objects.get(property_name="survival")
+lore_celestials = Lore.objects.get_or_create(property_name="celestials")[0]
+lore_earth = Lore.objects.get_or_create(property_name="earth")[0]
+lore_firmament = Lore.objects.get_or_create(property_name="firmament")[0]
+lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
+lore_forge = Lore.objects.get_or_create(property_name="forge")[0]
+lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
+lore_paths = Lore.objects.get_or_create(property_name="paths")[0]
+lore_portals = Lore.objects.get_or_create(property_name="portals")[0]
+lore_realms = Lore.objects.get_or_create(property_name="realms")[0]
+lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
 
 # =============================================================================
 # MALEFACTOR RITUALS - HOUSES OF THE FALLEN

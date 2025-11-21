@@ -13,14 +13,14 @@ loner = Archetype.objects.get_or_create(name="Loner")[0]
 explorer = Archetype.objects.get_or_create(name="Explorer")[0]
 
 # Get common advantages
-armor = Advantage.objects.get(name="Armor")
-claws = Advantage.objects.get(name="Claws, Fangs, or Horns")
+armor = Advantage.objects.get_or_create(name="Armor")[0]
+claws = Advantage.objects.get_or_create(name="Claws, Fangs, or Horns")[0]
 nightsight = Advantage.objects.get_or_create(name="Nightsight")[0]
 nightsight.add_ratings([1])
-alacrity = Advantage.objects.get(name="Alacrity")
+alacrity = Advantage.objects.get_or_create(name="Alacrity")[0]
 tracking = Advantage.objects.get_or_create(name="Tracking")[0]
 tracking.add_ratings([1, 2, 3])
-flexibility = Advantage.objects.get(name="Flexibility")
+flexibility = Advantage.objects.get_or_create(name="Flexibility")[0]
 wings = Advantage.objects.get_or_create(name="Wings")[0]
 wings.add_ratings([2, 4, 6])
 empathic_bond = Advantage.objects.get_or_create(name="Empathic Bond")[0]

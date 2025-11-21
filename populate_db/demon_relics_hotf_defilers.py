@@ -3,11 +3,9 @@ Populate database with Defiler (Lammasu) relics from Houses of the Fallen.
 These are house-specific relics for the Fifth House.
 """
 
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 
-# Get the Defilers house
-defilers = DemonHouse.objects.get(name="Defilers")
+from populate_db.demon_houses import defilers
 
 # =============================================================================
 # DEFILER HOUSE RELICS - HOUSES OF THE FALLEN
