@@ -1,9 +1,11 @@
 from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from locations.models.mage.sector import Sector
 
 
-class SectorDetailView(DetailView):
+class SectorDetailView(ViewPermissionMixin, DetailView):
     model = Sector
     template_name = "locations/mage/sector/detail.html"
 
@@ -14,7 +16,7 @@ class SectorListView(ListView):
     template_name = "locations/mage/sector/list.html"
 
 
-class SectorCreateView(MessageMixin, CreateView):
+class SectorCreateView(LoginRequiredMixin, CreateView):
     model = Sector
     fields = ["name", "description", "parent", "sector_class", "constraints"]
     template_name = "locations/mage/sector/form.html"
@@ -34,7 +36,7 @@ class SectorCreateView(MessageMixin, CreateView):
         return form
 
 
-class SectorUpdateView(MessageMixin, UpdateView):
+class SectorUpdateView(EditPermissionMixin, UpdateView):
     model = Sector
     fields = ["name", "description", "parent", "sector_class", "constraints"]
     template_name = "locations/mage/sector/form.html"

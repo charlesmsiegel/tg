@@ -3,11 +3,13 @@ from typing import Any
 from core.views.message_mixin import MessageMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from locations.forms.mage.node import NodeForm
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 
 
-class NodeDetailView(DetailView):
+class NodeDetailView(ViewPermissionMixin, DetailView):
     model = Node
     template_name = "locations/mage/node/detail.html"
 
@@ -28,7 +30,7 @@ class NodeListView(ListView):
     template_name = "locations/mage/node/list.html"
 
 
-class NodeCreateView(MessageMixin, FormView):
+class NodeCreateView(LoginRequiredMixin, FormView):
     template_name = "locations/mage/node/form.html"
     form_class = NodeForm
     success_message = "Node '{name}' created successfully!"
@@ -42,7 +44,7 @@ class NodeCreateView(MessageMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class NodeUpdateView(MessageMixin, UpdateView):
+class NodeUpdateView(EditPermissionMixin, UpdateView):
     model = Node
     fields = [
         "name",

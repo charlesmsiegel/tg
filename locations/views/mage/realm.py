@@ -1,9 +1,11 @@
 from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin
 from locations.models.mage.realm import HorizonRealm
 
 
-class RealmDetailView(DetailView):
+class RealmDetailView(ViewPermissionMixin, DetailView):
     model = HorizonRealm
     template_name = "locations/mage/realm/detail.html"
 
@@ -14,7 +16,7 @@ class RealmListView(ListView):
     template_name = "locations/mage/realm/list.html"
 
 
-class RealmCreateView(MessageMixin, CreateView):
+class RealmCreateView(LoginRequiredMixin, CreateView):
     model = HorizonRealm
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/realm/form.html"
@@ -31,7 +33,7 @@ class RealmCreateView(MessageMixin, CreateView):
         return form
 
 
-class RealmUpdateView(MessageMixin, UpdateView):
+class RealmUpdateView(EditPermissionMixin, UpdateView):
     model = HorizonRealm
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/realm/form.html"
