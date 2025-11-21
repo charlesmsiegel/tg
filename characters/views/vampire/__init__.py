@@ -59,6 +59,6 @@ from .vtmhuman import (
     VtMHumanCharacterCreationView,
     VtMHumanCreateView,
     VtMHumanDetailView,
-    # VtMHumanTemplateSelectView,  # TODO: Uncomment when CharacterTemplate model is implemented
+    VtMHumanTemplateSelectView,
     VtMHumanUpdateView,
 )

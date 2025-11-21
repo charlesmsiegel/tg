@@ -20,7 +20,7 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import Language
+from core.models import CharacterTemplate, Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
@@ -198,81 +198,75 @@ class WtAHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        # TODO: Temporarily skip template selection until CharacterTemplate model is implemented
-        # Original: return reverse("characters:werewolf:wtahuman_template", kwargs={"pk": self.object.pk})
+        return reverse("characters:werewolf:wtahuman_template", kwargs={"pk": self.object.pk})
+
+
+class CharacterTemplateSelectionForm(forms.Form):
+    """Form for selecting optional character template"""
+
+    template = forms.ModelChoiceField(
+        queryset=CharacterTemplate.objects.none(),
+        required=False,
+        empty_label="No template - build from scratch",
+        widget=forms.RadioSelect,
+        help_text="Select a pre-made character concept to speed up creation",
+    )
+
+    def __init__(self, *args, character=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if character:
+            self.fields["template"].queryset = CharacterTemplate.objects.filter(
+                gameline="wta", character_type="werewolf", is_public=True
+            ).order_by("name")
+
+
+class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
+    """Step 0.5: Optional template selection after basics"""
+
+    form_class = CharacterTemplateSelectionForm
+    template_name = "characters/werewolf/wtahuman/template_select.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = get_object_or_404(
+            WtAHuman, pk=kwargs["pk"], owner=request.user
+        )
+        # Only allow template selection if character creation hasn't started yet
+        if self.object.creation_status > 0:
+            return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = self.object
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character"] = self.object
+        context["available_templates"] = CharacterTemplate.objects.filter(
+            gameline="wta", character_type="werewolf", is_public=True
+        ).order_by("name")
+        return context
+
+    def form_valid(self, form):
+        template = form.cleaned_data.get("template")
+        if template:
+            # Apply template
+            template.apply_to_character(self.object)
+            messages.success(
+                self.request,
+                f"Applied template '{template.name}'. You can now customize the character further.",
+            )
+        else:
+            messages.info(
+                self.request, "Starting with blank character. Fill in all attributes."
+            )
+
+        # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1
         self.object.save()
-        return reverse("characters:werewolf:wtahuman_creation", kwargs={"pk": self.object.pk})
 
-
-# TODO: CharacterTemplate model needs to be implemented in core/models.py before uncommenting
-# class CharacterTemplateSelectionForm(forms.Form):
-#     """Form for selecting optional character template"""
-#
-#     template = forms.ModelChoiceField(
-#         queryset=CharacterTemplate.objects.none(),
-#         required=False,
-#         empty_label="No template - build from scratch",
-#         widget=forms.RadioSelect,
-#         help_text="Select a pre-made character concept to speed up creation",
-#     )
-#
-#     def __init__(self, *args, character=None, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         if character:
-#             self.fields["template"].queryset = CharacterTemplate.objects.filter(
-#                 gameline="wta", character_type="werewolf", is_public=True
-#             ).order_by("name")
-
-
-# TODO: CharacterTemplate model needs to be implemented in core/models.py before uncommenting
-# class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
-#     """Step 0.5: Optional template selection after basics"""
-#
-#     form_class = CharacterTemplateSelectionForm
-#     template_name = "characters/werewolf/wtahuman/template_select.html"
-#
-#     def dispatch(self, request, *args, **kwargs):
-#         self.object = get_object_or_404(
-#             WtAHuman, pk=kwargs["pk"], owner=request.user
-#         )
-#         # Only allow template selection if character creation hasn't started yet
-#         if self.object.creation_status > 0:
-#             return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
-#         return super().dispatch(request, *args, **kwargs)
-#
-#     def get_form_kwargs(self):
-#         kwargs = super().get_form_kwargs()
-#         kwargs["character"] = self.object
-#         return kwargs
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["character"] = self.object
-#         context["available_templates"] = CharacterTemplate.objects.filter(
-#             gameline="wta", character_type="werewolf", is_public=True
-#         ).order_by("name")
-#         return context
-#
-#     def form_valid(self, form):
-#         template = form.cleaned_data.get("template")
-#         if template:
-#             # Apply template
-#             template.apply_to_character(self.object)
-#             messages.success(
-#                 self.request,
-#                 f"Applied template '{template.name}'. You can now customize the character further.",
-#             )
-#         else:
-#             messages.info(
-#                 self.request, "Starting with blank character. Fill in all attributes."
-#             )
-#
-#         # Set creation_status to 1 to proceed to attribute allocation
-#         self.object.creation_status = 1
-#         self.object.save()
-#
-#         return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
+        return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
 
 
 class WtAHumanAttributeView(HumanAttributeView):
