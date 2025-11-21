@@ -227,8 +227,8 @@ class Week(models.Model):
         )
 
 
-class SceneManager(models.Manager):
-    """Custom manager for Scene with status-based queries."""
+class SceneQuerySet(models.QuerySet):
+    """Custom queryset for Scene with chainable query patterns."""
 
     def active(self):
         """Scenes that are not finished"""
@@ -261,6 +261,10 @@ class SceneManager(models.Manager):
     def for_user_chronicles(self, user):
         """Scenes in any of the user's chronicles"""
         return self.filter(chronicle__in=user.chronicle_set.all())
+
+
+# Create SceneManager from the QuerySet to expose all QuerySet methods on the manager
+SceneManager = models.Manager.from_queryset(SceneQuerySet)
 
 
 class Scene(models.Model):
