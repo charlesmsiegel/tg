@@ -1,8 +1,8 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.vtmhuman import VtMHumanCreationForm
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
@@ -430,7 +430,7 @@ class VtMHumanLanguagesView(EditPermissionMixin, FormView):
 class VtMHumanAlliesView(GenericBackgroundView):
     primary_object_class = VtMHuman
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
 

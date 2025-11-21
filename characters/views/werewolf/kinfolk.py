@@ -1,4 +1,3 @@
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
 from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.werewolf.kinfolk import Kinfolk
@@ -283,7 +282,7 @@ class KinfolkLanguagesView(WtAHumanLanguagesView):
 class KinfolkAlliesView(GenericBackgroundView):
     primary_object_class = Kinfolk
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
 

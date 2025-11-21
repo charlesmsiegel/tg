@@ -1,6 +1,6 @@
 """
-Enhanced Retainer/NPC creation form that supports all character types with their basics.
-This form creates NPCs with essential information filled in, ready for completion.
+Unified NPC/linked character creation form for all background types.
+This single form handles Allies, Mentors, Contacts, Retainers, and Followers.
 """
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
@@ -26,14 +26,17 @@ from characters.models.core.archetype import Archetype
 from django import forms
 
 
-class RetainerEnhancedForm(forms.Form):
+class LinkedNPCForm(forms.Form):
     """
-    Enhanced form for creating NPC allies with proper basics.
-    Supports all character types in the system.
+    Unified form for creating NPC characters linked through backgrounds.
+    Used for: Allies, Mentors, Contacts, Retainers, Followers, etc.
+
+    This form supports creating any character type in the system with their basics,
+    making them ready for completion after the linking character finishes creation.
     """
 
     # Character type choices - organized by gameline
-    ALLY_TYPE_CHOICES = [
+    NPC_TYPE_CHOICES = [
         ("--- Vampire ---", [
             ("vampire", "Vampire"),
             ("vtmhuman", "Human (Vampire)"),
@@ -70,7 +73,7 @@ class RetainerEnhancedForm(forms.Form):
         ]),
     ]
 
-    ALLY_CLASSES = {
+    NPC_CLASSES = {
         "vampire": Vampire,
         "vtmhuman": VtMHuman,
         "ghoul": Ghoul,
@@ -94,9 +97,9 @@ class RetainerEnhancedForm(forms.Form):
     }
 
     # Common fields for all types
-    retainer_type = forms.ChoiceField(
-        choices=ALLY_TYPE_CHOICES,
-        label="Retainer Type",
+    npc_type = forms.ChoiceField(
+        choices=NPC_TYPE_CHOICES,
+        label="Character Type",
         help_text="Select the type of character to create"
     )
     name = forms.CharField(
@@ -108,8 +111,8 @@ class RetainerEnhancedForm(forms.Form):
         min_value=0,
         max_value=5,
         initial=1,
-        label="Retainer Rating",
-        help_text="Retainer background rating (0-5)"
+        label="Background Rating",
+        help_text="Background rating (0-5)"
     )
     concept = forms.CharField(
         max_length=100,
@@ -226,29 +229,40 @@ class RetainerEnhancedForm(forms.Form):
 
     # General notes
     note = forms.CharField(
-        widget=forms.Textarea(attrs={"placeholder": "Additional notes about this retainer", "rows": 4}),
+        widget=forms.Textarea(attrs={"placeholder": "Additional notes about this character", "rows": 4}),
         label="Notes",
         required=False,
     )
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the form with optional customization.
+
+        Parameters:
+            obj: The character this NPC is being created for
+            npc_role: The role/relationship (e.g., 'ally', 'mentor', 'contact', 'retainer', 'follower')
+        """
         self.obj = kwargs.pop("obj", None)
+        self.npc_role = kwargs.pop("npc_role", "ally")  # Default to 'ally'
         super().__init__(*args, **kwargs)
+
+        # Customize label based on role
+        role_display = self.npc_role.capitalize()
+        self.fields["rank"].label = f"{role_display} Rating"
 
     def save(self, commit=True):
         """
         Create the NPC character with basic information filled in.
         The character is created with status='Un' (Unfinished) so it can be completed later.
         """
-        retainer_type = self.cleaned_data["retainer_type"]
-        char_class = self.ALLY_CLASSES[retainer_type]
+        npc_type = self.cleaned_data["npc_type"]
+        char_class = self.NPC_CLASSES[npc_type]
 
-        # Build base note with rank
+        # Build base note with rank and role
+        role_display = self.npc_role.capitalize()
         note = (
             (self.cleaned_data.get("note") or "")
-            + "<br>Rank "
-            + str(self.cleaned_data["rank"])
-            + " Retainer"
+            + f"<br>Rank {self.cleaned_data['rank']} {role_display}"
         )
         if self.obj is not None:
             note += " for " + self.obj.name
@@ -264,7 +278,7 @@ class RetainerEnhancedForm(forms.Form):
 
         # Add archetypes for types that use them
         # Werewolves, Changelings, and Fera don't use nature/demeanor
-        if retainer_type not in ["werewolf", "changeling", "fera"]:
+        if npc_type not in ["werewolf", "changeling", "fera"]:
             if self.cleaned_data.get("nature"):
                 char_data["nature"] = self.cleaned_data["nature"]
             if self.cleaned_data.get("demeanor"):
@@ -274,34 +288,34 @@ class RetainerEnhancedForm(forms.Form):
         # We store these in notes since the actual ForeignKey fields need real objects
         specific_info = []
 
-        if retainer_type == "vampire" and self.cleaned_data.get("clan_name"):
+        if npc_type == "vampire" and self.cleaned_data.get("clan_name"):
             specific_info.append(f"Clan: {self.cleaned_data['clan_name']}")
-        if retainer_type == "vampire" and self.cleaned_data.get("sect_name"):
+        if npc_type == "vampire" and self.cleaned_data.get("sect_name"):
             specific_info.append(f"Sect: {self.cleaned_data['sect_name']}")
 
-        if retainer_type in ["werewolf", "fera"] and self.cleaned_data.get("breed_name"):
+        if npc_type in ["werewolf", "fera"] and self.cleaned_data.get("breed_name"):
             specific_info.append(f"Breed: {self.cleaned_data['breed_name']}")
-        if retainer_type == "werewolf" and self.cleaned_data.get("auspice_name"):
+        if npc_type == "werewolf" and self.cleaned_data.get("auspice_name"):
             specific_info.append(f"Auspice: {self.cleaned_data['auspice_name']}")
-        if retainer_type in ["werewolf", "kinfolk"] and self.cleaned_data.get("tribe_name"):
+        if npc_type in ["werewolf", "kinfolk"] and self.cleaned_data.get("tribe_name"):
             specific_info.append(f"Tribe: {self.cleaned_data['tribe_name']}")
 
-        if retainer_type == "mage" and self.cleaned_data.get("affiliation_name"):
+        if npc_type == "mage" and self.cleaned_data.get("affiliation_name"):
             specific_info.append(f"Affiliation: {self.cleaned_data['affiliation_name']}")
 
-        if retainer_type == "wraith" and self.cleaned_data.get("guild_name"):
+        if npc_type == "wraith" and self.cleaned_data.get("guild_name"):
             specific_info.append(f"Guild: {self.cleaned_data['guild_name']}")
 
-        if retainer_type == "changeling":
+        if npc_type == "changeling":
             if self.cleaned_data.get("kith_name"):
                 specific_info.append(f"Kith: {self.cleaned_data['kith_name']}")
             if self.cleaned_data.get("court_name"):
                 specific_info.append(f"Court: {self.cleaned_data['court_name']}")
 
-        if retainer_type == "demon" and self.cleaned_data.get("house_name"):
+        if npc_type == "demon" and self.cleaned_data.get("house_name"):
             specific_info.append(f"House: {self.cleaned_data['house_name']}")
 
-        if retainer_type == "fera" and self.cleaned_data.get("fera_type_name"):
+        if npc_type == "fera" and self.cleaned_data.get("fera_type_name"):
             specific_info.append(f"Fera Type: {self.cleaned_data['fera_type_name']}")
 
         if specific_info:

@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.vampire.freebies import GhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -232,7 +232,7 @@ class GhoulLanguagesView(HumanLanguagesView):
 class GhoulAlliesView(GenericBackgroundView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/chargen.html"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

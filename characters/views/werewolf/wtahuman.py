@@ -1,9 +1,9 @@
 from typing import Any
 
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.wtahuman import WtAHumanCreationForm
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.human import Human
@@ -408,7 +408,7 @@ class WtAHumanLanguagesView(EditPermissionMixin, FormView):
 class WtAHumanAlliesView(GenericBackgroundView):
     primary_object_class = WtAHuman
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
 

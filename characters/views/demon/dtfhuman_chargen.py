@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.demon.dtfhuman import DtFHumanCreationForm
 from characters.forms.demon.freebies import DtFHumanFreebiesForm
 from characters.models.core.specialty import Specialty
@@ -233,7 +233,7 @@ class DtFHumanLanguagesView(HumanLanguagesView):
 class DtFHumanAlliesView(GenericBackgroundView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

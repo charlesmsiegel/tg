@@ -1,9 +1,9 @@
 from typing import Any
 
 from characters.forms.changeling.changeling import ChangelingCreationForm
-from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlawRating
@@ -608,7 +608,7 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
 class ChangelingAlliesView(GenericBackgroundView):
     primary_object_class = Changeling
     background_name = "allies"
-    form_class = AllyEnhancedForm
+    form_class = LinkedNPCForm
     template_name = "characters/changeling/changeling/chargen.html"
 
 
