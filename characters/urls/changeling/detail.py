@@ -26,11 +26,12 @@ urls = [
         LegacyDetailView.as_view(),
         name="legacy",
     ),
-    path(
-        "ctdhuman/<int:pk>/template/",
-        characters.changeling.CtDHumanTemplateSelectView.as_view(),
-        name="ctdhuman_template",
-    ),
+    # TODO: Uncomment when CharacterTemplate model is implemented
+    # path(
+    #     "ctdhuman/<int:pk>/template/",
+    #     characters.changeling.CtDHumanTemplateSelectView.as_view(),
+    #     name="ctdhuman_template",
+    # ),
     path(
         "ctdhuman/<int:pk>/creation/",
         characters.changeling.CtDHumanCharacterCreationView.as_view(),
