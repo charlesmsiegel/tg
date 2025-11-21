@@ -1,10 +1,10 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
-from characters.forms.core.contact import ContactForm
-from characters.forms.core.follower import FollowerForm
-from characters.forms.core.mentor import MentorForm
-from characters.forms.core.retainer import RetainerForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
+from characters.forms.core.contact_enhanced import ContactEnhancedForm
+from characters.forms.core.follower_enhanced import FollowerEnhancedForm
+from characters.forms.core.mentor_enhanced import MentorEnhancedForm
+from characters.forms.core.retainer_enhanced import RetainerEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
@@ -378,35 +378,35 @@ class DemonAlliesView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "allies"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
 
 
 class DemonMentorView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "mentor"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = MentorForm
+    form_class = MentorEnhancedForm
 
 
 class DemonContactsView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "contacts"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = ContactForm
+    form_class = ContactEnhancedForm
 
 
 class DemonRetainersView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "retainers"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = RetainerForm
+    form_class = RetainerEnhancedForm
 
 
 class DemonFollowersView(GenericBackgroundView):
     primary_object_class = Demon
     background_name = "followers"
     template_name = "characters/demon/demon/chargen.html"
-    form_class = FollowerForm
+    form_class = FollowerEnhancedForm
 
 
 class DemonSpecialtiesView(HumanSpecialtiesView):

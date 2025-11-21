@@ -1,8 +1,8 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
-from characters.forms.core.contact import ContactForm
-from characters.forms.core.mentor import MentorForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
+from characters.forms.core.contact_enhanced import ContactEnhancedForm
+from characters.forms.core.mentor_enhanced import MentorEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.wraith.fetter import FetterForm
 from characters.forms.wraith.freebies import WraithFreebiesForm
@@ -568,21 +568,21 @@ class WraithLanguagesView(EditPermissionMixin, FormView):
 class WraithAlliesView(GenericBackgroundView):
     primary_object_class = Wraith
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/wraith/wraith/chargen.html"
 
 
 class WraithMentorView(GenericBackgroundView):
     primary_object_class = Wraith
     background_name = "mentor"
-    form_class = MentorForm
+    form_class = MentorEnhancedForm
     template_name = "characters/wraith/wraith/chargen.html"
 
 
 class WraithContactsView(GenericBackgroundView):
     primary_object_class = Wraith
     background_name = "contacts"
-    form_class = ContactForm
+    form_class = ContactEnhancedForm
     template_name = "characters/wraith/wraith/chargen.html"
 
 

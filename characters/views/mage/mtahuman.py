@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.mtahuman import MtAHumanCreationForm
@@ -681,7 +681,7 @@ class MtAHumanLanguagesView(EditPermissionMixin, FormView):
 class MtAHumanAlliesView(GenericBackgroundView):
     primary_object_class = MtAHuman
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
 

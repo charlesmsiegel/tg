@@ -1,9 +1,9 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
-from characters.forms.core.contact import ContactForm
-from characters.forms.core.mentor import MentorForm
-from characters.forms.core.retainer import RetainerForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
+from characters.forms.core.contact_enhanced import ContactEnhancedForm
+from characters.forms.core.mentor_enhanced import MentorEnhancedForm
+from characters.forms.core.retainer_enhanced import RetainerEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.freebies import VampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
@@ -341,28 +341,28 @@ class VampireAlliesView(GenericBackgroundView):
     primary_object_class = Vampire
     background_name = "allies"
     template_name = "characters/vampire/vampire/chargen.html"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
 
 
 class VampireMentorView(GenericBackgroundView):
     primary_object_class = Vampire
     background_name = "mentor"
     template_name = "characters/vampire/vampire/chargen.html"
-    form_class = MentorForm
+    form_class = MentorEnhancedForm
 
 
 class VampireContactsView(GenericBackgroundView):
     primary_object_class = Vampire
     background_name = "contacts"
     template_name = "characters/vampire/vampire/chargen.html"
-    form_class = ContactForm
+    form_class = ContactEnhancedForm
 
 
 class VampireRetainersView(GenericBackgroundView):
     primary_object_class = Vampire
     background_name = "retainers"
     template_name = "characters/vampire/vampire/chargen.html"
-    form_class = RetainerForm
+    form_class = RetainerEnhancedForm
 
 
 class VampireSpecialtiesView(HumanSpecialtiesView):

@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.backgroundform import BackgroundRatingFormSet
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
@@ -806,7 +806,7 @@ class SorcererSpecialtiesView(EditPermissionMixin, FormView):
 class SorcererAlliesView(GenericBackgroundView):
     primary_object_class = Sorcerer
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
 

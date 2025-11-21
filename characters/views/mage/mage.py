@@ -4,10 +4,10 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db import transaction
 
-from characters.forms.core.ally import AllyForm
-from characters.forms.core.contact import ContactForm
-from characters.forms.core.mentor import MentorForm
-from characters.forms.core.retainer import RetainerForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
+from characters.forms.core.contact_enhanced import ContactEnhancedForm
+from characters.forms.core.mentor_enhanced import MentorEnhancedForm
+from characters.forms.core.retainer_enhanced import RetainerEnhancedForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
@@ -1535,28 +1535,28 @@ class MageRoteView(SpecialUserMixin, CreateView):
 class MageAlliesView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageMentorView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "mentor"
-    form_class = MentorForm
+    form_class = MentorEnhancedForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageContactsView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "contacts"
-    form_class = ContactForm
+    form_class = ContactEnhancedForm
     template_name = "characters/mage/mage/chargen.html"
 
 
 class MageRetainersView(GenericBackgroundView):
     primary_object_class = Mage
     background_name = "retainers"
-    form_class = RetainerForm
+    form_class = RetainerEnhancedForm
     template_name = "characters/mage/mage/chargen.html"
 
 

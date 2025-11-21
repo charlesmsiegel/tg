@@ -1,7 +1,7 @@
 from typing import Any
 
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.ally_enhanced import AllyEnhancedForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.ctdhuman import CtDHuman
@@ -384,7 +384,7 @@ class CtDHumanLanguagesView(EditPermissionMixin, FormView):
 class CtDHumanAlliesView(GenericBackgroundView):
     primary_object_class = CtDHuman
     background_name = "allies"
-    form_class = AllyForm
+    form_class = AllyEnhancedForm
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
