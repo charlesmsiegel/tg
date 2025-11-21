@@ -24,6 +24,7 @@ from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -50,10 +51,12 @@ class CompanionDetailView(HumanDetailView):
         return context
 
 
-class CompanionCreateView(CreateView):
+class CompanionCreateView(MessageMixin, CreateView):
     model = Companion
     fields = "__all__"
     template_name = "characters/mage/companion/form.html"
+    success_message = "Companion created successfully."
+    error_message = "There was an error creating the Companion."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -63,10 +66,12 @@ class CompanionCreateView(CreateView):
         return form
 
 
-class CompanionUpdateView(SpecialUserMixin, UpdateView):
+class CompanionUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Companion
     fields = "__all__"
     template_name = "characters/mage/companion/form.html"
+    success_message = "Companion updated successfully."
+    error_message = "There was an error updating the Companion."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

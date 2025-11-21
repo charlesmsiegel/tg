@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.sanctum import Sanctum
@@ -14,9 +15,11 @@ class SanctumListView(ListView):
     template_name = "locations/mage/sanctum/list.html"
 
 
-class SanctumCreateView(FormView):
+class SanctumCreateView(MessageMixin, FormView):
     form_class = SanctumForm
     template_name = "locations/mage/sanctum/form.html"
+    success_message = "Sanctum '{name}' created successfully!"
+    error_message = "Failed to create sanctum. Please correct the errors below."
 
     def form_valid(self, form):
         self.object = form.save()
@@ -26,10 +29,12 @@ class SanctumCreateView(FormView):
         return self.object.get_absolute_url()
 
 
-class SanctumUpdateView(UpdateView):
+class SanctumUpdateView(MessageMixin, UpdateView):
     model = Sanctum
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/sanctum/form.html"
+    success_message = "Sanctum '{name}' updated successfully!"
+    error_message = "Failed to update sanctum. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

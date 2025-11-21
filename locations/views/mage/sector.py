@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.sector import Sector
 
@@ -13,10 +14,12 @@ class SectorListView(ListView):
     template_name = "locations/mage/sector/list.html"
 
 
-class SectorCreateView(CreateView):
+class SectorCreateView(MessageMixin, CreateView):
     model = Sector
     fields = ["name", "description", "parent", "sector_class", "constraints"]
     template_name = "locations/mage/sector/form.html"
+    success_message = "Sector '{name}' created successfully!"
+    error_message = "Failed to create sector. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -31,10 +34,12 @@ class SectorCreateView(CreateView):
         return form
 
 
-class SectorUpdateView(UpdateView):
+class SectorUpdateView(MessageMixin, UpdateView):
     model = Sector
     fields = ["name", "description", "parent", "sector_class", "constraints"]
     template_name = "locations/mage/sector/form.html"
+    success_message = "Sector '{name}' updated successfully!"
+    error_message = "Failed to update sector. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

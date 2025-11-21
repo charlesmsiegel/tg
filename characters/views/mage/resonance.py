@@ -1,4 +1,5 @@
 from characters.models.mage import Resonance
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class ResonanceDetailView(DetailView):
     template_name = "characters/mage/resonance/detail.html"
 
 
-class ResonanceCreateView(CreateView):
+class ResonanceCreateView(MessageMixin, CreateView):
     model = Resonance
     fields = [
         "name",
@@ -22,9 +23,11 @@ class ResonanceCreateView(CreateView):
         "time",
     ]
     template_name = "characters/mage/resonance/form.html"
+    success_message = "Resonance created successfully."
+    error_message = "There was an error creating the Resonance."
 
 
-class ResonanceUpdateView(UpdateView):
+class ResonanceUpdateView(MessageMixin, UpdateView):
     model = Resonance
     fields = [
         "name",
@@ -39,6 +42,8 @@ class ResonanceUpdateView(UpdateView):
         "time",
     ]
     template_name = "characters/mage/resonance/form.html"
+    success_message = "Resonance updated successfully."
+    error_message = "There was an error updating the Resonance."
 
 
 class ResonanceListView(ListView):

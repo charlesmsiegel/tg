@@ -19,6 +19,7 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -38,8 +39,10 @@ class CtDHumanDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class CtDHumanCreateView(CreateView):
+class CtDHumanCreateView(MessageMixin, CreateView):
     model = CtDHuman
+    success_message = "CtD Human created successfully."
+    error_message = "Error creating CtD Human."
     fields = [
         "name",
         "description",
@@ -92,8 +95,10 @@ class CtDHumanCreateView(CreateView):
     template_name = "characters/changeling/ctdhuman/form.html"
 
 
-class CtDHumanUpdateView(SpecialUserMixin, UpdateView):
+class CtDHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = CtDHuman
+    success_message = "CtD Human updated successfully."
+    error_message = "Error updating CtD Human."
     fields = [
         "name",
         "description",

@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.mage import Charm, WonderResonanceRating
 
 
@@ -22,7 +24,7 @@ class CharmListView(ListView):
     template_name = "items/mage/charm/list.html"
 
 
-class CharmCreateView(CreateView):
+class CharmCreateView(MessageMixin, CreateView):
     model = Charm
     fields = [
         "name",
@@ -34,6 +36,8 @@ class CharmCreateView(CreateView):
         "arete",
     ]
     template_name = "items/mage/charm/form.html"
+    success_message = "Charm '{name}' created successfully!"
+    error_message = "Failed to create Charm. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -44,7 +48,7 @@ class CharmCreateView(CreateView):
         return form
 
 
-class CharmUpdateView(UpdateView):
+class CharmUpdateView(MessageMixin, UpdateView):
     model = Charm
     fields = [
         "name",
@@ -56,6 +60,8 @@ class CharmUpdateView(UpdateView):
         "arete",
     ]
     template_name = "items/mage/charm/form.html"
+    success_message = "Charm '{name}' updated successfully!"
+    error_message = "Failed to update Charm. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

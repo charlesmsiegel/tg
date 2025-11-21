@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.models.core import MeritFlaw
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -16,16 +17,20 @@ class MeritFlawDetailView(DetailView):
         return context
 
 
-class MeritFlawCreateView(CreateView):
+class MeritFlawCreateView(MessageMixin, CreateView):
     model = MeritFlaw
     fields = ["name", "description", "ratings", "allowed_types"]
     template_name = "characters/core/meritflaw/form.html"
+    success_message = "Merit/Flaw '{name}' created successfully!"
+    error_message = "Failed to create Merit/Flaw. Please correct the errors below."
 
 
-class MeritFlawUpdateView(UpdateView):
+class MeritFlawUpdateView(MessageMixin, UpdateView):
     model = MeritFlaw
     fields = ["name", "description", "ratings", "allowed_types"]
     template_name = "characters/core/meritflaw/form.html"
+    success_message = "Merit/Flaw '{name}' updated successfully!"
+    error_message = "Failed to update Merit/Flaw. Please correct the errors below."
 
 
 class MeritFlawListView(ListView):

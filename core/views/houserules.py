@@ -1,6 +1,7 @@
 from typing import Any
 
 from core.models import HouseRule
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -22,10 +23,12 @@ class HouseRuleDetailView(DetailView):
     template_name = "core/houserules/detail.html"
 
 
-class HouseRuleCreateView(CreateView):
+class HouseRuleCreateView(MessageMixin, CreateView):
     model = HouseRule
     fields = ["name", "description", "chronicle", "gameline"]
     template_name = "core/houserules/form.html"
+    success_message = "House rule created successfully."
+    error_message = "Error creating house rule."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -36,10 +39,12 @@ class HouseRuleCreateView(CreateView):
         return form
 
 
-class HouseRuleUpdateView(UpdateView):
+class HouseRuleUpdateView(MessageMixin, UpdateView):
     model = HouseRule
     fields = ["name", "description", "chronicle", "gameline"]
     template_name = "core/houserules/form.html"
+    success_message = "House rule updated successfully."
+    error_message = "Error updating house rule."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

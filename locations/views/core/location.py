@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 from locations.models import LocationModel
 
@@ -7,7 +8,7 @@ class LocationDetailView(DetailView):
     template_name = "locations/core/location/detail.html"
 
 
-class LocationCreateView(CreateView):
+class LocationCreateView(MessageMixin, CreateView):
     model = LocationModel
     fields = [
         "name",
@@ -18,6 +19,8 @@ class LocationCreateView(CreateView):
         "description",
     ]
     template_name = "locations/core/location/form.html"
+    success_message = "Location '{name}' created successfully!"
+    error_message = "Failed to create location. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -29,7 +32,7 @@ class LocationCreateView(CreateView):
         return form
 
 
-class LocationUpdateView(UpdateView):
+class LocationUpdateView(MessageMixin, UpdateView):
     model = LocationModel
     fields = [
         "name",
@@ -40,6 +43,8 @@ class LocationUpdateView(UpdateView):
         "description",
     ]
     template_name = "locations/core/location/form.html"
+    success_message = "Location '{name}' updated successfully!"
+    error_message = "Failed to update location. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

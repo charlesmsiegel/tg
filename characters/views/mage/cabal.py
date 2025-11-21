@@ -1,6 +1,7 @@
 from characters.forms.mage.cabal import CabalForm
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.views.generic import CreateView, DetailView, UpdateView
 
@@ -10,10 +11,12 @@ class CabalDetailView(DetailView):
     template_name = "characters/mage/cabal/detail.html"
 
 
-class CabalCreateView(CreateView):
+class CabalCreateView(MessageMixin, CreateView):
     model = Cabal
     form_class = CabalForm
     template_name = "characters/mage/cabal/form.html"
+    success_message = "Cabal created successfully."
+    error_message = "There was an error creating the Cabal."
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -28,10 +31,12 @@ class CabalCreateView(CreateView):
         return kwargs
 
 
-class CabalUpdateView(UpdateView):
+class CabalUpdateView(MessageMixin, UpdateView):
     model = Cabal
     form_class = CabalForm
     template_name = "characters/mage/cabal/form.html"
+    success_message = "Cabal updated successfully."
+    error_message = "There was an error updating the Cabal."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

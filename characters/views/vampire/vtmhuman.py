@@ -20,6 +20,7 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -39,8 +40,10 @@ class VtMHumanDetailView(HumanDetailView):
         return context
 
 
-class VtMHumanCreateView(CreateView):
+class VtMHumanCreateView(MessageMixin, CreateView):
     model = VtMHuman
+    success_message = "VtM Human created successfully."
+    error_message = "Error creating VtM Human."
     fields = [
         "name",
         "owner",
@@ -111,8 +114,10 @@ class VtMHumanCreateView(CreateView):
     template_name = "characters/vampire/vtmhuman/form.html"
 
 
-class VtMHumanUpdateView(SpecialUserMixin, UpdateView):
+class VtMHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = VtMHuman
+    success_message = "VtM Human updated successfully."
+    error_message = "Error updating VtM Human."
     fields = [
         "name",
         "owner",

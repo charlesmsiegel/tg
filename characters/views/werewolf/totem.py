@@ -1,4 +1,5 @@
 from characters.models.werewolf.totem import Totem
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class TotemDetailView(DetailView):
     template_name = "characters/werewolf/totem/detail.html"
 
 
-class TotemCreateView(CreateView):
+class TotemCreateView(MessageMixin, CreateView):
     model = Totem
     fields = [
         "name",
@@ -19,6 +20,8 @@ class TotemCreateView(CreateView):
         "ban",
     ]
     template_name = "characters/werewolf/totem/form.html"
+    success_message = "Totem created successfully."
+    error_message = "There was an error creating the Totem."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -36,7 +39,7 @@ class TotemCreateView(CreateView):
         return form
 
 
-class TotemUpdateView(UpdateView):
+class TotemUpdateView(MessageMixin, UpdateView):
     model = Totem
     fields = [
         "name",
@@ -48,6 +51,8 @@ class TotemUpdateView(UpdateView):
         "ban",
     ]
     template_name = "characters/werewolf/totem/form.html"
+    success_message = "Totem updated successfully."
+    error_message = "There was an error updating the Totem."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

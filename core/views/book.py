@@ -1,4 +1,5 @@
 from core.models import Book
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -13,10 +14,12 @@ class BookListView(ListView):
     template_name = "core/book/list.html"
 
 
-class BookCreateView(CreateView):
+class BookCreateView(MessageMixin, CreateView):
     model = Book
     fields = ["name", "url", "edition", "gameline", "storytellers_vault"]
     template_name = "core/book/form.html"
+    success_message = "Book created successfully."
+    error_message = "Error creating book."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -25,10 +28,12 @@ class BookCreateView(CreateView):
         return form
 
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(MessageMixin, UpdateView):
     model = Book
     fields = ["name", "url", "edition", "gameline", "storytellers_vault"]
     template_name = "core/book/form.html"
+    success_message = "Book updated successfully."
+    error_message = "Error updating book."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

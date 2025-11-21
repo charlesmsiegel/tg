@@ -1,5 +1,6 @@
 from characters.models.demon import Thrall
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
@@ -15,8 +16,10 @@ class ThrallDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class ThrallCreateView(CreateView):
+class ThrallCreateView(MessageMixin, CreateView):
     model = Thrall
+    success_message = "Thrall created successfully."
+    error_message = "Error creating thrall."
     fields = [
         "name",
         "description",
@@ -90,8 +93,10 @@ class ThrallCreateView(CreateView):
     template_name = "characters/demon/thrall/form.html"
 
 
-class ThrallUpdateView(SpecialUserMixin, UpdateView):
+class ThrallUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Thrall
+    success_message = "Thrall updated successfully."
+    error_message = "Error updating thrall."
     fields = [
         "name",
         "description",

@@ -18,6 +18,7 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -37,8 +38,10 @@ class FomorDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class FomorCreateView(CreateView):
+class FomorCreateView(MessageMixin, CreateView):
     model = Fomor
+    success_message = "Fomor created successfully."
+    error_message = "Error creating fomor."
     fields = [
         "name",
         "description",
@@ -102,8 +105,10 @@ class FomorCreateView(CreateView):
     template_name = "characters/werewolf/fomor/form.html"
 
 
-class FomorUpdateView(SpecialUserMixin, UpdateView):
+class FomorUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Fomor
+    success_message = "Fomor updated successfully."
+    error_message = "Error updating fomor."
     fields = [
         "name",
         "description",

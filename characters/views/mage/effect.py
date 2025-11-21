@@ -1,4 +1,5 @@
 from characters.models.mage import Effect
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class EffectDetailView(DetailView):
     template_name = "characters/mage/effect/detail.html"
 
 
-class EffectCreateView(CreateView):
+class EffectCreateView(MessageMixin, CreateView):
     model = Effect
     fields = [
         "name",
@@ -23,9 +24,11 @@ class EffectCreateView(CreateView):
         "prime",
     ]
     template_name = "characters/mage/effect/form.html"
+    success_message = "Effect created successfully."
+    error_message = "There was an error creating the Effect."
 
 
-class EffectUpdateView(UpdateView):
+class EffectUpdateView(MessageMixin, UpdateView):
     model = Effect
     fields = [
         "name",
@@ -41,6 +44,8 @@ class EffectUpdateView(UpdateView):
         "prime",
     ]
     template_name = "characters/mage/effect/form.html"
+    success_message = "Effect updated successfully."
+    error_message = "There was an error updating the Effect."
 
 
 class EffectListView(ListView):

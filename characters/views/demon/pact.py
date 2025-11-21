@@ -1,4 +1,5 @@
 from characters.models.demon import Pact
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,7 +8,7 @@ class PactDetailView(DetailView):
     template_name = "characters/demon/pact/detail.html"
 
 
-class PactCreateView(CreateView):
+class PactCreateView(MessageMixin, CreateView):
     model = Pact
     fields = [
         "demon",
@@ -18,9 +19,11 @@ class PactCreateView(CreateView):
         "active",
     ]
     template_name = "characters/demon/pact/form.html"
+    success_message = "Pact created successfully."
+    error_message = "There was an error creating the Pact."
 
 
-class PactUpdateView(UpdateView):
+class PactUpdateView(MessageMixin, UpdateView):
     model = Pact
     fields = [
         "demon",
@@ -31,6 +34,8 @@ class PactUpdateView(UpdateView):
         "active",
     ]
     template_name = "characters/demon/pact/form.html"
+    success_message = "Pact updated successfully."
+    error_message = "There was an error updating the Pact."
 
 
 class PactListView(ListView):

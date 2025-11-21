@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.core import MeleeWeapon
 
 
@@ -13,10 +15,12 @@ class MeleeWeaponListView(ListView):
     template_name = "items/core/meleeweapon/list.html"
 
 
-class MeleeWeaponCreateView(CreateView):
+class MeleeWeaponCreateView(MessageMixin, CreateView):
     model = MeleeWeapon
     fields = ["name", "description", "difficulty", "damage", "damage_type", "conceal"]
     template_name = "items/core/meleeweapon/form.html"
+    success_message = "Melee Weapon '{name}' created successfully!"
+    error_message = "Failed to create Melee Weapon. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -27,10 +31,12 @@ class MeleeWeaponCreateView(CreateView):
         return form
 
 
-class MeleeWeaponUpdateView(UpdateView):
+class MeleeWeaponUpdateView(MessageMixin, UpdateView):
     model = MeleeWeapon
     fields = ["name", "description", "difficulty", "damage", "damage_type", "conceal"]
     template_name = "items/core/meleeweapon/form.html"
+    success_message = "Melee Weapon '{name}' updated successfully!"
+    error_message = "Failed to update Melee Weapon. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

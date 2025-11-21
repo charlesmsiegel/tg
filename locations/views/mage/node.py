@@ -1,5 +1,6 @@
 from typing import Any
 
+from core.views.message_mixin import MessageMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 from locations.forms.mage.node import NodeForm
@@ -27,9 +28,11 @@ class NodeListView(ListView):
     template_name = "locations/mage/node/list.html"
 
 
-class NodeCreateView(FormView):
+class NodeCreateView(MessageMixin, FormView):
     template_name = "locations/mage/node/form.html"
     form_class = NodeForm
+    success_message = "Node '{name}' created successfully!"
+    error_message = "Failed to create node. Please correct the errors below."
 
     def form_valid(self, form):
         self.object = form.save()
@@ -39,7 +42,7 @@ class NodeCreateView(FormView):
         return self.object.get_absolute_url()
 
 
-class NodeUpdateView(UpdateView):
+class NodeUpdateView(MessageMixin, UpdateView):
     model = Node
     fields = [
         "name",
@@ -56,6 +59,8 @@ class NodeUpdateView(UpdateView):
         "resonance",
     ]
     template_name = "locations/mage/node/form.html"
+    success_message = "Node '{name}' updated successfully!"
+    error_message = "Failed to update node. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

@@ -1,5 +1,6 @@
 from characters.models.demon import DtFHuman
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
@@ -15,8 +16,10 @@ class DtFHumanDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class DtFHumanCreateView(CreateView):
+class DtFHumanCreateView(MessageMixin, CreateView):
     model = DtFHuman
+    success_message = "DtF Human created successfully."
+    error_message = "Error creating DtF Human."
     fields = [
         "name",
         "description",
@@ -83,8 +86,10 @@ class DtFHumanCreateView(CreateView):
     template_name = "characters/demon/dtfhuman/form.html"
 
 
-class DtFHumanUpdateView(SpecialUserMixin, UpdateView):
+class DtFHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = DtFHuman
+    success_message = "DtF Human updated successfully."
+    error_message = "Error updating DtF Human."
     fields = [
         "name",
         "description",

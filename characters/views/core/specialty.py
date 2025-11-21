@@ -3,6 +3,7 @@ from characters.models.core.statistic import Statistic
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -11,16 +12,20 @@ class SpecialtyDetailView(DetailView):
     template_name = "characters/core/specialty/detail.html"
 
 
-class SpecialtyCreateView(CreateView):
+class SpecialtyCreateView(MessageMixin, CreateView):
     model = Specialty
     fields = ["name", "stat"]
     template_name = "characters/core/specialty/form.html"
+    success_message = "Specialty '{name}' created successfully!"
+    error_message = "Failed to create Specialty. Please correct the errors below."
 
 
-class SpecialtyUpdateView(UpdateView):
+class SpecialtyUpdateView(MessageMixin, UpdateView):
     model = Specialty
     fields = ["name", "stat"]
     template_name = "characters/core/specialty/form.html"
+    success_message = "Specialty '{name}' updated successfully!"
+    error_message = "Failed to update Specialty. Please correct the errors below."
 
 
 class SpecialtyListView(ListView):

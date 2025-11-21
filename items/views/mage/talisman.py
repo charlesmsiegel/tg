@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.mage import WonderResonanceRating
 from items.models.mage.talisman import Talisman
 
@@ -23,7 +25,7 @@ class TalismanListView(ListView):
     template_name = "items/mage/talisman/list.html"
 
 
-class TalismanCreateView(CreateView):
+class TalismanCreateView(MessageMixin, CreateView):
     model = Talisman
     fields = [
         "name",
@@ -35,6 +37,8 @@ class TalismanCreateView(CreateView):
         "arete",
     ]
     template_name = "items/mage/talisman/form.html"
+    success_message = "Talisman '{name}' created successfully!"
+    error_message = "Failed to create Talisman. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -45,7 +49,7 @@ class TalismanCreateView(CreateView):
         return form
 
 
-class TalismanUpdateView(UpdateView):
+class TalismanUpdateView(MessageMixin, UpdateView):
     model = Talisman
     fields = [
         "name",
@@ -57,6 +61,8 @@ class TalismanUpdateView(UpdateView):
         "arete",
     ]
     template_name = "items/mage/talisman/form.html"
+    success_message = "Talisman '{name}' updated successfully!"
+    error_message = "Failed to update Talisman. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

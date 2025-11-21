@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.core import ItemModel
 
 
@@ -7,10 +9,12 @@ class ItemDetailView(DetailView):
     template_name = "items/core/item/detail.html"
 
 
-class ItemCreateView(CreateView):
+class ItemCreateView(MessageMixin, CreateView):
     model = ItemModel
     fields = ["name", "description"]
     template_name = "items/core/item/form.html"
+    success_message = "Item '{name}' created successfully!"
+    error_message = "Failed to create Item. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -21,10 +25,12 @@ class ItemCreateView(CreateView):
         return form
 
 
-class ItemUpdateView(UpdateView):
+class ItemUpdateView(MessageMixin, UpdateView):
     model = ItemModel
     fields = ["name", "description"]
     template_name = "items/core/item/form.html"
+    success_message = "Item '{name}' updated successfully!"
+    error_message = "Failed to update Item. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

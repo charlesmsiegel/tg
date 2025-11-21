@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.views.message_mixin import MessageMixin
 from items.models.werewolf.talen import Talen
 
 
@@ -13,7 +15,7 @@ class TalenListView(ListView):
     template_name = "items/werewolf/talen/list.html"
 
 
-class TalenCreateView(CreateView):
+class TalenCreateView(MessageMixin, CreateView):
     model = Talen
     fields = [
         "name",
@@ -25,6 +27,8 @@ class TalenCreateView(CreateView):
         "spirit",
     ]
     template_name = "items/werewolf/talen/form.html"
+    success_message = "Talen '{name}' created successfully!"
+    error_message = "Failed to create Talen. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -35,7 +39,7 @@ class TalenCreateView(CreateView):
         return form
 
 
-class TalenUpdateView(UpdateView):
+class TalenUpdateView(MessageMixin, UpdateView):
     model = Talen
     fields = [
         "name",
@@ -47,6 +51,8 @@ class TalenUpdateView(UpdateView):
         "spirit",
     ]
     template_name = "items/werewolf/talen/form.html"
+    success_message = "Talen '{name}' updated successfully!"
+    error_message = "Failed to update Talen. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

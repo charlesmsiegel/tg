@@ -19,6 +19,7 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanSpecialtiesView,
 )
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
@@ -57,8 +58,10 @@ class KinfolkDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class KinfolkCreateView(CreateView):
+class KinfolkCreateView(MessageMixin, CreateView):
     model = Kinfolk
+    success_message = "Kinfolk created successfully."
+    error_message = "Error creating kinfolk."
     fields = [
         "name",
         "description",
@@ -131,8 +134,10 @@ class KinfolkCreateView(CreateView):
     template_name = "characters/werewolf/kinfolk/form.html"
 
 
-class KinfolkUpdateView(SpecialUserMixin, UpdateView):
+class KinfolkUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Kinfolk
+    success_message = "Kinfolk updated successfully."
+    error_message = "Error updating kinfolk."
     fields = [
         "name",
         "description",

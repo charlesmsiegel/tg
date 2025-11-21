@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.models.vampire.title import VampireTitle
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -15,7 +16,7 @@ class VampireTitleDetailView(DetailView):
         return context
 
 
-class VampireTitleCreateView(CreateView):
+class VampireTitleCreateView(MessageMixin, CreateView):
     model = VampireTitle
     fields = [
         "name",
@@ -26,9 +27,11 @@ class VampireTitleCreateView(CreateView):
         "powers",
     ]
     template_name = "characters/vampire/title/form.html"
+    success_message = "Vampire Title created successfully."
+    error_message = "There was an error creating the Vampire Title."
 
 
-class VampireTitleUpdateView(UpdateView):
+class VampireTitleUpdateView(MessageMixin, UpdateView):
     model = VampireTitle
     fields = [
         "name",
@@ -39,6 +42,8 @@ class VampireTitleUpdateView(UpdateView):
         "powers",
     ]
     template_name = "characters/vampire/title/form.html"
+    success_message = "Vampire Title updated successfully."
+    error_message = "There was an error updating the Vampire Title."
 
 
 class VampireTitleListView(ListView):

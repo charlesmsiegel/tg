@@ -1,4 +1,5 @@
 from characters.models.werewolf.gift import Gift, GiftPermission
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -7,16 +8,20 @@ class GiftDetailView(DetailView):
     template_name = "characters/werewolf/gift/detail.html"
 
 
-class GiftCreateView(CreateView):
+class GiftCreateView(MessageMixin, CreateView):
     model = Gift
     fields = ["name", "rank", "description"]
     template_name = "characters/werewolf/gift/form.html"
+    success_message = "Gift created successfully."
+    error_message = "There was an error creating the Gift."
 
 
-class GiftUpdateView(UpdateView):
+class GiftUpdateView(MessageMixin, UpdateView):
     model = Gift
     fields = ["name", "rank", "description"]
     template_name = "characters/werewolf/gift/form.html"
+    success_message = "Gift updated successfully."
+    error_message = "There was an error updating the Gift."
 
 
 class GiftListView(ListView):

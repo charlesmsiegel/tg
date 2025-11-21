@@ -2,6 +2,7 @@ from typing import Any
 
 from characters.models.core import Character
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, UpdateView
@@ -34,16 +35,20 @@ class CharacterDetailView(SpecialUserMixin, DetailView):
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
-class CharacterCreateView(CreateView):
+class CharacterCreateView(MessageMixin, CreateView):
     model = Character
     fields = "__all__"
     template_name = "characters/core/character/form.html"
+    success_message = "Character '{name}' created successfully!"
+    error_message = "Failed to create Character. Please correct the errors below."
 
 
-class CharacterUpdateView(SpecialUserMixin, UpdateView):
+class CharacterUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Character
     fields = "__all__"
     template_name = "characters/core/character/form.html"
+    success_message = "Character '{name}' updated successfully!"
+    error_message = "Failed to update Character. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

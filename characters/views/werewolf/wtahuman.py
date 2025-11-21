@@ -22,6 +22,7 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -41,8 +42,10 @@ class WtAHumanDetailView(HumanDetailView):
         return context
 
 
-class WtAHumanCreateView(CreateView):
+class WtAHumanCreateView(MessageMixin, CreateView):
     model = WtAHuman
+    success_message = "WtA Human created successfully."
+    error_message = "Error creating WtA Human."
     fields = [
         "name",
         "description",
@@ -103,8 +106,10 @@ class WtAHumanCreateView(CreateView):
     template_name = "characters/werewolf/wtahuman/form.html"
 
 
-class WtAHumanUpdateView(SpecialUserMixin, UpdateView):
+class WtAHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = WtAHuman
+    success_message = "WtA Human updated successfully."
+    error_message = "Error updating WtA Human."
     fields = [
         "name",
         "description",
