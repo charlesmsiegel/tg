@@ -1,6 +1,9 @@
 from typing import Any
 
 from characters.forms.core.ally import AllyForm
+from characters.forms.core.contact import ContactForm
+from characters.forms.core.mentor import MentorForm
+from characters.forms.core.retainer import RetainerForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.freebies import VampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
@@ -336,14 +339,31 @@ class VampireLanguagesView(HumanLanguagesView):
 
 
 class VampireAlliesView(GenericBackgroundView):
-    model = Vampire
+    primary_object_class = Vampire
+    background_name = "allies"
     template_name = "characters/vampire/vampire/chargen.html"
     form_class = AllyForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["bg_name"] = "allies"
-        return context
+
+class VampireMentorView(GenericBackgroundView):
+    primary_object_class = Vampire
+    background_name = "mentor"
+    template_name = "characters/vampire/vampire/chargen.html"
+    form_class = MentorForm
+
+
+class VampireContactsView(GenericBackgroundView):
+    primary_object_class = Vampire
+    background_name = "contacts"
+    template_name = "characters/vampire/vampire/chargen.html"
+    form_class = ContactForm
+
+
+class VampireRetainersView(GenericBackgroundView):
+    primary_object_class = Vampire
+    background_name = "retainers"
+    template_name = "characters/vampire/vampire/chargen.html"
+    form_class = RetainerForm
 
 
 class VampireSpecialtiesView(HumanSpecialtiesView):
@@ -377,7 +397,10 @@ class VampireCharacterCreationView(HumanCharacterCreationView):
         7: VampireFreebiesView,
         8: VampireLanguagesView,
         9: VampireAlliesView,
-        10: VampireSpecialtiesView,
+        10: VampireMentorView,
+        11: VampireContactsView,
+        12: VampireRetainersView,
+        13: VampireSpecialtiesView,
     }
     model_class = Vampire
     key_property = "creation_status"

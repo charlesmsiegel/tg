@@ -1,7 +1,9 @@
 from typing import Any
 
 from characters.forms.core.ally import AllyForm
+from characters.forms.core.contact import ContactForm
 from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.mentor import MentorForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.garou import WerewolfCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -498,6 +500,20 @@ class WerewolfAlliesView(GenericBackgroundView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
+class WerewolfMentorView(GenericBackgroundView):
+    primary_object_class = Werewolf
+    background_name = "mentor"
+    form_class = MentorForm
+    template_name = "characters/werewolf/garou/chargen.html"
+
+
+class WerewolfContactsView(GenericBackgroundView):
+    primary_object_class = Werewolf
+    background_name = "contacts"
+    form_class = ContactForm
+    template_name = "characters/werewolf/garou/chargen.html"
+
+
 class WerewolfFetishView(GenericBackgroundView):
     primary_object_class = Werewolf
     background_name = "fetish"
@@ -542,7 +558,9 @@ class WerewolfCharacterCreationView(HumanCharacterCreationView):
         7: WerewolfFreebiesView,
         8: WerewolfLanguagesView,
         9: WerewolfAlliesView,
-        10: WerewolfSpecialtiesView,
+        10: WerewolfMentorView,
+        11: WerewolfContactsView,
+        12: WerewolfSpecialtiesView,
     }
     model_class = Werewolf
     key_property = "creation_status"
