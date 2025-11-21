@@ -79,7 +79,7 @@
                 <!-- Form Actions -->
                 <div class="tg-card">
                     <div class="tg-card-body text-center">
-                        <button type="submit" class="tg-btn btn-primary btn-lg">
+                        <button type="submit" class="tg-btn btn-primary btn-lg"{% if hide_save_until_valid %} style="display: none;"{% endif %}>
                             <i class="fas fa-save"></i> Save
                         </button>
                         {% if object %}

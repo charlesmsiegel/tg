@@ -181,6 +181,7 @@ class HumanAttributeView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
+        context["hide_save_until_valid"] = True
         return context
 
 
