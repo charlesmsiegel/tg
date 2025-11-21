@@ -69,8 +69,12 @@
         mental: ['perception', 'intelligence', 'wits']
     };
 
-    // Find the submit button
+    // Find the submit button and hide it by default (will be shown when valid distribution achieved)
     const submitButton = document.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.style.display = 'none';
+        submitButton.disabled = true;
+    }
 
     // Get all attribute input fields
     const inputs = {};
