@@ -1,11 +1,11 @@
-from core.models import Model, ModelManager
+from core.models import Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.db.models import OuterRef, Subquery
 from django.urls import reverse
 
 
-class CharacterManager(ModelManager):
-    """Custom manager for Character with specialized query patterns."""
+class CharacterQuerySet(ModelQuerySet):
+    """Custom queryset for Character with chainable query patterns."""
 
     def npcs(self):
         """Non-player characters"""
@@ -45,6 +45,14 @@ class CharacterManager(ModelManager):
             .select_related("chronicle", "owner")
             .order_by("name")
         )
+
+
+class CharacterManager(ModelManager):
+    """Custom manager for Character with specialized query patterns."""
+
+    def get_queryset(self):
+        """Return custom queryset with chainable methods."""
+        return CharacterQuerySet(self.model, using=self._db)
 
 
 class CharacterModel(Model):

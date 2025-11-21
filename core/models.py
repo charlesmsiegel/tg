@@ -7,6 +7,7 @@ from django.utils import timezone
 from game.models import Chronicle
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
+from polymorphic.query import PolymorphicQuerySet
 
 
 class Book(models.Model):
@@ -59,8 +60,8 @@ class BookReference(models.Model):
         return f"<i>{self.book}</i> p. {self.page}"
 
 
-class ModelManager(PolymorphicManager):
-    """Custom manager for Model with common query patterns."""
+class ModelQuerySet(PolymorphicQuerySet):
+    """Custom queryset for Model with chainable query patterns."""
 
     def submitted(self):
         """Objects with status='Sub' (Submitted for approval)"""
@@ -135,6 +136,14 @@ class ModelManager(PolymorphicManager):
             .select_related("chronicle", "owner")
             .order_by("name")
         )
+
+
+class ModelManager(PolymorphicManager):
+    """Custom manager for Model with common query patterns."""
+
+    def get_queryset(self):
+        """Return custom queryset with chainable methods."""
+        return ModelQuerySet(self.model, using=self._db)
 
 
 class Model(PolymorphicModel):
