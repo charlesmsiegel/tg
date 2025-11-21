@@ -1,26 +1,26 @@
 from .changeling import (
     ChangelingCharacterCreationView,
-    ChangelingCharacterDetailView,
-    ChangelingCharacterListView,
-    ChangelingCharacterUpdateView,
+    ChangelingDetailView as ChangelingCharacterDetailView,
+    ChangelingCreateView as ChangelingCharacterListView,
+    ChangelingUpdateView as ChangelingCharacterUpdateView,
 )
 from .ctdhuman import (
     CtDHumanCharacterCreationView,
-    CtDHumanCharacterDetailView,
-    CtDHumanCharacterListView,
-    CtDHumanCharacterUpdateView,
+    CtDHumanDetailView as CtDHumanCharacterDetailView,
+    CtDHumanCreateView as CtDHumanCharacterListView,
+    CtDHumanUpdateView as CtDHumanCharacterUpdateView,
 )
 from .house_faction import (
-    ChangelingFactionCreateView,
-    ChangelingFactionDetailView,
-    ChangelingFactionListView,
-    ChangelingFactionUpdateView,
+    HouseFactionCreateView as ChangelingFactionCreateView,
+    HouseFactionDetailView as ChangelingFactionDetailView,
+    HouseFactionListView as ChangelingFactionListView,
+    HouseFactionUpdateView as ChangelingFactionUpdateView,
 )
 from .house import (
-    ChangelingHouseCreateView,
-    ChangelingHouseDetailView,
-    ChangelingHouseListView,
-    ChangelingHouseUpdateView,
+    HouseCreateView as ChangelingHouseCreateView,
+    HouseDetailView as ChangelingHouseDetailView,
+    HouseListView as ChangelingHouseListView,
+    HouseUpdateView as ChangelingHouseUpdateView,
 )
 from .kith import (
     KithCreateView,
@@ -37,6 +37,5 @@ from .legacy import (
 from .motley import (
     MotleyCreateView,
     MotleyDetailView,
-    MotleyListView,
     MotleyUpdateView,
 )

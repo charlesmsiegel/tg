@@ -38,50 +38,55 @@ from .group import GroupDetailView
 
 
 class GenericCharacterDetailView(DictView):
-    from characters.views import changeling, mage, vampire, werewolf, wraith, demon
-
-    view_mapping = {
-        "vtm_human": vampire.VtMHumanCharacterCreationView,
-        "vampire": vampire.VampireCharacterCreationView,
-        "wta_human": werewolf.WtAHumanCharacterCreationView,
-        "werewolf": werewolf.WerewolfCharacterCreationView,
-        "spirit_character": werewolf.SpiritDetailView,
-        "kinfolk": werewolf.KinfolkCharacterCreationView,
-        "fomor": werewolf.FomorCharacterCreationView,
-        "fera": werewolf.FeraCharacterCreationView,
-        "mta_human": mage.MtAHumanCharacterCreationView,
-        "mage": mage.MageCharacterCreationView,
-        "companion": mage.CopanionCharacterCreationView,
-        "sorcerer": mage.SorcererCharacterCreationView,
-        "ctd_human": changeling.CtDHumanCharacterCreationView,
-        "changeling": changeling.ChangelingCharacterCreationView,
-        "wto_human": wraith.WtOHumanCharacterCreationView,
-        "wraith": wraith.WraithCharacterCreationView,
-        "dtf_human": demon.DtFHumanCharacterCreationView,
-        "demon": demon.DemonCharacterCreationView,
-        "thrall": demon.ThrallCharacterCreationView,
-        
-    }
     model_class = Character
     key_property = "type"
     default_redirect = "characters:index"
 
+    @property
+    def view_mapping(self):
+        from characters.views import changeling, demon, mage, vampire, werewolf, wraith
+
+        return {
+            "vtm_human": vampire.VtMHumanCharacterCreationView,
+            "vampire": vampire.VampireCharacterCreationView,
+            "wta_human": werewolf.WtAHumanCharacterCreationView,
+            "werewolf": werewolf.WerewolfCharacterCreationView,
+            "spirit_character": werewolf.SpiritDetailView,
+            "kinfolk": werewolf.KinfolkCharacterCreationView,
+            "fomor": werewolf.FomorCharacterCreationView,
+            "fera": werewolf.FeraCharacterCreationView,
+            "mta_human": mage.MtAHumanCharacterCreationView,
+            "mage": mage.MageCharacterCreationView,
+            "companion": mage.CopanionCharacterCreationView,
+            "sorcerer": mage.SorcererCharacterCreationView,
+            "ctd_human": changeling.CtDHumanCharacterCreationView,
+            "changeling": changeling.ChangelingCharacterCreationView,
+            "wto_human": wraith.WtOHumanCharacterCreationView,
+            "wraith": wraith.WraithCharacterCreationView,
+            "dtf_human": demon.DtFHumanCharacterCreationView,
+            "demon": demon.DemonCharacterCreationView,
+            "thrall": demon.ThrallCharacterCreationView,
+        }
+
 
 class GenericGroupDetailView(DictView):
-    from characters.views import changeling, mage, vampire, werewolf, wraith, demon
-
-    view_mapping = {
-        "group": GroupDetailView,
-        "pack": werewolf.PackDetailView,
-        "cabal": mage.CabalDetailView,
-        "motley": changeling.MotleyDetailView,
-        "coterie": vampire.CoterieDetailView,
-        "circle": wraith.CircleDetailView,
-        "conclave": demon.ConclaveDetailView,
-    }
     model_class = Group
     key_property = "type"
     default_redirect = "characters:index"
+
+    @property
+    def view_mapping(self):
+        from characters.views import changeling, demon, mage, vampire, werewolf, wraith
+
+        return {
+            "group": GroupDetailView,
+            "pack": werewolf.PackDetailView,
+            "cabal": mage.CabalDetailView,
+            "motley": changeling.MotleyDetailView,
+            "coterie": vampire.CoterieDetailView,
+            "circle": wraith.CircleDetailView,
+            "conclave": demon.ConclaveDetailView,
+        }
 
 
 class CharacterIndexView(ListView):
