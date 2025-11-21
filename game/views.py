@@ -3,6 +3,7 @@ import itertools
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
 from core.mixins import ViewPermissionMixin, EditPermissionMixin
+from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import OuterRef, Subquery
