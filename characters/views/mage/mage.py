@@ -476,7 +476,6 @@ class MageDetailView(HumanDetailView):
                             messages.error(request, str(e))
                             context["form"] = form
                             form_errors = True
-                            continue
                     elif category == "Tenet":
                         trait = example.name
                         trait_type = "tenet"
