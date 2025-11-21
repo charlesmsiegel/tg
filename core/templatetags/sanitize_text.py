@@ -9,6 +9,14 @@ register = template.Library()
 
 @register.filter
 def sanitize_html(value):
+    # Handle None, empty strings, and non-string types
+    if value is None or value == "":
+        return ""
+
+    # Convert to string if not already (handles Message objects, etc.)
+    if not isinstance(value, str):
+        value = str(value)
+
     allowed_tags = ["b", "i", "em", "strong", "p", "br", "strike", "ul", "li", "span"]
     allowed_attributes = {
         "span": lambda tag, name, value: name == "class" and value == "quote"
