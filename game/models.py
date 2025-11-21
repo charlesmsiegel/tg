@@ -70,6 +70,25 @@ class Gameline(models.Model):
 class Chronicle(models.Model):
     name = models.CharField(max_length=100, default="")
     storytellers = models.ManyToManyField(User, blank=True, through="STRelationship")
+
+    # Head storyteller (primary ST with full control)
+    head_st = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='chronicles_as_head_st',
+        help_text="Primary storyteller with full chronicle control"
+    )
+
+    # Game storytellers (subordinate STs with view-only access)
+    game_storytellers = models.ManyToManyField(
+        User,
+        related_name='chronicles_as_game_st',
+        blank=True,
+        help_text="Game STs can view all chronicle data but cannot edit most objects"
+    )
+
     theme = models.CharField(max_length=200, default="")
     mood = models.CharField(max_length=200, default="")
     common_knowledge_elements = models.ManyToManyField(SettingElement, blank=True)
@@ -146,6 +165,22 @@ class Chronicle(models.Model):
         )
         self.save()
         return s
+
+    @property
+    def players(self):
+        """Returns queryset of Users with characters in this chronicle."""
+        from characters.models import Character
+        return User.objects.filter(
+            characters__chronicle=self
+        ).distinct()
+
+    def is_head_st(self, user):
+        """Check if user is head ST of this chronicle."""
+        return self.head_st == user
+
+    def is_game_st(self, user):
+        """Check if user is a game ST in this chronicle."""
+        return self.game_storytellers.filter(id=user.id).exists()
 
 
 class STRelationshipManager(models.Manager):
