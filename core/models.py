@@ -160,7 +160,7 @@ class PermissionMixin(models.Model):
 
     # Generic relation to observers
     observers = GenericRelation(
-        'Observer',
+        'core.Observer',
         related_query_name='%(class)s'
     )
 
