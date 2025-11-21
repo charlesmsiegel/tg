@@ -19,6 +19,7 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanSpecialtiesView,
 )
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView

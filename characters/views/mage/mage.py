@@ -40,6 +40,7 @@ from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
