@@ -5,12 +5,31 @@ Run this to populate all character templates from World of Darkness sourcebooks.
 """
 
 import os
+import sys
 import django
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
 django.setup()
 
-from .mage_templates import populate_mage_templates
+# Import functions directly when run as module
+if __name__ == "__main__":
+    from mage_templates import populate_mage_templates
+    from vampire_templates import populate_vampire_templates
+    from werewolf_templates import populate_werewolf_templates
+    from changeling_templates import populate_changeling_templates
+    from wraith_templates import populate_wraith_templates
+    from demon_templates import populate_demon_templates
+else:
+    from .mage_templates import populate_mage_templates
+    from .vampire_templates import populate_vampire_templates
+    from .werewolf_templates import populate_werewolf_templates
+    from .changeling_templates import populate_changeling_templates
+    from .wraith_templates import populate_wraith_templates
+    from .demon_templates import populate_demon_templates
 
 
 def populate_all_templates():
@@ -23,12 +42,25 @@ def populate_all_templates():
     print("\n[Mage: The Ascension]")
     populate_mage_templates()
 
-    # TODO: Add other gamelines as templates are created
-    # populate_vampire_templates()
-    # populate_werewolf_templates()
-    # populate_demon_templates()
-    # populate_changeling_templates()
-    # populate_wraith_templates()
+    # Vampire templates
+    print("\n[Vampire: The Masquerade]")
+    populate_vampire_templates()
+
+    # Werewolf templates
+    print("\n[Werewolf: The Apocalypse]")
+    populate_werewolf_templates()
+
+    # Changeling templates
+    print("\n[Changeling: The Dreaming]")
+    populate_changeling_templates()
+
+    # Wraith templates
+    print("\n[Wraith: The Oblivion]")
+    populate_wraith_templates()
+
+    # Demon templates
+    print("\n[Demon: The Fallen]")
+    populate_demon_templates()
 
     print("\n" + "=" * 60)
     print("ALL CHARACTER TEMPLATES POPULATED SUCCESSFULLY")
