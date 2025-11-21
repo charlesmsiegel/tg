@@ -1,18 +1,30 @@
 from characters import views
 from django.urls import include, path
+from importlib import import_module
 
-from . import changeling, demon, mage, vampire, werewolf, wraith
+from core.constants import GameLine
 from .core import ajax, create, detail, index, update
 
-urlpatterns = [
-    path("vampire/", include((vampire.urls, "vampire"), namespace="vampire")),
-    path("werewolf/", include((werewolf.urls, "werewolf"), namespace="werewolf")),
-    path("mage/", include((mage.urls, "mage"), namespace="mage")),
-    path("wraith/", include((wraith.urls, "wraith"), namespace="wraith")),
-    path(
-        "changeling/", include((changeling.urls, "changeling"), namespace="changeling")
-    ),
-    path("demon/", include((demon.urls, "demon"), namespace="demon")),
+# Generate gameline URL patterns programmatically
+urlpatterns = []
+
+# Available gameline modules in characters app
+AVAILABLE_GAMELINES = ["vampire", "werewolf", "mage", "wraith", "changeling", "demon"]
+
+for url_path, module_name, namespace in GameLine.URL_PATTERNS:
+    # Only include gamelines that exist in this app
+    if module_name in AVAILABLE_GAMELINES:
+        try:
+            gameline_module = import_module(f".{module_name}", package="characters.urls")
+            urlpatterns.append(
+                path(f"{url_path}/", include((gameline_module.urls, module_name), namespace=namespace))
+            )
+        except (ImportError, AttributeError):
+            # Skip if module doesn't exist or doesn't have urls attribute
+            pass
+
+# Add core URL patterns
+urlpatterns.extend([
     path("ajax/", include((ajax.urls, "characters_ajax"), namespace="ajax")),
     path("create/", include((create.urls, "characters_create"), namespace="create")),
     path("update/", include((update.urls, "characters_update"), namespace="update")),
@@ -22,4 +34,4 @@ urlpatterns = [
     path("deceased/", views.core.DeceasedCharacterIndex.as_view(), name="deceased"),
     path("npc/", views.core.NPCCharacterIndex.as_view(), name="npc"),
     path("", include(detail.urls)),
-]
+])
