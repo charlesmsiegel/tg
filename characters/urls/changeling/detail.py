@@ -28,12 +28,12 @@ urls = [
     ),
     path(
         "ctdhuman/<int:pk>/template/",
-        characters.views.changeling.CtDHumanTemplateSelectView.as_view(),
+        characters.changeling.CtDHumanTemplateSelectView.as_view(),
         name="ctdhuman_template",
     ),
     path(
         "ctdhuman/<int:pk>/creation/",
-        characters.views.changeling.CtDHumanCharacterCreationView.as_view(),
+        characters.changeling.CtDHumanCharacterCreationView.as_view(),
         name="ctdhuman_creation",
     ),
 ]
