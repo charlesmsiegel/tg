@@ -2,20 +2,19 @@
 Populate database with Defiler (Lammasu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
 from populate_db.demon_houses import defilers
-
-# Get all lores for reference
-lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
-lore_flesh = Lore.objects.get_or_create(property_name="flesh")[0]
-lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
-lore_longing = Lore.objects.get_or_create(property_name="longing")[0]
-lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
-lore_storms = Lore.objects.get_or_create(property_name="storms")[0]
-lore_transfiguration = Lore.objects.get_or_create(property_name="transfiguration")[0]
-lore_winds = Lore.objects.get_or_create(property_name="winds")[0]
+from populate_db.demon_lores import (
+    lore_of_awakening as lore_awakening,
+    lore_of_the_flesh as lore_flesh,
+    lore_of_the_fundament as lore_fundament,
+    lore_of_longing,
+    lore_of_patterns,
+    lore_of_storms,
+    lore_of_transfiguration,
+    lore_of_the_winds as lore_winds,
+)
 
 # =============================================================================
 # DEFILER RITUALS - HOUSES OF THE FALLEN

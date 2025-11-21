@@ -6,26 +6,29 @@ of potential worshippers, causing chaos and terror, and protecting the Earthboun
 Unlike normal demon rituals, Earthbound rituals do not have low-Torment effects.
 """
 
-from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get lores for reference
-lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
-lore_beast = Lore.objects.get_or_create(property_name="beast")[0]
-lore_celestials = Lore.objects.get_or_create(property_name="celestials")[0]
-lore_expression = Lore.objects.get_or_create(property_name="expression")[0]
-lore_firmament = Lore.objects.get_or_create(property_name="firmament")[0]
-lore_flesh = Lore.objects.get_or_create(property_name="flesh")[0]
-lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
-lore_forge = Lore.objects.get_or_create(property_name="forge")[0]
-lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
-lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
-lore_spirit = Lore.objects.get_or_create(property_name="spirit")[0]
+from populate_db.demon_lores import (
+    lore_of_awakening as lore_awakening,
+    lore_of_the_beast as lore_beast,
+    lore_of_the_celestials as lore_celestials,
+    lore_of_the_firmament as lore_firmament,
+    lore_of_the_flesh as lore_flesh,
+    lore_of_flame,
+    lore_of_the_forge as lore_forge,
+    lore_of_humanity,
+    lore_of_patterns as lore_patterns,
+    lore_of_the_spirit as lore_spirit,
+)
+from populate_db.demon_earthbound_lores import (
+    lore_of_chaos as lore_chaos,
+    lore_of_contamination as lore_contamination,
+    lore_of_violation as lore_violation,
+)
 
-# Get Earthbound lores
-lore_chaos = Lore.objects.get_or_create(property_name="chaos")[0]
-lore_contamination = Lore.objects.get_or_create(property_name="contamination")[0]
-lore_violation = Lore.objects.get_or_create(property_name="violation")[0]
+# Note: lore_expression not found in demon_lores.py - may need to be created
+from characters.models.demon.lore import Lore
+lore_expression = Lore.objects.get_or_create(property_name="expression")[0]
 
 # ============================================================================
 # EARTHBOUND RITUALS
