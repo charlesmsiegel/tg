@@ -40,11 +40,15 @@ class CustomUserCreationForm(UserCreationForm):
             else:
                 self.fields[field_name].widget.attrs["class"] = "tg-form-control"
 
-    def is_valid(self):
-        if self.data["username"] == self.data["email"]:
-            self.add_error(None, "Username and Email must be distinct")
-            return False
-        return super().is_valid()
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        email = cleaned_data.get("email")
+
+        if username and email and username == email:
+            raise forms.ValidationError("Username and Email must be distinct")
+
+        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=False)
