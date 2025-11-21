@@ -1,12 +1,13 @@
 # Example Wonders, Talismans, Artifacts, and Magical Items from Mage Sourcebooks
 
-from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
+
+from populate_db.effects_INC import effect_summon_spirit_minor, effect_harm_ghost
 
 # ===== WONDERS (Permanent Magical Items) =====
 
@@ -242,7 +243,7 @@ whistle = Charm.objects.get_or_create(
     quintessence_max=5,
     arete=2,
 )[0]
-whistle.power = Effect.objects.get_or_create(name="Summon Spirit (Minor)")
+whistle.power = effect_summon_spirit_minor
 whistle.description = (
     "A carved bone whistle that summons friendly spirits when blown. "
     "Contains a minor air spirit."
@@ -259,7 +260,7 @@ ghostblade = Charm.objects.get_or_create(
     quintessence_max=8,
     arete=3,
 )[0]
-ghostblade.power = Effect.objects.get_or_create(name="Harm Ghost")[0]
+ghostblade.power = effect_harm_ghost
 ghostblade.description = (
     "A sword bound with a spirit that allows it to harm incorporeal entities. "
     "Deals aggravated damage to ghosts and spirits."

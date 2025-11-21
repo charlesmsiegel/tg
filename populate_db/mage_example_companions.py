@@ -1,30 +1,26 @@
 # Example Companions and Familiars from Mage Sourcebooks
 # These serve as templates for player familiars and magical companions
 
-from characters.models.core.archetype import Archetype
-from characters.models.mage.companion import Advantage, Companion
+from characters.models.mage.companion import Companion
 from characters.models.werewolf.charm import SpiritCharm
 
-# Get common archetypes
-caregiver = Archetype.objects.get_or_create(name="Caregiver")[0]
-trickster = Archetype.objects.get_or_create(name="Trickster")[0]
-sage = Archetype.objects.get_or_create(name="Sage")[0]
-loner = Archetype.objects.get_or_create(name="Loner")[0]
-explorer = Archetype.objects.get_or_create(name="Explorer")[0]
+from populate_db.archetypes import caregiver, trickster, sage, loner, explorer
+from populate_db.advantages import (
+    armor,
+    claws_fangs_or_horns as claws,
+    nightsight,
+    alacrity,
+    tracking,
+    flexibility,
+    wings,
+    empathic_bond,
+    human_speech,
+)
 
-# Get common advantages
-armor = Advantage.objects.get_or_create(name="Armor")[0]
-claws = Advantage.objects.get_or_create(name="Claws, Fangs, or Horns")[0]
-nightsight = Advantage.objects.get_or_create(name="Nightsight")[0]
+# Configure advantages
 nightsight.add_ratings([1])
-alacrity = Advantage.objects.get_or_create(name="Alacrity")[0]
-tracking = Advantage.objects.get_or_create(name="Tracking")[0]
 tracking.add_ratings([1, 2, 3])
-flexibility = Advantage.objects.get_or_create(name="Flexibility")[0]
-wings = Advantage.objects.get_or_create(name="Wings")[0]
 wings.add_ratings([2, 4, 6])
-empathic_bond = Advantage.objects.get_or_create(name="Empathic Bond")[0]
-human_speech = Advantage.objects.get_or_create(name="Human Speech")[0]
 human_speech.add_ratings([2])
 
 # ===== CLASSIC ANIMAL FAMILIARS =====
