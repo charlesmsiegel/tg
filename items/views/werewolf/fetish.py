@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
@@ -13,7 +14,7 @@ class FetishListView(ListView):
     template_name = "items/werewolf/fetish/list.html"
 
 
-class FetishCreateView(CreateView):
+class FetishCreateView(MessageMixin, CreateView):
     model = Fetish
     fields = [
         "name",
@@ -25,6 +26,8 @@ class FetishCreateView(CreateView):
         "spirit",
     ]
     template_name = "items/werewolf/fetish/form.html"
+    success_message = "Fetish '{name}' created successfully!"
+    error_message = "Failed to create fetish. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -35,7 +38,7 @@ class FetishCreateView(CreateView):
         return form
 
 
-class FetishUpdateView(UpdateView):
+class FetishUpdateView(MessageMixin, UpdateView):
     model = Fetish
     fields = [
         "name",
@@ -47,6 +50,8 @@ class FetishUpdateView(UpdateView):
         "spirit",
     ]
     template_name = "items/werewolf/fetish/form.html"
+    success_message = "Fetish '{name}' updated successfully!"
+    error_message = "Failed to update fetish. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

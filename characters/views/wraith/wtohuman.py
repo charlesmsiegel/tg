@@ -21,7 +21,9 @@ from characters.views.core.human import (
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -40,7 +42,7 @@ class WtOHumanDetailView(HumanDetailView):
         return context
 
 
-class WtOHumanCreateView(CreateView):
+class WtOHumanCreateView(MessageMixin, CreateView):
     model = WtOHuman
     fields = [
         "name",
@@ -99,9 +101,11 @@ class WtOHumanCreateView(CreateView):
         "technology",
     ]
     template_name = "characters/wraith/wtohuman/form.html"
+    success_message = "Wraith Human '{name}' created successfully!"
+    error_message = "Failed to create wraith human. Please correct the errors below."
 
 
-class WtOHumanUpdateView(SpecialUserMixin, UpdateView):
+class WtOHumanUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = [
         "name",
@@ -160,6 +164,8 @@ class WtOHumanUpdateView(SpecialUserMixin, UpdateView):
         "technology",
     ]
     template_name = "characters/wraith/wtohuman/form.html"
+    success_message = "Wraith Human '{name}' updated successfully!"
+    error_message = "Failed to update wraith human. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -187,7 +193,18 @@ class WtOHumanBasicsView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         self.object = form.save()
+        messages.success(
+            self.request,
+            f"Wraith Human '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -232,6 +249,10 @@ class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
         for ability in self.model.primary_abilities:
             if form.cleaned_data.get(ability) < 0 or form.cleaned_data.get(ability) > 3:
                 form.add_error(None, "Abilities must range from 0-3")
+                messages.error(
+                    self.request,
+                    "All abilities must be between 0 and 3 dots."
+                )
                 return self.form_invalid(form)
 
         talents = sum(
@@ -249,10 +270,26 @@ class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
                 None,
                 f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}",
             )
+            messages.error(
+                self.request,
+                f"Abilities must be distributed {self.primary}/{self.secondary}/{self.tertiary}. Current: {talents} talents, {skills} skills, {knowledges} knowledges."
+            )
             return self.form_invalid(form)
         self.object.creation_status += 1
         self.object.save()
+        messages.success(
+            self.request,
+            "Abilities allocated successfully!"
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
 
 class WtOHumanBackgroundsView(HumanBackgroundsView):
@@ -283,7 +320,18 @@ class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
     def form_valid(self, form):
         self.object.creation_status += 1
         self.object.save()
+        messages.success(
+            self.request,
+            "Character details saved successfully!"
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -358,6 +406,10 @@ class WtOHumanLanguagesView(SpecialUserMixin, FormView):
                 human.languages.add(language)
         human.creation_status += 1
         human.save()
+        messages.success(
+            self.request,
+            "Languages added successfully!"
+        )
         return HttpResponseRedirect(human.get_absolute_url())
 
     def get_context_data(self, **kwargs):
@@ -403,6 +455,10 @@ class WtOHumanSpecialtiesView(SpecialUserMixin, FormView):
             wraith.specialties.add(spec)
         wraith.status = "Sub"
         wraith.save()
+        messages.success(
+            self.request,
+            f"Wraith Human '{wraith.name}' submitted for approval!"
+        )
         return HttpResponseRedirect(wraith.get_absolute_url())
 
 

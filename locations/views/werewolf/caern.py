@@ -1,3 +1,4 @@
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.werewolf.caern import Caern
 
@@ -13,7 +14,7 @@ class CaernListView(ListView):
     template_name = "locations/werewolf/caern/list.html"
 
 
-class CaernCreateView(CreateView):
+class CaernCreateView(MessageMixin, CreateView):
     model = Caern
     fields = [
         "name",
@@ -23,6 +24,8 @@ class CaernCreateView(CreateView):
         "caern_type",
     ]
     template_name = "locations/werewolf/caern/form.html"
+    success_message = "Caern '{name}' created successfully!"
+    error_message = "Failed to create caern. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -34,7 +37,7 @@ class CaernCreateView(CreateView):
         return form
 
 
-class CaernUpdateView(UpdateView):
+class CaernUpdateView(MessageMixin, UpdateView):
     model = Caern
     fields = [
         "name",
@@ -44,6 +47,8 @@ class CaernUpdateView(UpdateView):
         "caern_type",
     ]
     template_name = "locations/werewolf/caern/form.html"
+    success_message = "Caern '{name}' updated successfully!"
+    error_message = "Failed to update caern. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

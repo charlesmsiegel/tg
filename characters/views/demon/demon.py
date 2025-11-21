@@ -1,5 +1,6 @@
 from characters.models.demon import Demon
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
@@ -15,7 +16,7 @@ class DemonDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class DemonCreateView(CreateView):
+class DemonCreateView(MessageMixin, CreateView):
     model = Demon
     fields = [
         "name",
@@ -98,9 +99,11 @@ class DemonCreateView(CreateView):
         "abyss_duration",
     ]
     template_name = "characters/demon/demon/form.html"
+    success_message = "Demon '{name}' created successfully!"
+    error_message = "Failed to create demon. Please correct the errors below."
 
 
-class DemonUpdateView(SpecialUserMixin, UpdateView):
+class DemonUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "name",
@@ -183,6 +186,8 @@ class DemonUpdateView(SpecialUserMixin, UpdateView):
         "abyss_duration",
     ]
     template_name = "characters/demon/demon/form.html"
+    success_message = "Demon '{name}' updated successfully!"
+    error_message = "Failed to update demon. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

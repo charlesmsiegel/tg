@@ -5,6 +5,7 @@ from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.generic import DictView
+from core.views.message_mixin import MessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import View
@@ -44,7 +45,7 @@ class ChantryListView(ListView):
     template_name = "locations/mage/chantry/list.html"
 
 
-class ChantryCreateView(CreateView):
+class ChantryCreateView(MessageMixin, CreateView):
     model = Chantry
     fields = [
         "name",
@@ -66,6 +67,8 @@ class ChantryCreateView(CreateView):
         "teacher",
     ]
     template_name = "locations/mage/chantry/form.html"
+    success_message = "Chantry '{name}' created successfully!"
+    error_message = "Failed to create chantry. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -76,7 +79,7 @@ class ChantryCreateView(CreateView):
         return form
 
 
-class ChantryUpdateView(UpdateView):
+class ChantryUpdateView(MessageMixin, UpdateView):
     model = Chantry
     fields = [
         "name",
@@ -98,6 +101,8 @@ class ChantryUpdateView(UpdateView):
         "teacher",
     ]
     template_name = "locations/mage/chantry/form.html"
+    success_message = "Chantry '{name}' updated successfully!"
+    error_message = "Failed to update chantry. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
