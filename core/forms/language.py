@@ -10,16 +10,15 @@ class HumanLanguageForm(forms.Form):
 
         super().__init__(*args, **kwargs)
 
+        # Query once before loop to avoid repeated database queries
+        language_suggestions = [
+            x.name
+            for x in Language.objects.order_by("frequency").exclude(name="English")
+        ]
+
         # Dynamically create fields
         for i in range(num_languages):
             self.fields[f"language_{i+1}"] = forms.CharField(
-                widget=AutocompleteTextInput(
-                    suggestions=[
-                        x.name
-                        for x in Language.objects.order_by("frequency").exclude(
-                            name="English"
-                        )
-                    ]
-                ),
+                widget=AutocompleteTextInput(suggestions=language_suggestions),
                 label=f"Language {i + 1}",
             )

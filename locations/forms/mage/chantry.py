@@ -57,16 +57,17 @@ class ChantryPointForm(forms.Form):
         if category == "Existing Background":
             self.fields["example"].queryset = self.object.backgrounds.all()
 
-    def is_valid(self):
-        valid = super().is_valid()
-        category = self.cleaned_data["category"]
-        if category == "New Background":
-            if self.cleaned_data["example"] is None:
-                raise forms.ValidationError("Need to choose a Background")
-        if category == "Existing Background":
-            if self.cleaned_data["example"] is None:
-                raise forms.ValidationError("Need to choose a Background")
-        return valid
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get("category")
+        example = cleaned_data.get("example")
+
+        if category == "New Background" and example is None:
+            raise forms.ValidationError("Need to choose a Background")
+        if category == "Existing Background" and example is None:
+            raise forms.ValidationError("Need to choose a Background")
+
+        return cleaned_data
 
     def save(self, commit=True):
         category = self.cleaned_data["category"]

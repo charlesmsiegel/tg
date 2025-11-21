@@ -74,7 +74,6 @@ class HumanFreebiesForm(forms.Form):
         elif category == "MeritFlaw" and (
             self.data["example"] == "" or self.data["value"] == ""
         ):
-            print("MeritFlaw Invalid!")
             raise forms.ValidationError("Must Choose Merit/Flaw and rating")
         elif (
             category
