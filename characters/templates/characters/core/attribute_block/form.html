@@ -8,9 +8,18 @@
     </div>
 </div>
 <div class="row">
-    <h3 class="col-sm {{ object.get_heading }}">Physical</h3>
-    <h3 class="col-sm {{ object.get_heading }}">Social</h3>
-    <h3 class="col-sm {{ object.get_heading }}">Mental</h3>
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Physical</h3>
+        <div id="physical-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+    </div>
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Social</h3>
+        <div id="social-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+    </div>
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Mental</h3>
+        <div id="mental-remaining" style="font-weight: 600; color: var(--theme-text-secondary);"></div>
+    </div>
 </div>
 <div class="row">
     <div class="col-sm">Strength</div>
@@ -36,3 +45,191 @@
     <div class="col-sm">Wits</div>
     <div class="col-sm dots">{{ form.wits }}</div>
 </div>
+
+<script>
+(function() {
+    'use strict';
+
+    const PRIMARY = {{ primary }};
+    const SECONDARY = {{ secondary }};
+    const TERTIARY = {{ tertiary }};
+    const BASE = 3; // Each category starts with 3 points (1 per attribute)
+    const MAX_ATTRIBUTE = 5;
+    const MIN_ATTRIBUTE = 1;
+
+    // Target totals for each category
+    const TARGETS = [BASE + PRIMARY, BASE + SECONDARY, BASE + TERTIARY].sort(); // [6, 8, 10]
+
+    // Attribute groupings
+    const CATEGORIES = {
+        physical: ['strength', 'dexterity', 'stamina'],
+        social: ['charisma', 'manipulation', 'appearance'],
+        mental: ['perception', 'intelligence', 'wits']
+    };
+
+    // Get all attribute input fields
+    const inputs = {};
+    Object.values(CATEGORIES).flat().forEach(attr => {
+        const input = document.querySelector(`#id_${attr}`);
+        if (input) {
+            inputs[attr] = input;
+            // Listen for changes on all inputs
+            input.addEventListener('change', updateDisplay);
+            input.addEventListener('input', updateDisplay);
+        }
+    });
+
+    function getCategoryTotal(categoryName) {
+        return CATEGORIES[categoryName].reduce((sum, attr) => {
+            const value = parseInt(inputs[attr]?.value) || MIN_ATTRIBUTE;
+            return sum + value;
+        }, 0);
+    }
+
+    function getCurrentTotals() {
+        return {
+            physical: getCategoryTotal('physical'),
+            social: getCategoryTotal('social'),
+            mental: getCategoryTotal('mental')
+        };
+    }
+
+    function findBestAllocation(totals) {
+        const values = [totals.physical, totals.social, totals.mental];
+        const sortedValues = [...values].sort((a, b) => a - b);
+
+        // Calculate remaining points for each possible target
+        const remaining = {
+            physical: null,
+            social: null,
+            mental: null
+        };
+
+        // Try to match current totals to target totals
+        // The logic: we need the three categories to eventually equal [6, 8, 10]
+        // We calculate how many more points are needed for each category to reach
+        // one of these targets
+
+        const categoryNames = ['physical', 'social', 'mental'];
+        const currentSorted = [...values].map((val, idx) => ({ val, name: categoryNames[idx] }))
+            .sort((a, b) => a.val - b.val);
+
+        // Match smallest to smallest target, etc.
+        currentSorted.forEach((item, idx) => {
+            const targetTotal = TARGETS[idx];
+            remaining[item.name] = targetTotal - item.val;
+        });
+
+        return remaining;
+    }
+
+    function canIncreaseAttribute(attrName) {
+        const currentValue = parseInt(inputs[attrName]?.value) || MIN_ATTRIBUTE;
+
+        // Can't exceed maximum
+        if (currentValue >= MAX_ATTRIBUTE) {
+            return false;
+        }
+
+        // Check if increasing would make valid distribution impossible
+        const totals = getCurrentTotals();
+
+        // Find which category this attribute belongs to
+        let category = null;
+        for (const [cat, attrs] of Object.entries(CATEGORIES)) {
+            if (attrs.includes(attrName)) {
+                category = cat;
+                break;
+            }
+        }
+
+        if (!category) return false;
+
+        // Simulate increasing this attribute
+        totals[category] += 1;
+
+        // Check if the new totals can still form a valid [6, 8, 10] distribution
+        const values = [totals.physical, totals.social, totals.mental];
+        const sorted = [...values].sort((a, b) => a - b);
+
+        // Each value must be <= its corresponding target
+        // (we can't have a category that exceeds its maximum possible target)
+        if (sorted[0] > TARGETS[0] || sorted[1] > TARGETS[1] || sorted[2] > TARGETS[2]) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function updateDisplay() {
+        const totals = getCurrentTotals();
+        const remaining = findBestAllocation(totals);
+
+        // Update remaining point displays
+        for (const [category, points] of Object.entries(remaining)) {
+            const element = document.getElementById(`${category}-remaining`);
+            if (element) {
+                if (points > 0) {
+                    element.textContent = `${points} point${points !== 1 ? 's' : ''} remaining`;
+                    element.style.color = 'var(--theme-text-secondary)';
+                } else if (points === 0) {
+                    element.textContent = 'Complete';
+                    element.style.color = '#28a745';
+                } else {
+                    element.textContent = `${Math.abs(points)} point${Math.abs(points) !== 1 ? 's' : ''} over`;
+                    element.style.color = '#dc3545';
+                }
+            }
+        }
+
+        // Validate each input and enforce constraints
+        Object.entries(inputs).forEach(([attrName, input]) => {
+            if (!input) return;
+
+            const currentValue = parseInt(input.value) || MIN_ATTRIBUTE;
+
+            if (input.tagName === 'SELECT') {
+                // Handle select dropdowns
+                Array.from(input.options).forEach(option => {
+                    const optionValue = parseInt(option.value);
+                    if (optionValue > currentValue) {
+                        // This is an increase option
+                        if (!canIncreaseAttribute(attrName)) {
+                            option.disabled = true;
+                        } else {
+                            option.disabled = false;
+                        }
+                    } else {
+                        // Always allow decreasing or staying the same
+                        option.disabled = false;
+                    }
+                });
+            } else if (input.tagName === 'INPUT' && input.type === 'number') {
+                // Handle number inputs - set max attribute dynamically
+                const maxAllowed = canIncreaseAttribute(attrName) ? MAX_ATTRIBUTE : currentValue;
+                input.max = maxAllowed;
+                input.min = MIN_ATTRIBUTE;
+
+                // Add validation on input
+                const validateInput = function(e) {
+                    const val = parseInt(this.value);
+                    if (val > maxAllowed) {
+                        this.value = maxAllowed;
+                    }
+                    if (val < MIN_ATTRIBUTE) {
+                        this.value = MIN_ATTRIBUTE;
+                    }
+                };
+
+                // Remove old listener if exists
+                input.removeEventListener('blur', input._validateInput);
+                input._validateInput = validateInput;
+                input.addEventListener('blur', validateInput);
+            }
+        });
+    }
+
+    // Initial update on page load
+    updateDisplay();
+})();
+</script>
