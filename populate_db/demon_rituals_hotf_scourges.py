@@ -2,7 +2,6 @@
 Populate database with Scourge (Asharu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
 from populate_db.demon_houses import scourges
@@ -14,9 +13,6 @@ from populate_db.demon_lores import (
     lore_of_storms,
     lore_of_the_winds as lore_winds,
 )
-
-# Lore of Survival not found in demon_lores.py
-lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
 
 # =============================================================================
 # SCOURGE RITUALS - HOUSES OF THE FALLEN

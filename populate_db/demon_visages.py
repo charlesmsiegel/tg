@@ -144,6 +144,12 @@ trait_weather_sense_defilers = ApocalypticFormTrait.objects.get_or_create(name="
 trait_wings = ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0]
 trait_wings_cost3 = ApocalypticFormTrait.objects.get_or_create(name="Wings", cost=3, house=None)[0]
 
+# Additional traits for specific visages
+trait_enhanced_social_traits_devourers = ApocalypticFormTrait.objects.get_or_create(name="Enhanced Social Traits", house=devourers)[0]
+trait_immune_to_bashing_damage_malefactors = ApocalypticFormTrait.objects.get_or_create(name="Immune to Bashing Damage", house=malefactors)[0]
+trait_immune_to_falling_damage_scourges = ApocalypticFormTrait.objects.get_or_create(name="Immune to Falling Damage", house=scourges)[0]
+trait_improved_physical_capabilities_scourges = ApocalypticFormTrait.objects.get_or_create(name="Improved Physical Capabilities", house=scourges)[0]
+
 # =============================================================================
 # VISAGE DEFINITIONS
 # =============================================================================
@@ -241,9 +247,7 @@ dagan.low_torment_traits.set(
     [
         trait_aura_of_vitality_scourges,
         trait_pass_without_trace,
-        ApocalypticFormTrait.objects.get_or_create(
-            name="Improved Physical Capabilities", house=scourges
-        ),
+        trait_improved_physical_capabilities_scourges,
         trait_wings,
     ]
 )
@@ -296,9 +300,7 @@ ellil.low_torment_traits.set(
         trait_supernatural_vision_scourges,
         trait_wings,
         trait_perfect_balance_scourges,
-        ApocalypticFormTrait.objects.get_or_create(
-            name="Immune to Falling Damage", house=scourges
-        ),
+        trait_immune_to_falling_damage_scourges,
     ]
 )
 ellil.high_torment_traits.set(
@@ -323,9 +325,7 @@ kishar.add_source("Demon: The Fallen", 188)
 kishar.low_torment_traits.set(
     [
         trait_increased_size,
-        ApocalypticFormTrait.objects.get_or_create(
-            name="Immune to Bashing Damage", house=malefactors
-        ),
+        trait_immune_to_bashing_damage_malefactors,
         trait_irresistible_force_malefactors,
         trait_night_vision_malefactors,
     ]
@@ -482,9 +482,7 @@ ishhara = Visage.objects.get_or_create(
 ishhara.add_source("Demon: The Fallen", 199)
 ishhara.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get_or_create(
-            name="Enhanced Social Traits", house=devourers
-        ),
+        trait_enhanced_social_traits_devourers,
         trait_lyrical_voice_defilers,
         trait_enhanced_senses,
         trait_enhanced_intuition_defilers,
@@ -615,9 +613,7 @@ aruru = Visage.objects.get_or_create(
 aruru.add_source("Demon: The Fallen", 209)
 aruru.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get_or_create(
-            name="Enhanced Social Traits", house=devourers
-        ),
+        trait_enhanced_social_traits_devourers,
         trait_immune_to_poisons_devourers,
         trait_improved_initiative,
         trait_casts_no_reflection,

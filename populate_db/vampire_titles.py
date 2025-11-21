@@ -2,9 +2,6 @@ from characters.models.vampire.title import VampireTitle
 
 from populate_db.vampire_sects import camarilla, sabbat, anarch_movement, independent
 
-# For backwards compatibility
-anarch = anarch_movement
-
 # CAMARILLA TITLES
 
 prince = VampireTitle.objects.get_or_create(
@@ -277,7 +274,7 @@ true_sabbat = VampireTitle.objects.get_or_create(
 
 baron = VampireTitle.objects.get_or_create(
     name="Baron",
-    sect=anarch,
+    sect=anarch_movement,
     value=4,
     is_negative=False,
     description="Anarch domain leader. Similar to Prince but with limited powers. "
@@ -289,7 +286,7 @@ baron = VampireTitle.objects.get_or_create(
 
 warlord = VampireTitle.objects.get_or_create(
     name="Warlord",
-    sect=anarch,
+    sect=anarch_movement,
     value=3,
     is_negative=False,
     description="Charismatic or violent insurgency leader. Motivates fighting factions. "
@@ -301,7 +298,7 @@ warlord = VampireTitle.objects.get_or_create(
 
 sweeper = VampireTitle.objects.get_or_create(
     name="Sweeper",
-    sect=anarch,
+    sect=anarch_movement,
     value=2,
     is_negative=False,
     description="Tracks who's in domain. Prevents surprises about population. "
@@ -313,7 +310,7 @@ sweeper = VampireTitle.objects.get_or_create(
 
 reeve = VampireTitle.objects.get_or_create(
     name="Reeve",
-    sect=anarch,
+    sect=anarch_movement,
     value=1,
     is_negative=False,
     description="Similar to Sheriff but with less accountability. Enforces Baron's will. "
@@ -325,7 +322,7 @@ reeve = VampireTitle.objects.get_or_create(
 
 coyote = VampireTitle.objects.get_or_create(
     name="Coyote",
-    sect=anarch,
+    sect=anarch_movement,
     value=1,
     is_negative=False,
     description="Specializes in smuggling Kindred in and out of domains. "
