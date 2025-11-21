@@ -61,6 +61,7 @@ from .mtahuman import (
     MtAHumanCharacterCreationView,
     MtAHumanCreateView,
     MtAHumanDetailView,
+    MtAHumanTemplateSelectView,
     MtAHumanUpdateView,
 )
 from .resonance import (
