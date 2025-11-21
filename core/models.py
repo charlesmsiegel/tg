@@ -108,7 +108,23 @@ class ModelManager(PolymorphicManager):
         return self.filter(image_status="sub").exclude(image="")
 
     def top_level(self):
-        """Objects with no parent (top-level in hierarchy)"""
+        """Objects with no parent (top-level in hierarchy)
+
+        Raises:
+            AttributeError: If the model doesn't have a 'parent' field
+        """
+        # Check if the model has a parent field
+        if not hasattr(self.model, '_meta'):
+            raise AttributeError(f"{self.model.__name__} manager cannot use top_level()")
+
+        try:
+            self.model._meta.get_field('parent')
+        except Exception:
+            raise AttributeError(
+                f"{self.model.__name__} does not have a 'parent' field. "
+                f"top_level() can only be used on models with hierarchical parent relationships."
+            )
+
         return self.filter(parent=None)
 
     def pending_approval_for_user(self, user):
