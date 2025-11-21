@@ -21,7 +21,9 @@ from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -55,7 +57,7 @@ class ChangelingDetailView(SpecialUserMixin, DetailView):
         return context
 
 
-class ChangelingCreateView(CreateView):
+class ChangelingCreateView(MessageMixin, CreateView):
     model = Changeling
     fields = [
         "name",
@@ -143,9 +145,11 @@ class ChangelingCreateView(CreateView):
         "fae_mien",
     ]
     template_name = "characters/changeling/changeling/form.html"
+    success_message = "Changeling '{name}' created successfully!"
+    error_message = "Failed to create changeling. Please correct the errors below."
 
 
-class ChangelingUpdateView(SpecialUserMixin, UpdateView):
+class ChangelingUpdateView(MessageMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "name",
@@ -233,6 +237,8 @@ class ChangelingUpdateView(SpecialUserMixin, UpdateView):
         "fae_mien",
     ]
     template_name = "characters/changeling/changeling/form.html"
+    success_message = "Changeling '{name}' updated successfully!"
+    error_message = "Failed to update changeling. Please correct the errors below."
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -260,7 +266,18 @@ class ChangelingBasicsView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         self.object = form.save()
+        messages.success(
+            self.request,
+            f"Changeling '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -365,28 +382,33 @@ class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
         total_arts = sum(arts.values())
         if total_arts != 3:
             form.add_error(None, f"Arts must total 3 dots (currently {total_arts})")
+            messages.error(self.request, f"Arts allocation error: You must spend exactly 3 dots. You have {total_arts}.")
             return self.form_invalid(form)
 
         # Validate realms total is 5
         total_realms = sum(realms.values())
         if total_realms != 5:
             form.add_error(None, f"Realms must total 5 dots (currently {total_realms})")
+            messages.error(self.request, f"Realms allocation error: You must spend exactly 5 dots. You have {total_realms}.")
             return self.form_invalid(form)
 
         # Validate individual values don't exceed 5
         for art_name, value in arts.items():
             if value > 5:
                 form.add_error(art_name, "Cannot exceed 5 dots")
+                messages.error(self.request, f"{art_name.replace('_', ' ').title()} cannot exceed 5 dots.")
                 return self.form_invalid(form)
 
         for realm_name, value in realms.items():
             if value > 5:
                 form.add_error(realm_name, "Cannot exceed 5 dots")
+                messages.error(self.request, f"{realm_name.replace('_', ' ').title()} cannot exceed 5 dots.")
                 return self.form_invalid(form)
 
         # All validations passed, increment creation_status and save
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Arts and Realms allocated successfully!")
         return super().form_valid(form)
 
 
@@ -421,6 +443,7 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
     def form_valid(self, form):
         self.object.creation_status += 1
         self.object.save()
+        messages.success(self.request, "Character details saved successfully!")
         return super().form_valid(form)
 
     def get_form(self, form_class=None):
@@ -577,6 +600,7 @@ class ChangelingLanguagesView(SpecialUserMixin, FormView):
                 changeling.languages.add(language)
         changeling.creation_status += 1
         changeling.save()
+        messages.success(self.request, "Languages added successfully!")
         return HttpResponseRedirect(changeling.get_absolute_url())
 
     def get_context_data(self, **kwargs):
@@ -615,6 +639,7 @@ class ChangelingSpecialtiesView(SpecialUserMixin, FormView):
             changeling.specialties.add(spec)
         changeling.status = "Sub"
         changeling.save()
+        messages.success(self.request, f"Changeling '{changeling.name}' submitted for approval!")
         return HttpResponseRedirect(changeling.get_absolute_url())
 
 

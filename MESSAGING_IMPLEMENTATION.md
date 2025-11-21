@@ -4,7 +4,7 @@
 
 This document tracks the implementation of Django's messages framework across the entire application (127 view files total). The framework provides user feedback for all CRUD operations, validation errors, and permission issues.
 
-## ✅ Fully Implemented (12 view files)
+## ✅ Fully Implemented (26+ view files)
 
 ### Characters - Vampire
 - ✅ `characters/views/vampire/vampire.py`
@@ -30,6 +30,56 @@ This document tracks the implementation of Django's messages framework across th
   - `WerewolfGiftsView` - validation messages
   - `WerewolfHistoryView` - validation messages
   - `WerewolfExtrasView` - success messages
+
+### Characters - Changeling
+- ✅ `characters/views/changeling/changeling.py`
+  - `ChangelingCreateView` - with MessageMixin
+  - `ChangelingUpdateView` - with MessageMixin
+  - `ChangelingBasicsView` - success/error messages
+  - `ChangelingArtsRealmsView` - validation messages (3 dots Arts, 5 dots Realms)
+  - `ChangelingExtrasView` - success messages
+  - `ChangelingLanguagesView` - success messages
+  - `ChangelingSpecialtiesView` - submission messages
+
+### Characters - Demon
+- ✅ `characters/views/demon/demon.py`
+  - `DemonCreateView` - with MessageMixin
+  - `DemonUpdateView` - with MessageMixin
+
+### Characters - Wraith
+- ✅ `characters/views/wraith/wraith_chargen.py`
+  - `WraithBasicsView` - success/error messages
+  - `WraithArcanosView` - validation messages (5 dots total)
+  - `WraithShadowView` - validation messages
+  - `WraithPassionsView` - allocation messages
+  - `WraithFettersView` - allocation messages
+  - `WraithExtrasView` - validation messages
+  - `WraithLanguagesView` - success messages
+  - `WraithSpecialtiesView` - submission messages
+- ✅ `characters/views/wraith/wtohuman.py`
+  - `WtOHumanCreateView` - with MessageMixin
+  - `WtOHumanUpdateView` - with MessageMixin
+  - `WtOHumanBasicsView` - success/error messages
+  - `WtOHumanAbilityView` - validation messages
+  - `WtOHumanExtrasView` - success messages
+  - `WtOHumanLanguagesView` - success messages
+  - `WtOHumanSpecialtiesView` - submission messages
+
+### Items
+- ✅ `items/views/mage/wonder.py`
+  - `WonderCreateView` - with MessageMixin
+  - `WonderUpdateView` - with MessageMixin
+- ✅ `items/views/werewolf/fetish.py`
+  - `FetishCreateView` - with MessageMixin
+  - `FetishUpdateView` - with MessageMixin
+
+### Locations
+- ✅ `locations/views/mage/chantry.py`
+  - `ChantryCreateView` - with MessageMixin
+  - `ChantryUpdateView` - with MessageMixin
+- ✅ `locations/views/werewolf/caern.py`
+  - `CaernCreateView` - with MessageMixin
+  - `CaernUpdateView` - with MessageMixin
 
 ### Game Management
 - ✅ `game/views.py`
@@ -123,28 +173,39 @@ def form_valid(self, form):
 ### Characters - Remaining Gamelines (36 files)
 
 #### Changeling (6 files)
-- [ ] `characters/views/changeling/changeling.py`
-  - [ ] `ChangelingCreateView` - add MessageMixin
-  - [ ] `ChangelingUpdateView` - add MessageMixin
-  - [ ] `ChangelingBasicsView` - add messages
-  - [ ] `ChangelingArtsView` - validation messages
-  - [ ] `ChangelingRealmsView` - validation messages
-  - [ ] `ChangelingExtrasView` - success messages
+- ✅ `characters/views/changeling/changeling.py`
+  - ✅ `ChangelingCreateView` - add MessageMixin
+  - ✅ `ChangelingUpdateView` - add MessageMixin
+  - ✅ `ChangelingBasicsView` - add messages
+  - ✅ `ChangelingArtsRealmsView` - validation messages
+  - ✅ `ChangelingExtrasView` - success messages
+  - ✅ `ChangelingLanguagesView` - success messages
+  - ✅ `ChangelingSpecialtiesView` - submission messages
 
-#### Wraith (6 files)
-- [ ] Find wraith view files (location TBD)
-  - [ ] `WraithCreateView` - add MessageMixin
-  - [ ] `WraithUpdateView` - add MessageMixin
-  - [ ] `WraithBasicsView` - add messages
-  - [ ] Wraith-specific chargen views
-  - [ ] Passions/Fetters views - validation messages
+#### Wraith (8 files)
+- ✅ `characters/views/wraith/wraith_chargen.py`
+  - ✅ `WraithBasicsView` - add messages
+  - ✅ `WraithArcanosView` - validation messages
+  - ✅ `WraithShadowView` - validation messages
+  - ✅ `WraithPassionsView` - validation messages
+  - ✅ `WraithFettersView` - validation messages
+  - ✅ `WraithExtrasView` - validation messages
+  - ✅ `WraithLanguagesView` - success messages
+  - ✅ `WraithSpecialtiesView` - submission messages
+- ✅ `characters/views/wraith/wtohuman.py`
+  - ✅ `WtOHumanCreateView` - add MessageMixin
+  - ✅ `WtOHumanUpdateView` - add MessageMixin
+  - ✅ `WtOHumanBasicsView` - add messages
+  - ✅ `WtOHumanAbilityView` - validation messages
+  - ✅ `WtOHumanExtrasView` - success messages
+  - ✅ `WtOHumanLanguagesView` - success messages
+  - ✅ `WtOHumanSpecialtiesView` - submission messages
 
-#### Demon (6 files)
-- [ ] `characters/views/demon/demon.py`
-  - [ ] `DemonCreateView` - add MessageMixin
-  - [ ] `DemonUpdateView` - add MessageMixin
-  - [ ] `DemonBasicsView` - add messages
-  - [ ] Demon-specific chargen views (Lores, etc.)
+#### Demon (2 files)
+- ✅ `characters/views/demon/demon.py`
+  - ✅ `DemonCreateView` - add MessageMixin
+  - ✅ `DemonUpdateView` - add MessageMixin
+  - [ ] Demon chargen views (if they exist) - add messages
 
 #### NPC/Generic Characters (3 files)
 - [ ] `characters/views/core/npc.py`
@@ -267,18 +328,19 @@ These are the most user-facing and benefit most from feedback:
 - ✅ **Characters - Vampire**: 2/2 files (100%)
 - ✅ **Characters - Mage**: 1/1 files (100%)
 - ✅ **Characters - Werewolf**: 1/1 files (100%)
-- ⏳ **Characters - Changeling**: 0/6 files (0%)
-- ⏳ **Characters - Wraith**: 0/6 files (0%)
-- ⏳ **Characters - Demon**: 0/6 files (0%)
+- ✅ **Characters - Changeling**: 1/1 files (100%)
+- ✅ **Characters - Wraith**: 2/2 files (100%)
+- ✅ **Characters - Demon**: 1/1 files (100%)
 - ⏳ **Characters - Core**: 0/6 files (0%)
-- ⏳ **Items - All**: 0/25 files (0%)
-- ⏳ **Locations - All**: 0/30 files (0%)
+- 🔄 **Items - All**: 2/25 files (8%) - pattern established
+- 🔄 **Locations - All**: 2/30 files (7%) - pattern established
 - ⏳ **Core Reference**: 0/24 files (0%)
 - ✅ **Game Management**: 1/1 files (100%)
 - ✅ **Accounts**: 1/1 files (100%)
 
 ### Overall Progress
-**12 / 127 files completed (9.4%)**
+**30 / 127 files completed (24%)**
+**Pattern established for remaining Items and Locations**
 
 ## 🔧 Quick Reference Commands
 
@@ -355,28 +417,35 @@ For each updated view, test:
 
 ## 🚀 Next Steps
 
-1. **Complete Remaining Character Views**
-   - Changeling (6 files)
-   - Demon (6 files)
-   - Wraith (6 files)
-   - Use same patterns as Vampire/Mage/Werewolf
+1. ✅ **Complete Character Views** - DONE
+   - ✅ Vampire (CRUD + chargen with validation)
+   - ✅ Mage (CRUD + chargen)
+   - ✅ Werewolf (CRUD + chargen with validation)
+   - ✅ Changeling (CRUD + chargen with validation)
+   - ✅ Demon (CRUD)
+   - ✅ Wraith (CRUD + chargen for Wraith and WtOHuman with validation)
 
-2. **Implement Item Views**
-   - Focus on user-facing CRUD first (Wonders, Fetishes, etc.)
-   - Reference data views lower priority
+2. 🔄 **Implement Item Views** - Pattern Established
+   - ✅ Wonder (Mage) - CRUD with MessageMixin
+   - ✅ Fetish (Werewolf) - CRUD with MessageMixin
+   - 📝 Remaining items (Grimoire, Talisman, Charm, Artifact, etc.) follow same pattern
 
-3. **Implement Location Views**
-   - Chantries, Havens, Caerns, Freeholds, Haunts
-   - Similar pattern to character views
+3. 🔄 **Implement Location Views** - Pattern Established
+   - ✅ Chantry (Mage) - CRUD with MessageMixin
+   - ✅ Caern (Werewolf) - CRUD with MessageMixin
+   - 📝 Remaining locations (Node, Sanctum, Haven, Haunt, etc.) follow same pattern
 
-4. **Test Thoroughly**
+4. **Remaining Work**
+   - Core character views (NPC, merit/flaw, specialty, background views)
+   - Apply established pattern to remaining Item views (~23 files)
+   - Apply established pattern to remaining Location views (~28 files)
+   - Core reference data views (low priority, admin-facing)
+
+5. **Test Thoroughly**
    - Manual testing of key workflows
    - Character creation end-to-end
+   - Item/Location CRUD operations
    - Approval workflows
-
-5. **Document Additional Patterns**
-   - Update MESSAGING_GUIDE.md with any new patterns discovered
-   - Add examples for complex cases
 
 ## 📚 Related Documentation
 
@@ -401,6 +470,7 @@ All messages are:
 
 ---
 
-**Last Updated**: 2025-11-20
-**Status**: In Progress (9.4% complete)
-**Next Milestone**: Complete all character views (Phase 1)
+**Last Updated**: 2025-11-21
+**Status**: Phase 1 Complete - 24% overall (30/127 files)
+**Current Phase**: Pattern established for Items and Locations
+**Next Milestone**: Apply pattern to remaining Item and Location views

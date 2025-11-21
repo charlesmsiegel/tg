@@ -24,6 +24,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -50,7 +51,18 @@ class WraithBasicsView(LoginRequiredMixin, FormView):
         if self.object.guild:
             self.object.willpower = self.object.guild.willpower
         self.object.save()
+        messages.success(
+            self.request,
+            f"Wraith '{self.object.name}' created successfully! Continue with character creation."
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Please correct the errors in the form below."
+        )
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -125,17 +137,37 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
                 None,
                 f"Arcanoi must total exactly 5 dots (currently {arcanoi_total})",
             )
+            messages.error(
+                self.request,
+                f"Arcanoi allocation error: You must spend exactly 5 dots. You have {arcanoi_total}."
+            )
             return self.form_invalid(form)
 
         # Validate that no arcanos exceeds 5
         for field in self.fields:
             if form.cleaned_data.get(field, 0) > 5:
                 form.add_error(field, "Arcanoi cannot exceed 5 dots")
+                messages.error(
+                    self.request,
+                    "Each Arcanos cannot exceed 5 dots."
+                )
                 return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(
+            self.request,
+            "Arcanoi allocated successfully!"
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
 
 class WraithShadowView(SpecialUserMixin, UpdateView):
@@ -156,11 +188,27 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         # Shadow archetype is required
         if not form.cleaned_data.get("shadow_archetype"):
             form.add_error("shadow_archetype", "Shadow Archetype is required")
+            messages.error(
+                self.request,
+                "You must select a Shadow Archetype to continue."
+            )
             return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(
+            self.request,
+            "Shadow Archetype selected successfully!"
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
 
 class WraithPassionsView(SpecialUserMixin, FormView):
@@ -202,6 +250,11 @@ class WraithPassionsView(SpecialUserMixin, FormView):
                 f"Cannot exceed {wraith.passion_points} total passion points. "
                 f"You have {wraith.passion_points - current_total} remaining.",
             )
+            messages.error(
+                self.request,
+                f"Cannot exceed {wraith.passion_points} total passion points. "
+                f"You have {wraith.passion_points - current_total} remaining."
+            )
             return self.form_invalid(form)
 
         # Add the passion
@@ -216,8 +269,25 @@ class WraithPassionsView(SpecialUserMixin, FormView):
         if wraith.has_passions():
             wraith.creation_status += 1
             wraith.save()
+            messages.success(
+                self.request,
+                "All Passions allocated successfully!"
+            )
+        else:
+            messages.success(
+                self.request,
+                f"Passion added successfully! {wraith.passion_points - wraith.total_passion_rating()} points remaining."
+            )
 
         return HttpResponseRedirect(wraith.get_absolute_url())
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
 
 class WraithFettersView(SpecialUserMixin, FormView):
@@ -259,6 +329,11 @@ class WraithFettersView(SpecialUserMixin, FormView):
                 f"Cannot exceed {wraith.fetter_points} total fetter points. "
                 f"You have {wraith.fetter_points - current_total} remaining.",
             )
+            messages.error(
+                self.request,
+                f"Cannot exceed {wraith.fetter_points} total fetter points. "
+                f"You have {wraith.fetter_points - current_total} remaining."
+            )
             return self.form_invalid(form)
 
         # Add the fetter
@@ -272,8 +347,25 @@ class WraithFettersView(SpecialUserMixin, FormView):
         if wraith.has_fetters():
             wraith.creation_status += 1
             wraith.save()
+            messages.success(
+                self.request,
+                "All Fetters allocated successfully!"
+            )
+        else:
+            messages.success(
+                self.request,
+                f"Fetter added successfully! {wraith.fetter_points - wraith.total_fetter_rating()} points remaining."
+            )
 
         return HttpResponseRedirect(wraith.get_absolute_url())
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
 
 class WraithExtrasView(SpecialUserMixin, UpdateView):
@@ -303,15 +395,35 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
         # Validate that death-related fields are filled
         if not form.cleaned_data.get("age_at_death"):
             form.add_error("age_at_death", "Age at death is required")
+            messages.error(
+                self.request,
+                "Age at death is required for Wraith characters."
+            )
             return self.form_invalid(form)
 
         if not form.cleaned_data.get("death_description"):
             form.add_error("death_description", "Death description is required")
+            messages.error(
+                self.request,
+                "Death description is required for Wraith characters."
+            )
             return self.form_invalid(form)
 
         self.object.creation_status += 1
         self.object.save()
+        messages.success(
+            self.request,
+            "Character details saved successfully!"
+        )
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if not self.request._messages._queued_messages:
+            messages.error(
+                self.request,
+                "Please correct the errors in the form below."
+            )
+        return super().form_invalid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -443,6 +555,10 @@ class WraithLanguagesView(SpecialUserMixin, FormView):
                 human.languages.add(language)
         human.creation_status += 1
         human.save()
+        messages.success(
+            self.request,
+            "Languages added successfully!"
+        )
         return HttpResponseRedirect(human.get_absolute_url())
 
     def get_context_data(self, **kwargs):
@@ -488,6 +604,10 @@ class WraithSpecialtiesView(SpecialUserMixin, FormView):
             wraith.specialties.add(spec)
         wraith.status = "Sub"
         wraith.save()
+        messages.success(
+            self.request,
+            f"Wraith '{wraith.name}' submitted for approval!"
+        )
         return HttpResponseRedirect(wraith.get_absolute_url())
 
 

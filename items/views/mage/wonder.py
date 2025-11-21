@@ -1,5 +1,6 @@
 from typing import Any
 
+from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.forms.mage.wonder import WonderForm
 from items.models.mage import Wonder, WonderResonanceRating
@@ -23,11 +24,15 @@ class WonderListView(ListView):
     template_name = "items/mage/wonder/list.html"
 
 
-class WonderCreateView(CreateView):
+class WonderCreateView(MessageMixin, CreateView):
     form_class = WonderForm
     template_name = "items/mage/wonder/form.html"
+    success_message = "Wonder '{name}' created successfully!"
+    error_message = "Failed to create wonder. Please correct the errors below."
 
 
-class WonderUpdateView(UpdateView):
+class WonderUpdateView(MessageMixin, UpdateView):
     form_class = WonderForm
     template_name = "items/mage/wonder/form.html"
+    success_message = "Wonder '{name}' updated successfully!"
+    error_message = "Failed to update wonder. Please correct the errors below."
