@@ -10,6 +10,7 @@ class GameLine:
     MTA = "mta"
     WTO = "wto"
     CTD = "ctd"
+    DTF = "dtf"
 
     CHOICES = [
         (WOD, "World of Darkness"),
@@ -18,6 +19,18 @@ class GameLine:
         (MTA, "Mage: the Ascension"),
         (WTO, "Wraith: the Oblivion"),
         (CTD, "Changeling: the Dreaming"),
+        (DTF, "Demon: the Fallen"),
+    ]
+
+    # URL path mappings for gamelines
+    # Format: (url_path, module_name, namespace)
+    URL_PATTERNS = [
+        ("vampire", "vampire", "vampire"),
+        ("werewolf", "werewolf", "werewolf"),
+        ("mage", "mage", "mage"),
+        ("wraith", "wraith", "wraith"),
+        ("changeling", "changeling", "changeling"),
+        ("demon", "demon", "demon"),
     ]
 
 
