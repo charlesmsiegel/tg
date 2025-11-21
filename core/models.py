@@ -12,6 +12,16 @@ from polymorphic.managers import PolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
 
 
+class ModelQuerySet(PolymorphicQuerySet):
+    """Base queryset with common optimizations"""
+    pass
+
+
+class ModelManager(PolymorphicManager):
+    """Base manager with common query methods"""
+    pass
+
+
 class Book(models.Model):
     name = models.TextField(default="")
     url = models.CharField(max_length=200, null=True, blank=True)
