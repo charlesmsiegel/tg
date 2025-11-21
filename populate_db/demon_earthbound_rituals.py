@@ -26,10 +26,6 @@ from populate_db.demon_earthbound_lores import (
     lore_of_violation as lore_violation,
 )
 
-# Note: lore_expression not found in demon_lores.py - may need to be created
-from characters.models.demon.lore import Lore
-lore_expression = Lore.objects.get_or_create(property_name="expression")[0]
-
 # ============================================================================
 # EARTHBOUND RITUALS
 # ============================================================================

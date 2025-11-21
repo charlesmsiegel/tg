@@ -12,9 +12,7 @@ from populate_db.demon_lores import (
     lore_of_the_firmament as lore_firmament,
     lore_of_flame,
     lore_of_the_forge as lore_forge,
-    lore_of_the_fundament as lore_fundament,
     lore_of_paths as lore_paths,
-    lore_of_portals as lore_portals,
     lore_of_the_realms as lore_realms,
 )
 

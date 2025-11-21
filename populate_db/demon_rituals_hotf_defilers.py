@@ -13,7 +13,6 @@ from populate_db.demon_lores import (
     lore_of_patterns,
     lore_of_storms,
     lore_of_transfiguration,
-    lore_of_the_winds as lore_winds,
 )
 
 # =============================================================================
