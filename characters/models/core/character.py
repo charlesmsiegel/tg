@@ -95,12 +95,8 @@ class Character(CharacterModel):
                 name='characters_character_xp_non_negative',
                 violation_error_message="XP cannot be negative"
             ),
-            # Status must be valid
-            CheckConstraint(
-                check=Q(status__in=['Un', 'Sub', 'App', 'Ret', 'Dec']),
-                name='characters_character_valid_status',
-                violation_error_message="Invalid character status"
-            ),
+            # Note: status validation is handled in clean() method since status
+            # is inherited from Model and constraints can't reference parent fields
         ]
 
     # Valid status transitions
@@ -115,6 +111,13 @@ class Character(CharacterModel):
     def clean(self):
         """Validate character data before saving."""
         super().clean()
+
+        # Validate status is in valid choices
+        valid_statuses = ['Un', 'Sub', 'App', 'Ret', 'Dec']
+        if self.status not in valid_statuses:
+            raise ValidationError({
+                'status': f"Invalid status '{self.status}'. Must be one of: {', '.join(valid_statuses)}"
+            })
 
         # Validate status transition if character already exists
         if self.pk:
