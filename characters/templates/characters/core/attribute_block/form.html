@@ -69,6 +69,9 @@
         mental: ['perception', 'intelligence', 'wits']
     };
 
+    // Find the submit button
+    const submitButton = document.querySelector('button[type="submit"]');
+
     // Get all attribute input fields
     const inputs = {};
     Object.values(CATEGORIES).flat().forEach(attr => {
@@ -193,6 +196,22 @@
         const totalPoints = getTotalPoints();
         const pointsRemaining = TOTAL_POINTS - totalPoints;
 
+        // Check if we have a valid distribution
+        const sortedTotals = [totals.physical, totals.social, totals.mental].sort((a,b) => a-b);
+        const isValidDistribution = pointsRemaining === 0 &&
+                                   JSON.stringify(sortedTotals) === JSON.stringify(TARGETS);
+
+        // Control submit button visibility
+        if (submitButton) {
+            if (isValidDistribution) {
+                submitButton.style.display = '';
+                submitButton.disabled = false;
+            } else {
+                submitButton.style.display = 'none';
+                submitButton.disabled = true;
+            }
+        }
+
         // Update total remaining points
         const totalElement = document.getElementById('total-remaining');
         if (totalElement) {
@@ -202,8 +221,7 @@
             } else if (pointsRemaining === 0) {
                 // Check if it's a valid distribution
                 if (isValidState(totals.physical, totals.social, totals.mental)) {
-                    const sortedTotals = [totals.physical, totals.social, totals.mental].sort((a,b) => a-b);
-                    if (JSON.stringify(sortedTotals) === JSON.stringify(TARGETS)) {
+                    if (isValidDistribution) {
                         totalElement.textContent = 'Complete! Valid distribution achieved.';
                         totalElement.style.color = '#28a745';
                     } else {
