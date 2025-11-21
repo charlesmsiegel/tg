@@ -24,6 +24,9 @@ class GameLine:
 
     # URL path mappings for gamelines
     # Format: (url_path, module_name, namespace)
+    # This is the single source of truth for all gameline URL routing.
+    # Each app's URL config will attempt to load these modules; missing modules
+    # are gracefully handled via exception catching.
     URL_PATTERNS = [
         ("vampire", "vampire", "vampire"),
         ("werewolf", "werewolf", "werewolf"),
