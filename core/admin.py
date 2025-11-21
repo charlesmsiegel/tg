@@ -42,10 +42,11 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
         "is_official",
         "is_public",
         "times_used",
+        "status",
         "created_at",
     ]
-    list_filter = ["gameline", "character_type", "is_official", "is_public", "created_at"]
-    search_fields = ["name", "description", "source_book", "concept"]
+    list_filter = ["gameline", "character_type", "is_official", "is_public", "status", "created_at"]
+    search_fields = ["name", "description", "concept"]
     readonly_fields = ["times_used", "created_at", "updated_at"]
 
     fieldsets = (
@@ -58,8 +59,14 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
                     "character_type",
                     "concept",
                     "description",
-                    "source_book",
                 )
+            },
+        ),
+        (
+            "Sources",
+            {
+                "fields": ("sources",),
+                "description": "Use the add_source() method or manage sources here",
             },
         ),
         (
@@ -81,12 +88,16 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Metadata",
+            "Metadata & Permissions",
             {
                 "fields": (
                     "is_official",
                     "is_public",
-                    "created_by",
+                    "owner",
+                    "chronicle",
+                    "status",
+                    "visibility",
+                    "display",
                     "times_used",
                     "created_at",
                     "updated_at",
