@@ -3,6 +3,8 @@ from characters.models.mage.mtahuman import MtAHuman
 from characters.models.werewolf.charm import SpiritCharm
 from core.models import Model, Number
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 
 
@@ -154,11 +156,21 @@ class Companion(MtAHuman):
 class AdvantageRating(models.Model):
     character = models.ForeignKey(Companion, on_delete=models.SET_NULL, null=True)
     advantage = models.ForeignKey(Advantage, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Advantage Rating"
         verbose_name_plural = "Advantage Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=0, rating__lte=10),
+                name='characters_mage_advantagerating_rating_range',
+                violation_error_message="Advantage rating must be between 0 and 10"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.advantage}: {self.rating}"

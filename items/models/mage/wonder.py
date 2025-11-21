@@ -1,6 +1,8 @@
 from characters.models.mage.resonance import Resonance
 from core.utils import fast_selector
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from items.models.core import ItemModel
 
@@ -9,12 +11,22 @@ class WonderResonanceRating(models.Model):
     class Meta:
         verbose_name = "Wonder Resonance Rating"
         verbose_name_plural = "Wonder Resonance Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=0, rating__lte=10),
+                name='items_wonderresonancerating_rating_range',
+                violation_error_message="Wonder resonance rating must be between 0 and 10"
+            ),
+        ]
 
     wonder = models.ForeignKey("Wonder", on_delete=models.SET_NULL, null=True)
     resonance = models.ForeignKey(
         "characters.Resonance", on_delete=models.SET_NULL, null=True
     )
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
 
     def __str__(self):
         return f"{self.resonance}: {self.rating}"
@@ -23,9 +35,18 @@ class WonderResonanceRating(models.Model):
 class Wonder(ItemModel):
     type = "wonder"
 
-    rank = models.IntegerField(default=0)
-    background_cost = models.IntegerField(default=0)
-    quintessence_max = models.IntegerField(default=0)
+    rank = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    background_cost = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    quintessence_max = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
 
     resonance = models.ManyToManyField(
         "characters.Resonance", blank=True, through=WonderResonanceRating
@@ -34,6 +55,23 @@ class Wonder(ItemModel):
     class Meta:
         verbose_name = "Wonder"
         verbose_name_plural = "Wonders"
+        constraints = [
+            CheckConstraint(
+                check=Q(rank__gte=0, rank__lte=10),
+                name='items_wonder_rank_range',
+                violation_error_message="Wonder rank must be between 0 and 10"
+            ),
+            CheckConstraint(
+                check=Q(background_cost__gte=0, background_cost__lte=10),
+                name='items_wonder_background_cost_range',
+                violation_error_message="Wonder background cost must be between 0 and 10"
+            ),
+            CheckConstraint(
+                check=Q(quintessence_max__gte=0, quintessence_max__lte=100),
+                name='items_wonder_quintessence_max_range',
+                violation_error_message="Wonder quintessence max must be between 0 and 100"
+            ),
+        ]
 
     def get_update_url(self):
         return reverse("items:mage:update:wonder", args=[str(self.id)])

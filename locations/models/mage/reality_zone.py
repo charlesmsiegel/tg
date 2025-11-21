@@ -1,16 +1,28 @@
 from characters.models.mage.focus import Practice
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 
 
 class ZoneRating(models.Model):
     zone = models.ForeignKey("RealityZone", on_delete=models.SET_NULL, null=True)
     practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+    )
 
     class Meta:
         verbose_name = "Reality Zone Rating"
         verbose_name_plural = "Reality Zone Ratings"
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=-10, rating__lte=10),
+                name='locations_zonerating_rating_range',
+                violation_error_message="Reality zone rating must be between -10 and 10"
+            ),
+        ]
 
 
 class RealityZone(models.Model):
