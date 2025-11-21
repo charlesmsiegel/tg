@@ -138,12 +138,8 @@ class ModelQuerySet(PolymorphicQuerySet):
         )
 
 
-class ModelManager(PolymorphicManager):
-    """Custom manager for Model with common query patterns."""
-
-    def get_queryset(self):
-        """Return custom queryset with chainable methods."""
-        return ModelQuerySet(self.model, using=self._db)
+# Create ModelManager from the QuerySet to expose all QuerySet methods on the manager
+ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
 
 
 class Model(PolymorphicModel):

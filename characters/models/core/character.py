@@ -2,6 +2,7 @@ from core.models import Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.db.models import OuterRef, Subquery
 from django.urls import reverse
+from polymorphic.managers import PolymorphicManager
 
 
 class CharacterQuerySet(ModelQuerySet):
@@ -47,12 +48,8 @@ class CharacterQuerySet(ModelQuerySet):
         )
 
 
-class CharacterManager(ModelManager):
-    """Custom manager for Character with specialized query patterns."""
-
-    def get_queryset(self):
-        """Return custom queryset with chainable methods."""
-        return CharacterQuerySet(self.model, using=self._db)
+# Create CharacterManager from the QuerySet to expose all QuerySet methods on the manager
+CharacterManager = PolymorphicManager.from_queryset(CharacterQuerySet)
 
 
 class CharacterModel(Model):
