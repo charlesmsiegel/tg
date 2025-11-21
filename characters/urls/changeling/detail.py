@@ -1,3 +1,4 @@
+from characters import views as characters
 from characters.views.changeling.house import HouseDetailView
 from characters.views.changeling.house_faction import HouseFactionDetailView
 from characters.views.changeling.kith import KithDetailView
@@ -24,5 +25,15 @@ urls = [
         "legacy/<pk>/",
         LegacyDetailView.as_view(),
         name="legacy",
+    ),
+    path(
+        "ctdhuman/<int:pk>/template/",
+        characters.views.changeling.CtDHumanTemplateSelectView.as_view(),
+        name="ctdhuman_template",
+    ),
+    path(
+        "ctdhuman/<int:pk>/creation/",
+        characters.views.changeling.CtDHumanCharacterCreationView.as_view(),
+        name="ctdhuman_creation",
     ),
 ]

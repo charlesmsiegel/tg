@@ -70,5 +70,6 @@ from .wtahuman import (
     WtAHumanCharacterCreationView,
     WtAHumanCreateView,
     WtAHumanDetailView,
+    WtAHumanTemplateSelectView,
     WtAHumanUpdateView,
 )

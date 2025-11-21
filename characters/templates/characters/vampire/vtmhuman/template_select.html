@@ -1,0 +1,162 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+
+{% block heading %}Character Template Selection{% endblock %}
+
+{% block content %}
+<div class="tg-card mb-4" data-gameline="vtm">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title vtm_heading">Choose a Starting Template (Optional)</h4>
+        <div style="font-size: 0.9rem; color: var(--theme-text-secondary); margin-top: 8px;">
+            Speed up character creation by starting with a pre-made template from the sourcebooks
+        </div>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <p style="margin-bottom: 24px; line-height: 1.6;">
+            You can select a pre-configured character concept to automatically populate your character's
+            attributes, abilities, backgrounds, and powers. After selection, you can still customize everything.
+            Or skip this step to build your character from scratch.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- No Template Option -->
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <label class="template-option" style="display: block; cursor: pointer;">
+                        <input type="radio" name="template" value="" class="template-radio"
+                               style="position: absolute; opacity: 0;">
+                        <div class="tg-card h-100 template-card" style="border: 2px solid rgba(0,0,0,0.1); transition: all 0.2s;">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <h6 class="tg-card-title" style="margin-bottom: 12px; font-weight: 700;">
+                                    Build from Scratch
+                                </h6>
+                                <p style="font-size: 0.9rem; line-height: 1.6; color: var(--theme-text-secondary); margin: 0;">
+                                    Start with a blank slate and assign all points yourself through the standard character creation process.
+                                </p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Template Options -->
+                {% for template in available_templates %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <label class="template-option" style="display: block; cursor: pointer;">
+                        <input type="radio" name="template" value="{{ template.id }}" class="template-radio"
+                               style="position: absolute; opacity: 0;">
+                        <div class="tg-card h-100 template-card" style="border: 2px solid rgba(0,0,0,0.1); transition: all 0.2s;">
+                            <div class="tg-card-header" style="padding: 16px 20px; background-color: rgba(0,0,0,0.02);">
+                                <h6 class="tg-card-title vtm_heading" style="margin-bottom: 4px; font-weight: 700;">
+                                    {{ template.name }}
+                                </h6>
+                                {% if template.source_book %}
+                                <div style="font-size: 0.75rem; color: var(--theme-text-secondary); margin-top: 4px;">
+                                    {{ template.source_book }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;">
+                                    {{ template.description }}
+                                </p>
+
+                                <!-- Preview Key Stats -->
+                                <div style="padding: 12px; border-radius: 4px; background-color: rgba(0,0,0,0.03); margin-bottom: 12px;">
+                                    <div style="font-size: 0.85rem; line-height: 1.5;">
+                                        <div style="margin-bottom: 6px;">
+                                            <span style="font-weight: 600; color: var(--theme-text-secondary);">Concept:</span>
+                                            <span>{{ template.concept }}</span>
+                                        </div>
+                                        {% with attrs=template.get_top_attributes %}
+                                        {% if attrs %}
+                                        <div>
+                                            <span style="font-weight: 600; color: var(--theme-text-secondary);">Top Attributes:</span>
+                                            <span>{{ attrs|join:", " }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+
+                                <!-- Usage Badge -->
+                                <div style="margin-top: 12px;">
+                                    <span class="tg-badge badge-pill" style="font-size: 0.75rem; background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
+                                        Used {{ template.times_used }} time{{ template.times_used|pluralize }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No templates available yet. Build your character from scratch!
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Form Messages -->
+            {% if messages %}
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Buttons -->
+            <div class="mt-4" style="padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.1);">
+                <button type="submit" class="btn btn-primary" style="min-width: 160px;">
+                    Continue to Character Creation
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Highlight selected template
+document.querySelectorAll('.template-option').forEach(option => {
+    option.addEventListener('click', function(e) {
+        // Remove previous selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.style.borderColor = 'rgba(0,0,0,0.1)';
+            card.style.boxShadow = 'none';
+        });
+
+        // Highlight this one
+        const card = this.querySelector('.template-card');
+        card.style.borderColor = 'var(--vtm-primary, #8B0000)';
+        card.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.15)';
+
+        // Check the radio button
+        this.querySelector('input[type="radio"]').checked = true;
+    });
+
+    // Add hover effect
+    const card = option.querySelector('.template-card');
+    option.addEventListener('mouseenter', function() {
+        if (!this.querySelector('input[type="radio"]').checked) {
+            card.style.borderColor = 'rgba(139, 0, 0, 0.3)';
+        }
+    });
+    option.addEventListener('mouseleave', function() {
+        if (!this.querySelector('input[type="radio"]').checked) {
+            card.style.borderColor = 'rgba(0,0,0,0.1)';
+        }
+    });
+});
+
+// Select "Build from Scratch" by default
+document.querySelector('input[type="radio"][value=""]').checked = true;
+document.querySelector('input[type="radio"][value=""]').closest('.template-option').click();
+</script>
+{% endblock %}

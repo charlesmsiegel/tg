@@ -20,5 +20,6 @@ from .wtohuman import (
     WtOHumanCharacterCreationView,
     WtOHumanCreateView,
     WtOHumanDetailView,
+    WtOHumanTemplateSelectView,
     WtOHumanUpdateView,
 )

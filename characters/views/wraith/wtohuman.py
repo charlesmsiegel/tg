@@ -19,14 +19,15 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import Language
+from core.models import CharacterTemplate, Language
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
@@ -207,7 +208,76 @@ class WtOHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        # Redirect to template selection instead of detail page
+        return reverse("characters:wraith:wtohuman_template", kwargs={"pk": self.object.pk})
+
+
+class CharacterTemplateSelectionForm(forms.Form):
+    """Form for selecting optional character template"""
+
+    template = forms.ModelChoiceField(
+        queryset=CharacterTemplate.objects.none(),
+        required=False,
+        empty_label="No template - build from scratch",
+        widget=forms.RadioSelect,
+        help_text="Select a pre-made character concept to speed up creation",
+    )
+
+    def __init__(self, *args, character=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if character:
+            self.fields["template"].queryset = CharacterTemplate.objects.filter(
+                gameline="wto", character_type="wraith", is_public=True
+            ).order_by("name")
+
+
+class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
+    """Step 0.5: Optional template selection after basics"""
+
+    form_class = CharacterTemplateSelectionForm
+    template_name = "characters/wraith/wtohuman/template_select.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = get_object_or_404(
+            WtOHuman, pk=kwargs["pk"], owner=request.user
+        )
+        # Only allow template selection if character creation hasn't started yet
+        if self.object.creation_status > 0:
+            return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = self.object
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character"] = self.object
+        context["available_templates"] = CharacterTemplate.objects.filter(
+            gameline="wto", character_type="wraith", is_public=True
+        ).order_by("name")
+        return context
+
+    def form_valid(self, form):
+        template = form.cleaned_data.get("template")
+        if template:
+            # Apply template
+            template.apply_to_character(self.object)
+            messages.success(
+                self.request,
+                f"Applied template '{template.name}'. You can now customize the character further.",
+            )
+        else:
+            messages.info(
+                self.request, "Starting with blank character. Fill in all attributes."
+            )
+
+        # Set creation_status to 1 to proceed to attribute allocation
+        self.object.creation_status = 1
+        self.object.save()
+
+        return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
 
 
 class WtOHumanAttributeView(HumanAttributeView):
