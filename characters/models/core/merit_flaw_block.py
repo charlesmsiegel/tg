@@ -40,17 +40,13 @@ class MeritFlaw(Model):
         return "wod_heading"
 
     def update_max_rating(self):
-        if self.ratings.all().count() == 0:
-            self.max_rating = 0
-        else:
-            self.max_rating = max(self.ratings.all().values_list("value", flat=True))
+        ratings = list(self.ratings.values_list("value", flat=True))
+        self.max_rating = max(ratings) if ratings else 0
         self.save()
 
     def update_min_rating(self):
-        if self.ratings.all().count() == 0:
-            self.min_rating = 0
-        else:
-            self.min_rating = min(self.ratings.all().values_list("value", flat=True))
+        ratings = list(self.ratings.values_list("value", flat=True))
+        self.min_rating = min(ratings) if ratings else 0
         self.save()
 
     def get_ratings(self):
@@ -144,26 +140,27 @@ class MeritFlawBlock(models.Model):
         return mf.filter(allowed_types=character_type_object)
 
     def mf_rating(self, mf):
-        if mf not in self.merits_and_flaws.all():
+        try:
+            return MeritFlawRating.objects.get(character=self, mf=mf).rating
+        except MeritFlawRating.DoesNotExist:
             return 0
-        return MeritFlawRating.objects.get(character=self, mf=mf).rating
 
     def has_max_flaws(self):
         return self.total_flaws() <= -7
 
     def total_flaws(self):
-        return sum(
-            x.rating
-            for x in MeritFlawRating.objects.filter(character=self)
-            if x.rating < 0
-        )
+        from django.db.models import Sum
+        result = MeritFlawRating.objects.filter(
+            character=self, rating__lt=0
+        ).aggregate(Sum('rating'))
+        return result['rating__sum'] or 0
 
     def total_merits(self):
-        return sum(
-            x.rating
-            for x in MeritFlawRating.objects.filter(character=self)
-            if x.rating > 0
-        )
+        from django.db.models import Sum
+        result = MeritFlawRating.objects.filter(
+            character=self, rating__gt=0
+        ).aggregate(Sum('rating'))
+        return result['rating__sum'] or 0
 
     def meritflaw_freebies(self, form):
         trait = form.cleaned_data["example"]

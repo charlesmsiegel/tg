@@ -324,7 +324,7 @@ class Scene(models.Model):
     user_read_status = models.ManyToManyField(
         User, blank=True, through="UserSceneReadStatus"
     )
-    finished = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False, db_index=True)
     xp_given = models.BooleanField(default=False)
     waiting_for_st = models.BooleanField(default=False)
     st_message = models.CharField(max_length=300, default="")
@@ -541,6 +541,7 @@ def message_processing(character, message):
     )
     wp_spend = False
     expenditures = []
+    needs_save = False
 
     for match in temporary_point_regex.finditer(message):
         full_match = match.group(0)
@@ -548,22 +549,22 @@ def message_processing(character, message):
             wp_amount = int(match.group(1))
             character.temporary_willpower -= wp_amount
             expenditures.append(f"{wp_amount}WP")
-            character.save()
+            needs_save = True
         elif full_match == "#WP":
             character.temporary_willpower -= 1
             wp_spend = True
             expenditures.append("WP")
-            character.save()
+            needs_save = True
         elif match.group(2):
             if hasattr(character, "quintessence"):
                 character.quintessence -= int(match.group(2))
                 expenditures.append(f"{int(match.group(2))}Q")
-                character.save()
+                needs_save = True
         elif match.group(3):
             if hasattr(character, "paradox"):
                 character.paradox += int(match.group(3))
                 expenditures.append(f"{int(match.group(3))}P")
-                character.save()
+                needs_save = True
         elif match.group(4):
             damage_type = match.group(5)
             damage_amount = int(match.group(4))
@@ -577,7 +578,11 @@ def message_processing(character, message):
             if damage_type == "A":
                 for _ in range(damage_amount):
                     character.add_aggravated()
-            character.save()
+            needs_save = True
+
+    # Save once at the end if any changes were made
+    if needs_save:
+        character.save()
 
     expenditures = ", ".join(["#" + x for x in expenditures])
     if "/extended" in message:

@@ -63,9 +63,12 @@ class RoteCreationForm(forms.Form):
         self.fields["mind"].widget.attrs["max"] = getattr(self.instance, "mind")
         self.fields["prime"].widget.attrs["max"] = getattr(self.instance, "prime")
 
+        # Query spheres once and reuse
+        spheres = list(Sphere.objects.all())
+
         rote_filter_dict = {}
         effect_filter_dict = {}
-        for sphere in Sphere.objects.all():
+        for sphere in spheres:
             rote_filter_dict["effect__" + sphere.property_name + "__lte"] = getattr(
                 self.instance, sphere.property_name
             )
@@ -98,7 +101,7 @@ class RoteCreationForm(forms.Form):
         practice_filter = Q()
         for practice, rating in pracdict.items():
             sphere_filter = {}
-            for sphere in Sphere.objects.all():
+            for sphere in spheres:
                 sphere_filter["effect__" + sphere.property_name + "__lte"] = rating
             practice_filter |= Q(practice=practice, **sphere_filter)
 

@@ -156,14 +156,12 @@ class Human(
     def is_group_member(self):
         from characters.models.core.group import Group
 
-        return Group.objects.filter(members=self).count() > 0
+        return Group.objects.filter(members=self).exists()
 
     def get_group(self):
         from characters.models.core.group import Group
 
-        if self.is_group_member():
-            return Group.objects.get(members=self)
-        return False
+        return Group.objects.filter(members=self).first()
 
     def get_heading(self):
         return f"{self.gameline}_heading"
@@ -230,12 +228,11 @@ class Human(
         return True
 
     def has_specialties(self):
-        output = True
-        for attribute in self.filter_attributes(minimum=4):
-            output = output and (self.specialties.filter(stat=attribute).count() > 0)
-        for ability in self.filter_abilities(minimum=4):
-            output = output and (self.specialties.filter(stat=ability).count() > 0)
-        for ability in [
+        # Collect all stats that require specialties
+        high_attributes = list(self.filter_attributes(minimum=4))
+        high_abilities = list(self.filter_abilities(minimum=4))
+
+        specialty_required_abilities = [
             x
             for x in self.filter_abilities(minimum=1)
             if x
@@ -251,9 +248,24 @@ class Human(
                 "politics",
                 "science",
             ]
-        ]:
-            output = output and (self.specialties.filter(stat=ability).count() > 0)
-        return output
+        ]
+
+        # Combine all stats that require specialties
+        required_stats = high_attributes + high_abilities + specialty_required_abilities
+
+        if not required_stats:
+            return True
+
+        # Get all stat IDs that require specialties
+        stat_ids = [stat.id for stat in required_stats]
+
+        # Single query to get all specialty stat IDs
+        specialty_stat_ids = set(
+            self.specialties.filter(stat__id__in=stat_ids).values_list('stat_id', flat=True)
+        )
+
+        # Check if all required stats have specialties
+        return len(specialty_stat_ids) == len(stat_ids)
 
     def freebie_costs(self):
         return {
