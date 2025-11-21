@@ -1,11 +1,9 @@
 from characters.models.vampire.title import VampireTitle
-from characters.models.vampire.sect import VampireSect
 
-# Get sects
-camarilla = VampireSect.objects.get(name="Camarilla")
-sabbat = VampireSect.objects.get(name="Sabbat")
-anarch = VampireSect.objects.get(name="Anarch Movement")
-independent = VampireSect.objects.get(name="Independent")
+from populate_db.vampire_sects import camarilla, sabbat, anarch_movement, independent
+
+# For backwards compatibility
+anarch = anarch_movement
 
 # CAMARILLA TITLES
 

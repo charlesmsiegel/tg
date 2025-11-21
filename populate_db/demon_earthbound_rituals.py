@@ -10,22 +10,22 @@ from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
 # Get lores for reference
-lore_awakening = Lore.objects.get(property_name="awakening")
-lore_beast = Lore.objects.get(property_name="beast")
-lore_celestials = Lore.objects.get(property_name="celestials")
+lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
+lore_beast = Lore.objects.get_or_create(property_name="beast")[0]
+lore_celestials = Lore.objects.get_or_create(property_name="celestials")[0]
 lore_expression = Lore.objects.get_or_create(property_name="expression")[0]
-lore_firmament = Lore.objects.get(property_name="firmament")
-lore_flesh = Lore.objects.get(property_name="flesh")
-lore_flame = Lore.objects.get(property_name="flame")
-lore_forge = Lore.objects.get(property_name="forge")
-lore_humanity = Lore.objects.get(property_name="humanity")
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_spirit = Lore.objects.get(property_name="spirit")
+lore_firmament = Lore.objects.get_or_create(property_name="firmament")[0]
+lore_flesh = Lore.objects.get_or_create(property_name="flesh")[0]
+lore_flame = Lore.objects.get_or_create(property_name="flame")[0]
+lore_forge = Lore.objects.get_or_create(property_name="forge")[0]
+lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
+lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
+lore_spirit = Lore.objects.get_or_create(property_name="spirit")[0]
 
 # Get Earthbound lores
-lore_chaos = Lore.objects.get(property_name="chaos")
-lore_contamination = Lore.objects.get(property_name="contamination")
-lore_violation = Lore.objects.get(property_name="violation")
+lore_chaos = Lore.objects.get_or_create(property_name="chaos")[0]
+lore_contamination = Lore.objects.get_or_create(property_name="contamination")[0]
+lore_violation = Lore.objects.get_or_create(property_name="violation")[0]
 
 # ============================================================================
 # EARTHBOUND RITUALS

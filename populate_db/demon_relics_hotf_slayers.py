@@ -3,11 +3,9 @@ Populate database with Slayer (Halaku) relics from Houses of the Fallen.
 These are house-specific relics for the Seventh House.
 """
 
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 
-# Get the Slayers house
-slayers = DemonHouse.objects.get(name="Slayers")
+from populate_db.demon_houses import slayers
 
 # =============================================================================
 # SLAYER HOUSE RELICS - HOUSES OF THE FALLEN

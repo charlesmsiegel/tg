@@ -242,7 +242,7 @@ whistle = Charm.objects.get_or_create(
     quintessence_max=5,
     arete=2,
 )[0]
-whistle.power = Effect.objects.get(name="Summon Spirit (Minor)")
+whistle.power = Effect.objects.get_or_create(name="Summon Spirit (Minor)")
 whistle.description = (
     "A carved bone whistle that summons friendly spirits when blown. "
     "Contains a minor air spirit."
@@ -259,7 +259,7 @@ ghostblade = Charm.objects.get_or_create(
     quintessence_max=8,
     arete=3,
 )[0]
-ghostblade.power = Effect.objects.get(name="Harm Ghost")
+ghostblade.power = Effect.objects.get_or_create(name="Harm Ghost")[0]
 ghostblade.description = (
     "A sword bound with a spirit that allows it to harm incorporeal entities. "
     "Deals aggravated damage to ghosts and spirits."

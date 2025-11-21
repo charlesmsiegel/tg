@@ -2,22 +2,20 @@
 Populate database with Defiler (Lammasu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Defilers house
-defilers = DemonHouse.objects.get(name="Defilers")
+from populate_db.demon_houses import defilers
 
 # Get all lores for reference
-lore_awakening = Lore.objects.get(property_name="awakening")
-lore_flesh = Lore.objects.get(property_name="flesh")
-lore_fundament = Lore.objects.get(property_name="fundament")
-lore_longing = Lore.objects.get(property_name="longing")
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_storms = Lore.objects.get(property_name="storms")
-lore_transfiguration = Lore.objects.get(property_name="transfiguration")
-lore_winds = Lore.objects.get(property_name="winds")
+lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
+lore_flesh = Lore.objects.get_or_create(property_name="flesh")[0]
+lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
+lore_longing = Lore.objects.get_or_create(property_name="longing")[0]
+lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
+lore_storms = Lore.objects.get_or_create(property_name="storms")[0]
+lore_transfiguration = Lore.objects.get_or_create(property_name="transfiguration")[0]
+lore_winds = Lore.objects.get_or_create(property_name="winds")[0]
 
 # =============================================================================
 # DEFILER RITUALS - HOUSES OF THE FALLEN

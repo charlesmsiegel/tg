@@ -3,11 +3,9 @@ Populate database with Devourer (Rabisu) relics from Houses of the Fallen.
 These are house-specific relics for the Sixth House.
 """
 
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 
-# Get the Devourers house
-devourers = DemonHouse.objects.get(name="Devourers")
+from populate_db.demon_houses import devourers
 
 # =============================================================================
 # DEVOURER HOUSE RELICS - HOUSES OF THE FALLEN

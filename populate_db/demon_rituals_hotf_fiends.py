@@ -2,16 +2,14 @@
 Populate database with Fiend (Neberu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Fiends house
-fiends = DemonHouse.objects.get(name="Fiends")
+from populate_db.demon_houses import fiends
 
 # Get all lores for reference
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_portals = Lore.objects.get(property_name="portals")
+lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
+lore_portals = Lore.objects.get_or_create(property_name="portals")[0]
 
 # =============================================================================
 # FIEND RITUALS - HOUSES OF THE FALLEN

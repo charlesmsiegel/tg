@@ -2,24 +2,22 @@
 Populate database with Scourge (Asharu) rituals from Houses of the Fallen.
 """
 
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 
-# Get the Scourges house
-scourges = DemonHouse.objects.get(name="Scourges")
+from populate_db.demon_houses import scourges
 
 # Get all lores for reference
-lore_awakening = Lore.objects.get(property_name="awakening")
-lore_beast = Lore.objects.get(property_name="beast")
-lore_fundament = Lore.objects.get(property_name="fundament")
-lore_humanity = Lore.objects.get(property_name="humanity")
-lore_paths = Lore.objects.get(property_name="paths")
-lore_patterns = Lore.objects.get(property_name="patterns")
-lore_storms = Lore.objects.get(property_name="storms")
-lore_survival = Lore.objects.get(property_name="survival")
-lore_winds = Lore.objects.get(property_name="winds")
-lore_wild = Lore.objects.get(property_name="wild")
+lore_awakening = Lore.objects.get_or_create(property_name="awakening")[0]
+lore_beast = Lore.objects.get_or_create(property_name="beast")[0]
+lore_fundament = Lore.objects.get_or_create(property_name="fundament")[0]
+lore_humanity = Lore.objects.get_or_create(property_name="humanity")[0]
+lore_paths = Lore.objects.get_or_create(property_name="paths")[0]
+lore_patterns = Lore.objects.get_or_create(property_name="patterns")[0]
+lore_storms = Lore.objects.get_or_create(property_name="storms")[0]
+lore_survival = Lore.objects.get_or_create(property_name="survival")[0]
+lore_winds = Lore.objects.get_or_create(property_name="winds")[0]
+lore_wild = Lore.objects.get_or_create(property_name="wild")[0]
 
 # =============================================================================
 # SCOURGE RITUALS - HOUSES OF THE FALLEN

@@ -439,18 +439,18 @@ bel = Visage.objects.get_or_create(
 bel.add_source("Demon: The Fallen", 176)
 bel.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Lordly Mien", house=devils),
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Increased Awareness", house=devils),
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Lordly Mien", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Awareness", house=devils)[0],
     ]
 )
 bel.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Scales", house=devils),
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(name="Dread Gaze", house=devils),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Scales", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Dread Gaze", house=devils)[0],
     ]
 )
 
@@ -465,18 +465,18 @@ nusku = Visage.objects.get_or_create(
 nusku.add_source("Demon: The Fallen", 178)
 nusku.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Shroud of Flames", house=devils),
-        ApocalypticFormTrait.objects.get(name="Immunity to Fire", house=devils),
-        ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Shroud of Flames", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Immunity to Fire", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
     ]
 )
 nusku.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Lashing Tail", house=None),
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(name="Fiery Blood", house=devils),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Lashing Tail", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Fiery Blood", house=devils)[0],
     ]
 )
 
@@ -491,18 +491,18 @@ qingu = Visage.objects.get_or_create(
 qingu.add_source("Demon: The Fallen", 180)
 qingu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Inhuman Allure", house=devils),
-        ApocalypticFormTrait.objects.get(name="Radiant Aura", house=devils),
-        ApocalypticFormTrait.objects.get(name="Sense the Hidden", house=devils),
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Inhuman Allure", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Radiant Aura", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Sense the Hidden", house=devils)[0],
     ]
 )
 qingu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Voice of the Damned", house=devils),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
-        ApocalypticFormTrait.objects.get(name="Corrosive Spit", house=devils),
-        ApocalypticFormTrait.objects.get(name="Horns", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Voice of the Damned", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Corrosive Spit", house=devils)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Horns", house=None)[0],
     ]
 )
 
@@ -518,20 +518,20 @@ dagan = Visage.objects.get_or_create(
 dagan.add_source("Demon: The Fallen", 182)
 dagan.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Aura of Vitality", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(
+        ApocalypticFormTrait.objects.get_or_create(name="Aura of Vitality", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(
             name="Improved Physical Capabilities", house=scourges
         ),
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
     ]
 )
 dagan.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Miasma", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Extra Health Levels", house=None),
-        ApocalypticFormTrait.objects.get(name="Viscous Flesh", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Miasma", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Health Levels", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Viscous Flesh", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
     ]
 )
 
@@ -546,18 +546,18 @@ anshar = Visage.objects.get_or_create(
 anshar.add_source("Demon: The Fallen", 184)
 anshar.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Intuition", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Enhanced Dodge", house=scourges),
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Intuition", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Dodge", house=scourges)[0],
     ]
 )
 anshar.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Multiple Eyes", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Cloak of Shadows", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Multiple Eyes", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
     ]
 )
 
@@ -572,20 +572,20 @@ ellil = Visage.objects.get_or_create(
 ellil.add_source("Demon: The Fallen", 185)
 ellil.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Supernatural Vision", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Perfect Balance", house=scourges),
-        ApocalypticFormTrait.objects.get(
+        ApocalypticFormTrait.objects.get_or_create(name="Supernatural Vision", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Perfect Balance", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(
             name="Immune to Falling Damage", house=scourges
         ),
     ]
 )
 ellil.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
-        ApocalypticFormTrait.objects.get(name="Quills", house=scourges),
-        ApocalypticFormTrait.objects.get(name="Caustic Bile", house=scourges),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Quills", house=scourges)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Caustic Bile", house=scourges)[0],
     ]
 )
 
@@ -601,20 +601,20 @@ kishar = Visage.objects.get_or_create(
 kishar.add_source("Demon: The Fallen", 188)
 kishar.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(
             name="Immune to Bashing Damage", house=malefactors
         ),
-        ApocalypticFormTrait.objects.get(name="Irresistible Force", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Night Vision", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Irresistible Force", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Night Vision", house=malefactors)[0],
     ]
 )
 kishar.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Gaping Maw", house=None),
-        ApocalypticFormTrait.objects.get(name="Spikes", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Ichor", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Gaping Maw", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Spikes", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Ichor", house=malefactors)[0],
     ]
 )
 
@@ -629,18 +629,18 @@ antu = Visage.objects.get_or_create(
 antu.add_source("Demon: The Fallen", 189)
 antu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Dead Reckoning", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Enhanced Perception", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Flashing Fingers", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Dead Reckoning", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Perception", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Flashing Fingers", house=malefactors)[0],
     ]
 )
 antu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Alter Size", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Mirage", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Relentless", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Alter Size", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Mirage", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Relentless", house=malefactors)[0],
     ]
 )
 
@@ -655,18 +655,18 @@ mummu = Visage.objects.get_or_create(
 mummu.add_source("Demon: The Fallen", 191)
 mummu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Master Artisan", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(name="Thunderous Voice", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Immune to Fire", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Master Artisan", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Thunderous Voice", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Immune to Fire", house=malefactors)[0],
     ]
 )
 mummu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Blades", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Magnetic Field", house=malefactors),
-        ApocalypticFormTrait.objects.get(name="Iron Skin", house=malefactors),
+        ApocalypticFormTrait.objects.get_or_create(name="Blades", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Magnetic Field", house=malefactors)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Iron Skin", house=malefactors)[0],
     ]
 )
 
@@ -682,18 +682,18 @@ ninsun = Visage.objects.get_or_create(
 ninsun.add_source("Demon: The Fallen", 194)
 ninsun.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Intuition", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Enhanced Mental Acuity", house=fiends),
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Intuition", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Mental Acuity", house=fiends)[0],
     ]
 )
 ninsun.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Aura of Misfortune", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Sibilant Whispers", house=fiends),
+        ApocalypticFormTrait.objects.get_or_create(name="Aura of Misfortune", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Sibilant Whispers", house=fiends)[0],
     ]
 )
 
@@ -708,18 +708,18 @@ nedu = Visage.objects.get_or_create(
 nedu.add_source("Demon: The Fallen", 196)
 nedu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Increased Awareness", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Awareness", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
     ]
 )
 nedu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Dodge", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Cloak of Shadows", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Dodge", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
     ]
 )
 
@@ -734,18 +734,18 @@ shamash = Visage.objects.get_or_create(
 shamash.add_source("Demon: The Fallen", 198)
 shamash.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Enhanced Mental Acuity", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Night Sight", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Chimerical Aura", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Unearthly Glamour", house=fiends),
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Mental Acuity", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Night Sight", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Chimerical Aura", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Unearthly Glamour", house=fiends)[0],
     ]
 )
 shamash.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Hypnotic Visions", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Dread Mien", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Chimerical Attack", house=fiends),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Hypnotic Visions", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Dread Mien", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Chimerical Attack", house=fiends)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
     ]
 )
 
@@ -761,20 +761,20 @@ ishhara = Visage.objects.get_or_create(
 ishhara.add_source("Demon: The Fallen", 199)
 ishhara.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(
+        ApocalypticFormTrait.objects.get_or_create(
             name="Enhanced Social Traits", house=devourers
         ),
-        ApocalypticFormTrait.objects.get(name="Lyrical Voice", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Intuition", house=defilers),
+        ApocalypticFormTrait.objects.get_or_create(name="Lyrical Voice", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Intuition", house=defilers)[0],
     ]
 )
 ishhara.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Venom", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Venom", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
     ]
 )
 
@@ -789,18 +789,18 @@ adad = Visage.objects.get_or_create(
 adad.add_source("Demon: The Fallen", 201)
 adad.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Weather Sense", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Immune to Electricity", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Shocking Touch", house=defilers),
+        ApocalypticFormTrait.objects.get_or_create(name="Weather Sense", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Immune to Electricity", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Shocking Touch", house=defilers)[0],
     ]
 )
 adad.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Spines", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Shark Hide", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Ink Cloud", house=defilers),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Spines", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Shark Hide", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Ink Cloud", house=defilers)[0],
     ]
 )
 
@@ -815,18 +815,18 @@ mammetum = Visage.objects.get_or_create(
 mammetum.add_source("Demon: The Fallen", 203)
 mammetum.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Enhanced Empathy", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Improved Dexterity", house=defilers),
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Empathy", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Dexterity", house=defilers)[0],
     ]
 )
 mammetum.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Venom", house=defilers),
-        ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Venom", house=defilers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[0],
     ]
 )
 
@@ -842,18 +842,18 @@ zaltu = Visage.objects.get_or_create(
 zaltu.add_source("Demon: The Fallen", 205)
 zaltu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Claws/Teeth", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Actions", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[0],
     ]
 )
 zaltu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Thick Hide", house=devourers),
-        ApocalypticFormTrait.objects.get(name="Gaping Maw", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Chameleon Skin", house=devourers),
+        ApocalypticFormTrait.objects.get_or_create(name="Thick Hide", house=devourers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Gaping Maw", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Chameleon Skin", house=devourers)[0],
     ]
 )
 
@@ -868,18 +868,18 @@ ninurtu = Visage.objects.get_or_create(
 ninurtu.add_source("Demon: The Fallen", 207)
 ninurtu.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Enhanced Senses", house=None),
-        ApocalypticFormTrait.objects.get(name="Chameleon Skin", house=devourers),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Health Levels", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Senses", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Chameleon Skin", house=devourers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Health Levels", house=None)[0],
     ]
 )
 ninurtu.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Thorns", house=devourers),
-        ApocalypticFormTrait.objects.get(name="Increased Size", house=None),
-        ApocalypticFormTrait.objects.get(name="Extra Limbs", house=None),
-        ApocalypticFormTrait.objects.get(name="Toxins", house=devourers),
+        ApocalypticFormTrait.objects.get_or_create(name="Thorns", house=devourers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Increased Size", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Toxins", house=devourers)[0],
     ]
 )
 
@@ -894,20 +894,20 @@ aruru = Visage.objects.get_or_create(
 aruru.add_source("Demon: The Fallen", 209)
 aruru.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(
+        ApocalypticFormTrait.objects.get_or_create(
             name="Enhanced Social Traits", house=devourers
         ),
-        ApocalypticFormTrait.objects.get(name="Immune to Poisons", house=devourers),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Immune to Poisons", house=devourers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
     ]
 )
 aruru.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Extra Health Levels", house=None),
-        ApocalypticFormTrait.objects.get(name="Armor", house=None),
-        ApocalypticFormTrait.objects.get(name="Gaping Maw", house=None),
-        ApocalypticFormTrait.objects.get(name="Regeneration", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Extra Health Levels", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Armor", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Gaping Maw", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Regeneration", house=None)[0],
     ]
 )
 
@@ -923,18 +923,18 @@ namtar = Visage.objects.get_or_create(
 namtar.add_source("Demon: The Fallen", 211)
 namtar.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
-        ApocalypticFormTrait.objects.get(name="Improved Initiative", house=None),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Casts No Reflection", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Improved Initiative", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Casts No Reflection", house=None)[0],
     ]
 )
 namtar.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Death-Grip", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Aura of Entropy", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Damage Resistance", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Cloak of Shadows", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Death-Grip", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Aura of Entropy", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Damage Resistance", house=None)[0],
     ]
 )
 
@@ -949,18 +949,18 @@ nergal = Visage.objects.get_or_create(
 nergal.add_source("Demon: The Fallen", 213)
 nergal.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Ghost Sight", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Enhanced Social Traits", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Wings", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Ghost Sight", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Social Traits", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0],
     ]
 )
 nergal.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Howl of the Damned", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Aura of Dread", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Damage Resistance", house=None),
+        ApocalypticFormTrait.objects.get_or_create(name="Cloak of Shadows", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Howl of the Damned", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Aura of Dread", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Damage Resistance", house=None)[0],
     ]
 )
 
@@ -975,17 +975,17 @@ ereshkigal = Visage.objects.get_or_create(
 ereshkigal.add_source("Demon: The Fallen", 215)
 ereshkigal.low_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Dead Reckoning", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Pass Without Trace", house=None),
-        ApocalypticFormTrait.objects.get(name="Enhanced Awareness", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Conjure from Nothing", house=slayers),
+        ApocalypticFormTrait.objects.get_or_create(name="Dead Reckoning", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Pass Without Trace", house=None)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Enhanced Awareness", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Conjure from Nothing", house=slayers)[0],
     ]
 )
 ereshkigal.high_torment_traits.set(
     [
-        ApocalypticFormTrait.objects.get(name="Cloak of Shadows", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Relentless", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Voice of the Grave", house=slayers),
-        ApocalypticFormTrait.objects.get(name="Dread Gaze", house=slayers),
+        ApocalypticFormTrait.objects.get_or_create(name="Cloak of Shadows", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Relentless", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Voice of the Grave", house=slayers)[0],
+        ApocalypticFormTrait.objects.get_or_create(name="Dread Gaze", house=slayers)[0],
     ]
 )
