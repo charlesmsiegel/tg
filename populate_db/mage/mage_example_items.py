@@ -6,7 +6,7 @@ from items.models.mage.charm import Charm
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
-from populate_db.effects_INC import effect_harm_ghost, effect_summon_spirit_minor
+from populate_db.mage.effects_INC import effect_harm_ghost, effect_summon_spirit_minor
 
 # ===== WONDERS (Permanent Magical Items) =====
 

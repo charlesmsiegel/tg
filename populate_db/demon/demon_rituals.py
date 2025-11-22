@@ -5,7 +5,7 @@ Populate database with Demon rituals from Demon Players Guide Chapter 6.
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_houses import (
+from populate_db.demon.demon_houses import (
     defilers,
     devils,
     devourers,
@@ -14,7 +14,7 @@ from populate_db.demon_houses import (
     scourges,
     slayers,
 )
-from populate_db.demon_lores import (
+from populate_db.demon.demon_lores import (
     lore_of_awakening,
     lore_of_death,
     lore_of_flame,

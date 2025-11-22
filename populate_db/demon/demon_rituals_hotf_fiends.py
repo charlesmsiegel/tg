@@ -3,9 +3,9 @@ Populate database with Fiend (Neberu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_houses import fiends
-from populate_db.demon_lores import lore_of_patterns as lore_patterns
-from populate_db.demon_lores import lore_of_portals as lore_portals
+from populate_db.demon.demon_houses import fiends
+from populate_db.demon.demon_lores import lore_of_patterns as lore_patterns
+from populate_db.demon.demon_lores import lore_of_portals as lore_portals
 
 # =============================================================================
 # FIEND RITUALS - HOUSES OF THE FALLEN

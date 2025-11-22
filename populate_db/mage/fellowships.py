@@ -12,7 +12,7 @@ from populate_db.attributes import (
     strength,
     wits,
 )
-from populate_db.linear_magic_path import (
+from populate_db.vampire.linear_magic_path import (
     alchemy,
     conjuration,
     conveyance,

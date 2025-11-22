@@ -12,7 +12,6 @@ detective = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "vampire",
         "description": "A world-weary cop who's seen it all—now from the other side of the yellow tape.",
-        "source_book": "Vampire: The Masquerade Revised, p. 87",
         "concept": "Detective",
         "basic_info": {
             "nature": "FK:Archetype:Judge",
@@ -64,7 +63,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Vampire: The Masquerade Revised", 87)
 
 # Template 2: Socialite (Toreador/Ventrue)
 socialite = CharacterTemplate.objects.get_or_create(
@@ -73,7 +72,6 @@ socialite = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "vampire",
         "description": "You've always been the life of the party, and death won't stop you now.",
-        "source_book": "Vampire: The Masquerade Revised, p. 88",
         "concept": "Socialite",
         "basic_info": {
             "nature": "FK:Archetype:Gallant",
@@ -124,7 +122,7 @@ socialite = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Vampire: The Masquerade Revised", 88)
 
 # Template 3: Street Preacher (Brujah/Gangrel)
 preacher = CharacterTemplate.objects.get_or_create(
@@ -133,7 +131,6 @@ preacher = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "vampire",
         "description": "A voice crying out in the urban wilderness, bringing harsh truths to those who will listen.",
-        "source_book": "Vampire: The Masquerade Revised, p. 89",
         "concept": "Street Preacher",
         "basic_info": {
             "nature": "FK:Archetype:Fanatic",
@@ -184,7 +181,7 @@ preacher = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Vampire: The Masquerade Revised", 89)
 
 # Template 4: Criminal (Giovanni/Nosferatu)
 criminal = CharacterTemplate.objects.get_or_create(
@@ -193,7 +190,6 @@ criminal = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "vampire",
         "description": "You made your living breaking the law, and unlife hasn't changed your profession.",
-        "source_book": "Vampire: The Masquerade Revised, p. 90",
         "concept": "Criminal",
         "basic_info": {
             "nature": "FK:Archetype:Survivor",
@@ -245,7 +241,7 @@ criminal = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Vampire: The Masquerade Revised", 90)
 
 # Template 5: Scholar (Tremere/Ventrue)
 scholar = CharacterTemplate.objects.get_or_create(
@@ -254,7 +250,6 @@ scholar = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "vampire",
         "description": "Knowledge is power, and you've spent your existence accumulating both.",
-        "source_book": "Vampire: The Masquerade Revised, p. 91",
         "concept": "Scholar",
         "basic_info": {
             "nature": "FK:Archetype:Architect",
@@ -305,6 +300,6 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Vampire: The Masquerade Revised", 91)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='vtm').count()} Vampire templates")

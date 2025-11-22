@@ -12,7 +12,6 @@ warrior = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "werewolf",
         "description": "A full moon warrior, bred for battle and born to lead the charge against the Wyrm.",
-        "source_book": "Werewolf: The Apocalypse Revised, p. 95",
         "concept": "Warrior",
         "basic_info": {
             "nature": "FK:Archetype:Bravo",
@@ -63,7 +62,7 @@ warrior = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Werewolf: The Apocalypse Revised", 95)
 
 # Template 2: Theurge Mystic
 mystic = CharacterTemplate.objects.get_or_create(
@@ -72,7 +71,6 @@ mystic = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "werewolf",
         "description": "A crescent moon shaman who walks between worlds and speaks with spirits.",
-        "source_book": "Werewolf: The Apocalypse Revised, p. 96",
         "concept": "Mystic",
         "basic_info": {
             "nature": "FK:Archetype:Visionary",
@@ -124,7 +122,7 @@ mystic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Werewolf: The Apocalypse Revised", 96)
 
 # Template 3: Ragabash Trickster
 trickster = CharacterTemplate.objects.get_or_create(
@@ -133,7 +131,6 @@ trickster = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "werewolf",
         "description": "A new moon scout who uses cunning and stealth to outwit the enemies of Gaia.",
-        "source_book": "Werewolf: The Apocalypse Revised, p. 97",
         "concept": "Trickster",
         "basic_info": {
             "nature": "FK:Archetype:Trickster",
@@ -185,7 +182,7 @@ trickster = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Werewolf: The Apocalypse Revised", 97)
 
 # Template 4: Philodox Judge
 judge = CharacterTemplate.objects.get_or_create(
@@ -194,7 +191,6 @@ judge = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "werewolf",
         "description": "A half moon mediator who keeps the peace and upholds the Litany.",
-        "source_book": "Werewolf: The Apocalypse Revised, p. 98",
         "concept": "Judge",
         "basic_info": {
             "nature": "FK:Archetype:Judge",
@@ -245,7 +241,7 @@ judge = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Werewolf: The Apocalypse Revised", 98)
 
 # Template 5: Galliard Bard
 bard = CharacterTemplate.objects.get_or_create(
@@ -254,7 +250,6 @@ bard = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "werewolf",
         "description": "A gibbous moon storyteller who preserves the tales and traditions of the Garou.",
-        "source_book": "Werewolf: The Apocalypse Revised, p. 99",
         "concept": "Bard",
         "basic_info": {
             "nature": "FK:Archetype:Celebrant",
@@ -305,6 +300,6 @@ bard = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Werewolf: The Apocalypse Revised", 99)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wta').count()} Werewolf templates")

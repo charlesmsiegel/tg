@@ -1,5 +1,5 @@
 from characters.models.mage.focus import Paradigm
-from populate_db.tenets import (
+from populate_db.mage.tenets import (
     a_rational_universe,
     achieve_full_knowledge,
     annihilation_is_freedom,

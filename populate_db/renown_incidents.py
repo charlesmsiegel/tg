@@ -1,5 +1,5 @@
 from characters.models.werewolf.renownincident import RenownIncident
-from populate_db.rites import (
+from populate_db.werewolf.rites import (
     moot_rite,
     rite_of_caern_building,
     rite_of_ostracism,

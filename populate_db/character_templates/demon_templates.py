@@ -12,7 +12,6 @@ detective = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "demon",
         "description": "A Devil who inhabits a detective's body, using mortal connections to navigate the modern world.",
-        "source_book": "Demon: The Fallen Core, p. 178",
         "concept": "Detective",
         "basic_info": {
             "nature": "FK:Archetype:Judge",
@@ -63,7 +62,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Demon: The Fallen Core", 178)
 
 # Template 2: Corrupted Artist
 artist = CharacterTemplate.objects.get_or_create(
@@ -72,7 +71,6 @@ artist = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "demon",
         "description": "A Fiend who channels demonic power through creative expression.",
-        "source_book": "Demon: The Fallen Core, p. 179",
         "concept": "Artist",
         "basic_info": {
             "nature": "FK:Archetype:Visionary",
@@ -122,7 +120,7 @@ artist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Demon: The Fallen Core", 179)
 
 # Template 3: Angelic Warrior
 warrior = CharacterTemplate.objects.get_or_create(
@@ -131,7 +129,6 @@ warrior = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "demon",
         "description": "A Scourge who fights the infernal war with righteous fury.",
-        "source_book": "Demon: The Fallen Core, p. 180",
         "concept": "Warrior",
         "basic_info": {
             "nature": "FK:Archetype:Defender",
@@ -182,7 +179,7 @@ warrior = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Demon: The Fallen Core", 180)
 
 # Template 4: Tempter
 tempter = CharacterTemplate.objects.get_or_create(
@@ -191,7 +188,6 @@ tempter = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "demon",
         "description": "A Defiler who corrupts mortals through seduction and manipulation.",
-        "source_book": "Demon: The Fallen Core, p. 181",
         "concept": "Tempter",
         "basic_info": {
             "nature": "FK:Archetype:Deviant",
@@ -242,7 +238,7 @@ tempter = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Demon: The Fallen Core", 181)
 
 # Template 5: Healer
 healer = CharacterTemplate.objects.get_or_create(
@@ -251,7 +247,6 @@ healer = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "demon",
         "description": "A Malefactor who still remembers the purpose of creation and seeks to heal.",
-        "source_book": "Demon: The Fallen Core, p. 182",
         "concept": "Healer",
         "basic_info": {
             "nature": "FK:Archetype:Caregiver",
@@ -302,6 +297,6 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Demon: The Fallen Core", 182)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='dtf').count()} Demon templates")

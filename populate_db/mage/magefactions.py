@@ -46,8 +46,8 @@ from populate_db.materials import (
     vellum,
     wood,
 )
-from populate_db.mediums import book, ebook, flash_drive, scrolls, software, tablets
-from populate_db.paradigms_INC import (
+from populate_db.mage.mediums import book, ebook, flash_drive, scrolls, software, tablets
+from populate_db.mage.paradigms_INC import (
     a_mechanistic_cosmos,
     bring_back_the_golden_age,
     divine_and_alive,
@@ -61,7 +61,7 @@ from populate_db.paradigms_INC import (
     one_way_trip_to_oblivion,
     tech_holds_all_answers,
 )
-from populate_db.practices_INC import (
+from populate_db.mage.practices_INC import (
     alchemy,
     artofdesire,
     bardism,
@@ -85,7 +85,7 @@ from populate_db.practices_INC import (
     witchcraft,
     yoga,
 )
-from populate_db.spheres import (
+from populate_db.mage.spheres import (
     correspondence,
     entropy,
     forces,

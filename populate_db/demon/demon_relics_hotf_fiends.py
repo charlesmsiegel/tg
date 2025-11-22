@@ -4,7 +4,7 @@ These are house-specific relics for the Fourth House.
 """
 
 from items.models.demon.relic import Relic
-from populate_db.demon_houses import fiends
+from populate_db.demon.demon_houses import fiends
 
 # =============================================================================
 # FIEND HOUSE RELICS - HOUSES OF THE FALLEN

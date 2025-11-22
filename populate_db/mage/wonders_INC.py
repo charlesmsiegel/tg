@@ -2,7 +2,7 @@ from characters.models.mage.effect import Effect
 from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.talisman import Talisman
-from populate_db.effects_INC import (
+from populate_db.mage.effects_INC import (
     effect_channel_quintessence,
     effect_harm_ghost,
     effect_summon_spirit_minor,

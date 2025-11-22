@@ -1,6 +1,6 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
-from populate_db.vampire_clans import (
+from populate_db.vampire.vampire_clans import (
     brujah,
     gangrel,
     giovanni,
@@ -11,7 +11,7 @@ from populate_db.vampire_clans import (
     tzimisce,
     ventrue,
 )
-from populate_db.vampire_disciplines import (
+from populate_db.vampire.vampire_disciplines import (
     animalism,
     auspex,
     daimoinon,

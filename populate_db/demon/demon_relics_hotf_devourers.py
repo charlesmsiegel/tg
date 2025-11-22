@@ -4,7 +4,7 @@ These are house-specific relics for the Sixth House.
 """
 
 from items.models.demon.relic import Relic
-from populate_db.demon_houses import devourers
+from populate_db.demon.demon_houses import devourers
 
 # =============================================================================
 # DEVOURER HOUSE RELICS - HOUSES OF THE FALLEN
