@@ -66,7 +66,7 @@ class DemonBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class DemonAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class DemonAttributeView(HumanAttributeView):
     model = Demon
     template_name = "characters/demon/demon/chargen.html"
 

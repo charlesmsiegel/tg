@@ -236,7 +236,7 @@ class KinfolkBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class KinfolkAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class KinfolkAttributeView(HumanAttributeView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/chargen.html"
 

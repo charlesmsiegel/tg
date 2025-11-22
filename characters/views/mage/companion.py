@@ -177,7 +177,7 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CompanionAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class CompanionAttributeView(HumanAttributeView):
     model = Companion
     template_name = "characters/mage/companion/chargen.html"
 

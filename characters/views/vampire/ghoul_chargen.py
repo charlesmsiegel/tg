@@ -63,7 +63,7 @@ class GhoulBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class GhoulAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class GhoulAttributeView(HumanAttributeView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/chargen.html"
 

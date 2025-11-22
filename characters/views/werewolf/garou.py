@@ -247,7 +247,7 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class WerewolfAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class WerewolfAttributeView(HumanAttributeView):
     model = Werewolf
     template_name = "characters/werewolf/garou/chargen.html"
 

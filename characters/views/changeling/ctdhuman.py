@@ -200,7 +200,7 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
 
 
-class CtDHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class CtDHumanAttributeView(HumanAttributeView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/chargen.html"
 

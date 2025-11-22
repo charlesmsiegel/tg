@@ -264,7 +264,7 @@ class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
 
 
-class WtAHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class WtAHumanAttributeView(HumanAttributeView):
     model = WtAHuman
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
