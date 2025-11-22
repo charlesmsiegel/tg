@@ -22,6 +22,10 @@ GAMELINE_MAP = {
     "Wraith: the Oblivion": "wto",
     "Changeling: the Dreaming": "ctd",
     "Demon: the Fallen": "dtf",
+    "Hunter: the Reckoning": "htr",
+    "Mummy: the Resurrection": "mtr",
+    "Orpheus": "orp",
+    "World of Darkness": "wod",
 }
 
 # Edition mappings to standardized format
@@ -38,6 +42,13 @@ EDITION_MAP = {
     "Revised Edition": "Rev",
     "20th Anniversary": "20th",
     "20th": "20th",
+    # Time period/setting editions
+    "Dark Age": "DA",
+    "Dark Ages": "DA",
+    "Victorian Age": "VA",
+    "Wild West": "WW",
+    "Sorcerer's Crusade": "SC",
+    "Kindred of the East": "KotE",
 }
 
 
