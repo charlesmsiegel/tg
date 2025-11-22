@@ -14,7 +14,24 @@ from polymorphic.query import PolymorphicQuerySet
 
 
 class ModelQuerySet(PolymorphicQuerySet):
-    """Base queryset with common optimizations"""
+    """
+    Base queryset for all polymorphic models with default ContentType optimization.
+
+    Automatically applies select_related('polymorphic_ctype') to prevent
+    N+1 queries when resolving polymorphic types (e.g., determining if a
+    Character is VtMHuman, Mage, Garou, etc.).
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._result_cache = None
+        # Default optimization: always select_related polymorphic_ctype
+        # to avoid N+1 ContentType lookups during polymorphic resolution
+        # In Django, query.select_related is False when not set, dict when set
+        if self.query.select_related is False:
+            self.query.select_related = {}
+        if 'polymorphic_ctype' not in self.query.select_related:
+            self.query.select_related['polymorphic_ctype'] = {}
 
     def pending_approval_for_user(self, user):
         """
