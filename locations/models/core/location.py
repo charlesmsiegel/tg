@@ -1,18 +1,21 @@
 from characters.models.core import CharacterModel
-from core.models import Model, ModelManager
+from core.models import Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.urls import reverse
 from game.models import Scene
+from polymorphic.managers import PolymorphicManager
 
 
-class LocationModelManager(ModelManager):
-    """Custom manager for LocationModel with specialized query patterns."""
+class LocationQuerySet(ModelQuerySet):
+    """Custom queryset for LocationModel with chainable query patterns."""
 
     def top_level(self):
         """Top-level locations (no parent)"""
         return self.filter(parent=None)
 
-    # Inherits pending_approval_for_user from ModelManager base class
+
+# Create LocationModelManager from the QuerySet to expose all QuerySet methods on the manager
+LocationModelManager = PolymorphicManager.from_queryset(LocationQuerySet)
 
 
 class LocationModel(Model):
