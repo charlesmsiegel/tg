@@ -73,33 +73,31 @@ def filepath(instance, filename):
 
 
 def get_gameline_name(s):
-    if s == "wod":
-        return "World of Darkness"
-    elif s == "vtm":
-        return "Vampire: the Masquerade"
-    elif s == "wta":
-        return "Werewolf: the Apocalypse"
-    elif s == "mta":
-        return "Mage: the Ascension"
-    elif s == "wto":
-        return "Wraith: the Oblivion"
-    elif s == "ctd":
-        return "Changeling: the Dreaming"
+    """
+    Get the full name of a gameline from its code.
+
+    Args:
+        s: Gameline code (e.g., 'vtm', 'wta')
+
+    Returns:
+        Full gameline name (e.g., 'Vampire: the Masquerade')
+    """
+    from django.conf import settings
+    return settings.GAMELINES.get(s, {}).get('name', s)
 
 
 def get_short_gameline_name(s):
-    if s == "wod":
-        return ""
-    elif s == "vtm":
-        return "vampire"
-    elif s == "wta":
-        return "werewolf"
-    elif s == "mta":
-        return "mage"
-    elif s == "wto":
-        return "wraith"
-    elif s == "ctd":
-        return "changeling"
+    """
+    Get the short app name of a gameline from its code.
+
+    Args:
+        s: Gameline code (e.g., 'vtm', 'wta')
+
+    Returns:
+        App name (e.g., 'vampire', 'werewolf')
+    """
+    from django.conf import settings
+    return settings.GAMELINES.get(s, {}).get('app_name', '')
 
 
 def fast_selector(cls):
