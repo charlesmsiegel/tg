@@ -18,6 +18,7 @@ from characters.views.core.human import (
 )
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -53,17 +54,12 @@ class ThrallBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class ThrallAttributeView(HumanAttributeView):
+class ThrallAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Thrall
     template_name = "characters/demon/thrall/chargen.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
-
-class ThrallAbilityView(SpecialUserMixin, UpdateView):
+class ThrallAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = Thrall.primary_abilities
     template_name = "characters/demon/thrall/chargen.html"
@@ -77,7 +73,6 @@ class ThrallAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -112,7 +107,7 @@ class ThrallBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallVirtuesView(SpecialUserMixin, UpdateView):
+class ThrallVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/thrall/chargen.html"
@@ -123,11 +118,6 @@ class ThrallVirtuesView(SpecialUserMixin, UpdateView):
         form.fields["courage"].help_text = "Thrall Virtue"
         form.fields["conscience"].help_text = "Thrall Virtue"
         return form
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         # Calculate total virtues (must equal 6)
@@ -149,7 +139,7 @@ class ThrallVirtuesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ThrallExtrasView(SpecialUserMixin, UpdateView):
+class ThrallExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Thrall
     fields = [
         "age",
@@ -176,11 +166,6 @@ class ThrallExtrasView(SpecialUserMixin, UpdateView):
         form.fields["history"].required = False
         form.fields["goals"].required = False
         return form
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

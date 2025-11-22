@@ -1,12 +1,12 @@
 from characters.forms.core.backgroundform import BackgroundRatingFormSet
 from characters.models.core.background_block import Background
 from characters.models.core.human import Human
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
 
 
-class HumanBackgroundsView(EditPermissionMixin, FormView):
+class HumanBackgroundsView(ApprovedUserContextMixin, EditPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
 
@@ -51,7 +51,6 @@ class HumanBackgroundsView(EditPermissionMixin, FormView):
         if not hasattr(self, "object") or self.object is None:
             self.object = Human.objects.get(pk=self.kwargs["pk"])
         context["object"] = self.object
-        context["is_approved_user"] = True  # If we got here, user has permission
         for form in context["form"]:
             form.fields["bg"].queryset = Background.objects.filter(
                 property_name__in=self.object.allowed_backgrounds

@@ -25,6 +25,7 @@ from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -35,17 +36,12 @@ from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class WerewolfDetailView(ViewPermissionMixin, DetailView):
+class WerewolfDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = Werewolf
     template_name = "characters/werewolf/garou/detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
-
-class WerewolfUpdateView(EditPermissionMixin, UpdateView):
+class WerewolfUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Werewolf
     fields = [
         "name",
@@ -126,11 +122,6 @@ class WerewolfUpdateView(EditPermissionMixin, UpdateView):
     template_name = "characters/werewolf/garou/form.html"
     success_message = "Werewolf '{name}' updated successfully!"
     error_message = "Failed to update werewolf. Please correct the errors below."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WerewolfCreateView(MessageMixin, CreateView):
@@ -251,14 +242,9 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class WerewolfAttributeView(HumanAttributeView):
+class WerewolfAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Werewolf
     template_name = "characters/werewolf/garou/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WerewolfAbilityView(WtAHumanAbilityView):
@@ -274,7 +260,7 @@ class WerewolfBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
-class WerewolfGiftsView(SpecialUserMixin, UpdateView):
+class WerewolfGiftsView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = ["gifts"]
     template_name = "characters/werewolf/garou/chargen.html"
@@ -293,7 +279,6 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         # Get gift permission objects for filtering
         breed_perm = GiftPermission.objects.get_or_create(
             shifter="werewolf", condition=self.object.breed
@@ -365,18 +350,13 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class WerewolfHistoryView(SpecialUserMixin, UpdateView):
+class WerewolfHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = [
         "first_change",
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/garou/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -424,7 +404,7 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class WerewolfExtrasView(SpecialUserMixin, UpdateView):
+class WerewolfExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = [
         "date_of_birth",
@@ -437,11 +417,6 @@ class WerewolfExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/garou/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

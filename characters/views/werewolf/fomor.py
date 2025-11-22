@@ -22,6 +22,7 @@ from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -30,14 +31,9 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class FomorDetailView(ViewPermissionMixin, DetailView):
+class FomorDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = Fomor
     template_name = "characters/werewolf/fomor/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class FomorCreateView(MessageMixin, CreateView):
@@ -107,7 +103,7 @@ class FomorCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/fomor/form.html"
 
 
-class FomorUpdateView(EditPermissionMixin, UpdateView):
+class FomorUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Fomor
     success_message = "Fomor updated successfully."
     error_message = "Error updating fomor."
@@ -173,11 +169,6 @@ class FomorUpdateView(EditPermissionMixin, UpdateView):
     ]
     template_name = "characters/werewolf/fomor/form.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
-
 
 class FomorBasicsView(LoginRequiredMixin, FormView):
     form_class = FomorCreationForm
@@ -203,18 +194,13 @@ class FomorBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class FomorAttributeView(HumanAttributeView):
+class FomorAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Fomor
     template_name = "characters/werewolf/fomor/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class FomorAbilityView(WtAHumanAbilityView):
@@ -226,7 +212,7 @@ class FomorBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorPowersView(SpecialUserMixin, UpdateView):
+class FomorPowersView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Fomor
     fields = ["powers", "rage", "gnosis"]
     template_name = "characters/werewolf/fomor/chargen.html"
@@ -242,18 +228,13 @@ class FomorPowersView(SpecialUserMixin, UpdateView):
         form.fields["gnosis"].help_text = "Fomori typically have 1-5 Gnosis"
         return form
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
-
     def form_valid(self, form):
         self.object.creation_status += 1
         self.object.save()
         return super().form_valid(form)
 
 
-class FomorExtrasView(SpecialUserMixin, UpdateView):
+class FomorExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Fomor
     fields = [
         "date_of_birth",
@@ -266,11 +247,6 @@ class FomorExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/fomor/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

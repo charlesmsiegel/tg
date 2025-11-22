@@ -1,17 +1,17 @@
 from characters.models.demon import DtFHuman
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class DtFHumanDetailView(ViewPermissionMixin, DetailView):
+class DtFHumanDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -85,7 +85,7 @@ class DtFHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/demon/dtfhuman/form.html"
 
 
-class DtFHumanUpdateView(EditPermissionMixin, UpdateView):
+class DtFHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = DtFHuman
     success_message = "DtF Human updated successfully."
     error_message = "Error updating DtF Human."
@@ -156,5 +156,4 @@ class DtFHumanUpdateView(EditPermissionMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context

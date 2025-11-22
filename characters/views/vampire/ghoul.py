@@ -6,13 +6,12 @@ from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 
-class GhoulDetailView(HumanDetailView):
+class GhoulDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/detail.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["disciplines"] = self.object.get_disciplines()
         return context
 

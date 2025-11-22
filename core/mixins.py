@@ -185,3 +185,22 @@ class STRequiredMixin:
                     return super().dispatch(request, *args, **kwargs)
 
         raise PermissionDenied("Only storytellers can perform this action")
+
+
+class ApprovedUserContextMixin:
+    """
+    Mixin that adds is_approved_user to context data.
+
+    Use this on views that use permission mixins to indicate the user
+    has passed permission checks and can see/edit the object.
+
+    Usage:
+        class CharacterDetailView(ViewPermissionMixin, ApprovedUserContextMixin, DetailView):
+            model = Character
+    """
+
+    def get_context_data(self, **kwargs):
+        """Add is_approved_user flag to context."""
+        context = super().get_context_data(**kwargs)
+        context["is_approved_user"] = True  # If we got here, user has permission
+        return context

@@ -21,6 +21,8 @@ from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesP
 from core.views.approved_user_mixin import SpecialUserMixin
 from django import forms
 from django.contrib import messages
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -121,17 +123,16 @@ class DtFHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:demon:dtfhuman_creation", pk=self.object.pk)
 
 
-class DtFHumanAttributeView(HumanAttributeView):
+class DtFHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
-class DtFHumanAbilityView(SpecialUserMixin, UpdateView):
+class DtFHumanAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = DtFHuman.primary_abilities
     template_name = "characters/demon/dtfhuman/chargen.html"
@@ -145,7 +146,6 @@ class DtFHumanAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -180,7 +180,7 @@ class DtFHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/dtfhuman/chargen.html"
 
 
-class DtFHumanExtrasView(SpecialUserMixin, UpdateView):
+class DtFHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = [
         "age",
@@ -210,7 +210,6 @@ class DtFHumanExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
