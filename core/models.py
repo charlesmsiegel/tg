@@ -61,7 +61,7 @@ class ModelQuerySet(PolymorphicQuerySet):
 
     def with_pending_images(self):
         """Objects with images awaiting approval"""
-        return self.filter(image_status="sub")
+        return self.filter(image_status="sub").exclude(image="")
 
     def for_user_chronicles(self, user):
         """Objects in any of the user's chronicles"""
@@ -99,7 +99,7 @@ class ModelManager(PolymorphicManager):
 
     def with_pending_images(self):
         """Objects with images awaiting approval"""
-        return self.filter(image_status="sub")
+        return self.filter(image_status="sub").exclude(image="")
 
     def for_user_chronicles(self, user):
         """Objects in any of the user's chronicles"""
