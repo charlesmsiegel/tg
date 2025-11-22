@@ -102,8 +102,8 @@ pytest.ini
 static/*
 */migrations/*
 pyproject.toml
-populate_db/zz*
 media/*
 remove_pycache.sh
 selenium_fix.sh
 SOURCES/
+populate_db/chronicles/
