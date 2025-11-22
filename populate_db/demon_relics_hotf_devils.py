@@ -62,4 +62,3 @@ armor_of_mercy = Relic.objects.get_or_create(
 )[0]
 armor_of_mercy.add_source("Houses of the Fallen", 26)
 
-print("Devil (Namaru) relics from Houses of the Fallen loaded successfully")

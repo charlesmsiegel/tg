@@ -25,8 +25,8 @@ dawns_light = Ritual.objects.get_or_create(
 dawns_light.primary_lore = lore_celestials
 dawns_light.primary_lore_rating = 3
 dawns_light.secondary_lore_requirements = [
-    {"lore_id": lore_humanity.id, "rating": 2},
-    {"lore_id": lore_light.id, "rating": 1},
+    {"lore_id": lore_of_humanity.id, "rating": 2},
+    {"lore_id": lore_of_light.id, "rating": 1},
 ]
 dawns_light.base_cost = 18
 dawns_light.minimum_casting_time = 36
@@ -80,8 +80,8 @@ reshape_soul = Ritual.objects.get_or_create(
 reshape_soul.primary_lore = lore_radiance
 reshape_soul.primary_lore_rating = 5
 reshape_soul.secondary_lore_requirements = [
-    {"lore_id": lore_humanity.id, "rating": 5},
-    {"lore_id": lore_longing.id, "rating": 2},
+    {"lore_id": lore_of_humanity.id, "rating": 5},
+    {"lore_id": lore_of_longing.id, "rating": 2},
 ]
 reshape_soul.base_cost = 36
 reshape_soul.minimum_casting_time = 144
@@ -96,5 +96,3 @@ reshape_soul.variations = "None"
 reshape_soul.flavor_text = "This powerful, terrible ritual is a product of the dark days of the Time of Atrocities, when both angels and demons made use of mortal worshippers or followers to strike at their enemies. With this ritual, demons would 'reprogram' a mortal's personality, shaping her into a perfect spy — or weapon."
 reshape_soul.source_page = "Houses of the Fallen, p. 30"
 reshape_soul.save()
-
-print("Devil (Namaru) rituals from Houses of the Fallen loaded successfully")

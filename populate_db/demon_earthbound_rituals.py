@@ -34,7 +34,7 @@ undying_fire = Ritual.objects.get_or_create(
 undying_fire.primary_lore = lore_flesh
 undying_fire.primary_lore_rating = 4
 undying_fire.secondary_lore_requirements = [
-    {"lore_id": lore_flame.id, "rating": 2},
+    {"lore_id": lore_of_flame.id, "rating": 2},
 ]
 undying_fire.base_cost = 12
 undying_fire.minimum_casting_time = 36
@@ -165,7 +165,7 @@ networking = Ritual.objects.get_or_create(
 networking.primary_lore = lore_firmament
 networking.primary_lore_rating = 4
 networking.secondary_lore_requirements = [
-    {"lore_id": lore_humanity.id, "rating": 3},
+    {"lore_id": lore_of_humanity.id, "rating": 3},
     {"lore_id": lore_forge.id, "rating": 3},
 ]
 networking.base_cost = 30
@@ -183,11 +183,3 @@ networking.variations = ""
 networking.flavor_text = "This newly developed ritual creates an Internet presence for the demon, an online persona who is witty, charming and interesting, preying upon the honesty and trust of naïve souls."
 networking.source_page = "Earthbound 116"
 networking.save()
-
-print("Earthbound Rituals created successfully!")
-print("- Undying Fire")
-print("- Unholy Geas")
-print("- Song of Sinuous Questioning")
-print("- Soul Cascade")
-print("- Plague Tide")
-print("- Networking")

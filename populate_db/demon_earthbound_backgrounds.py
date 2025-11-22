@@ -25,7 +25,6 @@ X You have never paid attention to others of your kind, so you have learned a sc
 •••• You know the True Names of perhaps thousands of demons, and you can identify and control almost any demon you encounter.
 ••••• Legends tell of a great book, older than any mortal can imagine, that records the True Name of every demon and angel. You are its author."""
 codex.save()
-codex.add_source("Demon: Earthbound", 75)
 
 # Cult
 cult_bg = Background.objects.get_or_create(name="Cult", property_name="cult")[0]
@@ -42,7 +41,6 @@ X You have no worshippers, or perhaps just a handful of dedicated thralls. You h
 •••• Your cult is huge, with tentacles of control in several different countries. Several hundred mortals obey your every whim. A ritual is performed for you twice a week.
 ••••• Your followers are everywhere, and temples to your unholy power are hidden in almost every nation. More than 1,000 mortals live and die for your name, and black rituals are performed for your glory almost every day. Not a day goes by without your worshippers performing rituals, and you gain Faith thus once per day."""
     cult_bg.save()
-cult_bg.add_source("Demon: Earthbound", 75)
 
 # Hoard
 hoard = Background.objects.get_or_create(name="Hoard", property_name="hoard")[0]
@@ -57,7 +55,6 @@ X Your reliquary is small and particularly shoddy, and you have not honed its sp
 •••• Your reliquary is both large and valuable, a finely crafted object of precious and appropriate materials nearly the size of a man. You can hold a maximum of 30 points of temporary Faith.
 ••••• Enormous and jaw-droppingly valuable, a king's ransom of precious materials have gone into making your reliquary, an object larger than a man that is worth a fortune in its own right. You can hold a maximum of 35 points of temporary Faith."""
 hoard.save()
-hoard.add_source("Demon: Earthbound", 76)
 
 # Mastery
 mastery = Background.objects.get_or_create(name="Mastery", property_name="mastery")[0]
@@ -70,7 +67,6 @@ X Your character has not mastered his lore, so he cannot spend any Faith on enha
 •••• You can spend four points of extra Faith to enhance an aspect of an evocation.
 ••••• You can spend five points of extra Faith to enhance an aspect of an evocation."""
 mastery.save()
-mastery.add_source("Demon: Earthbound", 76)
 
 # Thralls
 thralls = Background.objects.get_or_create(name="Thralls", property_name="thralls")[0]
@@ -85,7 +81,6 @@ X You have no thralls, mortal or supernatural, and you can work only through nor
 •••• You have four thralls.
 ••••• You have five thralls."""
 thralls.save()
-thralls.add_source("Demon: Earthbound", 77)
 
 # Worship
 worship = Background.objects.get_or_create(name="Worship", property_name="worship")[0]
@@ -100,6 +95,3 @@ X Your followers have yet to create any worship or veneration rituals, and they 
 •••• Eight cultists take turns performing complex rites over the course of more than a day. You gain eight points of Faith from each ritual. Veneration rituals can last up to eight hours and provide up to eight extra dice.
 ••••• Ten supplicants engage in a long, incredibly complex ritual that goes on for many days. You gain 10 points of Faith from each ritual. Veneration rituals can last up to 10 hours and provide up to 10 extra dice."""
 worship.save()
-worship.add_source("Demon: Earthbound", 77)
-
-print("Earthbound Backgrounds created successfully!")

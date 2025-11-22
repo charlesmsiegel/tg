@@ -99,7 +99,7 @@ Talisman.objects.get_or_create(
     display=False, name="Arachne's Web", background_cost=9, arete=5, quintessence_max=25
 )[0]
 Talisman.objects.get_or_create(
-    display=False, name="ARC-2", background_cost=12, arete=7, quintessence_max=35
+    display=False, name="ARC-2", background_cost=10, arete=7, quintessence_max=35
 )[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -125,7 +125,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Aurora Transatmospheric Fighter",
-    background_cost=13,
+    background_cost=10,
     arete=8,
     quintessence_max=40,
 )[0]
@@ -376,7 +376,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Corporate Raider Jet",
-    background_cost=12,
+    background_cost=10,
     arete=7,
     quintessence_max=35,
 )[0]
@@ -421,7 +421,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Deep Space Combat Armor",
-    background_cost=12,
+    background_cost=10,
     arete=7,
     quintessence_max=35,
 )[0]
@@ -1233,7 +1233,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Magickal Macro Keyboard",
-    background_cost=11,
+    background_cost=10,
     arete=7,
     quintessence_max=35,
 )[0]
@@ -1362,7 +1362,7 @@ Artifact.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Multi-Terrain Explorer",
-    background_cost=11,
+    background_cost=10,
     arete=6,
     quintessence_max=30,
 )[0]
@@ -1425,7 +1425,7 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Nuclear Bomb", background_cost=20)[
+Artifact.objects.get_or_create(display=False, name="Nuclear Bomb", background_cost=10)[
     0
 ]
 Artifact.objects.get_or_create(
@@ -1568,7 +1568,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Pluvius' Javelinman",
-    background_cost=12,
+    background_cost=10,
     arete=7,
     quintessence_max=35,
 )[0]
@@ -1642,7 +1642,7 @@ Artifact.objects.get_or_create(display=False, name="Prodigy", background_cost=1)
 Talisman.objects.get_or_create(
     display=False,
     name="Professor Parallax's Displacement Device",
-    background_cost=11,
+    background_cost=10,
     arete=6,
     quintessence_max=30,
 )[0]
@@ -1812,7 +1812,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Senex's Blade",
-    background_cost=12,
+    background_cost=10,
     arete=6,
     quintessence_max=30,
 )[0]
@@ -2058,7 +2058,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Temporal Transit Converter (TTC)",
-    background_cost=11,
+    background_cost=10,
     arete=6,
     quintessence_max=30,
 )[0]
@@ -2164,7 +2164,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="The Fiberopticon",
-    background_cost=12,
+    background_cost=10,
     arete=8,
     quintessence_max=40,
 )[0]
@@ -2328,7 +2328,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False,
     name="Thirsty Blade of Kali",
-    background_cost=11,
+    background_cost=10,
     arete=4,
     quintessence_max=20,
 )[0]
@@ -2383,7 +2383,7 @@ Artifact.objects.get_or_create(
 )
 Artifact.objects.get_or_create(display=False, name="Trance Drum", background_cost=4)[0]
 Artifact.objects.get_or_create(
-    display=False, name="Tranquility Raptor Class Corvette", background_cost=18
+    display=False, name="Tranquility Raptor Class Corvette", background_cost=10
 )[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -2612,7 +2612,7 @@ Artifact.objects.get_or_create(display=False, name="X-Ray Glasses", background_c
 Talisman.objects.get_or_create(
     display=False,
     name="X117 Death Ray",
-    background_cost=11,
+    background_cost=10,
     arete=8,
     quintessence_max=40,
 )[0]
@@ -2742,7 +2742,7 @@ Talisman.objects.get_or_create(
     display=False,
     name="Dümerang Blade (4)",
     arete=4,
-    background_cost=12,
+    background_cost=10,
     description="""This enchanted weapon appears as an elegant boomerang blade with Hermetic sigils etched along its curved edge. Created by the Order of Hermes, the Dümerang Blade is a masterwork of Forces and Correspondence magick that allows it to return unerringly to its wielder's hand after being thrown. The blade is perfectly balanced for both melee combat and ranged attacks.
 
 The Dümerang Blade has an Arete rating of 4 which automatically regenerates each day, allowing the wielder to channel Quintessence through the weapon. When thrown, the blade traces an arc through the air, striking its target before curving back to the wielder's waiting hand. Masters of the blade can throw it through impossible trajectories, having it strike multiple opponents or navigate around obstacles.
@@ -3146,7 +3146,7 @@ pearl.save()
 pearl_greater = Wonder.objects.get_or_create(
     name="Dragon Pearl (Greater)",
     rank=5,
-    background_cost=12,
+    background_cost=10,
     quintessence_max=10,
 )[0]
 pearl_greater.description = (
@@ -3180,7 +3180,7 @@ carpet.save()
 staff = Wonder.objects.get_or_create(
     name="Staff of the Magi",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=20,
 )[0]
 staff.description = (
@@ -3292,7 +3292,7 @@ ring.save()
 excalibur = Artifact.objects.get_or_create(
     name="Sword of the Rightful King",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=25,
 )[0]
 excalibur.description = (
@@ -3311,7 +3311,7 @@ excalibur.save()
 stone = Artifact.objects.get_or_create(
     name="The Philosopher's Stone",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=30,
 )[0]
 stone.description = (
@@ -3329,7 +3329,7 @@ stone.save()
 grail = Artifact.objects.get_or_create(
     name="The Holy Grail",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=50,
 )[0]
 grail.description = (
@@ -3515,7 +3515,7 @@ probdev.save()
 doissetep_stone = Artifact.objects.get_or_create(
     name="Heartstone of Doissetep",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=100,
 )[0]
 doissetep_stone.description = (

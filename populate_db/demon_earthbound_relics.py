@@ -168,11 +168,7 @@ ghost_coin = Relic.objects.get_or_create(
 )[0]
 ghost_coin.add_source("Demon: Earthbound", 113)
 
-print("Earthbound Relics created successfully!")
-print("Enhanced Items: Altar Knife, Body Armor, False ID, Unscaled Eyes")
-print(
     "Enchanted Items: Celestial Gauntlets, Veil of Secrets, Pain of the Ages, Press of Voices"
 )
-print(
     "Demonic Items: Black Whip, Infernal Grimoires (3 types), Child's Companion, Ghost Coin"
 )

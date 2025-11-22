@@ -6423,10 +6423,9 @@ effect_digital_avatar = Effect.objects.get_or_create(
     name="Digital Avatar", correspondence=3, mind=3, prime=2
 )[0].add_source("Lore of the Traditions", 188)
 
-# effect_information_overload = # Effect.objects.get_or_create(
-#     name="Information Overload", forces=3, mind=3, correspondence=2
-# )[0].add_source("Lore of the Traditions", 188)
-# )[0].add_source("Lore of the Traditions", 188)
+effect_information_overload = Effect.objects.get_or_create(
+    name="Information Overload", forces=3, mind=3, correspondence=2
+)[0].add_source("Lore of the Traditions", 188)
 
 # ===== TECHNOCRATIC PROCEDURES =====
 effect_hit_mark_activation_primium_construct = Effect.objects.get_or_create(
