@@ -12,7 +12,7 @@ from populate_db.advantages import (
     nightsight,
     wings,
 )
-from populate_db.archetypes import caregiver, explorer, loner, sage, trickster
+from populate_db.archetypes import caregiver, loner, sage, thrill_seeker, trickster
 
 # Configure advantages
 nightsight.add_ratings([1])
@@ -206,7 +206,7 @@ fire_spirit.description = (
     "A minor fire elemental bound as a familiar. Appears as a dancing flame "
     "or a small salamander made of fire. Grants power over Forces magic."
 )
-fire_spirit.nature = explorer
+fire_spirit.nature = thrill_seeker
 fire_spirit.demeanor = trickster
 fire_spirit.strength = 2
 fire_spirit.dexterity = 4
@@ -236,8 +236,8 @@ air_spirit.description = (
     "A minor air elemental that appears as a swirling breeze or a translucent "
     "winged figure. Swift and elusive, grants mastery over wind and flight."
 )
-air_spirit.nature = explorer
-air_spirit.demeanor = explorer
+air_spirit.nature = thrill_seeker
+air_spirit.demeanor = thrill_seeker
 air_spirit.strength = 1
 air_spirit.dexterity = 5
 air_spirit.stamina = 2
@@ -380,7 +380,7 @@ acolyte.description = (
     "A young student of magic who has not yet Awakened but shows great potential. "
     "Assists with research and can perform minor tasks."
 )
-acolyte.nature = explorer
+acolyte.nature = thrill_seeker
 acolyte.demeanor = caregiver
 acolyte.strength = 2
 acolyte.dexterity = 2
