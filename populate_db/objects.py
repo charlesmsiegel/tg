@@ -149,7 +149,9 @@ ObjectType.objects.get_or_create(name="necropolis", type="loc", gameline="wto")
 # DtF Character Objects
 demon = ObjectType.objects.get_or_create(name="demon", type="char", gameline="dtf")[0]
 thrall = ObjectType.objects.get_or_create(name="thrall", type="char", gameline="dtf")[0]
-earthbound = ObjectType.objects.get_or_create(name="earthbound", type="char", gameline="dtf")[0]
+earthbound = ObjectType.objects.get_or_create(
+    name="earthbound", type="char", gameline="dtf"
+)[0]
 dtfhuman = ObjectType.objects.get_or_create(
     name="dtf_human", type="char", gameline="dtf"
 )[0]

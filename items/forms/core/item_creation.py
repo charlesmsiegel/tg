@@ -1,7 +1,8 @@
 import json
+
+from core.constants import GameLine
 from django import forms
 from game.models import ObjectType
-from core.constants import GameLine
 
 
 class ItemCreationForm(forms.Form):
@@ -54,7 +55,8 @@ class ItemCreationForm(forms.Form):
 
                 # Create gameline choices
                 gameline_choices = [
-                    (code, name) for code, name in GameLine.CHOICES
+                    (code, name)
+                    for code, name in GameLine.CHOICES
                     if code in gamelines_with_items
                 ]
                 self.fields["gameline"].choices = gameline_choices
@@ -64,19 +66,18 @@ class ItemCreationForm(forms.Form):
                 for obj in all_item_types:
                     if obj.gameline not in item_types_by_gameline:
                         item_types_by_gameline[obj.gameline] = []
-                    item_types_by_gameline[obj.gameline].append({
-                        "value": obj.name,
-                        "label": self._format_label(obj.name)
-                    })
+                    item_types_by_gameline[obj.gameline].append(
+                        {"value": obj.name, "label": self._format_label(obj.name)}
+                    )
 
                 # Sort each gameline's types by label
                 for gameline in item_types_by_gameline:
                     item_types_by_gameline[gameline].sort(key=lambda x: x["label"])
 
                 # Store in widget attrs for JavaScript access
-                self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    item_types_by_gameline
-                )
+                self.fields["item_type"].widget.attrs[
+                    "data-types-by-gameline"
+                ] = json.dumps(item_types_by_gameline)
 
                 # Initially populate with first gameline's types
                 if gameline_choices:
@@ -100,9 +101,9 @@ class ItemCreationForm(forms.Form):
                 }
                 item_types_by_gameline["mta"].sort(key=lambda x: x["label"])
 
-                self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    item_types_by_gameline
-                )
+                self.fields["item_type"].widget.attrs[
+                    "data-types-by-gameline"
+                ] = json.dumps(item_types_by_gameline)
                 self.fields["item_type"].choices = [
                     (t["value"], t["label"]) for t in item_types_by_gameline["mta"]
                 ]

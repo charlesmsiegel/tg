@@ -87,4 +87,3 @@ siklos = Relic.objects.get_or_create(
     is_permanent=True,
 )[0]
 siklos.add_source("Houses of the Fallen", 190)
-

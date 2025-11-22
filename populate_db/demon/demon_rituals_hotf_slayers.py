@@ -82,4 +82,3 @@ veil_of_cerberus.variations = "In a bid to make things even more difficult for p
 veil_of_cerberus.flavor_text = "As the Thousand Year War turned into a rout, the rebel Elohim had to adopt more defensive tactics. Cerberus, an accomplished Ankida, conceived this variation on another Haven-building ritual to allow groups of rebels and mortal servants to escape pursuing loyalist forces."
 veil_of_cerberus.source_page = "Houses of the Fallen, p. 192"
 veil_of_cerberus.save()
-

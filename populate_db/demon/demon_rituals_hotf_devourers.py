@@ -79,4 +79,3 @@ wild_path.variations = "None"
 wild_path.flavor_text = "Speed and mobility on the field of war were essential for victory. Where others used their wings, many Ninurtu used the plants they had nurtured from infancy to burgeoning adulthood. Using the Wild Path ritual, Devourers could step into a stand of trees and step out a mile away, an unpleasant surprise to the enemy with their backs turned."
 wild_path.source_page = "Houses of the Fallen, p. 161"
 wild_path.save()
-

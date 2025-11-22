@@ -103,4 +103,3 @@ tears_of_tiamat = Relic.objects.get_or_create(
     is_permanent=True,
 )[0]
 tears_of_tiamat.add_source("Houses of the Fallen", 130)
-

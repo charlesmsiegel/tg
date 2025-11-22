@@ -30,4 +30,3 @@ lore_of_violation = Lore.objects.get_or_create(
     description="Brutal control and damage to mortal minds; nightmare sending, mind rape, visions of terror, enslavement, soul devouring",
 )[0]
 lore_of_violation.add_source("Demon: Earthbound", 91)
-

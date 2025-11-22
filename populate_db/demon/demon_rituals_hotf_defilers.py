@@ -5,7 +5,11 @@ Populate database with Defiler (Lammasu) rituals from Houses of the Fallen.
 from characters.models.demon.ritual import Ritual
 from populate_db.demon.demon_houses import defilers
 from populate_db.demon.demon_lores import lore_of_awakening as lore_awakening
-from populate_db.demon.demon_lores import lore_of_longing, lore_of_patterns, lore_of_storms
+from populate_db.demon.demon_lores import (
+    lore_of_longing,
+    lore_of_patterns,
+    lore_of_storms,
+)
 from populate_db.demon.demon_lores import lore_of_the_flesh as lore_flesh
 from populate_db.demon.demon_lores import lore_of_the_fundament as lore_fundament
 from populate_db.demon.demon_lores import lore_of_transfiguration
@@ -109,4 +113,3 @@ song_of_ecstatic_battle.variations = """A strange version of this ritual replace
 song_of_ecstatic_battle.flavor_text = "This ritual enables human troops to more effectively fight on while injured. Under its effects, each feels no pain from wounds, but only a surge of adrenaline and power that makes them redouble their attack."
 song_of_ecstatic_battle.source_page = "Houses of the Fallen, p. 132"
 song_of_ecstatic_battle.save()
-

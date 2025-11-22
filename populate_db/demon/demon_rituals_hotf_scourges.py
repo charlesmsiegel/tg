@@ -5,7 +5,11 @@ Populate database with Scourge (Asharu) rituals from Houses of the Fallen.
 from characters.models.demon.ritual import Ritual
 from populate_db.demon.demon_houses import scourges
 from populate_db.demon.demon_lores import lore_of_awakening as lore_awakening
-from populate_db.demon.demon_lores import lore_of_humanity, lore_of_patterns, lore_of_storms
+from populate_db.demon.demon_lores import (
+    lore_of_humanity,
+    lore_of_patterns,
+    lore_of_storms,
+)
 from populate_db.demon.demon_lores import lore_of_the_fundament as lore_fundament
 from populate_db.demon.demon_lores import lore_of_the_winds as lore_winds
 
@@ -93,4 +97,3 @@ inoculate.variations = "Increasing the Awakening level to ••• allows the p
 inoculate.flavor_text = "The Inoculate ritual was developed by desperate Asharu who wearied of seeing the human tribes ravaged again and again by the diseases of war — both natural diseases unavoidable in the poor living conditions of a war-torn land and supernatural maladies that spread as fast as breath."
 inoculate.source_page = "Houses of the Fallen, p. 55"
 inoculate.save()
-
