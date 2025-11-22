@@ -58,7 +58,7 @@ class ThrallBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class ThrallAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class ThrallAttributeView(HumanAttributeView):
     model = Thrall
     template_name = "characters/demon/thrall/chargen.html"
 

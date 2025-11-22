@@ -72,7 +72,7 @@ class WraithBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class WraithAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class WraithAttributeView(HumanAttributeView):
     model = Wraith
     template_name = "characters/wraith/wraith/chargen.html"
 

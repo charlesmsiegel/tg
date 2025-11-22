@@ -282,7 +282,7 @@ class ChangelingBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class ChangelingAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class ChangelingAttributeView(HumanAttributeView):
     model = Changeling
     template_name = "characters/changeling/changeling/chargen.html"
 

@@ -257,7 +257,7 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class FeraAttributeView(HumanAttributeView):
     model = Fera
     template_name = "characters/werewolf/fera/chargen.html"
 

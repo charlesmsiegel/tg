@@ -221,7 +221,7 @@ class VtMHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:vampire:vtmhuman_creation", pk=self.object.pk)
 
 
-class VtMHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class VtMHumanAttributeView(HumanAttributeView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/chargen.html"
 

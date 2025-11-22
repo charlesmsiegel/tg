@@ -77,7 +77,7 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class VampireAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class VampireAttributeView(HumanAttributeView):
     model = Vampire
     template_name = "characters/vampire/vampire/chargen.html"
 

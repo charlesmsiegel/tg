@@ -555,7 +555,7 @@ class MtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:mage:mtahuman_creation", pk=self.object.pk)
 
 
-class MtAHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class MtAHumanAttributeView(HumanAttributeView):
     model = MtAHuman
     template_name = "characters/mage/mtahuman/chargen.html"
 

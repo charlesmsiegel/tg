@@ -269,7 +269,7 @@ class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
 
 
-class WtOHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class WtOHumanAttributeView(HumanAttributeView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/chargen.html"
 

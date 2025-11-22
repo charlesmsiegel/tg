@@ -127,7 +127,7 @@ class DtFHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:demon:dtfhuman_creation", pk=self.object.pk)
 
 
-class DtFHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class DtFHumanAttributeView(HumanAttributeView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/chargen.html"
 

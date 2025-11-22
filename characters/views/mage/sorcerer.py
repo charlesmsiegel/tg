@@ -252,7 +252,7 @@ def load_companion_values(request):
     )
 
 
-class SorcererAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class SorcererAttributeView(HumanAttributeView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/chargen.html"
 

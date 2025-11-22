@@ -971,7 +971,7 @@ class MageBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class MageAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class MageAttributeView(HumanAttributeView):
     model = Mage
     template_name = "characters/mage/mage/chargen.html"
 

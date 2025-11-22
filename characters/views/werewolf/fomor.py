@@ -198,7 +198,7 @@ class FomorBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class FomorAttributeView(ApprovedUserContextMixin, HumanAttributeView):
+class FomorAttributeView(HumanAttributeView):
     model = Fomor
     template_name = "characters/werewolf/fomor/chargen.html"
 
