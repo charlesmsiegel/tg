@@ -4153,7 +4153,7 @@ effect.description = "The mage can bend space and probability around them, grant
 effect.save()
 effect.add_source("Initiates of the Art", 81)
 effect, _ = Effect.objects.get_or_create(
-    name='Ghayba (Occultation or "Unbeingness")[0]',
+    name='Ghayba (Occultation or "Unbeingness")',
     correspondence=4,
     spirit=3,
     mind=2,
@@ -4177,7 +4177,7 @@ effect.description = "This Procedure gives an operative a temporary Cloaking bac
 effect.save()
 effect.add_source("Guide to the Technocracy", 206)
 effect, _ = Effect.objects.get_or_create(
-    name='Sjonhverfing ("Deceiving of the Sight")[0]', mind=2
+    name='Sjonhverfing ("Deceiving of the Sight")', mind=2
 )
 effect.description = "With this magic, the mage can cloud the minds of men. The most basic version allows the mage to strike fear into all those in their presence. A more advanced version allows them to instill illusions into those minds, making them see what the mage wishes them to. With Entropy, they can destroy the target's sense of up and down, or even summon a mist. This is dispelled if the mage is blindfolded."
 effect.save()
@@ -4213,7 +4213,7 @@ effect.description = "Allows the mage to block out a specific type of energy, al
 effect.save()
 effect.add_source("Mage: The Ascension (Revised)", 166)
 effect, _ = Effect.objects.get_or_create(
-    name='Huli Shjalmr ("Helmet of Hiding")[0]', forces=2, prime=2
+    name='Huli Shjalmr ("Helmet of Hiding")', forces=2, prime=2
 )
 effect.description = "The Huli Shjalmr grants the power of invisibility, by either warping light around them, hiding themselves from the Minds of those around them, or destroying the very concept of them in those minds."
 effect.save()
@@ -4881,7 +4881,7 @@ effect.description = "A member of the Hem-Ka Sobk can hide their scars and tatto
 effect.save()
 effect.add_source("Book of Crafts", 57)
 effect, _ = Effect.objects.get_or_create(
-    name="Jivitamarana (Death in Life)[0] Yoga", life=4, entropy=4
+    name="Jivitamarana (Death in Life) Yoga", life=4, entropy=4
 )
 effect.description = "This effect creates a state of living near-death for the mage. For the duration, the mage can soak lethal damage, halves all bashing damage (before soaking), and ignores wound penalties. Life effects targeting the mage are at +1 difficulty as well. However, the mage automatically fails any touch-based Perception tests and gains an additional Entropic Synergy trait for the duration."
 effect.save()
