@@ -552,15 +552,15 @@ class TestXPRaceConditions:
 
 ## Deployment Checklist
 
-- [ ] Review all code changes
-- [ ] Run `python manage.py makemigrations`
-- [ ] Review generated migrations carefully
-- [ ] Test migrations on development database copy
-- [ ] Check for existing invalid data
-- [ ] Add data cleanup to migrations if needed
-- [ ] Run `python manage.py migrate` on dev
-- [ ] Run test suite: `pytest characters/tests/`
-- [ ] Update XP spending views to use new methods
+- [x] Review all code changes
+- [x] Run `python manage.py makemigrations`
+- [x] Review generated migrations carefully
+- [x] Test migrations on development database copy
+- [x] Check for existing invalid data
+- [x] Add data cleanup to migrations if needed
+- [x] Run `python manage.py migrate` on dev
+- [x] Run test suite: `pytest characters/tests/`
+- [x] Update XP spending views to use new methods
 - [ ] Add integration tests for transactions
 - [ ] Deploy to staging
 - [ ] Monitor for validation errors

@@ -357,11 +357,11 @@ After updating a view:
 
 For each view file you update:
 
-- [ ] Replace `SpecialUserMixin` with appropriate permission mixin
-- [ ] Update `get_context_data` to remove `check_if_special_user` calls
-- [ ] Add `from core.mixins import ...` imports
-- [ ] Add `from core.permissions import Permission, PermissionManager` if needed
-- [ ] Update templates to use `{% load permissions %}` tags
+- [x] Replace `SpecialUserMixin` with appropriate permission mixin
+- [x] Update `get_context_data` to remove `check_if_special_user` calls
+- [x] Add `from core.mixins import ...` imports
+- [x] Add `from core.permissions import Permission, PermissionManager` if needed
+- [x] Update templates to use `{% load permissions %}` tags
 - [ ] Create limited forms for owner editing
 - [ ] Test all permission scenarios
 - [ ] Update corresponding tests
