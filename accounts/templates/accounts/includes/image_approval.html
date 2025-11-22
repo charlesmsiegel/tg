@@ -20,10 +20,14 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-6 text-center mb-3 mb-md-0">
-                                    <img src="{{ char.image.url }}" 
-                                         class="img-fluid" 
-                                         style="max-width: 300px; max-height: 300px;"
-                                         alt="image of {{ char.name }}" />
+                                    {% if char.image %}
+                                        <img src="{{ char.image.url }}"
+                                             class="img-fluid"
+                                             style="max-width: 300px; max-height: 300px;"
+                                             alt="image of {{ char.name }}" />
+                                    {% else %}
+                                        <div class="text-muted">No image uploaded</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <form action="" method="post">
@@ -51,10 +55,14 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-6 text-center mb-3 mb-md-0">
-                                    <img src="{{ loc.image.url }}" 
-                                         class="img-fluid" 
-                                         style="max-width: 300px; max-height: 300px;"
-                                         alt="image of {{ loc.name }}" />
+                                    {% if loc.image %}
+                                        <img src="{{ loc.image.url }}"
+                                             class="img-fluid"
+                                             style="max-width: 300px; max-height: 300px;"
+                                             alt="image of {{ loc.name }}" />
+                                    {% else %}
+                                        <div class="text-muted">No image uploaded</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <form action="" method="post">
@@ -82,10 +90,14 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-6 text-center mb-3 mb-md-0">
-                                    <img src="{{ item.image.url }}" 
-                                         class="img-fluid" 
-                                         style="max-width: 300px; max-height: 300px;"
-                                         alt="image of {{ item.name }}" />
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}"
+                                             class="img-fluid"
+                                             style="max-width: 300px; max-height: 300px;"
+                                             alt="image of {{ item.name }}" />
+                                    {% else %}
+                                        <div class="text-muted">No image uploaded</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <form action="" method="post">
