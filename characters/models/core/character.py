@@ -455,3 +455,36 @@ class Character(CharacterModel):
         request.approved_at = timezone.now()
         request.save()
         return request
+
+    def has_pending_xp_or_model_requests(self):
+        """Check if character has ANY pending XP requests (JSONField or model-based).
+
+        Helper method for gradual migration - checks both systems.
+
+        Returns:
+            bool: True if any pending requests exist
+        """
+        # Check old JSONField system
+        jsonfield_pending = any(d.get("approved") == "Pending" for d in self.spent_xp)
+
+        # Check new model system
+        model_pending = self.xp_spendings.filter(approved='Pending').exists()
+
+        return jsonfield_pending or model_pending
+
+    def total_spent_xp_combined(self):
+        """Calculate total XP spent across both JSONField and model systems.
+
+        Helper method for gradual migration.
+
+        Returns:
+            int: Total XP spent
+        """
+        # JSONField system
+        jsonfield_total = sum(d.get("cost", 0) for d in self.spent_xp if d.get("approved") == "Approved")
+
+        # Model system
+        from django.db.models import Sum
+        model_total = self.xp_spendings.filter(approved='Approved').aggregate(total=Sum('cost'))['total'] or 0
+
+        return jsonfield_total + model_total

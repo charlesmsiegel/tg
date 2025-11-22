@@ -75,10 +75,18 @@
     <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
     <div class="col-sm d-none" id="pooled_wrap">Pooled? {{ form.pooled }}</div>
 </div>
+<!-- Legacy JSONField freebie spending -->
 {% for item in object.spent_freebies %}
     <div class="row">
         <div class="col-sm">{{ item.trait }} {{ item.value }}</div>
         <div class="col-sm">{{ item.cost }} freebies</div>
+    </div>
+{% endfor %}
+<!-- New model-based freebie spending -->
+{% for record in object.get_freebie_spending_history %}
+    <div class="row">
+        <div class="col-sm">{{ record.trait_name }} {{ record.trait_value }}</div>
+        <div class="col-sm">{{ record.cost }} freebies</div>
     </div>
 {% endfor %}
 <script>
