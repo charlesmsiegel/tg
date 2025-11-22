@@ -19,6 +19,11 @@ urls = [
         name="horizon_realm",
     ),
     path(
+        "paradox_realm/",
+        views.mage.ParadoxRealmCreateView.as_view(),
+        name="paradox_realm",
+    ),
+    path(
         "sanctum/",
         views.mage.SanctumCreateView.as_view(),
         name="sanctum",

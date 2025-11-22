@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="mta">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title mta_heading">Paradox Realms</h1>
+            </div>
+        </div>
+
+        <div class="tg-card mb-4">
+            <div class="tg-card-body" style="padding: 24px;">
+                {% if object_list %}
+                    <div class="list-group">
+                        {% for realm in object_list %}
+                            <a href="{{ realm.get_absolute_url }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1" style="font-weight: 600; color: var(--theme-text-primary);">{{ realm.name }}</h5>
+                                        <p class="mb-1" style="font-size: 0.9rem; color: var(--theme-text-secondary);">
+                                            {{ realm.get_primary_sphere_display }}
+                                            {% if realm.secondary_sphere %}
+                                                + {{ realm.get_secondary_sphere_display }}
+                                            {% endif %}
+                                            | {{ realm.get_paradigm_display }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="tg-badge badge-pill" style="background-color: rgba(0,0,0,0.1);">
+                                            {{ realm.get_obstacles.count }} obstacles
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="text-align: center; color: var(--theme-text-secondary); padding: 40px 0;">
+                        No paradox realms found. Create one to get started!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'locations:mage:create:paradox_realm' %}" class="btn btn-primary">
+                Create New Paradox Realm
+            </a>
+        </div>
+    </div>
+{% endblock content %}
