@@ -301,5 +301,3 @@ bard = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Werewolf: The Apocalypse Revised", 99)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wta').count()} Werewolf templates")

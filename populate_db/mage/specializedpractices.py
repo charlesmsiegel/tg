@@ -1,5 +1,5 @@
 from characters.models.mage.focus import SpecializedPractice
-from populate_db.magefactions import (
+from populate_db.mage.magefactions import (
     ab,
     ahl_i_batin,
     bataa,
