@@ -26,6 +26,7 @@ from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,14 +42,9 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class CompanionDetailView(HumanDetailView):
+class CompanionDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = Companion
     template_name = "characters/mage/companion/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class CompanionCreateView(MessageMixin, CreateView):
@@ -66,17 +62,12 @@ class CompanionCreateView(MessageMixin, CreateView):
         return form
 
 
-class CompanionUpdateView(EditPermissionMixin, UpdateView):
+class CompanionUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Companion
     fields = "__all__"
     template_name = "characters/mage/companion/form.html"
     success_message = "Companion updated successfully."
     error_message = "There was an error updating the Companion."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class LoadExamplesView(View):
@@ -182,18 +173,13 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CompanionAttributeView(HumanAttributeView):
+class CompanionAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Companion
     template_name = "characters/mage/companion/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class CompanionAbilityView(MtAHumanAbilityView):
@@ -209,7 +195,7 @@ class CompanionBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/companion/chargen.html"
 
 
-class CompanionExtrasView(SpecialUserMixin, UpdateView):
+class CompanionExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Companion
     fields = [
         "date_of_birth",
@@ -222,11 +208,6 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/companion/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1
@@ -294,15 +275,10 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
         return form
 
 
-class CompanionFreebiesView(SpecialUserMixin, UpdateView):
+class CompanionFreebiesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Companion
     form_class = CompanionFreebiesForm
     template_name = "characters/mage/companion/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         if form.data["category"] == "-----":

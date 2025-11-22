@@ -21,6 +21,14 @@ from core.models import CharacterTemplate, Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import (
+    ViewPermissionMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ApprovedUserContextMixin,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -31,21 +39,16 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class CtDHumanDetailView(ViewPermissionMixin, DetailView):
+class CtDHumanDetailView(ViewPermissionMixin, ApprovedUserContextMixin, DetailView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class CtDHumanCreateView(MessageMixin, CreateView):
     model = CtDHuman
     success_message = "CtD Human created successfully."
     error_message = "Error creating CtD Human."
-    fields = [
+    FORM_FIELDS = [
         "name",
         "description",
         "strength",
@@ -94,68 +97,16 @@ class CtDHumanCreateView(MessageMixin, CreateView):
         "politics",
         "technology",
     ]
+    fields = FORM_FIELDS
     template_name = "characters/changeling/ctdhuman/form.html"
 
 
-class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
+class CtDHumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = CtDHuman
     success_message = "CtD Human updated successfully."
     error_message = "Error updating CtD Human."
-    fields = [
-        "name",
-        "description",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "willpower",
-        "age",
-        "apparent_age",
-        "history",
-        "goals",
-        "notes",
-        "kenning",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "enigmas",
-        "gremayre",
-        "law",
-        "politics",
-        "technology",
-    ]
+    fields = CtDHumanCreateView.FORM_FIELDS
     template_name = "characters/changeling/ctdhuman/form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class CtDHumanBasicsView(LoginRequiredMixin, FormView):
@@ -250,18 +201,13 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
 
 
-class CtDHumanAttributeView(HumanAttributeView):
+class CtDHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class CtDHumanAbilityView(HumanAbilityView):
@@ -274,7 +220,7 @@ class CtDHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanExtrasView(SpecialUserMixin, UpdateView):
+class CtDHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = CtDHuman
     fields = [
         "date_of_birth",
@@ -287,11 +233,6 @@ class CtDHumanExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/changeling/ctdhuman/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

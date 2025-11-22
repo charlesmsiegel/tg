@@ -24,6 +24,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -58,7 +59,7 @@ class GhoulBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class GhoulAttributeView(HumanAttributeView):
+class GhoulAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/chargen.html"
 
@@ -66,11 +67,6 @@ class GhoulAttributeView(HumanAttributeView):
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class GhoulAbilityView(VtMHumanAbilityView):
@@ -128,7 +124,6 @@ class GhoulDisciplinesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["available_disciplines"] = self.object.get_available_disciplines()
         context["has_domitor"] = bool(self.object.domitor)
         return context
@@ -168,7 +163,7 @@ class GhoulDisciplinesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class GhoulExtrasView(SpecialUserMixin, UpdateView):
+class GhoulExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Ghoul
     fields = [
         "age",
@@ -199,11 +194,6 @@ class GhoulExtrasView(SpecialUserMixin, UpdateView):
             "How many years has your character been a ghoul?"
         )
         return form
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

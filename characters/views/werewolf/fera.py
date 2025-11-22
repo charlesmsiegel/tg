@@ -25,6 +25,7 @@ from characters.views.core.human import (
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -32,17 +33,12 @@ from django.views.generic import DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class FeraDetailView(ViewPermissionMixin, DetailView):
+class FeraDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = Fera
     template_name = "characters/werewolf/fera/detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
-
-class FeraUpdateView(EditPermissionMixin, UpdateView):
+class FeraUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Fera
     success_message = "Fera updated successfully."
     error_message = "Error updating fera."
@@ -115,11 +111,6 @@ class FeraUpdateView(EditPermissionMixin, UpdateView):
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/fera/form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class FeraBasicsView(LoginRequiredMixin, FormView):
@@ -229,7 +220,6 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["fera_type"] = type(self.object).__name__
         return context
 
@@ -265,14 +255,9 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraAttributeView(HumanAttributeView):
+class FeraAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Fera
     template_name = "characters/werewolf/fera/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class FeraAbilityView(WtAHumanAbilityView):
@@ -318,7 +303,6 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
 
         # Get gift categories based on type
         obj = self.object
@@ -436,18 +420,13 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraHistoryView(SpecialUserMixin, UpdateView):
+class FeraHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "first_change",
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/fera/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -491,7 +470,7 @@ class FeraHistoryView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraExtrasView(SpecialUserMixin, UpdateView):
+class FeraExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "date_of_birth",
@@ -504,11 +483,6 @@ class FeraExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/fera/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

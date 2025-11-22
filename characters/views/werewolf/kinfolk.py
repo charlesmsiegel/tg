@@ -19,13 +19,14 @@ from characters.views.werewolf.wtahuman import (
 )
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
 
 
-class KinfolkDetailView(ViewPermissionMixin, DetailView):
+class KinfolkDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 
@@ -52,7 +53,6 @@ class KinfolkDetailView(ViewPermissionMixin, DetailView):
             all_gifts[i : i + row_length] for i in range(0, len(all_gifts), row_length)
         ]
         context["gifts"] = all_gifts
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -132,7 +132,7 @@ class KinfolkCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/kinfolk/form.html"
 
 
-class KinfolkUpdateView(EditPermissionMixin, UpdateView):
+class KinfolkUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Kinfolk
     success_message = "Kinfolk updated successfully."
     error_message = "Error updating kinfolk."
@@ -207,11 +207,6 @@ class KinfolkUpdateView(EditPermissionMixin, UpdateView):
     ]
     template_name = "characters/werewolf/kinfolk/form.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
-
 
 class KinfolkBasicsView(LoginRequiredMixin, FormView):
     form_class = KinfolkCreationForm
@@ -237,18 +232,13 @@ class KinfolkBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class KinfolkAttributeView(HumanAttributeView):
+class KinfolkAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class KinfolkAbilityView(WtAHumanAbilityView):

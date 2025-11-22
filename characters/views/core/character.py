@@ -1,7 +1,7 @@
 from typing import Any
 
 from characters.models.core import Character
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, VisibilityFilterMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, VisibilityFilterMixin, ApprovedUserContextMixin
 from core.permissions import Permission, PermissionManager
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -98,7 +98,7 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CharacterUpdateView(EditPermissionMixin, UpdateView):
+class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     """
     Update view for characters.
     Automatically enforces edit permissions.
@@ -111,12 +111,6 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
     template_name = "characters/core/character/form.html"
     success_message = "Character '{name}' updated successfully!"
     error_message = "Failed to update Character. Please correct the errors below."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Backward compatibility
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def get_form_class(self):
         """

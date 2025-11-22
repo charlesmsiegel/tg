@@ -24,6 +24,8 @@ from core.models import CharacterTemplate, Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -34,14 +36,9 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class WtAHumanDetailView(HumanDetailView):
+class WtAHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = WtAHuman
     template_name = "characters/werewolf/wtahuman/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WtAHumanCreateView(MessageMixin, CreateView):
@@ -108,7 +105,7 @@ class WtAHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/wtahuman/form.html"
 
 
-class WtAHumanUpdateView(EditPermissionMixin, UpdateView):
+class WtAHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = WtAHuman
     success_message = "WtA Human updated successfully."
     error_message = "Error updating WtA Human."
@@ -170,11 +167,6 @@ class WtAHumanUpdateView(EditPermissionMixin, UpdateView):
         "technology",
     ]
     template_name = "characters/werewolf/wtahuman/form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WtAHumanBasicsView(LoginRequiredMixin, FormView):
@@ -269,18 +261,13 @@ class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)
 
 
-class WtAHumanAttributeView(HumanAttributeView):
+class WtAHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = WtAHuman
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WtAHumanAbilityView(HumanAbilityView):
@@ -297,7 +284,7 @@ class WtAHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
 
-class WtAHumanExtrasView(SpecialUserMixin, UpdateView):
+class WtAHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = WtAHuman
     fields = [
         "date_of_birth",
@@ -310,11 +297,6 @@ class WtAHumanExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/werewolf/wtahuman/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

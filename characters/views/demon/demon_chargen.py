@@ -21,6 +21,7 @@ from characters.views.core.human import (
 )
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -61,17 +62,16 @@ class DemonBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class DemonAttributeView(HumanAttributeView):
+class DemonAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Demon
     template_name = "characters/demon/demon/chargen.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
-class DemonAbilityView(SpecialUserMixin, UpdateView):
+class DemonAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = Demon.primary_abilities
     template_name = "characters/demon/demon/chargen.html"
@@ -85,7 +85,6 @@ class DemonAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -120,7 +119,7 @@ class DemonBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/demon/chargen.html"
 
 
-class DemonLoresView(SpecialUserMixin, UpdateView):
+class DemonLoresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "lore_of_the_celestials",
@@ -163,7 +162,6 @@ class DemonLoresView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         if self.object.house:
             context["house_lores"] = self.object.house.lores.all()
         else:
@@ -256,7 +254,7 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
         return HttpResponseRedirect(demon.get_absolute_url())
 
 
-class DemonVirtuesView(SpecialUserMixin, UpdateView):
+class DemonVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/demon/chargen.html"
@@ -270,7 +268,6 @@ class DemonVirtuesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -293,7 +290,7 @@ class DemonVirtuesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DemonExtrasView(SpecialUserMixin, UpdateView):
+class DemonExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "celestial_name",
@@ -341,7 +338,6 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):

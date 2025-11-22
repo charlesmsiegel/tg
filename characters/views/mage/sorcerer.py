@@ -39,6 +39,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from core.views.generic import MultipleFormsetsMixin
 from core.views.message_mixin import MessageMixin
@@ -140,7 +141,7 @@ def load_affinities(request):
     )
 
 
-class SorcererUpdateView(EditPermissionMixin, UpdateView):
+class SorcererUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Sorcerer
     fields = "__all__"
     template_name = "characters/mage/sorcerer/form.html"
@@ -149,17 +150,15 @@ class SorcererUpdateView(EditPermissionMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
-class SorcererDetailView(HumanDetailView):
+class SorcererDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -249,7 +248,7 @@ def load_companion_values(request):
     )
 
 
-class SorcererAttributeView(HumanAttributeView):
+class SorcererAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -259,7 +258,6 @@ class SorcererAttributeView(HumanAttributeView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -287,7 +285,7 @@ def get_abilities(request):
     return JsonResponse(abilities_list, safe=False)
 
 
-class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPsychicView(ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -305,7 +303,6 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -336,7 +333,7 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         return super().form_valid(form)
 
 
-class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPathView(ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -354,7 +351,6 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -478,7 +474,7 @@ class SorcererRitualView(EditPermissionMixin, FormView):
         return HttpResponseRedirect(context["object"].get_absolute_url())
 
 
-class SorcererExtrasView(SpecialUserMixin, UpdateView):
+class SorcererExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Sorcerer
     fields = [
         "date_of_birth",
@@ -494,7 +490,6 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -529,14 +524,13 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
         return form
 
 
-class SorcererFreebiesView(SpecialUserMixin, UpdateView):
+class SorcererFreebiesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Sorcerer
     form_class = SorcererFreebiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["ritual_form"] = NuminaRitualForm(pk=self.object.id)
         return context
 
