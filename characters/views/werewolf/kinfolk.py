@@ -1,3 +1,4 @@
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
 from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.werewolf.kinfolk import Kinfolk
