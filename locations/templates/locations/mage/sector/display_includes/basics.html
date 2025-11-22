@@ -1,19 +1,282 @@
+{% load sanitize_text %}
+
+<!-- Classification & Access -->
 <div class="tg-card mb-4">
     <div class="tg-card-header">
-        <h4 class="tg-card-title mta_heading">Sector Information</h4>
+        <h4 class="tg-card-title mta_heading">Classification & Access</h4>
     </div>
     <div class="tg-card-body" style="padding: 24px;">
-        <div class="mb-4 text-center">
-            <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
-                <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Sector Class:</span>
-                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_sector_class_display }}</span>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Sector Class</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.get_sector_class_display }}</div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Access Level</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-text-primary);">
+                        {{ object.get_access_level_display }}
+                        {% if object.requires_password %}<span class="tg-badge badge-pill" style="background-color: #f39c12; color: white; margin-left: 8px;">Password Required</span>{% endif %}
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="text-center">
-            <h4 class="mta_heading mb-3">Constraints</h4>
-            <div style="max-width: 800px; margin: 0 auto; padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02); text-align: center;">
-                <p class="mb-0" style="line-height: 1.6; text-align: center;">{{ object.constraints|default:"No constraints specified." }}</p>
+
+        {% if object.password_hint %}
+        <div class="mt-3">
+            <div style="padding: 12px; border-radius: 6px; background-color: rgba(243, 156, 18, 0.1); border-left: 4px solid #f39c12;">
+                <strong>Password Hint:</strong> {{ object.password_hint }}
             </div>
+        </div>
+        {% endif %}
+
+        {% if object.approved_users %}
+        <div class="mt-3">
+            <h6 class="mta_heading mb-2">Approved Users</h6>
+            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                <pre style="margin: 0; white-space: pre-wrap; font-family: monospace; font-size: 0.9rem;">{{ object.approved_users }}</pre>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if object.administrator %}
+        <div class="mt-3">
+            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Administrator:</span>
+                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.administrator }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Power & Security -->
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Power & Security</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Power Rating</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.power_rating }}</div>
+                    <div style="font-size: 0.7rem; color: var(--theme-text-secondary); margin-top: 4px;">Effects exceeding this generate Paradox</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Security Level</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.security_level }}/10</div>
+                    <div style="font-size: 0.7rem; color: var(--theme-text-secondary); margin-top: 4px;">Difficulty to hack/breach</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Size Rating</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.size_rating }}/6</div>
+                    <div style="font-size: 0.7rem; color: var(--theme-text-secondary); margin-top: 4px;">
+                        {% if object.size_rating == 1 %}Room-scale{% elif object.size_rating == 2 %}Building-scale{% elif object.size_rating == 3 %}Block-scale{% elif object.size_rating == 4 %}Neighborhood-scale{% elif object.size_rating == 5 %}City-scale{% else %}Region-scale{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if object.difficulty_modifier != 0 or object.paradox_risk_modifier != 0 %}
+        <div class="row mt-2">
+            {% if object.difficulty_modifier != 0 %}
+            <div class="col-md-6 mb-3">
+                <div style="padding: 12px; border-radius: 6px; background-color: {% if object.difficulty_modifier > 0 %}rgba(231, 76, 60, 0.1){% else %}rgba(46, 204, 113, 0.1){% endif %};">
+                    <span style="font-weight: 600; font-size: 0.85rem; color: var(--theme-text-secondary); margin-right: 8px;">Difficulty Modifier:</span>
+                    <span style="font-weight: 700; color: {% if object.difficulty_modifier > 0 %}#e74c3c{% else %}#2ecc71{% endif %};">{{ object.difficulty_modifier|stringformat:"+d" }}</span>
+                </div>
+            </div>
+            {% endif %}
+            {% if object.paradox_risk_modifier != 0 %}
+            <div class="col-md-6 mb-3">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(231, 76, 60, 0.1);">
+                    <span style="font-weight: 600; font-size: 0.85rem; color: var(--theme-text-secondary); margin-right: 8px;">Paradox Modifier:</span>
+                    <span style="font-weight: 700; color: #e74c3c;">+{{ object.paradox_risk_modifier }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if object.has_lag %}
+        <div class="mt-3">
+            <div style="padding: 12px; border-radius: 6px; background-color: rgba(231, 76, 60, 0.2); border-left: 4px solid #e74c3c;">
+                <strong style="color: #c0392b;">⚠ WARNING:</strong> <strong>LAG DETECTED</strong> - Sector showing signs of impending Whiteout!
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Constraint Protocols -->
+{% if object.constraints or object.genre_theme %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Constraint Protocols</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        {% if object.genre_theme %}
+        <div class="mb-3 text-center">
+            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(155, 89, 182, 0.2);">
+                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Genre Theme:</span>
+                <span style="font-weight: 700; color: #8e44ad;">{{ object.genre_theme }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if object.constraints %}
+        <div style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02); border-left: 4px solid #9b59b6;">
+            <div style="white-space: pre-wrap; line-height: 1.6;">{{ object.constraints|sanitize_html }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Temporal & Corruption -->
+{% if object.time_dilation != 1.00 or object.temporal_instability or object.corruption_level > 0 %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Temporal Effects & Corruption</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="row">
+            {% if object.time_dilation != 1.00 or object.temporal_instability %}
+            <div class="col-md-6 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(52, 152, 219, 0.1);">
+                    <h6 class="mta_heading mb-2">Temporal Effects</h6>
+                    <div style="display: inline-block; padding: 10px 20px; border-radius: 6px; background-color: rgba(0,0,0,0.05); margin-bottom: 8px;">
+                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Time Dilation:</span>
+                        <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.time_dilation }}x</span>
+                    </div>
+                    {% if object.temporal_instability %}
+                    <div style="padding: 8px 12px; border-radius: 4px; background-color: rgba(231, 76, 60, 0.2); border-left: 3px solid #e74c3c;">
+                        <strong>⚠ Temporally Unstable (Hung Sector)</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if object.corruption_level > 0 %}
+            <div class="col-md-6 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(231, 76, 60, 0.1);">
+                    <h6 class="mta_heading mb-2">Corruption</h6>
+                    <div style="display: inline-block; padding: 10px 20px; border-radius: 6px; background-color: rgba(0,0,0,0.05); margin-bottom: 8px;">
+                        <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Level:</span>
+                        <span style="font-weight: 700; color: #e74c3c;">{{ object.corruption_level }}/10</span>
+                    </div>
+                    <div style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.05);">
+                        {% if object.is_reformattable %}
+                        <span style="color: #f39c12;">⚠ Reformattable</span>
+                        {% else %}
+                        <span style="color: #c0392b;"><strong>✗ UNREFORMATTABLE</strong></span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+{% endif %}
+
+<!-- Population & ARO Data -->
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Population & Data</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Estimated Users</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.estimated_users|default:"Unknown" }}</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">ARO Density</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.get_aro_density_display }}</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">ARO Count</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">
+                        {% if object.aro_count > 1000000 %}{{ object.aro_count|floatformat:0|slice:"-9:-6" }}M+{% else %}{{ object.aro_count }}{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if object.data_flow_rate %}
+        <div class="mt-2">
+            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(52, 152, 219, 0.1);">
+                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Data Flow Rate:</span>
+                <span style="font-weight: 700; color: #3498db;">{{ object.get_data_flow_rate_display }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hazards & Features -->
+{% if object.hazards or object.notable_features %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Environmental Information</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        {% if object.hazards %}
+        <div class="mb-4">
+            <h6 class="mta_heading mb-2">⚠ Hazards</h6>
+            <div style="padding: 16px; border-radius: 8px; background-color: rgba(231, 76, 60, 0.1); border-left: 4px solid #e74c3c;">
+                <div style="white-space: pre-wrap; line-height: 1.6;">{{ object.hazards|sanitize_html }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if object.notable_features %}
+        <div>
+            <h6 class="mta_heading mb-2">✨ Notable Features</h6>
+            <div style="padding: 16px; border-radius: 8px; background-color: rgba(46, 204, 113, 0.1); border-left: 4px solid #2ecc71;">
+                <div style="white-space: pre-wrap; line-height: 1.6;">{{ object.notable_features|sanitize_html }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Connected Sectors -->
+{% if object.connected_sectors.all %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title mta_heading">Connected Sectors (Conduits/Hot Links)</h4>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="row">
+            {% for sector in object.connected_sectors.all %}
+            <div class="col-md-6 mb-3">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02); border-left: 3px solid #3498db;">
+                    <a href="{{ sector.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary); text-decoration: none;">
+                        {{ sector.name }}
+                    </a>
+                    <div style="font-size: 0.85rem; color: var(--theme-text-secondary); margin-top: 4px;">
+                        {{ sector.get_sector_class_display }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
