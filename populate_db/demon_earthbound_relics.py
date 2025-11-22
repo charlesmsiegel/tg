@@ -167,8 +167,3 @@ ghost_coin = Relic.objects.get_or_create(
     difficulty=0,
 )[0]
 ghost_coin.add_source("Demon: Earthbound", 113)
-
-    "Enchanted Items: Celestial Gauntlets, Veil of Secrets, Pain of the Ages, Press of Voices"
-)
-    "Demonic Items: Black Whip, Infernal Grimoires (3 types), Child's Companion, Ghost Coin"
-)

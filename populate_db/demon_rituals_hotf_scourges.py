@@ -74,7 +74,7 @@ inoculate = Ritual.objects.get_or_create(
 inoculate.primary_lore = lore_awakening
 inoculate.primary_lore_rating = 2
 inoculate.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 3},
+    {"lore_id": lore_of_patterns.id, "rating": 3},
 ]
 inoculate.base_cost = 10
 inoculate.minimum_casting_time = 25

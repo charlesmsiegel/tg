@@ -77,7 +77,7 @@ reshape_soul = Ritual.objects.get_or_create(
     name="Reshape the Soul",
     house=devils,
 )[0]
-reshape_soul.primary_lore = lore_radiance
+reshape_soul.primary_lore = lore_of_radiance
 reshape_soul.primary_lore_rating = 5
 reshape_soul.secondary_lore_requirements = [
     {"lore_id": lore_of_humanity.id, "rating": 5},

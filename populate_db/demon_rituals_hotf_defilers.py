@@ -18,10 +18,10 @@ horn_of_truesight = Ritual.objects.get_or_create(
     name="Horn of Truesight",
     house=defilers,
 )[0]
-horn_of_truesight.primary_lore = lore_longing
+horn_of_truesight.primary_lore = lore_of_longing
 horn_of_truesight.primary_lore_rating = 2
 horn_of_truesight.secondary_lore_requirements = [
-    {"lore_id": lore_patterns.id, "rating": 1},
+    {"lore_id": lore_of_patterns.id, "rating": 1},
 ]
 horn_of_truesight.base_cost = 6
 horn_of_truesight.minimum_casting_time = 9

@@ -10,14 +10,12 @@ from populate_db.advantages import (
     flexibility,
     human_speech,
     nightsight,
-    tracking,
     wings,
 )
 from populate_db.archetypes import caregiver, explorer, loner, sage, trickster
 
 # Configure advantages
 nightsight.add_ratings([1])
-tracking.add_ratings([1, 2, 3])
 wings.add_ratings([2, 4, 6])
 human_speech.add_ratings([2])
 
