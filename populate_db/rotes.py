@@ -1,5 +1,6 @@
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
+from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 from populate_db.effects_INC import (

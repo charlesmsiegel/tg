@@ -52,8 +52,8 @@ effect_harm_living_being_complex = Effect.objects.get_or_create(
 effect_heal_living_being_complex = Effect.objects.get_or_create(
     name="Heal Living Being (Complex)", life=3
 )
-effect_heal_fae = Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)
-effect_harm_fae = Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)
+effect_heal_fae = Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)[0]
+effect_harm_fae = Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)[0]
 effect_heal_vampire = Effect.objects.get_or_create(
     name="Heal Vampire", life=3, matter=2
 )
@@ -72,8 +72,8 @@ effect_increase_physique_traits_self = Effect.objects.get_or_create(
 effect_increase_physique_traits_other = Effect.objects.get_or_create(
     name="Increase Physique/Traits (Other)", life=4
 )
-effect_increase_speed = Effect.objects.get_or_create(name="Increase Speed", time=3)
-effect_reduce_speed = Effect.objects.get_or_create(name="Reduce Speed", time=3)
+effect_increase_speed = Effect.objects.get_or_create(name="Increase Speed", time=3)[0]
+effect_reduce_speed = Effect.objects.get_or_create(name="Reduce Speed", time=3)[0]
 effect_revive_recently_dead = Effect.objects.get_or_create(
     name="Revive Recently Dead", life=4, spirit=4, prime=3
 )
@@ -100,8 +100,8 @@ effect_transform_into_element_air_fire = Effect.objects.get_or_create(
 effect_alter_probability = Effect.objects.get_or_create(
     name="Alter Probability", entropy=2
 )
-effect_bless = Effect.objects.get_or_create(name="Bless", entropy=3, life=3)
-effect_curse = Effect.objects.get_or_create(name="Curse", entropy=3, life=3)
+effect_bless = Effect.objects.get_or_create(name="Bless", entropy=3, life=3)[0]
+effect_curse = Effect.objects.get_or_create(name="Curse", entropy=3, life=3)[0]
 effect_cause_decay = Effect.objects.get_or_create(name="Cause Decay", entropy=3)[
     0
 ]  # entropy 3+ variants
@@ -111,7 +111,7 @@ effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 192)
 effect.add_source("Mage: The Ascension (Second Edition)", 193)
 effect.add_source("Mage: The Ascension (Revised)", 162)
-effect_call_storm = Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)
+effect_call_storm = Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)[0]
 effect_conjure_element_fire_wind = Effect.objects.get_or_create(
     name="Conjure Element (Fire, Wind)", forces=3, prime=2
 )
@@ -143,7 +143,7 @@ effect_disintegrate_object_entropy_time = Effect.objects.get_or_create(
 effect_invisibility_field = Effect.objects.get_or_create(
     name="Invisibility Field", forces=2
 )
-effect_silence_field = Effect.objects.get_or_create(name="Silence Field", forces=2)
+effect_silence_field = Effect.objects.get_or_create(name="Silence Field", forces=2)[0]
 effect_invisibility_on_living_being = Effect.objects.get_or_create(
     name="Invisibility on Living Being", forces=2, life=2
 )
@@ -196,19 +196,19 @@ effect_alter_aura_prime = Effect.objects.get_or_create(
 effect_conceal_avatar = Effect.objects.get_or_create(
     name="Conceal Avatar", spirit=2, mind=1
 )
-effect_conceal_thoughts = Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)
+effect_conceal_thoughts = Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)[0]
 effect_conjure_mental_illusions = Effect.objects.get_or_create(
     name="Conjure Mental Illusions", mind=2
 )[
     0
 ]  # Mind 2+ variants
-effect_influence_mood = Effect.objects.get_or_create(name="Influence Mood", mind=2)
+effect_influence_mood = Effect.objects.get_or_create(name="Influence Mood", mind=2)[0]
 effect_influence_subconscious = Effect.objects.get_or_create(
     name="Influence Subconscious", mind=3
 )[
     0
 ]  # Mind 3+ variants
-effect_mind_control = Effect.objects.get_or_create(name="Mind Control", mind=4)
+effect_mind_control = Effect.objects.get_or_create(name="Mind Control", mind=4)[0]
 effect_prophecy = Effect.objects.get_or_create(name="Prophecy", time=2)[
     0
 ]  # why mind 2/time 2?
@@ -254,7 +254,7 @@ effect_share_perception = Effect.objects.get_or_create(name="Share Perception", 
 effect_shield_mind_other = Effect.objects.get_or_create(
     name="Shield Mind (Other)", mind=2
 )
-effect_tear_mind_apart = Effect.objects.get_or_create(name="Tear Mind Apart", mind=3)
+effect_tear_mind_apart = Effect.objects.get_or_create(name="Tear Mind Apart", mind=3)[0]
 effect_tear_mind_apart_aggravated = Effect.objects.get_or_create(
     name="Tear Mind Apart (Aggravated)", mind=3, life=3
 )
@@ -287,7 +287,7 @@ effect_destroy_by_draining_quintessence_object, _ = Effect.objects.get_or_create
 effect_destroy_by_draining_quintessence_creature, _ = Effect.objects.get_or_create(
     name="Destroy by Draining Quintessence (Creature)", prime=5
 )
-effect_drain_node = Effect.objects.get_or_create(name="Drain Node", prime=4)
+effect_drain_node = Effect.objects.get_or_create(name="Drain Node", prime=4)[0]
 effect_drain_quintessence = Effect.objects.get_or_create(
     name="Drain Quintessence", prime=3
 )
@@ -302,21 +302,21 @@ effect_share_exchange_quintessence = Effect.objects.get_or_create(
 effect_command_spirit = Effect.objects.get_or_create(
     name="Command Spirit", mind=4, spirit=4
 )
-effect_conjure_spirit = Effect.objects.get_or_create(name="Conjure Spirit", spirit=3)
+effect_conjure_spirit = Effect.objects.get_or_create(name="Conjure Spirit", spirit=3)[0]
 effect_drain_spirit_s_essence = Effect.objects.get_or_create(
     name="Drain Spirit's Essence", prime=4, spirit=4
 )
 effect_harm_spirit_wraith = Effect.objects.get_or_create(
     name="Harm Spirit/Wraith", spirit=3
 )
-effect_open_gateway = Effect.objects.get_or_create(name="Open Gateway", spirit=4)
-effect_close_gateway = Effect.objects.get_or_create(name="Close Gateway", spirit=4)
-effect_see_spirits = Effect.objects.get_or_create(name="See Spirits", spirit=1)
+effect_open_gateway = Effect.objects.get_or_create(name="Open Gateway", spirit=4)[0]
+effect_close_gateway = Effect.objects.get_or_create(name="Close Gateway", spirit=4)[0]
+effect_see_spirits = Effect.objects.get_or_create(name="See Spirits", spirit=1)[0]
 effect_speak_to_spirits = Effect.objects.get_or_create(
     name="Speak to Spirits", spirit=2
 )
-effect_step_sideways = Effect.objects.get_or_create(name="Step Sideways", spirit=3)
-effect_touch_spirit = Effect.objects.get_or_create(name="Touch Spirit", spirit=2)
+effect_step_sideways = Effect.objects.get_or_create(name="Step Sideways", spirit=3)[0]
+effect_touch_spirit = Effect.objects.get_or_create(name="Touch Spirit", spirit=2)[0]
 effect_affect_distant_object_being = Effect.objects.get_or_create(
     name="Affect Distant Object/Being", correspondence=2
 )[
@@ -359,15 +359,15 @@ effect_create_multiple_objects = Effect.objects.get_or_create(
 effect_open_gateway_between_locations = Effect.objects.get_or_create(
     name="Open Gateway Between Locations", correspondence=4
 )
-effect_rewind_time = Effect.objects.get_or_create(name="Rewind Time", time=3)
-effect_set_time_trigger = Effect.objects.get_or_create(name="Set Time Trigger", time=4)
+effect_rewind_time = Effect.objects.get_or_create(name="Rewind Time", time=3)[0]
+effect_set_time_trigger = Effect.objects.get_or_create(name="Set Time Trigger", time=4)[0]
 effect_teleport_self = Effect.objects.get_or_create(
     name="Teleport (Self)", correspondence=3
 )
 effect_teleport_other = Effect.objects.get_or_create(
     name="Teleport (Other)", correspondence=4
 )
-effect_time_travel = Effect.objects.get_or_create(name="Time Travel", time=5)
+effect_time_travel = Effect.objects.get_or_create(name="Time Travel", time=5)[0]
 
 # M20 Effects
 effect_bullet_catch = Effect.objects.get_or_create(
@@ -385,21 +385,21 @@ effect_agama_te = Effect.objects.get_or_create(
 effect_astral_agama = Effect.objects.get_or_create(
     name="Astral Agama", entropy=5, mind=5, spirit=3
 )
-effect_suggest_sleep = Effect.objects.get_or_create(name="Suggest Sleep", mind=2)
-effect_compel_sleep = Effect.objects.get_or_create(name="Compel Sleep", mind=4)
-effect_make_tired = Effect.objects.get_or_create(name="Make Tired", life=3)
-effect_create_wonder = Effect.objects.get_or_create(name="Create Wonder", prime=4)
+effect_suggest_sleep = Effect.objects.get_or_create(name="Suggest Sleep", mind=2)[0]
+effect_compel_sleep = Effect.objects.get_or_create(name="Compel Sleep", mind=4)[0]
+effect_make_tired = Effect.objects.get_or_create(name="Make Tired", life=3)[0]
+effect_create_wonder = Effect.objects.get_or_create(name="Create Wonder", prime=4)[0]
 effect_create_fetish_willing = Effect.objects.get_or_create(
     name="Create Fetish (Willing)", prime=4
 )
 effect_create_fetish_unwilling = Effect.objects.get_or_create(
     name="Create Fetish (Unwilling)", spirit=4
 )
-effect_create_periapt = Effect.objects.get_or_create(name="Create Periapt", matter=4)
+effect_create_periapt = Effect.objects.get_or_create(name="Create Periapt", matter=4)[0]
 effect_create_souflower = Effect.objects.get_or_create(
     name="Create Souflower", life=5, prime=3
 )
-effect_creat_trinket = Effect.objects.get_or_create(name="Creat Trinket", prime=2)
+effect_creat_trinket = Effect.objects.get_or_create(name="Creat Trinket", prime=2)[0]
 effect_mental_illusions_that_inflict_damage = Effect.objects.get_or_create(
     name="Mental Illusions that Inflict Damage", mind=3
 )
@@ -409,9 +409,9 @@ effect_immersive_illusions = Effect.objects.get_or_create(
 effect_awaken_object_s_spirit = Effect.objects.get_or_create(
     name="Awaken Object's Spirit", spirit=3
 )
-effect_harm_ghost, _ = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)
-effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)
-effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)
+effect_harm_ghost, _ = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)[0]
+effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)[0]
+effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)[0]
 effect_ward_ban = Effect.objects.get_or_create(
     name="Ward/Ban", correspondence=2, prime=2
 )[
@@ -420,7 +420,7 @@ effect_ward_ban = Effect.objects.get_or_create(
 effect_astral_body_of_light = Effect.objects.get_or_create(
     name="Astral Body of Light", mind=4, spirit=3, prime=2
 )
-effect_enter_a_dream = Effect.objects.get_or_create(name="Enter a Dream", mind=3)
+effect_enter_a_dream = Effect.objects.get_or_create(name="Enter a Dream", mind=3)[0]
 effect_see_avatar = Effect.objects.get_or_create(
     name="See Avatar", mind=3, prime=2, spirit=1
 )
@@ -430,17 +430,17 @@ effect_see_through_mental_illusions = Effect.objects.get_or_create(
 effect_shield_mind_self = Effect.objects.get_or_create(
     name="Shield Mind (Self)", mind=1
 )
-effect_create_new_node = Effect.objects.get_or_create(name="Create New Node", prime=5)
+effect_create_new_node = Effect.objects.get_or_create(name="Create New Node", prime=5)[0]
 effect_create_quintessence_weapon = Effect.objects.get_or_create(
     name="Create Quintessence Weapon", prime=3
 )
-effect_employ_periapt = Effect.objects.get_or_create(name="Employ Periapt", prime=2)
-effect_enchant_object = Effect.objects.get_or_create(name="Enchant Object", prime=2)
-effect_energize_periapt = Effect.objects.get_or_create(name="Energize Periapt", prime=3)
-effect_nullify_paradox = Effect.objects.get_or_create(name="Nullify Paradox", prime=5)
-effect_refine_tass = Effect.objects.get_or_create(name="Refine Tass", prime=4)
-effect_tap_wellspring = Effect.objects.get_or_create(name="Tap Wellspring", prime=4)
-effect_body_of_light = Effect.objects.get_or_create(name="Body of Light", prime=2)
+effect_employ_periapt = Effect.objects.get_or_create(name="Employ Periapt", prime=2)[0]
+effect_enchant_object = Effect.objects.get_or_create(name="Enchant Object", prime=2)[0]
+effect_energize_periapt = Effect.objects.get_or_create(name="Energize Periapt", prime=3)[0]
+effect_nullify_paradox = Effect.objects.get_or_create(name="Nullify Paradox", prime=5)[0]
+effect_refine_tass = Effect.objects.get_or_create(name="Refine Tass", prime=4)[0]
+effect_tap_wellspring = Effect.objects.get_or_create(name="Tap Wellspring", prime=4)[0]
+effect_body_of_light = Effect.objects.get_or_create(name="Body of Light", prime=2)[0]
 
 # How Do You DO That?
 # Book of Secrets

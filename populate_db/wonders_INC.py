@@ -2999,7 +2999,7 @@ dumerang_effect = Effect.objects.get_or_create(
     description="Enchanted boomerang that automatically returns to the wielder's hand after being thrown. The blade auto-regenerates its Arete rating daily. Can be used as both melee and ranged weapon.",
 )[0]
 for arete_level in [2, 3, 4]:
-    dumerang = Talisman.objects.get_or_create(name=f"Dümerang Blade ({arete_level})")
+    dumerang = Talisman.objects.get_or_create(name=f"Dümerang Blade ({arete_level})")[0]
     dumerang.powers.add(dumerang_effect)
 
 # Candle of Communion - Spirit communication
@@ -3011,7 +3011,7 @@ candle_effect = Effect.objects.get_or_create(
     description="When lit, this candle opens a channel of communication with spirits, ancestors, and entities in the Umbra. The flickering flame creates a beacon visible in both the physical and spirit worlds, attracting helpful spirits and allowing for clearer communion.",
 )[0]
 for arete_level in [1, 2, 3]:
-    candle = Talisman.objects.get_or_create(name=f"Candle of Communion ({arete_level})")
+    candle = Talisman.objects.get_or_create(name=f"Candle of Communion ({arete_level})")[0]
     candle.powers.add(candle_effect)
 
 # Mama Cybele's Tea Collection - Healing and enhancement
@@ -3030,7 +3030,7 @@ tea_enhance_effect = Effect.objects.get_or_create(
 for arete_level in [2, 3, 4, 5]:
     tea = Talisman.objects.get_or_create(
         name=f"Mama Cybele's Tea Collection ({arete_level})"
-    )
+    )[0]
     tea.powers.add(tea_heal_effect)
     tea.powers.add(tea_enhance_effect)
 
@@ -3046,7 +3046,7 @@ for arete_level in [4, 5, 6, 7, 8]:
     if Talisman.objects.filter(name=f"Grand Book of Shadows ({arete_level})").exists():
         book = Talisman.objects.get_or_create(
             name=f"Grand Book of Shadows ({arete_level})"
-        )
+        )[0]
         book.powers.add(book_power_effect)
 
 # Angel Tear Daggers - Holy weapons

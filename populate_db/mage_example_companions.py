@@ -12,7 +12,7 @@ from populate_db.advantages import (
     nightsight,
     wings,
 )
-from populate_db.archetypes import caregiver, loner, sage, thrill_seeker, trickster
+from populate_db.archetypes import caregiver, guru, loner, thrill_seeker, trickster
 
 # Configure advantages
 nightsight.add_ratings([1])
@@ -65,7 +65,7 @@ raven.description = (
     "A large raven with an uncanny intelligence. Associated with death magic, "
     "memory, and prophecy. Can speak a few words."
 )
-raven.nature = sage
+raven.nature = guru
 raven.demeanor = trickster
 raven.strength = 1
 raven.dexterity = 3
@@ -100,8 +100,8 @@ owl.description = (
     "A wise barn owl with enormous eyes. Grants insight into Mind magic "
     "and can see through illusions."
 )
-owl.nature = sage
-owl.demeanor = sage
+owl.nature = guru
+owl.demeanor = guru
 owl.strength = 1
 owl.dexterity = 3
 owl.stamina = 2
@@ -306,8 +306,8 @@ ancestor.description = (
     "The spirit of an ancient Euthanatos master, appearing as a translucent "
     "figure in robes. Provides guidance on death, fate, and the Wheel."
 )
-ancestor.nature = sage
-ancestor.demeanor = sage
+ancestor.nature = guru
+ancestor.demeanor = guru
 ancestor.strength = 0
 ancestor.dexterity = 2
 ancestor.stamina = 0

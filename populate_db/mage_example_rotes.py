@@ -247,7 +247,7 @@ rote.add_source("Lore of the Traditions", 108)
 
 rote = Rote.objects.get_or_create(
     name="Read the Tapestry",
-    effect=effect_sense_fate_and_fortune,
+    effect=effect_wheel_of_fate,
     practice=yoga,
     attribute=perception,
     ability=awareness,
