@@ -8,7 +8,7 @@ from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
-from characters.forms.mage.mage import MageCreationForm
+from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
 from characters.forms.mage.xp import MageXPForm
@@ -1226,23 +1226,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
 
 class MageSpheresView(SpecialUserMixin, UpdateView):
     model = Mage
-    fields = [
-        "arete",
-        "correspondence",
-        "time",
-        "spirit",
-        "forces",
-        "matter",
-        "life",
-        "entropy",
-        "mind",
-        "prime",
-        "affinity_sphere",
-        "corr_name",
-        "prime_name",
-        "spirit_name",
-        "resonance",
-    ]
+    form_class = MageSpheresForm
     template_name = "characters/mage/mage/chargen.html"
 
     def get_form(self, form_class=None):
@@ -1264,67 +1248,28 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
         return initial
 
     def form_valid(self, form):
+        """Handle successful form validation. Validation logic is in the form."""
         arete = form.cleaned_data.get("arete", 1)
-        correspondence = form.cleaned_data.get("correspondence", 0)
-        time = form.cleaned_data.get("time", 0)
-        spirit = form.cleaned_data.get("spirit", 0)
-        forces = form.cleaned_data.get("forces", 0)
-        matter = form.cleaned_data.get("matter", 0)
-        life = form.cleaned_data.get("life", 0)
-        entropy = form.cleaned_data.get("entropy", 0)
-        mind = form.cleaned_data.get("mind", 0)
-        prime = form.cleaned_data.get("prime", 0)
-        affinity_sphere = form.cleaned_data.get("affinity_sphere")
-        if affinity_sphere is None:  # This will catch the 'empty_label' selection
-            raise ValidationError("You must select a valid affinity sphere.")
-        corr_name = form.cleaned_data.get("corr_name")
-        prime_name = form.cleaned_data.get("prime_name")
-        spirit_name = form.cleaned_data.get("spirit_name")
         resonance = form.data.get("resonance")
+
+        # Add resonance to character
         self.object.add_resonance(resonance)
 
-        if arete > 3:
-            form.add_error(None, "Arete may not exceed 3 at character creation")
-            return self.form_invalid(form)
-
-        for sphere in [
-            correspondence,
-            time,
-            spirit,
-            forces,
-            matter,
-            life,
-            entropy,
-            mind,
-            prime,
-        ]:
-            if (
-                sphere < 0
-                or sphere > arete
-                or getattr(self.object, self.object.affinity_sphere.property_name) == 0
-            ):
-                form.add_error(
-                    None,
-                    "Spheres must range from 0-Arete Rating and Affinity Sphere must be nonzero",
-                )
-                return self.form_invalid(form)
-
-        tot_spheres = sum(
-            [correspondence, time, spirit, forces, matter, life, entropy, mind, prime]
-        )
-        if tot_spheres != 6:
-            form.add_error(None, "Spheres must total 6")
-            return self.form_invalid(form)
+        # Update creation status
         self.object.creation_status += 1
+
+        # Handle freebie spending for Arete above 1
         for i in range(arete - 1):
             self.object.freebies -= 4
             self.object.spent_freebies.append(
                 self.object.freebie_spend_record("Arete", "arete", i + 2)
             )
+
         self.object.save()
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        """Handle form validation errors. Remove resonance errors if data was provided."""
         errors = form.errors
         if "resonance" in errors and "resonance" in form.data:
             del errors["resonance"]

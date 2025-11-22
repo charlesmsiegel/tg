@@ -4,6 +4,11 @@ from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.garou import WerewolfCreationForm
+from characters.forms.werewolf.garou import (
+    WerewolfCreationForm,
+    WerewolfGiftsForm,
+    WerewolfHistoryForm,
+)
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
@@ -276,7 +281,7 @@ class WerewolfBackgroundsView(HumanBackgroundsView):
 
 class WerewolfGiftsView(SpecialUserMixin, UpdateView):
     model = Werewolf
-    fields = ["gifts"]
+    form_class = WerewolfGiftsForm
     template_name = "characters/werewolf/garou/chargen.html"
 
     def get_form(self, form_class=None):
@@ -323,42 +328,7 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        gifts = form.cleaned_data.get("gifts")
-        if gifts.count() != 3:
-            form.add_error("gifts", "You must select exactly 3 starting Gifts.")
-            return self.form_invalid(form)
-
-        # Get permission objects
-        breed_perm = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.object.breed
-        )[0]
-        auspice_perm = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.object.auspice
-        )[0]
-        if self.object.tribe:
-            tribe_perm = GiftPermission.objects.get_or_create(
-                shifter="werewolf", condition=self.object.tribe.name
-            )[0]
-        else:
-            form.add_error(None, "You must have a tribe to select starting Gifts.")
-            return self.form_invalid(form)
-
-        # Validate one from each category
-        breed_count = sum(1 for gift in gifts if breed_perm in gift.allowed.all())
-        auspice_count = sum(1 for gift in gifts if auspice_perm in gift.allowed.all())
-        tribe_count = sum(1 for gift in gifts if tribe_perm in gift.allowed.all())
-
-        if breed_count != 1 or auspice_count != 1 or tribe_count != 1:
-            form.add_error(
-                "gifts",
-                "You must select exactly one Gift from your Breed, one from your Auspice, and one from your Tribe.",
-            )
-            messages.error(
-                self.request,
-                "You must select one Gift from each category: Breed, Auspice, and Tribe."
-            )
-            return self.form_invalid(form)
-
+        """Handle successful form validation. Validation logic is in the form."""
         self.object.creation_status += 1
         self.object.save()
         messages.success(self.request, "Gifts selected successfully!")
@@ -367,10 +337,7 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
 
 class WerewolfHistoryView(SpecialUserMixin, UpdateView):
     model = Werewolf
-    fields = [
-        "first_change",
-        "age_of_first_change",
-    ]
+    form_class = WerewolfHistoryForm
     template_name = "characters/werewolf/garou/chargen.html"
 
     def get_context_data(self, **kwargs):
@@ -394,30 +361,7 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
         return form
 
     def form_valid(self, form):
-        first_change = form.cleaned_data.get("first_change")
-        age_of_first_change = form.cleaned_data.get("age_of_first_change")
-
-        if not first_change or first_change.strip() == "":
-            form.add_error("first_change", "You must describe your First Change.")
-            messages.error(self.request, "Please describe your First Change.")
-            return self.form_invalid(form)
-
-        if age_of_first_change <= 0:
-            form.add_error(
-                "age_of_first_change",
-                "Age of First Change must be greater than 0.",
-            )
-            messages.error(self.request, "Age of First Change must be greater than 0.")
-            return self.form_invalid(form)
-
-        if age_of_first_change >= self.object.age:
-            form.add_error(
-                "age_of_first_change",
-                "Age of First Change must be less than current age.",
-            )
-            messages.error(self.request, f"Age of First Change must be less than current age ({self.object.age}).")
-            return self.form_invalid(form)
-
+        """Handle successful form validation. Validation logic is in the form."""
         self.object.creation_status += 1
         self.object.save()
         messages.success(self.request, "First Change details saved successfully!")
