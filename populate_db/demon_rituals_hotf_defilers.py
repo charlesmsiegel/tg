@@ -41,7 +41,7 @@ liquid_assassin = Ritual.objects.get_or_create(
     name="Liquid Assassin",
     house=defilers,
 )[0]
-liquid_assassin.primary_lore = lore_storms
+liquid_assassin.primary_lore = lore_of_storms
 liquid_assassin.primary_lore_rating = 2
 liquid_assassin.secondary_lore_requirements = [
     {"lore_id": lore_fundament.id, "rating": 2},
@@ -64,10 +64,10 @@ prenatal_guardian = Ritual.objects.get_or_create(
     name="Prenatal Guardian",
     house=defilers,
 )[0]
-prenatal_guardian.primary_lore = lore_transfiguration
+prenatal_guardian.primary_lore = lore_of_transfiguration
 prenatal_guardian.primary_lore_rating = 3
 prenatal_guardian.secondary_lore_requirements = [
-    {"lore_id": lore_storms.id, "rating": 2},
+    {"lore_id": lore_of_storms.id, "rating": 2},
     {"lore_id": lore_flesh.id, "rating": 1},
 ]
 prenatal_guardian.base_cost = 18
@@ -90,10 +90,10 @@ song_of_ecstatic_battle = Ritual.objects.get_or_create(
     name="Song of Ecstatic Battle",
     house=defilers,
 )[0]
-song_of_ecstatic_battle.primary_lore = lore_longing
+song_of_ecstatic_battle.primary_lore = lore_of_longing
 song_of_ecstatic_battle.primary_lore_rating = 3
 song_of_ecstatic_battle.secondary_lore_requirements = [
-    {"lore_id": lore_transfiguration.id, "rating": 2},
+    {"lore_id": lore_of_transfiguration.id, "rating": 2},
     {"lore_id": lore_awakening.id, "rating": 2},
 ]
 song_of_ecstatic_battle.base_cost = 21

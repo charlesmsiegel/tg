@@ -278,13 +278,13 @@ effect_translate_languages_group = Effect.objects.get_or_create(
 effect_absorb_quintessence = Effect.objects.get_or_create(
     name="Absorb Quintessence", prime=3
 )
-effect_channel_quintessence = Effect.objects.get_or_create(
+effect_channel_quintessence, _ = Effect.objects.get_or_create(
     name="Channel Quintessence", prime=3
 )
-effect_destroy_by_draining_quintessence_object = Effect.objects.get_or_create(
+effect_destroy_by_draining_quintessence_object, _ = Effect.objects.get_or_create(
     name="Destroy by Draining Quintessence (Object)", prime=4
 )
-effect_destroy_by_draining_quintessence_creature = Effect.objects.get_or_create(
+effect_destroy_by_draining_quintessence_creature, _ = Effect.objects.get_or_create(
     name="Destroy by Draining Quintessence (Creature)", prime=5
 )
 effect_drain_node = Effect.objects.get_or_create(name="Drain Node", prime=4)
@@ -409,7 +409,7 @@ effect_immersive_illusions = Effect.objects.get_or_create(
 effect_awaken_object_s_spirit = Effect.objects.get_or_create(
     name="Awaken Object's Spirit", spirit=3
 )
-effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)
+effect_harm_ghost, _ = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)
 effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)
 effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)
 effect_ward_ban = Effect.objects.get_or_create(
@@ -3481,12 +3481,12 @@ effect, _ = Effect.objects.get_or_create(name="Spirit Cloak", spirit=2, mind=2)
 effect.description = "This hides the shaman's aura in the Umbra, causing them to stand out significantly less to the Umbra's natives."
 effect.save()
 effect.add_source("Tradition Book: Dreamspeakers (First Edition)", 67)
-effect, _ = Effect.objects.get_or_create(
+effect_spirit_journey, _ = Effect.objects.get_or_create(
     name="Spirit Journey", correspondence=2, spirit=2
 )
-effect.description = "This rote allows the shaman to enter a deep trance and sends their perceptions off into the Umbra. They cannot affect anything, but they can view any location on Earth or the Umbra and communicate with spirits they encounter."
-effect.save()
-effect.add_source("The Spirit Ways", 88)
+effect_spirit_journey.description = "This rote allows the shaman to enter a deep trance and sends their perceptions off into the Umbra. They cannot affect anything, but they can view any location on Earth or the Umbra and communicate with spirits they encounter."
+effect_spirit_journey.save()
+effect_spirit_journey.add_source("The Spirit Ways", 88)
 effect, _ = Effect.objects.get_or_create(name="Stepping Sideways", spirit=3)
 effect.description = (
     "The mage can now cross through the Gauntlet and enter the Near Umbra directly."
