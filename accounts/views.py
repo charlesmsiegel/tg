@@ -46,7 +46,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
             context["scenes_waiting"] = Scene.objects.waiting_for_st()
 
         # Optimize queries with select_related
-        scenes = self.object.xp_requests().select_related("chronicle", "location", "st")
+        scenes = self.object.xp_requests().select_related("chronicle", "location")
         characters = self.object.freebies_to_approve().select_related(
             "owner", "chronicle"
         )

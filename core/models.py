@@ -85,6 +85,26 @@ class ModelManager(PolymorphicManager):
             .order_by("name")
         )
 
+    def visible(self):
+        """Objects with display=True (visible to users)"""
+        return self.filter(display=True)
+
+    def for_chronicle(self, chronicle):
+        """Objects in a specific chronicle"""
+        return self.filter(chronicle=chronicle)
+
+    def owned_by(self, user):
+        """Objects owned by a specific user"""
+        return self.filter(owner=user)
+
+    def with_pending_images(self):
+        """Objects with images awaiting approval"""
+        return self.filter(image_status="sub")
+
+    def for_user_chronicles(self, user):
+        """Objects in any of the user's chronicles"""
+        return self.filter(chronicle__in=user.chronicle_set.all())
+
 
 class Book(models.Model):
     name = models.TextField(default="")
