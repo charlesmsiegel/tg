@@ -1,5 +1,6 @@
 from core.utils import filepath
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -59,14 +60,7 @@ class Book(models.Model):
     )
     gameline = models.CharField(
         max_length=3,
-        choices=[
-            ("wod", "World of Darkness"),
-            ("vtm", "Vampire: the Masquerade"),
-            ("wta", "Werewolf: the Apocalypse"),
-            ("mta", "Mage: the Ascension"),
-            ("wto", "Wraith: the Oblivion"),
-            ("ctd", "Changeling: the Dreaming"),
-        ],
+        choices=settings.GAMELINE_CHOICES,
         default="wod",
     )
     storytellers_vault = models.BooleanField(default=False)
@@ -389,14 +383,7 @@ class HouseRule(models.Model):
     )
     gameline = models.CharField(
         max_length=3,
-        choices=[
-            ("wod", "World of Darkness"),
-            ("vtm", "Vampire: the Masquerade"),
-            ("wta", "Werewolf: the Apocalypse"),
-            ("mta", "Mage: the Ascension"),
-            ("wto", "Wraith: the Oblivion"),
-            ("ctd", "Changeling: the Dreaming"),
-        ],
+        choices=settings.GAMELINE_CHOICES,
         default="wod",
     )
 

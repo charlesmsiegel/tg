@@ -230,6 +230,51 @@ TINYMCE_DEFAULT_CONFIG = {
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
+# Gameline Configuration
+# ====================
+# Centralized configuration for all World of Darkness gamelines
+# This replaces hardcoded gameline strings throughout the codebase
+GAMELINES = {
+    'wod': {
+        'name': 'World of Darkness',
+        'short': '',
+        'app_name': 'wod',
+    },
+    'vtm': {
+        'name': 'Vampire: the Masquerade',
+        'short': 'VtM',
+        'app_name': 'vampire',
+    },
+    'wta': {
+        'name': 'Werewolf: the Apocalypse',
+        'short': 'WtA',
+        'app_name': 'werewolf',
+    },
+    'mta': {
+        'name': 'Mage: the Ascension',
+        'short': 'MtA',
+        'app_name': 'mage',
+    },
+    'wto': {
+        'name': 'Wraith: the Oblivion',
+        'short': 'WtO',
+        'app_name': 'wraith',
+    },
+    'ctd': {
+        'name': 'Changeling: the Dreaming',
+        'short': 'CtD',
+        'app_name': 'changeling',
+    },
+    'dtf': {
+        'name': 'Demon: the Fallen',
+        'short': 'DtF',
+        'app_name': 'demon',
+    },
+}
+
+# Helper to get gameline choices for model fields
+GAMELINE_CHOICES = [(key, val['name']) for key, val in GAMELINES.items()]
+
 # Logging configuration
 LOGGING = {
     "version": 1,

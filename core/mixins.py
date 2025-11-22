@@ -1,10 +1,17 @@
 """
-Permission mixins for class-based views.
+Mixins for class-based views.
+
+This module consolidates all view mixins used throughout the application:
+- Permission mixins: For controlling access to views and objects
+- Message mixins: For displaying success/error messages
+- User verification mixins: For checking special user status
 """
 
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from core.permissions import Permission, PermissionManager, VisibilityTier
+from game.models import STRelationship
 
 
 class PermissionRequiredMixin:
