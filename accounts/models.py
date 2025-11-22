@@ -177,11 +177,9 @@ class Profile(models.Model):
         return to_approve
 
     def freebies_to_approve(self):
-        f = Character.objects.filter(
+        return Character.objects.filter(
             chronicle__in=self.user.chronicle_set.all(), freebies_approved=False
-        )
-        f = [x for x in f if x.creation_status == x.freebie_step]
-        return f
+        ).at_freebie_step()
 
     def character_images_to_approve(self):
         return Character.objects.with_pending_images().for_user_chronicles(self.user)
