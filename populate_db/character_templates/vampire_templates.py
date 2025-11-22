@@ -301,5 +301,3 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Vampire: The Masquerade Revised", 91)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='vtm').count()} Vampire templates")

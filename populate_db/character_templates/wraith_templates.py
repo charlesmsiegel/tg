@@ -300,5 +300,3 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Wraith: The Oblivion 20th Anniversary", 136)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wto').count()} Wraith templates")

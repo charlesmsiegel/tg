@@ -331,5 +331,3 @@ cultist = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Mage: The Ascension Revised", 90)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='mta').count()} Mage templates")

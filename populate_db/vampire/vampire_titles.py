@@ -1,5 +1,5 @@
 from characters.models.vampire.title import VampireTitle
-from populate_db.vampire_sects import anarch_movement, camarilla, independent, sabbat
+from populate_db.vampire.vampire_sects import anarch_movement, camarilla, independent, sabbat
 
 # CAMARILLA TITLES
 

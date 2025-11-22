@@ -298,5 +298,3 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Demon: The Fallen Core", 182)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='dtf').count()} Demon templates")

@@ -308,5 +308,3 @@ urchin = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Changeling: The Dreaming 20th Anniversary", 149)
-
-print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='ctd').count()} Changeling templates")
