@@ -537,25 +537,58 @@
                                 {% csrf_token %}
                                 <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
                                     <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
-                                        <i class="fas fa-dice-d20 mr-2" style="color: var(--color-primary);"></i>Character Type
+                                        <i class="fas fa-book mr-2" style="color: var(--color-primary);"></i>Game Line
                                     </label>
-                                    <select name="char_type" id="id_char_type" class="tg-form-control tg-form-select" required>
-                                        {% for value, label in form.char_type.field.choices %}
+                                    <select name="gameline" id="id_gameline" class="tg-form-control tg-form-select" required>
+                                        {% for value, label in form.gameline.field.choices %}
                                             <option value="{{ value }}">{{ label }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <button type="submit" 
-                                        name="action" 
-                                        value="create" 
+                                <div class="tg-form-group" style="margin-bottom: var(--spacing-3);">
+                                    <label class="tg-form-label" style="display: block; text-align: left; margin-bottom: var(--spacing-2);">
+                                        <i class="fas fa-dice-d20 mr-2" style="color: var(--color-primary);"></i>Character Type
+                                    </label>
+                                    {{ form.char_type }}
+                                </div>
+                                <button type="submit"
+                                        name="action"
+                                        value="create"
                                         class="tg-btn btn-primary btn-lg"
-                                        style="width: 100%; 
-                                               box-shadow: var(--shadow-sm); 
+                                        style="width: 100%;
+                                               box-shadow: var(--shadow-sm);
                                                transition: var(--transition-fast);
                                                font-weight: 600;">
                                     <i class="fas fa-plus-circle mr-2"></i>Create Character
                                 </button>
                             </form>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const gamelineSelect = document.getElementById('id_gameline');
+                                    const charTypeSelect = document.getElementById('id_char_type');
+                                    const typesByGameline = JSON.parse(charTypeSelect.dataset.typesByGameline || '{}');
+
+                                    function updateCharTypes() {
+                                        const selectedGameline = gamelineSelect.value;
+                                        const types = typesByGameline[selectedGameline] || [];
+
+                                        // Clear existing options
+                                        charTypeSelect.innerHTML = '';
+
+                                        // Add new options
+                                        types.forEach(function(type) {
+                                            const option = document.createElement('option');
+                                            option.value = type.value;
+                                            option.textContent = type.label;
+                                            charTypeSelect.appendChild(option);
+                                        });
+                                    }
+
+                                    gamelineSelect.addEventListener('change', updateCharTypes);
+                                    // Initialize on page load
+                                    updateCharTypes();
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
