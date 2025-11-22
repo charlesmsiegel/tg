@@ -1,15 +1,20 @@
 from characters.models.core import CharacterModel
-from core.models import Model, ModelManager
+from core.models import Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.urls import reverse
 from locations.models.core import LocationModel
+from polymorphic.managers import PolymorphicManager
 
 
-class ItemModelManager(ModelManager):
-    """Custom manager for ItemModel with specialized query patterns."""
+class ItemQuerySet(ModelQuerySet):
+    """Custom queryset for ItemModel with chainable query patterns."""
 
-    # Inherits pending_approval_for_user from ModelManager base class
+    # Inherits all methods from ModelQuerySet
     pass
+
+
+# Create ItemModelManager from the QuerySet to expose all QuerySet methods on the manager
+ItemModelManager = PolymorphicManager.from_queryset(ItemQuerySet)
 
 
 class ItemModel(Model):
