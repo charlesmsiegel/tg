@@ -228,76 +228,6 @@ Future enhancements for the CharacterTemplate system:
 
 ---
 
-## 🎨 Design System - Modern Site Redesign
-
-**Files**: `.kiro/specs/modern-site-redesign/tasks.md`, `.kiro/specs/modern-site-redesign/design.md`
-
-This is a separate design system overhaul project.
-
-### Template Updates
-- [ ] **Update characters app form templates**
-  - Use STYLE.md as a guide
-  - Apply tg-card, tg-table, tg-badge classes
-  - Implement gameline-specific heading styles
-
-- [ ] **Update items app form templates**
-  - Use STYLE.md as a guide
-  - Consistent with character template patterns
-
-### Testing
-- [ ] **Perform visual and functional testing**
-  - Test all templates in light theme mode
-  - Cross-browser: Chrome, Firefox, Safari, Edge
-  - Verify responsive layouts
-
-- [ ] **Perform accessibility testing**
-  - Test keyboard navigation through all interactive elements
-  - Screen reader compatibility
-  - WCAG compliance
-
-- [ ] **Final review and refinement**
-  - Review all updated templates for consistency
-  - Fix any visual bugs
-  - Ensure gameline theming works throughout
-
-### Visual QA Checklist
-
-**Characters:**
-- [ ] Character index page displays correctly with tabs
-- [ ] Character detail page shows all sections properly
-- [ ] Character creation form works
-- [ ] Gameline fonts apply to character names
-- [ ] Status badges display correctly
-
-**Locations:**
-- [ ] Location index page displays correctly
-- [ ] Location detail page shows all attributes
-- [ ] Location forms work properly
-- [ ] Gameline fonts apply to location names
-
-**Items:**
-- [ ] Item index page displays correctly
-- [ ] Item detail page shows all properties
-- [ ] Item forms work properly
-- [ ] Gameline fonts apply to item names
-
-**Game:**
-- [ ] Chronicle pages display correctly
-- [ ] Scene pages display correctly
-- [ ] Game-related forms work properly
-
-**Accounts:**
-- [ ] Profile pages display correctly
-- [ ] Login/signup forms work properly
-- [ ] Theme selection works
-
-**Core:**
-- [ ] Home page displays correctly
-- [ ] Navigation works across all pages
-- [ ] House rules pages display correctly
-
----
-
 ## 📊 Priority Summary
 
 | Category | High Priority | Medium Priority | Low Priority |
@@ -307,7 +237,6 @@ This is a separate design system overhaul project.
 | Feature Completeness | - | - | 35+ views |
 | Template Enhancements | - | - | 5 features |
 | Deployment | - | 8 items | - |
-| Design System | - | - | 25+ items |
 
 ---
 
@@ -330,4 +259,3 @@ This is a separate design system overhaul project.
 4. **Feature Completeness** (Low Priority)
    - Add MessageMixin to remaining views
    - Implement template system enhancements
-   - Complete design system overhaul
