@@ -265,32 +265,64 @@
                         <!-- Form -->
                         <form id="locForm" method="post" novalidate>
                             {% csrf_token %}
-                            
-                            <!-- Location Type Label - Left Aligned -->
-                            <div style="margin-bottom: var(--spacing-2); text-align: left;">
+
+                            <!-- Game Line -->
+                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
+                                <label class="tg-form-label">
+                                    <i class="fas fa-book mr-2" style="color: var(--color-primary);"></i>Game Line
+                                </label>
+                                <select name="gameline" id="id_loc_gameline" class="tg-form-control tg-form-select" required>
+                                    {% for value, label in form.gameline.field.choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Location Type -->
+                            <div style="margin-bottom: var(--spacing-3); text-align: left;">
                                 <label class="tg-form-label">
                                     <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary);"></i>Location Type
                                 </label>
-                            </div>
-                            
-                            <!-- Dropdown - Centered -->
-                            <div style="display: flex; justify-content: center; margin-bottom: var(--spacing-3);">
                                 {{ form.loc_type }}
                             </div>
-                            
+
                             <!-- Button - Full Width, Centered Text -->
-                            <button type="submit" 
-                                    name="action" 
-                                    value="create" 
+                            <button type="submit"
+                                    name="action"
+                                    value="create"
                                     class="tg-btn btn-primary btn-lg"
-                                    style="width: 100%; 
-                                           box-shadow: var(--shadow-sm); 
+                                    style="width: 100%;
+                                           box-shadow: var(--shadow-sm);
                                            transition: var(--transition-fast);
                                            font-weight: 600;
                                            text-align: center;">
                                 <i class="fas fa-plus-circle mr-2"></i>Create Location
                             </button>
                         </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const gamelineSelect = document.getElementById('id_loc_gameline');
+                                const locTypeSelect = document.getElementById('id_loc_type');
+                                const typesByGameline = JSON.parse(locTypeSelect.dataset.typesByGameline || '{}');
+
+                                function updateLocTypes() {
+                                    const selectedGameline = gamelineSelect.value;
+                                    const types = typesByGameline[selectedGameline] || [];
+
+                                    locTypeSelect.innerHTML = '';
+
+                                    types.forEach(function(type) {
+                                        const option = document.createElement('option');
+                                        option.value = type.value;
+                                        option.textContent = type.label;
+                                        locTypeSelect.appendChild(option);
+                                    });
+                                }
+
+                                gamelineSelect.addEventListener('change', updateLocTypes);
+                                updateLocTypes();
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

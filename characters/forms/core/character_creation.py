@@ -1,9 +1,20 @@
+import json
 from django import forms
 from game.models import ObjectType
+from core.constants import GameLine
 
 
 class CharacterCreationForm(forms.Form):
-    char_type = forms.ChoiceField(choices=[])
+    gameline = forms.ChoiceField(
+        choices=[],
+        label="Game Line",
+        widget=forms.Select(attrs={"id": "id_gameline"}),
+    )
+    char_type = forms.ChoiceField(
+        choices=[],
+        label="Character Type",
+        widget=forms.Select(attrs={"id": "id_char_type"}),
+    )
 
     def _format_label(self, name):
         """Format character type labels with special handling for humans."""
@@ -34,7 +45,7 @@ class CharacterCreationForm(forms.Form):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        # Group types to exclude from character creation
+        # Group types to exclude from character creation (available via separate form)
         group_types = ["cabal", "group", "pack", "motley", "coterie", "circle", "conclave"]
 
         # Non-character types to exclude (metadata/game objects)
@@ -48,23 +59,74 @@ class CharacterCreationForm(forms.Form):
             "mage_faction", "effect", "advantage"
         ]
 
-        if user.is_authenticated:
+        excluded_types = group_types + non_character_types
+
+        if user and user.is_authenticated:
             if user.profile.is_st():
-                # For STs, show all character types except groups and non-character metadata
-                excluded_types = group_types + non_character_types
-                choices = [
-                    (x.name, self._format_label(x.name))
-                    for x in ObjectType.objects.filter(type="char")
-                    if x.name not in excluded_types
+                # For STs, show all gamelines and character types
+                # Build gameline choices
+                gamelines_with_chars = set()
+                all_char_types = ObjectType.objects.filter(type="char").exclude(
+                    name__in=excluded_types
+                )
+
+                for obj in all_char_types:
+                    gamelines_with_chars.add(obj.gameline)
+
+                # Create gameline choices from GameLine.CHOICES, filtered to those with characters
+                gameline_choices = [
+                    (code, name) for code, name in GameLine.CHOICES
+                    if code in gamelines_with_chars
                 ]
-                # Sort alphabetically by label
-                self.fields["char_type"].choices = sorted(choices, key=lambda x: x[1])
+                self.fields["gameline"].choices = gameline_choices
+
+                # Build character type choices organized by gameline
+                # Store as data attribute for JavaScript filtering
+                char_types_by_gameline = {}
+                for obj in all_char_types:
+                    if obj.gameline not in char_types_by_gameline:
+                        char_types_by_gameline[obj.gameline] = []
+                    char_types_by_gameline[obj.gameline].append({
+                        "value": obj.name,
+                        "label": self._format_label(obj.name)
+                    })
+
+                # Sort each gameline's types by label
+                for gameline in char_types_by_gameline:
+                    char_types_by_gameline[gameline].sort(key=lambda x: x["label"])
+
+                # Store in widget attrs for JavaScript access
+                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+                    char_types_by_gameline
+                )
+
+                # Initially populate with first gameline's types
+                if gameline_choices:
+                    first_gameline = gameline_choices[0][0]
+                    initial_choices = [
+                        (t["value"], t["label"])
+                        for t in char_types_by_gameline.get(first_gameline, [])
+                    ]
+                    self.fields["char_type"].choices = initial_choices
             else:
-                # For regular users, only show mage and sorcerer
-                choices = [
-                    (x.name, self._format_label(x.name))
-                    for x in ObjectType.objects.filter(type="char")
-                    if x.name in ["mage", "sorcerer"]
+                # For regular users, only show mage gameline
+                self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
+
+                mage_types = ObjectType.objects.filter(
+                    type="char", gameline="mta"
+                ).exclude(name__in=excluded_types)
+
+                char_types_by_gameline = {
+                    "mta": [
+                        {"value": obj.name, "label": self._format_label(obj.name)}
+                        for obj in mage_types
+                    ]
+                }
+                char_types_by_gameline["mta"].sort(key=lambda x: x["label"])
+
+                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+                    char_types_by_gameline
+                )
+                self.fields["char_type"].choices = [
+                    (t["value"], t["label"]) for t in char_types_by_gameline["mta"]
                 ]
-                # Sort alphabetically by label
-                self.fields["char_type"].choices = sorted(choices, key=lambda x: x[1])

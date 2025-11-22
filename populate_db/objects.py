@@ -35,6 +35,7 @@ ObjectType.objects.get_or_create(name="vampire_sect", type="char", gameline="vtm
 ObjectType.objects.get_or_create(name="vampire", type="char", gameline="vtm")
 ObjectType.objects.get_or_create(name="ghoul", type="char", gameline="vtm")
 ObjectType.objects.get_or_create(name="vtm_human", type="char", gameline="vtm")
+ObjectType.objects.get_or_create(name="coterie", type="char", gameline="vtm")
 
 # VtM Item Objects
 ObjectType.objects.get_or_create(name="vampire_artifact", type="obj", gameline="vtm")
@@ -74,6 +75,7 @@ ObjectType.objects.get_or_create(name="rite", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="gift", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="gift_permission", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="fomori_power", type="char", gameline="wta")
+ObjectType.objects.get_or_create(name="pack", type="char", gameline="wta")
 
 # WtA Item Objects
 ObjectType.objects.get_or_create(name="fetish", type="obj", gameline="wta")
@@ -134,6 +136,7 @@ ObjectType.objects.get_or_create(name="treasure", type="obj", gameline="ctd")
 # WtO Character Objects
 ObjectType.objects.get_or_create(name="wraith", type="char", gameline="wto")
 ObjectType.objects.get_or_create(name="wto_human", type="char", gameline="wto")
+ObjectType.objects.get_or_create(name="circle", type="char", gameline="wto")
 
 # WtO Item Objects
 ObjectType.objects.get_or_create(name="artifact", type="obj", gameline="wto")
@@ -150,6 +153,7 @@ earthbound = ObjectType.objects.get_or_create(name="earthbound", type="char", ga
 dtfhuman = ObjectType.objects.get_or_create(
     name="dtf_human", type="char", gameline="dtf"
 )[0]
+ObjectType.objects.get_or_create(name="conclave", type="char", gameline="dtf")
 
 # DtF Item Objects
 ObjectType.objects.get_or_create(name="relic", type="obj", gameline="dtf")
