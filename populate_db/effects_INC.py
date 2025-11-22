@@ -409,7 +409,7 @@ effect_immersive_illusions = Effect.objects.get_or_create(
 effect_awaken_object_s_spirit = Effect.objects.get_or_create(
     name="Awaken Object's Spirit", spirit=3
 )
-effect_harm_ghost, _ = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)[0]
+effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)[0]
 effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)[0]
 effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)[0]
 effect_ward_ban = Effect.objects.get_or_create(
