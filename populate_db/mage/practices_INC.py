@@ -69,7 +69,7 @@ from populate_db.abilities import (
     torture,
     vice,
 )
-from populate_db.instruments_INC import (
+from populate_db.mage.instruments_INC import (
     armor,
     artwork,
     blessings,

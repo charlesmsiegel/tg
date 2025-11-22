@@ -3,7 +3,7 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
 
 # Get the houses
-from populate_db.demon_houses import (
+from populate_db.demon.demon_houses import (
     defilers,
     devils,
     devourers,

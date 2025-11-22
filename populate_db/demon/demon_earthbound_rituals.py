@@ -7,20 +7,20 @@ Unlike normal demon rituals, Earthbound rituals do not have low-Torment effects.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_earthbound_lores import lore_of_chaos as lore_chaos
-from populate_db.demon_earthbound_lores import (
+from populate_db.demon.demon_earthbound_lores import lore_of_chaos as lore_chaos
+from populate_db.demon.demon_earthbound_lores import (
     lore_of_contamination as lore_contamination,
 )
-from populate_db.demon_earthbound_lores import lore_of_violation as lore_violation
-from populate_db.demon_lores import lore_of_awakening as lore_awakening
-from populate_db.demon_lores import lore_of_flame, lore_of_humanity
-from populate_db.demon_lores import lore_of_patterns as lore_patterns
-from populate_db.demon_lores import lore_of_the_beast as lore_beast
-from populate_db.demon_lores import lore_of_the_celestials as lore_celestials
-from populate_db.demon_lores import lore_of_the_firmament as lore_firmament
-from populate_db.demon_lores import lore_of_the_flesh as lore_flesh
-from populate_db.demon_lores import lore_of_the_forge as lore_forge
-from populate_db.demon_lores import lore_of_the_spirit as lore_spirit
+from populate_db.demon.demon_earthbound_lores import lore_of_violation as lore_violation
+from populate_db.demon.demon_lores import lore_of_awakening as lore_awakening
+from populate_db.demon.demon_lores import lore_of_flame, lore_of_humanity
+from populate_db.demon.demon_lores import lore_of_patterns as lore_patterns
+from populate_db.demon.demon_lores import lore_of_the_beast as lore_beast
+from populate_db.demon.demon_lores import lore_of_the_celestials as lore_celestials
+from populate_db.demon.demon_lores import lore_of_the_firmament as lore_firmament
+from populate_db.demon.demon_lores import lore_of_the_flesh as lore_flesh
+from populate_db.demon.demon_lores import lore_of_the_forge as lore_forge
+from populate_db.demon.demon_lores import lore_of_the_spirit as lore_spirit
 
 # ============================================================================
 # EARTHBOUND RITUALS

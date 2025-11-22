@@ -12,7 +12,6 @@ detective = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "wraith",
         "description": "A cop who died with an unsolved case, now seeking justice from beyond the grave.",
-        "source_book": "Wraith: The Oblivion 20th Anniversary, p. 132",
         "concept": "Detective",
         "basic_info": {
             "nature": "FK:Archetype:Judge",
@@ -63,7 +62,7 @@ detective = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Wraith: The Oblivion 20th Anniversary", 132)
 
 # Template 2: Vengeful Spirit
 vengeful = CharacterTemplate.objects.get_or_create(
@@ -72,7 +71,6 @@ vengeful = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "wraith",
         "description": "Murdered in life, you seek retribution against those who wronged you.",
-        "source_book": "Wraith: The Oblivion 20th Anniversary, p. 133",
         "concept": "Avenger",
         "basic_info": {
             "nature": "FK:Archetype:Bravo",
@@ -124,7 +122,7 @@ vengeful = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Wraith: The Oblivion 20th Anniversary", 133)
 
 # Template 3: Guardian Spirit
 guardian = CharacterTemplate.objects.get_or_create(
@@ -133,7 +131,6 @@ guardian = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "wraith",
         "description": "You watch over loved ones from the Shadowlands, protecting them from harm.",
-        "source_book": "Wraith: The Oblivion 20th Anniversary, p. 134",
         "concept": "Guardian",
         "basic_info": {
             "nature": "FK:Archetype:Caregiver",
@@ -185,7 +182,7 @@ guardian = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Wraith: The Oblivion 20th Anniversary", 134)
 
 # Template 4: Lost Soul
 lost = CharacterTemplate.objects.get_or_create(
@@ -194,7 +191,6 @@ lost = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "wraith",
         "description": "Confused and disoriented, you wander the Shadowlands seeking meaning.",
-        "source_book": "Wraith: The Oblivion 20th Anniversary, p. 135",
         "concept": "Lost Soul",
         "basic_info": {
             "nature": "FK:Archetype:Loner",
@@ -245,7 +241,7 @@ lost = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Wraith: The Oblivion 20th Anniversary", 135)
 
 # Template 5: Scholar of Death
 scholar = CharacterTemplate.objects.get_or_create(
@@ -254,7 +250,6 @@ scholar = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "wraith",
         "description": "In death as in life, you seek knowledge and understanding of the afterlife.",
-        "source_book": "Wraith: The Oblivion 20th Anniversary, p. 136",
         "concept": "Scholar",
         "basic_info": {
             "nature": "FK:Archetype:Architect",
@@ -304,6 +299,6 @@ scholar = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Wraith: The Oblivion 20th Anniversary", 136)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wto').count()} Wraith templates")

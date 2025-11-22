@@ -12,7 +12,6 @@ hacker = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "mage",
         "description": "A digital age mage who bends reality through code and virtual reality. You see the Matrix behind the matrix.",
-        "source_book": "Mage: The Ascension Revised, p. 93",
         "concept": "Hacker",
         "basic_info": {
             "nature": "FK:Archetype:Visionary",
@@ -69,7 +68,7 @@ hacker = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Mage: The Ascension Revised", 93)
 
 # Template 2: Hermetic Researcher
 hermetic = CharacterTemplate.objects.get_or_create(
@@ -78,7 +77,6 @@ hermetic = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "mage",
         "description": "A traditional mage steeped in centuries of occult lore, wielding ancient formulae and hermetic principles.",
-        "source_book": "Mage: The Ascension Revised, p. 91",
         "concept": "Hermetic Scholar",
         "basic_info": {
             "nature": "FK:Archetype:Traditionalist",
@@ -136,7 +134,7 @@ hermetic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Mage: The Ascension Revised", 91)
 
 # Template 3: Verbena Healer
 healer = CharacterTemplate.objects.get_or_create(
@@ -145,7 +143,6 @@ healer = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "mage",
         "description": "A nature mage who channels the primal forces of life, death, and rebirth through ancient pagan traditions.",
-        "source_book": "Mage: The Ascension Revised, p. 96",
         "concept": "Healer/Midwife",
         "basic_info": {
             "nature": "FK:Archetype:Caregiver",
@@ -201,7 +198,7 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Mage: The Ascension Revised", 96)
 
 # Template 4: Akashic Brother Martial Artist
 akashic = CharacterTemplate.objects.get_or_create(
@@ -210,7 +207,6 @@ akashic = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "mage",
         "description": "A warrior-philosopher who seeks enlightenment through martial discipline and meditation, mastering both body and mind.",
-        "source_book": "Mage: The Ascension Revised, p. 89",
         "concept": "Martial Artist",
         "basic_info": {
             "nature": "FK:Archetype:Perfectionist",
@@ -268,7 +264,7 @@ akashic = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Mage: The Ascension Revised", 89)
 
 # Template 5: Cult of Ecstasy DJ
 cultist = CharacterTemplate.objects.get_or_create(
@@ -277,7 +273,6 @@ cultist = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "mage",
         "description": "A rave culture mage who finds enlightenment through music, rhythm, and altered states of consciousness.",
-        "source_book": "Mage: The Ascension Revised, p. 90",
         "concept": "DJ/Musician",
         "basic_info": {
             "nature": "FK:Archetype:Bon Vivant",
@@ -335,6 +330,6 @@ cultist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Mage: The Ascension Revised", 90)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='mta').count()} Mage templates")

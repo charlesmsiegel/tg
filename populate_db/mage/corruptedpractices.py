@@ -1,5 +1,5 @@
 from characters.models.mage.focus import CorruptedPractice
-from populate_db.practices_INC import (
+from populate_db.mage.practices_INC import (
     animalism,
     crazywisdom,
     faith,

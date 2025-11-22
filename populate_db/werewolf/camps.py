@@ -1,5 +1,5 @@
 from characters.models.werewolf.camp import Camp
-from populate_db.tribes import (
+from populate_db.werewolf.tribes import (
     black_furies,
     bone_gnawers,
     children_of_gaia,

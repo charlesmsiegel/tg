@@ -3,14 +3,14 @@ Populate database with Malefactor (Annunaki) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_houses import malefactors
-from populate_db.demon_lores import lore_of_flame
-from populate_db.demon_lores import lore_of_paths as lore_paths
-from populate_db.demon_lores import lore_of_the_celestials as lore_celestials
-from populate_db.demon_lores import lore_of_the_earth as lore_earth
-from populate_db.demon_lores import lore_of_the_firmament as lore_firmament
-from populate_db.demon_lores import lore_of_the_forge as lore_forge
-from populate_db.demon_lores import lore_of_the_realms as lore_realms
+from populate_db.demon.demon_houses import malefactors
+from populate_db.demon.demon_lores import lore_of_flame
+from populate_db.demon.demon_lores import lore_of_paths as lore_paths
+from populate_db.demon.demon_lores import lore_of_the_celestials as lore_celestials
+from populate_db.demon.demon_lores import lore_of_the_earth as lore_earth
+from populate_db.demon.demon_lores import lore_of_the_firmament as lore_firmament
+from populate_db.demon.demon_lores import lore_of_the_forge as lore_forge
+from populate_db.demon.demon_lores import lore_of_the_realms as lore_realms
 
 # =============================================================================
 # MALEFACTOR RITUALS - HOUSES OF THE FALLEN

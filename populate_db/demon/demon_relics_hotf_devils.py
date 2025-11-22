@@ -4,7 +4,7 @@ These are house-specific relics for the First House.
 """
 
 from items.models.demon.relic import Relic
-from populate_db.demon_houses import devils
+from populate_db.demon.demon_houses import devils
 
 # =============================================================================
 # DEVIL HOUSE RELICS - HOUSES OF THE FALLEN

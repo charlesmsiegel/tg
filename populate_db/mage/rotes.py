@@ -3,7 +3,7 @@ from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
-from populate_db.effects_INC import (
+from populate_db.mage.effects_INC import (
     effect_alchemical_transmutation,
     effect_blessing_of_the_one,
     effect_blood_magic_ritual,
@@ -645,7 +645,7 @@ from populate_db.attributes import (
     stamina,
     wits,
 )
-from populate_db.practices_INC import (
+from populate_db.mage.practices_INC import (
     alchemy,
     crazywisdom,
     faith,

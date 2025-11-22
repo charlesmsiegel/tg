@@ -1,6 +1,6 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
-from populate_db.vampire_disciplines import (
+from populate_db.vampire.vampire_disciplines import (
     animalism,
     auspex,
     celerity,

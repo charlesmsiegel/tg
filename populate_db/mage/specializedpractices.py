@@ -25,7 +25,7 @@ from populate_db.magefactions import (
     verb,
     wulung,
 )
-from populate_db.practices_INC import (
+from populate_db.mage.practices_INC import (
     alchemy,
     artofdesire,
     craftwork,

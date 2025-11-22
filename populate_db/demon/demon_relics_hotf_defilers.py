@@ -4,7 +4,7 @@ These are house-specific relics for the Fifth House.
 """
 
 from items.models.demon.relic import Relic
-from populate_db.demon_houses import defilers
+from populate_db.demon.demon_houses import defilers
 
 # =============================================================================
 # DEFILER HOUSE RELICS - HOUSES OF THE FALLEN

@@ -4,7 +4,7 @@ These are house-specific relics for the Seventh House.
 """
 
 from items.models.demon.relic import Relic
-from populate_db.demon_houses import slayers
+from populate_db.demon.demon_houses import slayers
 
 # =============================================================================
 # SLAYER HOUSE RELICS - HOUSES OF THE FALLEN

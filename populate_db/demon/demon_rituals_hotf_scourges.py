@@ -3,11 +3,11 @@ Populate database with Scourge (Asharu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_houses import scourges
-from populate_db.demon_lores import lore_of_awakening as lore_awakening
-from populate_db.demon_lores import lore_of_humanity, lore_of_patterns, lore_of_storms
-from populate_db.demon_lores import lore_of_the_fundament as lore_fundament
-from populate_db.demon_lores import lore_of_the_winds as lore_winds
+from populate_db.demon.demon_houses import scourges
+from populate_db.demon.demon_lores import lore_of_awakening as lore_awakening
+from populate_db.demon.demon_lores import lore_of_humanity, lore_of_patterns, lore_of_storms
+from populate_db.demon.demon_lores import lore_of_the_fundament as lore_fundament
+from populate_db.demon.demon_lores import lore_of_the_winds as lore_winds
 
 # =============================================================================
 # SCOURGE RITUALS - HOUSES OF THE FALLEN

@@ -12,7 +12,6 @@ dreamer = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "changeling",
         "description": "A young changeling full of wonder and creativity, still deeply connected to the Dreaming.",
-        "source_book": "Changeling: The Dreaming 20th Anniversary, p. 145",
         "concept": "Dreamer",
         "basic_info": {
             "nature": "FK:Archetype:Child",
@@ -65,7 +64,7 @@ dreamer = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Changeling: The Dreaming 20th Anniversary", 145)
 
 # Template 2: Wilder Artist
 artist = CharacterTemplate.objects.get_or_create(
@@ -74,7 +73,6 @@ artist = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "changeling",
         "description": "A passionate creator who channels Glamour through art and performance.",
-        "source_book": "Changeling: The Dreaming 20th Anniversary, p. 146",
         "concept": "Artist",
         "basic_info": {
             "nature": "FK:Archetype:Visionary",
@@ -126,7 +124,7 @@ artist = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Changeling: The Dreaming 20th Anniversary", 146)
 
 # Template 3: Grump Crafter
 crafter = CharacterTemplate.objects.get_or_create(
@@ -135,7 +133,6 @@ crafter = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "changeling",
         "description": "An experienced artisan who has weathered Banality but still creates wonders.",
-        "source_book": "Changeling: The Dreaming 20th Anniversary, p. 147",
         "concept": "Crafter",
         "basic_info": {
             "nature": "FK:Archetype:Architect",
@@ -188,7 +185,7 @@ crafter = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Changeling: The Dreaming 20th Anniversary", 147)
 
 # Template 4: Knight Errant
 knight = CharacterTemplate.objects.get_or_create(
@@ -197,7 +194,6 @@ knight = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "changeling",
         "description": "A noble warrior sworn to protect the Dreaming and uphold chivalric ideals.",
-        "source_book": "Changeling: The Dreaming 20th Anniversary, p. 148",
         "concept": "Knight",
         "basic_info": {
             "nature": "FK:Archetype:Defender",
@@ -250,7 +246,7 @@ knight = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Changeling: The Dreaming 20th Anniversary", 148)
 
 # Template 5: Street Urchin
 urchin = CharacterTemplate.objects.get_or_create(
@@ -259,7 +255,6 @@ urchin = CharacterTemplate.objects.get_or_create(
     defaults={
         "character_type": "changeling",
         "description": "A scrappy survivor who lives on the margins of both mortal and fae society.",
-        "source_book": "Changeling: The Dreaming 20th Anniversary, p. 149",
         "concept": "Street Urchin",
         "basic_info": {
             "nature": "FK:Archetype:Survivor",
@@ -312,6 +307,6 @@ urchin = CharacterTemplate.objects.get_or_create(
         "is_official": True,
         "is_public": True,
     },
-)[0]
+)[0].add_source("Changeling: The Dreaming 20th Anniversary", 149)
 
 print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='ctd').count()} Changeling templates")

@@ -3,11 +3,11 @@ Populate database with Devourer (Rabisu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon_houses import devourers
-from populate_db.demon_lores import lore_of_humanity
-from populate_db.demon_lores import lore_of_paths as lore_paths
-from populate_db.demon_lores import lore_of_the_beast as lore_beast
-from populate_db.demon_lores import lore_of_the_wild as lore_wild
+from populate_db.demon.demon_houses import devourers
+from populate_db.demon.demon_lores import lore_of_humanity
+from populate_db.demon.demon_lores import lore_of_paths as lore_paths
+from populate_db.demon.demon_lores import lore_of_the_beast as lore_beast
+from populate_db.demon.demon_lores import lore_of_the_wild as lore_wild
 
 # =============================================================================
 # DEVOURER RITUALS - HOUSES OF THE FALLEN

@@ -1,20 +1,17 @@
-rm db.sqlite3
-rm accounts/migrations/0*
-rm characters/migrations/0*
-rm core/migrations/0*
-rm game/migrations/0*
-rm items/migrations/0*
-rm locations/migrations/0*
+#!/bin/bash
+
+# Reset database and migrations
+python manage.py reset_db --yes
+
+# Create migrations and apply them
 python manage.py makemigrations
 python manage.py migrate
+
+# Collect static files
 yes yes | python manage.py collectstatic
+
+# Create superuser (interactive)
 python manage.py createsuperuser
 
-DIRECTORY="populate_db/"
-
-for FILE in "$DIRECTORY"/*; do
-  if [ -f "$FILE" ]; then
-  echo "Running $FILE..."
-  python manage.py shell < "$FILE"
-  fi
-done
+# Populate game data
+python manage.py populate_gamedata
