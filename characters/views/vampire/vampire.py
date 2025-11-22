@@ -2,9 +2,9 @@ from typing import Any
 
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.human import HumanDetailView
+from core.mixins import ApprovedUserContextMixin
 from core.views.message_mixin import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
-from core.mixins import ApprovedUserContextMixin
 
 
 class VampireDetailView(ApprovedUserContextMixin, HumanDetailView):

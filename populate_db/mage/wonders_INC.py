@@ -3011,7 +3011,9 @@ candle_effect = Effect.objects.get_or_create(
     description="When lit, this candle opens a channel of communication with spirits, ancestors, and entities in the Umbra. The flickering flame creates a beacon visible in both the physical and spirit worlds, attracting helpful spirits and allowing for clearer communion.",
 )[0]
 for arete_level in [1, 2, 3]:
-    candle = Talisman.objects.get_or_create(name=f"Candle of Communion ({arete_level})")[0]
+    candle = Talisman.objects.get_or_create(
+        name=f"Candle of Communion ({arete_level})"
+    )[0]
     candle.powers.add(candle_effect)
 
 # Mama Cybele's Tea Collection - Healing and enhancement

@@ -35,18 +35,14 @@ from populate_db.languages import (
     welsh,
     yoruba,
 )
-from populate_db.materials import (
-    bone,
-    cloth,
-    iron,
-    leather,
-    paper,
-    parchment,
-    steel,
-    vellum,
-    wood,
+from populate_db.mage.mediums import (
+    book,
+    ebook,
+    flash_drive,
+    scrolls,
+    software,
+    tablets,
 )
-from populate_db.mage.mediums import book, ebook, flash_drive, scrolls, software, tablets
 from populate_db.mage.paradigms_INC import (
     a_mechanistic_cosmos,
     bring_back_the_golden_age,
@@ -95,6 +91,17 @@ from populate_db.mage.spheres import (
     prime,
     spirit,
     time,
+)
+from populate_db.materials import (
+    bone,
+    cloth,
+    iron,
+    leather,
+    paper,
+    parchment,
+    steel,
+    vellum,
+    wood,
 )
 
 traditions = MageFaction.objects.get_or_create(name="Traditions")[0]

@@ -75,8 +75,10 @@ class CharacterQuerySet(ModelQuerySet):
         """
         # Get all IDs where creation_status == freebie_step
         matching_ids = [
-            char.id for char in self
-            if hasattr(char, 'creation_status') and hasattr(char, 'freebie_step')
+            char.id
+            for char in self
+            if hasattr(char, "creation_status")
+            and hasattr(char, "freebie_step")
             and char.creation_status == char.freebie_step
         ]
         return self.filter(id__in=matching_ids)

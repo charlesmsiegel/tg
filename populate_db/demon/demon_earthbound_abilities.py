@@ -80,4 +80,3 @@ Torturing a victim requires an extended, resisted roll. Roll Manipulation + Tort
 Possessed by: Black Ops Agents, Earthbound, "Military Advisors," Serial Killers
 Specialties: Improvised, Physical, Psychological, Rapid, Resisting Torture"""
 torture.save()
-

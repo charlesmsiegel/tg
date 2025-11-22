@@ -42,4 +42,3 @@ vivisectionist = Archetype.objects.get_or_create(
     description="Nothing in this world is as important as knowledge and the gathering of information - certainly not the lives of others or the foolishness of morality and ethics. How can you know the intricacies of the human nervous system if you don't flay open an experimental subject and tinker with her muscles? How can you learn the limits of human Faith without pushing a human past those limits - and recording the way in which he died? Experiments require subjects, and if those subjects suffer for your knowledge, that's not so inconvenient. You regain Willpower whenever your twisted experiments grant you new and meaningful information.",
 )[0]
 vivisectionist.add_source("Demon: Earthbound", 72)
-

@@ -13,9 +13,7 @@ from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = (
-        "Populate database with World of Darkness game data from populate_db/ scripts (searches recursively)"
-    )
+    help = "Populate database with World of Darkness game data from populate_db/ scripts (searches recursively)"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -82,7 +80,9 @@ class Command(BaseCommand):
             raise CommandError(f"Directory {populate_dir} not found")
 
         # Get all .py files in populate_db directory (recursively)
-        all_files = sorted(populate_dir.rglob("*.py"), key=lambda f: self.get_sort_key(f, populate_dir))
+        all_files = sorted(
+            populate_dir.rglob("*.py"), key=lambda f: self.get_sort_key(f, populate_dir)
+        )
 
         if not all_files:
             raise CommandError(f"No .py files found in {populate_dir}")

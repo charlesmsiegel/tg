@@ -93,4 +93,3 @@ unerring_map = Relic.objects.get_or_create(
     difficulty=6,
 )[0]
 unerring_map.add_source("Houses of the Fallen", 160)
-

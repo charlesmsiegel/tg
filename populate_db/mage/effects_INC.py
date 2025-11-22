@@ -111,7 +111,9 @@ effect.save()
 effect.add_source("Mage: The Ascension (First Edition)", 192)
 effect.add_source("Mage: The Ascension (Second Edition)", 193)
 effect.add_source("Mage: The Ascension (Revised)", 162)
-effect_call_storm = Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)[0]
+effect_call_storm = Effect.objects.get_or_create(name="Call Storm", forces=4, prime=2)[
+    0
+]
 effect_conjure_element_fire_wind = Effect.objects.get_or_create(
     name="Conjure Element (Fire, Wind)", forces=3, prime=2
 )
@@ -196,7 +198,9 @@ effect_alter_aura_prime = Effect.objects.get_or_create(
 effect_conceal_avatar = Effect.objects.get_or_create(
     name="Conceal Avatar", spirit=2, mind=1
 )
-effect_conceal_thoughts = Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)[0]
+effect_conceal_thoughts = Effect.objects.get_or_create(name="Conceal Thoughts", mind=1)[
+    0
+]
 effect_conjure_mental_illusions = Effect.objects.get_or_create(
     name="Conjure Mental Illusions", mind=2
 )[
@@ -360,7 +364,9 @@ effect_open_gateway_between_locations = Effect.objects.get_or_create(
     name="Open Gateway Between Locations", correspondence=4
 )
 effect_rewind_time = Effect.objects.get_or_create(name="Rewind Time", time=3)[0]
-effect_set_time_trigger = Effect.objects.get_or_create(name="Set Time Trigger", time=4)[0]
+effect_set_time_trigger = Effect.objects.get_or_create(name="Set Time Trigger", time=4)[
+    0
+]
 effect_teleport_self = Effect.objects.get_or_create(
     name="Teleport (Self)", correspondence=3
 )
@@ -409,7 +415,9 @@ effect_immersive_illusions = Effect.objects.get_or_create(
 effect_awaken_object_s_spirit = Effect.objects.get_or_create(
     name="Awaken Object's Spirit", spirit=3
 )
-effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)[0]
+effect_harm_ghost = Effect.objects.get_or_create(name="Harm Ghost", entropy=3, prime=2)[
+    0
+]
 effect_perfect_object = Effect.objects.get_or_create(name="Perfect Object", matter=3)[0]
 effect_consecrate = Effect.objects.get_or_create(name="Consecrate", prime=2)[0]
 effect_ward_ban = Effect.objects.get_or_create(
@@ -430,14 +438,20 @@ effect_see_through_mental_illusions = Effect.objects.get_or_create(
 effect_shield_mind_self = Effect.objects.get_or_create(
     name="Shield Mind (Self)", mind=1
 )
-effect_create_new_node = Effect.objects.get_or_create(name="Create New Node", prime=5)[0]
+effect_create_new_node = Effect.objects.get_or_create(name="Create New Node", prime=5)[
+    0
+]
 effect_create_quintessence_weapon = Effect.objects.get_or_create(
     name="Create Quintessence Weapon", prime=3
 )
 effect_employ_periapt = Effect.objects.get_or_create(name="Employ Periapt", prime=2)[0]
 effect_enchant_object = Effect.objects.get_or_create(name="Enchant Object", prime=2)[0]
-effect_energize_periapt = Effect.objects.get_or_create(name="Energize Periapt", prime=3)[0]
-effect_nullify_paradox = Effect.objects.get_or_create(name="Nullify Paradox", prime=5)[0]
+effect_energize_periapt = Effect.objects.get_or_create(
+    name="Energize Periapt", prime=3
+)[0]
+effect_nullify_paradox = Effect.objects.get_or_create(name="Nullify Paradox", prime=5)[
+    0
+]
 effect_refine_tass = Effect.objects.get_or_create(name="Refine Tass", prime=4)[0]
 effect_tap_wellspring = Effect.objects.get_or_create(name="Tap Wellspring", prime=4)[0]
 effect_body_of_light = Effect.objects.get_or_create(name="Body of Light", prime=2)[0]

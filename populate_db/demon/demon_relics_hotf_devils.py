@@ -61,4 +61,3 @@ armor_of_mercy = Relic.objects.get_or_create(
     difficulty=9,
 )[0]
 armor_of_mercy.add_source("Houses of the Fallen", 26)
-

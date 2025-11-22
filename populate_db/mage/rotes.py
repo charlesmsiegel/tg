@@ -827,7 +827,9 @@ rote = Rote.objects.get_or_create(
 rote.description = "The mage perceives and manipulates the threads of fate and destiny."
 rote.add_source("Lore of the Traditions", 108)
 
-effect_sense_fate_and_fortune = Effect.objects.get_or_create(name="Sense Fate and Fortune", entropy=1)[0]
+effect_sense_fate_and_fortune = Effect.objects.get_or_create(
+    name="Sense Fate and Fortune", entropy=1
+)[0]
 rote = Rote.objects.get_or_create(
     name="Read the Tapestry",
     effect=effect_sense_fate_and_fortune,

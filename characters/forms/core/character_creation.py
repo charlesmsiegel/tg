@@ -1,7 +1,8 @@
 import json
+
+from core.constants import GameLine
 from django import forms
 from game.models import ObjectType
-from core.constants import GameLine
 
 
 class CharacterCreationForm(forms.Form):
@@ -46,17 +47,57 @@ class CharacterCreationForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         # Group types to exclude from character creation (available via separate form)
-        group_types = ["cabal", "group", "pack", "motley", "coterie", "circle", "conclave"]
+        group_types = [
+            "cabal",
+            "group",
+            "pack",
+            "motley",
+            "coterie",
+            "circle",
+            "conclave",
+        ]
 
         # Non-character types to exclude (metadata/game objects)
         non_character_types = [
-            "statistic", "specialty", "attribute", "merit_flaw", "human", "derangement",
-            "character", "archetype", "ability", "background", "gameline", "house_rule",
-            "discipline", "path", "vampire_clan", "vampire_sect", "battle_scar", "camp",
-            "totem", "spirit", "spirit_charm", "tribe", "renown_incident", "rite", "gift",
-            "gift_permission", "fomori_power", "sphere", "rote", "resonance", "instrument",
-            "practice", "specialized_practice", "corrupted_practice", "tenet", "paradigm",
-            "mage_faction", "effect", "advantage"
+            "statistic",
+            "specialty",
+            "attribute",
+            "merit_flaw",
+            "human",
+            "derangement",
+            "character",
+            "archetype",
+            "ability",
+            "background",
+            "gameline",
+            "house_rule",
+            "discipline",
+            "path",
+            "vampire_clan",
+            "vampire_sect",
+            "battle_scar",
+            "camp",
+            "totem",
+            "spirit",
+            "spirit_charm",
+            "tribe",
+            "renown_incident",
+            "rite",
+            "gift",
+            "gift_permission",
+            "fomori_power",
+            "sphere",
+            "rote",
+            "resonance",
+            "instrument",
+            "practice",
+            "specialized_practice",
+            "corrupted_practice",
+            "tenet",
+            "paradigm",
+            "mage_faction",
+            "effect",
+            "advantage",
         ]
 
         excluded_types = group_types + non_character_types
@@ -75,7 +116,8 @@ class CharacterCreationForm(forms.Form):
 
                 # Create gameline choices from GameLine.CHOICES, filtered to those with characters
                 gameline_choices = [
-                    (code, name) for code, name in GameLine.CHOICES
+                    (code, name)
+                    for code, name in GameLine.CHOICES
                     if code in gamelines_with_chars
                 ]
                 self.fields["gameline"].choices = gameline_choices
@@ -86,19 +128,18 @@ class CharacterCreationForm(forms.Form):
                 for obj in all_char_types:
                     if obj.gameline not in char_types_by_gameline:
                         char_types_by_gameline[obj.gameline] = []
-                    char_types_by_gameline[obj.gameline].append({
-                        "value": obj.name,
-                        "label": self._format_label(obj.name)
-                    })
+                    char_types_by_gameline[obj.gameline].append(
+                        {"value": obj.name, "label": self._format_label(obj.name)}
+                    )
 
                 # Sort each gameline's types by label
                 for gameline in char_types_by_gameline:
                     char_types_by_gameline[gameline].sort(key=lambda x: x["label"])
 
                 # Store in widget attrs for JavaScript access
-                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    char_types_by_gameline
-                )
+                self.fields["char_type"].widget.attrs[
+                    "data-types-by-gameline"
+                ] = json.dumps(char_types_by_gameline)
 
                 # Initially populate with first gameline's types
                 if gameline_choices:
@@ -124,9 +165,9 @@ class CharacterCreationForm(forms.Form):
                 }
                 char_types_by_gameline["mta"].sort(key=lambda x: x["label"])
 
-                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    char_types_by_gameline
-                )
+                self.fields["char_type"].widget.attrs[
+                    "data-types-by-gameline"
+                ] = json.dumps(char_types_by_gameline)
                 self.fields["char_type"].choices = [
                     (t["value"], t["label"]) for t in char_types_by_gameline["mta"]
                 ]

@@ -20,9 +20,13 @@ aww = Advantage.objects.get_or_create(name="Aww!")[0].add_source(
     "Gods and Monsters", 202
 )
 aww.add_ratings([1, 2, 3, 4])
-bare_necessities = Advantage.objects.get_or_create(name="Bare Necessities")[0].add_source("Gods and Monsters", 202)
+bare_necessities = Advantage.objects.get_or_create(name="Bare Necessities")[
+    0
+].add_source("Gods and Monsters", 202)
 bare_necessities.add_ratings([1, 3])
-bioluminescence = Advantage.objects.get_or_create(name="Bioluminescence")[0].add_source("Gods and Monsters", 202)
+bioluminescence = Advantage.objects.get_or_create(name="Bioluminescence")[0].add_source(
+    "Gods and Monsters", 202
+)
 bioluminescence.add_ratings([1, 2, 3])
 blending = Advantage.objects.get_or_create(name="Blending")[0].add_source(
     "Gods and Monsters", 203
@@ -36,13 +40,17 @@ claws_fangs_or_horns = Advantage.objects.get_or_create(name="Claws, Fangs, or Ho
     0
 ].add_source("Gods and Monsters", 203)
 claws_fangs_or_horns.add_ratings([3, 5, 7])
-cause_insanity = Advantage.objects.get_or_create(name="Cause Insanity")[0].add_source("Gods and Monsters", 203)
+cause_insanity = Advantage.objects.get_or_create(name="Cause Insanity")[0].add_source(
+    "Gods and Monsters", 203
+)
 cause_insanity.add_ratings([2, 4, 6, 8, 10, 12, 14, 16, 18, 20])
 deadly_demise = Advantage.objects.get_or_create(name="Deadly Demise")[0].add_source(
     "Gods and Monsters", 204
 )
 deadly_demise.add_ratings([2, 4, 6])
-elemental_touch = Advantage.objects.get_or_create(name="Elemental Touch")[0].add_source("Gods and Monsters", 204)
+elemental_touch = Advantage.objects.get_or_create(name="Elemental Touch")[0].add_source(
+    "Gods and Monsters", 204
+)
 elemental_touch.add_ratings([3, 5, 7, 10, 15])
 empathic_bond = Advantage.objects.get_or_create(name="Empathic Bond")[0].add_source(
     "Gods and Monsters", 205
@@ -72,7 +80,9 @@ earthbond = Advantage.objects.get_or_create(name="Earthbond")[0].add_source(
     "Gods and Monsters", 204
 )
 earthbond.add_ratings([2])
-hazardous_breath = Advantage.objects.get_or_create(name="Hazardous Breath")[0].add_source("Gods and Monsters", 206)
+hazardous_breath = Advantage.objects.get_or_create(name="Hazardous Breath")[
+    0
+].add_source("Gods and Monsters", 206)
 hazardous_breath.add_ratings([5, 10, 15, 20, 25, 30])
 hazardous_breath_aggravated = Advantage.objects.get_or_create(
     name="Hazardous Breath (Aggravated)"
@@ -90,7 +100,9 @@ healing_lick = Advantage.objects.get_or_create(name="Healing Lick")[0].add_sourc
     "Gods and Monsters", 206
 )
 healing_lick.add_ratings([3, 6])
-homing_instinct = Advantage.objects.get_or_create(name="Homing Instinct")[0].add_source("Gods and Monsters", 206)
+homing_instinct = Advantage.objects.get_or_create(name="Homing Instinct")[0].add_source(
+    "Gods and Monsters", 206
+)
 homing_instinct.add_ratings([2, 4])
 human_guise = Advantage.objects.get_or_create(name="Human Guise")[0].add_source(
     "Gods and Monsters", 206
@@ -100,7 +112,9 @@ human_speech = Advantage.objects.get_or_create(name="Human Speech")[0].add_sourc
     "Gods and Monsters", 207
 )
 human_speech.add_ratings([1])
-information_fount = Advantage.objects.get_or_create(name="Information Fount")[0].add_source("Gods and Monsters", 207)
+information_fount = Advantage.objects.get_or_create(name="Information Fount")[
+    0
+].add_source("Gods and Monsters", 207)
 information_fount.add_ratings([5])
 intangibility = Advantage.objects.get_or_create(name="Intangibility")[0].add_source(
     "Gods and Monsters", 207
@@ -110,7 +124,9 @@ mesemerism = Advantage.objects.get_or_create(name="Mesemerism")[0].add_source(
     "Gods and Monsters", 207
 )
 mesemerism.add_ratings([3, 6])
-musical_influence = Advantage.objects.get_or_create(name="Musical Influence")[0].add_source("Gods and Monsters", 208)
+musical_influence = Advantage.objects.get_or_create(name="Musical Influence")[
+    0
+].add_source("Gods and Monsters", 208)
 musical_influence.add_ratings([6])
 musk = Advantage.objects.get_or_create(name="Musk")[0].add_source(
     "Gods and Monsters", 208
@@ -148,7 +164,9 @@ razorskin = Advantage.objects.get_or_create(name="Razorskin")[0].add_source(
     "Gods and Monsters", 210
 )
 razorskin.add_ratings([3])
-read_and_write = Advantage.objects.get_or_create(name="Read and Write")[0].add_source("Gods and Monsters", 210)
+read_and_write = Advantage.objects.get_or_create(name="Read and Write")[0].add_source(
+    "Gods and Monsters", 210
+)
 read_and_write.add_ratings([1])
 regrowth = Advantage.objects.get_or_create(name="Regrowth")[0].add_source(
     "Gods and Monsters", 210
@@ -162,7 +180,9 @@ size = Advantage.objects.get_or_create(name="Size")[0].add_source(
     "Gods and Monsters", 34
 )
 size.add_ratings([3, 5, 8])
-soak_lethal_damage = Advantage.objects.get_or_create(name="Soak Lethal Damage")[0].add_source("Gods and Monsters", 211)
+soak_lethal_damage = Advantage.objects.get_or_create(name="Soak Lethal Damage")[
+    0
+].add_source("Gods and Monsters", 211)
 soak_lethal_damage.add_ratings([3])
 soak_aggravated_damage = Advantage.objects.get_or_create(name="Soak Aggravated Damage")[
     0
@@ -192,7 +212,9 @@ telekinesis = Advantage.objects.get_or_create(name="Telekinesis")[0].add_source(
     "Gods and Monsters", 212
 )
 telekinesis.add_ratings([3, 5, 8, 12])
-tides_of_fortune = Advantage.objects.get_or_create(name="Tides of Fortune")[0].add_source("Gods and Monsters", 213)
+tides_of_fortune = Advantage.objects.get_or_create(name="Tides of Fortune")[
+    0
+].add_source("Gods and Monsters", 213)
 tides_of_fortune.add_ratings([5])
 tunneling = Advantage.objects.get_or_create(name="Tunneling")[0].add_source(
     "Gods and Monsters", 213
@@ -202,19 +224,25 @@ unaging = Advantage.objects.get_or_create(name="Unaging")[0].add_source(
     "Gods and Monsters", 213
 )
 unaging.add_ratings([5])
-universal_translator = Advantage.objects.get_or_create(name="Universal Translator")[0].add_source("Gods and Monsters", 213)
+universal_translator = Advantage.objects.get_or_create(name="Universal Translator")[
+    0
+].add_source("Gods and Monsters", 213)
 universal_translator.add_ratings([5])
 venom_injury = Advantage.objects.get_or_create(name="Venom (Injury)")[0].add_source(
     "Gods and Monsters", 213
 )
 venom_injury.add_ratings([3, 6, 9, 12, 15, 18, 21])
-venom_contact = Advantage.objects.get_or_create(name="Venom (Contact)")[0].add_source("Gods and Monsters", 213)
+venom_contact = Advantage.objects.get_or_create(name="Venom (Contact)")[0].add_source(
+    "Gods and Monsters", 213
+)
 venom_contact.add_ratings([5, 10, 15, 20, 25, 30])
 wall_crawling = Advantage.objects.get_or_create(name="Wall-Crawling")[0].add_source(
     "Gods and Monsters", 213
 )
 wall_crawling.add_ratings([3])
-water_breathing = Advantage.objects.get_or_create(name="Water-Breathing")[0].add_source("Gods and Monsters", 214)
+water_breathing = Advantage.objects.get_or_create(name="Water-Breathing")[0].add_source(
+    "Gods and Monsters", 214
+)
 water_breathing.add_ratings([2, 5])
 webbing = Advantage.objects.get_or_create(name="Webbing")[0].add_source(
     "Gods and Monsters", 214

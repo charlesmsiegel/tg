@@ -73,4 +73,3 @@ spider_golems = Relic.objects.get_or_create(
     difficulty=7,
 )[0]
 spider_golems.add_source("Houses of the Fallen", 105)
-

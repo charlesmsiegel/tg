@@ -34,4 +34,3 @@ eternal_imprisonment.variations = "There are rumors that the ritual could be per
 eternal_imprisonment.flavor_text = "This nightmarish ritual was created in the last days of the war as a means of striking fear into the hearts of enemy angels. It was only used twice, and so horrific were its effects that all but the most hardened fallen cried out against it ever being used again. In fact, some fallen think that it was the use of this ritual that caused the Creator to cast the rebels into the Abyss. The ritual was thought to be lost, until one of the books of Gaar-Asok turned up with the details of the ritual mentioned inside."
 eternal_imprisonment.source_page = "Houses of the Fallen, p. 106"
 eternal_imprisonment.save()
-
