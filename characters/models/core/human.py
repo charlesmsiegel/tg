@@ -110,6 +110,7 @@ class Human(
     goals = models.TextField(default="", blank=True, null=True)
 
     freebies = models.IntegerField(default=15)
+    # DEPRECATED: Use FreebieSpendingRecord model instead (see JSONFIELD_MIGRATION_GUIDE.md)
     spent_freebies = models.JSONField(default=list)
     background_points = 5
 
@@ -152,6 +153,49 @@ class Human(
 
     def total_freebies(self):
         return self.freebies + sum([x["cost"] for x in self.spent_freebies])
+
+    # New model-based freebie spending methods (replaces JSONField usage)
+
+    def create_freebie_spending_record(self, trait_name, trait_type, trait_value, cost):
+        """Create a freebie spending record using the new model-based system.
+
+        This replaces the JSONField-based spent_freebies system with proper database relations.
+
+        Args:
+            trait_name: Display name of the trait (e.g., 'Alertness', 'Strength')
+            trait_type: Category of trait (e.g., 'attribute', 'ability', 'background')
+            trait_value: Value gained
+            cost: Freebie point cost
+
+        Returns:
+            FreebieSpendingRecord instance
+        """
+        from game.models import FreebieSpendingRecord
+        return FreebieSpendingRecord.objects.create(
+            character=self,
+            trait_name=trait_name,
+            trait_type=trait_type,
+            trait_value=trait_value,
+            cost=cost
+        )
+
+    def get_freebie_spending_history(self):
+        """Get all freebie spending records for this character.
+
+        Returns:
+            QuerySet of FreebieSpendingRecord instances ordered by creation date
+        """
+        return self.freebie_spendings.all()
+
+    def total_freebies_from_model(self):
+        """Calculate total freebies spent using the new model-based system.
+
+        Returns:
+            int: Total freebie points spent
+        """
+        from django.db.models import Sum
+        spent = self.freebie_spendings.aggregate(total=Sum('cost'))['total'] or 0
+        return self.freebies + spent
 
     def is_group_member(self):
         from characters.models.core.group import Group

@@ -106,10 +106,6 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
         ),
     )
 
-    class Meta:
-        verbose_name = "Character Template"
-        verbose_name_plural = "Character Templates"
-
 
 @admin.register(TemplateApplication)
 class TemplateApplicationAdmin(admin.ModelAdmin):
