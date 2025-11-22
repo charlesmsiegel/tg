@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
@@ -128,12 +129,14 @@ class ProfileView(LoginRequiredMixin, DetailView):
             else:
                 messages.error(request, "Failed to award XP. Please check your input.")
         if approve_character_id is not None:
-            char = get_object_or_404(Character, pk=approve_character_id)
-            char.status = "App"
-            char.save()
-            if hasattr(char, "group_set"):
-                for g in char.group_set.all():
-                    g.update_pooled_backgrounds()
+            with transaction.atomic():
+                char = get_object_or_404(Character, pk=approve_character_id)
+                char.status = "App"
+                char.save()
+                if hasattr(char, "group_set"):
+                    groups = char.group_set.select_related().all()
+                    for g in groups:
+                        g.update_pooled_backgrounds()
             messages.success(request, f"Character '{char.name}' approved successfully!")
         if approve_location_id is not None:
             loc = get_object_or_404(LocationModel, pk=approve_location_id)
@@ -213,12 +216,13 @@ class ProfileView(LoginRequiredMixin, DetailView):
             else:
                 messages.error(request, "Failed to approve XP request. Please check your input.")
         if mark_scene_id_read is not None:
-            scene = get_object_or_404(Scene, pk=mark_scene_id_read)
-            status = UserSceneReadStatus.objects.get_or_create(
-                scene=scene, user=self.object.user
-            )[0]
-            status.read = True
-            status.save()
+            with transaction.atomic():
+                scene = get_object_or_404(Scene, pk=mark_scene_id_read)
+                status, created = UserSceneReadStatus.objects.get_or_create(
+                    scene=scene, user=self.object.user
+                )
+                status.read = True
+                status.save()
             messages.success(request, f"Scene '{scene.name}' marked as read!")
         elif "Edit Preferences" in request.POST.keys():
             return redirect("profile_update", pk=self.object.pk)
