@@ -3,51 +3,80 @@
 
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
-from populate_db.effects_INC import (
-    effect_do_strike_akashic,
-    effect_chi_healing,
-    effect_increase_speed,
-    effect_holy_fire,
-    effect_blessing_of_the_one,
-    effect_heal_living_being_complex,
-    effect_temporal_fugue,
-    effect_ecstatic_vision,
-    effect_influence_mood,
-    effect_spirit_journey,
-    effect_call_totem_spirit,
-    effect_medicine_work_healing,
-    effect_good_death,
-    effect_wheel_of_fate,
-    effect_sense_fate_and_fortune,
-    effect_hermetic_circle_of_protection,
-    effect_summon_elemental,
-    effect_alchemical_transmutation,
-    effect_lightning_bolt,
-    effect_ether_ray,
-    effect_dimensional_portal_device,
-    effect_flying_forces,
-    effect_blood_magic_ritual,
-    effect_primal_transformation,
-    effect_call_the_wild_hunt,
-    effect_reality_hack,
-    effect_digital_avatar,
-    effect_information_overload,
-    effect_teleport_self_short_range,
-    effect_read_surface_thoughts,
-    effect_force_shield,
-    effect_see_spirits,
-    effect_curse_of_bad_luck,
-    effect_create_portal_temporary,
-    effect_shapeshift_into_animal_self,
-    effect_channel_quintessence,
-)
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
-
-from populate_db.attributes import perception, intelligence, wits, manipulation, dexterity, stamina
-from populate_db.abilities import awareness, occult, cosmology, brawl, athletics, science, technology, crafts, medicine, expression, subterfuge
-
-from populate_db.practices_INC import highritualmagick, martialarts, faith, shamanism, witchcraft, alchemy, weirdscience, realityhacking, crazywisdom, yoga, medicinework
+from populate_db.abilities import (
+    athletics,
+    awareness,
+    brawl,
+    cosmology,
+    crafts,
+    expression,
+    medicine,
+    occult,
+    science,
+    subterfuge,
+    technology,
+)
+from populate_db.attributes import (
+    dexterity,
+    intelligence,
+    manipulation,
+    perception,
+    stamina,
+    wits,
+)
+from populate_db.effects_INC import (
+    effect_alchemical_transmutation,
+    effect_blessing_of_the_one,
+    effect_blood_magic_ritual,
+    effect_call_the_wild_hunt,
+    effect_call_totem_spirit,
+    effect_channel_quintessence,
+    effect_chi_healing,
+    effect_create_portal_temporary,
+    effect_curse_of_bad_luck,
+    effect_digital_avatar,
+    effect_dimensional_portal_device,
+    effect_do_strike_akashic,
+    effect_ecstatic_vision,
+    effect_ether_ray,
+    effect_flying_forces,
+    effect_force_shield,
+    effect_good_death,
+    effect_heal_living_being_complex,
+    effect_hermetic_circle_of_protection,
+    effect_holy_fire,
+    effect_increase_speed,
+    effect_influence_mood,
+    effect_information_overload,
+    effect_lightning_bolt,
+    effect_medicine_work_healing,
+    effect_primal_transformation,
+    effect_read_surface_thoughts,
+    effect_reality_hack,
+    effect_see_spirits,
+    effect_sense_fate_and_fortune,
+    effect_shapeshift_into_animal_self,
+    effect_spirit_journey,
+    effect_summon_elemental,
+    effect_teleport_self_short_range,
+    effect_temporal_fugue,
+    effect_wheel_of_fate,
+)
+from populate_db.practices_INC import (
+    alchemy,
+    crazywisdom,
+    faith,
+    highritualmagick,
+    martialarts,
+    medicinework,
+    realityhacking,
+    shamanism,
+    weirdscience,
+    witchcraft,
+    yoga,
+)
 
 # ===== AKASHIC BROTHERHOOD ROTES =====
 

@@ -1,43 +1,20 @@
-from .changeling import (
-    ChangelingCharacterCreationView,
-    ChangelingDetailView as ChangelingCharacterDetailView,
-    ChangelingCreateView as ChangelingCharacterListView,
-    ChangelingUpdateView as ChangelingCharacterUpdateView,
-)
-from .ctdhuman import (
-    CtDHumanBasicsView,
-    CtDHumanCharacterCreationView,
-    CtDHumanDetailView as CtDHumanCharacterDetailView,
-    CtDHumanCreateView as CtDHumanCharacterListView,
-    CtDHumanTemplateSelectView,
-    CtDHumanUpdateView as CtDHumanCharacterUpdateView,
-)
-from .house_faction import (
-    HouseFactionCreateView as ChangelingFactionCreateView,
-    HouseFactionDetailView as ChangelingFactionDetailView,
-    HouseFactionListView as ChangelingFactionListView,
-    HouseFactionUpdateView as ChangelingFactionUpdateView,
-)
-from .house import (
-    HouseCreateView as ChangelingHouseCreateView,
-    HouseDetailView as ChangelingHouseDetailView,
-    HouseListView as ChangelingHouseListView,
-    HouseUpdateView as ChangelingHouseUpdateView,
-)
-from .kith import (
-    KithCreateView,
-    KithDetailView,
-    KithListView,
-    KithUpdateView,
-)
-from .legacy import (
-    LegacyCreateView,
-    LegacyDetailView,
-    LegacyListView,
-    LegacyUpdateView,
-)
-from .motley import (
-    MotleyCreateView,
-    MotleyDetailView,
-    MotleyUpdateView,
-)
+from .changeling import ChangelingCharacterCreationView
+from .changeling import ChangelingCreateView as ChangelingCharacterListView
+from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
+from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView
+from .ctdhuman import CtDHumanBasicsView, CtDHumanCharacterCreationView
+from .ctdhuman import CtDHumanCreateView as CtDHumanCharacterListView
+from .ctdhuman import CtDHumanDetailView as CtDHumanCharacterDetailView
+from .ctdhuman import CtDHumanTemplateSelectView
+from .ctdhuman import CtDHumanUpdateView as CtDHumanCharacterUpdateView
+from .house import HouseCreateView as ChangelingHouseCreateView
+from .house import HouseDetailView as ChangelingHouseDetailView
+from .house import HouseListView as ChangelingHouseListView
+from .house import HouseUpdateView as ChangelingHouseUpdateView
+from .house_faction import HouseFactionCreateView as ChangelingFactionCreateView
+from .house_faction import HouseFactionDetailView as ChangelingFactionDetailView
+from .house_faction import HouseFactionListView as ChangelingFactionListView
+from .house_faction import HouseFactionUpdateView as ChangelingFactionUpdateView
+from .kith import KithCreateView, KithDetailView, KithListView, KithUpdateView
+from .legacy import LegacyCreateView, LegacyDetailView, LegacyListView, LegacyUpdateView
+from .motley import MotleyCreateView, MotleyDetailView, MotleyUpdateView

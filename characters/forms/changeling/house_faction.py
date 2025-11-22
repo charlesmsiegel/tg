@@ -19,9 +19,7 @@ class HouseFactionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance.pk:
             # If editing an existing faction, set the initial houses
-            self.fields["houses"].initial = House.objects.filter(
-                factions=self.instance
-            )
+            self.fields["houses"].initial = House.objects.filter(factions=self.instance)
 
     def save(self, commit=True):
         instance = super().save(commit=commit)

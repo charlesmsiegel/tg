@@ -83,7 +83,8 @@ def get_gameline_name(s):
         Full gameline name (e.g., 'Vampire: the Masquerade')
     """
     from django.conf import settings
-    return settings.GAMELINES.get(s, {}).get('name', s)
+
+    return settings.GAMELINES.get(s, {}).get("name", s)
 
 
 def get_short_gameline_name(s):
@@ -97,7 +98,8 @@ def get_short_gameline_name(s):
         App name (e.g., 'vampire', 'werewolf')
     """
     from django.conf import settings
-    return settings.GAMELINES.get(s, {}).get('app_name', '')
+
+    return settings.GAMELINES.get(s, {}).get("app_name", "")
 
 
 def fast_selector(cls):

@@ -9,7 +9,7 @@ Generates:
 - Player engagement metrics
 """
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Q, Sum
 from game.models import Chronicle, Scene
 
 
@@ -111,8 +111,7 @@ class Command(BaseCommand):
             # Count pending XP requests
             char_ids = approved_chars.values_list("id", flat=True)
             pending_requests = WeeklyXPRequest.objects.filter(
-                character_id__in=char_ids,
-                approved=False
+                character_id__in=char_ids, approved=False
             ).count()
             stats["xp"]["pending_requests"] = pending_requests
         else:
@@ -122,9 +121,13 @@ class Command(BaseCommand):
 
         # Player engagement
         # Count unique players (character owners)
-        unique_players = all_chars.filter(npc=False).exclude(
-            owner__isnull=True
-        ).values("owner").distinct().count()
+        unique_players = (
+            all_chars.filter(npc=False)
+            .exclude(owner__isnull=True)
+            .values("owner")
+            .distinct()
+            .count()
+        )
         stats["engagement"]["unique_players"] = unique_players
 
         # Character participation in scenes
@@ -132,9 +135,12 @@ class Command(BaseCommand):
         stats["engagement"]["characters_with_scenes"] = chars_in_scenes.count()
 
         # Most active characters
-        active_chars = all_chars.filter(npc=False).annotate(
-            scene_count=Count("scenes")
-        ).filter(scene_count__gt=0).order_by("-scene_count")[:5]
+        active_chars = (
+            all_chars.filter(npc=False)
+            .annotate(scene_count=Count("scenes"))
+            .filter(scene_count__gt=0)
+            .order_by("-scene_count")[:5]
+        )
 
         stats["engagement"]["top_characters"] = [
             {
@@ -158,7 +164,9 @@ class Command(BaseCommand):
         # Basic info
         output.append("CHRONICLE INFORMATION")
         output.append("-" * 70)
-        output.append(f"Storytellers: {', '.join(st.username for st in stats['storytellers']) or 'None'}")
+        output.append(
+            f"Storytellers: {', '.join(st.username for st in stats['storytellers']) or 'None'}"
+        )
         output.append(f"Theme: {stats['chronicle'].theme or 'Not set'}")
         output.append(f"Mood: {stats['chronicle'].mood or 'Not set'}")
         output.append(f"Year: {stats['chronicle'].year}")
@@ -190,7 +198,9 @@ class Command(BaseCommand):
         output.append("XP STATISTICS")
         output.append("-" * 70)
         output.append(f"Total XP Awarded: {stats['xp']['total_awarded']}")
-        output.append(f"Average XP per Character: {stats['xp']['average_per_character']:.1f}")
+        output.append(
+            f"Average XP per Character: {stats['xp']['average_per_character']:.1f}"
+        )
         output.append(f"Pending XP Requests: {stats['xp']['pending_requests']}")
         output.append("")
 
@@ -198,12 +208,14 @@ class Command(BaseCommand):
         output.append("PLAYER ENGAGEMENT")
         output.append("-" * 70)
         output.append(f"Unique Players: {stats['engagement']['unique_players']}")
-        output.append(f"Characters with Scenes: {stats['engagement']['characters_with_scenes']}")
+        output.append(
+            f"Characters with Scenes: {stats['engagement']['characters_with_scenes']}"
+        )
         output.append("")
 
-        if stats['engagement']['top_characters']:
+        if stats["engagement"]["top_characters"]:
             output.append("Top 5 Most Active Characters:")
-            for char in stats['engagement']['top_characters']:
+            for char in stats["engagement"]["top_characters"]:
                 output.append(
                     f"  - {char['name']} ({char['owner']}): {char['scene_count']} scenes"
                 )
@@ -224,7 +236,9 @@ class Command(BaseCommand):
         # Basic info
         output.append("## Chronicle Information")
         output.append("")
-        output.append(f"**Storytellers:** {', '.join(st.username for st in stats['storytellers']) or 'None'}")
+        output.append(
+            f"**Storytellers:** {', '.join(st.username for st in stats['storytellers']) or 'None'}"
+        )
         output.append(f"**Theme:** {stats['chronicle'].theme or 'Not set'}")
         output.append(f"**Mood:** {stats['chronicle'].mood or 'Not set'}")
         output.append(f"**Year:** {stats['chronicle'].year}")
@@ -256,7 +270,9 @@ class Command(BaseCommand):
         output.append("## XP Statistics")
         output.append("")
         output.append(f"- **Total XP Awarded:** {stats['xp']['total_awarded']}")
-        output.append(f"- **Average XP per Character:** {stats['xp']['average_per_character']:.1f}")
+        output.append(
+            f"- **Average XP per Character:** {stats['xp']['average_per_character']:.1f}"
+        )
         output.append(f"- **Pending XP Requests:** {stats['xp']['pending_requests']}")
         output.append("")
 
@@ -264,14 +280,18 @@ class Command(BaseCommand):
         output.append("## Player Engagement")
         output.append("")
         output.append(f"- **Unique Players:** {stats['engagement']['unique_players']}")
-        output.append(f"- **Characters with Scenes:** {stats['engagement']['characters_with_scenes']}")
+        output.append(
+            f"- **Characters with Scenes:** {stats['engagement']['characters_with_scenes']}"
+        )
         output.append("")
 
-        if stats['engagement']['top_characters']:
+        if stats["engagement"]["top_characters"]:
             output.append("### Top 5 Most Active Characters")
             output.append("")
-            for char in stats['engagement']['top_characters']:
-                output.append(f"- **{char['name']}** ({char['owner']}): {char['scene_count']} scenes")
+            for char in stats["engagement"]["top_characters"]:
+                output.append(
+                    f"- **{char['name']}** ({char['owner']}): {char['scene_count']} scenes"
+                )
         else:
             output.append("No character activity recorded")
 
@@ -334,12 +354,12 @@ class Command(BaseCommand):
     <div class="stat"><span class="stat-label">Characters with Scenes:</span> {stats['engagement']['characters_with_scenes']}</div>
 """
 
-        if stats['engagement']['top_characters']:
+        if stats["engagement"]["top_characters"]:
             html += """
     <h3>Top 5 Most Active Characters</h3>
     <ul>
 """
-            for char in stats['engagement']['top_characters']:
+            for char in stats["engagement"]["top_characters"]:
                 html += f"""        <li><strong>{char['name']}</strong> ({char['owner']}): {char['scene_count']} scenes</li>
 """
             html += """    </ul>

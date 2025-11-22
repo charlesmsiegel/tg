@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.freebies import VampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -21,11 +21,15 @@ from characters.views.core.human import (
 )
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -61,15 +65,12 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         self.object.save()
         messages.success(
             self.request,
-            f"Vampire '{self.object.name}' created successfully! Continue with character creation."
+            f"Vampire '{self.object.name}' created successfully! Continue with character creation.",
         )
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "Please correct the errors in the form below."
-        )
+        messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -159,11 +160,12 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
 
         if total_disciplines != 3:
             form.add_error(
-                None, f"You must spend exactly 3 dots on Disciplines. Currently: {total_disciplines}"
+                None,
+                f"You must spend exactly 3 dots on Disciplines. Currently: {total_disciplines}",
             )
             messages.error(
                 self.request,
-                f"Discipline allocation error: You must spend exactly 3 dots. You have {total_disciplines}."
+                f"Discipline allocation error: You must spend exactly 3 dots. You have {total_disciplines}.",
             )
             return self.form_invalid(form)
 
@@ -176,12 +178,11 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
                 rating = form.cleaned_data.get(field, 0)
                 if rating > 0 and field not in clan_discipline_properties:
                     form.add_error(
-                        field,
-                        f"You can only spend starting dots on clan Disciplines."
+                        field, f"You can only spend starting dots on clan Disciplines."
                     )
                     messages.error(
                         self.request,
-                        "You can only allocate starting dots to your clan's Disciplines."
+                        "You can only allocate starting dots to your clan's Disciplines.",
                     )
                     return self.form_invalid(form)
 
@@ -246,7 +247,7 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
             form.add_error(None, f"Virtues must total 7 dots. Currently: {total}")
             messages.error(
                 self.request,
-                f"Virtue allocation error: You must spend exactly 7 dots. You have {total}."
+                f"Virtue allocation error: You must spend exactly 7 dots. You have {total}.",
             )
             return self.form_invalid(form)
 
@@ -310,12 +311,14 @@ class VampireFreebiesView(HumanFreebiesView):
 
     def get_category_functions(self):
         d = super().get_category_functions()
-        d.update({
-            "discipline": self.object.discipline_freebies,
-            "virtue": self.object.virtue_freebies,
-            "humanity": self.object.humanity_freebies,
-            "path_rating": self.object.path_rating_freebies,
-        })
+        d.update(
+            {
+                "discipline": self.object.discipline_freebies,
+                "virtue": self.object.virtue_freebies,
+                "humanity": self.object.humanity_freebies,
+                "path_rating": self.object.path_rating_freebies,
+            }
+        )
         return d
 
 
@@ -363,9 +366,11 @@ class VampireFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
     def category_method_map(self):
         d = super().category_method_map()
-        d.update({
-            "Discipline": self.discipline_options,
-        })
+        d.update(
+            {
+                "Discipline": self.discipline_options,
+            }
+        )
         return d
 
     def discipline_options(self):

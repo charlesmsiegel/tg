@@ -10,8 +10,12 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+)
 from core.models import Language
-from core.mixins import EditPermissionMixin, SpendFreebiesPermissionMixin, ApprovedUserContextMixin
 from core.views.generic import DictView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -23,12 +27,14 @@ from game.models import ObjectType
 
 class HumanDetailView(CharacterDetailView):
     """Detail view for Human characters. Inherits permissions from CharacterDetailView."""
+
     model = Human
     template_name = "characters/core/human/detail.html"
 
 
 class HumanCreateView(LoginRequiredMixin, CreateView):
     """Create view for Human characters."""
+
     model = Human
     fields = [
         "name",
@@ -70,6 +76,7 @@ class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView)
     Only STs and Admins can directly edit character fields.
     Owners should use the character creation workflow or XP spending.
     """
+
     model = Human
     fields = [
         "name",
@@ -102,6 +109,7 @@ class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView)
 
 class HumanBasicsView(LoginRequiredMixin, CreateView):
     """First step of character creation."""
+
     model = Human
     fields = [
         "name",
@@ -117,11 +125,14 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanAttributeView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class HumanAttributeView(
+    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+):
     """
     Character creation step: allocating attribute points.
     Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
     """
+
     model = Human
     fields = [
         "strength",
@@ -190,7 +201,9 @@ class HumanAttributeView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin,
         return context
 
 
-class HumanAbilityView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class HumanAbilityView(
+    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+):
     model = Human
     fields = Human.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -233,7 +246,9 @@ class HumanAbilityView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, U
         return super().form_valid(form)
 
 
-class HumanBiographicalInformation(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class HumanBiographicalInformation(
+    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+):
     model = Human
     fields = [
         "age",
@@ -281,6 +296,7 @@ def load_values(request):
     # Filter ratings based on character's available freebies/XP and flaw limit
     if character_id:
         from characters.models import Human
+
         character = Human.objects.get(pk=character_id)
         current_rating = character.mf_rating(mf)
 
@@ -400,7 +416,9 @@ class HumanFreebieFormPopulationView(View):
         return examples.filter(id__in=affordable_mfs)
 
 
-class HumanFreebiesView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class HumanFreebiesView(
+    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+):
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/human/human/chargen.html"

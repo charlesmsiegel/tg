@@ -4,10 +4,11 @@ Management command to import a chronicle from JSON export.
 Imports all data exported by export_chronicle command.
 """
 import json
+
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.core.serializers import deserialize
 from django.db import transaction
-from django.contrib.auth.models import User
 
 
 class Command(BaseCommand):
@@ -62,7 +63,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("IMPORT SUMMARY"))
         self.stdout.write("=" * 70)
         self.stdout.write(f"Export Date: {import_data.get('export_date', 'Unknown')}")
-        self.stdout.write(f"Export Version: {import_data.get('export_version', 'Unknown')}")
+        self.stdout.write(
+            f"Export Version: {import_data.get('export_version', 'Unknown')}"
+        )
         self.stdout.write(f"Characters: {len(import_data.get('characters', []))}")
         self.stdout.write(f"Items: {len(import_data.get('items', []))}")
         self.stdout.write(f"Locations: {len(import_data.get('locations', []))}")
@@ -83,9 +86,7 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError(f"Import failed: {e}")
 
-        self.stdout.write(
-            self.style.SUCCESS("\n✓ Import complete!\n")
-        )
+        self.stdout.write(self.style.SUCCESS("\n✓ Import complete!\n"))
 
     def import_data(self, data, options, user_map):
         """Import all data."""
@@ -136,7 +137,9 @@ class Command(BaseCommand):
             # Check if user already exists
             if User.objects.filter(username=new_username).exists():
                 self.stdout.write(
-                    self.style.WARNING(f"  User {new_username} already exists, skipping")
+                    self.style.WARNING(
+                        f"  User {new_username} already exists, skipping"
+                    )
                 )
                 continue
 
@@ -194,7 +197,7 @@ class Command(BaseCommand):
             fields = element_json["fields"]
             element, created = SettingElement.objects.get_or_create(
                 name=fields.get("name", ""),
-                defaults={"description": fields.get("description", "")}
+                defaults={"description": fields.get("description", "")},
             )
             chronicle.common_knowledge_elements.add(element)
 
@@ -220,9 +223,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Importing {len(items_data)} items...")
         # Similar to characters, simplified
         self.stdout.write(
-            self.style.WARNING(
-                "  Item import is complex and requires manual review"
-            )
+            self.style.WARNING("  Item import is complex and requires manual review")
         )
 
     def import_locations(self, locations_data, chronicle):
@@ -240,9 +241,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Importing {len(scenes_data)} scenes...")
         # Simplified - would need to handle relationships
         self.stdout.write(
-            self.style.WARNING(
-                "  Scene import is complex and requires manual review"
-            )
+            self.style.WARNING("  Scene import is complex and requires manual review")
         )
 
     def import_journals(self, journals_data, chronicle):

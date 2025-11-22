@@ -3,13 +3,14 @@ Permission decorators for function-based views.
 """
 
 from functools import wraps
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
-from django.http import Http404
+
 from core.permissions import Permission, PermissionManager
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 
-def require_permission(permission: Permission, lookup='pk', raise_404=True):
+def require_permission(permission: Permission, lookup="pk", raise_404=True):
     """
     Decorator for views requiring specific permission.
 
@@ -24,6 +25,7 @@ def require_permission(permission: Permission, lookup='pk', raise_404=True):
             # Object available as request.permission_object
             ...
     """
+
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
@@ -33,7 +35,7 @@ def require_permission(permission: Permission, lookup='pk', raise_404=True):
             # Try to get model class from view's attributes or module
             # This is a simplified approach - in practice you might want
             # to pass the model class as a parameter
-            model_class = getattr(view_func, 'model', None)
+            model_class = getattr(view_func, "model", None)
 
             if model_class is None:
                 # Try to infer from URL pattern or raise error
@@ -45,19 +47,21 @@ def require_permission(permission: Permission, lookup='pk', raise_404=True):
             obj = get_object_or_404(model_class, pk=obj_id)
 
             # Check permission
-            if not PermissionManager.user_has_permission(
-                request.user, obj, permission
-            ):
+            if not PermissionManager.user_has_permission(request.user, obj, permission):
                 if raise_404:
                     raise Http404("Object not found")
                 else:
-                    raise PermissionDenied("You don't have permission to access this resource")
+                    raise PermissionDenied(
+                        "You don't have permission to access this resource"
+                    )
 
             # Attach object to request for convenience
             request.permission_object = obj
 
             return view_func(request, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -93,7 +97,9 @@ def require_spend_freebies_permission(view_func):
     return require_permission(Permission.SPEND_FREEBIES, raise_404=False)(view_func)
 
 
-def require_model_permission(model_class, permission: Permission, lookup='pk', raise_404=True):
+def require_model_permission(
+    model_class, permission: Permission, lookup="pk", raise_404=True
+):
     """
     Decorator that explicitly specifies the model class.
 
@@ -108,6 +114,7 @@ def require_model_permission(model_class, permission: Permission, lookup='pk', r
         def update_character(request, pk):
             ...
     """
+
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
@@ -116,17 +123,19 @@ def require_model_permission(model_class, permission: Permission, lookup='pk', r
             obj = get_object_or_404(model_class, pk=obj_id)
 
             # Check permission
-            if not PermissionManager.user_has_permission(
-                request.user, obj, permission
-            ):
+            if not PermissionManager.user_has_permission(request.user, obj, permission):
                 if raise_404:
                     raise Http404("Object not found")
                 else:
-                    raise PermissionDenied("You don't have permission to access this resource")
+                    raise PermissionDenied(
+                        "You don't have permission to access this resource"
+                    )
 
             # Attach object to request for convenience
             request.permission_object = obj
 
             return view_func(request, *args, **kwargs)
+
         return wrapper
+
     return decorator

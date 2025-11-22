@@ -23,10 +23,14 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
@@ -185,36 +189,34 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
 
         if isinstance(obj, Ratkin):
             if "aspect" in form.fields:
-                form.fields["aspect"].help_text = (
-                    "Choose your aspect (similar to auspice for Garou)."
-                )
+                form.fields[
+                    "aspect"
+                ].help_text = "Choose your aspect (similar to auspice for Garou)."
         elif isinstance(obj, Mokole):
             if "stream" in form.fields:
-                form.fields["stream"].help_text = (
-                    "Choose your stream (cultural/regional grouping)."
-                )
+                form.fields[
+                    "stream"
+                ].help_text = "Choose your stream (cultural/regional grouping)."
             if "auspice" in form.fields:
-                form.fields["auspice"].help_text = (
-                    "Choose your auspice (based on sun position at birth)."
-                )
+                form.fields[
+                    "auspice"
+                ].help_text = "Choose your auspice (based on sun position at birth)."
         elif isinstance(obj, Bastet):
             if "tribe" in form.fields:
                 form.fields["tribe"].help_text = "Choose your tribe (cat species)."
             if "pryio" in form.fields:
-                form.fields["pryio"].help_text = (
-                    "Choose your Pryio (moon-based role)."
-                )
+                form.fields["pryio"].help_text = "Choose your Pryio (moon-based role)."
         elif isinstance(obj, Nuwisha):
             if "role" in form.fields:
-                form.fields["role"].help_text = (
-                    "Choose your role (optional, loose affiliation)."
-                )
+                form.fields[
+                    "role"
+                ].help_text = "Choose your role (optional, loose affiliation)."
                 form.fields["role"].required = False
         elif isinstance(obj, Gurahl):
             if "auspice" in form.fields:
-                form.fields["auspice"].help_text = (
-                    "Choose your auspice (seasonal role)."
-                )
+                form.fields[
+                    "auspice"
+                ].help_text = "Choose your auspice (seasonal role)."
 
         return form
 
@@ -287,15 +289,19 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
 
         # Customize help text based on Fera type
         if isinstance(self.object, Corax):
-            form.fields["gifts"].help_text = (
-                "Choose 3 starting Gifts: all from the Corax gift list."
-            )
+            form.fields[
+                "gifts"
+            ].help_text = "Choose 3 starting Gifts: all from the Corax gift list."
         elif isinstance(self.object, Nuwisha):
-            form.fields["gifts"].help_text = (
+            form.fields[
+                "gifts"
+            ].help_text = (
                 "Choose 3 starting Gifts: from your Breed and general Nuwisha gifts."
             )
         else:
-            form.fields["gifts"].help_text = (
+            form.fields[
+                "gifts"
+            ].help_text = (
                 "Choose 3 starting Gifts from your breed and faction/aspect/tribe."
             )
 
@@ -435,12 +441,12 @@ class FeraHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
                 "placeholder": f"Describe your character's First Change. Include where they were, what triggered it, and how they dealt with the immediate aftermath."
             }
         )
-        form.fields["first_change"].help_text = (
-            "This is a pivotal moment in every shapeshifter's life."
-        )
-        form.fields["age_of_first_change"].help_text = (
-            "The age at which the character first changed forms."
-        )
+        form.fields[
+            "first_change"
+        ].help_text = "This is a pivotal moment in every shapeshifter's life."
+        form.fields[
+            "age_of_first_change"
+        ].help_text = "The age at which the character first changed forms."
         return form
 
     def form_valid(self, form):

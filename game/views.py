@@ -2,7 +2,7 @@ import itertools
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
-from core.mixins import ViewPermissionMixin, EditPermissionMixin
+from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
@@ -43,8 +43,14 @@ class ChronicleDetailView(LoginRequiredMixin, View):
 
     def get_context(self, pk):
         chronicle = get_object_or_404(Chronicle, pk=pk)
-        top_locations = LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
-        characters = Character.objects.active().player_characters().with_group_ordering()
+        top_locations = (
+            LocationModel.objects.top_level()
+            .filter(chronicle=chronicle)
+            .order_by("name")
+        )
+        characters = (
+            Character.objects.active().player_characters().with_group_ordering()
+        )
 
         return {
             "object": chronicle,
@@ -82,7 +88,9 @@ class ChronicleDetailView(LoginRequiredMixin, View):
                 location,
                 date_of_scene=request.POST["date_of_scene"],
             )
-            messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
+            messages.success(
+                request, f"Scene '{request.POST['name']}' created successfully!"
+            )
             return redirect(scene)
         return render(request, "game/chronicle/detail.html", context)
 
@@ -162,9 +170,13 @@ class SceneDetailView(LoginRequiredMixin, View):
                     context["post_form"].add_error(
                         None, "Command does not match the expected format."
                     )
-                    messages.error(request, "Command does not match the expected format.")
+                    messages.error(
+                        request, "Command does not match the expected format."
+                    )
             else:
-                messages.error(request, "Failed to create post. Please check your input.")
+                messages.error(
+                    request, "Failed to create post. Please check your input."
+                )
         context = self.get_context(kwargs["pk"], request.user)
         context["post_form"] = context["post_form"](
             user=request.user, scene=context["object"]
@@ -266,7 +278,9 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
                 f.save()
                 messages.success(request, "Journal entry added successfully!")
             else:
-                messages.error(request, "Failed to add journal entry. Please check your input.")
+                messages.error(
+                    request, "Failed to add journal entry. Please check your input."
+                )
         if submit_response is not None:
             tmp = [x for x in request.POST.keys() if "entry" in x][0]
             tmp = tmp.split("-")[1]
@@ -279,7 +293,9 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
                 f.save()
                 messages.success(request, "ST response added successfully!")
             else:
-                messages.error(request, "Failed to add ST response. Please check your input.")
+                messages.error(
+                    request, "Failed to add ST response. Please check your input."
+                )
         return render(
             request, "game/journal/detail.html", self.get_context_data(**kwargs)
         )

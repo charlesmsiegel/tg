@@ -4,6 +4,7 @@ This single form handles Allies, Mentors, Contacts, Retainers, and Followers.
 """
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
+from characters.models.core.archetype import Archetype
 from characters.models.demon.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.thrall import Thrall
@@ -18,11 +19,10 @@ from characters.models.werewolf.fera import Fera
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.kinfolk import Kinfolk
+from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from characters.models.werewolf.spirit_character import SpiritCharacter
-from characters.models.core.archetype import Archetype
 from django import forms
 
 
@@ -37,40 +37,61 @@ class LinkedNPCForm(forms.Form):
 
     # Character type choices - organized by gameline
     NPC_TYPE_CHOICES = [
-        ("--- Vampire ---", [
-            ("vampire", "Vampire"),
-            ("vtmhuman", "Human (Vampire)"),
-            ("ghoul", "Ghoul"),
-        ]),
-        ("--- Werewolf ---", [
-            ("werewolf", "Werewolf (Garou)"),
-            ("wtahuman", "Human (Werewolf)"),
-            ("kinfolk", "Kinfolk"),
-            ("fera", "Fera (Changing Breeds)"),
-            ("fomor", "Fomor"),
-        ]),
-        ("--- Mage ---", [
-            ("mage", "Mage (Awakened)"),
-            ("mtahuman", "Human (Mage)"),
-            ("sorcerer", "Sorcerer"),
-            ("companion", "Companion"),
-        ]),
-        ("--- Wraith ---", [
-            ("wraith", "Wraith"),
-            ("wtohuman", "Human (Wraith)"),
-        ]),
-        ("--- Changeling ---", [
-            ("changeling", "Changeling"),
-            ("ctdhuman", "Human (Changeling)"),
-        ]),
-        ("--- Demon ---", [
-            ("demon", "Demon"),
-            ("dtfhuman", "Human (Demon)"),
-            ("thrall", "Thrall"),
-        ]),
-        ("--- Other ---", [
-            ("spirit", "Spirit"),
-        ]),
+        (
+            "--- Vampire ---",
+            [
+                ("vampire", "Vampire"),
+                ("vtmhuman", "Human (Vampire)"),
+                ("ghoul", "Ghoul"),
+            ],
+        ),
+        (
+            "--- Werewolf ---",
+            [
+                ("werewolf", "Werewolf (Garou)"),
+                ("wtahuman", "Human (Werewolf)"),
+                ("kinfolk", "Kinfolk"),
+                ("fera", "Fera (Changing Breeds)"),
+                ("fomor", "Fomor"),
+            ],
+        ),
+        (
+            "--- Mage ---",
+            [
+                ("mage", "Mage (Awakened)"),
+                ("mtahuman", "Human (Mage)"),
+                ("sorcerer", "Sorcerer"),
+                ("companion", "Companion"),
+            ],
+        ),
+        (
+            "--- Wraith ---",
+            [
+                ("wraith", "Wraith"),
+                ("wtohuman", "Human (Wraith)"),
+            ],
+        ),
+        (
+            "--- Changeling ---",
+            [
+                ("changeling", "Changeling"),
+                ("ctdhuman", "Human (Changeling)"),
+            ],
+        ),
+        (
+            "--- Demon ---",
+            [
+                ("demon", "Demon"),
+                ("dtfhuman", "Human (Demon)"),
+                ("thrall", "Thrall"),
+            ],
+        ),
+        (
+            "--- Other ---",
+            [
+                ("spirit", "Spirit"),
+            ],
+        ),
     ]
 
     NPC_CLASSES = {
@@ -100,7 +121,7 @@ class LinkedNPCForm(forms.Form):
     npc_type = forms.ChoiceField(
         choices=NPC_TYPE_CHOICES,
         label="Character Type",
-        help_text="Select the type of character to create"
+        help_text="Select the type of character to create",
     )
     name = forms.CharField(
         max_length=100,
@@ -112,7 +133,7 @@ class LinkedNPCForm(forms.Form):
         max_value=5,
         initial=1,
         label="Background Rating",
-        help_text="Background rating (0-5)"
+        help_text="Background rating (0-5)",
     )
     concept = forms.CharField(
         max_length=100,
@@ -126,13 +147,13 @@ class LinkedNPCForm(forms.Form):
         queryset=Archetype.objects.all(),
         label="Nature",
         required=False,
-        help_text="Inner self (leave blank for Werewolf/Changeling)"
+        help_text="Inner self (leave blank for Werewolf/Changeling)",
     )
     demeanor = forms.ModelChoiceField(
         queryset=Archetype.objects.all(),
         label="Demeanor",
         required=False,
-        help_text="Outer personality (leave blank for Werewolf/Changeling)"
+        help_text="Outer personality (leave blank for Werewolf/Changeling)",
     )
 
     # Gameline-specific basics - collected but only used if relevant
@@ -142,14 +163,14 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Clan",
         widget=forms.TextInput(attrs={"placeholder": "Vampire clan (if Vampire)"}),
-        help_text="For Vampires only"
+        help_text="For Vampires only",
     )
     sect_name = forms.CharField(
         max_length=100,
         required=False,
         label="Sect",
         widget=forms.TextInput(attrs={"placeholder": "Vampire sect (if Vampire)"}),
-        help_text="For Vampires only"
+        help_text="For Vampires only",
     )
 
     # Werewolf
@@ -158,21 +179,21 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Breed",
         widget=forms.TextInput(attrs={"placeholder": "Homid/Metis/Lupus"}),
-        help_text="For Werewolves/Fera only"
+        help_text="For Werewolves/Fera only",
     )
     auspice_name = forms.CharField(
         max_length=100,
         required=False,
         label="Auspice",
         widget=forms.TextInput(attrs={"placeholder": "Moon sign"}),
-        help_text="For Werewolves only"
+        help_text="For Werewolves only",
     )
     tribe_name = forms.CharField(
         max_length=100,
         required=False,
         label="Tribe",
         widget=forms.TextInput(attrs={"placeholder": "Tribe name"}),
-        help_text="For Werewolves/Kinfolk only"
+        help_text="For Werewolves/Kinfolk only",
     )
 
     # Mage
@@ -181,7 +202,7 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Affiliation",
         widget=forms.TextInput(attrs={"placeholder": "Tradition/Technocracy/etc"}),
-        help_text="For Mages only"
+        help_text="For Mages only",
     )
 
     # Wraith
@@ -190,7 +211,7 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Guild",
         widget=forms.TextInput(attrs={"placeholder": "Wraith guild"}),
-        help_text="For Wraiths only"
+        help_text="For Wraiths only",
     )
 
     # Changeling
@@ -199,14 +220,14 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Kith",
         widget=forms.TextInput(attrs={"placeholder": "Changeling kith"}),
-        help_text="For Changelings only"
+        help_text="For Changelings only",
     )
     court_name = forms.CharField(
         max_length=100,
         required=False,
         label="Court",
         widget=forms.TextInput(attrs={"placeholder": "Seelie/Unseelie"}),
-        help_text="For Changelings only"
+        help_text="For Changelings only",
     )
 
     # Demon
@@ -215,7 +236,7 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="House",
         widget=forms.TextInput(attrs={"placeholder": "Demon house"}),
-        help_text="For Demons only"
+        help_text="For Demons only",
     )
 
     # Fera special
@@ -224,12 +245,14 @@ class LinkedNPCForm(forms.Form):
         required=False,
         label="Fera Type",
         widget=forms.TextInput(attrs={"placeholder": "Ratkin/Mokole/Bastet/etc"}),
-        help_text="For Fera only"
+        help_text="For Fera only",
     )
 
     # General notes
     note = forms.CharField(
-        widget=forms.Textarea(attrs={"placeholder": "Additional notes about this character", "rows": 4}),
+        widget=forms.Textarea(
+            attrs={"placeholder": "Additional notes about this character", "rows": 4}
+        ),
         label="Notes",
         required=False,
     )
@@ -261,9 +284,8 @@ class LinkedNPCForm(forms.Form):
         # Build base note with rank and role
         role_display = self.npc_role.capitalize()
         note = (
-            (self.cleaned_data.get("note") or "")
-            + f"<br>Rank {self.cleaned_data['rank']} {role_display}"
-        )
+            self.cleaned_data.get("note") or ""
+        ) + f"<br>Rank {self.cleaned_data['rank']} {role_display}"
         if self.obj is not None:
             note += " for " + self.obj.name
 
@@ -301,7 +323,9 @@ class LinkedNPCForm(forms.Form):
             specific_info.append(f"Tribe: {self.cleaned_data['tribe_name']}")
 
         if npc_type == "mage" and self.cleaned_data.get("affiliation_name"):
-            specific_info.append(f"Affiliation: {self.cleaned_data['affiliation_name']}")
+            specific_info.append(
+                f"Affiliation: {self.cleaned_data['affiliation_name']}"
+            )
 
         if npc_type == "wraith" and self.cleaned_data.get("guild_name"):
             specific_info.append(f"Guild: {self.cleaned_data['guild_name']}")
@@ -319,7 +343,11 @@ class LinkedNPCForm(forms.Form):
             specific_info.append(f"Fera Type: {self.cleaned_data['fera_type_name']}")
 
         if specific_info:
-            char_data["notes"] += "<br><br><strong>Basics to set:</strong><br>" + "<br>".join(specific_info)
+            char_data[
+                "notes"
+            ] += "<br><br><strong>Basics to set:</strong><br>" + "<br>".join(
+                specific_info
+            )
 
         # Create the character
         obj = char_class.objects.create(**char_data)

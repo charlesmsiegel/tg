@@ -3,17 +3,14 @@ Populate database with Malefactor (Annunaki) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-
 from populate_db.demon_houses import malefactors
-from populate_db.demon_lores import (
-    lore_of_the_celestials as lore_celestials,
-    lore_of_the_earth as lore_earth,
-    lore_of_the_firmament as lore_firmament,
-    lore_of_flame,
-    lore_of_the_forge as lore_forge,
-    lore_of_paths as lore_paths,
-    lore_of_the_realms as lore_realms,
-)
+from populate_db.demon_lores import lore_of_flame
+from populate_db.demon_lores import lore_of_paths as lore_paths
+from populate_db.demon_lores import lore_of_the_celestials as lore_celestials
+from populate_db.demon_lores import lore_of_the_earth as lore_earth
+from populate_db.demon_lores import lore_of_the_firmament as lore_firmament
+from populate_db.demon_lores import lore_of_the_forge as lore_forge
+from populate_db.demon_lores import lore_of_the_realms as lore_realms
 
 # =============================================================================
 # MALEFACTOR RITUALS - HOUSES OF THE FALLEN
@@ -56,7 +53,9 @@ hunters_byway.secondary_lore_requirements = [
 ]
 hunters_byway.base_cost = 18
 hunters_byway.minimum_casting_time = 36
-hunters_byway.restrictions = "The item used as a focus must be placed in the center of the ritual's sigil."
+hunters_byway.restrictions = (
+    "The item used as a focus must be placed in the center of the ritual's sigil."
+)
 hunters_byway.system = """Roll Wits + Survival. If the ritual succeeds, a pathway visible to all the participants but not to observers appears leading from the sigil, and fading from view a few yards away. If someone follows the path, she passes into the spirit realm. From the outside, she simply fades from view, while from her perspective, she moves down a luminous, misty tunnel surrounded by darkness.
 
 Movement along the path is not instantaneous. It takes a base of 10 minutes, minus one minute for each success on the ritual roll, to reach the other end and exit back into reality. The traveler appears just behind the person being hunted, who will probably be taken by surprise. He must gain more successes on a Perception + Awareness roll than the successes of the ritual to notice his pursuer arrive.

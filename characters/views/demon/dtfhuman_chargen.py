@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.dtfhuman import DtFHumanCreationForm
 from characters.forms.demon.freebies import DtFHumanFreebiesForm
 from characters.models.core.specialty import Specialty
@@ -16,13 +16,17 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import CharacterTemplate
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from django import forms
 from django.contrib import messages
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -52,7 +56,9 @@ class DtFHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("characters:demon:dtfhuman_template", kwargs={"pk": self.object.pk})
+        return reverse(
+            "characters:demon:dtfhuman_template", kwargs={"pk": self.object.pk}
+        )
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -81,9 +87,7 @@ class DtFHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/demon/dtfhuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(
-            DtFHuman, pk=kwargs["pk"], owner=request.user
-        )
+        self.object = get_object_or_404(DtFHuman, pk=kwargs["pk"], owner=request.user)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:demon:dtfhuman_creation", pk=self.object.pk)

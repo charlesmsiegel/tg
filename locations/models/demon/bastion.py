@@ -14,19 +14,15 @@ class Bastion(LocationModel):
 
     # Bastion-specific fields
     ritual_strength = models.IntegerField(
-        default=0,
-        help_text="Strength of the ritual defenses (0-10)"
+        default=0, help_text="Strength of the ritual defenses (0-10)"
     )
 
     warding_level = models.IntegerField(
-        default=0,
-        help_text="Level of mystical warding protecting the bastion"
+        default=0, help_text="Level of mystical warding protecting the bastion"
     )
 
     consecration_date = models.DateField(
-        blank=True,
-        null=True,
-        help_text="Date when the bastion was consecrated"
+        blank=True, null=True, help_text="Date when the bastion was consecrated"
     )
 
     class Meta:

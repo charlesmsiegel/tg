@@ -1,12 +1,17 @@
 from typing import Any
 
 from characters.models.core import Character
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, VisibilityFilterMixin, ApprovedUserContextMixin
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    ViewPermissionMixin,
+    VisibilityFilterMixin,
+)
 from core.permissions import Permission, PermissionManager
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from game.models import Scene
 
 
@@ -15,18 +20,18 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
     Detail view for characters.
     Automatically enforces view permissions and provides visibility tier in context.
     """
+
     model = Character
     template_name = "characters/core/character/detail.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["scenes"] = Scene.objects.filter(
-            characters=context["object"]
-        ).select_related(
-            "chronicle", "location", "st"
-        ).prefetch_related(
-            "characters", "participants"
-        ).order_by("-date_of_scene")
+        context["scenes"] = (
+            Scene.objects.filter(characters=context["object"])
+            .select_related("chronicle", "location", "st")
+            .prefetch_related("characters", "participants")
+            .order_by("-date_of_scene")
+        )
         # Backward compatibility: is_approved_user now means "can edit"
         context["is_approved_user"] = PermissionManager.user_can_edit(
             self.request.user, self.object
@@ -50,7 +55,9 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                 self.object.save()
             # STs/Admins can mark as deceased
             elif "decease" in request.POST:
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+                return redirect(
+                    reverse("characters:character", kwargs={"pk": self.object.pk})
+                )
         else:
             # Handle retirement and death status changes
             if "retire" in request.POST:
@@ -68,6 +75,7 @@ class CharacterListView(VisibilityFilterMixin, ListView):
     List view for characters.
     Automatically filters to only characters the user can view.
     """
+
     model = Character
     template_name = "characters/core/character/list.html"
     context_object_name = "characters"
@@ -77,7 +85,7 @@ class CharacterListView(VisibilityFilterMixin, ListView):
         """Get filtered queryset based on permissions."""
         qs = super().get_queryset()
         # Additional filtering can be added here (e.g., by status, chronicle, etc.)
-        return qs.order_by('name')
+        return qs.order_by("name")
 
 
 class CharacterCreateView(LoginRequiredMixin, CreateView):
@@ -85,6 +93,7 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
     Create view for characters.
     Automatically sets the owner to the current user.
     """
+
     model = Character
     fields = "__all__"
     template_name = "characters/core/character/form.html"
@@ -106,6 +115,7 @@ class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateV
     - Chronicle Head STs can edit everything
     - Owners can only edit limited fields (enforced by form)
     """
+
     model = Character
     fields = "__all__"
     template_name = "characters/core/character/form.html"
@@ -131,4 +141,3 @@ class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateV
             # notes, description, etc. For now, we'll use all fields
             # TODO: Create LimitedCharacterForm with only editable fields
             return super().get_form_class()
-

@@ -6,9 +6,9 @@ from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.mtahuman import MtAHuman
 from core.models import Model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 
@@ -186,8 +186,7 @@ class PathRating(models.Model):
     practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True)
     ability = models.ForeignKey(Ability, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -196,8 +195,8 @@ class PathRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_mage_pathrating_rating_range',
-                violation_error_message="Path rating must be between 0 and 10"
+                name="characters_mage_pathrating_rating_range",
+                violation_error_message="Path rating must be between 0 and 10",
             ),
         ]
 

@@ -25,6 +25,7 @@ from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.charm import SpiritCharm
 from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.totem import Totem
+
 # from characters.views.changeling.changeling import ChangelingCharacterCreationView
 # from characters.views.changeling.ctdhuman import CtDHumanCharacterCreationView
 # from characters.views.changeling.motley import MotleyDetailView
@@ -174,19 +175,15 @@ class CharacterIndexView(ListView):
         for chron in list(Chronicle.objects.all()) + [None]:
             chron_dict[chron] = {
                 "active": list(
-                    self.get_queryset().filter(
-                        chronicle=chron, status__in=["Un", "Sub", "App"], npc=False
-                    ).visible()
+                    self.get_queryset()
+                    .filter(chronicle=chron, status__in=["Un", "Sub", "App"], npc=False)
+                    .visible()
                 ),
                 "retired": list(
-                    self.get_queryset().filter(
-                        chronicle=chron, status="Ret"
-                    ).visible()
+                    self.get_queryset().filter(chronicle=chron, status="Ret").visible()
                 ),
                 "deceased": list(
-                    self.get_queryset().filter(
-                        chronicle=chron, status="Dec"
-                    ).visible()
+                    self.get_queryset().filter(chronicle=chron, status="Dec").visible()
                 ),
                 "npc": list(
                     self.get_queryset().filter(chronicle=chron, npc=True).visible()

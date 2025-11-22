@@ -1,9 +1,8 @@
 from typing import Any
 
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.werewolf.garou import WerewolfCreationForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.garou import (
     WerewolfCreationForm,
     WerewolfGiftsForm,
@@ -26,12 +25,16 @@ from characters.views.core.human import (
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -232,15 +235,12 @@ class WerewolfBasicsView(LoginRequiredMixin, FormView):
         self.object = form.save()
         messages.success(
             self.request,
-            f"Werewolf '{self.object.name}' created successfully! Continue with character creation."
+            f"Werewolf '{self.object.name}' created successfully! Continue with character creation.",
         )
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "Please correct the errors in the form below."
-        )
+        messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -332,12 +332,12 @@ class WerewolfHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView
                 "placeholder": "Describe your character's First Change. Include where they were, what triggered it, and how they dealt with the immediate aftermath."
             }
         )
-        form.fields["first_change"].help_text = (
-            "This is a pivotal moment in every Garou's life."
-        )
-        form.fields["age_of_first_change"].help_text = (
-            "The age at which the character first changed into Crinos form."
-        )
+        form.fields[
+            "first_change"
+        ].help_text = "This is a pivotal moment in every Garou's life."
+        form.fields[
+            "age_of_first_change"
+        ].help_text = "The age at which the character first changed into Crinos form."
         return form
 
     def form_valid(self, form):
@@ -453,9 +453,7 @@ class WerewolfFetishView(GenericBackgroundView):
             context["current_fetish_total"] = 0
         context["available_fetishes"] = self.object.filter_fetishes(
             min_rating=0,
-            max_rating=(
-                fetish_rating.rating if fetish_rating else 0
-            ),
+            max_rating=(fetish_rating.rating if fetish_rating else 0),
         )
         return context
 

@@ -1,6 +1,14 @@
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
-from populate_db.demon_houses import defilers, devourers, devils, fiends, malefactors, scourges, slayers
+from populate_db.demon_houses import (
+    defilers,
+    devils,
+    devourers,
+    fiends,
+    malefactors,
+    scourges,
+    slayers,
+)
 
 # Scourge House Lores
 lore_of_awakening = Lore.objects.get_or_create(

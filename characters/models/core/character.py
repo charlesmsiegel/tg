@@ -1,8 +1,8 @@
 from core.models import Model, ModelManager, ModelQuerySet
-from django.db import models, transaction
-from django.db.models import CheckConstraint, Q, OuterRef, Subquery
-from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.db import models, transaction
+from django.db.models import CheckConstraint, OuterRef, Q, Subquery
+from django.urls import reverse
 from django.utils import timezone
 from polymorphic.managers import PolymorphicManager
 
@@ -93,8 +93,8 @@ class Character(CharacterModel):
             # XP cannot go negative
             CheckConstraint(
                 check=Q(xp__gte=0),
-                name='characters_character_xp_non_negative',
-                violation_error_message="XP cannot be negative"
+                name="characters_character_xp_non_negative",
+                violation_error_message="XP cannot be negative",
             ),
             # Note: status validation is handled in clean() method since status
             # is inherited from Model and constraints can't reference parent fields
@@ -102,11 +102,11 @@ class Character(CharacterModel):
 
     # Valid status transitions
     STATUS_TRANSITIONS = {
-        'Un': ['Sub', 'Ret'],  # Unfinished can be submitted or retired
-        'Sub': ['Un', 'App', 'Ret'],  # Submitted can go back, be approved, or retired
-        'App': ['Ret', 'Dec'],  # Approved can be retired or killed
-        'Ret': ['App'],  # Retired can be reactivated (ST discretion)
-        'Dec': [],  # Deceased is final
+        "Un": ["Sub", "Ret"],  # Unfinished can be submitted or retired
+        "Sub": ["Un", "App", "Ret"],  # Submitted can go back, be approved, or retired
+        "App": ["Ret", "Dec"],  # Approved can be retired or killed
+        "Ret": ["App"],  # Retired can be reactivated (ST discretion)
+        "Dec": [],  # Deceased is final
     }
 
     def clean(self):
@@ -114,11 +114,13 @@ class Character(CharacterModel):
         super().clean()
 
         # Validate status is in valid choices
-        valid_statuses = ['Un', 'Sub', 'App', 'Ret', 'Dec']
+        valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]
         if self.status not in valid_statuses:
-            raise ValidationError({
-                'status': f"Invalid status '{self.status}'. Must be one of: {', '.join(valid_statuses)}"
-            })
+            raise ValidationError(
+                {
+                    "status": f"Invalid status '{self.status}'. Must be one of: {', '.join(valid_statuses)}"
+                }
+            )
 
         # Validate status transition if character already exists
         if self.pk:
@@ -131,23 +133,23 @@ class Character(CharacterModel):
 
         # Validate XP balance
         if self.xp < 0:
-            raise ValidationError({
-                'xp': "XP cannot be negative"
-            })
+            raise ValidationError({"xp": "XP cannot be negative"})
 
     def _validate_status_transition(self, old_status, new_status):
         """Enforce valid status transitions."""
         valid_transitions = self.STATUS_TRANSITIONS.get(old_status, [])
 
         if new_status not in valid_transitions:
-            raise ValidationError({
-                'status': f"Cannot transition from {old_status} to {new_status}. "
-                         f"Valid transitions: {', '.join(valid_transitions) or 'none'}"
-            })
+            raise ValidationError(
+                {
+                    "status": f"Cannot transition from {old_status} to {new_status}. "
+                    f"Valid transitions: {', '.join(valid_transitions) or 'none'}"
+                }
+            )
 
     def save(self, *args, **kwargs):
         # Run validation unless explicitly skipped
-        if not kwargs.pop('skip_validation', False):
+        if not kwargs.pop("skip_validation", False):
             try:
                 self.full_clean()
             except ValidationError:
@@ -320,8 +322,7 @@ class Character(CharacterModel):
 
         if char.xp < cost:
             raise ValidationError(
-                f"Insufficient XP: need {cost}, have {char.xp}",
-                code='insufficient_xp'
+                f"Insufficient XP: need {cost}, have {char.xp}", code="insufficient_xp"
             )
 
         # Deduct XP
@@ -329,17 +330,17 @@ class Character(CharacterModel):
 
         # Record spending
         record = {
-            'index': len(char.spent_xp),
-            'trait': trait_display,
-            'value': trait_name,
-            'cost': cost,
-            'category': category,
-            'approved': 'Pending',
-            'timestamp': timezone.now().isoformat(),
+            "index": len(char.spent_xp),
+            "trait": trait_display,
+            "value": trait_name,
+            "cost": cost,
+            "category": category,
+            "approved": "Pending",
+            "timestamp": timezone.now().isoformat(),
         }
         char.spent_xp.append(record)
 
-        char.save(update_fields=['xp', 'spent_xp'])
+        char.save(update_fields=["xp", "spent_xp"])
         return record
 
     @transaction.atomic
@@ -358,17 +359,17 @@ class Character(CharacterModel):
         char = Character.objects.select_for_update().get(pk=self.pk)
 
         if spend_index >= len(char.spent_xp):
-            raise ValidationError("Invalid spend index", code='invalid_index')
+            raise ValidationError("Invalid spend index", code="invalid_index")
 
-        if char.spent_xp[spend_index]['approved'] != 'Pending':
+        if char.spent_xp[spend_index]["approved"] != "Pending":
             raise ValidationError(
                 f"XP spend already processed: {char.spent_xp[spend_index]['approved']}",
-                code='already_processed'
+                code="already_processed",
             )
 
         # Update approval status
-        char.spent_xp[spend_index]['approved'] = 'Approved'
-        char.spent_xp[spend_index]['approved_at'] = timezone.now().isoformat()
+        char.spent_xp[spend_index]["approved"] = "Approved"
+        char.spent_xp[spend_index]["approved_at"] = timezone.now().isoformat()
 
         # Apply trait increase
         setattr(char, trait_property_name, new_value)
@@ -393,13 +394,14 @@ class Character(CharacterModel):
             XPSpendingRequest instance
         """
         from game.models import XPSpendingRequest
+
         return XPSpendingRequest.objects.create(
             character=self,
             trait_name=trait_name,
             trait_type=trait_type,
             trait_value=trait_value,
             cost=cost,
-            approved='Pending'
+            approved="Pending",
         )
 
     def get_pending_xp_requests(self):
@@ -408,7 +410,7 @@ class Character(CharacterModel):
         Returns:
             QuerySet of XPSpendingRequest instances
         """
-        return self.xp_spendings.filter(approved='Pending')
+        return self.xp_spendings.filter(approved="Pending")
 
     def get_xp_spending_history(self):
         """Get all XP spending requests for this character.
@@ -430,8 +432,8 @@ class Character(CharacterModel):
         """
         from django.utils import timezone
 
-        request = self.xp_spendings.get(id=request_id, approved='Pending')
-        request.approved = 'Approved'
+        request = self.xp_spendings.get(id=request_id, approved="Pending")
+        request.approved = "Approved"
         request.approved_by = approver
         request.approved_at = timezone.now()
         request.save()
@@ -449,8 +451,8 @@ class Character(CharacterModel):
         """
         from django.utils import timezone
 
-        request = self.xp_spendings.get(id=request_id, approved='Pending')
-        request.approved = 'Denied'
+        request = self.xp_spendings.get(id=request_id, approved="Pending")
+        request.approved = "Denied"
         request.approved_by = approver
         request.approved_at = timezone.now()
         request.save()
@@ -468,7 +470,7 @@ class Character(CharacterModel):
         jsonfield_pending = any(d.get("approved") == "Pending" for d in self.spent_xp)
 
         # Check new model system
-        model_pending = self.xp_spendings.filter(approved='Pending').exists()
+        model_pending = self.xp_spendings.filter(approved="Pending").exists()
 
         return jsonfield_pending or model_pending
 
@@ -481,10 +483,18 @@ class Character(CharacterModel):
             int: Total XP spent
         """
         # JSONField system
-        jsonfield_total = sum(d.get("cost", 0) for d in self.spent_xp if d.get("approved") == "Approved")
+        jsonfield_total = sum(
+            d.get("cost", 0) for d in self.spent_xp if d.get("approved") == "Approved"
+        )
 
         # Model system
         from django.db.models import Sum
-        model_total = self.xp_spendings.filter(approved='Approved').aggregate(total=Sum('cost'))['total'] or 0
+
+        model_total = (
+            self.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))[
+                "total"
+            ]
+            or 0
+        )
 
         return jsonfield_total + model_total

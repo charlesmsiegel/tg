@@ -1,8 +1,8 @@
 from typing import Any
 
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.vtmhuman import VtMHumanCreationForm
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
@@ -18,19 +18,16 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
-from core.models import Language
 from core.mixins import (
-    ViewPermissionMixin,
+    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
-    ApprovedUserContextMixin,
+    ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from core.models import CharacterTemplate, Language
+from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -153,7 +150,9 @@ class VtMHumanBasicsView(LoginRequiredMixin, FormView):
         # Original: return reverse("characters:vampire:vtmhuman_template", kwargs={"pk": self.object.pk})
         self.object.creation_status = 1
         self.object.save()
-        return reverse("characters:vampire:vtmhuman_creation", kwargs={"pk": self.object.pk})
+        return reverse(
+            "characters:vampire:vtmhuman_creation", kwargs={"pk": self.object.pk}
+        )
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -182,9 +181,7 @@ class VtMHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/vampire/vtmhuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(
-            VtMHuman, pk=kwargs["pk"], owner=request.user
-        )
+        self.object = get_object_or_404(VtMHuman, pk=kwargs["pk"], owner=request.user)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:vampire:vtmhuman_creation", pk=self.object.pk)

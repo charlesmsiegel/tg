@@ -8,9 +8,9 @@ Checks for:
 - Orphaned spent_xp entries
 - Polymorphic relationship integrity
 """
+from characters.models.core.character import Character, CharacterModel
 from django.core.management.base import BaseCommand
 from django.db.models import Q
-from characters.models.core.character import Character, CharacterModel
 
 
 class Command(BaseCommand):
@@ -53,9 +53,7 @@ class Command(BaseCommand):
 
         # Count total characters to validate
         total = queryset.count()
-        self.stdout.write(
-            self.style.SUCCESS(f"\nValidating {total} character(s)...\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nValidating {total} character(s)...\n"))
 
         # Track issues
         self.issues = {
@@ -93,20 +91,31 @@ class Command(BaseCommand):
 
     def check_attribute_bounds(self, char):
         """Validate attribute values are within acceptable bounds."""
-        attributes = ["strength", "dexterity", "stamina", "perception",
-                      "intelligence", "wits", "charisma", "manipulation", "appearance"]
+        attributes = [
+            "strength",
+            "dexterity",
+            "stamina",
+            "perception",
+            "intelligence",
+            "wits",
+            "charisma",
+            "manipulation",
+            "appearance",
+        ]
 
         for attr in attributes:
             if hasattr(char, attr):
                 value = getattr(char, attr)
                 # Most attributes should be 1-10 (some elder/powerful characters go higher)
                 if value < 0 or value > 15:
-                    self.issues["attribute_bounds"].append({
-                        "character": char,
-                        "attribute": attr,
-                        "value": value,
-                        "issue": f"Attribute {attr} = {value} is outside normal bounds (0-15)",
-                    })
+                    self.issues["attribute_bounds"].append(
+                        {
+                            "character": char,
+                            "attribute": attr,
+                            "value": value,
+                            "issue": f"Attribute {attr} = {value} is outside normal bounds (0-15)",
+                        }
+                    )
 
                     if self.fix_mode and value < 0:
                         setattr(char, attr, 1)
@@ -134,13 +143,15 @@ class Command(BaseCommand):
         remaining_xp = char.xp - total_spent
 
         if remaining_xp < 0:
-            self.issues["xp_inconsistencies"].append({
-                "character": char,
-                "earned": char.xp,
-                "spent": total_spent,
-                "remaining": remaining_xp,
-                "issue": f"Character has negative XP: earned {char.xp}, spent {total_spent}",
-            })
+            self.issues["xp_inconsistencies"].append(
+                {
+                    "character": char,
+                    "earned": char.xp,
+                    "spent": total_spent,
+                    "remaining": remaining_xp,
+                    "issue": f"Character has negative XP: earned {char.xp}, spent {total_spent}",
+                }
+            )
 
     def check_required_fields(self, char):
         """Check that required fields are filled based on character status."""
@@ -153,17 +164,21 @@ class Command(BaseCommand):
         # Submitted/Approved characters should have concept
         if char.status in ["Sub", "App"] and hasattr(char, "concept"):
             if not char.concept or char.concept == "":
-                issues.append("Missing concept (required for Submitted/Approved status)")
+                issues.append(
+                    "Missing concept (required for Submitted/Approved status)"
+                )
 
         # Approved characters should have owner
         if char.status == "App" and not char.owner:
             issues.append("Missing owner (required for Approved status)")
 
         if issues:
-            self.issues["missing_required_fields"].append({
-                "character": char,
-                "issues": issues,
-            })
+            self.issues["missing_required_fields"].append(
+                {
+                    "character": char,
+                    "issues": issues,
+                }
+            )
 
     def check_orphaned_xp_spends(self, char):
         """Check for spent_xp entries that don't correspond to actual traits."""
@@ -172,19 +187,20 @@ class Command(BaseCommand):
 
         # Count pending spends
         pending_spends = [
-            spend for spend in char.spent_xp
-            if spend.get("approved") == "Pending"
+            spend for spend in char.spent_xp if spend.get("approved") == "Pending"
         ]
 
         # Check for very old pending spends (potential orphans)
         # Note: This is a simple check - a more sophisticated version would
         # verify that the trait actually exists on the character
         if len(pending_spends) > 20:
-            self.issues["orphaned_xp_spends"].append({
-                "character": char,
-                "pending_count": len(pending_spends),
-                "issue": f"Character has {len(pending_spends)} pending XP spends (possible orphaned entries)",
-            })
+            self.issues["orphaned_xp_spends"].append(
+                {
+                    "character": char,
+                    "pending_count": len(pending_spends),
+                    "issue": f"Character has {len(pending_spends)} pending XP spends (possible orphaned entries)",
+                }
+            )
 
     def check_status_consistency(self, char):
         """Check for status-related inconsistencies."""
@@ -193,11 +209,13 @@ class Command(BaseCommand):
             # Check if character is in any active (non-finished) scenes
             active_scenes = char.scenes.filter(finished=False)
             if active_scenes.exists():
-                self.issues["status_inconsistencies"].append({
-                    "character": char,
-                    "status": char.get_status_display(),
-                    "issue": f"{char.get_status_display()} character is in {active_scenes.count()} active scene(s)",
-                })
+                self.issues["status_inconsistencies"].append(
+                    {
+                        "character": char,
+                        "status": char.get_status_display(),
+                        "issue": f"{char.get_status_display()} character is in {active_scenes.count()} active scene(s)",
+                    }
+                )
 
     def report_results(self, total):
         """Display validation results."""
@@ -213,14 +231,18 @@ class Command(BaseCommand):
             )
         else:
             self.stdout.write(
-                self.style.WARNING(f"Found {total_issues} issue(s) across {total} character(s)\n")
+                self.style.WARNING(
+                    f"Found {total_issues} issue(s) across {total} character(s)\n"
+                )
             )
 
             # Report each category
             for category, issues in self.issues.items():
                 if issues:
                     self.stdout.write(
-                        self.style.WARNING(f"\n{category.replace('_', ' ').title()}: {len(issues)}")
+                        self.style.WARNING(
+                            f"\n{category.replace('_', ' ').title()}: {len(issues)}"
+                        )
                     )
 
                     for issue in issues[:10]:  # Show first 10 of each type

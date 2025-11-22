@@ -77,16 +77,16 @@ class Chronicle(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='chronicles_as_head_st',
-        help_text="Primary storyteller with full chronicle control"
+        related_name="chronicles_as_head_st",
+        help_text="Primary storyteller with full chronicle control",
     )
 
     # Game storytellers (subordinate STs with view-only access)
     game_storytellers = models.ManyToManyField(
         User,
-        related_name='chronicles_as_game_st',
+        related_name="chronicles_as_game_st",
         blank=True,
-        help_text="Game STs can view all chronicle data but cannot edit most objects"
+        help_text="Game STs can view all chronicle data but cannot edit most objects",
     )
 
     theme = models.CharField(max_length=200, default="")
@@ -170,9 +170,8 @@ class Chronicle(models.Model):
     def players(self):
         """Returns queryset of Users with characters in this chronicle."""
         from characters.models import Character
-        return User.objects.filter(
-            characters__chronicle=self
-        ).distinct()
+
+        return User.objects.filter(characters__chronicle=self).distinct()
 
     def is_head_st(self, user):
         """Check if user is head ST of this chronicle."""
@@ -202,9 +201,9 @@ class STRelationship(models.Model):
         ordering = ["gameline__id"]
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'chronicle', 'gameline'],
-                name='unique_st_per_chronicle_gameline',
-                violation_error_message="User is already a storyteller for this gameline in this chronicle"
+                fields=["user", "chronicle", "gameline"],
+                name="unique_st_per_chronicle_gameline",
+                violation_error_message="User is already a storyteller for this gameline in this chronicle",
             ),
         ]
 
@@ -434,24 +433,24 @@ class Scene(models.Model):
 
         if scene.xp_given:
             raise ValidationError(
-                "XP has already been awarded for this scene",
-                code='xp_already_given'
+                "XP has already been awarded for this scene", code="xp_already_given"
             )
 
         # Award to all characters atomically
         from characters.models import Character
+
         awarded_count = 0
         for char, should_award in character_awards.items():
             if should_award:
                 # Lock each character row to prevent race conditions
                 locked_char = Character.objects.select_for_update().get(pk=char.pk)
                 locked_char.xp += 1
-                locked_char.save(update_fields=['xp'])
+                locked_char.save(update_fields=["xp"])
                 awarded_count += 1
 
         # Mark scene as complete
         scene.xp_given = True
-        scene.save(update_fields=['xp_given'])
+        scene.save(update_fields=["xp_given"])
 
         return awarded_count
 
@@ -607,9 +606,7 @@ def message_processing(character, message):
                 difficulty=difficulty,
                 specialty=specialty,
             )
-            roll_description = (
-                f"extended roll of {num_dice} dice at difficulty {difficulty} targeting {target_successes} successes"
-            )
+            roll_description = f"extended roll of {num_dice} dice at difficulty {difficulty} targeting {target_successes} successes"
             if specialty:
                 roll_description += " with relevant specialty"
             m = ""
@@ -786,7 +783,9 @@ def rolls(num_rolls, num_dice, difficulty, specialty):
     return "Rolls:<br>" + f"<br>".join(join_list)
 
 
-def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100):
+def extended_roll(
+    num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100
+):
     """
     Perform an extended roll, accumulating successes until target is reached or botch occurs.
 
@@ -924,15 +923,16 @@ class XPSpendingRequest(models.Model):
     Replaces the spent_xp JSONField with proper database relations.
     Allows efficient querying and prevents index-based update issues.
     """
+
     character = models.ForeignKey(
         "characters.CharacterModel",
         on_delete=models.CASCADE,
-        related_name="xp_spendings"
+        related_name="xp_spendings",
     )
     trait_name = models.CharField(max_length=100, help_text="Display name of the trait")
     trait_type = models.CharField(
         max_length=50,
-        help_text="Category of trait (attribute, ability, background, etc.)"
+        help_text="Category of trait (attribute, ability, background, etc.)",
     )
     trait_value = models.IntegerField(help_text="New value after spending")
     cost = models.IntegerField(help_text="XP cost")
@@ -943,7 +943,7 @@ class XPSpendingRequest(models.Model):
             ("Approved", "Approved"),
             ("Denied", "Denied"),
         ],
-        default="Pending"
+        default="Pending",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     approved_at = models.DateTimeField(null=True, blank=True)
@@ -952,7 +952,7 @@ class XPSpendingRequest(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="approved_xp_spendings"
+        related_name="approved_xp_spendings",
     )
 
     class Meta:
@@ -974,15 +974,16 @@ class FreebieSpendingRecord(models.Model):
 
     Replaces the spent_freebies JSONField with proper database relations.
     """
+
     character = models.ForeignKey(
         "characters.CharacterModel",
         on_delete=models.CASCADE,
-        related_name="freebie_spendings"
+        related_name="freebie_spendings",
     )
     trait_name = models.CharField(max_length=100, help_text="Display name of the trait")
     trait_type = models.CharField(
         max_length=50,
-        help_text="Category of trait (attribute, ability, background, etc.)"
+        help_text="Category of trait (attribute, ability, background, etc.)",
     )
     trait_value = models.IntegerField(help_text="Value gained")
     cost = models.IntegerField(help_text="Freebie point cost")

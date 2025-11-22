@@ -1,6 +1,5 @@
-from django.views.generic import CreateView, DetailView, UpdateView
-
 from core.views.message_mixin import MessageMixin
+from django.views.generic import CreateView, DetailView, UpdateView
 from items.models.core import ItemModel
 
 

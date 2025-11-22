@@ -9,8 +9,8 @@ A chronicle is considered inactive if it has:
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
 from django.db.models import Max, Q
+from django.utils.timezone import now
 from game.models import Chronicle, Scene
 
 
@@ -54,9 +54,7 @@ class Command(BaseCommand):
         inactive_chronicles = self.find_inactive_chronicles()
 
         if not inactive_chronicles:
-            self.stdout.write(
-                self.style.SUCCESS("No inactive chronicles found!")
-            )
+            self.stdout.write(self.style.SUCCESS("No inactive chronicles found!"))
             return
 
         # Display findings
@@ -78,10 +76,12 @@ class Command(BaseCommand):
             activity_info = self.check_chronicle_activity(chronicle)
 
             if activity_info["is_inactive"]:
-                inactive.append({
-                    "chronicle": chronicle,
-                    "info": activity_info,
-                })
+                inactive.append(
+                    {
+                        "chronicle": chronicle,
+                        "info": activity_info,
+                    }
+                )
 
         return inactive
 
@@ -111,6 +111,7 @@ class Command(BaseCommand):
 
         # Check characters
         from characters.models.core.character import CharacterModel
+
         characters = CharacterModel.objects.filter(chronicle=chronicle)
         info["total_characters"] = characters.count()
         info["active_character_count"] = characters.filter(
@@ -119,16 +120,15 @@ class Command(BaseCommand):
 
         # Determine if inactive
         has_no_recent_scenes = (
-            info["last_scene_date"] is None or
-            info["last_scene_date"] < self.cutoff_date.date()
+            info["last_scene_date"] is None
+            or info["last_scene_date"] < self.cutoff_date.date()
         )
         has_no_active_scenes = info["active_scene_count"] == 0
         has_no_active_characters = info["active_character_count"] == 0
 
         # Chronicle is inactive if it has no recent activity
-        info["is_inactive"] = (
-            has_no_recent_scenes and
-            (has_no_active_scenes or has_no_active_characters)
+        info["is_inactive"] = has_no_recent_scenes and (
+            has_no_active_scenes or has_no_active_characters
         )
 
         return info
@@ -146,7 +146,9 @@ class Command(BaseCommand):
             info = item["info"]
 
             self.stdout.write(f"\n{chronicle.name} (ID: {chronicle.id})")
-            self.stdout.write(f"  Storytellers: {chronicle.storyteller_list() or 'None'}")
+            self.stdout.write(
+                f"  Storytellers: {chronicle.storyteller_list() or 'None'}"
+            )
 
             if info["last_scene_date"]:
                 days_ago = (now().date() - info["last_scene_date"]).days
@@ -168,8 +170,9 @@ class Command(BaseCommand):
 
     def export_chronicles(self, inactive_chronicles):
         """Export inactive chronicles to JSON files."""
-        from django.core.management import call_command
         import os
+
+        from django.core.management import call_command
 
         self.stdout.write("\nExporting chronicles...")
 
@@ -181,8 +184,7 @@ class Command(BaseCommand):
 
             # Safe filename
             safe_name = "".join(
-                c if c.isalnum() or c in " _-" else "_"
-                for c in chronicle.name
+                c if c.isalnum() or c in " _-" else "_" for c in chronicle.name
             ).strip()
 
             filename = f"chronicle_archives/archive_{chronicle.id}_{safe_name}.json"
@@ -190,10 +192,7 @@ class Command(BaseCommand):
             try:
                 # Call export_chronicle command
                 call_command(
-                    "export_chronicle",
-                    chronicle.id,
-                    "--output", filename,
-                    "--pretty"
+                    "export_chronicle", chronicle.id, "--output", filename, "--pretty"
                 )
                 self.stdout.write(
                     self.style.SUCCESS(f"  ✓ Exported {chronicle.name} to {filename}")
@@ -217,6 +216,4 @@ class Command(BaseCommand):
                     self.style.SUCCESS(f"  ✓ Marked as archived: {chronicle.name}")
                 )
             else:
-                self.stdout.write(
-                    f"  - Already archived: {chronicle.name}"
-                )
+                self.stdout.write(f"  - Already archived: {chronicle.name}")

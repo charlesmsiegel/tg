@@ -1,5 +1,5 @@
-from characters.models.demon.thrall import Thrall
 from characters.models.demon.demon import Demon
+from characters.models.demon.thrall import Thrall
 from django import forms
 
 

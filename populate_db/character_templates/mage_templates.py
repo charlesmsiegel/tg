@@ -5,10 +5,13 @@ Pre-built character concepts from sourcebooks
 
 import os
 import sys
+
 import django
 
 # Add project root to path
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
@@ -135,7 +138,10 @@ def populate_mage_templates():
                 "prime": 1,
                 "arete": 1,
             },
-            "specialties": ["Occult (Hermetic Magic)", "Academics (Classical Literature)"],
+            "specialties": [
+                "Occult (Hermetic Magic)",
+                "Academics (Classical Literature)",
+            ],
             "languages": ["English", "Latin", "Ancient Greek"],
             "equipment": "Wand, grimoire, ritual athame, rare occult texts",
             "suggested_freebie_spending": {
@@ -331,7 +337,10 @@ def populate_mage_templates():
                 "mind": 1,
                 "arete": 1,
             },
-            "specialties": ["Performance (Electronic Music)", "Expression (Lyrical Composition)"],
+            "specialties": [
+                "Performance (Electronic Music)",
+                "Expression (Lyrical Composition)",
+            ],
             "languages": ["English", "Spanish"],
             "equipment": "DJ equipment, synthesizers, laptop, portable speakers",
             "suggested_freebie_spending": {
@@ -346,7 +355,9 @@ def populate_mage_templates():
         },
     )[0]
 
-    print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='mta').count()} Mage templates")
+    print(
+        f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='mta').count()} Mage templates"
+    )
     return [hacker, hermetic, healer, akashic, cultist]
 
 

@@ -22,7 +22,9 @@ class ShadowArchetype(Model):
         return reverse("characters:wraith:shadow_archetype", kwargs={"pk": self.pk})
 
     def get_update_url(self):
-        return reverse("characters:wraith:update:shadow_archetype", kwargs={"pk": self.pk})
+        return reverse(
+            "characters:wraith:update:shadow_archetype", kwargs={"pk": self.pk}
+        )
 
     @classmethod
     def get_creation_url(cls):

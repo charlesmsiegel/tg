@@ -109,12 +109,10 @@ class Vampire(VtMHuman):
 
     # Virtue selection - determines which virtues are active
     has_conviction = models.BooleanField(
-        default=False,
-        help_text="If True, uses Conviction; if False, uses Conscience"
+        default=False, help_text="If True, uses Conviction; if False, uses Conscience"
     )
     has_instinct = models.BooleanField(
-        default=False,
-        help_text="If True, uses Instinct; if False, uses Self-Control"
+        default=False, help_text="If True, uses Instinct; if False, uses Self-Control"
     )
 
     # Virtues (Camarilla)
@@ -323,7 +321,13 @@ class Vampire(VtMHuman):
     def set_virtue_by_name(self, virtue_name, value):
         """Set a virtue value by name (case-insensitive)."""
         virtue_name = virtue_name.lower()
-        if virtue_name in ["conscience", "conviction", "self_control", "instinct", "courage"]:
+        if virtue_name in [
+            "conscience",
+            "conviction",
+            "self_control",
+            "instinct",
+            "courage",
+        ]:
             setattr(self, virtue_name, value)
         else:
             raise ValueError(f"Unknown virtue: {virtue_name}")
@@ -346,7 +350,9 @@ class Vampire(VtMHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            lambda: super().xp_cost(trait_type, trait_value)
+            if trait_value is not None
+            else 10000,
             {
                 "new_discipline": 10,
                 "clan_discipline": 5,
@@ -379,11 +385,31 @@ class Vampire(VtMHuman):
 
         # Check if trait is a discipline
         discipline_fields = [
-            "celerity", "fortitude", "potence", "auspex", "dominate", "dementation",
-            "presence", "animalism", "protean", "obfuscate", "chimerstry",
-            "necromancy", "obtenebration", "quietus", "serpentis", "thaumaturgy",
-            "vicissitude", "daimoinon", "melpominee", "mytherceria", "obeah",
-            "temporis", "thanatosis", "valeren", "visceratika"
+            "celerity",
+            "fortitude",
+            "potence",
+            "auspex",
+            "dominate",
+            "dementation",
+            "presence",
+            "animalism",
+            "protean",
+            "obfuscate",
+            "chimerstry",
+            "necromancy",
+            "obtenebration",
+            "quietus",
+            "serpentis",
+            "thaumaturgy",
+            "vicissitude",
+            "daimoinon",
+            "melpominee",
+            "mytherceria",
+            "obeah",
+            "temporis",
+            "thanatosis",
+            "valeren",
+            "visceratika",
         ]
 
         if trait in discipline_fields:
@@ -391,6 +417,7 @@ class Vampire(VtMHuman):
 
             # Determine if it's clan or out-of-clan
             from characters.models.vampire.discipline import Discipline
+
             try:
                 discipline_obj = Discipline.objects.get(property_name=trait)
                 is_clan = self.is_clan_discipline(discipline_obj)
@@ -404,6 +431,7 @@ class Vampire(VtMHuman):
 
                 if cost <= self.xp:
                     from core.utils import add_dot
+
                     if add_dot(self, trait, 5):
                         self.xp -= cost
                         self.add_to_spend(trait, getattr(self, trait), cost)
@@ -419,6 +447,7 @@ class Vampire(VtMHuman):
             cost = self.xp_cost("virtue", current_value + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
+
                 if add_dot(self, trait, 5):
                     self.xp -= cost
                     self.add_to_spend(trait, getattr(self, trait), cost)
@@ -431,6 +460,7 @@ class Vampire(VtMHuman):
             cost = self.xp_cost("humanity", self.humanity + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
+
                 if add_dot(self, "humanity", 10):
                     self.xp -= cost
                     self.add_to_spend(trait, self.humanity, cost)
@@ -443,6 +473,7 @@ class Vampire(VtMHuman):
             cost = self.xp_cost("path_rating", self.path_rating + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
+
                 if add_dot(self, "path_rating", 10):
                     self.xp -= cost
                     self.add_to_spend(trait, self.path_rating, cost)
@@ -469,13 +500,15 @@ class Vampire(VtMHuman):
     def freebie_costs(self):
         """Return a dictionary of freebie costs for vampire traits."""
         costs = super().freebie_costs()
-        costs.update({
-            "discipline": 7,
-            "out_of_clan_discipline": 10,
-            "virtue": 2,
-            "humanity": 1,
-            "path_rating": 1,
-        })
+        costs.update(
+            {
+                "discipline": 7,
+                "out_of_clan_discipline": 10,
+                "virtue": 2,
+                "humanity": 1,
+                "path_rating": 1,
+            }
+        )
         return costs
 
     def spend_freebies(self, trait):
@@ -486,15 +519,36 @@ class Vampire(VtMHuman):
 
         # Check if trait is a discipline
         discipline_fields = [
-            "celerity", "fortitude", "potence", "auspex", "dominate", "dementation",
-            "presence", "animalism", "protean", "obfuscate", "chimerstry",
-            "necromancy", "obtenebration", "quietus", "serpentis", "thaumaturgy",
-            "vicissitude", "daimoinon", "melpominee", "mytherceria", "obeah",
-            "temporis", "thanatosis", "valeren", "visceratika"
+            "celerity",
+            "fortitude",
+            "potence",
+            "auspex",
+            "dominate",
+            "dementation",
+            "presence",
+            "animalism",
+            "protean",
+            "obfuscate",
+            "chimerstry",
+            "necromancy",
+            "obtenebration",
+            "quietus",
+            "serpentis",
+            "thaumaturgy",
+            "vicissitude",
+            "daimoinon",
+            "melpominee",
+            "mytherceria",
+            "obeah",
+            "temporis",
+            "thanatosis",
+            "valeren",
+            "visceratika",
         ]
 
         if trait in discipline_fields:
             from characters.models.vampire.discipline import Discipline
+
             try:
                 discipline_obj = Discipline.objects.get(property_name=trait)
                 is_clan = self.is_clan_discipline(discipline_obj)
@@ -502,6 +556,7 @@ class Vampire(VtMHuman):
 
                 if cost <= self.freebies:
                     from core.utils import add_dot
+
                     if add_dot(self, trait, 5):
                         self.freebies -= cost
                         return True
@@ -515,6 +570,7 @@ class Vampire(VtMHuman):
             cost = self.freebie_cost("virtue")
             if cost <= self.freebies:
                 from core.utils import add_dot
+
                 if add_dot(self, trait, 5):
                     self.freebies -= cost
                     return True
@@ -526,6 +582,7 @@ class Vampire(VtMHuman):
             cost = self.freebie_cost("humanity")
             if cost <= self.freebies:
                 from core.utils import add_dot
+
                 if add_dot(self, "humanity", 10):
                     self.freebies -= cost
                     return True
@@ -537,6 +594,7 @@ class Vampire(VtMHuman):
             cost = self.freebie_cost("path_rating")
             if cost <= self.freebies:
                 from core.utils import add_dot
+
                 if add_dot(self, "path_rating", 10):
                     self.freebies -= cost
                     return True

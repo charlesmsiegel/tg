@@ -15,9 +15,9 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.utils import add_dot, weighted_choice
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from items.models.core.item import ItemModel
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
@@ -829,8 +829,7 @@ class ResRating(models.Model):
     mage = models.ForeignKey("Mage", on_delete=models.SET_NULL, null=True)
     resonance = models.ForeignKey(Resonance, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -839,8 +838,8 @@ class ResRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_mage_resrating_rating_range',
-                violation_error_message="Resonance rating must be between 0 and 10"
+                name="characters_mage_resrating_rating_range",
+                violation_error_message="Resonance rating must be between 0 and 10",
             ),
         ]
 
@@ -849,16 +848,15 @@ class PracticeRating(models.Model):
     mage = models.ForeignKey(Mage, on_delete=models.SET_NULL, null=True)
     practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_mage_practicerating_rating_range',
-                violation_error_message="Practice rating must be between 0 and 10"
+                name="characters_mage_practicerating_rating_range",
+                violation_error_message="Practice rating must be between 0 and 10",
             ),
         ]
 

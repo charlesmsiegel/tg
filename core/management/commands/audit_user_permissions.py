@@ -6,8 +6,8 @@ Reports on:
 - Users with ST permissions but no active chronicles
 - Profile data completeness (lines/veils for safety tools)
 """
-from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
 from game.models import Chronicle, STRelationship
 
 
@@ -27,9 +27,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        self.stdout.write(
-            self.style.SUCCESS("\nAuditing user permissions...\n")
-        )
+        self.stdout.write(self.style.SUCCESS("\nAuditing user permissions...\n"))
 
         # Gather data
         all_users = User.objects.all()
@@ -125,7 +123,9 @@ class Command(BaseCommand):
         # Count profiles with lines/veils set
         with_lines = profiles.exclude(Q(lines="") | Q(lines__isnull=True)).count()
         with_veils = profiles.exclude(Q(veils="") | Q(veils__isnull=True)).count()
-        with_discord = profiles.exclude(Q(discord_id="") | Q(discord_id__isnull=True)).count()
+        with_discord = profiles.exclude(
+            Q(discord_id="") | Q(discord_id__isnull=True)
+        ).count()
 
         # Visibility settings
         lines_visible = profiles.filter(lines_toggle=True).count()
@@ -134,23 +134,36 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Total Profiles: {total}")
         self.stdout.write(f"\nSafety Tools:")
-        self.stdout.write(f"  Lines set: {with_lines} ({with_lines/total*100 if total > 0 else 0:.1f}%)")
+        self.stdout.write(
+            f"  Lines set: {with_lines} ({with_lines/total*100 if total > 0 else 0:.1f}%)"
+        )
         self.stdout.write(f"  Lines visible: {lines_visible}")
-        self.stdout.write(f"  Veils set: {with_veils} ({with_veils/total*100 if total > 0 else 0:.1f}%)")
+        self.stdout.write(
+            f"  Veils set: {with_veils} ({with_veils/total*100 if total > 0 else 0:.1f}%)"
+        )
         self.stdout.write(f"  Veils visible: {veils_visible}")
         self.stdout.write(f"\nContact Info:")
-        self.stdout.write(f"  Discord ID set: {with_discord} ({with_discord/total*100 if total > 0 else 0:.1f}%)")
+        self.stdout.write(
+            f"  Discord ID set: {with_discord} ({with_discord/total*100 if total > 0 else 0:.1f}%)"
+        )
         self.stdout.write(f"  Discord visible: {discord_visible}")
 
     def export_audit(self, filename, all_users, st_users):
         """Export audit results to CSV."""
         import csv
+
         from accounts.models import Profile
 
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
-                "username", "email", "is_st", "chronicles",
-                "has_profile", "has_lines", "has_veils", "has_discord"
+                "username",
+                "email",
+                "is_st",
+                "chronicles",
+                "has_profile",
+                "has_lines",
+                "has_veils",
+                "has_discord",
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -169,26 +182,29 @@ class Command(BaseCommand):
                     has_profile = True
                     has_lines = bool(profile.lines and profile.lines.strip())
                     has_veils = bool(profile.veils and profile.veils.strip())
-                    has_discord = bool(profile.discord_id and profile.discord_id.strip())
+                    has_discord = bool(
+                        profile.discord_id and profile.discord_id.strip()
+                    )
                 except Profile.DoesNotExist:
                     has_profile = False
                     has_lines = False
                     has_veils = False
                     has_discord = False
 
-                writer.writerow({
-                    "username": user.username,
-                    "email": user.email,
-                    "is_st": is_st,
-                    "chronicles": chronicle_names,
-                    "has_profile": has_profile,
-                    "has_lines": has_lines,
-                    "has_veils": has_veils,
-                    "has_discord": has_discord,
-                })
+                writer.writerow(
+                    {
+                        "username": user.username,
+                        "email": user.email,
+                        "is_st": is_st,
+                        "chronicles": chronicle_names,
+                        "has_profile": has_profile,
+                        "has_lines": has_lines,
+                        "has_veils": has_veils,
+                        "has_discord": has_discord,
+                    }
+                )
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\n✓ Audit exported to {filename}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\n✓ Audit exported to {filename}"))
+
 
 from django.db.models import Q  # Import for check_profile_completeness

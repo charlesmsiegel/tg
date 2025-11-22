@@ -12,7 +12,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Drives companions to frustration; occasionally reveals actual conspiracies",
         "strengths": "Paranoid but sometimes correct pattern recognition",
         "weaknesses": "Unable to accept simple explanations",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -25,7 +25,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Reckless physical/verbal abuse; self-destructive behavior",
         "strengths": "Immediate destructive power",
         "weaknesses": "Lacks subtlety; self-sabotaging",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -38,7 +38,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Creates carefully timed revelations; poisonous observations about companions",
         "strengths": "Intelligent, methodical, accurate observations",
         "weaknesses": "Requires planning time; vulnerable if timetable disrupted",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -51,7 +51,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Damages relationships; promotes hypocrisy exploitation",
         "strengths": "Personable facade; difficult to detect initially",
         "weaknesses": "Revealed when switching tactics",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -64,7 +64,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Alienation of all external relationships; dependence reinforcement",
         "strengths": "Emotional manipulation; claims moral authority",
         "weaknesses": "Exposed when 'outsiders' prove beneficial",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -77,7 +77,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Public spectacle of suffering; manipulation of circle members",
         "strengths": "Moral authority veneer; audience leverage",
         "weaknesses": "Transparent when suffering produces no results",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -90,7 +90,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Complete spectral transformation preview",
         "strengths": "Immediate overwhelming force",
         "weaknesses": "No strategy; self-defeating behavior",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -103,7 +103,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Missed opportunities; relationship failures; revealed dereliction",
         "strengths": "Lulls Psyche into false security",
         "weaknesses": "Predictable when apathy broken",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -116,7 +116,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Systemic self-hatred; learned helplessness; confidence collapse",
         "strengths": "Justification for taking control; universal targets",
         "weaknesses": "Predictable criticism patterns",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -129,7 +129,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Endless suffering through dashed hopes",
         "strengths": "Emotional sustenance facade; motivates action",
         "weaknesses": "Inevitably exposed as false",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -142,7 +142,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Undermines companion actions; ensures foreseen failures",
         "strengths": "Self-fulfilling prophesy mechanics",
         "weaknesses": "Depends on Psyche following suggestions",
-    }
+    },
 )[0]
 
 # From Book of Oblivion - Additional Archetypes
@@ -156,7 +156,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Identity crisis and self-doubt",
         "strengths": "Can make wraith question fundamental reality",
         "weaknesses": "Lying about own nature",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -169,7 +169,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Forces submission through overwhelming power",
         "strengths": "Responds to strength",
         "weaknesses": "Can be reasoned with via strength/respect",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -182,7 +182,7 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Systematic destruction of all meaning",
         "strengths": "Single-minded focus on destruction",
         "weaknesses": "Destructive urges exposed",
-    }
+    },
 )[0]
 
 ShadowArchetype.objects.get_or_create(
@@ -195,5 +195,5 @@ ShadowArchetype.objects.get_or_create(
         "effect_on_psyche": "Forces wraith to worship Shadow",
         "strengths": "Charismatic and demanding",
         "weaknesses": "Self-love vulnerability",
-    }
+    },
 )[0]

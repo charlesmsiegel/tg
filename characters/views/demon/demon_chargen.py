@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
 from characters.models.core.specialty import Specialty
@@ -19,10 +19,14 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -152,7 +156,8 @@ class DemonLoresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         # Highlight house lores if house is set
         if self.object.house:
             house_lore_properties = [
-                f"lore_of_{lore.property_name}" for lore in self.object.house.lores.all()
+                f"lore_of_{lore.property_name}"
+                for lore in self.object.house.lores.all()
             ]
             for field_name in self.fields:
                 if field_name in house_lore_properties:
@@ -176,7 +181,8 @@ class DemonLoresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
 
         if total_lores != 3:
             form.add_error(
-                None, f"You must spend exactly 3 dots on Lores. Currently: {total_lores}"
+                None,
+                f"You must spend exactly 3 dots on Lores. Currently: {total_lores}",
             )
             return self.form_invalid(form)
 
@@ -213,7 +219,9 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
             context["object"], self.request.user
         )
         context["points_spent"] = context["object"].apocalyptic_form_points_spent()
-        context["points_remaining"] = context["object"].apocalyptic_form_points_remaining()
+        context["points_remaining"] = context[
+            "object"
+        ].apocalyptic_form_points_remaining()
         context["points_budget"] = context["object"].apocalyptic_form_points
         return context
 
@@ -239,14 +247,20 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
                     return self.form_invalid(form)
 
                 if total_cost > demon.apocalyptic_form_points:
-                    form.add_error(None, f"Point budget exceeded. You have {demon.apocalyptic_form_points} points available.")
+                    form.add_error(
+                        None,
+                        f"Point budget exceeded. You have {demon.apocalyptic_form_points} points available.",
+                    )
                     return self.form_invalid(form)
 
                 demon.apocalyptic_form.add(trait)
 
         # Must spend at least 8 points
         if total_cost < 8:
-            form.add_error(None, f"You must spend at least 8 points on Apocalyptic Form traits. Currently: {total_cost}")
+            form.add_error(
+                None,
+                f"You must spend at least 8 points on Apocalyptic Form traits. Currently: {total_cost}",
+            )
             return self.form_invalid(form)
 
         demon.creation_status += 1
@@ -353,12 +367,14 @@ class DemonFreebiesView(HumanFreebiesView):
 
     def get_category_functions(self):
         d = super().get_category_functions()
-        d.update({
-            "lore": self.object.lore_freebies,
-            "faith": self.object.faith_freebies,
-            "virtue": self.object.virtue_freebies,
-            "temporary_faith": self.object.temporary_faith_freebies,
-        })
+        d.update(
+            {
+                "lore": self.object.lore_freebies,
+                "faith": self.object.faith_freebies,
+                "virtue": self.object.virtue_freebies,
+                "temporary_faith": self.object.temporary_faith_freebies,
+            }
+        )
         return d
 
 
@@ -413,9 +429,11 @@ class DemonFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
     def category_method_map(self):
         d = super().category_method_map()
-        d.update({
-            "Lore": self.lore_options,
-        })
+        d.update(
+            {
+                "Lore": self.lore_options,
+            }
+        )
         return d
 
     def lore_options(self):

@@ -4,7 +4,7 @@ Source: Demon Players Guide
 """
 
 from characters.models.core.merit_flaw_block import MeritFlaw
-from populate_db.objects import demon, thrall, dtfhuman
+from populate_db.objects import demon, dtfhuman, thrall
 
 # INFERNAL MERITS - Specific to demon nature and celestial heritage
 
@@ -567,7 +567,7 @@ mf.add_ratings([2])
 mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
-mf.description = "The Internet is becoming increasingly common, but it is far from universal. Many users never progress beyond the basic email/simple surfing to \"sites whose address you know\" stage. Characters with this Merit are adept at using the Internet in all its vast, rambling confusion — no small feat for the technologically challenged fallen."
+mf.description = 'The Internet is becoming increasingly common, but it is far from universal. Many users never progress beyond the basic email/simple surfing to "sites whose address you know" stage. Characters with this Merit are adept at using the Internet in all its vast, rambling confusion — no small feat for the technologically challenged fallen.'
 mf.add_source("Demon Players Guide", 82)
 mf.save()
 
@@ -936,7 +936,7 @@ mf.add_ratings([-1, -2, -3])
 mf.allowed_types.add(demon)
 mf.allowed_types.add(thrall)
 mf.allowed_types.add(dtfhuman)
-mf.description = "Your character is addicted to some sort of substance. The one-point version of this Flaw represents an addiction to a substance that is legal and easy to satisfy, such as cigarettes. The two-point version represents a legal or mildly illegal substance that inhibits her abilities to a serious degree, such as alcohol or marijuana. The three-point version represents an addiction to a highly illegal or highly dangerous \"hard\" drug such as heroin. Your character is always under the effects of your chosen vice unless she assumes her apocalyptic form."
+mf.description = 'Your character is addicted to some sort of substance. The one-point version of this Flaw represents an addiction to a substance that is legal and easy to satisfy, such as cigarettes. The two-point version represents a legal or mildly illegal substance that inhibits her abilities to a serious degree, such as alcohol or marijuana. The three-point version represents an addiction to a highly illegal or highly dangerous "hard" drug such as heroin. Your character is always under the effects of your chosen vice unless she assumes her apocalyptic form.'
 mf.add_source("Demon Players Guide", 86)
 mf.save()
 

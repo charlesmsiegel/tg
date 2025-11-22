@@ -3,19 +3,17 @@
 
 from characters.models.mage.companion import Companion
 from characters.models.werewolf.charm import SpiritCharm
-
-from populate_db.archetypes import caregiver, trickster, sage, loner, explorer
+from populate_db.advantages import alacrity, armor
+from populate_db.advantages import claws_fangs_or_horns as claws
 from populate_db.advantages import (
-    armor,
-    claws_fangs_or_horns as claws,
-    nightsight,
-    alacrity,
-    tracking,
-    flexibility,
-    wings,
     empathic_bond,
+    flexibility,
     human_speech,
+    nightsight,
+    tracking,
+    wings,
 )
+from populate_db.archetypes import caregiver, explorer, loner, sage, trickster
 
 # Configure advantages
 nightsight.add_ratings([1])

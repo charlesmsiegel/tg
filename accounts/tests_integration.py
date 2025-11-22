@@ -7,14 +7,6 @@ Tests cover:
 - Profile view approval workflows
 - ST permission boundaries
 """
-from characters.models.core.human import Human
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
-from game.models import Chronicle, Gameline, Scene, STRelationship
-from items.models.core import ItemModel
-from locations.models.core import LocationModel
-
 from accounts.forms import (
     CustomUserCreationForm,
     FreebieAwardForm,
@@ -22,6 +14,13 @@ from accounts.forms import (
     SceneXP,
 )
 from accounts.models import Profile
+from characters.models.core.human import Human
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+from game.models import Chronicle, Gameline, Scene, STRelationship
+from items.models.core import ItemModel
+from locations.models.core import LocationModel
 
 
 class TestProfileSignal(TestCase):

@@ -7,8 +7,8 @@ Shows:
 - Recent XP requests
 - Character status breakdown
 """
-from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand, CommandError
 from game.models import Chronicle, Scene, WeeklyXPRequest
 
 
@@ -89,31 +89,30 @@ class Command(BaseCommand):
 
             # Characters
             pending_chars = CharacterModel.objects.filter(
-                chronicle=chronicle,
-                status="Sub"
+                chronicle=chronicle, status="Sub"
             ).count()
             output.append(f"  Submitted Characters: {pending_chars}")
 
             # Images
-            pending_images = CharacterModel.objects.filter(
-                chronicle=chronicle,
-                image_status="sub"
-            ).exclude(image="").count()
+            pending_images = (
+                CharacterModel.objects.filter(chronicle=chronicle, image_status="sub")
+                .exclude(image="")
+                .count()
+            )
             output.append(f"  Pending Images: {pending_images}")
 
             # Freebies
             pending_freebies = CharacterModel.objects.filter(
-                chronicle=chronicle,
-                freebies_approved=False,
-                status="Sub"
+                chronicle=chronicle, freebies_approved=False, status="Sub"
             ).count()
             output.append(f"  Pending Freebies: {pending_freebies}")
 
             # XP Requests
-            char_ids = CharacterModel.objects.filter(chronicle=chronicle).values_list("id", flat=True)
+            char_ids = CharacterModel.objects.filter(chronicle=chronicle).values_list(
+                "id", flat=True
+            )
             pending_xp = WeeklyXPRequest.objects.filter(
-                character_id__in=char_ids,
-                approved=False
+                character_id__in=char_ids, approved=False
             ).count()
             output.append(f"  Pending XP Requests: {pending_xp}")
             output.append("")
@@ -127,7 +126,9 @@ class Command(BaseCommand):
             if active_count > 0:
                 for scene in active_scenes[:5]:
                     char_count = scene.characters.count()
-                    output.append(f"    - {scene.name or '(unnamed)'}: {char_count} character(s)")
+                    output.append(
+                        f"    - {scene.name or '(unnamed)'}: {char_count} character(s)"
+                    )
                 if active_count > 5:
                     output.append(f"    ... and {active_count - 5} more")
             output.append("")

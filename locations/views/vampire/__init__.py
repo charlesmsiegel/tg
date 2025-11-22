@@ -1,5 +1,5 @@
-from locations.models.vampire import Domain, Elysium, Haven, Rack
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from locations.models.vampire import Domain, Elysium, Haven, Rack
 
 
 # Haven Views

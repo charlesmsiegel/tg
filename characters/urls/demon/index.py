@@ -1,11 +1,8 @@
-from characters.views.demon import (
+from characters.views.demon import (  # DemonListView,; DtFHumanListView,; ThrallListView,
     DemonFactionListView,
     DemonHouseListView,
-    # DemonListView,
-    # DtFHumanListView,
     LoreListView,
     PactListView,
-    # ThrallListView,
     VisageListView,
 )
 from django.urls import path

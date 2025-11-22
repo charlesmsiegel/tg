@@ -299,7 +299,9 @@ class Changeling(CtDHuman):
         cost = 5
         self.add_art(trait.property_name)
         self.freebies -= cost
-        self.spent_freebies.append(self.freebie_spend_record(trait.name, trait.property_name, value, cost))
+        self.spent_freebies.append(
+            self.freebie_spend_record(trait.name, trait.property_name, value, cost)
+        )
         return True
 
     def realm_freebies(self, form):
@@ -309,7 +311,9 @@ class Changeling(CtDHuman):
         cost = 3
         self.add_realm(trait.property_name)
         self.freebies -= cost
-        self.spent_freebies.append(self.freebie_spend_record(trait.name, trait.property_name, value, cost))
+        self.spent_freebies.append(
+            self.freebie_spend_record(trait.name, trait.property_name, value, cost)
+        )
         return True
 
     def glamour_freebies(self, form):
@@ -319,7 +323,9 @@ class Changeling(CtDHuman):
         cost = 3
         self.add_glamour()
         self.freebies -= cost
-        self.spent_freebies.append(self.freebie_spend_record(trait, "glamour", value, cost))
+        self.spent_freebies.append(
+            self.freebie_spend_record(trait, "glamour", value, cost)
+        )
         return True
 
     def xp_frequencies(self):
@@ -340,7 +346,9 @@ class Changeling(CtDHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            lambda: super().xp_cost(trait_type, trait_value)
+            if trait_value is not None
+            else 10000,
             {
                 "art": 8,
                 "realm": 5,
@@ -433,12 +441,14 @@ class Changeling(CtDHuman):
     def freebie_costs(self):
         """Return a dictionary of freebie costs for changeling traits."""
         costs = super().freebie_costs()
-        costs.update({
-            "art": 5,
-            "realm": 3,
-            "glamour": 3,
-            "banality": 2,
-        })
+        costs.update(
+            {
+                "art": 5,
+                "realm": 3,
+                "glamour": 3,
+                "banality": 2,
+            }
+        )
         return costs
 
     def freebie_cost(self, trait_type):

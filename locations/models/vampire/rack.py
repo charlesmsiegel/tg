@@ -82,7 +82,7 @@ class Rack(LocationModel):
     def get_total_value(self):
         """Calculate the overall value of this rack."""
         value = self.quality + self.population_density
-        value -= (self.risk_level - 3)  # Adjust for risk
+        value -= self.risk_level - 3  # Adjust for risk
         if self.is_protected:
             value += 1
         if self.is_exclusive:

@@ -415,7 +415,9 @@ class Werewolf(WtAHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            lambda: super().xp_cost(trait_type, trait_value)
+            if trait_value is not None
+            else 10000,
             {
                 "gift": 3,
                 "rite": 1,
@@ -506,15 +508,17 @@ class Werewolf(WtAHuman):
     def freebie_costs(self):
         """Return a dictionary of freebie costs for werewolf traits."""
         costs = super().freebie_costs()
-        costs.update({
-            "gift": 5,
-            "rite": 1,
-            "rage": 1,
-            "gnosis": 2,
-            "glory": 1,
-            "honor": 1,
-            "wisdom": 1,
-        })
+        costs.update(
+            {
+                "gift": 5,
+                "rite": 1,
+                "rage": 1,
+                "gnosis": 2,
+                "glory": 1,
+                "honor": 1,
+                "wisdom": 1,
+            }
+        )
         return costs
 
     def freebie_cost(self, trait_type):

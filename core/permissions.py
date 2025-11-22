@@ -5,15 +5,17 @@ Provides role-based access control with fine-grained permissions for
 characters, items, locations, and other game objects.
 """
 
-from typing import Set
 from enum import Enum
+from typing import Set
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q, Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 
 
 class Role(Enum):
     """User roles for permission checks."""
+
     OWNER = "owner"
     ADMIN = "admin"
     CHRONICLE_HEAD_ST = "chronicle_head_st"
@@ -26,6 +28,7 @@ class Role(Enum):
 
 class VisibilityTier(Enum):
     """Visibility levels for object data."""
+
     FULL = "full"
     PARTIAL = "partial"
     NONE = "none"
@@ -33,6 +36,7 @@ class VisibilityTier(Enum):
 
 class Permission(Enum):
     """Specific permissions that can be granted."""
+
     VIEW_FULL = "view_full"
     VIEW_PARTIAL = "view_partial"
     EDIT_FULL = "edit_full"
@@ -122,38 +126,37 @@ class PermissionManager:
             roles.add(Role.ADMIN)
 
         # Owner check
-        if hasattr(obj, 'owner') and obj.owner == user:
+        if hasattr(obj, "owner") and obj.owner == user:
             roles.add(Role.OWNER)
-        elif hasattr(obj, 'user') and obj.user == user:
+        elif hasattr(obj, "user") and obj.user == user:
             roles.add(Role.OWNER)
 
         # Chronicle Head ST check
-        if hasattr(obj, 'chronicle') and obj.chronicle:
+        if hasattr(obj, "chronicle") and obj.chronicle:
             # Check if user is head ST of the chronicle
-            if hasattr(obj.chronicle, 'head_st') and obj.chronicle.head_st == user:
+            if hasattr(obj.chronicle, "head_st") and obj.chronicle.head_st == user:
                 roles.add(Role.CHRONICLE_HEAD_ST)
-            elif hasattr(obj.chronicle, 'head_storytellers'):
+            elif hasattr(obj.chronicle, "head_storytellers"):
                 if obj.chronicle.head_storytellers.filter(id=user.id).exists():
                     roles.add(Role.CHRONICLE_HEAD_ST)
 
             # Check if user is a game ST in the chronicle
-            if hasattr(obj.chronicle, 'game_storytellers'):
+            if hasattr(obj.chronicle, "game_storytellers"):
                 if obj.chronicle.game_storytellers.filter(id=user.id).exists():
                     roles.add(Role.GAME_ST)
 
             # Player check - user has a character in same chronicle
-            if hasattr(user, 'characters'):
+            if hasattr(user, "characters"):
                 if user.characters.filter(chronicle=obj.chronicle).exists():
                     roles.add(Role.PLAYER)
 
         # Observer check (uses generic relation)
-        if hasattr(obj, 'observers'):
+        if hasattr(obj, "observers"):
             ct = ContentType.objects.get_for_model(obj)
             from core.models import Observer
+
             if Observer.objects.filter(
-                content_type=ct,
-                object_id=obj.id,
-                user=user
+                content_type=ct, object_id=obj.id, user=user
             ).exists():
                 roles.add(Role.OBSERVER)
 
@@ -161,10 +164,7 @@ class PermissionManager:
 
     @staticmethod
     def user_has_permission(
-        user: User,
-        obj,
-        permission: Permission,
-        status_aware: bool = True
+        user: User, obj, permission: Permission, status_aware: bool = True
     ) -> bool:
         """
         Check if user has a specific permission for an object.
@@ -183,16 +183,14 @@ class PermissionManager:
         # Collect all permissions from all roles (union)
         user_permissions = set()
         for role in roles:
-            user_permissions.update(
-                PermissionManager.ROLE_PERMISSIONS.get(role, set())
-            )
+            user_permissions.update(PermissionManager.ROLE_PERMISSIONS.get(role, set()))
 
         # Check base permission
         if permission not in user_permissions:
             return False
 
         # Apply status-based restrictions for characters
-        if status_aware and hasattr(obj, 'status'):
+        if status_aware and hasattr(obj, "status"):
             return PermissionManager._check_status_restrictions(
                 user, obj, permission, roles
             )
@@ -201,32 +199,34 @@ class PermissionManager:
 
     @staticmethod
     def _check_status_restrictions(
-        user: User,
-        obj,
-        permission: Permission,
-        roles: Set[Role]
+        user: User, obj, permission: Permission, roles: Set[Role]
     ) -> bool:
         """Apply status-based permission restrictions."""
         status = obj.status
 
         # Deceased characters are read-only for everyone except admins and head STs
-        if status == 'Dec':
-            if permission in [Permission.EDIT_FULL, Permission.EDIT_LIMITED,
-                            Permission.DELETE, Permission.SPEND_XP]:
-                return (Role.ADMIN in roles or
-                       Role.CHRONICLE_HEAD_ST in roles)
+        if status == "Dec":
+            if permission in [
+                Permission.EDIT_FULL,
+                Permission.EDIT_LIMITED,
+                Permission.DELETE,
+                Permission.SPEND_XP,
+            ]:
+                return Role.ADMIN in roles or Role.CHRONICLE_HEAD_ST in roles
 
         # Submitted characters: owners have no permissions, only head ST/admin
-        if status == 'Sub':
-            if permission in [Permission.EDIT_LIMITED, Permission.SPEND_XP,
-                            Permission.SPEND_FREEBIES]:
+        if status == "Sub":
+            if permission in [
+                Permission.EDIT_LIMITED,
+                Permission.SPEND_XP,
+                Permission.SPEND_FREEBIES,
+            ]:
                 if Role.OWNER in roles:
                     return False
-                return (Role.CHRONICLE_HEAD_ST in roles or
-                       Role.ADMIN in roles)
+                return Role.CHRONICLE_HEAD_ST in roles or Role.ADMIN in roles
 
         # Unfinished: Owner can spend freebies only (not XP yet)
-        if status == 'Un':
+        if status == "Un":
             if permission == Permission.SPEND_XP and Role.OWNER in roles:
                 # Can't spend XP until approved
                 return False
@@ -234,7 +234,7 @@ class PermissionManager:
                 return True
 
         # Approved: Owner can spend XP (not freebies) and edit limited fields
-        if status == 'App':
+        if status == "App":
             if permission == Permission.SPEND_FREEBIES and Role.OWNER in roles:
                 # Can't spend freebies after approval
                 return False
@@ -242,9 +242,12 @@ class PermissionManager:
                 return True
 
         # Retired: Owner cannot make any changes
-        if status == 'Ret':
-            if permission in [Permission.EDIT_LIMITED, Permission.SPEND_XP,
-                            Permission.SPEND_FREEBIES]:
+        if status == "Ret":
+            if permission in [
+                Permission.EDIT_LIMITED,
+                Permission.SPEND_XP,
+                Permission.SPEND_FREEBIES,
+            ]:
                 if Role.OWNER in roles:
                     return False
 
@@ -263,15 +266,11 @@ class PermissionManager:
             return VisibilityTier.NONE
 
         # Check if user has full access
-        if PermissionManager.user_has_permission(
-            user, obj, Permission.VIEW_FULL
-        ):
+        if PermissionManager.user_has_permission(user, obj, Permission.VIEW_FULL):
             return VisibilityTier.FULL
 
         # Check if user has partial access
-        if PermissionManager.user_has_permission(
-            user, obj, Permission.VIEW_PARTIAL
-        ):
+        if PermissionManager.user_has_permission(user, obj, Permission.VIEW_PARTIAL):
             return VisibilityTier.PARTIAL
 
         return VisibilityTier.NONE
@@ -281,9 +280,7 @@ class PermissionManager:
         """Simplified view check."""
         return PermissionManager.user_has_permission(
             user, obj, Permission.VIEW_FULL
-        ) or PermissionManager.user_has_permission(
-            user, obj, Permission.VIEW_PARTIAL
-        )
+        ) or PermissionManager.user_has_permission(user, obj, Permission.VIEW_PARTIAL)
 
     @staticmethod
     def user_can_edit(user: User, obj) -> bool:
@@ -292,16 +289,12 @@ class PermissionManager:
         Returns True if user has EDIT_FULL permission.
         For limited editing (owner), use user_has_permission(EDIT_LIMITED).
         """
-        return PermissionManager.user_has_permission(
-            user, obj, Permission.EDIT_FULL
-        )
+        return PermissionManager.user_has_permission(user, obj, Permission.EDIT_FULL)
 
     @staticmethod
     def user_can_spend_xp(user: User, obj) -> bool:
         """Check if user can spend XP on this object."""
-        return PermissionManager.user_has_permission(
-            user, obj, Permission.SPEND_XP
-        )
+        return PermissionManager.user_has_permission(user, obj, Permission.SPEND_XP)
 
     @staticmethod
     def user_can_spend_freebies(user: User, obj) -> bool:
@@ -327,8 +320,8 @@ class PermissionManager:
         """
         if not user.is_authenticated:
             # Anonymous users see nothing (or only PUBLIC visibility)
-            if hasattr(queryset.model, 'visibility'):
-                return queryset.filter(visibility='PUB')
+            if hasattr(queryset.model, "visibility"):
+                return queryset.filter(visibility="PUB")
             return queryset.none()
 
         # Admins see everything
@@ -340,47 +333,46 @@ class PermissionManager:
 
         # Objects user owns
         try:
-            queryset.model._meta.get_field('owner')
+            queryset.model._meta.get_field("owner")
             filters |= Q(owner=user)
         except Exception:
             pass
 
         # Objects in chronicles where user is head ST
-        if hasattr(queryset.model, 'chronicle'):
+        if hasattr(queryset.model, "chronicle"):
             filters |= Q(chronicle__head_st=user)
             # Or if using M2M for head storytellers
             try:
-                if hasattr(queryset.model, 'chronicle__head_storytellers'):
+                if hasattr(queryset.model, "chronicle__head_storytellers"):
                     filters |= Q(chronicle__head_storytellers=user)
             except Exception:
                 pass
 
         # Objects in chronicles where user is game ST (can view all)
-        if hasattr(queryset.model, 'chronicle'):
+        if hasattr(queryset.model, "chronicle"):
             try:
-                if hasattr(queryset.model, 'chronicle__game_storytellers'):
+                if hasattr(queryset.model, "chronicle__game_storytellers"):
                     filters |= Q(chronicle__game_storytellers=user)
             except Exception:
                 pass
 
         # Objects in chronicles user plays in
-        if hasattr(queryset.model, 'chronicle'):
+        if hasattr(queryset.model, "chronicle"):
             # User has a character in the chronicle
             from characters.models import Character
+
             player_chronicle_subquery = Character.objects.filter(
-                user=user,
-                chronicle=OuterRef('chronicle'),
-                status='App'
+                user=user, chronicle=OuterRef("chronicle"), status="App"
             )
-            filters |= Q(Exists(player_chronicle_subquery), status='App')
+            filters |= Q(Exists(player_chronicle_subquery), status="App")
 
         # Objects user is explicitly observing
         ct = ContentType.objects.get_for_model(queryset.model)
         from core.models import Observer
-        observer_ids = Observer.objects.filter(
-            content_type=ct,
-            user=user
-        ).values_list('object_id', flat=True)
+
+        observer_ids = Observer.objects.filter(content_type=ct, user=user).values_list(
+            "object_id", flat=True
+        )
         filters |= Q(id__in=observer_ids)
 
         return queryset.filter(filters).distinct()

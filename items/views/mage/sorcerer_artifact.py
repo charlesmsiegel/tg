@@ -1,6 +1,5 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-
 from core.views.message_mixin import MessageMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 
 
@@ -20,7 +19,9 @@ class SorcererArtifactCreateView(MessageMixin, CreateView):
     fields = ["name", "rank", "background_cost", "description", "power"]
     template_name = "items/mage/sorcerer_artifact/form.html"
     success_message = "Sorcerer Artifact '{name}' created successfully!"
-    error_message = "Failed to create Sorcerer Artifact. Please correct the errors below."
+    error_message = (
+        "Failed to create Sorcerer Artifact. Please correct the errors below."
+    )
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -36,7 +37,9 @@ class SorcererArtifactUpdateView(MessageMixin, UpdateView):
     fields = ["name", "rank", "background_cost", "description", "power"]
     template_name = "items/mage/sorcerer_artifact/form.html"
     success_message = "Sorcerer Artifact '{name}' updated successfully!"
-    error_message = "Failed to update Sorcerer Artifact. Please correct the errors below."
+    error_message = (
+        "Failed to update Sorcerer Artifact. Please correct the errors below."
+    )
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

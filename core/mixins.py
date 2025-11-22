@@ -7,10 +7,10 @@ This module consolidates all view mixins used throughout the application:
 - User verification mixins: For checking special user status
 """
 
+from core.permissions import Permission, PermissionManager, VisibilityTier
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from core.permissions import Permission, PermissionManager, VisibilityTier
 from game.models import STRelationship
 
 
@@ -47,9 +47,7 @@ class PermissionRequiredMixin:
 
         obj = self.get_object()
         return PermissionManager.user_has_permission(
-            self.request.user,
-            obj,
-            self.required_permission
+            self.request.user, obj, self.required_permission
         )
 
 
@@ -58,6 +56,7 @@ class ViewPermissionMixin(PermissionRequiredMixin):
     Require view permission for CBV.
     Raises 404 if user cannot view the object.
     """
+
     required_permission = Permission.VIEW_FULL
     raise_404_on_deny = True
 
@@ -67,6 +66,7 @@ class EditPermissionMixin(PermissionRequiredMixin):
     Require full edit permission for CBV.
     Raises 403 if user cannot edit the object.
     """
+
     required_permission = Permission.EDIT_FULL
     raise_404_on_deny = False
 
@@ -76,6 +76,7 @@ class SpendXPPermissionMixin(PermissionRequiredMixin):
     Require XP spending permission for CBV.
     Raises 403 if user cannot spend XP.
     """
+
     required_permission = Permission.SPEND_XP
     raise_404_on_deny = False
 
@@ -85,6 +86,7 @@ class SpendFreebiesPermissionMixin(PermissionRequiredMixin):
     Require freebie spending permission for CBV.
     Raises 403 if user cannot spend freebies.
     """
+
     required_permission = Permission.SPEND_FREEBIES
     raise_404_on_deny = False
 
@@ -104,35 +106,30 @@ class VisibilityFilterMixin:
     def get_queryset(self):
         """Filter queryset to only viewable objects."""
         qs = super().get_queryset()
-        return PermissionManager.filter_queryset_for_user(
-            self.request.user,
-            qs
-        )
+        return PermissionManager.filter_queryset_for_user(self.request.user, qs)
 
     def get_context_data(self, **kwargs):
         """Add visibility tier to context."""
         context = super().get_context_data(**kwargs)
 
         # For detail views, add visibility information
-        if hasattr(self, 'object') and self.object:
-            context['visibility_tier'] = PermissionManager.get_visibility_tier(
-                self.request.user,
-                self.object
+        if hasattr(self, "object") and self.object:
+            context["visibility_tier"] = PermissionManager.get_visibility_tier(
+                self.request.user, self.object
             )
-            context['user_can_edit'] = PermissionManager.user_can_edit(
-                self.request.user,
-                self.object
+            context["user_can_edit"] = PermissionManager.user_can_edit(
+                self.request.user, self.object
             )
-            context['user_can_spend_xp'] = PermissionManager.user_can_spend_xp(
-                self.request.user,
-                self.object
+            context["user_can_spend_xp"] = PermissionManager.user_can_spend_xp(
+                self.request.user, self.object
             )
-            context['user_can_spend_freebies'] = PermissionManager.user_can_spend_freebies(
-                self.request.user,
-                self.object
+            context[
+                "user_can_spend_freebies"
+            ] = PermissionManager.user_can_spend_freebies(
+                self.request.user, self.object
             )
             # Add the VisibilityTier enum to context for template comparisons
-            context['VisibilityTier'] = VisibilityTier
+            context["VisibilityTier"] = VisibilityTier
 
         return context
 
@@ -152,9 +149,9 @@ class OwnerRequiredMixin:
 
         # Check if user is owner
         is_owner = False
-        if hasattr(obj, 'owner') and obj.owner == request.user:
+        if hasattr(obj, "owner") and obj.owner == request.user:
             is_owner = True
-        elif hasattr(obj, 'user') and obj.user == request.user:
+        elif hasattr(obj, "user") and obj.user == request.user:
             is_owner = True
 
         # Also allow admins
@@ -184,10 +181,13 @@ class STRequiredMixin:
             return super().dispatch(request, *args, **kwargs)
 
         # Check if user is head ST of the chronicle
-        if hasattr(obj, 'chronicle') and obj.chronicle:
-            if hasattr(obj.chronicle, 'head_st') and obj.chronicle.head_st == request.user:
+        if hasattr(obj, "chronicle") and obj.chronicle:
+            if (
+                hasattr(obj.chronicle, "head_st")
+                and obj.chronicle.head_st == request.user
+            ):
                 return super().dispatch(request, *args, **kwargs)
-            elif hasattr(obj.chronicle, 'head_storytellers'):
+            elif hasattr(obj.chronicle, "head_storytellers"):
                 if obj.chronicle.head_storytellers.filter(id=request.user.id).exists():
                     return super().dispatch(request, *args, **kwargs)
 

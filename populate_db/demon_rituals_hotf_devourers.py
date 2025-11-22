@@ -3,14 +3,11 @@ Populate database with Devourer (Rabisu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-
 from populate_db.demon_houses import devourers
-from populate_db.demon_lores import (
-    lore_of_the_beast as lore_beast,
-    lore_of_humanity,
-    lore_of_paths as lore_paths,
-    lore_of_the_wild as lore_wild,
-)
+from populate_db.demon_lores import lore_of_humanity
+from populate_db.demon_lores import lore_of_paths as lore_paths
+from populate_db.demon_lores import lore_of_the_beast as lore_beast
+from populate_db.demon_lores import lore_of_the_wild as lore_wild
 
 # =============================================================================
 # DEVOURER RITUALS - HOUSES OF THE FALLEN
@@ -50,7 +47,9 @@ beast_tongue.secondary_lore_requirements = [
 ]
 beast_tongue.base_cost = 6
 beast_tongue.minimum_casting_time = 9
-beast_tongue.restrictions = "The sigil must be drawn with a solution infused with woodbine and robin."
+beast_tongue.restrictions = (
+    "The sigil must be drawn with a solution infused with woodbine and robin."
+)
 beast_tongue.system = """Roll Manipulation + Empathy. The ritual can affect a number of mortals (or demons) equal to the Ankida's Faith score multiplied by the number of successes rolled. Once it takes effect, the subjects can converse with any natural animal that is ordinarily capable of communicating with others of its kind. The animal will perceive the ritual subjects to be communicating with it as others of its kind would. The ritual's effects last for a number of hours equal to the Ankida's Faith score."""
 beast_tongue.torment_effect = """The ritual's subjects can still communicate with animals, but their "speech" comes out hostile and aggressive. Animals will react as if threatened to anything the subjects say while affected by the ritual. A mortal or demon must rely on a Manipulation + Animal Ken roll against a difficulty equal to the Ankida's Torment score to overcome this effect and be understood normally."""
 beast_tongue.variations = "Increasing the Humanity rating to •• causes animals who are being spoken to by a ritual subject to be naturally predisposed in her favor, regardless of whether they have been previously commanded by a Devourer to be friendly."

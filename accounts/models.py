@@ -187,7 +187,9 @@ class Profile(models.Model):
         return Character.objects.with_pending_images().for_user_chronicles(self.user)
 
     def location_images_to_approve(self):
-        return LocationModel.objects.with_pending_images().for_user_chronicles(self.user)
+        return LocationModel.objects.with_pending_images().for_user_chronicles(
+            self.user
+        )
 
     def item_images_to_approve(self):
         return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)

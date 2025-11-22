@@ -43,8 +43,11 @@ class Command(BaseCommand):
         # Determine week ending date
         if options["week_ending"]:
             from datetime import datetime
+
             try:
-                week_ending = datetime.strptime(options["week_ending"], "%Y-%m-%d").date()
+                week_ending = datetime.strptime(
+                    options["week_ending"], "%Y-%m-%d"
+                ).date()
             except ValueError:
                 self.stdout.write(
                     self.style.ERROR("Invalid date format. Use YYYY-MM-DD")
@@ -74,7 +77,7 @@ class Command(BaseCommand):
                         f"\n[DRY RUN] Would create week ending {week_ending}"
                     )
                 )
-                week = type('Week', (), {'end_date': week_ending, 'id': 'NEW'})()
+                week = type("Week", (), {"end_date": week_ending, "id": "NEW"})()
             else:
                 week = Week.objects.create(end_date=week_ending)
                 self.stdout.write(
@@ -89,8 +92,8 @@ class Command(BaseCommand):
         else:
             # For dry run or new week, calculate from scratch
             from characters.models.core.human import Human
-            from game.models import Scene, Post
             from django.db.models import Max, OuterRef, Subquery
+            from game.models import Post, Scene
 
             week_start = week_ending - timedelta(days=7)
 
@@ -141,8 +144,7 @@ class Command(BaseCommand):
             # Check if request already exists
             if not self.dry_run:
                 existing = WeeklyXPRequest.objects.filter(
-                    week=week,
-                    character=character
+                    week=week, character=character
                 ).first()
 
                 if existing:

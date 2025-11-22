@@ -10,8 +10,8 @@ Removes:
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
+from django.db.models import Count, Q
 from django.utils.timezone import now
-from django.db.models import Q, Count
 
 
 class Command(BaseCommand):
@@ -44,9 +44,7 @@ class Command(BaseCommand):
         self.dry_run = options["dry_run"]
         self.cutoff_date = now() - timedelta(days=options["days"])
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\nCleaning up orphaned data...\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nCleaning up orphaned data...\n"))
         if self.dry_run:
             self.stdout.write(self.style.WARNING("[DRY RUN MODE]\n"))
 
@@ -79,10 +77,7 @@ class Command(BaseCommand):
         """Remove orphaned character objects."""
         from characters.models.core.character import CharacterModel
 
-        orphaned = CharacterModel.objects.filter(
-            owner__isnull=True,
-            status="Un"
-        )
+        orphaned = CharacterModel.objects.filter(owner__isnull=True, status="Un")
 
         count = orphaned.count()
         if count > 0:
@@ -98,16 +93,15 @@ class Command(BaseCommand):
             if not self.dry_run:
                 orphaned.delete()
                 self.deleted["characters"] = count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {count} orphaned character(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✓ Deleted {count} orphaned character(s)")
+                )
 
     def cleanup_orphaned_items(self):
         """Remove orphaned item objects."""
         from items.models.core.item import ItemModel
 
-        orphaned = ItemModel.objects.filter(
-            owner__isnull=True,
-            status="Un"
-        )
+        orphaned = ItemModel.objects.filter(owner__isnull=True, status="Un")
 
         count = orphaned.count()
         if count > 0:
@@ -122,16 +116,15 @@ class Command(BaseCommand):
             if not self.dry_run:
                 orphaned.delete()
                 self.deleted["items"] = count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {count} orphaned item(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✓ Deleted {count} orphaned item(s)")
+                )
 
     def cleanup_orphaned_locations(self):
         """Remove orphaned location objects."""
         from locations.models.core.location import LocationModel
 
-        orphaned = LocationModel.objects.filter(
-            owner__isnull=True,
-            status="Un"
-        )
+        orphaned = LocationModel.objects.filter(owner__isnull=True, status="Un")
 
         count = orphaned.count()
         if count > 0:
@@ -146,7 +139,9 @@ class Command(BaseCommand):
             if not self.dry_run:
                 orphaned.delete()
                 self.deleted["locations"] = count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {count} orphaned location(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✓ Deleted {count} orphaned location(s)")
+                )
 
     def cleanup_empty_scenes(self):
         """Remove empty scenes with no posts or participants."""
@@ -154,13 +149,8 @@ class Command(BaseCommand):
 
         # Find scenes with no posts and no characters
         empty_scenes = Scene.objects.annotate(
-            post_count=Count('post'),
-            char_count=Count('characters')
-        ).filter(
-            post_count=0,
-            char_count=0,
-            finished=False
-        )
+            post_count=Count("post"), char_count=Count("characters")
+        ).filter(post_count=0, char_count=0, finished=False)
 
         count = empty_scenes.count()
         if count > 0:
@@ -175,7 +165,9 @@ class Command(BaseCommand):
             if not self.dry_run:
                 empty_scenes.delete()
                 self.deleted["scenes"] = count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {count} empty scene(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✓ Deleted {count} empty scene(s)")
+                )
 
     def cleanup_unused_setting_elements(self):
         """Remove unused setting elements."""
@@ -183,7 +175,7 @@ class Command(BaseCommand):
 
         # Find setting elements not associated with any chronicle
         unused = SettingElement.objects.annotate(
-            chronicle_count=Count('chronicle')
+            chronicle_count=Count("chronicle")
         ).filter(chronicle_count=0)
 
         count = unused.count()
@@ -199,11 +191,13 @@ class Command(BaseCommand):
             if not self.dry_run:
                 unused.delete()
                 self.deleted["setting_elements"] = count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {count} unused setting element(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✓ Deleted {count} unused setting element(s)")
+                )
 
     def cleanup_orphaned_xp_requests(self):
         """Remove XP requests with no associated character."""
-        from game.models import WeeklyXPRequest, StoryXPRequest
+        from game.models import StoryXPRequest, WeeklyXPRequest
 
         # Weekly requests
         orphaned_weekly = WeeklyXPRequest.objects.filter(character__isnull=True)
@@ -224,7 +218,11 @@ class Command(BaseCommand):
                 orphaned_weekly.delete()
                 orphaned_story.delete()
                 self.deleted["xp_requests"] = total_count
-                self.stdout.write(self.style.SUCCESS(f"  ✓ Deleted {total_count} orphaned XP request(s)"))
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"  ✓ Deleted {total_count} orphaned XP request(s)"
+                    )
+                )
 
     def display_summary(self):
         """Display cleanup summary."""

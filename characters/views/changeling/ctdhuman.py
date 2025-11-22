@@ -2,8 +2,8 @@ from typing import Any
 
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.human import Human
 from characters.models.core.specialty import Specialty
@@ -17,19 +17,16 @@ from characters.views.core.human import (
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
-from core.models import CharacterTemplate, Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
-from core.models import Language
 from core.mixins import (
-    ViewPermissionMixin,
+    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
-    ApprovedUserContextMixin,
+    ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from core.models import CharacterTemplate, Language
+from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -130,7 +127,9 @@ class CtDHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.object.pk})
+        return reverse(
+            "characters:changeling:ctdhuman_template", kwargs={"pk": self.object.pk}
+        )
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -159,12 +158,12 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/changeling/ctdhuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(
-            CtDHuman, pk=kwargs["pk"], owner=request.user
-        )
+        self.object = get_object_or_404(CtDHuman, pk=kwargs["pk"], owner=request.user)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
-            return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
+            return redirect(
+                "characters:changeling:ctdhuman_creation", pk=self.object.pk
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):

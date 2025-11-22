@@ -8,4 +8,4 @@ Please import from core.mixins instead:
 # Import for backward compatibility
 from core.mixins import SpecialUserMixin
 
-__all__ = ['SpecialUserMixin']
+__all__ = ["SpecialUserMixin"]

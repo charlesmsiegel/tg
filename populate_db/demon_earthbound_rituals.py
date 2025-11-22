@@ -7,24 +7,20 @@ Unlike normal demon rituals, Earthbound rituals do not have low-Torment effects.
 """
 
 from characters.models.demon.ritual import Ritual
-
-from populate_db.demon_lores import (
-    lore_of_awakening as lore_awakening,
-    lore_of_the_beast as lore_beast,
-    lore_of_the_celestials as lore_celestials,
-    lore_of_the_firmament as lore_firmament,
-    lore_of_the_flesh as lore_flesh,
-    lore_of_flame,
-    lore_of_the_forge as lore_forge,
-    lore_of_humanity,
-    lore_of_patterns as lore_patterns,
-    lore_of_the_spirit as lore_spirit,
-)
+from populate_db.demon_earthbound_lores import lore_of_chaos as lore_chaos
 from populate_db.demon_earthbound_lores import (
-    lore_of_chaos as lore_chaos,
     lore_of_contamination as lore_contamination,
-    lore_of_violation as lore_violation,
 )
+from populate_db.demon_earthbound_lores import lore_of_violation as lore_violation
+from populate_db.demon_lores import lore_of_awakening as lore_awakening
+from populate_db.demon_lores import lore_of_flame, lore_of_humanity
+from populate_db.demon_lores import lore_of_patterns as lore_patterns
+from populate_db.demon_lores import lore_of_the_beast as lore_beast
+from populate_db.demon_lores import lore_of_the_celestials as lore_celestials
+from populate_db.demon_lores import lore_of_the_firmament as lore_firmament
+from populate_db.demon_lores import lore_of_the_flesh as lore_flesh
+from populate_db.demon_lores import lore_of_the_forge as lore_forge
+from populate_db.demon_lores import lore_of_the_spirit as lore_spirit
 
 # ============================================================================
 # EARTHBOUND RITUALS
@@ -145,7 +141,9 @@ plague_tide.secondary_lore_requirements = [
 ]
 plague_tide.base_cost = 21
 plague_tide.minimum_casting_time = 49
-plague_tide.restrictions = "The creatures to be affected must all be gathered within the sigil."
+plague_tide.restrictions = (
+    "The creatures to be affected must all be gathered within the sigil."
+)
 plague_tide.system = """Roll Manipulation + Animal Ken. This ritual allows the Earthbound to possess and control a number of animals, equal to 10 times the number of successes rolled, although it works only on animals the size of a cat or smaller. The Earthbound often use rats, mice, bats, snakes, crows, eels and insects as their instruments of contagion. The possession lasts for a number of hours equal to the Ankida's Faith score.
 
 For more information on animal swarms and their capabilities, please see page 72 of the Demon Storytellers Companion.

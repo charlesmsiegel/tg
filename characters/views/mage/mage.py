@@ -1,11 +1,7 @@
 from typing import Any
 
-from django.core.exceptions import ValidationError
-from django.contrib import messages
-from django.db import transaction
-
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
 from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
@@ -38,22 +34,22 @@ from characters.views.core.human import (
 from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
-from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
-from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
 from core.mixins import (
-    ViewPermissionMixin,
+    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
-    ApprovedUserContextMixin,
+    ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from core.models import Language
+from core.views.approved_user_mixin import SpecialUserMixin
+from core.views.message_mixin import MessageMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Q
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect, JsonResponse
@@ -368,9 +364,11 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
         context["spec_form"] = SpecialtiesForm(
             object=self.object, specialties_needed=self.object.needed_specialties()
         )
-        context["resonance"] = ResRating.objects.filter(
-            mage=self.object
-        ).select_related("resonance").order_by("resonance__name")
+        context["resonance"] = (
+            ResRating.objects.filter(mage=self.object)
+            .select_related("resonance")
+            .order_by("resonance__name")
+        )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -476,7 +474,7 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                                 trait_name=trait,
                                 trait_display=trait,
                                 cost=cost,
-                                category=trait_type
+                                category=trait_type,
                             )
                         except ValidationError as e:
                             messages.error(request, str(e))
@@ -517,10 +515,10 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                         try:
                             # Recreate the record using spend_xp for atomicity
                             d = self.object.spend_xp(
-                                trait_name=d['value'],
-                                trait_display=d['trait'],
+                                trait_name=d["value"],
+                                trait_display=d["trait"],
                                 cost=cost,
-                                category=trait_type
+                                category=trait_type,
                             )
                         except ValidationError as e:
                             messages.error(request, str(e))
@@ -617,14 +615,18 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                 att = Attribute.objects.get(name=trait)
                 try:
                     self.object.approve_xp_spend(i, att.property_name, value)
-                    messages.success(request, f"Approved {att.name} increase to {value}")
+                    messages.success(
+                        request, f"Approved {att.name} increase to {value}"
+                    )
                 except ValidationError as e:
                     messages.error(request, str(e))
             elif trait_type == "ability":
                 abb = Ability.objects.get(name=trait)
                 try:
                     self.object.approve_xp_spend(i, abb.property_name, value)
-                    messages.success(request, f"Approved {abb.name} increase to {value}")
+                    messages.success(
+                        request, f"Approved {abb.name} increase to {value}"
+                    )
                 except ValidationError as e:
                     messages.error(request, str(e))
             elif trait_type == "background":
@@ -632,7 +634,9 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                 with transaction.atomic():
                     trait, note = trait.replace("-", " ").split(" (")
                     note = note[:-1]
-                    bgr = self.object.backgrounds.filter(bg__name=trait, note=note).first()
+                    bgr = self.object.backgrounds.filter(
+                        bg__name=trait, note=note
+                    ).first()
                     bgr.rating += 1
                     bgr.save()
                     self.object.spent_xp[i]["approved"] = "Approved"
@@ -660,7 +664,7 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
             elif trait_type == "willpower":
                 # Use atomic approval method
                 try:
-                    self.object.approve_xp_spend(i, 'willpower', value)
+                    self.object.approve_xp_spend(i, "willpower", value)
                     messages.success(request, f"Approved Willpower increase to {value}")
                 except ValidationError as e:
                     messages.error(request, str(e))
@@ -683,7 +687,7 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
             elif trait_type == "arete":
                 # Use atomic approval method
                 try:
-                    self.object.approve_xp_spend(i, 'arete', value)
+                    self.object.approve_xp_spend(i, "arete", value)
                     messages.success(request, f"Approved Arete increase to {value}")
                 except ValidationError as e:
                     messages.error(request, str(e))
@@ -752,7 +756,10 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                     or not (x["index"] == index and x["approved"] == "Pending")
                 ]
                 self.object.save()
-                messages.success(request, f"Rejected XP spend and refunded {sum(s['cost'] for s in spends)} XP")
+                messages.success(
+                    request,
+                    f"Rejected XP spend and refunded {sum(s['cost'] for s in spends)} XP",
+                )
         if "specialties" in form.data.keys():
             specs = {
                 k: v
@@ -952,15 +959,12 @@ class MageBasicsView(LoginRequiredMixin, FormView):
         self.object.save()
         messages.success(
             self.request,
-            f"Mage '{self.object.name}' created successfully! Continue with character creation."
+            f"Mage '{self.object.name}' created successfully! Continue with character creation.",
         )
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "Please correct the errors in the form below."
-        )
+        messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 
     def get_success_url(self):

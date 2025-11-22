@@ -8,8 +8,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from game.models import Chronicle
-from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
+from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
 
 
@@ -30,8 +30,8 @@ class ModelQuerySet(PolymorphicQuerySet):
         # In Django, query.select_related is False when not set, dict when set
         if self.query.select_related is False:
             self.query.select_related = {}
-        if 'polymorphic_ctype' not in self.query.select_related:
-            self.query.select_related['polymorphic_ctype'] = {}
+        if "polymorphic_ctype" not in self.query.select_related:
+            self.query.select_related["polymorphic_ctype"] = {}
 
     def pending_approval_for_user(self, user):
         """
@@ -40,7 +40,9 @@ class ModelQuerySet(PolymorphicQuerySet):
         Override in subclasses if different status logic is needed.
         """
         return (
-            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            self.filter(
+                status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all()
+            )
             .select_related("chronicle", "owner")
             .order_by("name")
         )
@@ -56,7 +58,9 @@ class ModelManager(PolymorphicManager):
         Override in subclasses if different status logic is needed.
         """
         return (
-            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            self.filter(
+                status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all()
+            )
             .select_related("chronicle", "owner")
             .order_by("name")
         )
@@ -105,7 +109,6 @@ class BookReference(models.Model):
         return f"<i>{self.book}</i> p. {self.page}"
 
 
-
 class Observer(models.Model):
     """
     Grants specific users observer access to any object.
@@ -113,19 +116,12 @@ class Observer(models.Model):
     """
 
     # Generic FK to any object
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE
-    )
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     # Who can observe
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='observing'
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="observing")
 
     # Metadata
     granted_by = models.ForeignKey(
@@ -133,16 +129,16 @@ class Observer(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='granted_observer_access'
+        related_name="granted_observer_access",
     )
     granted_at = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(blank=True)
 
     class Meta:
-        unique_together = [['content_type', 'object_id', 'user']]
+        unique_together = [["content_type", "object_id", "user"]]
         indexes = [
-            models.Index(fields=['content_type', 'object_id']),
-            models.Index(fields=['user']),
+            models.Index(fields=["content_type", "object_id"]),
+            models.Index(fields=["user"]),
         ]
         verbose_name = "Observer"
         verbose_name_plural = "Observers"
@@ -160,20 +156,17 @@ class PermissionMixin(models.Model):
     visibility = models.CharField(
         max_length=3,
         choices=[
-            ('PUB', 'Public'),
-            ('PRI', 'Private'),
-            ('CHR', 'Chronicle Only'),
-            ('CUS', 'Custom'),
+            ("PUB", "Public"),
+            ("PRI", "Private"),
+            ("CHR", "Chronicle Only"),
+            ("CUS", "Custom"),
         ],
-        default='PRI',
-        help_text="Controls baseline visibility"
+        default="PRI",
+        help_text="Controls baseline visibility",
     )
 
     # Generic relation to observers
-    observers = GenericRelation(
-        'core.Observer',
-        related_query_name='%(class)s'
-    )
+    observers = GenericRelation("core.Observer", related_query_name="%(class)s")
 
     class Meta:
         abstract = True
@@ -181,39 +174,43 @@ class PermissionMixin(models.Model):
     def get_user_roles(self, user):
         """Get all roles user has for this object."""
         from core.permissions import PermissionManager
+
         return PermissionManager.get_user_roles(user, self)
 
     def user_can_view(self, user):
         """Check if user can view this object."""
         from core.permissions import PermissionManager
+
         return PermissionManager.user_can_view(user, self)
 
     def user_can_edit(self, user):
         """Check if user can edit this object (EDIT_FULL)."""
         from core.permissions import PermissionManager
+
         return PermissionManager.user_can_edit(user, self)
 
     def user_can_spend_xp(self, user):
         """Check if user can spend XP on this object."""
         from core.permissions import PermissionManager
+
         return PermissionManager.user_can_spend_xp(user, self)
 
     def user_can_spend_freebies(self, user):
         """Check if user can spend freebie points on this object."""
         from core.permissions import PermissionManager
+
         return PermissionManager.user_can_spend_freebies(user, self)
 
     def get_visibility_tier(self, user):
         """Get visibility tier for user."""
         from core.permissions import PermissionManager
+
         return PermissionManager.get_visibility_tier(user, self)
 
     def add_observer(self, user, granted_by):
         """Grant observer access to a user."""
         Observer.objects.get_or_create(
-            content_object=self,
-            user=user,
-            defaults={'granted_by': granted_by}
+            content_object=self, user=user, defaults={"granted_by": granted_by}
         )
 
     def remove_observer(self, user):
@@ -425,6 +422,7 @@ class CharacterTemplate(Model):
     Inherits from Model to get: name, description, sources (via add_source()),
     owner, chronicle, status, and permission system.
     """
+
     type = "character_template"
 
     # Template-specific fields
@@ -443,24 +441,44 @@ class CharacterTemplate(Model):
     )
     character_type = models.CharField(
         max_length=50,
-        help_text="e.g., 'mage', 'vampire', 'werewolf', 'changeling', 'wraith', 'demon'"
+        help_text="e.g., 'mage', 'vampire', 'werewolf', 'changeling', 'wraith', 'demon'",
     )
     concept = models.CharField(max_length=200, blank=True)
 
     # Character Data (stored as JSON)
-    basic_info = models.JSONField(default=dict, blank=True, help_text="Nature, demeanor, concept, etc.")
-    attributes = models.JSONField(default=dict, blank=True, help_text="Strength, dexterity, etc.")
-    abilities = models.JSONField(default=dict, blank=True, help_text="Alertness, investigation, etc.")
-    backgrounds = models.JSONField(default=list, blank=True, help_text="List of {name, rating} dicts")
-    powers = models.JSONField(default=dict, blank=True, help_text="Disciplines, spheres, gifts, etc.")
-    merits_flaws = models.JSONField(default=list, blank=True, help_text="List of {name, rating} dicts")
-    specialties = models.JSONField(default=list, blank=True, help_text="List of 'Ability (Specialty)' strings")
-    languages = models.JSONField(default=list, blank=True, help_text="List of language names")
+    basic_info = models.JSONField(
+        default=dict, blank=True, help_text="Nature, demeanor, concept, etc."
+    )
+    attributes = models.JSONField(
+        default=dict, blank=True, help_text="Strength, dexterity, etc."
+    )
+    abilities = models.JSONField(
+        default=dict, blank=True, help_text="Alertness, investigation, etc."
+    )
+    backgrounds = models.JSONField(
+        default=list, blank=True, help_text="List of {name, rating} dicts"
+    )
+    powers = models.JSONField(
+        default=dict, blank=True, help_text="Disciplines, spheres, gifts, etc."
+    )
+    merits_flaws = models.JSONField(
+        default=list, blank=True, help_text="List of {name, rating} dicts"
+    )
+    specialties = models.JSONField(
+        default=list, blank=True, help_text="List of 'Ability (Specialty)' strings"
+    )
+    languages = models.JSONField(
+        default=list, blank=True, help_text="List of language names"
+    )
     equipment = models.TextField(blank=True, help_text="Starting gear description")
-    suggested_freebie_spending = models.JSONField(default=dict, blank=True, help_text="Suggested allocation")
+    suggested_freebie_spending = models.JSONField(
+        default=dict, blank=True, help_text="Suggested allocation"
+    )
 
     # Metadata
-    is_official = models.BooleanField(default=True, help_text="Official WW template vs user-created")
+    is_official = models.BooleanField(
+        default=True, help_text="Official WW template vs user-created"
+    )
     is_public = models.BooleanField(default=True, help_text="Available to all users")
     times_used = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -519,7 +537,7 @@ class CharacterTemplate(Model):
                 BackgroundRating.objects.get_or_create(
                     character=character,
                     bg=background,
-                    defaults={"rating": bg_data.get("rating", 0)}
+                    defaults={"rating": bg_data.get("rating", 0)},
                 )
             except Background.DoesNotExist:
                 pass
@@ -536,7 +554,7 @@ class CharacterTemplate(Model):
                 MeritFlawRating.objects.get_or_create(
                     character=character,
                     mf=merit_flaw,
-                    defaults={"rating": mf_data.get("rating", 0)}
+                    defaults={"rating": mf_data.get("rating", 0)},
                 )
             except MeritFlaw.DoesNotExist:
                 pass
@@ -550,8 +568,9 @@ class CharacterTemplate(Model):
                 pass
 
         # 8. Apply specialties
-        from characters.models.core.specialty import Specialty
         from characters.models.core.ability_block import Ability
+        from characters.models.core.specialty import Specialty
+
         for specialty_str in self.specialties:
             # Format: "Ability (Specialty)"
             if "(" in specialty_str and ")" in specialty_str:
@@ -562,7 +581,7 @@ class CharacterTemplate(Model):
                     Specialty.objects.get_or_create(
                         character=character,
                         skill=ability,
-                        defaults={"name": specialty_name}
+                        defaults={"name": specialty_name},
                     )
                 except Ability.DoesNotExist:
                     pass
@@ -571,10 +590,7 @@ class CharacterTemplate(Model):
         character.save()
 
         # 9. Create application record
-        TemplateApplication.objects.create(
-            character=character,
-            template=self
-        )
+        TemplateApplication.objects.create(character=character, template=self)
 
         # 10. Increment usage counter
         self.times_used += 1
@@ -586,16 +602,17 @@ class TemplateApplication(models.Model):
     Tracks when a template is applied to a character.
     Used for statistics and auditing.
     """
+
     character = models.ForeignKey(
         "characters.Character",
         on_delete=models.CASCADE,
-        related_name="template_applications"
+        related_name="template_applications",
     )
     template = models.ForeignKey(
         CharacterTemplate,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="applications"
+        related_name="applications",
     )
     applied_at = models.DateTimeField(auto_now_add=True)
 
@@ -604,5 +621,6 @@ class TemplateApplication(models.Model):
         verbose_name_plural = "Template Applications"
 
     def __str__(self):
-        return f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
-
+        return (
+            f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
+        )

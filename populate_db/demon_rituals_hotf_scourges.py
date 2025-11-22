@@ -3,16 +3,11 @@ Populate database with Scourge (Asharu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-
 from populate_db.demon_houses import scourges
-from populate_db.demon_lores import (
-    lore_of_awakening as lore_awakening,
-    lore_of_the_fundament as lore_fundament,
-    lore_of_humanity,
-    lore_of_patterns,
-    lore_of_storms,
-    lore_of_the_winds as lore_winds,
-)
+from populate_db.demon_lores import lore_of_awakening as lore_awakening
+from populate_db.demon_lores import lore_of_humanity, lore_of_patterns, lore_of_storms
+from populate_db.demon_lores import lore_of_the_fundament as lore_fundament
+from populate_db.demon_lores import lore_of_the_winds as lore_winds
 
 # =============================================================================
 # SCOURGE RITUALS - HOUSES OF THE FALLEN
@@ -54,7 +49,9 @@ fog_of_war.secondary_lore_requirements = [
 ]
 fog_of_war.base_cost = 12
 fog_of_war.minimum_casting_time = 36
-fog_of_war.restrictions = "The area of the sigil must be overlaid with maidens' veils soaked in tears."
+fog_of_war.restrictions = (
+    "The area of the sigil must be overlaid with maidens' veils soaked in tears."
+)
 fog_of_war.system = """The ritual conceals the Ankida and his allies from the sight of mortals. The players of each mortal who should see the hidden group may make a Willpower test against difficulty 8. If he achieves more successes than the ritual casting did, he can perceive the group normally (though such perception does not magically reveal the group to any viewer other than that mortal). Otherwise, the group is hidden from mortal sight. The fog automatically conceals the Ankida and a number of additional people — demons or mortals — equal to the Ankida's Faith score.
 
 The ritual does affect the perceptions of other fallen, but to a much smaller degree. A demon can see the concealed group if she succeeds on a Perception + Alertness roll with a difficulty equal to the Ankida's Faith.

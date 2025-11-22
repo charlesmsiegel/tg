@@ -9,10 +9,7 @@ Earthbound over the course of a chronicle.
 from characters.models.core.background_block import Background
 
 # Codex
-codex = Background.objects.get_or_create(
-    name="Codex",
-    property_name="codex"
-)[0]
+codex = Background.objects.get_or_create(name="Codex", property_name="codex")[0]
 codex.description = """Over the course of centuries and millennia, the Earthbound have sought desperately after two invaluable commodities. The first is, of course, a cult of worshippers to do the monster's bidding and provide it with Faith. The second is the Celestial and True Names of other demons - not just those of Earthbound who oppose the character, but those of demons who are still in Hell. With the True Name of another demon, the Earthbound can have it summoned from Hell, enslave it or destroy it and devour its soul.
 
 The Codex Background determines how successful the Earthbound has been in learning the True or Celestial Names of other demons. When the character encounters another demon - one who is Earthbound or inhabiting a mortal body - the player may make an Intelligence + Codex roll (difficulty 8). With two successes, the Earthbound knows the Celestial Name of the demon, gaining a slight advantage. With four or more successes, the Earthbound knows the True Name of the demon and can use it against this new rival or potential slave. Only one Codex roll can be made for any demon the Earthbound encounters. If the roll doesn't receive enough successes, the Earthbound has simply never learned the spiritual identity of the newcomer.
@@ -31,10 +28,7 @@ codex.save()
 codex.add_source("Demon: Earthbound", 75)
 
 # Cult
-cult_bg = Background.objects.get_or_create(
-    name="Cult",
-    property_name="cult"
-)[0]
+cult_bg = Background.objects.get_or_create(name="Cult", property_name="cult")[0]
 # Note: Cult already exists, but we'll update it with Earthbound-specific info
 if not cult_bg.description or len(cult_bg.description) < 100:
     cult_bg.description = """There is power in worship, power both mundane and mystical. Every Earthbound strives to amass a thriving cult of worshippers, and each actively seeks new members and believers for two reasons. First, dedicated worshippers provide the Earthbound with a horde of agents who are able to perform the tasks that it cannot while trapped inside its reliquary. Secondly, the size of the Earthbound's cult determines how often its disciples can meet and perform their black masses. You gain Faith only when your worshippers perform a worship ritual, and such a ritual normally occurs on one of the specific days that is unholy to your cult. See the Worship Background to determine how much Faith you gain with each ritual.
@@ -51,10 +45,7 @@ X You have no worshippers, or perhaps just a handful of dedicated thralls. You h
 cult_bg.add_source("Demon: Earthbound", 75)
 
 # Hoard
-hoard = Background.objects.get_or_create(
-    name="Hoard",
-    property_name="hoard"
-)[0]
+hoard = Background.objects.get_or_create(name="Hoard", property_name="hoard")[0]
 hoard.description = """Mortal bodies can hold only so much divine (or infernal) power, and they can channel only a small amount of spiritual energy. Inanimate objects have the capacity to hold much more Faith in reserve, giving even minor Earthbound a vast wellspring of Faith to draw upon for evocations and black miracles.
 
 The character's Hoard Background measures how much temporary Faith its reliquary can hold at any one time. The higher the reliquary's quality is, the more attuned it is to the Earthbound's spirit, and the larger the reliquary is, the more Faith it can contain. Small reliquaries of highly valuable or appropriate materials can hold a great deal of Faith, as can large reliquaries, and those few vessels that are both large and of high quality can hold enormous amounts. Due to their spiritually unattuned nature, improvised reliquaries are poor vessels for Faith. Characters who are bound to improvised reliquaries cannot have more than three dots in Hoard.
@@ -69,10 +60,7 @@ hoard.save()
 hoard.add_source("Demon: Earthbound", 76)
 
 # Mastery
-mastery = Background.objects.get_or_create(
-    name="Mastery",
-    property_name="mastery"
-)[0]
+mastery = Background.objects.get_or_create(name="Mastery", property_name="mastery")[0]
 mastery.description = """The Earthbound are perhaps the greatest masters of lore that Creation has ever seen - even though their lore is a twisted and corrupt thing that can only destroy. While the evocations of other demons are often limited in power and range, the evocations of the Earthbound - powered by staggering expenditures of Faith - can reach across a continent, strike down dozens of victims or set a city afire. The Mastery Background measures how much extra Faith the character can spend on enhancing its evocations. For full details of how the Earthbound enhance their evocations, see "That Hideous Strength" (Demon: Earthbound p. 79).
 
 X Your character has not mastered his lore, so he cannot spend any Faith on enhancing evocations.
@@ -85,10 +73,7 @@ mastery.save()
 mastery.add_source("Demon: Earthbound", 76)
 
 # Thralls
-thralls = Background.objects.get_or_create(
-    name="Thralls",
-    property_name="thralls"
-)[0]
+thralls = Background.objects.get_or_create(name="Thralls", property_name="thralls")[0]
 thralls.description = """As well as the devoted followers that worship them, the Earthbound also have need of stronger, more capable agents - ones who are still loyal unto death to their dark master. These thralls might be mortals who have accepted the black gift of the Earthbound's power, or they could be infernal slaves, demons bound to the Earthbound through its knowledge of their True Names. With Storyteller permission, you might even have other supernatural beings as thralls (for more information on the effects of thralldom on other supernatural beings, see the Demon Storytellers Companion).
 
 The Thralls Background replaces the Followers Background, which is available to normal Demon characters. It functions in a very similar way, but while the agents of the Followers Background are normal mortals, those provided by the Thralls Background are much more competent and powerful. They are still insects compared to the power of their Earthbound master, but they are a match for any skilled mortal or even for the average demon. The Storyteller and player should work together to decide on the capabilities of the character's Thralls. Infernal slaves are roughly equal to a starting Demon character, while empowered mortals are skilled examples of their kind. See "Damned Souls" (Demon: Earthbound p. 98) for more details.
@@ -103,10 +88,7 @@ thralls.save()
 thralls.add_source("Demon: Earthbound", 77)
 
 # Worship
-worship = Background.objects.get_or_create(
-    name="Worship",
-    property_name="worship"
-)[0]
+worship = Background.objects.get_or_create(name="Worship", property_name="worship")[0]
 worship.description = """It's not enough to merely have a cult of followers and servants. Such pawns might be useful, but they don't provide the Earthbound with what it desperately needs - Faith. The Earthbound gains Faith only if its followers perform a long, complex and symbolic worship ritual, which culminates in the Earthbound gaining Faith equal to the number of participants. The Worship Background determines how many worshippers of the Earthbound participate in each ritual. Other members might be involved, but only on the periphery, and their Faith does not flow to the demon.
 
 Worship also measures how powerful the veneration rituals of the cult are - the shorter, less powerful rites that can grant the Earthbound's player extra dice for evocation rolls. For more details on veneration rituals, see Demon: Earthbound p. 69.

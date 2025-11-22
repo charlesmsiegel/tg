@@ -19,7 +19,7 @@ class VampireTitle(Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="titles"
+        related_name="titles",
     )
 
     # Point value of title (for social interactions)
@@ -27,8 +27,7 @@ class VampireTitle(Model):
 
     # Whether this is a negative title
     is_negative = models.BooleanField(
-        default=False,
-        help_text="Negative titles subtract from social dice pools"
+        default=False, help_text="Negative titles subtract from social dice pools"
     )
 
     # Title description and powers

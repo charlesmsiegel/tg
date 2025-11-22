@@ -1,6 +1,5 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-
 from core.views.message_mixin import MessageMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.core import Medium
 
 

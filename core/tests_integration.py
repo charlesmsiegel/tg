@@ -214,9 +214,7 @@ class TestXPApprovalWorkflowIntegration(TestCase):
             },
         )
         self.assertTrue(
-            WeeklyXPRequest.objects.filter(
-                character=self.char, week=self.week
-            ).exists()
+            WeeklyXPRequest.objects.filter(character=self.char, week=self.week).exists()
         )
         request = WeeklyXPRequest.objects.get(character=self.char, week=self.week)
         self.assertTrue(request.finishing)
@@ -224,9 +222,7 @@ class TestXPApprovalWorkflowIntegration(TestCase):
 
     def test_player_cannot_submit_for_other_character(self):
         """Test that player cannot submit request for another user's character."""
-        other_user = User.objects.create_user(
-            "other", "other@test.com", "password"
-        )
+        other_user = User.objects.create_user("other", "other@test.com", "password")
         other_char = Human.objects.create(
             name="Other Character",
             owner=other_user,
@@ -358,9 +354,7 @@ class TestChronicleManagementIntegration(TestCase):
         )
 
         # Create items
-        item = ItemModel.objects.create(
-            name="Chronicle Item", chronicle=self.chronicle
-        )
+        item = ItemModel.objects.create(name="Chronicle Item", chronicle=self.chronicle)
 
         # Create locations
         loc = LocationModel.objects.create(
@@ -376,9 +370,7 @@ class TestChronicleManagementIntegration(TestCase):
         self.assertEqual(
             LocationModel.objects.filter(chronicle=self.chronicle).count(), 2
         )
-        self.assertEqual(
-            ItemModel.objects.filter(chronicle=self.chronicle).count(), 1
-        )
+        self.assertEqual(ItemModel.objects.filter(chronicle=self.chronicle).count(), 1)
 
     def test_scene_with_multiple_player_characters(self):
         """Test scene with characters from multiple players."""
@@ -521,9 +513,7 @@ class TestPermissionBoundariesIntegration(TestCase):
         )
 
         self.client.login(username="player", password="password")
-        response = self.client.post(
-            f"/game/scene/{scene.id}", {"close_scene": "true"}
-        )
+        response = self.client.post(f"/game/scene/{scene.id}", {"close_scene": "true"})
         self.assertEqual(response.status_code, 403)
         scene.refresh_from_db()
         self.assertFalse(scene.finished)

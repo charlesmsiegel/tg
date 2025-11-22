@@ -1,7 +1,7 @@
 from characters.models.core.statistic import Statistic
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Background(Statistic):
@@ -23,8 +23,7 @@ class BackgroundRating(models.Model):
         related_name="backgrounds",
     )
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     note = models.CharField(default="", max_length=100)
     url = models.CharField(default="", max_length=500)
@@ -37,8 +36,8 @@ class BackgroundRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_backgroundrating_rating_range',
-                violation_error_message="Background rating must be between 0 and 10"
+                name="characters_backgroundrating_rating_range",
+                violation_error_message="Background rating must be between 0 and 10",
             ),
         ]
 

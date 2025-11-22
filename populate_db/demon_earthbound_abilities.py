@@ -9,8 +9,7 @@ from characters.models.core.ability_block import Ability
 
 # Indoctrination (Skill)
 indoctrination = Ability.objects.get_or_create(
-    name="Indoctrination",
-    property_name="indoctrination"
+    name="Indoctrination", property_name="indoctrination"
 )[0]
 indoctrination.description = """This Skill represents the capability to change the heartfelt convictions and attitudes of others through brainwashing and psychological conditioning. More than simply lying or persuading another, Indoctrination allows the practitioner to permanently alter another person's personality, loyalty and beliefs. The Skill involves knowledge of effective psychological techniques, as well as familiarity with the medications, drugs and equipment useful to the brainwashing process.
 
@@ -31,10 +30,7 @@ Specialties: Chemical Aids, Harsh Methods, Hate, Love, Worship"""
 indoctrination.save()
 
 # Recall (Talent) - Earthbound only
-recall = Ability.objects.get_or_create(
-    name="Recall",
-    property_name="recall"
-)[0]
+recall = Ability.objects.get_or_create(name="Recall", property_name="recall")[0]
 recall.description = """This Talent is available only to the Earthbound who escaped to Earth before the breaking of the Abyss; recently Earthbound demons may not possess it.
 
 Ancient Earthbound do not suffer from the same clouding of memory that other demons have, so their memories of the Fall and the Age of Wrath are detailed and full. What's more problematic, though, is remembering the details of the Earthbound's time in Creation after being summoned from Hell. The Earthbound do not perceive time the same way mortals do, they occasionally ignore meaningless events like wars and the rise of civilization, and they spend time in dreaming stasis when they run low on Faith. Therefore, the memory of an Earthbound can be patchy - not hazy like that of a normal demon, but simply unfocused.
@@ -54,10 +50,7 @@ Specialties: Cults, Empires, Lost Cities, Rivals, Wars"""
 recall.save()
 
 # Tactics (Skill)
-tactics = Ability.objects.get_or_create(
-    name="Tactics",
-    property_name="tactics"
-)[0]
+tactics = Ability.objects.get_or_create(name="Tactics", property_name="tactics")[0]
 tactics.description = """The Earthbound have witnessed countless wars and millennia of conflict, and they have learned the secrets of battle. Tactics is a Skill measuring the character's grasp of military strategy and the best way to fight a battle, regardless of the odds. A skilled tactician can hold back an army with a dozen soldiers or pierce a stronghold's defenses with perfectly timed attacks. Tactics is useless for a lone warrior, though, who survives only through raw skill and power. Tactics is based on leadership and teamwork, and it requires the character to command a group of warriors or followers.
 
 Successful Intelligence or Wits + Tactics rolls allow the player to ask the Storyteller questions about the forces opposing her followers before the battle begins. Each success yields a piece of information that the player can use to form battle plans. Alternatively, the Storyteller might award the player a pool of automatic successes equal to the successes of the Tactics roll. These successes can be applied to any roll or rolls made in the ensuing battle, representing the planning and teamwork employed by the Earthbound's forces. Once used, these automatic successes are lost. Only one Tactics roll may be made per scene.
@@ -73,10 +66,7 @@ Specialties: Defense, First Strikes, Offense, Teamwork, Weapons"""
 tactics.save()
 
 # Torture (Skill)
-torture = Ability.objects.get_or_create(
-    name="Torture",
-    property_name="torture"
-)[0]
+torture = Ability.objects.get_or_create(name="Torture", property_name="torture")[0]
 torture.description = """Torture is a dark and hideous Skill, made all the more insidious because the Earthbound learned it from their mortal followers. It took a mortal to invent murder, and it took a mortal to invent the notion of hurting someone until that someone cooperates. Torture allows the character to wrest information from an unwilling victim, usually through physical means - beatings, red-hot pokers, drops of water falling constantly on the victim's skull. Psychological torture can also be effective, using methods such as sensory deprivation, sleep deprivation and constant questioning that leaves the victim on the edge of madness.
 
 Torturing a victim requires an extended, resisted roll. Roll Manipulation + Torture versus the victim's Willpower - the difficulty for both rolls is 7. If the Torture roll wins, the victim suffers one health level of lethal damage (for physical torture) or loses one point of temporary Willpower (for psychological torture). Once the torturer accumulates successes equal to the victim's permanent Willpower, the victim breaks and tells the torturer what she wants. If the victim's resistance roll botches, the character loses a point of permanent Willpower; if the Torture roll botches, the victim resists all further attempts at interrogation. Note that the victim can cease resistance at any time to spare further damage or loss of Willpower and confess what she knows.

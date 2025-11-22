@@ -1,8 +1,8 @@
 from typing import Any
 
 from characters.forms.core.backgroundform import BackgroundRatingFormSet
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import SorcererFreebiesForm
 from characters.forms.mage.numina import (
@@ -36,11 +36,15 @@ from characters.views.core.human import (
 from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from core.views.generic import MultipleFormsetsMixin
 from core.views.message_mixin import MessageMixin
 from django import forms
@@ -285,7 +289,9 @@ def get_abilities(request):
     return JsonResponse(abilities_list, safe=False)
 
 
-class SorcererPsychicView(ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPsychicView(
+    ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView
+):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -333,7 +339,9 @@ class SorcererPsychicView(ApprovedUserContextMixin, SpecialUserMixin, MultipleFo
         return super().form_valid(form)
 
 
-class SorcererPathView(ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
+class SorcererPathView(
+    ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView
+):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"

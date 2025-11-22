@@ -1,6 +1,6 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 from items.models.core import ItemModel
 
@@ -57,7 +57,7 @@ class Treasure(ItemModel):
     glamour_storage = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(50)],
-        help_text="If it can store Glamour, how much"
+        help_text="If it can store Glamour, how much",
     )
     glamour_affinity = models.CharField(
         max_length=30,
@@ -72,13 +72,13 @@ class Treasure(ItemModel):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=1, rating__lte=5),
-                name='items_treasure_rating_range',
-                violation_error_message="Treasure rating must be between 1 and 5"
+                name="items_treasure_rating_range",
+                violation_error_message="Treasure rating must be between 1 and 5",
             ),
             CheckConstraint(
                 check=Q(glamour_storage__gte=0, glamour_storage__lte=50),
-                name='items_treasure_glamour_storage_range',
-                violation_error_message="Glamour storage must be between 0 and 50"
+                name="items_treasure_glamour_storage_range",
+                violation_error_message="Glamour storage must be between 0 and 50",
             ),
         ]
 

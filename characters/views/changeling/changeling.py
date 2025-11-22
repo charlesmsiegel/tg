@@ -2,8 +2,8 @@ from typing import Any
 
 from characters.forms.changeling.changeling import ChangelingCreationForm
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlawRating
@@ -20,12 +20,16 @@ from characters.views.core.human import (
 )
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -266,15 +270,12 @@ class ChangelingBasicsView(LoginRequiredMixin, FormView):
         self.object = form.save()
         messages.success(
             self.request,
-            f"Changeling '{self.object.name}' created successfully! Continue with character creation."
+            f"Changeling '{self.object.name}' created successfully! Continue with character creation.",
         )
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "Please correct the errors in the form below."
-        )
+        messages.error(self.request, "Please correct the errors in the form below.")
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -374,27 +375,39 @@ class ChangelingArtsRealmsView(ApprovedUserContextMixin, SpecialUserMixin, Updat
         total_arts = sum(arts.values())
         if total_arts != 3:
             form.add_error(None, f"Arts must total 3 dots (currently {total_arts})")
-            messages.error(self.request, f"Arts allocation error: You must spend exactly 3 dots. You have {total_arts}.")
+            messages.error(
+                self.request,
+                f"Arts allocation error: You must spend exactly 3 dots. You have {total_arts}.",
+            )
             return self.form_invalid(form)
 
         # Validate realms total is 5
         total_realms = sum(realms.values())
         if total_realms != 5:
             form.add_error(None, f"Realms must total 5 dots (currently {total_realms})")
-            messages.error(self.request, f"Realms allocation error: You must spend exactly 5 dots. You have {total_realms}.")
+            messages.error(
+                self.request,
+                f"Realms allocation error: You must spend exactly 5 dots. You have {total_realms}.",
+            )
             return self.form_invalid(form)
 
         # Validate individual values don't exceed 5
         for art_name, value in arts.items():
             if value > 5:
                 form.add_error(art_name, "Cannot exceed 5 dots")
-                messages.error(self.request, f"{art_name.replace('_', ' ').title()} cannot exceed 5 dots.")
+                messages.error(
+                    self.request,
+                    f"{art_name.replace('_', ' ').title()} cannot exceed 5 dots.",
+                )
                 return self.form_invalid(form)
 
         for realm_name, value in realms.items():
             if value > 5:
                 form.add_error(realm_name, "Cannot exceed 5 dots")
-                messages.error(self.request, f"{realm_name.replace('_', ' ').title()} cannot exceed 5 dots.")
+                messages.error(
+                    self.request,
+                    f"{realm_name.replace('_', ' ').title()} cannot exceed 5 dots.",
+                )
                 return self.form_invalid(form)
 
         # All validations passed, increment creation_status and save
@@ -439,9 +452,7 @@ class ChangelingExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateVie
         form = super().get_form(form_class)
         form.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})
         form.fields["date_of_birth"].required = False
-        form.fields["date_of_crysalis"].widget = forms.DateInput(
-            attrs={"type": "date"}
-        )
+        form.fields["date_of_crysalis"].widget = forms.DateInput(attrs={"type": "date"})
         form.fields["date_of_crysalis"].required = False
         form.fields["description"].widget.attrs.update(
             {
@@ -454,9 +465,7 @@ class ChangelingExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateVie
             }
         )
         form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals."
-            }
+            {"placeholder": "Describe your character's long and short term goals."}
         )
         form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
         form.fields["public_info"].widget.attrs.update(
@@ -635,7 +644,9 @@ class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
             changeling.specialties.add(spec)
         changeling.status = "Sub"
         changeling.save()
-        messages.success(self.request, f"Changeling '{changeling.name}' submitted for approval!")
+        messages.success(
+            self.request, f"Changeling '{changeling.name}' submitted for approval!"
+        )
         return HttpResponseRedirect(changeling.get_absolute_url())
 
 

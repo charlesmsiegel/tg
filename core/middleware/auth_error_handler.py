@@ -35,7 +35,10 @@ class AuthErrorHandlerMiddleware:
             redirect_url = response.url
 
             # Check if redirecting to login and user is not authenticated
-            if redirect_url.startswith(reverse(login_url)) and not request.user.is_authenticated:
+            if (
+                redirect_url.startswith(reverse(login_url))
+                and not request.user.is_authenticated
+            ):
                 # Return 401 error instead of redirect
                 return render(request, "core/errors/401.html", status=401)
 

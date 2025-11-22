@@ -3,10 +3,15 @@ from typing import Any
 from characters.forms.core.ally import AllyForm
 from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
+from core.mixins import (
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.views.generic import DictView
 from core.views.message_mixin import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import View

@@ -7,6 +7,7 @@ from locations.models.core import LocationModel
 
 class ItemModelManager(ModelManager):
     """Custom manager for ItemModel with specialized query patterns."""
+
     # Inherits pending_approval_for_user from ModelManager base class
     pass
 

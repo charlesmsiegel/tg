@@ -1,12 +1,13 @@
 from django.db import models
-from locations.models.core.location import LocationModel
 from django.urls import reverse
+from locations.models.core.location import LocationModel
+
 
 class Haunt(LocationModel):
     """Faith-rich location where the Veil is weakened."""
 
     type = "haunt"
-    
+
     rank = models.IntegerField(default=1)
     shroud_rating = models.IntegerField(default=5)
 
@@ -24,7 +25,7 @@ class Haunt(LocationModel):
             ("other", "Other"),
         ],
     )
-    
+
     HAUNT_SIZE_CHOICES = [
         ("single_room", "Single Room"),
         ("apartment", "Small Apartment/Shop"),

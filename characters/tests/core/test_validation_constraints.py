@@ -9,15 +9,14 @@ Tests the following features:
 """
 
 import pytest
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
-from django.contrib.auth.models import User
-
+from characters.models.core.ability_block import Ability
+from characters.models.core.attribute_block import Attribute
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from characters.models.core.attribute_block import Attribute
-from characters.models.core.ability_block import Ability
-from game.models import Chronicle, STRelationship, Gameline, ObjectType, Scene
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
+from game.models import Chronicle, Gameline, ObjectType, Scene, STRelationship
 
 
 @pytest.mark.django_db
@@ -30,7 +29,9 @@ class TestCharacterConstraints:
         character.xp = -100
 
         with pytest.raises(IntegrityError, match="xp_non_negative"):
-            character.save(skip_validation=True)  # Bypass model validation to test DB constraint
+            character.save(
+                skip_validation=True
+            )  # Bypass model validation to test DB constraint
 
     def test_xp_cannot_be_negative_model_validation(self):
         """Model validation prevents negative XP"""
@@ -107,8 +108,17 @@ class TestAttributeConstraints:
         human = Human.objects.create(name="Test")
 
         # Test each attribute
-        for attr in ['strength', 'dexterity', 'stamina', 'perception',
-                     'intelligence', 'wits', 'charisma', 'manipulation', 'appearance']:
+        for attr in [
+            "strength",
+            "dexterity",
+            "stamina",
+            "perception",
+            "intelligence",
+            "wits",
+            "charisma",
+            "manipulation",
+            "appearance",
+        ]:
             # Test minimum
             setattr(human, attr, 0)
             with pytest.raises(IntegrityError):
@@ -132,8 +142,17 @@ class TestAttributeConstraints:
         human = Human.objects.create(name="Test")
 
         # Set all attributes to max valid value
-        for attr in ['strength', 'dexterity', 'stamina', 'perception',
-                     'intelligence', 'wits', 'charisma', 'manipulation', 'appearance']:
+        for attr in [
+            "strength",
+            "dexterity",
+            "stamina",
+            "perception",
+            "intelligence",
+            "wits",
+            "charisma",
+            "manipulation",
+            "appearance",
+        ]:
             setattr(human, attr, 10)
 
         human.save()  # Should not raise
@@ -242,14 +261,14 @@ class TestXPTransactions:
             trait_name="strength",
             trait_display="Strength",
             cost=5,
-            category="attributes"
+            category="attributes",
         )
 
         character.refresh_from_db()
         assert character.xp == 5
         assert len(character.spent_xp) == 1
-        assert character.spent_xp[0]['cost'] == 5
-        assert character.spent_xp[0]['approved'] == 'Pending'
+        assert character.spent_xp[0]["cost"] == 5
+        assert character.spent_xp[0]["approved"] == "Pending"
 
     def test_spend_xp_insufficient_xp(self):
         """Spending more XP than available raises ValidationError"""
@@ -260,7 +279,7 @@ class TestXPTransactions:
                 trait_name="strength",
                 trait_display="Strength",
                 cost=10,
-                category="attributes"
+                category="attributes",
             )
 
         # Character state should be unchanged
@@ -277,10 +296,7 @@ class TestXPTransactions:
         try:
             with transaction.atomic():
                 record = character.spend_xp(
-                    trait_name="test",
-                    trait_display="Test",
-                    cost=5,
-                    category="test"
+                    trait_name="test", trait_display="Test", cost=5, category="test"
                 )
                 # Force an error
                 raise ValueError("Simulated error")
@@ -302,20 +318,18 @@ class TestXPTransactions:
             trait_name="strength",
             trait_display="Strength",
             cost=5,
-            category="attributes"
+            category="attributes",
         )
 
         # Approve and apply
         human.approve_xp_spend(
-            spend_index=0,
-            trait_property_name="strength",
-            new_value=4
+            spend_index=0, trait_property_name="strength", new_value=4
         )
 
         human.refresh_from_db()
         assert human.strength == 4
-        assert human.spent_xp[0]['approved'] == 'Approved'
-        assert 'approved_at' in human.spent_xp[0]
+        assert human.spent_xp[0]["approved"] == "Approved"
+        assert "approved_at" in human.spent_xp[0]
 
     def test_approve_xp_spend_invalid_index(self):
         """Approving invalid spend index raises ValidationError"""
@@ -323,9 +337,7 @@ class TestXPTransactions:
 
         with pytest.raises(ValidationError, match="Invalid spend index"):
             human.approve_xp_spend(
-                spend_index=99,
-                trait_property_name="strength",
-                new_value=4
+                spend_index=99, trait_property_name="strength", new_value=4
             )
 
     def test_approve_xp_spend_already_processed(self):
@@ -443,18 +455,12 @@ class TestSTRelationshipConstraints:
         gameline = Gameline.objects.create(name="Test Gameline")
 
         # First relationship
-        STRelationship.objects.create(
-            user=user,
-            chronicle=chronicle,
-            gameline=gameline
-        )
+        STRelationship.objects.create(user=user, chronicle=chronicle, gameline=gameline)
 
         # Duplicate should fail
         with pytest.raises(IntegrityError, match="unique_st_per_chronicle_gameline"):
             STRelationship.objects.create(
-                user=user,
-                chronicle=chronicle,
-                gameline=gameline
+                user=user, chronicle=chronicle, gameline=gameline
             )
 
     def test_different_gameline_allowed(self):
@@ -466,20 +472,18 @@ class TestSTRelationshipConstraints:
 
         # Two relationships with different gamelines
         rel1 = STRelationship.objects.create(
-            user=user,
-            chronicle=chronicle,
-            gameline=gameline1
+            user=user, chronicle=chronicle, gameline=gameline1
         )
 
         rel2 = STRelationship.objects.create(
-            user=user,
-            chronicle=chronicle,
-            gameline=gameline2
+            user=user, chronicle=chronicle, gameline=gameline2
         )
 
         # Should succeed
         assert rel1.pk != rel2.pk
-        assert STRelationship.objects.filter(user=user, chronicle=chronicle).count() == 2
+        assert (
+            STRelationship.objects.filter(user=user, chronicle=chronicle).count() == 2
+        )
 
 
 @pytest.mark.django_db
@@ -545,7 +549,9 @@ class TestModelValidationIntegration:
     def test_full_validation_chain(self):
         """Test that validation works at all levels"""
         Attribute.objects.create(name="Strength", property_name="strength")
-        human = Human.objects.create(name="Test", xp=20, strength=3, willpower=5, temporary_willpower=5)
+        human = Human.objects.create(
+            name="Test", xp=20, strength=3, willpower=5, temporary_willpower=5
+        )
 
         # Model validation
         human.xp = -5

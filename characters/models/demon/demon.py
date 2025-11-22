@@ -7,9 +7,9 @@ from characters.models.demon.lore import Lore
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
 from core.utils import add_dot
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 
@@ -381,7 +381,7 @@ class Demon(LoreBlock, DtFHuman):
                 if demon.add_faith():
                     demon.xp -= cost
                     demon.add_to_spend(trait, demon.faith, cost)
-                    demon.save(update_fields=['xp', 'faith', 'spent_xp'])
+                    demon.save(update_fields=["xp", "faith", "spent_xp"])
                     return True
             return False
 
@@ -594,8 +594,7 @@ class LoreRating(models.Model):
     demon = models.ForeignKey("Demon", on_delete=models.CASCADE, null=True)
     lore = models.ForeignKey(Lore, on_delete=models.CASCADE, null=True)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -604,8 +603,8 @@ class LoreRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_demon_lorerating_rating_range',
-                violation_error_message="Lore rating must be between 0 and 10"
+                name="characters_demon_lorerating_rating_range",
+                violation_error_message="Lore rating must be between 0 and 10",
             ),
         ]
 

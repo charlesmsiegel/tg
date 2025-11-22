@@ -5,9 +5,9 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
 from core.utils import add_dot
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 
@@ -231,6 +231,7 @@ class Wraith(WtOHuman):
 
     def add_passion(self, emotion, description, rating=1, is_dark=False):
         from characters.models.wraith.passion import Passion
+
         passion = Passion.objects.create(
             wraith=self,
             emotion=emotion,
@@ -242,6 +243,7 @@ class Wraith(WtOHuman):
 
     def total_passion_rating(self):
         from characters.models.wraith.passion import Passion
+
         return sum(p.rating for p in Passion.objects.filter(wraith=self))
 
     def has_passions(self):
@@ -249,6 +251,7 @@ class Wraith(WtOHuman):
 
     def add_fetter(self, fetter_type, description, rating=1):
         from characters.models.wraith.fetter import Fetter
+
         fetter = Fetter.objects.create(
             wraith=self,
             fetter_type=fetter_type,
@@ -259,6 +262,7 @@ class Wraith(WtOHuman):
 
     def total_fetter_rating(self):
         from characters.models.wraith.fetter import Fetter
+
         return sum(f.rating for f in Fetter.objects.filter(wraith=self))
 
     def has_fetters(self):
@@ -451,6 +455,7 @@ class Wraith(WtOHuman):
 
         # Reduce connection to Fetters (optional - makes them weaker)
         from characters.models.wraith.fetter import Fetter
+
         fetters = Fetter.objects.filter(wraith=self)
         for fetter in fetters:
             fetter.rating = max(1, fetter.rating // 2)  # Halve fetter strength
@@ -533,7 +538,9 @@ class Wraith(WtOHuman):
                 passion.save()
 
             # Reduce Angst
-            self.angst_permanent = max(0, self.angst_permanent - (psyche_successes - shadow_successes))
+            self.angst_permanent = max(
+                0, self.angst_permanent - (psyche_successes - shadow_successes)
+            )
             self.angst = max(0, self.angst - (psyche_successes - shadow_successes) * 2)
 
             self.save()
@@ -580,7 +587,9 @@ class Wraith(WtOHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
+            lambda: super().xp_cost(trait_type, trait_value)
+            if trait_value is not None
+            else 10000,
             {
                 "arcanos": 10,
                 "pathos": 2,
@@ -603,7 +612,9 @@ class Wraith(WtOHuman):
             return output
 
         # Check if trait is an arcanos
-        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(
+            self.get_dark_arcanoi().keys()
+        )
 
         if trait in arcanoi_list:
             current_value = getattr(self, trait)
@@ -674,7 +685,9 @@ class Wraith(WtOHuman):
             return output
 
         # Check if trait is an arcanos
-        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(
+            self.get_dark_arcanoi().keys()
+        )
 
         if trait in arcanoi_list:
             cost = self.freebie_cost("arcanos")
@@ -806,8 +819,7 @@ class ThornRating(models.Model):
     wraith = models.ForeignKey(Wraith, on_delete=models.CASCADE)
     thorn = models.ForeignKey(Thorn, on_delete=models.CASCADE)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -816,8 +828,8 @@ class ThornRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
-                name='characters_wraith_thornrating_rating_range',
-                violation_error_message="Thorn rating must be between 0 and 10"
+                name="characters_wraith_thornrating_rating_range",
+                violation_error_message="Thorn rating must be between 0 and 10",
             ),
         ]
 

@@ -1,7 +1,24 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
-
-from populate_db.vampire_disciplines import celerity, fortitude, potence, auspex, dominate, dementation, presence, animalism, protean, obfuscate, chimerstry, necromancy, obtenebration, quietus, serpentis, thaumaturgy, vicissitude
+from populate_db.vampire_disciplines import (
+    animalism,
+    auspex,
+    celerity,
+    chimerstry,
+    dementation,
+    dominate,
+    fortitude,
+    necromancy,
+    obfuscate,
+    obtenebration,
+    potence,
+    presence,
+    protean,
+    quietus,
+    serpentis,
+    thaumaturgy,
+    vicissitude,
+)
 
 # Create the 13 Main Clans
 
@@ -14,7 +31,7 @@ assamite = VampireClan.objects.get_or_create(
     description="Guild of assassins bound by ancient Tremere curse (later broken). Middle Eastern, "
     "North African, or Mediterranean features common. Accept blood contracts and follow the Path of Blood. "
     "Also known as Banu Haqim.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 assamite.disciplines.add(celerity, obfuscate, quietus)
 
@@ -24,7 +41,7 @@ brujah = VampireClan.objects.get_or_create(
     weakness="Difficulty to resist frenzy reduced by 2 (minimum 3). Quick to anger and passionate.",
     description="Once philosopher-kings, now passionate rebels and idealists. Punk, biker, revolutionary "
     "aesthetics common. Quick to anger. Large presence in both Camarilla and Anarch Movement.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 brujah.disciplines.add(celerity, potence, presence)
 
@@ -35,7 +52,7 @@ followers_of_set = VampireClan.objects.get_or_create(
     description="Worship Set; spread corruption and vice. Deal in forbidden pleasures and knowledge. "
     "Egyptian or Mediterranean features common. Some adopt snake-like modifications. Operate temples, "
     "nightclubs, and drug dens.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 followers_of_set.disciplines.add(obfuscate, presence, serpentis)
 
@@ -46,7 +63,7 @@ gangrel = VampireClan.objects.get_or_create(
     "ears, claws, tail, etc.). These features accumulate over time.",
     description="Nomadic loners close to animals and nature. Formerly Camarilla, left in modern nights. "
     "Often rugged and feral in appearance. Sleep in the earth. Distrust cities and politics.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 gangrel.disciplines.add(animalism, fortitude, protean)
 
@@ -58,7 +75,7 @@ giovanni = VampireClan.objects.get_or_create(
     description="Incestuous Italian merchant family who murdered the Cappadocians to steal Necromancy. "
     "Maintain mortal business empire alongside their dealings with the dead. Italian family resemblance "
     "common; business attire standard.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 giovanni.disciplines.add(dominate, necromancy, potence)
 
@@ -70,7 +87,7 @@ lasombra = VampireClan.objects.get_or_create(
     description="Social Darwinists who manipulate through shadows and hierarchies. Pillar clan of the Sabbat. "
     "Diableried their own Antediluvian. Spanish and Italian features common; aristocratic bearing. "
     "Often found in churches and positions of authority.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 lasombra.disciplines.add(dominate, obtenebration, potence)
 
@@ -82,7 +99,7 @@ malkavian = VampireClan.objects.get_or_create(
     description="Gifted with insight and cursed with madness. Connected through the Malkavian Madness "
     "Network. Appearance varies from normal to obviously disturbed. Found in asylums, hospitals, and "
     "urban spaces. Trade in secrets and strange wisdom.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 malkavian.disciplines.add(auspex, dementation, obfuscate)
 
@@ -94,7 +111,7 @@ nosferatu = VampireClan.objects.get_or_create(
     description="Information brokers and master spies. Trade in secrets. Work together out of necessity. "
     "Live in sewers and abandoned tunnels beneath cities. Pale, hairless, corpse-like with unique mutations. "
     "Forced to rely on Obfuscate to move through mortal society.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 nosferatu.disciplines.add(animalism, obfuscate, potence)
 
@@ -106,7 +123,7 @@ ravnos = VampireClan.objects.get_or_create(
     description="Wandering tricksters and illusionists. Romani and Indian features common. Each has a "
     "compulsion related to the clan curse. Nearly destroyed during the Week of Nightmares. Travel in "
     "caravans and temporary shelters.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 ravnos.disciplines.add(animalism, chimerstry, fortitude)
 
@@ -118,7 +135,7 @@ toreador = VampireClan.objects.get_or_create(
     description="Artists and aesthetes; patrons of the arts. Seek beauty and perfection. Some are true "
     "artists, others mere poseurs. Beautiful and fashionable. Found in museums, galleries, penthouses, "
     "and theaters. Active in Camarilla high society.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 toreador.disciplines.add(auspex, celerity, presence)
 
@@ -130,7 +147,7 @@ tremere = VampireClan.objects.get_or_create(
     description="Former mortal mages who achieved vampirism through ritual. Destroyed the Salubri and "
     "stole Necromancy from Cappadocians. Hierarchical pyramid structure. Scholarly and formal appearance; "
     "often European features. Live in fortified chantries.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 tremere.disciplines.add(auspex, dominate, thaumaturgy)
 
@@ -142,7 +159,7 @@ tzimisce = VampireClan.objects.get_or_create(
     description="Transylvanian nobility and masters of fleshcrafting. Pillar clan of the Sabbat. Spiritual "
     "and alien in thinking. Appearance highly variable due to Vicissitude modifications. Old Clan Tzimisce "
     "lack Vicissitude but have Dominate instead. Found in ancestral estates.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 tzimisce.disciplines.add(animalism, auspex, vicissitude)
 
@@ -154,7 +171,7 @@ ventrue = VampireClan.objects.get_or_create(
     description="Leaders and nobility who claim rulership as birthright. Natural leaders and maintainers of "
     "the Masquerade. Well-groomed, professional, aristocratic appearance. Found in estates and corporate "
     "penthouses. Pillar of the Camarilla.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 ventrue.disciplines.add(dominate, fortitude, presence)
 
@@ -167,6 +184,6 @@ caitiff = VampireClan.objects.get_or_create(
     description="Clanless vampires, typically 13th+ Generation or of unknown lineage. Weakening of vampire "
     "blood or mysterious origins. Can learn any Discipline but all cost more. Pariahs of vampire society. "
     "No inherent clan weakness from parent bloodline but suffer severe social stigma.",
-    is_bloodline=False
+    is_bloodline=False,
 )[0]
 # Caitiff have no set clan disciplines - they can learn any

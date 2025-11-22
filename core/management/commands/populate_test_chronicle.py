@@ -7,11 +7,12 @@ Creates:
 - XP history
 - Relationships
 """
-from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import User
-from game.models import Chronicle
 from datetime import date, timedelta
 from random import choice, randint
+
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand, CommandError
+from game.models import Chronicle
 
 
 class Command(BaseCommand):
@@ -52,9 +53,7 @@ class Command(BaseCommand):
             raise CommandError(f"Chronicle {options['chronicle']} not found")
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\nPopulating test data for: {chronicle.name}\n"
-            )
+            self.style.SUCCESS(f"\nPopulating test data for: {chronicle.name}\n")
         )
 
         # Create test user if needed
@@ -62,27 +61,22 @@ class Command(BaseCommand):
             username="test_player",
             defaults={
                 "email": "test@example.com",
-            }
+            },
         )
         if created:
             test_user.set_password("test123")
             test_user.save()
-            self.stdout.write("  ✓ Created test user (username: test_player, password: test123)")
+            self.stdout.write(
+                "  ✓ Created test user (username: test_player, password: test123)"
+            )
 
         # Create characters
         characters = self.create_characters(
-            chronicle,
-            test_user,
-            options["characters"],
-            options["gameline"]
+            chronicle, test_user, options["characters"], options["gameline"]
         )
 
         # Create scenes
-        scenes = self.create_scenes(
-            chronicle,
-            characters,
-            options["scenes"]
-        )
+        scenes = self.create_scenes(chronicle, characters, options["scenes"])
 
         # Summary
         self.stdout.write("\n" + "=" * 70)
@@ -101,29 +95,54 @@ class Command(BaseCommand):
 
         # Character name templates
         names = [
-            "Marcus", "Isabella", "Vincent", "Elena", "Thomas",
-            "Sophia", "Alexander", "Catherine", "Dominic", "Natalie",
-            "Jonathan", "Victoria", "Sebastian", "Anastasia", "Gabriel",
+            "Marcus",
+            "Isabella",
+            "Vincent",
+            "Elena",
+            "Thomas",
+            "Sophia",
+            "Alexander",
+            "Catherine",
+            "Dominic",
+            "Natalie",
+            "Jonathan",
+            "Victoria",
+            "Sebastian",
+            "Anastasia",
+            "Gabriel",
         ]
 
         # Character concepts
         concepts = [
-            "Former Detective", "Street Artist", "Corporate Lawyer",
-            "Underground DJ", "Medical Student", "Philosophy Professor",
-            "Club Owner", "Investigative Journalist", "Gang Member",
-            "Social Worker", "Antique Dealer", "Hacker",
+            "Former Detective",
+            "Street Artist",
+            "Corporate Lawyer",
+            "Underground DJ",
+            "Medical Student",
+            "Philosophy Professor",
+            "Club Owner",
+            "Investigative Journalist",
+            "Gang Member",
+            "Social Worker",
+            "Antique Dealer",
+            "Hacker",
         ]
 
         statuses = ["App", "App", "App", "Sub", "Un"]  # Weighted towards approved
 
         for i in range(count):
-            name = choice(names) + " " + choice(["Smith", "Jones", "Martinez", "Chen", "O'Brien"])
+            name = (
+                choice(names)
+                + " "
+                + choice(["Smith", "Jones", "Martinez", "Chen", "O'Brien"])
+            )
             concept = choice(concepts)
             status = choice(statuses)
 
             # Import appropriate model based on gameline
             if gameline == "vtm":
                 from characters.models.vampire.human import Human
+
                 char = Human.objects.create(
                     name=name,
                     owner=user,
@@ -135,6 +154,7 @@ class Command(BaseCommand):
             else:
                 # For other gamelines, create basic human
                 from characters.models.core.human import Human
+
                 char = Human.objects.create(
                     name=name,
                     owner=user,
@@ -167,7 +187,7 @@ class Command(BaseCommand):
                 "owner": characters[0].owner if characters else None,
                 "status": "App",
                 "description": "A neutral gathering place for supernatural beings",
-            }
+            },
         )
 
         scenes = []
@@ -209,8 +229,6 @@ class Command(BaseCommand):
 
             scenes.append(scene)
 
-        self.stdout.write(
-            self.style.SUCCESS(f"  ✓ Created {len(scenes)} scene(s)")
-        )
+        self.stdout.write(self.style.SUCCESS(f"  ✓ Created {len(scenes)} scene(s)"))
 
         return scenes

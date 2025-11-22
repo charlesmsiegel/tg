@@ -9,13 +9,12 @@ Tests that:
 """
 
 import pytest
+from accounts.models import Profile
+from core.views.errors import error_401, error_403, error_404, error_500
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.test import Client, RequestFactory, override_settings
 from django.urls import reverse
-
-from accounts.models import Profile
-from core.views.errors import error_401, error_403, error_404, error_500
 
 User = get_user_model()
 

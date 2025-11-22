@@ -1,7 +1,7 @@
+from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from core.views.message_mixin import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
 

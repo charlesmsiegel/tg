@@ -16,15 +16,13 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
-from locations.models.core import LocationModel
-
 from game.forms import (
     AddCharForm,
     JournalEntryForm,
     PostForm,
     SceneCreationForm,
-    STResponseForm,
     StoryForm,
+    STResponseForm,
     WeeklyXPRequestForm,
 )
 from game.models import (
@@ -34,13 +32,14 @@ from game.models import (
     JournalEntry,
     Post,
     Scene,
-    STRelationship,
     Story,
+    STRelationship,
     Week,
     WeeklyXPRequest,
     get_next_sunday,
     message_processing,
 )
+from locations.models.core import LocationModel
 
 
 class TestJournalSignal(TestCase):
@@ -503,16 +502,12 @@ class TestSTResponseForm(TestCase):
 
     def test_valid_form(self):
         """Test valid ST response form."""
-        form = STResponseForm(
-            data={"st_message": "ST response here"}, entry=self.entry
-        )
+        form = STResponseForm(data={"st_message": "ST response here"}, entry=self.entry)
         self.assertTrue(form.is_valid())
 
     def test_save_updates_entry(self):
         """Test that save updates the journal entry."""
-        form = STResponseForm(
-            data={"st_message": "ST response here"}, entry=self.entry
-        )
+        form = STResponseForm(data={"st_message": "ST response here"}, entry=self.entry)
         form.is_valid()
         form.save()
         self.entry.refresh_from_db()
@@ -557,9 +552,7 @@ class TestStoryViews(TestCase):
     def test_story_create_view(self):
         """Test story create view."""
         initial_count = Story.objects.count()
-        response = self.client.post(
-            reverse("game:story:create"), {"name": "New Story"}
-        )
+        response = self.client.post(reverse("game:story:create"), {"name": "New Story"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Story.objects.count(), initial_count + 1)
 

@@ -1,6 +1,6 @@
 from characters.models.demon.demon import Demon
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.faction import DemonFaction
+from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
 from django import forms
 

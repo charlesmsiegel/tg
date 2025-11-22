@@ -14,7 +14,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent",
         "frequency_limitation": "Cannot exceed character's Shadow purchase limits",
         "limitations": "Passive social effect only",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -29,7 +29,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent (on-call aid)",
         "frequency_limitation": "Aid is Storyteller discretion",
         "limitations": "Different from Pact of Doom - relationship-based rather than transaction-based",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -44,7 +44,7 @@ Thorn.objects.get_or_create(
         "duration": "Scene (Catharsis duration)",
         "frequency_limitation": "Manifests in all Catharsis events",
         "limitations": "Relic always has significance to Psyche; manifests in all Catharsis",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -60,7 +60,7 @@ Thorn.objects.get_or_create(
         "duration": "Per Slumber cycle (recovers permanently next Slumber)",
         "frequency_limitation": "Maximum 5 points total",
         "limitations": "Infamous wraiths face social consequences from living world",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -75,7 +75,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent/Passive until suppressed",
         "frequency_limitation": "None",
         "limitations": "Makes wraith highly distinctive (advantages and disadvantages)",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -90,7 +90,7 @@ Thorn.objects.get_or_create(
         "duration": "Catharsis scene only",
         "frequency_limitation": "Stackable purchases",
         "limitations": "Only usable when Shadow controls Corpus",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -106,7 +106,7 @@ Thorn.objects.get_or_create(
         "duration": "One Slumber period",
         "frequency_limitation": "Costs 1 Angst per use",
         "limitations": "Defensive Willpower negates entirely",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -121,7 +121,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent",
         "frequency_limitation": "Can only be purchased once per character",
         "limitations": "Effect is cumulative with other negative modifiers",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -136,7 +136,7 @@ Thorn.objects.get_or_create(
         "duration": "Until reflection is no longer viewed",
         "frequency_limitation": "Effectiveness dims with repeated use",
         "limitations": "Requires reflective surface; purely illusory",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -152,7 +152,7 @@ Thorn.objects.get_or_create(
         "duration": "Scene (Spectres act until scene ends or destroyed)",
         "frequency_limitation": "Must be in Tempest/Nihil",
         "limitations": "No effect outside Tempest/Nihil; Spectre types determined by Storyteller",
-    }
+    },
 )[0]
 
 # Medium Thorns (3-5 Point Range)
@@ -169,7 +169,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent (knowledge retained; Angst cost paid once)",
         "frequency_limitation": "Consensual arrangement",
         "limitations": "Only Shadows with Pact of Doom access hive-mind knowledge",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -184,7 +184,7 @@ Thorn.objects.get_or_create(
         "duration": "Scene (lasts entire scene once activated)",
         "frequency_limitation": "One sense per scene",
         "limitations": "Only affects targeted Psyche (not other wraiths)",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -199,7 +199,7 @@ Thorn.objects.get_or_create(
         "duration": "Immediate effect (per roll)",
         "frequency_limitation": "Multiple uses per scene possible",
         "limitations": "Most effective on critical rolls where failure has major consequences",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -214,7 +214,7 @@ Thorn.objects.get_or_create(
         "duration": "Catharsis scene",
         "frequency_limitation": "Each Catharsis",
         "limitations": "Makes Shadow difficult to identify; potential for mistaken identity",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -229,7 +229,7 @@ Thorn.objects.get_or_create(
         "duration": "Single statement effect (until contradicted or believed)",
         "frequency_limitation": "Once per scene maximum",
         "limitations": "Applies to one sentence only",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -245,7 +245,7 @@ Thorn.objects.get_or_create(
         "duration": "One contact per day per target (resets after 24 hours)",
         "frequency_limitation": "Once per target per day",
         "limitations": "Requires physical contact",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -260,7 +260,7 @@ Thorn.objects.get_or_create(
         "duration": "Single action",
         "frequency_limitation": "Shadow must offer; Psyche cannot request",
         "limitations": "Psyche can become dependent; Shadow can withhold at critical moments",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -275,7 +275,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent",
         "frequency_limitation": "One familiar at a time",
         "limitations": "Small and harmless; avoidable by hostile wraiths; self-preserving",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -291,7 +291,7 @@ Thorn.objects.get_or_create(
         "duration": "Immediate (single action/statement)",
         "frequency_limitation": "Requires careful crafting",
         "limitations": "Should be discussed with player beforehand; requires player comfort",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -306,7 +306,7 @@ Thorn.objects.get_or_create(
         "duration": "Slumber period",
         "frequency_limitation": "Each Slumber",
         "limitations": "Psyche receives all blame for Shadow's actions",
-    }
+    },
 )[0]
 
 # Advanced/High-Level Thorns (6-7 Point Range)
@@ -324,7 +324,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent communication capability",
         "frequency_limitation": "None",
         "limitations": "Requires both Shadows have this Thorn (or comparable ability)",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -339,7 +339,7 @@ Thorn.objects.get_or_create(
         "duration": "Single scene (must rest silently following scene)",
         "frequency_limitation": "Must rest silently following scene",
         "limitations": "Two identical wraiths may trigger Doppelganger identification from Legionnaires",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -354,7 +354,7 @@ Thorn.objects.get_or_create(
         "duration": "Until session end",
         "frequency_limitation": "Dare must be within character's capabilities",
         "limitations": "Impossible dares lose invested Angst",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -369,7 +369,7 @@ Thorn.objects.get_or_create(
         "duration": "One contact",
         "frequency_limitation": "Once per target per session",
         "limitations": "Psyche may never suspect",
-    }
+    },
 )[0]
 
 # Book of Oblivion Thorns
@@ -386,7 +386,7 @@ Thorn.objects.get_or_create(
         "duration": "Permanent",
         "frequency_limitation": "Can use multiple times",
         "limitations": "After retrieval, Shadow or Psyche with memory-related arts can use them on Spectre's related memories",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -402,7 +402,7 @@ Thorn.objects.get_or_create(
         "duration": "Session duration (entire game session)",
         "frequency_limitation": "Once per session",
         "limitations": "Both options impair Passion benefits but don't eliminate them entirely",
-    }
+    },
 )[0]
 
 # Collective Thorns (Require Multiple Shadows)
@@ -420,7 +420,7 @@ Thorn.objects.get_or_create(
         "duration": "Scene",
         "frequency_limitation": "Cannot be used on same target more than once per session",
         "limitations": "Any Shadow with this Thorn contributes to pool",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -435,7 +435,7 @@ Thorn.objects.get_or_create(
         "duration": "One contact",
         "frequency_limitation": "Cannot be used on same target more than once per session",
         "limitations": "Minimum 3 targets required; extracted Angst divided among participating Shadows",
-    }
+    },
 )[0]
 
 Thorn.objects.get_or_create(
@@ -451,5 +451,5 @@ Thorn.objects.get_or_create(
         "duration": "3 turns base (scaling available)",
         "frequency_limitation": "Complex scaling system",
         "limitations": "Teamwork: Shadows can pool; Wraiths can pool counter-efforts",
-    }
+    },
 )[0]

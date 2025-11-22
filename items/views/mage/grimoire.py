@@ -1,9 +1,8 @@
 from collections import namedtuple
 from typing import Any
 
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
-
 from core.views.message_mixin import MessageMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage.grimoire import Grimoire
 
 EmptyRote = namedtuple("EmptyRote", ["name", "spheres"])

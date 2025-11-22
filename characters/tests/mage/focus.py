@@ -590,7 +590,9 @@ class TestPracticeRatingTenetBonus(TestCase):
         self.practice_only_associated = Practice.objects.create(
             name="Practice Only Associated"
         )
-        self.practice_only_limited = Practice.objects.create(name="Practice Only Limited")
+        self.practice_only_limited = Practice.objects.create(
+            name="Practice Only Limited"
+        )
         self.practice_both = Practice.objects.create(name="Practice Both")
         self.practice_neither = Practice.objects.create(name="Practice Neither")
 

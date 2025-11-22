@@ -24,47 +24,43 @@ class Reliquary(LocationModel):
         max_length=20,
         choices=RELIQUARY_TYPES,
         default="location",
-        help_text="Type of reliquary"
+        help_text="Type of reliquary",
     )
 
     # For location reliquaries
     location_size = models.CharField(
         max_length=200,
         blank=True,
-        help_text="Description of the location's size and boundaries"
+        help_text="Description of the location's size and boundaries",
     )
 
     # Health levels (for tracking damage)
     max_health_levels = models.IntegerField(
         default=20,
-        help_text="Maximum health levels (Faith + Willpower x 2 for locations)"
+        help_text="Maximum health levels (Faith + Willpower x 2 for locations)",
     )
 
     current_health_levels = models.IntegerField(
-        default=20,
-        help_text="Current health levels"
+        default=20, help_text="Current health levels"
     )
 
     # Soak rating
     soak_rating = models.IntegerField(
-        default=0,
-        help_text="Soak rating equal to permanent Willpower"
+        default=0, help_text="Soak rating equal to permanent Willpower"
     )
 
     # Special features for location reliquaries
     has_pervasiveness = models.BooleanField(
-        default=True,
-        help_text="Earthbound can sense everything within the location"
+        default=True, help_text="Earthbound can sense everything within the location"
     )
 
     has_manifestation = models.BooleanField(
-        default=True,
-        help_text="Can manifest apocalyptic form within location"
+        default=True, help_text="Can manifest apocalyptic form within location"
     )
 
     manifestation_range = models.IntegerField(
         default=0,
-        help_text="Range in yards the Earthbound can move outside location (= Faith)"
+        help_text="Range in yards the Earthbound can move outside location (= Faith)",
     )
 
     class Meta:
@@ -82,5 +78,8 @@ class Reliquary(LocationModel):
         """Return percentage of damage taken"""
         if self.max_health_levels == 0:
             return 0
-        return ((self.max_health_levels - self.current_health_levels) /
-                self.max_health_levels * 100)
+        return (
+            (self.max_health_levels - self.current_health_levels)
+            / self.max_health_levels
+            * 100
+        )

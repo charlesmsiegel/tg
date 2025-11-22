@@ -100,7 +100,7 @@ from characters.models.wraith.guild import Guild
 from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
-from characters.models.wraith.wraith import Wraith, ThornRating
+from characters.models.wraith.wraith import ThornRating, Wraith
 from django.contrib import admin
 
 admin.site.register(CharacterModel)
@@ -504,6 +504,7 @@ class ThrallAdmin(admin.ModelAdmin):
 class ApocalypticFormTraitAdmin(admin.ModelAdmin):
     list_display = ("name", "cost", "high_torment_only")
     list_filter = ("cost", "high_torment_only")
+
 
 # Wraith Models
 

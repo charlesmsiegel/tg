@@ -1,8 +1,8 @@
 from characters.models.core.statistic import Statistic
 from core.utils import add_dot
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Ability(Statistic):
@@ -45,82 +45,63 @@ class AbilityBlock(models.Model):
     ]
 
     alertness = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     athletics = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     brawl = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     empathy = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     expression = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     intimidation = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     streetwise = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     subterfuge = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     crafts = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     drive = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     etiquette = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     firearms = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     melee = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     stealth = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     academics = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     computer = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     investigation = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     medicine = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     science = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -129,98 +110,98 @@ class AbilityBlock(models.Model):
             # All abilities must be between 0 and 10
             CheckConstraint(
                 check=Q(alertness__gte=0, alertness__lte=10),
-                name='%(app_label)s_%(class)s_alertness_range',
-                violation_error_message="Alertness must be between 0 and 10"
+                name="%(app_label)s_%(class)s_alertness_range",
+                violation_error_message="Alertness must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(athletics__gte=0, athletics__lte=10),
-                name='%(app_label)s_%(class)s_athletics_range',
-                violation_error_message="Athletics must be between 0 and 10"
+                name="%(app_label)s_%(class)s_athletics_range",
+                violation_error_message="Athletics must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(brawl__gte=0, brawl__lte=10),
-                name='%(app_label)s_%(class)s_brawl_range',
-                violation_error_message="Brawl must be between 0 and 10"
+                name="%(app_label)s_%(class)s_brawl_range",
+                violation_error_message="Brawl must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(empathy__gte=0, empathy__lte=10),
-                name='%(app_label)s_%(class)s_empathy_range',
-                violation_error_message="Empathy must be between 0 and 10"
+                name="%(app_label)s_%(class)s_empathy_range",
+                violation_error_message="Empathy must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(expression__gte=0, expression__lte=10),
-                name='%(app_label)s_%(class)s_expression_range',
-                violation_error_message="Expression must be between 0 and 10"
+                name="%(app_label)s_%(class)s_expression_range",
+                violation_error_message="Expression must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(intimidation__gte=0, intimidation__lte=10),
-                name='%(app_label)s_%(class)s_intimidation_range',
-                violation_error_message="Intimidation must be between 0 and 10"
+                name="%(app_label)s_%(class)s_intimidation_range",
+                violation_error_message="Intimidation must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(streetwise__gte=0, streetwise__lte=10),
-                name='%(app_label)s_%(class)s_streetwise_range',
-                violation_error_message="Streetwise must be between 0 and 10"
+                name="%(app_label)s_%(class)s_streetwise_range",
+                violation_error_message="Streetwise must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(subterfuge__gte=0, subterfuge__lte=10),
-                name='%(app_label)s_%(class)s_subterfuge_range',
-                violation_error_message="Subterfuge must be between 0 and 10"
+                name="%(app_label)s_%(class)s_subterfuge_range",
+                violation_error_message="Subterfuge must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(crafts__gte=0, crafts__lte=10),
-                name='%(app_label)s_%(class)s_crafts_range',
-                violation_error_message="Crafts must be between 0 and 10"
+                name="%(app_label)s_%(class)s_crafts_range",
+                violation_error_message="Crafts must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(drive__gte=0, drive__lte=10),
-                name='%(app_label)s_%(class)s_drive_range',
-                violation_error_message="Drive must be between 0 and 10"
+                name="%(app_label)s_%(class)s_drive_range",
+                violation_error_message="Drive must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(etiquette__gte=0, etiquette__lte=10),
-                name='%(app_label)s_%(class)s_etiquette_range',
-                violation_error_message="Etiquette must be between 0 and 10"
+                name="%(app_label)s_%(class)s_etiquette_range",
+                violation_error_message="Etiquette must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(firearms__gte=0, firearms__lte=10),
-                name='%(app_label)s_%(class)s_firearms_range',
-                violation_error_message="Firearms must be between 0 and 10"
+                name="%(app_label)s_%(class)s_firearms_range",
+                violation_error_message="Firearms must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(melee__gte=0, melee__lte=10),
-                name='%(app_label)s_%(class)s_melee_range',
-                violation_error_message="Melee must be between 0 and 10"
+                name="%(app_label)s_%(class)s_melee_range",
+                violation_error_message="Melee must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(stealth__gte=0, stealth__lte=10),
-                name='%(app_label)s_%(class)s_stealth_range',
-                violation_error_message="Stealth must be between 0 and 10"
+                name="%(app_label)s_%(class)s_stealth_range",
+                violation_error_message="Stealth must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(academics__gte=0, academics__lte=10),
-                name='%(app_label)s_%(class)s_academics_range',
-                violation_error_message="Academics must be between 0 and 10"
+                name="%(app_label)s_%(class)s_academics_range",
+                violation_error_message="Academics must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(computer__gte=0, computer__lte=10),
-                name='%(app_label)s_%(class)s_computer_range',
-                violation_error_message="Computer must be between 0 and 10"
+                name="%(app_label)s_%(class)s_computer_range",
+                violation_error_message="Computer must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(investigation__gte=0, investigation__lte=10),
-                name='%(app_label)s_%(class)s_investigation_range',
-                violation_error_message="Investigation must be between 0 and 10"
+                name="%(app_label)s_%(class)s_investigation_range",
+                violation_error_message="Investigation must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(medicine__gte=0, medicine__lte=10),
-                name='%(app_label)s_%(class)s_medicine_range',
-                violation_error_message="Medicine must be between 0 and 10"
+                name="%(app_label)s_%(class)s_medicine_range",
+                violation_error_message="Medicine must be between 0 and 10",
             ),
             CheckConstraint(
                 check=Q(science__gte=0, science__lte=10),
-                name='%(app_label)s_%(class)s_science_range',
-                violation_error_message="Science must be between 0 and 10"
+                name="%(app_label)s_%(class)s_science_range",
+                violation_error_message="Science must be between 0 and 10",
             ),
         ]
 

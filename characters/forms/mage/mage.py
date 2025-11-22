@@ -107,27 +107,34 @@ class MageSpheresForm(forms.ModelForm):
         affinity_sphere = cleaned_data.get("affinity_sphere")
 
         # Check individual sphere ratings
-        spheres = [correspondence, time, spirit, forces, matter, life, entropy, mind, prime]
+        spheres = [
+            correspondence,
+            time,
+            spirit,
+            forces,
+            matter,
+            life,
+            entropy,
+            mind,
+            prime,
+        ]
         for sphere_value in spheres:
             if sphere_value < 0 or sphere_value > arete:
-                raise ValidationError(
-                    "Spheres must range from 0-Arete Rating."
-                )
+                raise ValidationError("Spheres must range from 0-Arete Rating.")
 
         # Check that affinity sphere is nonzero
         if affinity_sphere and self.instance:
             affinity_value = getattr(self.instance, affinity_sphere.property_name, None)
             # Check in cleaned_data first (in case it's being set now)
-            if affinity_value == 0 and cleaned_data.get(affinity_sphere.property_name, 0) == 0:
-                raise ValidationError(
-                    "Affinity Sphere must be nonzero."
-                )
+            if (
+                affinity_value == 0
+                and cleaned_data.get(affinity_sphere.property_name, 0) == 0
+            ):
+                raise ValidationError("Affinity Sphere must be nonzero.")
 
         # Check total sphere points
         total_spheres = sum(spheres)
         if total_spheres != 6:
-            raise ValidationError(
-                f"Spheres must total 6 (currently {total_spheres})."
-            )
+            raise ValidationError(f"Spheres must total 6 (currently {total_spheres}).")
 
         return cleaned_data

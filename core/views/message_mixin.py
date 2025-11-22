@@ -12,15 +12,15 @@ Please import from core.mixins instead:
 
 # Import for backward compatibility
 from core.mixins import (
-    SuccessMessageMixin,
+    DeleteMessageMixin,
     ErrorMessageMixin,
     MessageMixin,
-    DeleteMessageMixin,
+    SuccessMessageMixin,
 )
 
 __all__ = [
-    'SuccessMessageMixin',
-    'ErrorMessageMixin',
-    'MessageMixin',
-    'DeleteMessageMixin',
+    "SuccessMessageMixin",
+    "ErrorMessageMixin",
+    "MessageMixin",
+    "DeleteMessageMixin",
 ]

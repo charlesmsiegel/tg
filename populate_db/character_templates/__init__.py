@@ -6,10 +6,13 @@ Run this to populate all character templates from World of Darkness sourcebooks.
 
 import os
 import sys
+
 import django
 
 # Add project root to path
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
@@ -17,19 +20,19 @@ django.setup()
 
 # Import functions directly when run as module
 if __name__ == "__main__":
+    from changeling_templates import populate_changeling_templates
+    from demon_templates import populate_demon_templates
     from mage_templates import populate_mage_templates
     from vampire_templates import populate_vampire_templates
     from werewolf_templates import populate_werewolf_templates
-    from changeling_templates import populate_changeling_templates
     from wraith_templates import populate_wraith_templates
-    from demon_templates import populate_demon_templates
 else:
+    from .changeling_templates import populate_changeling_templates
+    from .demon_templates import populate_demon_templates
     from .mage_templates import populate_mage_templates
     from .vampire_templates import populate_vampire_templates
     from .werewolf_templates import populate_werewolf_templates
-    from .changeling_templates import populate_changeling_templates
     from .wraith_templates import populate_wraith_templates
-    from .demon_templates import populate_demon_templates
 
 
 def populate_all_templates():

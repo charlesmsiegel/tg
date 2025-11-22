@@ -47,34 +47,29 @@ class Earthbound(LoreBlock, DtFHuman):
     # These distribute dots to host Attributes when possessing or manifesting
     urge_flesh = models.IntegerField(
         default=1,
-        help_text="Physical urges - distribute among Strength, Dexterity, Stamina (1-5)"
+        help_text="Physical urges - distribute among Strength, Dexterity, Stamina (1-5)",
     )
     urge_thought = models.IntegerField(
         default=1,
-        help_text="Mental urges - distribute among Perception, Intelligence, Wits (1-5)"
+        help_text="Mental urges - distribute among Perception, Intelligence, Wits (1-5)",
     )
     urge_emotion = models.IntegerField(
         default=1,
-        help_text="Social urges - distribute among Charisma, Manipulation, Appearance (1-5)"
+        help_text="Social urges - distribute among Charisma, Manipulation, Appearance (1-5)",
     )
 
     # FAITH AND TORMENT
-    faith = models.IntegerField(
-        default=3,
-        help_text="Permanent Faith rating (1-10)"
-    )
+    faith = models.IntegerField(default=3, help_text="Permanent Faith rating (1-10)")
     temporary_faith = models.IntegerField(
         default=10,
-        help_text="Temporary Faith pool (max determined by Hoard background)"
+        help_text="Temporary Faith pool (max determined by Hoard background)",
     )
     max_faith = models.IntegerField(
-        default=10,
-        help_text="Maximum Faith pool from Hoard (10-35 for Earthbound)"
+        default=10, help_text="Maximum Faith pool from Hoard (10-35 for Earthbound)"
     )
 
     torment = models.IntegerField(
-        default=6,
-        help_text="Permanent Torment rating (becomes 10 at Final Damnation)"
+        default=6, help_text="Permanent Torment rating (becomes 10 at Final Damnation)"
     )
     temporary_torment = models.IntegerField(default=0)
 
@@ -94,34 +89,32 @@ class Earthbound(LoreBlock, DtFHuman):
         max_length=20,
         choices=RELIQUARY_TYPES,
         default="perfect",
-        help_text="Type of reliquary the Earthbound inhabits"
+        help_text="Type of reliquary the Earthbound inhabits",
     )
 
     reliquary_description = models.TextField(
-        blank=True,
-        help_text="Description of the reliquary's appearance and nature"
+        blank=True, help_text="Description of the reliquary's appearance and nature"
     )
 
     # For perfect reliquaries
     reliquary_materials = models.TextField(
         blank=True,
-        help_text="Materials and affinity (e.g., 'rubies and volcanic stone for fire affinity')"
+        help_text="Materials and affinity (e.g., 'rubies and volcanic stone for fire affinity')",
     )
 
     # Health levels (for tracking reliquary damage)
     reliquary_max_health = models.IntegerField(
         default=10,
-        help_text="Maximum health levels (= permanent Faith for perfect/improvised, (Faith+Willpower)x2 for locations)"
+        help_text="Maximum health levels (= permanent Faith for perfect/improvised, (Faith+Willpower)x2 for locations)",
     )
 
     reliquary_current_health = models.IntegerField(
-        default=10,
-        help_text="Current health levels of reliquary"
+        default=10, help_text="Current health levels of reliquary"
     )
 
     reliquary_soak = models.IntegerField(
         default=0,
-        help_text="Soak rating (= permanent Willpower for perfect/location, temp Willpower for improvised)"
+        help_text="Soak rating (= permanent Willpower for perfect/location, temp Willpower for improvised)",
     )
 
     # APOCALYPTIC FORM - Earthbound design custom visages
@@ -129,42 +122,41 @@ class Earthbound(LoreBlock, DtFHuman):
     visage_features = models.JSONField(
         default=list,
         blank=True,
-        help_text="List of 8 visage features with point costs, e.g., [{'name': 'Claws/Teeth', 'cost': 2}, ...]"
+        help_text="List of 8 visage features with point costs, e.g., [{'name': 'Claws/Teeth', 'cost': 2}, ...]",
     )
 
     visage_grotesqueries = models.JSONField(
         default=list,
         blank=True,
-        help_text="List of 8 grotesqueries (cosmetic deformities), e.g., ['Decaying', 'Multiple Eyes', ...]"
+        help_text="List of 8 grotesqueries (cosmetic deformities), e.g., ['Decaying', 'Multiple Eyes', ...]",
     )
 
     total_form_points = models.IntegerField(
-        default=16,
-        help_text="Total form points available (default 16)"
+        default=16, help_text="Total form points available (default 16)"
     )
 
     # MANIFESTATION
     can_manifest = models.BooleanField(
         default=True,
-        help_text="Can manifest apocalyptic form (perfect reliquary & location: 2 Faith/turn, improvised: 1 Faith/turn)"
+        help_text="Can manifest apocalyptic form (perfect reliquary & location: 2 Faith/turn, improvised: 1 Faith/turn)",
     )
 
     manifestation_range = models.IntegerField(
         default=0,
-        help_text="Range in yards for location reliquaries (= permanent Faith)"
+        help_text="Range in yards for location reliquaries (= permanent Faith)",
     )
 
     # CULT INFORMATION
     cult_size = models.CharField(
         max_length=500,
         blank=True,
-        help_text="Description of cult size and organization"
+        help_text="Description of cult size and organization",
     )
 
     worship_ritual_frequency = models.CharField(
         max_length=200,
         blank=True,
-        help_text="How often worship rituals are performed (e.g., 'once per week')"
+        help_text="How often worship rituals are performed (e.g., 'once per week')",
     )
 
     # THRALLS (powerful servants)
@@ -173,27 +165,25 @@ class Earthbound(LoreBlock, DtFHuman):
 
     # TRUE NAMES KNOWN (Codex background)
     known_celestial_names = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="List of Celestial Names known"
+        default=list, blank=True, help_text="List of Celestial Names known"
     )
 
     known_true_names = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="List of True Names known"
+        default=list, blank=True, help_text="List of True Names known"
     )
 
     # LORE MASTERY
     # Earthbound can spend extra Faith to enhance evocations (Mastery background)
     mastery_rating = models.IntegerField(
         default=0,
-        help_text="How much extra Faith can be spent on enhancing evocations (0-5)"
+        help_text="How much extra Faith can be spent on enhancing evocations (0-5)",
     )
 
     # EARTHBOUND-SPECIFIC ABILITIES
     indoctrination = models.IntegerField(default=0)  # Brainwashing skill
-    recall = models.IntegerField(default=0)  # Memory of mortal history (Earthbound only)
+    recall = models.IntegerField(
+        default=0
+    )  # Memory of mortal history (Earthbound only)
     tactics = models.IntegerField(default=0)  # Military strategy
     torture = models.IntegerField(default=0)  # Interrogation through pain
 
@@ -207,26 +197,22 @@ class Earthbound(LoreBlock, DtFHuman):
 
     # CELESTIAL IDENTITY
     celestial_name = models.CharField(
-        max_length=200,
-        default="",
-        help_text="The demon's Celestial Name"
+        max_length=200, default="", help_text="The demon's Celestial Name"
     )
     true_name = models.CharField(
-        max_length=200,
-        default="",
-        help_text="The demon's True Name (powerful secret)"
+        max_length=200, default="", help_text="The demon's True Name (powerful secret)"
     )
 
     # HISTORY
     date_summoned = models.CharField(
         max_length=200,
         blank=True,
-        help_text="When the Earthbound was first summoned from Hell"
+        help_text="When the Earthbound was first summoned from Hell",
     )
 
     time_in_stasis = models.TextField(
         blank=True,
-        help_text="Periods when the Earthbound was in dreaming stasis due to low Faith"
+        help_text="Periods when the Earthbound was in dreaming stasis due to low Faith",
     )
 
     class Meta:
@@ -266,18 +252,23 @@ class Earthbound(LoreBlock, DtFHuman):
 
     def can_regenerate_reliquary(self):
         """Check if can spend Faith to heal reliquary"""
-        return self.temporary_faith > 0 and self.reliquary_current_health < self.reliquary_max_health
+        return (
+            self.temporary_faith > 0
+            and self.reliquary_current_health < self.reliquary_max_health
+        )
 
     def get_total_visage_feature_cost(self):
         """Calculate total form points spent on visage features"""
         total = 0
         for feature in self.visage_features:
-            if isinstance(feature, dict) and 'cost' in feature:
-                total += feature.get('cost', 0)
+            if isinstance(feature, dict) and "cost" in feature:
+                total += feature.get("cost", 0)
         return total
 
     def has_valid_visage(self):
         """Check if visage has 8 features totaling 16 points or less"""
-        return (len(self.visage_features) == 8 and
-                len(self.visage_grotesqueries) == 8 and
-                self.get_total_visage_feature_cost() <= self.total_form_points)
+        return (
+            len(self.visage_features) == 8
+            and len(self.visage_grotesqueries) == 8
+            and self.get_total_visage_feature_cost() <= self.total_form_points
+        )

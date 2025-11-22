@@ -12,7 +12,9 @@ from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = "Populate database with World of Darkness game data from populate_db/ scripts"
+    help = (
+        "Populate database with World of Darkness game data from populate_db/ scripts"
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -87,11 +89,10 @@ class Command(BaseCommand):
                 success_count += 1
             except Exception as e:
                 error_count += 1
-                self.stdout.write(
-                    self.style.ERROR(f"✗ {file.name}: {str(e)}")
-                )
+                self.stdout.write(self.style.ERROR(f"✗ {file.name}: {str(e)}"))
                 if options["verbose"]:
                     import traceback
+
                     self.stdout.write(traceback.format_exc())
 
         # Summary
@@ -113,7 +114,8 @@ class Command(BaseCommand):
         if options["gameline"]:
             gameline = options["gameline"].lower()
             filtered = [
-                f for f in filtered
+                f
+                for f in filtered
                 if gameline in f.stem.lower() or not self.is_gameline_specific(f)
             ]
 
@@ -131,8 +133,20 @@ class Command(BaseCommand):
 
     def is_gameline_specific(self, file):
         """Check if a file is specific to a gameline."""
-        gamelines = ["vampire", "werewolf", "mage", "wraith", "changeling", "demon",
-                     "vtm", "wta", "mta", "wto", "ctd", "dtf"]
+        gamelines = [
+            "vampire",
+            "werewolf",
+            "mage",
+            "wraith",
+            "changeling",
+            "demon",
+            "vtm",
+            "wta",
+            "mta",
+            "wto",
+            "ctd",
+            "dtf",
+        ]
         stem = file.stem.lower()
         return any(gl in stem for gl in gamelines)
 

@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.freebies import GhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -21,11 +21,15 @@ from characters.views.core.human import (
 )
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -190,9 +194,9 @@ class GhoulExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         form.fields["notes"].required = False
         form.fields["history"].required = False
         form.fields["goals"].required = False
-        form.fields["years_as_ghoul"].help_text = (
-            "How many years has your character been a ghoul?"
-        )
+        form.fields[
+            "years_as_ghoul"
+        ].help_text = "How many years has your character been a ghoul?"
         return form
 
     def form_valid(self, form):
@@ -208,9 +212,11 @@ class GhoulFreebiesView(HumanFreebiesView):
 
     def get_category_functions(self):
         d = super().get_category_functions()
-        d.update({
-            "discipline": self.object.discipline_freebies,
-        })
+        d.update(
+            {
+                "discipline": self.object.discipline_freebies,
+            }
+        )
         return d
 
 
@@ -241,9 +247,11 @@ class GhoulFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
     def category_method_map(self):
         d = super().category_method_map()
-        d.update({
-            "Discipline": self.discipline_options,
-        })
+        d.update(
+            {
+                "Discipline": self.discipline_options,
+            }
+        )
         return d
 
     def discipline_options(self):

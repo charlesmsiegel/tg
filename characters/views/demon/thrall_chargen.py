@@ -1,7 +1,7 @@
 from typing import Any
 
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
 from characters.models.core.specialty import Specialty
@@ -16,10 +16,14 @@ from characters.views.core.human import (
     HumanLanguagesView,
     HumanSpecialtiesView,
 )
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -180,10 +184,12 @@ class ThrallFreebiesView(HumanFreebiesView):
 
     def get_category_functions(self):
         d = super().get_category_functions()
-        d.update({
-            "faith_potential": self.object.faith_potential_freebies,
-            "virtue": self.object.virtue_freebies,
-        })
+        d.update(
+            {
+                "faith_potential": self.object.faith_potential_freebies,
+                "virtue": self.object.virtue_freebies,
+            }
+        )
         return d
 
 

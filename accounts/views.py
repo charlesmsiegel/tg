@@ -46,15 +46,16 @@ class ProfileView(LoginRequiredMixin, DetailView):
             context["scenes_waiting"] = Scene.objects.waiting_for_st()
 
         # Optimize queries with select_related
-        scenes = self.object.xp_requests().select_related('chronicle', 'location', 'st')
-        characters = self.object.freebies_to_approve().select_related('owner', 'chronicle')
+        scenes = self.object.xp_requests().select_related("chronicle", "location", "st")
+        characters = self.object.freebies_to_approve().select_related(
+            "owner", "chronicle"
+        )
 
         context["scenexp_forms"] = [
             SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in scenes
         ]
         context["freebie_forms"] = [
-            FreebieAwardForm(character=character)
-            for character in characters
+            FreebieAwardForm(character=character) for character in characters
         ]
         if "weekly_xp_request_forms" not in context:
             context["weekly_xp_request_forms"] = [
@@ -178,27 +179,35 @@ class ProfileView(LoginRequiredMixin, DetailView):
                 form.save()
                 messages.success(request, f"Freebies awarded to '{char.name}'!")
             else:
-                messages.error(request, "Failed to award freebies. Please check your input.")
+                messages.error(
+                    request, "Failed to award freebies. Please check your input."
+                )
         if submit_weekly_request_id is not None:
             _, week_pk, _, char_pk = submit_weekly_request_id.split("-")
             week = get_object_or_404(Week, pk=week_pk)
             char = get_object_or_404(Character, pk=char_pk)
             # Check user owns this character
             if char.owner != request.user:
-                messages.error(request, "You can only submit requests for your own characters.")
+                messages.error(
+                    request, "You can only submit requests for your own characters."
+                )
                 raise PermissionDenied(
                     "You can only submit requests for your own characters"
                 )
             form = WeeklyXPRequestForm(request.POST, week=week, character=char)
             if form.is_valid():
                 form.player_save()
-                messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
+                messages.success(
+                    request, f"Weekly XP request submitted for '{char.name}'!"
+                )
             else:
                 context["weekly_xp_request_forms"] = [
                     form
                 ]  # Replace the list with the invalid form
                 form_errors = True
-                messages.error(request, "Failed to submit XP request. Please check your input.")
+                messages.error(
+                    request, "Failed to submit XP request. Please check your input."
+                )
         if submit_weekly_approval_id is not None:
             _, week_pk, _, char_pk = submit_weekly_approval_id.split("-")
             week = get_object_or_404(Week, pk=week_pk)
@@ -212,9 +221,13 @@ class ProfileView(LoginRequiredMixin, DetailView):
             )
             if form.is_valid():
                 form.st_save()
-                messages.success(request, f"Weekly XP request approved for '{char.name}'!")
+                messages.success(
+                    request, f"Weekly XP request approved for '{char.name}'!"
+                )
             else:
-                messages.error(request, "Failed to approve XP request. Please check your input.")
+                messages.error(
+                    request, "Failed to approve XP request. Please check your input."
+                )
         if mark_scene_id_read is not None:
             with transaction.atomic():
                 scene = get_object_or_404(Scene, pk=mark_scene_id_read)

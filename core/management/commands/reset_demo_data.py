@@ -25,9 +25,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not options["confirm"]:
             self.stdout.write(
-                self.style.ERROR(
-                    "\nWARNING: This command will DELETE ALL GAME DATA!\n"
-                )
+                self.style.ERROR("\nWARNING: This command will DELETE ALL GAME DATA!\n")
             )
             self.stdout.write(
                 "To proceed, run with --confirm flag:\n"
@@ -35,9 +33,7 @@ class Command(BaseCommand):
             )
             return
 
-        self.stdout.write(
-            self.style.WARNING("\nResetting database to demo state...\n")
-        )
+        self.stdout.write(self.style.WARNING("\nResetting database to demo state...\n"))
 
         with transaction.atomic():
             # Delete game data
@@ -52,14 +48,12 @@ class Command(BaseCommand):
             # Load demo data
             self.load_demo_data()
 
-        self.stdout.write(
-            self.style.SUCCESS("\n✓ Demo data loaded successfully!")
-        )
+        self.stdout.write(self.style.SUCCESS("\n✓ Demo data loaded successfully!"))
 
     def delete_game_data(self):
         """Delete all game-related data."""
-        from game.models import Chronicle, Scene, Week, WeeklyXPRequest, StoryXPRequest
         from characters.models.core.character import CharacterModel
+        from game.models import Chronicle, Scene, StoryXPRequest, Week, WeeklyXPRequest
         from items.models.core.item import ItemModel
         from locations.models.core.location import LocationModel
 
@@ -91,29 +85,32 @@ class Command(BaseCommand):
 
     def load_demo_data(self):
         """Load demo data."""
-        from django.core.management import call_command
-        from django.contrib.auth.models import User
-        from game.models import Chronicle
         from datetime import date
+
+        from django.contrib.auth.models import User
+        from django.core.management import call_command
+        from game.models import Chronicle
 
         self.stdout.write("Loading demo data...")
 
         # Create demo users
         if not User.objects.filter(username="demo_st").exists():
             demo_st = User.objects.create_user(
-                username="demo_st",
-                email="demo_st@example.com",
-                password="demo123"
+                username="demo_st", email="demo_st@example.com", password="demo123"
             )
-            self.stdout.write("  ✓ Created demo ST user (username: demo_st, password: demo123)")
+            self.stdout.write(
+                "  ✓ Created demo ST user (username: demo_st, password: demo123)"
+            )
 
         if not User.objects.filter(username="demo_player").exists():
             demo_player = User.objects.create_user(
                 username="demo_player",
                 email="demo_player@example.com",
-                password="demo123"
+                password="demo123",
             )
-            self.stdout.write("  ✓ Created demo player user (username: demo_player, password: demo123)")
+            self.stdout.write(
+                "  ✓ Created demo player user (username: demo_player, password: demo123)"
+            )
 
         # Create demo chronicle
         chronicle = Chronicle.objects.create(
@@ -121,16 +118,16 @@ class Command(BaseCommand):
             theme="Political intrigue and ancient mysteries",
             mood="Dark, suspenseful, with moments of dark humor",
             year=2025,
-            headings="vtm_heading"
+            headings="vtm_heading",
         )
         chronicle.storytellers.add(User.objects.get(username="demo_st"))
         chronicle.save()
 
-        self.stdout.write(f"  ✓ Created demo chronicle: {chronicle.name} (ID: {chronicle.id})")
-
         self.stdout.write(
-            self.style.SUCCESS("\n✓ Demo data loaded!")
+            f"  ✓ Created demo chronicle: {chronicle.name} (ID: {chronicle.id})"
         )
+
+        self.stdout.write(self.style.SUCCESS("\n✓ Demo data loaded!"))
         self.stdout.write("\nDemo accounts created:")
         self.stdout.write("  ST: demo_st / demo123")
         self.stdout.write("  Player: demo_player / demo123")

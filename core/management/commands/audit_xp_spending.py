@@ -10,10 +10,10 @@ Checks for:
 """
 from datetime import timedelta
 
+from characters.models.core.character import CharacterModel
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from characters.models.core.character import CharacterModel
-from game.models import WeeklyXPRequest, StoryXPRequest, Week
+from game.models import StoryXPRequest, Week, WeeklyXPRequest
 
 
 class Command(BaseCommand):
@@ -86,12 +86,10 @@ class Command(BaseCommand):
         # Calculate XP totals
         total_earned = char.xp
         approved_spends = [
-            spend for spend in char.spent_xp
-            if spend.get("approved") == "Approved"
+            spend for spend in char.spent_xp if spend.get("approved") == "Approved"
         ]
         pending_spends = [
-            spend for spend in char.spent_xp
-            if spend.get("approved") == "Pending"
+            spend for spend in char.spent_xp if spend.get("approved") == "Pending"
         ]
 
         total_approved = sum(spend.get("cost", 0) for spend in approved_spends)
@@ -115,9 +113,7 @@ class Command(BaseCommand):
 
         # Check for excessive pending spends
         if len(pending_spends) > 15:
-            warnings.append(
-                f"Large number of pending spends: {len(pending_spends)}"
-            )
+            warnings.append(f"Large number of pending spends: {len(pending_spends)}")
 
         # Check for orphaned approved spends (just flag high counts as suspicious)
         if len(approved_spends) > 100:
@@ -163,17 +159,13 @@ class Command(BaseCommand):
 
         # Display warnings
         if with_warnings:
-            self.stdout.write(
-                self.style.WARNING(f"\nWARNINGS ({len(with_warnings)}):")
-            )
+            self.stdout.write(self.style.WARNING(f"\nWARNINGS ({len(with_warnings)}):"))
             for result in with_warnings:
                 self.display_character_result(result, show_warnings=True)
 
         # Display clean characters if show_all
         if clean and self.show_all:
-            self.stdout.write(
-                self.style.SUCCESS(f"\nCLEAN ({len(clean)}):")
-            )
+            self.stdout.write(self.style.SUCCESS(f"\nCLEAN ({len(clean)}):"))
             for result in clean[:10]:  # Show first 10
                 self.display_character_result(result)
             if len(clean) > 10:
@@ -181,15 +173,9 @@ class Command(BaseCommand):
 
         # Summary
         self.stdout.write("\n" + "=" * 80)
-        self.stdout.write(
-            self.style.ERROR(f"Critical Issues: {len(with_issues)}")
-        )
-        self.stdout.write(
-            self.style.WARNING(f"Warnings: {len(with_warnings)}")
-        )
-        self.stdout.write(
-            self.style.SUCCESS(f"Clean: {len(clean)}")
-        )
+        self.stdout.write(self.style.ERROR(f"Critical Issues: {len(with_issues)}"))
+        self.stdout.write(self.style.WARNING(f"Warnings: {len(with_warnings)}"))
+        self.stdout.write(self.style.SUCCESS(f"Clean: {len(clean)}"))
         self.stdout.write("=" * 80 + "\n")
 
     def display_character_result(self, result, show_issues=False, show_warnings=False):
@@ -278,20 +264,20 @@ class Command(BaseCommand):
 
             writer.writeheader()
             for result in self.results:
-                writer.writerow({
-                    "character_id": result["character"].id,
-                    "character_name": result["character"].name,
-                    "status": result["character"].get_status_display(),
-                    "earned": result["earned"],
-                    "approved": result["approved"],
-                    "pending": result["pending"],
-                    "remaining": result["remaining"],
-                    "approved_count": result["approved_count"],
-                    "pending_count": result["pending_count"],
-                    "issues": "; ".join(result["issues"]),
-                    "warnings": "; ".join(result["warnings"]),
-                })
+                writer.writerow(
+                    {
+                        "character_id": result["character"].id,
+                        "character_name": result["character"].name,
+                        "status": result["character"].get_status_display(),
+                        "earned": result["earned"],
+                        "approved": result["approved"],
+                        "pending": result["pending"],
+                        "remaining": result["remaining"],
+                        "approved_count": result["approved_count"],
+                        "pending_count": result["pending_count"],
+                        "issues": "; ".join(result["issues"]),
+                        "warnings": "; ".join(result["warnings"]),
+                    }
+                )
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\nResults exported to {filename}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nResults exported to {filename}"))

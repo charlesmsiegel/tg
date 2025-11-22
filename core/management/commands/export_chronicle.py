@@ -17,7 +17,14 @@ from datetime import date, datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.core.serializers import serialize
 from django.db.models import Q
-from game.models import Chronicle, Scene, Story, Journal, WeeklyXPRequest, StoryXPRequest
+from game.models import (
+    Chronicle,
+    Journal,
+    Scene,
+    Story,
+    StoryXPRequest,
+    WeeklyXPRequest,
+)
 
 
 class Command(BaseCommand):
@@ -60,7 +67,9 @@ class Command(BaseCommand):
             raise CommandError(f"Chronicle with ID {chronicle_id} does not exist")
 
         self.stdout.write(
-            self.style.SUCCESS(f"\nExporting chronicle: {chronicle.name} (ID: {chronicle_id})\n")
+            self.style.SUCCESS(
+                f"\nExporting chronicle: {chronicle.name} (ID: {chronicle_id})\n"
+            )
         )
 
         # Build export data
@@ -112,9 +121,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Journals: {len(export_data['journals'])}")
         self.stdout.write(f"XP Requests: {len(export_data['xp_requests'])}")
         self.stdout.write("=" * 70)
-        self.stdout.write(
-            self.style.SUCCESS(f"\n✓ Export complete: {filename}\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\n✓ Export complete: {filename}\n"))
 
     def export_chronicle(self, chronicle):
         """Export chronicle data."""
@@ -177,16 +184,12 @@ class Command(BaseCommand):
         """Export XP requests for characters in the chronicle."""
         from characters.models.core.character import CharacterModel
 
-        character_ids = CharacterModel.objects.filter(
-            chronicle=chronicle
-        ).values_list("id", flat=True)
+        character_ids = CharacterModel.objects.filter(chronicle=chronicle).values_list(
+            "id", flat=True
+        )
 
-        weekly_requests = WeeklyXPRequest.objects.filter(
-            character_id__in=character_ids
-        )
-        story_requests = StoryXPRequest.objects.filter(
-            character_id__in=character_ids
-        )
+        weekly_requests = WeeklyXPRequest.objects.filter(character_id__in=character_ids)
+        story_requests = StoryXPRequest.objects.filter(character_id__in=character_ids)
 
         self.stdout.write(
             f"Exporting {weekly_requests.count()} weekly + "
@@ -207,9 +210,12 @@ class Command(BaseCommand):
         user_ids.update(chronicle.storytellers.values_list("id", flat=True))
 
         from characters.models.core.character import CharacterModel
-        character_owners = CharacterModel.objects.filter(
-            chronicle=chronicle
-        ).exclude(owner__isnull=True).values_list("owner_id", flat=True)
+
+        character_owners = (
+            CharacterModel.objects.filter(chronicle=chronicle)
+            .exclude(owner__isnull=True)
+            .values_list("owner_id", flat=True)
+        )
         user_ids.update(character_owners)
 
         users = User.objects.filter(id__in=user_ids)

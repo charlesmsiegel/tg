@@ -1,7 +1,7 @@
 from characters.models.core import MeritFlaw
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q, CheckConstraint
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 from locations.models.core import LocationModel
 
@@ -43,9 +43,7 @@ class Haven(LocationModel):
     is_hidden = models.BooleanField(
         default=False, help_text="Haven location is concealed"
     )
-    has_library = models.BooleanField(
-        default=False, help_text="Haven contains library"
-    )
+    has_library = models.BooleanField(default=False, help_text="Haven contains library")
     has_workshop = models.BooleanField(
         default=False, help_text="Haven contains workshop"
     )
@@ -97,8 +95,7 @@ class HavenMeritFlawRating(models.Model):
     haven = models.ForeignKey(Haven, on_delete=models.CASCADE)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.CASCADE)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(-10), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -106,7 +103,7 @@ class HavenMeritFlawRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=-10, rating__lte=10),
-                name='locations_havenmeritflawrating_rating_range',
-                violation_error_message="Haven merit/flaw rating must be between -10 and 10"
+                name="locations_havenmeritflawrating_rating_range",
+                violation_error_message="Haven merit/flaw rating must be between -10 and 10",
             ),
         ]

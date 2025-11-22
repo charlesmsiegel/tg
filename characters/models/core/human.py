@@ -12,9 +12,9 @@ from characters.models.core.merit_flaw_block import MeritFlawBlock
 from characters.models.core.specialty import Specialty
 from core.models import Language
 from core.utils import add_dot
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import CheckConstraint, Q, F
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import CheckConstraint, F, Q
 
 
 class Human(
@@ -85,24 +85,18 @@ class Human(
     languages = models.ManyToManyField(Language, blank=True)
 
     willpower = models.IntegerField(
-        default=3,
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=3, validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     temporary_willpower = models.IntegerField(
-        default=3,
-        validators=[MinValueValidator(0), MaxValueValidator(10)]
+        default=3, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     derangements = models.ManyToManyField("Derangement", blank=True)
 
     age = models.IntegerField(
-        blank=True,
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(500)]
+        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(500)]
     )
     apparent_age = models.IntegerField(
-        blank=True,
-        null=True,
-        validators=[MinValueValidator(0), MaxValueValidator(200)]
+        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(200)]
     )
     date_of_birth = models.DateField(blank=True, null=True)
 
@@ -122,32 +116,33 @@ class Human(
             # Willpower must be between 1 and 10
             CheckConstraint(
                 check=Q(willpower__gte=1, willpower__lte=10),
-                name='characters_human_willpower_range',
-                violation_error_message="Willpower must be between 1 and 10"
+                name="characters_human_willpower_range",
+                violation_error_message="Willpower must be between 1 and 10",
             ),
             # Temporary willpower must be between 0 and 10
             CheckConstraint(
                 check=Q(temporary_willpower__gte=0, temporary_willpower__lte=10),
-                name='characters_human_temp_willpower_range',
-                violation_error_message="Temporary willpower must be between 0 and 10"
+                name="characters_human_temp_willpower_range",
+                violation_error_message="Temporary willpower must be between 0 and 10",
             ),
             # Temporary willpower cannot exceed permanent willpower
             CheckConstraint(
-                check=Q(temporary_willpower__lte=F('willpower')),
-                name='characters_human_temp_not_exceeds_max',
-                violation_error_message="Temporary willpower cannot exceed permanent willpower"
+                check=Q(temporary_willpower__lte=F("willpower")),
+                name="characters_human_temp_not_exceeds_max",
+                violation_error_message="Temporary willpower cannot exceed permanent willpower",
             ),
             # Age must be reasonable if provided
             CheckConstraint(
                 check=Q(age__isnull=True) | Q(age__gte=0, age__lte=500),
-                name='characters_human_reasonable_age',
-                violation_error_message="Age must be between 0 and 500"
+                name="characters_human_reasonable_age",
+                violation_error_message="Age must be between 0 and 500",
             ),
             # Apparent age must be reasonable if provided
             CheckConstraint(
-                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=200),
-                name='characters_human_reasonable_apparent_age',
-                violation_error_message="Apparent age must be between 0 and 200"
+                check=Q(apparent_age__isnull=True)
+                | Q(apparent_age__gte=0, apparent_age__lte=200),
+                name="characters_human_reasonable_apparent_age",
+                violation_error_message="Apparent age must be between 0 and 200",
             ),
         ]
 
@@ -171,12 +166,13 @@ class Human(
             FreebieSpendingRecord instance
         """
         from game.models import FreebieSpendingRecord
+
         return FreebieSpendingRecord.objects.create(
             character=self,
             trait_name=trait_name,
             trait_type=trait_type,
             trait_value=trait_value,
-            cost=cost
+            cost=cost,
         )
 
     def get_freebie_spending_history(self):
@@ -194,7 +190,8 @@ class Human(
             int: Total freebie points spent
         """
         from django.db.models import Sum
-        spent = self.freebie_spendings.aggregate(total=Sum('cost'))['total'] or 0
+
+        spent = self.freebie_spendings.aggregate(total=Sum("cost"))["total"] or 0
         return self.freebies + spent
 
     def is_group_member(self):
@@ -305,7 +302,9 @@ class Human(
 
         # Single query to get all specialty stat IDs
         specialty_stat_ids = set(
-            self.specialties.filter(stat__id__in=stat_ids).values_list('stat_id', flat=True)
+            self.specialties.filter(stat__id__in=stat_ids).values_list(
+                "stat_id", flat=True
+            )
         )
 
         # Check if all required stats have specialties
@@ -406,7 +405,7 @@ class Human(
             trait (string) if this method doesn't handle this trait (pass to subclass)
         """
         # Check if trait is an attribute
-        if hasattr(Attribute.objects, 'filter'):
+        if hasattr(Attribute.objects, "filter"):
             try:
                 attribute = Attribute.objects.filter(property_name=trait).first()
                 if attribute and hasattr(self, trait):
@@ -424,7 +423,7 @@ class Human(
                 pass
 
         # Check if trait is an ability
-        if hasattr(Ability.objects, 'filter'):
+        if hasattr(Ability.objects, "filter"):
             try:
                 ability = Ability.objects.filter(property_name=trait).first()
                 if ability and hasattr(self, trait):
@@ -489,7 +488,7 @@ class Human(
             trait (string) if this method doesn't handle this trait (pass to subclass)
         """
         # Check if trait is an attribute
-        if hasattr(Attribute.objects, 'filter'):
+        if hasattr(Attribute.objects, "filter"):
             try:
                 attribute = Attribute.objects.filter(property_name=trait).first()
                 if attribute and hasattr(self, trait):
@@ -504,7 +503,7 @@ class Human(
                 pass
 
         # Check if trait is an ability
-        if hasattr(Ability.objects, 'filter'):
+        if hasattr(Ability.objects, "filter"):
             try:
                 ability = Ability.objects.filter(property_name=trait).first()
                 if ability and hasattr(self, trait):

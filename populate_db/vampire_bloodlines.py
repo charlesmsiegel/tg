@@ -1,8 +1,38 @@
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
-
-from populate_db.vampire_clans import lasombra, giovanni, brujah, gangrel, nosferatu, tzimisce, toreador, ventrue, malkavian
-from populate_db.vampire_disciplines import daimoinon, obfuscate, presence, fortitude, melpominee, auspex, flight, potence, visceratika, protean, necromancy, serpentis, dominate, mytherceria, obtenebration, obeah, valeren, thanatosis, temporis, animalism
+from populate_db.vampire_clans import (
+    brujah,
+    gangrel,
+    giovanni,
+    lasombra,
+    malkavian,
+    nosferatu,
+    toreador,
+    tzimisce,
+    ventrue,
+)
+from populate_db.vampire_disciplines import (
+    animalism,
+    auspex,
+    daimoinon,
+    dominate,
+    flight,
+    fortitude,
+    melpominee,
+    mytherceria,
+    necromancy,
+    obeah,
+    obfuscate,
+    obtenebration,
+    potence,
+    presence,
+    protean,
+    serpentis,
+    temporis,
+    thanatosis,
+    valeren,
+    visceratika,
+)
 
 # BAALI
 baali = VampireClan.objects.get_or_create(
@@ -14,7 +44,7 @@ baali = VampireClan.objects.get_or_create(
     "(Daimoinon 6). Practice infernalism and demon worship. Extremely rare and hunted by most vampires. "
     "Seek to bring about apocalypse through demonic means.",
     is_bloodline=True,
-    parent_clan=None  # Obscure/unknown origins
+    parent_clan=None,  # Obscure/unknown origins
 )[0]
 baali.disciplines.add(daimoinon, obfuscate, presence)
 
@@ -28,7 +58,7 @@ daughters = VampireClan.objects.get_or_create(
     "All members are female. Obsessed with music and vocal perfection. Often found in music scenes "
     "and performance venues.",
     is_bloodline=True,
-    parent_clan=toreador  # Mixed but primarily Toreador
+    parent_clan=toreador,  # Mixed but primarily Toreador
 )[0]
 daughters.disciplines.add(fortitude, melpominee, presence)
 
@@ -42,7 +72,7 @@ gargoyle = VampireClan.objects.get_or_create(
     "wings required as psychological focus. Warrior variant is most common. Stone-like appearance. "
     "Many have freed themselves from Tremere control.",
     is_bloodline=True,
-    parent_clan=gangrel  # Mixed but listing Gangrel as primary component
+    parent_clan=gangrel,  # Mixed but listing Gangrel as primary component
 )[0]
 gargoyle.disciplines.add(flight, fortitude, potence, visceratika)
 
@@ -54,7 +84,7 @@ gargoyle_scout = VampireClan.objects.get_or_create(
     description="Scout variant of Gargoyles created by Tremere. Specializes in reconnaissance and stealth. "
     "Uses Auspex and Obfuscate for spying. Wings allow flight but frame is lighter and more vulnerable.",
     is_bloodline=True,
-    parent_clan=gargoyle
+    parent_clan=gargoyle,
 )[0]
 gargoyle_scout.disciplines.add(auspex, obfuscate, flight)
 
@@ -67,7 +97,7 @@ gargoyle_sentinel = VampireClan.objects.get_or_create(
     description="Sentinel variant of Gargoyles created by Tremere. Built for guarding and protection. "
     "Extremely loyal when bonded. Suffers from psychological need for someone to protect.",
     is_bloodline=True,
-    parent_clan=gargoyle
+    parent_clan=gargoyle,
 )[0]
 gargoyle_sentinel.disciplines.add(flight, potence, fortitude)
 
@@ -81,7 +111,7 @@ harbingers = VampireClan.objects.get_or_create(
     "Use Necromancy and wear death masks with embedded jewels indicating status and achievements. "
     "Deeply connected to the Underworld.",
     is_bloodline=True,
-    parent_clan=giovanni  # Technically Cappadocian, but listing Giovanni as closest existing
+    parent_clan=giovanni,  # Technically Cappadocian, but listing Giovanni as closest existing
 )[0]
 harbingers.disciplines.add(auspex, necromancy, fortitude)
 
@@ -94,7 +124,7 @@ kiasyd = VampireClan.objects.get_or_create(
     description="Created by Marconius mixing Lasombra vitae with fae essence. Tall, pale, with black eyes. "
     "Obsessed with knowledge and books. Practice Mytherceria, a fae-touched Discipline. Reclusive scholars.",
     is_bloodline=True,
-    parent_clan=lasombra
+    parent_clan=lasombra,
 )[0]
 kiasyd.disciplines.add(dominate, mytherceria, obtenebration)
 
@@ -108,7 +138,7 @@ nagaraja = VampireClan.objects.get_or_create(
     "Practice Vitreous Path Necromancy focusing on soul manipulation. Ancient and mysterious origins. "
     "Indian and Middle Eastern features common.",
     is_bloodline=True,
-    parent_clan=None  # Self-made through necromantic ritual
+    parent_clan=None,  # Self-made through necromantic ritual
 )[0]
 # Note: Vitreous Path is a Necromancy path, so using Necromancy discipline
 nagaraja.disciplines.add(auspex, necromancy, serpentis)
@@ -123,7 +153,7 @@ salubri_healer = VampireClan.objects.get_or_create(
     "supernatural healing. Third eye on forehead (can be visible or hidden). Only seven Salubri may "
     "exist at once according to tradition.",
     is_bloodline=True,
-    parent_clan=None  # Original clan, not bloodline, but nearly extinct
+    parent_clan=None,  # Original clan, not bloodline, but nearly extinct
 )[0]
 salubri_healer.disciplines.add(auspex, fortitude, obeah)
 
@@ -136,7 +166,7 @@ salubri_warrior = VampireClan.objects.get_or_create(
     description="Warrior branch of Salubri. Possess Valeren for combat instead of Obeah. Protect the weak "
     "and hunt infernalists. Third eye manifests during Valeren use. Found primarily in Sabbat as antitribu.",
     is_bloodline=True,
-    parent_clan=salubri_healer
+    parent_clan=salubri_healer,
 )[0]
 salubri_warrior.disciplines.add(auspex, fortitude, valeren)
 
@@ -150,7 +180,7 @@ samedi = VampireClan.objects.get_or_create(
     "Bodies in constant state of decay. Uncertain if descended from Loa or vampire. Practice death magic "
     "and thanatosis. Caribbean and African features common.",
     is_bloodline=True,
-    parent_clan=giovanni  # Presumed connection
+    parent_clan=giovanni,  # Presumed connection
 )[0]
 samedi.disciplines.add(fortitude, obfuscate, thanatosis)
 
@@ -163,7 +193,7 @@ true_brujah = VampireClan.objects.get_or_create(
     "for time manipulation instead of Celerity. Calm and intellectual, opposite of modern Brujah passion. "
     "Claim pre-diablerie Brujah legacy and philosophy.",
     is_bloodline=True,
-    parent_clan=brujah
+    parent_clan=brujah,
 )[0]
 true_brujah.disciplines.add(potence, presence, temporis)
 
@@ -177,7 +207,7 @@ blood_brothers = VampireClan.objects.get_or_create(
     "simultaneously who share mystical bond. Bred for warfare and loyalty. Nearly identical appearance "
     "within circle. Possess Sanguinus (unique Discipline for sharing blood and powers).",
     is_bloodline=True,
-    parent_clan=tzimisce
+    parent_clan=tzimisce,
 )[0]
 # Note: Blood Brothers have unique Discipline "Sanguinus" not in base list
 blood_brothers.disciplines.add(fortitude, potence)
@@ -192,7 +222,7 @@ old_clan = VampireClan.objects.get_or_create(
     "Possess Dominate rather than Vicissitude. More traditional and spiritual. Tied to land and old ways. "
     "Claim to predate Vicissitude in Tzimisce history.",
     is_bloodline=True,
-    parent_clan=tzimisce
+    parent_clan=tzimisce,
 )[0]
 old_clan.disciplines.add(animalism, auspex, dominate)
 
@@ -205,7 +235,7 @@ country_gangrel = VampireClan.objects.get_or_create(
     "Camarilla structure. Same as regular Gangrel but with stronger ties to rural domains and agriculture. "
     "More likely to have farm animal features.",
     is_bloodline=True,
-    parent_clan=gangrel
+    parent_clan=gangrel,
 )[0]
 country_gangrel.disciplines.add(animalism, fortitude, protean)
 
@@ -218,7 +248,7 @@ ahrimanes = VampireClan.objects.get_or_create(
     "(spirit magic) instead of Fortitude. Found primarily in American Southwest. Changed from Gangrel "
     "through mysterious spiritual transformation. Develop cat-like features.",
     is_bloodline=True,
-    parent_clan=gangrel
+    parent_clan=gangrel,
 )[0]
 # Note: Spiritus is unique Discipline, using Animalism as stand-in
 ahrimanes.disciplines.add(animalism, protean, auspex)
@@ -233,6 +263,6 @@ lhiannan = VampireClan.objects.get_or_create(
     "nature and old ways. Practice nature magic. Scottish and Irish origins. Rumored destroyed but some "
     "may survive. Possess Ogham (nature-based Discipline).",
     is_bloodline=True,
-    parent_clan=gangrel  # Celtic nature connection
+    parent_clan=gangrel,  # Celtic nature connection
 )[0]
 lhiannan.disciplines.add(animalism, fortitude, presence)

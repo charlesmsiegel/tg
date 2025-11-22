@@ -1,8 +1,8 @@
 from core.models import Model, Number
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import F, Q, CheckConstraint
+from django.db.models import CheckConstraint, F, Q
 from django.urls import reverse
-from django.core.validators import MinValueValidator, MaxValueValidator
 from game.models import ObjectType
 
 
@@ -74,8 +74,7 @@ class MeritFlawRating(models.Model):
     character = models.ForeignKey("Human", on_delete=models.SET_NULL, null=True)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
-        default=0,
-        validators=[MinValueValidator(-10), MaxValueValidator(10)]
+        default=0, validators=[MinValueValidator(-10), MaxValueValidator(10)]
     )
 
     class Meta:
@@ -84,8 +83,8 @@ class MeritFlawRating(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=-10, rating__lte=10),
-                name='characters_meritflawrating_rating_range',
-                violation_error_message="Merit/Flaw rating must be between -10 and 10"
+                name="characters_meritflawrating_rating_range",
+                violation_error_message="Merit/Flaw rating must be between -10 and 10",
             ),
         ]
 
@@ -150,17 +149,19 @@ class MeritFlawBlock(models.Model):
 
     def total_flaws(self):
         from django.db.models import Sum
-        result = MeritFlawRating.objects.filter(
-            character=self, rating__lt=0
-        ).aggregate(Sum('rating'))
-        return result['rating__sum'] or 0
+
+        result = MeritFlawRating.objects.filter(character=self, rating__lt=0).aggregate(
+            Sum("rating")
+        )
+        return result["rating__sum"] or 0
 
     def total_merits(self):
         from django.db.models import Sum
-        result = MeritFlawRating.objects.filter(
-            character=self, rating__gt=0
-        ).aggregate(Sum('rating'))
-        return result['rating__sum'] or 0
+
+        result = MeritFlawRating.objects.filter(character=self, rating__gt=0).aggregate(
+            Sum("rating")
+        )
+        return result["rating__sum"] or 0
 
     def meritflaw_freebies(self, form):
         trait = form.cleaned_data["example"]

@@ -6,7 +6,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Legion of Death, military enforcement",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -14,7 +14,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Legion of Destiny",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -22,7 +22,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Legion of Redemption",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -30,7 +30,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Legion of Introspection",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -38,7 +38,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Legion of Justice",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -46,7 +46,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Military Legion",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -54,7 +54,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "legion",
         "description": "Regional Legion",
-    }
+    },
 )[0]
 
 # Heretic Groups
@@ -63,7 +63,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "heretic",
         "description": "Anti-hierarchy rebels",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -71,7 +71,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "heretic",
         "description": "Independent operators",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -79,7 +79,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "heretic",
         "description": "Labyrinth explorers and Spectre hunters",
-    }
+    },
 )[0]
 
 # Spectre Organizations
@@ -88,7 +88,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "spectre",
         "description": "Coordinated Spectre collectives",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -96,7 +96,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "spectre",
         "description": "Spectre collective consciousness units",
-    }
+    },
 )[0]
 
 # Other Factions
@@ -105,7 +105,7 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "other",
         "description": "Order of Redemption researchers",
-    }
+    },
 )[0]
 
 WraithFaction.objects.get_or_create(
@@ -113,5 +113,5 @@ WraithFaction.objects.get_or_create(
     defaults={
         "faction_type": "other",
         "description": "Combat specialists and recovery teams",
-    }
+    },
 )[0]

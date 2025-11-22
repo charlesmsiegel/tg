@@ -7,8 +7,8 @@ Ensures that Retired/Deceased characters are properly removed from:
 - Leadership positions
 - Active scenes
 """
-from django.core.management.base import BaseCommand
 from characters.models.core.character import CharacterModel
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -82,7 +82,9 @@ class Command(BaseCommand):
         """Process a single character and return True if any changes were made."""
         changed = False
 
-        self.stdout.write(f"\nProcessing: {character.name} (ID: {character.id}, {character.get_status_display()})")
+        self.stdout.write(
+            f"\nProcessing: {character.name} (ID: {character.id}, {character.get_status_display()})"
+        )
 
         # Only process Retired/Deceased
         if character.status not in ["Ret", "Dec"]:
@@ -164,7 +166,9 @@ class Command(BaseCommand):
             led_chantries = character.chantry_leader_at.all()
             if led_chantries.exists():
                 for chantry in led_chantries:
-                    self.stdout.write(f"  - Clearing chantry leadership at: {chantry.name}")
+                    self.stdout.write(
+                        f"  - Clearing chantry leadership at: {chantry.name}"
+                    )
                     if not self.dry_run:
                         chantry.leaders.remove(character)
                 self.changes["chantry_leadership"] += led_chantries.count()
@@ -175,7 +179,9 @@ class Command(BaseCommand):
             ambassador_chantries = character.ambassador_from.all()
             if ambassador_chantries.exists():
                 for chantry in ambassador_chantries:
-                    self.stdout.write(f"  - Clearing ambassador position at: {chantry.name}")
+                    self.stdout.write(
+                        f"  - Clearing ambassador position at: {chantry.name}"
+                    )
                     if not self.dry_run:
                         chantry.ambassador = None
                         chantry.save()
@@ -199,7 +205,9 @@ class Command(BaseCommand):
             investigator_chantries = character.investigator_at.all()
             if investigator_chantries.exists():
                 for chantry in investigator_chantries:
-                    self.stdout.write(f"  - Removing investigator role at: {chantry.name}")
+                    self.stdout.write(
+                        f"  - Removing investigator role at: {chantry.name}"
+                    )
                     if not self.dry_run:
                         chantry.investigator.remove(character)
                 self.changes["other_positions"] += investigator_chantries.count()
@@ -258,9 +266,13 @@ class Command(BaseCommand):
             self.stdout.write("Changes made:")
             for category, count in self.changes.items():
                 if count > 0:
-                    self.stdout.write(f"  {category.replace('_', ' ').title()}: {count}")
+                    self.stdout.write(
+                        f"  {category.replace('_', ' ').title()}: {count}"
+                    )
         else:
-            self.stdout.write(self.style.SUCCESS("No changes needed - all characters in sync!"))
+            self.stdout.write(
+                self.style.SUCCESS("No changes needed - all characters in sync!")
+            )
 
         self.stdout.write("=" * 70 + "\n")
 

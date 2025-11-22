@@ -5,10 +5,13 @@ Pre-built character concepts from sourcebooks
 
 import os
 import sys
+
 import django
 
 # Add project root to path
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
@@ -322,7 +325,9 @@ def populate_werewolf_templates():
         },
     )[0]
 
-    print(f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wta').count()} Werewolf templates")
+    print(
+        f"✓ Created/updated {CharacterTemplate.objects.filter(gameline='wta').count()} Werewolf templates"
+    )
     return [warrior, mystic, trickster, judge, bard]
 
 

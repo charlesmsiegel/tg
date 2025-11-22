@@ -62,9 +62,7 @@ class Command(BaseCommand):
         count = old_weeks.count()
 
         if count == 0:
-            self.stdout.write(
-                self.style.SUCCESS("No old weeks found to clean up!")
-            )
+            self.stdout.write(self.style.SUCCESS("No old weeks found to clean up!"))
             return
 
         # Display information
@@ -79,9 +77,7 @@ class Command(BaseCommand):
         # Delete
         if not self.dry_run:
             old_weeks.delete()
-            self.stdout.write(
-                self.style.SUCCESS(f"\n✓ Deleted {count} old week(s)")
-            )
+            self.stdout.write(self.style.SUCCESS(f"\n✓ Deleted {count} old week(s)"))
         else:
             self.stdout.write(
                 self.style.WARNING(f"\n[DRY RUN] Would delete {count} week(s)")

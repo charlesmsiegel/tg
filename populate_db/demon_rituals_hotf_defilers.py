@@ -3,17 +3,12 @@ Populate database with Defiler (Lammasu) rituals from Houses of the Fallen.
 """
 
 from characters.models.demon.ritual import Ritual
-
 from populate_db.demon_houses import defilers
-from populate_db.demon_lores import (
-    lore_of_awakening as lore_awakening,
-    lore_of_the_flesh as lore_flesh,
-    lore_of_the_fundament as lore_fundament,
-    lore_of_longing,
-    lore_of_patterns,
-    lore_of_storms,
-    lore_of_transfiguration,
-)
+from populate_db.demon_lores import lore_of_awakening as lore_awakening
+from populate_db.demon_lores import lore_of_longing, lore_of_patterns, lore_of_storms
+from populate_db.demon_lores import lore_of_the_flesh as lore_flesh
+from populate_db.demon_lores import lore_of_the_fundament as lore_fundament
+from populate_db.demon_lores import lore_of_transfiguration
 
 # =============================================================================
 # DEFILER RITUALS - HOUSES OF THE FALLEN
@@ -77,7 +72,9 @@ prenatal_guardian.secondary_lore_requirements = [
 ]
 prenatal_guardian.base_cost = 18
 prenatal_guardian.minimum_casting_time = 36
-prenatal_guardian.restrictions = "Must be cast upon a pregnant woman within one week of conception."
+prenatal_guardian.restrictions = (
+    "Must be cast upon a pregnant woman within one week of conception."
+)
 prenatal_guardian.system = """Roll Stamina + Medicine (difficulty 8). Each success protects against a negative influence on the growing fetus. Such an influence might be the transmission of a disease or poison from the mother's body, the development of a congenital disease or even miscarriage. When the baby is born, any remaining successes not used will increase the baby's potential Attributes at the Storyteller's discretion.
 
 These rituals can create child prodigies whose talents far exceed those of their peers, creating a potential resource for unscrupulous fallen. There are rumors that monstrous demons and even Earthbound continue to refine this ritual as a means of creating superhuman vessels for themselves or their still-imprisoned superiors, sometimes using isolated villages to breed scores of altered children for their experimentations.
@@ -101,7 +98,9 @@ song_of_ecstatic_battle.secondary_lore_requirements = [
 ]
 song_of_ecstatic_battle.base_cost = 21
 song_of_ecstatic_battle.minimum_casting_time = 49
-song_of_ecstatic_battle.restrictions = "A drop of blood from every human potentially affected."
+song_of_ecstatic_battle.restrictions = (
+    "A drop of blood from every human potentially affected."
+)
 song_of_ecstatic_battle.system = """Roll Charisma + Leadership. For each success, three troops can be affected. When they have taken between two (Hurt) and five (Mauled) health levels of damage, they add one die to any pool based on a Physical Attribute, rather than subtracting anything.
 
 Once they reach six levels (Crippled), however, the entire effect catches up with them. In addition, each level of lethal damage taken while under the effect of the ritual creates an extra level of bashing damage (that cannot be soaked) once the effect dissipates. The duration is 10 minutes per point of Faith."""

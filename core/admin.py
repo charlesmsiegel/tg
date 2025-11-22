@@ -45,7 +45,14 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
         "status",
         "created_at",
     ]
-    list_filter = ["gameline", "character_type", "is_official", "is_public", "status", "created_at"]
+    list_filter = [
+        "gameline",
+        "character_type",
+        "is_official",
+        "is_public",
+        "status",
+        "created_at",
+    ]
     search_fields = ["name", "description", "concept"]
     readonly_fields = ["times_used", "created_at", "updated_at"]
 

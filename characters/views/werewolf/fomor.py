@@ -1,8 +1,8 @@
 from typing import Any
 
 from characters.forms.core.freebies import HumanFreebiesForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.fomor import FomorCreationForm
 from characters.models.core import Human
 from characters.models.core.specialty import Specialty
@@ -18,12 +18,16 @@ from characters.views.core.human import (
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
+from core.mixins import (
+    ApprovedUserContextMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ViewPermissionMixin,
+)
 from core.models import Language
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
-from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -221,7 +225,9 @@ class FomorPowersView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["powers"].queryset = FomoriPower.objects.all()
         form.fields["powers"].required = False
-        form.fields["powers"].help_text = (
+        form.fields[
+            "powers"
+        ].help_text = (
             "Select the powers your Fomor possesses. Fomori typically have 1-3 powers."
         )
         form.fields["rage"].help_text = "Fomori typically have 1-5 Rage"
@@ -267,9 +273,7 @@ class FomorExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
             }
         )
         form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's goals and motivations."
-            }
+            {"placeholder": "Describe your character's goals and motivations."}
         )
         form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
         form.fields["public_info"].widget.attrs.update(

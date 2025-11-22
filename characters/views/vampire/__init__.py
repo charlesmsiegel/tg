@@ -12,9 +12,9 @@ from .discipline import (
 )
 from .ghoul import GhoulCreateView, GhoulDetailView, GhoulListView, GhoulUpdateView
 from .ghoul_chargen import (
+    GhoulAbilityView,
     GhoulAlliesView,
     GhoulAttributeView,
-    GhoulAbilityView,
     GhoulBackgroundsView,
     GhoulBasicsView,
     GhoulCharacterCreationView,
@@ -38,11 +38,16 @@ from .title import (
     VampireTitleListView,
     VampireTitleUpdateView,
 )
-from .vampire import VampireCreateView, VampireDetailView, VampireListView, VampireUpdateView
+from .vampire import (
+    VampireCreateView,
+    VampireDetailView,
+    VampireListView,
+    VampireUpdateView,
+)
 from .vampire_chargen import (
+    VampireAbilityView,
     VampireAlliesView,
     VampireAttributeView,
-    VampireAbilityView,
     VampireBackgroundsView,
     VampireBasicsView,
     VampireCharacterCreationView,

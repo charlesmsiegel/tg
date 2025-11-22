@@ -1,5 +1,5 @@
-from items.models.vampire import Bloodstone, VampireArtifact
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from items.models.vampire import Bloodstone, VampireArtifact
 
 
 # VampireArtifact Views

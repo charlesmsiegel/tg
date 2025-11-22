@@ -5,11 +5,10 @@ Populate database with Demon rituals from Demon Players Guide Chapter 6.
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
-
 from populate_db.demon_houses import (
     defilers,
-    devourers,
     devils,
+    devourers,
     fiends,
     malefactors,
     scourges,
@@ -17,15 +16,8 @@ from populate_db.demon_houses import (
 )
 from populate_db.demon_lores import (
     lore_of_awakening,
-    lore_of_the_beast,
-    lore_of_the_celestials,
     lore_of_death,
-    lore_of_the_earth,
     lore_of_flame,
-    lore_of_the_firmament,
-    lore_of_the_flesh,
-    lore_of_the_forge,
-    lore_of_the_fundament,
     lore_of_humanity,
     lore_of_light,
     lore_of_longing,
@@ -33,12 +25,19 @@ from populate_db.demon_lores import (
     lore_of_patterns,
     lore_of_portals,
     lore_of_radiance,
+    lore_of_storms,
+    lore_of_the_beast,
+    lore_of_the_celestials,
+    lore_of_the_earth,
+    lore_of_the_firmament,
+    lore_of_the_flesh,
+    lore_of_the_forge,
+    lore_of_the_fundament,
     lore_of_the_realms,
     lore_of_the_spirit,
-    lore_of_storms,
+    lore_of_the_wild,
     lore_of_the_winds,
     lore_of_transfiguration,
-    lore_of_the_wild
 )
 
 # ============================================================================

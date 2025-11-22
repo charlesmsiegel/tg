@@ -61,9 +61,7 @@ class Command(BaseCommand):
         self.auto_merge = options["auto_merge"]
         self.delete_empty = options["delete_empty"]
 
-        self.stdout.write(
-            self.style.SUCCESS("\nSearching for duplicate objects...\n")
-        )
+        self.stdout.write(self.style.SUCCESS("\nSearching for duplicate objects...\n"))
 
         # Determine which model types to check
         if options["type"] == "all":
@@ -114,9 +112,7 @@ class Command(BaseCommand):
         }
 
         if obj_type not in type_map:
-            self.stdout.write(
-                self.style.ERROR(f"Unknown type: {obj_type}")
-            )
+            self.stdout.write(self.style.ERROR(f"Unknown type: {obj_type}"))
             return
 
         module_path, class_name = type_map[obj_type]
@@ -133,9 +129,7 @@ class Command(BaseCommand):
                 self.export_duplicates(duplicates, options["export"])
 
         except (ImportError, AttributeError) as e:
-            self.stdout.write(
-                self.style.ERROR(f"Could not load {obj_type}: {e}")
-            )
+            self.stdout.write(self.style.ERROR(f"Could not load {obj_type}: {e}"))
 
     def find_duplicates(self, model_class, type_name, options):
         """Find duplicates for a specific model class."""
@@ -147,6 +141,7 @@ class Command(BaseCommand):
 
         if options["owner"]:
             from django.contrib.auth.models import User
+
             try:
                 user = User.objects.get(username=options["owner"])
                 queryset = queryset.filter(owner=user)
@@ -177,6 +172,7 @@ class Command(BaseCommand):
                 owner_name = "None"
                 if owner_id:
                     from django.contrib.auth.models import User
+
                     try:
                         owner_name = User.objects.get(id=owner_id).username
                     except User.DoesNotExist:
@@ -185,6 +181,7 @@ class Command(BaseCommand):
                 chronicle_name = "None"
                 if chronicle_id:
                     from game.models import Chronicle
+
                     try:
                         chronicle_name = Chronicle.objects.get(id=chronicle_id).name
                     except Chronicle.DoesNotExist:
@@ -217,7 +214,7 @@ class Command(BaseCommand):
             status_priority = {"App": 3, "Sub": 2, "Un": 1, "Ret": 0, "Dec": 0}
             return (
                 status_priority.get(obj.status, 0),
-                obj.id  # Older ID = created first
+                obj.id,  # Older ID = created first
             )
 
         objects_sorted = sorted(objects, key=sort_key, reverse=True)
@@ -226,8 +223,7 @@ class Command(BaseCommand):
 
         # Only merge if they're truly identical (same status, same basic fields)
         can_merge = all(
-            obj.status == keeper.status and
-            obj.description == keeper.description
+            obj.status == keeper.status and obj.description == keeper.description
             for obj in to_delete
         )
 
@@ -255,8 +251,9 @@ class Command(BaseCommand):
 
         for obj in objects:
             # Only delete if Unfinished, no description, and no other significant data
-            if (obj.status == "Un" and
-                (not obj.description or obj.description.strip() == "")):
+            if obj.status == "Un" and (
+                not obj.description or obj.description.strip() == ""
+            ):
 
                 obj.delete()
                 self.stdout.write(
@@ -285,7 +282,9 @@ class Command(BaseCommand):
 
         for obj_type, duplicates in sorted(by_type.items()):
             self.stdout.write(
-                self.style.WARNING(f"\n{obj_type.upper()} ({len(duplicates)} duplicate groups):")
+                self.style.WARNING(
+                    f"\n{obj_type.upper()} ({len(duplicates)} duplicate groups):"
+                )
             )
 
             for dup in duplicates[:10]:  # Show first 10 per type
@@ -316,24 +315,31 @@ class Command(BaseCommand):
 
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
-                "type", "name", "owner", "chronicle",
-                "instance_count", "object_ids", "statuses"
+                "type",
+                "name",
+                "owner",
+                "chronicle",
+                "instance_count",
+                "object_ids",
+                "statuses",
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
             for dup in duplicates:
                 objects = dup["objects"]
-                writer.writerow({
-                    "type": dup["type"],
-                    "name": dup["name"],
-                    "owner": dup["owner"],
-                    "chronicle": dup["chronicle"],
-                    "instance_count": len(objects),
-                    "object_ids": ", ".join(str(obj.id) for obj in objects),
-                    "statuses": ", ".join(obj.get_status_display() for obj in objects),
-                })
+                writer.writerow(
+                    {
+                        "type": dup["type"],
+                        "name": dup["name"],
+                        "owner": dup["owner"],
+                        "chronicle": dup["chronicle"],
+                        "instance_count": len(objects),
+                        "object_ids": ", ".join(str(obj.id) for obj in objects),
+                        "statuses": ", ".join(
+                            obj.get_status_display() for obj in objects
+                        ),
+                    }
+                )
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Exported duplicates to {filename}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Exported duplicates to {filename}"))

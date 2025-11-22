@@ -13,12 +13,10 @@ class Path(Model):
 
     # Path attributes - which virtues this path requires
     requires_conviction = models.BooleanField(
-        default=True,
-        help_text="If True, uses Conviction; if False, uses Conscience"
+        default=True, help_text="If True, uses Conviction; if False, uses Conscience"
     )
     requires_instinct = models.BooleanField(
-        default=True,
-        help_text="If True, uses Instinct; if False, uses Self-Control"
+        default=True, help_text="If True, uses Instinct; if False, uses Self-Control"
     )
 
     # Path description and ethics

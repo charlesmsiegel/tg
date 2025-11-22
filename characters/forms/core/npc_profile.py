@@ -16,8 +16,8 @@ from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.sorcerer import Sorcerer
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.fomor import Fomor
-from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.garou import Werewolf
+from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.faction import WraithFaction
@@ -35,34 +35,47 @@ class NPCProfileForm(forms.Form):
     """
 
     NPC_TYPE_CHOICES = [
-        ("Vampire", (
-            ("vtm_human", "Human (Vampire)"),
-        )),
-        ("Werewolf", (
-            ("wta_human", "Human (Werewolf)"),
-            ("kinfolk", "Kinfolk"),
-            ("fomor", "Fomor"),
-            ("werewolf", "Werewolf"),
-        )),
-        ("Mage", (
-            ("mta_human", "Human (Mage)"),
-            ("sorcerer", "Sorcerer"),
-            ("companion", "Companion"),
-            ("mage", "Mage"),
-        )),
-        ("Wraith", (
-            ("wto_human", "Human (Wraith)"),
-            ("wraith", "Wraith"),
-        )),
-        ("Changeling", (
-            ("ctd_human", "Human (Changeling)"),
-            ("changeling", "Changeling"),
-        )),
-        ("Demon", (
-            ("dtf_human", "Human (Demon)"),
-            ("thrall", "Thrall"),
-            ("demon", "Demon"),
-        )),
+        ("Vampire", (("vtm_human", "Human (Vampire)"),)),
+        (
+            "Werewolf",
+            (
+                ("wta_human", "Human (Werewolf)"),
+                ("kinfolk", "Kinfolk"),
+                ("fomor", "Fomor"),
+                ("werewolf", "Werewolf"),
+            ),
+        ),
+        (
+            "Mage",
+            (
+                ("mta_human", "Human (Mage)"),
+                ("sorcerer", "Sorcerer"),
+                ("companion", "Companion"),
+                ("mage", "Mage"),
+            ),
+        ),
+        (
+            "Wraith",
+            (
+                ("wto_human", "Human (Wraith)"),
+                ("wraith", "Wraith"),
+            ),
+        ),
+        (
+            "Changeling",
+            (
+                ("ctd_human", "Human (Changeling)"),
+                ("changeling", "Changeling"),
+            ),
+        ),
+        (
+            "Demon",
+            (
+                ("dtf_human", "Human (Demon)"),
+                ("thrall", "Thrall"),
+                ("demon", "Demon"),
+            ),
+        ),
     ]
 
     NPC_CLASSES = {
@@ -225,7 +238,8 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     mage_essence = forms.ChoiceField(
-        choices=[("", "-- Select Essence --")] + [
+        choices=[("", "-- Select Essence --")]
+        + [
             ("Dynamic", "Dynamic"),
             ("Pattern", "Pattern"),
             ("Primordial", "Primordial"),
@@ -245,7 +259,8 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     werewolf_breed = forms.ChoiceField(
-        choices=[("", "-- Select Breed --")] + [
+        choices=[("", "-- Select Breed --")]
+        + [
             ("homid", "Homid"),
             ("metis", "Metis"),
             ("lupus", "Lupus"),
@@ -255,7 +270,8 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     werewolf_auspice = forms.ChoiceField(
-        choices=[("", "-- Select Auspice --")] + [
+        choices=[("", "-- Select Auspice --")]
+        + [
             ("ragabash", "Ragabash"),
             ("theurge", "Theurge"),
             ("philodox", "Philodox"),
@@ -276,7 +292,8 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     kinfolk_breed = forms.ChoiceField(
-        choices=[("", "-- Select Breed --")] + [
+        choices=[("", "-- Select Breed --")]
+        + [
             ("homid", "Homid"),
             ("lupus", "Lupus"),
         ],
@@ -308,7 +325,8 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     wraith_character_type = forms.ChoiceField(
-        choices=[("", "-- Select Type --")] + [
+        choices=[("", "-- Select Type --")]
+        + [
             ("wraith", "Wraith"),
             ("spectre", "Spectre"),
             ("doppelganger", "Doppelganger"),
@@ -337,13 +355,18 @@ class NPCProfileForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     changeling_court = forms.ChoiceField(
-        choices=[("", "-- Select Court --"), ("seelie", "Seelie"), ("unseelie", "Unseelie")],
+        choices=[
+            ("", "-- Select Court --"),
+            ("seelie", "Seelie"),
+            ("unseelie", "Unseelie"),
+        ],
         label="Court",
         required=False,
         widget=forms.Select(attrs={"class": "form-control"}),
     )
     changeling_seeming = forms.ChoiceField(
-        choices=[("", "-- Select Seeming --")] + [
+        choices=[("", "-- Select Seeming --")]
+        + [
             ("childling", "Childling"),
             ("wilder", "Wilder"),
             ("grump", "Grump"),

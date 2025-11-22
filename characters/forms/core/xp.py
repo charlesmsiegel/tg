@@ -107,9 +107,7 @@ class XPForm(forms.Form):
 
             filtered_mfs = filtered_mfs.filter(id__in=affordable_mfs)
 
-            self.fields["example"].choices = [
-                (mf.id, mf.name) for mf in filtered_mfs
-            ]
+            self.fields["example"].choices = [(mf.id, mf.name) for mf in filtered_mfs]
 
     def image_valid(self):
         if self.character.image and self.character.image.storage.exists(

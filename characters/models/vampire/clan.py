@@ -31,7 +31,7 @@ class VampireClan(Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="bloodlines"
+        related_name="bloodlines",
     )
 
     class Meta:
@@ -55,5 +55,7 @@ class VampireClan(Model):
     def get_all_disciplines(self):
         """Get all disciplines including parent clan disciplines for bloodlines."""
         if self.parent_clan:
-            return (self.disciplines.all() | self.parent_clan.disciplines.all()).distinct()
+            return (
+                self.disciplines.all() | self.parent_clan.disciplines.all()
+            ).distinct()
         return self.disciplines.all()
