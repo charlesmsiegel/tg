@@ -30,7 +30,7 @@ pearl.save()
 pearl_greater = Wonder.objects.get_or_create(
     name="Dragon Pearl (Greater)",
     rank=5,
-    background_cost=12,
+    background_cost=10,
     quintessence_max=10,
 )[0]
 pearl_greater.description = (
@@ -64,7 +64,7 @@ carpet.save()
 staff = Wonder.objects.get_or_create(
     name="Staff of the Magi",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=20,
 )[0]
 staff.description = (
@@ -180,7 +180,7 @@ ring.save()
 excalibur = Artifact.objects.get_or_create(
     name="Sword of the Rightful King",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=25,
 )[0]
 excalibur.description = (
@@ -199,7 +199,7 @@ excalibur.save()
 stone = Artifact.objects.get_or_create(
     name="The Philosopher's Stone",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=30,
 )[0]
 stone.description = (
@@ -217,7 +217,7 @@ stone.save()
 grail = Artifact.objects.get_or_create(
     name="The Holy Grail",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=50,
 )[0]
 grail.description = (
@@ -419,7 +419,7 @@ probdev.save()
 doissetep_stone = Artifact.objects.get_or_create(
     name="Heartstone of Doissetep",
     rank=5,
-    background_cost=15,
+    background_cost=10,
     quintessence_max=100,
 )[0]
 doissetep_stone.description = (

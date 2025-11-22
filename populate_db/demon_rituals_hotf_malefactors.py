@@ -23,7 +23,7 @@ volcano = Ritual.objects.get_or_create(
 volcano.primary_lore = lore_earth
 volcano.primary_lore_rating = 5
 volcano.secondary_lore_requirements = [
-    {"lore_id": lore_flame.id, "rating": 2},
+    {"lore_id": lore_of_flame.id, "rating": 2},
 ]
 volcano.base_cost = 14
 volcano.minimum_casting_time = 49
@@ -90,4 +90,3 @@ chalice_of_faith.flavor_text = "Faith is the lifeblood of the fallen, a precious
 chalice_of_faith.source_page = "Houses of the Fallen, p. 84"
 chalice_of_faith.save()
 
-print("Malefactor (Annunaki) rituals from Houses of the Fallen loaded successfully")

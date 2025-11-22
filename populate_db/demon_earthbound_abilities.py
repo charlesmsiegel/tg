@@ -81,4 +81,3 @@ Possessed by: Black Ops Agents, Earthbound, "Military Advisors," Serial Killers
 Specialties: Improvised, Physical, Psychological, Rapid, Resisting Torture"""
 torture.save()
 
-print("Earthbound Abilities created successfully!")

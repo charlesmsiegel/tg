@@ -35,4 +35,3 @@ eternal_imprisonment.flavor_text = "This nightmarish ritual was created in the l
 eternal_imprisonment.source_page = "Houses of the Fallen, p. 106"
 eternal_imprisonment.save()
 
-print("Fiend (Neberu) rituals from Houses of the Fallen loaded successfully")

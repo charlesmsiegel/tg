@@ -43,7 +43,7 @@ beast_tongue = Ritual.objects.get_or_create(
 beast_tongue.primary_lore = lore_beast
 beast_tongue.primary_lore_rating = 2
 beast_tongue.secondary_lore_requirements = [
-    {"lore_id": lore_humanity.id, "rating": 1},
+    {"lore_id": lore_of_humanity.id, "rating": 1},
 ]
 beast_tongue.base_cost = 6
 beast_tongue.minimum_casting_time = 9
@@ -80,4 +80,3 @@ wild_path.flavor_text = "Speed and mobility on the field of war were essential f
 wild_path.source_page = "Houses of the Fallen, p. 161"
 wild_path.save()
 
-print("Devourer (Rabisu) rituals from Houses of the Fallen loaded successfully")

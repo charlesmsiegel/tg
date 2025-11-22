@@ -23,7 +23,7 @@ reborn_in_new_skin = Ritual.objects.get_or_create(
 reborn_in_new_skin.primary_lore = lore_spirit
 reborn_in_new_skin.primary_lore_rating = 5
 reborn_in_new_skin.secondary_lore_requirements = [
-    {"lore_id": lore_death.id, "rating": 4},
+    {"lore_id": lore_of_death.id, "rating": 4},
     {"lore_id": lore_winds.id, "rating": 2},
 ]
 reborn_in_new_skin.base_cost = 33
@@ -83,4 +83,3 @@ veil_of_cerberus.flavor_text = "As the Thousand Year War turned into a rout, the
 veil_of_cerberus.source_page = "Houses of the Fallen, p. 192"
 veil_of_cerberus.save()
 
-print("Slayer (Halaku) rituals from Houses of the Fallen loaded successfully")

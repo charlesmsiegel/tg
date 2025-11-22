@@ -110,4 +110,3 @@ song_of_ecstatic_battle.flavor_text = "This ritual enables human troops to more 
 song_of_ecstatic_battle.source_page = "Houses of the Fallen, p. 132"
 song_of_ecstatic_battle.save()
 
-print("Defiler (Lammasu) rituals from Houses of the Fallen loaded successfully")

@@ -104,4 +104,3 @@ tears_of_tiamat = Relic.objects.get_or_create(
 )[0]
 tears_of_tiamat.add_source("Houses of the Fallen", 130)
 
-print("Defiler (Lammasu) relics from Houses of the Fallen loaded successfully")

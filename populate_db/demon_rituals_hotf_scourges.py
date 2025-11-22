@@ -45,7 +45,7 @@ fog_of_war = Ritual.objects.get_or_create(
 fog_of_war.primary_lore = lore_winds
 fog_of_war.primary_lore_rating = 3
 fog_of_war.secondary_lore_requirements = [
-    {"lore_id": lore_humanity.id, "rating": 3},
+    {"lore_id": lore_of_humanity.id, "rating": 3},
 ]
 fog_of_war.base_cost = 12
 fog_of_war.minimum_casting_time = 36
@@ -94,4 +94,3 @@ inoculate.flavor_text = "The Inoculate ritual was developed by desperate Asharu 
 inoculate.source_page = "Houses of the Fallen, p. 55"
 inoculate.save()
 
-print("Scourge (Asharu) rituals from Houses of the Fallen loaded successfully")

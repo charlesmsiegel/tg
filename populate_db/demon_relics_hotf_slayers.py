@@ -88,4 +88,3 @@ siklos = Relic.objects.get_or_create(
 )[0]
 siklos.add_source("Houses of the Fallen", 190)
 
-print("Slayer (Halaku) relics from Houses of the Fallen loaded successfully")

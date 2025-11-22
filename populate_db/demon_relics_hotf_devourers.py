@@ -94,4 +94,3 @@ unerring_map = Relic.objects.get_or_create(
 )[0]
 unerring_map.add_source("Houses of the Fallen", 160)
 
-print("Devourer (Rabisu) relics from Houses of the Fallen loaded successfully")

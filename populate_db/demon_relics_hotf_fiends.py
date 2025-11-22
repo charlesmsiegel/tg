@@ -74,4 +74,3 @@ spider_golems = Relic.objects.get_or_create(
 )[0]
 spider_golems.add_source("Houses of the Fallen", 105)
 
-print("Fiend (Neberu) relics from Houses of the Fallen loaded successfully")

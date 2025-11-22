@@ -31,7 +31,3 @@ lore_of_violation = Lore.objects.get_or_create(
 )[0]
 lore_of_violation.add_source("Demon: Earthbound", 91)
 
-print("Earthbound Lores created successfully!")
-print("- Lore of Chaos")
-print("- Lore of Contamination")
-print("- Lore of Violation")

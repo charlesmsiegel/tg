@@ -43,4 +43,3 @@ vivisectionist = Archetype.objects.get_or_create(
 )[0]
 vivisectionist.add_source("Demon: Earthbound", 72)
 
-print("Earthbound Archetypes created successfully!")
