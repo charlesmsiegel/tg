@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Debug script to run effects_INC.py and show full traceback
+Debug script to run rotes.py and show full traceback
 """
 import os
 import django
@@ -13,9 +13,9 @@ django.setup()
 
 try:
     # Import and run the effects script
-    print("Running effects_INC.py...")
-    with open('populate_db/effects_INC.py') as f:
-        code = compile(f.read(), 'populate_db/effects_INC.py', 'exec')
+    print("Running rotes.py...")
+    with open('populate_db/rotes.py') as f:
+        code = compile(f.read(), 'populate_db/rotes.py', 'exec')
         exec(code)
     print("Script completed successfully!")
 except Exception as e:
@@ -33,8 +33,8 @@ except Exception as e:
     tb = sys.exc_info()[2]
     while tb.tb_next:
         frame = tb.tb_frame
-        if 'effects_INC.py' in frame.f_code.co_filename:
-            print(f"\n>>> Error occurs at line {tb.tb_lineno} in effects_INC.py")
+        if 'rotes.py' in frame.f_code.co_filename:
+            print(f"\n>>> Error occurs at line {tb.tb_lineno} in rotes.py")
             print(f">>> In context: {frame.f_code.co_name}")
         tb = tb.tb_next
 

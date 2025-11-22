@@ -51,7 +51,7 @@ effect_harm_living_being_complex = Effect.objects.get_or_create(
 )
 effect_heal_living_being_complex = Effect.objects.get_or_create(
     name="Heal Living Being (Complex)", life=3
-)
+)[0]
 effect_heal_fae = Effect.objects.get_or_create(name="Heal Fae", life=3, mind=3)[0]
 effect_harm_fae = Effect.objects.get_or_create(name="Harm Fae", life=3, mind=3)[0]
 effect_heal_vampire = Effect.objects.get_or_create(
@@ -153,7 +153,7 @@ effect_levitation_forces = Effect.objects.get_or_create(
 effect_levitation_correspondence = Effect.objects.get_or_create(
     name="Levitation (Correspondence)", correspondence=3, matter=2
 )
-effect_flying_forces = Effect.objects.get_or_create(name="Flying (Forces)", forces=2)
+effect_flying_forces = Effect.objects.get_or_create(name="Flying (Forces)", forces=2)[0]
 effect_flying_correspondence = Effect.objects.get_or_create(
     name="Flying (Correspondence)", correspondence=3, life=2
 )
