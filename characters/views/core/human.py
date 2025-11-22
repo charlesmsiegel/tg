@@ -11,7 +11,7 @@ from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
 from core.models import Language
-from core.mixins import EditPermissionMixin, SpendFreebiesPermissionMixin
+from core.mixins import EditPermissionMixin, SpendFreebiesPermissionMixin, ApprovedUserContextMixin
 from core.views.generic import DictView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -64,7 +64,7 @@ class HumanCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanUpdateView(EditPermissionMixin, UpdateView):
+class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
     """
     Update view for Human characters.
     Only STs and Admins can directly edit character fields.
@@ -99,11 +99,6 @@ class HumanUpdateView(EditPermissionMixin, UpdateView):
     ]
     template_name = "characters/core/human/form.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
-
 
 class HumanBasicsView(LoginRequiredMixin, CreateView):
     """First step of character creation."""
@@ -122,7 +117,7 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanAttributeView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
     """
     Character creation step: allocating attribute points.
     Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
@@ -189,14 +184,13 @@ class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
         return context
 
 
-class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanAbilityView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = Human
     fields = Human.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -210,7 +204,6 @@ class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -240,7 +233,7 @@ class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
         return super().form_valid(form)
 
 
-class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
+class HumanBiographicalInformation(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = Human
     fields = [
         "age",
@@ -256,11 +249,6 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
         self.object.creation_status += 1
         self.object.save()
         return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 def load_examples(request):
@@ -412,7 +400,7 @@ class HumanFreebieFormPopulationView(View):
         return examples.filter(id__in=affordable_mfs)
 
 
-class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
+class HumanFreebiesView(SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/human/human/chargen.html"
@@ -426,11 +414,6 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
             "meritflaw": self.object.meritflaw_freebies,
             "willpower": self.object.willpower_freebies,
         }
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         if form.is_valid():

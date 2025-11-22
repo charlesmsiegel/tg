@@ -24,6 +24,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -70,18 +71,13 @@ class WraithBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class WraithAttributeView(HumanAttributeView):
+class WraithAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Wraith
     template_name = "characters/wraith/wraith/chargen.html"
 
     primary = 7
     secondary = 5
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WraithAbilityView(WtOHumanAbilityView):
@@ -98,7 +94,7 @@ class WraithBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithArcanosView(SpecialUserMixin, UpdateView):
+class WraithArcanosView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "argos",
@@ -118,11 +114,6 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
         "intimation",
     ]
     template_name = "characters/wraith/wraith/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         # Validate that total arcanoi is exactly 5
@@ -168,7 +159,7 @@ class WraithArcanosView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithShadowView(SpecialUserMixin, UpdateView):
+class WraithShadowView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = ["shadow_archetype"]
     template_name = "characters/wraith/wraith/chargen.html"
@@ -177,7 +168,6 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["shadow_archetypes"] = ShadowArchetype.objects.all()
         context["thorns"] = Thorn.objects.all()
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -364,7 +354,7 @@ class WraithFettersView(EditPermissionMixin, FormView):
         return super().form_invalid(form)
 
 
-class WraithExtrasView(SpecialUserMixin, UpdateView):
+class WraithExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "date_of_birth",
@@ -379,11 +369,6 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/wraith/wraith/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         # Validate that death-related fields are filled

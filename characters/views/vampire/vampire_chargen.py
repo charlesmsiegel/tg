@@ -24,6 +24,7 @@ from core.forms.language import HumanLanguageForm
 from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -75,14 +76,9 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class VampireAttributeView(HumanAttributeView):
+class VampireAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Vampire
     template_name = "characters/vampire/vampire/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class VampireAbilityView(VtMHumanAbilityView):
@@ -149,7 +145,6 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         if self.object.clan:
             context["clan_disciplines"] = self.object.get_clan_disciplines()
         else:
@@ -229,7 +224,6 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         context["uses_path"] = bool(self.object.path)
         return context
 
@@ -274,7 +268,7 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class VampireExtrasView(SpecialUserMixin, UpdateView):
+class VampireExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Vampire
     fields = [
         "age",
@@ -301,11 +295,6 @@ class VampireExtrasView(SpecialUserMixin, UpdateView):
         form.fields["history"].required = False
         form.fields["goals"].required = False
         return form
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

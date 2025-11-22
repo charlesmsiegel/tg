@@ -23,6 +23,8 @@ from core.models import CharacterTemplate, Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -33,14 +35,9 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class WtOHumanDetailView(HumanDetailView):
+class WtOHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WtOHumanCreateView(MessageMixin, CreateView):
@@ -106,7 +103,7 @@ class WtOHumanCreateView(MessageMixin, CreateView):
     error_message = "Failed to create wraith human. Please correct the errors below."
 
 
-class WtOHumanUpdateView(EditPermissionMixin, UpdateView):
+class WtOHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = WtOHuman
     fields = [
         "name",
@@ -167,11 +164,6 @@ class WtOHumanUpdateView(EditPermissionMixin, UpdateView):
     template_name = "characters/wraith/wtohuman/form.html"
     success_message = "Wraith Human '{name}' updated successfully!"
     error_message = "Failed to update wraith human. Please correct the errors below."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class WtOHumanBasicsView(LoginRequiredMixin, FormView):
@@ -277,7 +269,7 @@ class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
 
 
-class WtOHumanAttributeView(HumanAttributeView):
+class WtOHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/chargen.html"
 
@@ -285,13 +277,8 @@ class WtOHumanAttributeView(HumanAttributeView):
     secondary = 4
     tertiary = 3
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
-
-class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
+class WtOHumanAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = WtOHuman.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -305,7 +292,6 @@ class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -359,7 +345,7 @@ class WtOHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
+class WtOHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = [
         "date_of_birth",
@@ -372,11 +358,6 @@ class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/wraith/wtohuman/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

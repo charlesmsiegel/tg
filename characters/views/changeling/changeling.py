@@ -24,6 +24,7 @@ from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin, ApprovedUserContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -33,7 +34,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, FormView, UpdateView, View
 
 
-class ChangelingDetailView(ViewPermissionMixin, DetailView):
+class ChangelingDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 
@@ -54,7 +55,6 @@ class ChangelingDetailView(ViewPermissionMixin, DetailView):
         context["merits_and_flaws"] = MeritFlawRating.objects.order_by(
             "mf__name"
         ).filter(character=self.object)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -150,7 +150,7 @@ class ChangelingCreateView(MessageMixin, CreateView):
     error_message = "Failed to create changeling. Please correct the errors below."
 
 
-class ChangelingUpdateView(EditPermissionMixin, UpdateView):
+class ChangelingUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
     model = Changeling
     fields = [
         "name",
@@ -243,7 +243,6 @@ class ChangelingUpdateView(EditPermissionMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -282,13 +281,12 @@ class ChangelingBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class ChangelingAttributeView(HumanAttributeView):
+class ChangelingAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Changeling
     template_name = "characters/changeling/changeling/chargen.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
 
@@ -305,7 +303,7 @@ class ChangelingBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
+class ChangelingArtsRealmsView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "autumn",
@@ -337,7 +335,6 @@ class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -407,7 +404,7 @@ class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ChangelingExtrasView(SpecialUserMixin, UpdateView):
+class ChangelingExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "date_of_birth",
@@ -430,7 +427,6 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):

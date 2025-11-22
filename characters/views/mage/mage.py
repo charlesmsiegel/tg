@@ -42,6 +42,13 @@ from core.models import Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.mixins import (
+    ViewPermissionMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ApprovedUserContextMixin,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
@@ -348,14 +355,13 @@ def get_abilities(request):
     return JsonResponse(abilities_list, safe=False)
 
 
-class MageDetailView(HumanDetailView):
+class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = Mage
     template_name = "characters/mage/mage/detail.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["items_owned"] = ItemModel.objects.filter(owned_by=self.object)
-        context["is_approved_user"] = True  # If we got here, user has permission
         if "form" not in context:
             context["form"] = MageXPForm(character=self.object)
         context["rote_form"] = RoteCreationForm(instance=self.object)
@@ -784,7 +790,7 @@ class MageDetailView(HumanDetailView):
 
 class MageCreateView(MessageMixin, CreateView):
     model = Mage
-    fields = [
+    FORM_FIELDS = [
         "name",
         "owner",
         "description",
@@ -917,6 +923,7 @@ class MageCreateView(MessageMixin, CreateView):
         "subfaction",
         "public_info",
     ]
+    fields = FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
     success_message = "Mage '{name}' created successfully!"
     error_message = "Failed to create mage. Please correct the errors below."
@@ -929,149 +936,12 @@ class MageCreateView(MessageMixin, CreateView):
         return form
 
 
-class MageUpdateView(EditPermissionMixin, UpdateView):
+class MageUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = Mage
-    fields = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "specialties",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "awareness",
-        "art",
-        "leadership",
-        "animal_kinship",
-        "blatancy",
-        "carousing",
-        "flying",
-        "high_ritual",
-        "lucid_dreaming",
-        "search",
-        "seduction",
-        "larceny",
-        "meditation",
-        "research",
-        "survival",
-        "technology",
-        "acrobatics",
-        "archery",
-        "biotech",
-        "energy_weapons",
-        "jetpack",
-        "riding",
-        "torture",
-        "cosmology",
-        "enigmas",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "area_knowledge",
-        "belief_systems",
-        "cryptography",
-        "demolitions",
-        "lore",
-        "media",
-        "pharmacopeia",
-        "cooking",
-        "diplomacy",
-        "instruction",
-        "intrigue",
-        "intuition",
-        "mimicry",
-        "negotiation",
-        "newspeak",
-        "scan",
-        "scrounging",
-        "style",
-        "blind_fighting",
-        "climbing",
-        "disguise",
-        "elusion",
-        "escapology",
-        "fast_draw",
-        "fast_talk",
-        "fencing",
-        "fortune_telling",
-        "gambling",
-        "gunsmith",
-        "heavy_weapons",
-        "hunting",
-        "hypnotism",
-        "jury_rigging",
-        "microgravity_operations",
-        "misdirection",
-        "networking",
-        "pilot",
-        "psychology",
-        "security",
-        "speed_reading",
-        "swimming",
-        "conspiracy_theory",
-        "chantry_politics",
-        "covert_culture",
-        "cultural_savvy",
-        "helmsman",
-        "history_knowledge",
-        "power_brokering",
-        "propaganda",
-        "theology",
-        "unconventional_warface",
-        "vice",
-        "essence",
-        "correspondence",
-        "time",
-        "spirit",
-        "mind",
-        "entropy",
-        "prime",
-        "forces",
-        "matter",
-        "life",
-        "arete",
-        "affinity_sphere",
-        "corr_name",
-        "prime_name",
-        "spirit_name",
-        "age_of_awakening",
-        "avatar_description",
-        "rote_points",
-        "quintessence",
-        "paradox",
-        "quiet",
-        "quiet_type",
-        "affiliation",
-        "faction",
-        "subfaction",
-        "public_info",
-    ]
+    fields = MageCreateView.FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
     success_message = "Mage '{name}' updated successfully!"
     error_message = "Failed to update mage. Please correct the errors below."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class MageBasicsView(LoginRequiredMixin, FormView):
@@ -1111,14 +981,9 @@ class MageBasicsView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class MageAttributeView(HumanAttributeView):
+class MageAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = Mage
     template_name = "characters/mage/mage/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class MageAbilityView(MtAHumanAbilityView):
@@ -1134,7 +999,7 @@ class MageBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mage/chargen.html"
 
 
-class MageFocusView(SpecialUserMixin, UpdateView):
+class MageFocusView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "metaphysical_tenet",
@@ -1167,7 +1032,6 @@ class MageFocusView(SpecialUserMixin, UpdateView):
             context["practice_formset"] = PracticeRatingFormSet(
                 instance=self.object, mage=self.object
             )
-        context["is_approved_user"] = True  # If we got here, user has permission
         return context
 
     def form_valid(self, form):
@@ -1224,7 +1088,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
         return response
 
 
-class MageSpheresView(SpecialUserMixin, UpdateView):
+class MageSpheresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "arete",
@@ -1332,13 +1196,8 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
             return self.form_valid(form)
         return super().form_invalid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
-
-class MageExtrasView(SpecialUserMixin, UpdateView):
+class MageExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "date_of_birth",
@@ -1353,11 +1212,6 @@ class MageExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/mage/mage/chargen.html"
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1

@@ -22,6 +22,14 @@ from core.models import CharacterTemplate, Language
 from core.mixins import ViewPermissionMixin, EditPermissionMixin, SpendFreebiesPermissionMixin, SpendXPPermissionMixin
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.message_mixin import MessageMixin
+from core.models import Language
+from core.mixins import (
+    ViewPermissionMixin,
+    EditPermissionMixin,
+    SpendFreebiesPermissionMixin,
+    SpendXPPermissionMixin,
+    ApprovedUserContextMixin,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import forms
 from django.contrib import messages
@@ -32,21 +40,16 @@ from django.urls import reverse
 from django.views.generic import CreateView, FormView, UpdateView
 
 
-class VtMHumanDetailView(HumanDetailView):
+class VtMHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class VtMHumanCreateView(MessageMixin, CreateView):
     model = VtMHuman
     success_message = "VtM Human created successfully."
     error_message = "Error creating VtM Human."
-    fields = [
+    FORM_FIELDS = [
         "name",
         "owner",
         "description",
@@ -113,86 +116,16 @@ class VtMHumanCreateView(MessageMixin, CreateView):
         "politics",
         "technology",
     ]
+    fields = FORM_FIELDS
     template_name = "characters/vampire/vtmhuman/form.html"
 
 
-class VtMHumanUpdateView(EditPermissionMixin, UpdateView):
+class VtMHumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
     model = VtMHuman
     success_message = "VtM Human updated successfully."
     error_message = "Error updating VtM Human."
-    fields = [
-        "name",
-        "owner",
-        "description",
-        "nature",
-        "demeanor",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "strength",
-        "dexterity",
-        "stamina",
-        "perception",
-        "intelligence",
-        "wits",
-        "charisma",
-        "manipulation",
-        "appearance",
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-        "specialties",
-        "languages",
-        "willpower",
-        "derangements",
-        "age",
-        "apparent_age",
-        "date_of_birth",
-        "merits_and_flaws",
-        "history",
-        "goals",
-        "notes",
-        "xp",
-        "awareness",
-        "leadership",
-        "animal_ken",
-        "larceny",
-        "performance",
-        "survival",
-        "finance",
-        "law",
-        "occult",
-        "politics",
-        "technology",
-    ]
+    fields = VtMHumanCreateView.FORM_FIELDS
     template_name = "characters/vampire/vtmhuman/form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class VtMHumanBasicsView(LoginRequiredMixin, FormView):
@@ -291,18 +224,13 @@ class VtMHumanTemplateSelectView(LoginRequiredMixin, FormView):
         return redirect("characters:vampire:vtmhuman_creation", pk=self.object.pk)
 
 
-class VtMHumanAttributeView(HumanAttributeView):
+class VtMHumanAttributeView(ApprovedUserContextMixin, HumanAttributeView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
     primary = 6
     secondary = 4
     tertiary = 3
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
 
 class VtMHumanAbilityView(HumanAbilityView):
@@ -319,7 +247,7 @@ class VtMHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
 
-class VtMHumanExtrasView(SpecialUserMixin, UpdateView):
+class VtMHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
     model = VtMHuman
     fields = [
         "date_of_birth",
@@ -332,11 +260,6 @@ class VtMHumanExtrasView(SpecialUserMixin, UpdateView):
         "public_info",
     ]
     template_name = "characters/vampire/vtmhuman/chargen.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_approved_user"] = True  # If we got here, user has permission
-        return context
 
     def form_valid(self, form):
         self.object.creation_status += 1
