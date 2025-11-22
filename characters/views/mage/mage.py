@@ -539,9 +539,8 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                             and not rote_form.cleaned_data["rote_options"]
                         ):
                             rote_form.add_error(None, "Must create or select a rote")
-                            return render(
-                                request, self.template_name, self.get_context_data()
-                            )
+                            context["rote_form"] = rote_form
+                            return render(request, self.template_name, context)
                         if rote_form.cleaned_data["select_or_create_rote"]:
                             if (
                                 not rote_form.cleaned_data["select_or_create_effect"]
@@ -550,46 +549,37 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                                 rote_form.add_error(
                                     None, "Must create or select an effect"
                                 )
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["name"]:
                                 rote_form.add_error(None, "Must choose rote name")
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["practice"]:
                                 rote_form.add_error(None, "Must choose rote Practice")
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["attribute"]:
                                 rote_form.add_error(None, "Must choose rote Attribute")
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["ability"]:
                                 rote_form.add_error(None, "Must choose rote Ability")
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["description"]:
                                 rote_form.add_error(
                                     None, "Must choose rote description"
                                 )
-                                return render(
-                                    request, self.template_name, self.get_context_data()
-                                )
+                                context["rote_form"] = rote_form
+                                return render(request, self.template_name, context)
                             if rote_form.cleaned_data["select_or_create_effect"]:
                                 if not rote_form.cleaned_data["systems"]:
                                     rote_form.add_error(
                                         None, "Must choose rote systems"
                                     )
-                                    return render(
-                                        request,
-                                        self.template_name,
-                                        self.get_context_data(),
-                                    )
+                                    context["rote_form"] = rote_form
+                                    return render(request, self.template_name, context)
                                 if (
                                     rote_form.cleaned_data["correspondence"]
                                     + rote_form.cleaned_data["entropy"]
@@ -605,17 +595,13 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                                     rote_form.add_error(
                                         None, "Effects must have sphere ratings"
                                     )
-                                    return render(
-                                        request,
-                                        self.template_name,
-                                        self.get_context_data(),
-                                    )
+                                    context["rote_form"] = rote_form
+                                    return render(request, self.template_name, context)
                         try:
                             rote_form.save(self.object)
                         except forms.ValidationError:
-                            return render(
-                                request, self.template_name, self.get_context_data()
-                            )
+                            context["rote_form"] = rote_form
+                            return render(request, self.template_name, context)
             else:
                 print("errors", form.errors)
         if "Approve" in form.data.values():
