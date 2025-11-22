@@ -44,6 +44,37 @@ class Command(BaseCommand):
             help="Show detailed output for each file",
         )
 
+    def get_sort_key(self, file, populate_dir):
+        """
+        Generate a sort key for files to ensure proper loading order:
+        1. Main directory files first
+        2. Then 'core' subdirectory
+        3. Then other subdirectories alphabetically
+        4. Then 'chronicles' subdirectory last
+        Within each category, sort files alphabetically
+        """
+        relative_path = file.relative_to(populate_dir)
+        parts = relative_path.parts
+
+        # Files in the main directory (no subdirectory)
+        if len(parts) == 1:
+            return (0, relative_path.name)
+
+        # Files in subdirectories
+        subdir = parts[0].lower()
+
+        # Assign priority: core=1, chronicles=999, others=500
+        if subdir == "core":
+            priority = 1
+        elif subdir == "chronicles":
+            priority = 999
+        else:
+            priority = 500
+
+        # Return tuple: (priority, subdirectory name, file path)
+        # This ensures proper ordering within each priority level
+        return (priority, subdir, str(relative_path))
+
     def handle(self, *args, **options):
         populate_dir = Path("populate_db")
 
@@ -51,7 +82,7 @@ class Command(BaseCommand):
             raise CommandError(f"Directory {populate_dir} not found")
 
         # Get all .py files in populate_db directory (recursively)
-        all_files = sorted(populate_dir.rglob("*.py"))
+        all_files = sorted(populate_dir.rglob("*.py"), key=lambda f: self.get_sort_key(f, populate_dir))
 
         if not all_files:
             raise CommandError(f"No .py files found in {populate_dir}")
