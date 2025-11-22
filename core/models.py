@@ -116,6 +116,11 @@ class Book(models.Model):
             ("2e", "2nd Edition"),
             ("Rev", "Revised Edition"),
             ("20th", "20th Anniversary Edition"),
+            ("DA", "Dark Ages"),
+            ("VA", "Victorian Age"),
+            ("WW", "Wild West"),
+            ("SC", "Sorcerer's Crusade"),
+            ("KotE", "Kindred of the East"),
         ],
         default="1e",
     )
