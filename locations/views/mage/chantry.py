@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.ally import AllyForm
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
@@ -280,7 +280,7 @@ class ChantryLibrarysView(GenericBackgroundView):
 class ChantryAlliesView(GenericBackgroundView):
     primary_object_class = Chantry
     background_name = "allies"
-    form_class = AllyForm
+    form_class = LinkedNPCForm
     is_owned = False
     template_name = "locations/mage/chantry/locgen.html"
 
