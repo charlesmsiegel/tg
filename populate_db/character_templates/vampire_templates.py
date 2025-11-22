@@ -3,20 +3,6 @@ Character templates for Vampire: The Masquerade
 Pre-built character concepts from sourcebooks
 """
 
-import os
-import sys
-
-import django
-
-# Add project root to path
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
-sys.path.insert(0, project_root)
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
-django.setup()
-
 from core.models import CharacterTemplate
 
 
@@ -331,6 +317,5 @@ def populate_vampire_templates():
     return [detective, socialite, preacher, criminal, scholar]
 
 
-if __name__ == "__main__":
-    populate_vampire_templates()
-    print("\nVampire character templates populated successfully!")
+# Execute when loaded
+populate_vampire_templates()

@@ -3,20 +3,6 @@ Character templates for Demon: The Fallen
 Pre-built character concepts from sourcebooks
 """
 
-import os
-import sys
-
-import django
-
-# Add project root to path
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
-sys.path.insert(0, project_root)
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
-django.setup()
-
 from core.models import CharacterTemplate
 
 
@@ -328,6 +314,5 @@ def populate_demon_templates():
     return [detective, artist, warrior, tempter, healer]
 
 
-if __name__ == "__main__":
-    populate_demon_templates()
-    print("\nDemon character templates populated successfully!")
+# Execute when loaded
+populate_demon_templates()

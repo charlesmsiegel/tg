@@ -3,20 +3,6 @@ Character templates for Wraith: The Oblivion
 Pre-built character concepts from sourcebooks
 """
 
-import os
-import sys
-
-import django
-
-# Add project root to path
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
-sys.path.insert(0, project_root)
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
-django.setup()
-
 from core.models import CharacterTemplate
 
 
@@ -330,6 +316,5 @@ def populate_wraith_templates():
     return [detective, vengeful, guardian, lost, scholar]
 
 
-if __name__ == "__main__":
-    populate_wraith_templates()
-    print("\nWraith character templates populated successfully!")
+# Execute when loaded
+populate_wraith_templates()

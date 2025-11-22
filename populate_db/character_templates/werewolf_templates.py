@@ -3,20 +3,6 @@ Character templates for Werewolf: The Apocalypse
 Pre-built character concepts from sourcebooks
 """
 
-import os
-import sys
-
-import django
-
-# Add project root to path
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
-sys.path.insert(0, project_root)
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
-django.setup()
-
 from core.models import CharacterTemplate
 
 
@@ -331,6 +317,5 @@ def populate_werewolf_templates():
     return [warrior, mystic, trickster, judge, bard]
 
 
-if __name__ == "__main__":
-    populate_werewolf_templates()
-    print("\nWerewolf character templates populated successfully!")
+# Execute when loaded
+populate_werewolf_templates()
