@@ -211,3 +211,42 @@ class ApprovedUserContextMixin:
         context = super().get_context_data(**kwargs)
         context["is_approved_user"] = True  # If we got here, user has permission
         return context
+
+
+class SpecialUserMixin:
+    """
+    Mixin for checking if a user has special access to an object.
+
+    Special users include:
+    - The object owner
+    - Any authenticated storyteller (ST)
+    - Anyone if the object has no owner
+
+    Usage:
+        class MyView(SpecialUserMixin, DetailView):
+            def get_context_data(self, **kwargs):
+                context = super().get_context_data(**kwargs)
+                context['is_special'] = self.check_if_special_user(self.object, self.request.user)
+                return context
+    """
+
+    def check_if_special_user(self, obj, user):
+        """
+        Check if user has special access to the object.
+
+        Args:
+            obj: The object to check access for
+            user: The user to check
+
+        Returns:
+            bool: True if user has special access
+        """
+        if obj.owner is None:
+            return True
+        if user == obj.owner:
+            return True
+        if not user.is_authenticated:
+            return False
+        if STRelationship.objects.filter(user=user).count() > 0:
+            return True
+        return False
