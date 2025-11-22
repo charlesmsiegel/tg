@@ -44,7 +44,7 @@ havens_peace = Ritual.objects.get_or_create(
     name="Haven's Peace",
     house=slayers,
 )[0]
-havens_peace.primary_lore = lore_storms
+havens_peace.primary_lore = lore_of_storms
 havens_peace.primary_lore_rating = 4
 havens_peace.secondary_lore_requirements = [
     {"lore_id": lore_spirit.id, "rating": 3},

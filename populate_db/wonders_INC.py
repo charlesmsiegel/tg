@@ -1694,7 +1694,7 @@ Artifact.objects.get_or_create(
     display=False, name="Qui La Machinae X156", background_cost=0
 )
 Artifact.objects.get_or_create(
-    display=False, name="Qui La Machinae X160", background_cost=40
+    display=False, name="Qui La Machinae X160", background_cost=10
 )
 Artifact.objects.get_or_create(
     display=False, name="Qui La Machinae X200 “Vader”", background_cost=0

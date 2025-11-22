@@ -32,7 +32,6 @@ from populate_db.effects_INC import (
     effect_read_surface_thoughts,
     effect_reality_hack,
     effect_see_spirits,
-    effect_sense_fate_and_fortune,
     effect_shapeshift_into_animal_self,
     effect_spirit_journey,
     effect_summon_elemental,
