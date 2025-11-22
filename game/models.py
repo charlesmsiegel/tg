@@ -917,6 +917,89 @@ class StoryXPRequest(models.Model):
     duration = models.IntegerField(default=0)
 
 
+class XPSpendingRequest(models.Model):
+    """
+    Model for tracking XP spending requests.
+
+    Replaces the spent_xp JSONField with proper database relations.
+    Allows efficient querying and prevents index-based update issues.
+    """
+    character = models.ForeignKey(
+        "characters.CharacterModel",
+        on_delete=models.CASCADE,
+        related_name="xp_spendings"
+    )
+    trait_name = models.CharField(max_length=100, help_text="Display name of the trait")
+    trait_type = models.CharField(
+        max_length=50,
+        help_text="Category of trait (attribute, ability, background, etc.)"
+    )
+    trait_value = models.IntegerField(help_text="New value after spending")
+    cost = models.IntegerField(help_text="XP cost")
+    approved = models.CharField(
+        max_length=20,
+        choices=[
+            ("Pending", "Pending"),
+            ("Approved", "Approved"),
+            ("Denied", "Denied"),
+        ],
+        default="Pending"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_xp_spendings"
+    )
+
+    class Meta:
+        verbose_name = "XP Spending Request"
+        verbose_name_plural = "XP Spending Requests"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["character", "approved"]),
+            models.Index(fields=["character", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.character.name} - {self.trait_name} ({self.approved})"
+
+
+class FreebieSpendingRecord(models.Model):
+    """
+    Model for tracking freebie point spending during character creation.
+
+    Replaces the spent_freebies JSONField with proper database relations.
+    """
+    character = models.ForeignKey(
+        "characters.CharacterModel",
+        on_delete=models.CASCADE,
+        related_name="freebie_spendings"
+    )
+    trait_name = models.CharField(max_length=100, help_text="Display name of the trait")
+    trait_type = models.CharField(
+        max_length=50,
+        help_text="Category of trait (attribute, ability, background, etc.)"
+    )
+    trait_value = models.IntegerField(help_text="Value gained")
+    cost = models.IntegerField(help_text="Freebie point cost")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Freebie Spending Record"
+        verbose_name_plural = "Freebie Spending Records"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["character", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.character.name} - {self.trait_name} ({self.cost} freebies)"
+
+
 def get_next_sunday(from_date):
     """
     Given a date, returns a date object representing the upcoming Sunday

@@ -83,6 +83,7 @@ class Character(CharacterModel):
 
     notes = models.TextField(default="", blank=True, null=True)
     xp = models.IntegerField(default=0, db_index=True)
+    # DEPRECATED: Use XPSpendingRequest model instead (see JSONFIELD_MIGRATION_GUIDE.md)
     spent_xp = models.JSONField(default=list)
 
     class Meta:
@@ -374,3 +375,83 @@ class Character(CharacterModel):
 
         char.save()
         return char.spent_xp[spend_index]
+
+    # New model-based XP spending methods (replaces JSONField usage)
+
+    def create_xp_spending_request(self, trait_name, trait_type, trait_value, cost):
+        """Create an XP spending request using the new model-based system.
+
+        This replaces the JSONField-based spent_xp system with proper database relations.
+
+        Args:
+            trait_name: Display name of the trait (e.g., 'Alertness', 'Strength')
+            trait_type: Category of trait (e.g., 'attribute', 'ability', 'background')
+            trait_value: New value after spending
+            cost: XP cost
+
+        Returns:
+            XPSpendingRequest instance
+        """
+        from game.models import XPSpendingRequest
+        return XPSpendingRequest.objects.create(
+            character=self,
+            trait_name=trait_name,
+            trait_type=trait_type,
+            trait_value=trait_value,
+            cost=cost,
+            approved='Pending'
+        )
+
+    def get_pending_xp_requests(self):
+        """Get all pending XP spending requests for this character.
+
+        Returns:
+            QuerySet of XPSpendingRequest instances
+        """
+        return self.xp_spendings.filter(approved='Pending')
+
+    def get_xp_spending_history(self):
+        """Get all XP spending requests for this character.
+
+        Returns:
+            QuerySet of XPSpendingRequest instances ordered by creation date
+        """
+        return self.xp_spendings.all()
+
+    def approve_xp_request(self, request_id, approver):
+        """Approve an XP spending request.
+
+        Args:
+            request_id: ID of the XPSpendingRequest
+            approver: User who is approving the request
+
+        Returns:
+            XPSpendingRequest instance
+        """
+        from django.utils import timezone
+
+        request = self.xp_spendings.get(id=request_id, approved='Pending')
+        request.approved = 'Approved'
+        request.approved_by = approver
+        request.approved_at = timezone.now()
+        request.save()
+        return request
+
+    def deny_xp_request(self, request_id, approver):
+        """Deny an XP spending request.
+
+        Args:
+            request_id: ID of the XPSpendingRequest
+            approver: User who is denying the request
+
+        Returns:
+            XPSpendingRequest instance
+        """
+        from django.utils import timezone
+
+        request = self.xp_spendings.get(id=request_id, approved='Pending')
+        request.approved = 'Denied'
+        request.approved_by = approver
+        request.approved_at = timezone.now()
+        request.save()
+        return request
