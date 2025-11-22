@@ -239,19 +239,21 @@ def form_valid(self, form):
 
 #### Core Character Views (6 files)
 - [ ] `characters/views/core/human.py` - base views (consider inheritance implications)
-- [ ] `characters/views/core/merit_flaw_views.py`
-- [ ] `characters/views/core/specialty_views.py`
-- [ ] `characters/views/core/background_views.py`
+- [x] `characters/views/core/meritflaw.py` - MessageMixin applied
+- [x] `characters/views/core/specialty.py` - MessageMixin applied
+- [x] `characters/views/core/backgrounds.py` - (if applicable)
 
 ### Items (25 files)
 
 #### Mage Items (5 files)
-- [ ] `items/views/mage/wonder.py`
-  - [ ] `WonderCreateView` - add MessageMixin
-  - [ ] `WonderUpdateView` - add MessageMixin
-- [ ] `items/views/mage/library.py`
-- [ ] `items/views/mage/grimoire.py`
-- [ ] Other mage item views
+- [x] `items/views/mage/wonder.py`
+  - [x] `WonderCreateView` - MessageMixin applied
+  - [x] `WonderUpdateView` - MessageMixin applied
+- [x] `items/views/mage/grimoire.py` - MessageMixin applied
+- [x] `items/views/mage/artifact.py` - MessageMixin applied
+- [x] `items/views/mage/charm.py` - MessageMixin applied
+- [x] `items/views/mage/talisman.py` - MessageMixin applied
+- [x] `items/views/mage/sorcerer_artifact.py` - MessageMixin applied
 
 #### Vampire Items (5 files)
 - [ ] `items/views/vampire/*.py`
@@ -259,9 +261,9 @@ def form_valid(self, form):
   - [ ] Domain views
 
 #### Werewolf Items (5 files)
-- [ ] `items/views/werewolf/fetish.py`
-  - [ ] `FetishCreateView` - add MessageMixin
-  - [ ] `FetishUpdateView` - add MessageMixin
+- [x] `items/views/werewolf/fetish.py`
+  - [x] `FetishCreateView` - MessageMixin applied
+  - [x] `FetishUpdateView` - MessageMixin applied
 - [ ] `items/views/werewolf/rite.py`
 - [ ] Other werewolf item views
 

@@ -198,13 +198,13 @@ Complete design documentation with all implementation details:
 
 - [ ] Create and activate virtual environment
 - [ ] Install dependencies (`pip install -r requirements.txt`)
-- [ ] Create migrations (`python manage.py makemigrations core game`)
-- [ ] Review migration files
-- [ ] Apply migrations (`python manage.py migrate`)
-- [ ] Add context processor to settings.py
-- [ ] Run test suite (`pytest core/test_permissions.py -v`)
-- [ ] Update existing views to use permission checks
-- [ ] Update existing templates to respect visibility tiers
+- [x] Create migrations (`python manage.py makemigrations core game`)
+- [x] Review migration files
+- [x] Apply migrations (`python manage.py migrate`)
+- [x] Add context processor to settings.py
+- [x] Run test suite (`pytest core/test_permissions.py -v`)
+- [x] Update existing views to use permission checks
+- [x] Update existing templates to respect visibility tiers
 - [ ] Test with different user roles
 - [ ] Deploy to staging
 - [ ] User acceptance testing

@@ -146,8 +146,6 @@ class VtMHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        # TODO: Temporarily skip template selection until CharacterTemplate model is implemented
-        # Original: return reverse("characters:vampire:vtmhuman_template", kwargs={"pk": self.object.pk})
         self.object.creation_status = 1
         self.object.save()
         return reverse(
