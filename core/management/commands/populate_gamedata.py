@@ -1,7 +1,8 @@
 """
 Management command to populate the database with game data from populate_db/ directory.
 
-This command replaces the setup_db.sh script and provides more control over data loading.
+This command recursively searches populate_db/ and all subdirectories for .py scripts
+and provides more control over data loading.
 """
 import os
 import sys
@@ -13,7 +14,7 @@ from django.db import transaction
 
 class Command(BaseCommand):
     help = (
-        "Populate database with World of Darkness game data from populate_db/ scripts"
+        "Populate database with World of Darkness game data from populate_db/ scripts (searches recursively)"
     )
 
     def add_arguments(self, parser):
@@ -49,8 +50,8 @@ class Command(BaseCommand):
         if not populate_dir.exists():
             raise CommandError(f"Directory {populate_dir} not found")
 
-        # Get all .py files in populate_db directory
-        all_files = sorted(populate_dir.glob("*.py"))
+        # Get all .py files in populate_db directory (recursively)
+        all_files = sorted(populate_dir.rglob("*.py"))
 
         if not all_files:
             raise CommandError(f"No .py files found in {populate_dir}")
@@ -69,7 +70,9 @@ class Command(BaseCommand):
             self.style.SUCCESS(f"\nFound {len(files_to_load)} file(s) to load:")
         )
         for file in files_to_load:
-            self.stdout.write(f"  - {file.name}")
+            # Show relative path from populate_db for better context
+            relative_path = file.relative_to(populate_dir)
+            self.stdout.write(f"  - {relative_path}")
 
         if options["dry_run"]:
             self.stdout.write(
@@ -85,11 +88,12 @@ class Command(BaseCommand):
 
         for file in files_to_load:
             try:
-                self.load_file(file, options["verbose"])
+                self.load_file(file, populate_dir, options["verbose"])
                 success_count += 1
             except Exception as e:
                 error_count += 1
-                self.stdout.write(self.style.ERROR(f"✗ {file.name}: {str(e)}"))
+                relative_path = file.relative_to(populate_dir)
+                self.stdout.write(self.style.ERROR(f"✗ {relative_path}: {str(e)}"))
                 if options["verbose"]:
                     import traceback
 
@@ -150,10 +154,12 @@ class Command(BaseCommand):
         stem = file.stem.lower()
         return any(gl in stem for gl in gamelines)
 
-    def load_file(self, file, verbose=False):
+    def load_file(self, file, populate_dir, verbose=False):
         """Execute a populate script file."""
+        relative_path = file.relative_to(populate_dir)
+
         if verbose:
-            self.stdout.write(f"Loading {file.name}...", ending="")
+            self.stdout.write(f"Loading {relative_path}...", ending="")
 
         # Read and execute the file
         with open(file, "r") as f:
@@ -166,4 +172,4 @@ class Command(BaseCommand):
         if verbose:
             self.stdout.write(self.style.SUCCESS(" ✓"))
         else:
-            self.stdout.write(f"✓ {file.name}")
+            self.stdout.write(f"✓ {relative_path}")
