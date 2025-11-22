@@ -18,6 +18,18 @@ class CharacterQuerySet(ModelQuerySet):
         """Player characters (not NPCs)"""
         return self.filter(npc=False)
 
+    def active(self):
+        """Active characters (not retired or deceased)"""
+        return self.filter(status__in=["Un", "Sub", "App"])
+
+    def retired(self):
+        """Retired characters"""
+        return self.filter(status="Ret")
+
+    def deceased(self):
+        """Deceased characters"""
+        return self.filter(status="Dec")
+
     def with_group_ordering(self):
         """
         Annotate characters with first group membership and apply standard ordering.
@@ -52,6 +64,22 @@ class CharacterQuerySet(ModelQuerySet):
             .select_related("chronicle", "owner")
             .order_by("name")
         )
+
+    def at_freebie_step(self):
+        """
+        Characters at their freebie spending step.
+
+        This filters characters where creation_status equals their class's freebie_step.
+        Since freebie_step varies by character type, we need to check each instance.
+        Returns a filtered queryset (evaluated, but still a queryset).
+        """
+        # Get all IDs where creation_status == freebie_step
+        matching_ids = [
+            char.id for char in self
+            if hasattr(char, 'creation_status') and hasattr(char, 'freebie_step')
+            and char.creation_status == char.freebie_step
+        ]
+        return self.filter(id__in=matching_ids)
 
 
 # Create CharacterManager from the QuerySet to expose all QuerySet methods on the manager
