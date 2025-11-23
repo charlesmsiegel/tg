@@ -130,7 +130,12 @@ class PermissionManager:
             roles.add(Role.OWNER)
         elif hasattr(obj, "user") and obj.user == user:
             roles.add(Role.OWNER)
-        elif hasattr(obj, "owned_by") and obj.owned_by and hasattr(obj.owned_by, "owner") and obj.owned_by.owner == user:
+        elif (
+            hasattr(obj, "owned_by")
+            and obj.owned_by
+            and hasattr(obj.owned_by, "owner")
+            and obj.owned_by.owner == user
+        ):
             # For locations/items owned through characters
             roles.add(Role.OWNER)
 
@@ -150,6 +155,7 @@ class PermissionManager:
 
             # Player check - user has a character in same chronicle
             from characters.models.core.character import Character
+
             if Character.objects.filter(owner=user, chronicle=obj.chronicle).exists():
                 roles.add(Role.PLAYER)
 

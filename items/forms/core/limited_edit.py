@@ -8,7 +8,6 @@ Only Chronicle Head STs and Admins can directly edit mechanical fields.
 """
 
 from django import forms
-
 from items.models.core.item import ItemModel
 
 
@@ -29,22 +28,26 @@ class LimitedItemEditForm(forms.ModelForm):
     class Meta:
         model = ItemModel
         fields = [
-            'description',
-            'public_info',
-            'image',
+            "description",
+            "public_info",
+            "image",
         ]
         widgets = {
-            'description': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Item description, appearance, history...'
-            }),
-            'public_info': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Information visible to other players...'
-            }),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Item description, appearance, history...",
+                }
+            ),
+            "public_info": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Information visible to other players...",
+                }
+            ),
         }
         help_texts = {
-            'description': 'Detailed description of the item',
-            'public_info': 'Information other players can see about this item',
-            'image': 'Item image (will require ST approval)',
+            "description": "Detailed description of the item",
+            "public_info": "Information other players can see about this item",
+            "image": "Item image (will require ST approval)",
         }

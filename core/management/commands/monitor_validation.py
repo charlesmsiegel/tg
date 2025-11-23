@@ -17,11 +17,12 @@ Usage:
 
 import json
 from datetime import datetime, timedelta
+
+from characters.models.core.character import Character
+from characters.models.core.human import Human
 from django.core.management.base import BaseCommand
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
-from characters.models.core.character import Character
-from characters.models.core.human import Human
 from game.models import Scene
 
 
@@ -58,7 +59,7 @@ class Command(BaseCommand):
         metrics = {
             "timestamp": timezone.now().isoformat(),
             "period_hours": period_hours,
-            "checks": {}
+            "checks": {},
         }
 
         # Run all checks
@@ -104,9 +105,15 @@ class Command(BaseCommand):
         """Count characters with attributes outside valid range."""
         count = 0
         attributes = [
-            "strength", "dexterity", "stamina",
-            "perception", "intelligence", "wits",
-            "charisma", "manipulation", "appearance"
+            "strength",
+            "dexterity",
+            "stamina",
+            "perception",
+            "intelligence",
+            "wits",
+            "charisma",
+            "manipulation",
+            "appearance",
         ]
 
         for attr in attributes:
@@ -120,10 +127,25 @@ class Command(BaseCommand):
         """Count characters with abilities outside valid range."""
         count = 0
         abilities = [
-            "alertness", "athletics", "brawl", "empathy", "expression",
-            "intimidation", "streetwise", "subterfuge",
-            "crafts", "drive", "etiquette", "firearms", "melee", "stealth",
-            "academics", "computer", "investigation", "medicine", "science"
+            "alertness",
+            "athletics",
+            "brawl",
+            "empathy",
+            "expression",
+            "intimidation",
+            "streetwise",
+            "subterfuge",
+            "crafts",
+            "drive",
+            "etiquette",
+            "firearms",
+            "melee",
+            "stealth",
+            "academics",
+            "computer",
+            "investigation",
+            "medicine",
+            "science",
         ]
 
         for ability in abilities:
@@ -241,21 +263,13 @@ class Command(BaseCommand):
 
     def display_report(self, metrics):
         """Display human-readable report."""
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
-        self.stdout.write(
-            self.style.SUCCESS("Validation System Health Report")
-        )
-        self.stdout.write(
-            self.style.SUCCESS(f"Generated: {metrics['timestamp']}")
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
+        self.stdout.write(self.style.SUCCESS("Validation System Health Report"))
+        self.stdout.write(self.style.SUCCESS(f"Generated: {metrics['timestamp']}"))
         self.stdout.write(
             self.style.SUCCESS(f"Period: Last {metrics['period_hours']} hours")
         )
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
         self.stdout.write("")
 
         # Overall status
@@ -283,15 +297,25 @@ class Command(BaseCommand):
                 self.style.WARNING(f"   ⚠ {integrity['total']} issues detected:")
             )
             if integrity["negative_xp"] > 0:
-                self.stdout.write(f"     - {integrity['negative_xp']} characters with negative XP")
+                self.stdout.write(
+                    f"     - {integrity['negative_xp']} characters with negative XP"
+                )
             if integrity["invalid_status"] > 0:
-                self.stdout.write(f"     - {integrity['invalid_status']} characters with invalid status")
+                self.stdout.write(
+                    f"     - {integrity['invalid_status']} characters with invalid status"
+                )
             if integrity["attributes_out_of_range"] > 0:
-                self.stdout.write(f"     - {integrity['attributes_out_of_range']} attribute violations")
+                self.stdout.write(
+                    f"     - {integrity['attributes_out_of_range']} attribute violations"
+                )
             if integrity["abilities_out_of_range"] > 0:
-                self.stdout.write(f"     - {integrity['abilities_out_of_range']} ability violations")
+                self.stdout.write(
+                    f"     - {integrity['abilities_out_of_range']} ability violations"
+                )
             if integrity["willpower_violations"] > 0:
-                self.stdout.write(f"     - {integrity['willpower_violations']} willpower violations")
+                self.stdout.write(
+                    f"     - {integrity['willpower_violations']} willpower violations"
+                )
         self.stdout.write("")
 
         # XP Activity
@@ -324,21 +348,15 @@ class Command(BaseCommand):
             self.stdout.write(f"     - {status}: {count}")
         self.stdout.write("")
 
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
 
         # Recommendations
         if not integrity["healthy"]:
-            self.stdout.write(
-                self.style.WARNING("\nRecommendations:")
-            )
+            self.stdout.write(self.style.WARNING("\nRecommendations:"))
             self.stdout.write(
                 "   - Run: python manage.py validate_data_integrity --fix"
             )
-            self.stdout.write(
-                "   - Review recent data changes for source of issues"
-            )
+            self.stdout.write("   - Review recent data changes for source of issues")
 
     def send_alerts(self, metrics):
         """Send alerts for degraded health."""
@@ -363,9 +381,7 @@ Run to fix:
     python manage.py validate_data_integrity --fix
 """
 
-        self.stdout.write(
-            self.style.ERROR("\n[ALERT] " + alert_message)
-        )
+        self.stdout.write(self.style.ERROR("\n[ALERT] " + alert_message))
 
         # TODO: Implement actual alerting mechanism
         # - Send email via Django's send_mail()

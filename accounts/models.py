@@ -4,14 +4,7 @@ from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from game.models import (
-    Journal,
-    Scene,
-    Story,
-    STRelationship,
-    Week,
-    WeeklyXPRequest,
-)
+from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
 from items.models.core.item import ItemModel
 from locations.models.core.location import LocationModel
 

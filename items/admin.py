@@ -1,4 +1,5 @@
 from django.contrib import admin
+from items.models.changeling import Treasure
 from items.models.core import (
     ItemModel,
     Material,
@@ -8,13 +9,12 @@ from items.models.core import (
     ThrownWeapon,
     Weapon,
 )
+from items.models.demon import Relic
 from items.models.mage import Charm, Wonder, WonderResonanceRating
 from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 from items.models.mage.talisman import Talisman
-from items.models.changeling import Treasure
-from items.models.demon import Relic
 from items.models.vampire import Bloodstone, VampireArtifact
 from items.models.werewolf.fetish import Fetish
 from items.models.wraith import WraithArtifact, WraithRelic
@@ -88,7 +88,8 @@ from items.models.demon.relic import Relic
 class RelicAdmin(admin.ModelAdmin):
     list_display = ("name", "relic_type", "complexity", "house", "difficulty")
     list_filter = ("relic_type", "house")
-    
+
+
 # Wraith items
 @admin.register(WraithRelic)
 class WraithRelicAdmin(admin.ModelAdmin):

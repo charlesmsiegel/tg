@@ -9,12 +9,12 @@ Usage:
     python manage.py validate_data_integrity        # Report only
 """
 
-from django.core.management.base import BaseCommand
-from django.db.models import F, Q
+from accounts.models import Profile
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from django.core.management.base import BaseCommand
+from django.db.models import F, Q
 from game.models import Scene, STRelationship
-from accounts.models import Profile
 
 
 class Command(BaseCommand):
@@ -36,15 +36,9 @@ class Command(BaseCommand):
         fix = options["fix"]
         verbose = options["verbose"]
 
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
-        self.stdout.write(
-            self.style.SUCCESS("Data Integrity Validation Report")
-        )
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
+        self.stdout.write(self.style.SUCCESS("Data Integrity Validation Report"))
+        self.stdout.write(self.style.SUCCESS("=" * 70))
         self.stdout.write("")
 
         total_issues = 0
@@ -75,13 +69,9 @@ class Command(BaseCommand):
 
         # Summary
         self.stdout.write("")
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS("✓ No data integrity issues found!")
-            )
+            self.stdout.write(self.style.SUCCESS("✓ No data integrity issues found!"))
             self.stdout.write(
                 self.style.SUCCESS("Database is ready for validation constraints.")
             )
@@ -91,21 +81,21 @@ class Command(BaseCommand):
             )
             if fix:
                 self.stdout.write(
-                    self.style.SUCCESS("Issues have been automatically fixed where possible.")
+                    self.style.SUCCESS(
+                        "Issues have been automatically fixed where possible."
+                    )
                 )
             else:
                 self.stdout.write(
-                    self.style.WARNING("Run with --fix flag to automatically fix issues.")
+                    self.style.WARNING(
+                        "Run with --fix flag to automatically fix issues."
+                    )
                 )
-        self.stdout.write(
-            self.style.SUCCESS("=" * 70)
-        )
+        self.stdout.write(self.style.SUCCESS("=" * 70))
 
     def check_negative_xp(self, fix, verbose):
         """Check for characters with negative XP."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n1. Checking for negative XP...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n1. Checking for negative XP..."))
 
         negative_xp_chars = Character.objects.filter(xp__lt=0)
         count = negative_xp_chars.count()
@@ -141,7 +131,9 @@ class Command(BaseCommand):
         count = invalid_status_chars.count()
 
         if count == 0:
-            self.stdout.write(self.style.SUCCESS("   ✓ All characters have valid status"))
+            self.stdout.write(
+                self.style.SUCCESS("   ✓ All characters have valid status")
+            )
             return 0
 
         self.stdout.write(
@@ -158,7 +150,9 @@ class Command(BaseCommand):
             # Set invalid statuses to 'Un' (Unfinished) as safe default
             updated = invalid_status_chars.update(status="Un")
             self.stdout.write(
-                self.style.SUCCESS(f"   → Fixed {updated} characters (set status to 'Un')")
+                self.style.SUCCESS(
+                    f"   → Fixed {updated} characters (set status to 'Un')"
+                )
             )
 
         return count
@@ -170,9 +164,15 @@ class Command(BaseCommand):
         )
 
         attributes = [
-            "strength", "dexterity", "stamina",
-            "perception", "intelligence", "wits",
-            "charisma", "manipulation", "appearance"
+            "strength",
+            "dexterity",
+            "stamina",
+            "perception",
+            "intelligence",
+            "wits",
+            "charisma",
+            "manipulation",
+            "appearance",
         ]
 
         total_issues = 0
@@ -191,29 +191,29 @@ class Command(BaseCommand):
             if low_count > 0:
                 total_issues += low_count
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"   ✗ {low_count} characters with {attr} < 1"
-                    )
+                    self.style.WARNING(f"   ✗ {low_count} characters with {attr} < 1")
                 )
                 if fix:
                     update_kwargs = {attr: 1}
                     low_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(f"     → Fixed {low_count} characters (set to 1)")
+                        self.style.SUCCESS(
+                            f"     → Fixed {low_count} characters (set to 1)"
+                        )
                     )
 
             if high_count > 0:
                 total_issues += high_count
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"   ✗ {high_count} characters with {attr} > 10"
-                    )
+                    self.style.WARNING(f"   ✗ {high_count} characters with {attr} > 10")
                 )
                 if fix:
                     update_kwargs = {attr: 10}
                     high_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(f"     → Fixed {high_count} characters (set to 10)")
+                        self.style.SUCCESS(
+                            f"     → Fixed {high_count} characters (set to 10)"
+                        )
                     )
 
         if total_issues == 0:
@@ -231,12 +231,25 @@ class Command(BaseCommand):
 
         # Get all ability field names from Human model
         abilities = [
-            "alertness", "athletics", "brawl", "empathy", "expression",
-            "intimidation", "streetwise", "subterfuge",
-            "crafts", "drive", "etiquette", "firearms", "melee",
+            "alertness",
+            "athletics",
+            "brawl",
+            "empathy",
+            "expression",
+            "intimidation",
+            "streetwise",
+            "subterfuge",
+            "crafts",
+            "drive",
+            "etiquette",
+            "firearms",
+            "melee",
             "stealth",
-            "academics", "computer", "investigation", "medicine",
-            "science"
+            "academics",
+            "computer",
+            "investigation",
+            "medicine",
+            "science",
         ]
 
         total_issues = 0
@@ -263,7 +276,9 @@ class Command(BaseCommand):
                     update_kwargs = {ability: 0}
                     low_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(f"     → Fixed {low_count} characters (set to 0)")
+                        self.style.SUCCESS(
+                            f"     → Fixed {low_count} characters (set to 0)"
+                        )
                     )
 
             if high_count > 0:
@@ -277,7 +292,9 @@ class Command(BaseCommand):
                     update_kwargs = {ability: 10}
                     high_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(f"     → Fixed {high_count} characters (set to 10)")
+                        self.style.SUCCESS(
+                            f"     → Fixed {high_count} characters (set to 10)"
+                        )
                     )
 
         if total_issues == 0:
@@ -363,17 +380,13 @@ class Command(BaseCommand):
                 )
 
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All willpower values valid")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All willpower values valid"))
 
         return total_issues
 
     def check_age_constraints(self, fix, verbose):
         """Check age constraints."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n6. Checking age constraints...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n6. Checking age constraints..."))
 
         total_issues = 0
 
@@ -409,7 +422,9 @@ class Command(BaseCommand):
             count = negative_apparent.count()
             total_issues += count
             self.stdout.write(
-                self.style.WARNING(f"   ✗ {count} characters with negative apparent age")
+                self.style.WARNING(
+                    f"   ✗ {count} characters with negative apparent age"
+                )
             )
             if fix:
                 negative_apparent.update(apparent_age=None)
@@ -426,9 +441,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 200)"))
 
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All age values valid")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All age values valid"))
 
         return total_issues
 
@@ -450,9 +463,7 @@ class Command(BaseCommand):
         count = duplicates.count()
 
         if count == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ No duplicate ST relationships")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ No duplicate ST relationships"))
             return 0
 
         self.stdout.write(
@@ -479,30 +490,26 @@ class Command(BaseCommand):
                     first = instances.first()
                     deleted = instances.exclude(pk=first.pk).delete()[0]
                     self.stdout.write(
-                        self.style.SUCCESS(f"     → Kept 1, deleted {deleted} duplicates")
+                        self.style.SUCCESS(
+                            f"     → Kept 1, deleted {deleted} duplicates"
+                        )
                     )
 
         return count
 
     def check_scene_xp_integrity(self, fix, verbose):
         """Check for scenes with inconsistent XP state."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n8. Checking scene XP integrity...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n8. Checking scene XP integrity..."))
 
         # This is more of an informational check - we can't automatically fix this
         scenes_with_xp_given = Scene.objects.filter(xp_given=True).count()
         scenes_without_xp = Scene.objects.filter(finished=True, xp_given=False).count()
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"   ℹ {scenes_with_xp_given} scenes have XP awarded"
-            )
+            self.style.SUCCESS(f"   ℹ {scenes_with_xp_given} scenes have XP awarded")
         )
         self.stdout.write(
-            self.style.SUCCESS(
-                f"   ℹ {scenes_without_xp} finished scenes awaiting XP"
-            )
+            self.style.SUCCESS(f"   ℹ {scenes_without_xp} finished scenes awaiting XP")
         )
 
         # No issues to report - this is informational only

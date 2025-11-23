@@ -483,8 +483,12 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     def form_valid(self, form):
         # Check that user owns the character
         if form.character.owner != self.request.user:
-            messages.error(self.request, "You can only submit requests for your own characters.")
-            raise PermissionDenied("You can only submit requests for your own characters")
+            messages.error(
+                self.request, "You can only submit requests for your own characters."
+            )
+            raise PermissionDenied(
+                "You can only submit requests for your own characters"
+            )
 
         # Check if request already exists
         if WeeklyXPRequest.objects.filter(
@@ -492,7 +496,7 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         ).exists():
             messages.error(
                 self.request,
-                f"XP request already exists for {form.character.name} for this week."
+                f"XP request already exists for {form.character.name} for this week.",
             )
             return redirect("game:week:detail", pk=form.week.pk)
 
@@ -533,11 +537,13 @@ class WeeklyXPRequestApproveView(StorytellerRequiredMixin, View):
             messages.success(
                 request,
                 f"XP request for {xp_request.character.name} approved successfully! "
-                f"{form.instance.total_xp()} XP awarded."
+                f"{form.instance.total_xp()} XP awarded.",
             )
             return redirect("game:week:detail", pk=xp_request.week.pk)
         else:
-            messages.error(request, "Failed to approve XP request. Please check the form.")
+            messages.error(
+                request, "Failed to approve XP request. Please check the form."
+            )
             return redirect("game:weekly_xp_request:detail", pk=xp_request.pk)
 
 

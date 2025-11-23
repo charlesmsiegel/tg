@@ -8,9 +8,9 @@ from characters.models.mage.focus import (
     SpecializedPractice,
     Tenet,
 )
+from core.mixins import MessageMixin
 from core.utils import display_queryset
 from core.views.generic import DictView
-from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 

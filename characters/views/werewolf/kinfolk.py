@@ -21,11 +21,11 @@ from characters.views.werewolf.wtahuman import (
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
@@ -293,7 +293,10 @@ class KinfolkBackgroundsView(HumanBackgroundsView):
                     f.add_error("bg", "Bone Gnawers may not purchase Pure Breed")
                     return super().form_invalid(form)
                 if bg_name == "resources" and rating > 3:
-                    f.add_error("rating", "Bone Gnawers may not purchase more than 3 dots of Resources")
+                    f.add_error(
+                        "rating",
+                        "Bone Gnawers may not purchase more than 3 dots of Resources",
+                    )
                     return super().form_invalid(form)
 
             # Glass Walkers: No Pure Breed or Mentor
@@ -317,35 +320,46 @@ class KinfolkBackgroundsView(HumanBackgroundsView):
             # Silent Striders: Resources capped at 3
             if tribe_name == "Silent Striders":
                 if bg_name == "resources" and rating > 3:
-                    f.add_error("rating", "Silent Striders may not purchase more than 3 dots of Resources")
+                    f.add_error(
+                        "rating",
+                        "Silent Striders may not purchase more than 3 dots of Resources",
+                    )
                     return super().form_invalid(form)
 
             # Stargazers: Resources capped at 3
             if tribe_name == "Stargazers":
                 if bg_name == "resources" and rating > 3:
-                    f.add_error("rating", "Stargazers may not purchase more than 3 dots of Resources")
+                    f.add_error(
+                        "rating",
+                        "Stargazers may not purchase more than 3 dots of Resources",
+                    )
                     return super().form_invalid(form)
 
             # Wendigo: Resources capped at 3
             if tribe_name == "Wendigo":
                 if bg_name == "resources" and rating > 3:
-                    f.add_error("rating", "Wendigo may not purchase more than 3 dots of Resources")
+                    f.add_error(
+                        "rating",
+                        "Wendigo may not purchase more than 3 dots of Resources",
+                    )
                     return super().form_invalid(form)
 
         # Silver Fangs: Must have at least 1 Pure Breed
         # Check after all forms have been validated
         if tribe_name == "Silver Fangs":
             pure_breed_found = any(
-                form_item.cleaned_data.get("bg") and
-                form_item.cleaned_data["bg"].property_name == "pure_breed" and
-                form_item.cleaned_data.get("rating", 0) >= 1
+                form_item.cleaned_data.get("bg")
+                and form_item.cleaned_data["bg"].property_name == "pure_breed"
+                and form_item.cleaned_data.get("rating", 0) >= 1
                 for form_item in form
                 if "bg" in form_item.cleaned_data and "rating" in form_item.cleaned_data
             )
             if not pure_breed_found:
                 # Add error to the first form in the formset
                 if len(form.forms) > 0:
-                    form.forms[0].add_error(None, "Silver Fangs must purchase at least 1 dot of Pure Breed")
+                    form.forms[0].add_error(
+                        None, "Silver Fangs must purchase at least 1 dot of Pure Breed"
+                    )
                 return super().form_invalid(form)
 
         # All tribal restrictions passed, use parent validation

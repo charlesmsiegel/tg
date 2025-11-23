@@ -1,9 +1,4 @@
-from .thorn import (
-    ThornCreateView,
-    ThornDetailView,
-    ThornListView,
-    ThornUpdateView,
-)
+from .thorn import ThornCreateView, ThornDetailView, ThornListView, ThornUpdateView
 from .wraith_chargen import (
     WraithAbilityView,
     WraithAlliesView,

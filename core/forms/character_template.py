@@ -1,7 +1,6 @@
+from core.models import CharacterTemplate
 from django import forms
 from django.conf import settings
-
-from core.models import CharacterTemplate
 
 
 class CharacterTemplateForm(forms.ModelForm):
@@ -39,7 +38,10 @@ class CharacterTemplateForm(forms.ModelForm):
                 }
             ),
             "concept": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "e.g., Hacker, Detective"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "e.g., Hacker, Detective",
+                }
             ),
             "faction": forms.TextInput(
                 attrs={
@@ -48,7 +50,11 @@ class CharacterTemplateForm(forms.ModelForm):
                 }
             ),
             "description": forms.Textarea(
-                attrs={"class": "form-control", "rows": 4, "placeholder": "Template description and background"}
+                attrs={
+                    "class": "form-control",
+                    "rows": 4,
+                    "placeholder": "Template description and background",
+                }
             ),
             "basic_info": forms.Textarea(
                 attrs={

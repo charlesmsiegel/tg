@@ -259,9 +259,7 @@ class CharacterTemplateImportView(
             messages.error(self.request, "Invalid JSON file. Please check the format.")
             return self.form_invalid(form)
         except Exception as e:
-            messages.error(
-                self.request, f"Error importing template: {str(e)}"
-            )
+            messages.error(self.request, f"Error importing template: {str(e)}")
             return self.form_invalid(form)
 
 
@@ -307,9 +305,7 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
             return redirect(character.get_absolute_url())
 
         except Exception as e:
-            messages.error(
-                request, f"Error creating NPC from template: {str(e)}"
-            )
+            messages.error(request, f"Error creating NPC from template: {str(e)}")
             return redirect("core:character_template_detail", pk=template.pk)
 
     def get_character_model(self, template):

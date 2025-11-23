@@ -10,20 +10,16 @@ Tests cover the testing checklist from VIEW_TEMPLATE_MIGRATION_GUIDE.md:
 - No regressions in existing functionality
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
+from characters.models.core.character import Character
+from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
-
-from characters.models.core.character import Character
-from characters.models.core.human import Human
-from game.models import (
-    XPSpendingRequest,
-    FreebieSpendingRecord,
-    Chronicle,
-)
+from game.models import Chronicle, FreebieSpendingRecord, XPSpendingRequest
 
 
 @pytest.mark.django_db
@@ -87,9 +83,7 @@ class TestXPSpendingRequest:
 
     def test_approve_xp_request(self):
         """Test approving an XP spending request."""
-        request = self.char.create_xp_spending_request(
-            "Alertness", "ability", 3, 6
-        )
+        request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
 
         # Approve it
         approved_request = self.char.approve_xp_request(request.id, self.user)
@@ -104,9 +98,7 @@ class TestXPSpendingRequest:
 
     def test_deny_xp_request(self):
         """Test denying an XP spending request."""
-        request = self.char.create_xp_spending_request(
-            "Alertness", "ability", 3, 6
-        )
+        request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
 
         # Deny it
         denied_request = self.char.deny_xp_request(request.id, self.user)
@@ -117,9 +109,7 @@ class TestXPSpendingRequest:
 
     def test_approve_already_approved_request_fails(self):
         """Test that approving an already approved request fails."""
-        request = self.char.create_xp_spending_request(
-            "Alertness", "ability", 3, 6
-        )
+        request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
         self.char.approve_xp_request(request.id, self.user)
 
         # Try to approve again
@@ -140,9 +130,7 @@ class TestXPSpendingRequest:
 
     def test_xp_spending_request_string_representation(self):
         """Test XPSpendingRequest __str__ method."""
-        request = self.char.create_xp_spending_request(
-            "Alertness", "ability", 3, 6
-        )
+        request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
         expected = f"{self.char.name} - Alertness (6 XP) - Pending"
         assert str(request) == expected
 

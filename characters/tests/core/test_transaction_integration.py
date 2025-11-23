@@ -50,7 +50,7 @@ class TestConcurrentXPSpending:
                     trait_name=trait_name,
                     trait_display=trait_name.title(),
                     cost=cost,
-                    category="test"
+                    category="test",
                 )
                 successful_spends.append(record)
             except ValidationError as e:
@@ -60,12 +60,10 @@ class TestConcurrentXPSpending:
 
         # Create two threads that try to spend 6 XP each from a pool of 10
         thread1 = threading.Thread(
-            target=spend_xp_thread,
-            args=(character.pk, 6, "test1")
+            target=spend_xp_thread, args=(character.pk, 6, "test1")
         )
         thread2 = threading.Thread(
-            target=spend_xp_thread,
-            args=(character.pk, 6, "test2")
+            target=spend_xp_thread, args=(character.pk, 6, "test2")
         )
 
         # Start both threads nearly simultaneously
@@ -110,7 +108,7 @@ class TestConcurrentXPSpending:
                     trait_name=trait_name,
                     trait_display=trait_name.title(),
                     cost=cost,
-                    category="test"
+                    category="test",
                 )
                 successful_spends.append(record)
             except ValidationError as e:
@@ -120,8 +118,7 @@ class TestConcurrentXPSpending:
         threads = []
         for i in range(5):
             thread = threading.Thread(
-                target=spend_xp_thread,
-                args=(character.pk, 3, f"test{i}")
+                target=spend_xp_thread, args=(character.pk, 3, f"test{i}")
             )
             threads.append(thread)
             thread.start()
@@ -157,7 +154,7 @@ class TestConcurrentXPSpending:
                     trait_name=trait_name,
                     trait_display=trait_name.title(),
                     cost=cost,
-                    category="test"
+                    category="test",
                 )
                 successful_spends.append(record)
             except ValidationError as e:
@@ -167,8 +164,7 @@ class TestConcurrentXPSpending:
         threads = []
         for i in range(5):
             thread = threading.Thread(
-                target=spend_xp_thread,
-                args=(character.pk, 4, f"test{i}")
+                target=spend_xp_thread, args=(character.pk, 4, f"test{i}")
             )
             threads.append(thread)
             thread.start()
@@ -203,10 +199,7 @@ class TestApproveXPSpendRollback:
 
         # Spend XP
         record = character.spend_xp(
-            trait_name="test_trait",
-            trait_display="Test Trait",
-            cost=5,
-            category="test"
+            trait_name="test_trait", trait_display="Test Trait", cost=5, category="test"
         )
 
         # Try to approve with a non-existent trait property
@@ -244,7 +237,7 @@ class TestApproveXPSpendRollback:
             trait_name="strength",
             trait_display="Strength",
             cost=5,
-            category="attributes"
+            category="attributes",
         )
 
         # Try to approve with invalid value (strength > 10)
@@ -276,14 +269,12 @@ class TestApproveXPSpendRollback:
             trait_name="strength",
             trait_display="Strength",
             cost=5,
-            category="attributes"
+            category="attributes",
         )
 
         # Approve successfully
         result = human.approve_xp_spend(
-            spend_index=0,
-            trait_property_name="strength",
-            new_value=4
+            spend_index=0, trait_property_name="strength", new_value=4
         )
 
         # Verify both changes persisted
@@ -306,7 +297,7 @@ class TestApproveXPSpendRollback:
             trait_name="strength",
             trait_display="Strength",
             cost=5,
-            category="attributes"
+            category="attributes",
         )
 
         errors = []
@@ -318,9 +309,7 @@ class TestApproveXPSpendRollback:
                 connection.close()
                 char = Human.objects.get(pk=char_id)
                 result = char.approve_xp_spend(
-                    spend_index=spend_index,
-                    trait_property_name="strength",
-                    new_value=4
+                    spend_index=spend_index, trait_property_name="strength", new_value=4
                 )
                 successful_approvals.append(result)
             except ValidationError as e:
@@ -457,6 +446,7 @@ class TestAwardXPAtomicity:
 
                 # Convert character IDs back to objects for the thread
                 from characters.models import Character
+
                 thread_awards = {}
                 for char_id, should_award in awards_dict.items():
                     char = Character.objects.get(pk=char_id)
@@ -469,11 +459,17 @@ class TestAwardXPAtomicity:
                 errors.append(e)
 
         # Convert awards to use IDs for thread safety
-        awards_with_ids = {char.pk: should_award for char, should_award in awards.items()}
+        awards_with_ids = {
+            char.pk: should_award for char, should_award in awards.items()
+        }
 
         # Two threads try to award XP
-        thread1 = threading.Thread(target=award_thread, args=(scene.pk, awards_with_ids))
-        thread2 = threading.Thread(target=award_thread, args=(scene.pk, awards_with_ids))
+        thread1 = threading.Thread(
+            target=award_thread, args=(scene.pk, awards_with_ids)
+        )
+        thread2 = threading.Thread(
+            target=award_thread, args=(scene.pk, awards_with_ids)
+        )
 
         thread1.start()
         thread2.start()
@@ -551,12 +547,10 @@ class TestSelectForUpdateLocking:
         # Thread 1 locks and holds for 0.5 seconds
         # Thread 2 tries to lock immediately but must wait
         thread1 = threading.Thread(
-            target=modify_with_lock,
-            args=(character.pk, "first", 0.5)
+            target=modify_with_lock, args=(character.pk, "first", 0.5)
         )
         thread2 = threading.Thread(
-            target=modify_with_lock,
-            args=(character.pk, "second", 0.1)
+            target=modify_with_lock, args=(character.pk, "second", 0.1)
         )
 
         thread1.start()
@@ -637,7 +631,7 @@ class TestTransactionIntegrityScenarios:
                 trait_name="strength",
                 trait_display="Strength",
                 cost=5,
-                category="attributes"
+                category="attributes",
             )
 
         human.refresh_from_db()
@@ -648,9 +642,7 @@ class TestTransactionIntegrityScenarios:
         # Approve XP
         with transaction.atomic():
             result = human.approve_xp_spend(
-                spend_index=0,
-                trait_property_name="strength",
-                new_value=4
+                spend_index=0, trait_property_name="strength", new_value=4
             )
 
         human.refresh_from_db()

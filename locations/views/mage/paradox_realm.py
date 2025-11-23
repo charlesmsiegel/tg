@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 from locations.forms.mage.paradox_realm import ParadoxRealmForm
-from locations.models.mage import ParadoxRealm, ParadoxObstacle, ParadoxAtmosphere
+from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
 
 
 class ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
@@ -17,9 +17,7 @@ class ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
         context["obstacles"] = ParadoxObstacle.objects.filter(
             realm=self.object
         ).order_by("order")
-        context["atmospheres"] = ParadoxAtmosphere.objects.filter(
-            realm=self.object
-        )
+        context["atmospheres"] = ParadoxAtmosphere.objects.filter(realm=self.object)
         return context
 
 
@@ -51,11 +49,11 @@ class ParadoxRealmUpdateView(EditPermissionMixin, FormView):
     error_message = "Failed to update paradox realm. Please correct the errors below."
 
     def get_object(self):
-        return ParadoxRealm.objects.get(pk=self.kwargs['pk'])
+        return ParadoxRealm.objects.get(pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['instance'] = self.get_object()
+        kwargs["instance"] = self.get_object()
         return kwargs
 
     def form_valid(self, form):

@@ -39,6 +39,7 @@ from core.forms.language import HumanLanguageForm
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
@@ -46,7 +47,6 @@ from core.mixins import (
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
 from core.views.generic import MultipleFormsetsMixin
-from core.mixins import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q

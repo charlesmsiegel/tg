@@ -4,9 +4,9 @@ Extracts characters, items, locations, and concepts from the story
 where a writer creates a pocket realm and discovers magick
 """
 
-from core.models import Book, CharacterTemplate
-from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.mage import Mage
+from characters.models.mage.mtahuman import MtAHuman
+from core.models import Book, CharacterTemplate
 
 # Create the book source
 book = Book.objects.get_or_create(
@@ -59,7 +59,10 @@ ron_church = CharacterTemplate.objects.get_or_create(
             "linguistics": 1,
         },
         "backgrounds": [
-            {"name": "Avatar", "rating": 5},  # Extremely powerful - creates whole worlds
+            {
+                "name": "Avatar",
+                "rating": 5,
+            },  # Extremely powerful - creates whole worlds
             {"name": "Resources", "rating": 3},  # Bestselling author
             {"name": "Contacts", "rating": 2},
         ],
@@ -161,7 +164,11 @@ tun_tzu = CharacterTemplate.objects.get_or_create(
         "languages": ["Ancient dialect", "English (learned)"],
         "equipment": "White and blue robes, bare feet, luira tree seeds",
         "merits_and_flaws": [
-            {"name": "Burning Avatar", "rating": 5, "type": "flaw"},  # Burned out of home reality
+            {
+                "name": "Burning Avatar",
+                "rating": 5,
+                "type": "flaw",
+            },  # Burned out of home reality
             {"name": "Sphere Natural (Spirit)", "rating": 5, "type": "merit"},
         ],
         "notes": "One of six sages from a bamboo grove in the pocket realm. Attempted to free 'the Zorn' from his paradigm restrictions. Burned out all his Quintessence and was pulled into Ron's world, then into Ron's mind. Served as psychic conductor for Ron's Awakening. Eventually given new story by meta-author John.",
@@ -241,9 +248,17 @@ max_zorn = CharacterTemplate.objects.get_or_create(
         "languages": ["Anglian (English equivalent)"],
         "equipment": "Navy blue Inquisitor uniform, Benton automatic pistol, Department of Orthodoxy badge",
         "merits_and_flaws": [
-            {"name": "Charmed Existence", "rating": 5, "type": "merit"},  # Survives impossible situations
+            {
+                "name": "Charmed Existence",
+                "rating": 5,
+                "type": "merit",
+            },  # Survives impossible situations
             {"name": "Nightmares", "rating": 1, "type": "flaw"},
-            {"name": "Dark Secret", "rating": 3, "type": "flaw"},  # Prays directly to Creator
+            {
+                "name": "Dark Secret",
+                "rating": 3,
+                "type": "flaw",
+            },  # Prays directly to Creator
         ],
         "notes": "Hero of 'Death on the Tower' novel. Defeated terrorist Kroaker atop Anglopolis Tower. Began spiritual quest after trauma, contacted his Creator (Ron) directly, violating Theocratic Orthodoxy. Hunted by Department of Orthodoxy, briefly allied with ALF under Brady Trimmerhorn. Unified with Ron during Ron's Awakening, becoming one being across two realities.",
         "suggested_freebie_spending": {
@@ -322,7 +337,11 @@ irene_agent = CharacterTemplate.objects.get_or_create(
         "equipment": "Dream scanner, snub-nosed .38 revolver, encrypted smartphone, banking access codes, mild tranquilizers",
         "merits_and_flaws": [
             {"name": "Natural Linguist", "rating": 2, "type": "merit"},
-            {"name": "Deep Sleeper", "rating": 1, "type": "flaw"},  # Technocracy conditioning
+            {
+                "name": "Deep Sleeper",
+                "rating": 1,
+                "type": "flaw",
+            },  # Technocracy conditioning
         ],
         "notes": "Posed as Ron Church's girlfriend while monitoring his unconscious creation of a pocket realm. Used elaborate cover including spouting conspiracy theories. Ultimately tried to kill Ron mercifully rather than let Technocracy vivisect him. Killed by Ron's Awakening backlash.",
         "suggested_freebie_spending": {
@@ -1050,9 +1069,9 @@ print("  from fiction made real. Zorn experienced this.")
 print("- Creator's Favorite (5pt Merit) - As protagonist, survive")
 print("  impossible situations. Zorn had this until Ron lost control.")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("Tower of Babel extraction complete!")
-print("="*70)
+print("=" * 70)
 print("\nThis meta-fictional novel explores Mage: The Ascension themes of:")
 print("- Consensus vs. dynamic reality")
 print("- The Technocracy's control through stasis")

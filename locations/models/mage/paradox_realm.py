@@ -1,4 +1,5 @@
 import random
+
 from django.db import models
 from django.urls import reverse
 from locations.models.mage.realm import HorizonRealm
@@ -54,13 +55,14 @@ class ParadoxRealm(HorizonRealm):
     They strip the character of their magick and equipment, leaving only wits to
     overcome trials.
     """
+
     type = "paradox_realm"
 
     primary_sphere = models.CharField(
         max_length=20,
         choices=SphereChoices.choices,
         default=SphereChoices.CORRESPONDENCE,
-        help_text="The sphere that created the greatest buildup of paradox"
+        help_text="The sphere that created the greatest buildup of paradox",
     )
 
     secondary_sphere = models.CharField(
@@ -68,14 +70,14 @@ class ParadoxRealm(HorizonRealm):
         choices=SphereChoices.choices,
         blank=True,
         null=True,
-        help_text="Optional second sphere for combined-sphere realms"
+        help_text="Optional second sphere for combined-sphere realms",
     )
 
     paradigm = models.CharField(
         max_length=50,
         choices=ParadigmChoices.choices,
         default=ParadigmChoices.ANTIMAGICK,
-        help_text="How the paradox realm interprets how reality 'should' be"
+        help_text="How the paradox realm interprets how reality 'should' be",
     )
 
     secondary_paradigm = models.CharField(
@@ -83,36 +85,32 @@ class ParadoxRealm(HorizonRealm):
         choices=ParadigmChoices.choices,
         blank=True,
         null=True,
-        help_text="Optional second paradigm for combined-paradigm realms"
+        help_text="Optional second paradigm for combined-paradigm realms",
     )
 
     atmosphere_details = models.JSONField(
         default=list,
         blank=True,
-        help_text="List of atmosphere attributes rolled for the realm"
+        help_text="List of atmosphere attributes rolled for the realm",
     )
 
     num_primary_obstacles = models.IntegerField(
-        default=0,
-        help_text="Number of obstacles from the primary sphere"
+        default=0, help_text="Number of obstacles from the primary sphere"
     )
 
     num_random_obstacles = models.IntegerField(
-        default=0,
-        help_text="Number of obstacles from random spheres"
+        default=0, help_text="Number of obstacles from random spheres"
     )
 
     final_obstacle_type = models.CharField(
         max_length=20,
         choices=FinalObstacleTypeChoices.choices,
         default=FinalObstacleTypeChoices.MAZE,
-        help_text="Type of final obstacle to overcome"
+        help_text="Type of final obstacle to overcome",
     )
 
     final_obstacle_details = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Details of the final obstacle"
+        default=dict, blank=True, help_text="Details of the final obstacle"
     )
 
     class Meta:
@@ -131,7 +129,7 @@ class ParadoxRealm(HorizonRealm):
 
     def get_obstacles(self):
         """Get all obstacles for this realm"""
-        return ParadoxObstacle.objects.filter(realm=self).order_by('order')
+        return ParadoxObstacle.objects.filter(realm=self).order_by("order")
 
     def get_atmosphere_elements(self):
         """Get all atmosphere elements for this realm"""
@@ -194,7 +192,9 @@ class ParadoxRealm(HorizonRealm):
             return paradigm_map[roll], None
         elif 14 <= roll <= 16:
             # Character's paradigm - use a random one for base generation
-            options = [p for p in ParadigmChoices.values if p not in [ParadigmChoices.UNSTABLE]]
+            options = [
+                p for p in ParadigmChoices.values if p not in [ParadigmChoices.UNSTABLE]
+            ]
             return random.choice(options), None
         elif 17 <= roll <= 19:
             return ParadigmChoices.ANTIMAGICK, None
@@ -304,7 +304,7 @@ class ParadoxRealm(HorizonRealm):
             num_primary_obstacles=num_primary,
             num_random_obstacles=num_random,
             final_obstacle_type=final_type,
-            final_obstacle_details=final_details
+            final_obstacle_details=final_details,
         )
 
         if save:
@@ -325,10 +325,7 @@ class ParadoxRealm(HorizonRealm):
                 while random_sphere is None:
                     random_sphere = cls.random_sphere()
                 ParadoxObstacle.random(
-                    realm=realm,
-                    sphere=random_sphere,
-                    order=num_primary + i,
-                    save=True
+                    realm=realm, sphere=random_sphere, order=num_primary + i, save=True
                 )
 
         return realm
@@ -344,9 +341,7 @@ class ParadoxObstacle(models.Model):
     """An obstacle within a paradox realm"""
 
     realm = models.ForeignKey(
-        ParadoxRealm,
-        on_delete=models.CASCADE,
-        related_name='realm_obstacles'
+        ParadoxRealm, on_delete=models.CASCADE, related_name="realm_obstacles"
     )
 
     sphere = models.CharField(
@@ -359,15 +354,14 @@ class ParadoxObstacle(models.Model):
     )
 
     order = models.IntegerField(
-        default=0,
-        help_text="Order in which this obstacle appears"
+        default=0, help_text="Order in which this obstacle appears"
     )
 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
         verbose_name = "Paradox Obstacle"
         verbose_name_plural = "Paradox Obstacles"
 
@@ -385,7 +379,7 @@ class ParadoxObstacle(models.Model):
             obstacle_number=roll,
             order=order,
             name=obstacle_name,
-            description=f"Obstacle #{roll} from {sphere} table"
+            description=f"Obstacle #{roll} from {sphere} table",
         )
 
         if save:
@@ -399,49 +393,112 @@ class ParadoxObstacle(models.Model):
         # Simplified mapping - full implementation would include all obstacle names
         obstacle_names = {
             SphereChoices.CORRESPONDENCE: {
-                1: "Leaning Walls", 2: "Chalk", 3: "Mirrors", 4: "Time Bomb",
-                5: "One Step Forward...", 6: "Compress", 7: "Outside", 8: "Salt",
-                9: "Abnormal Maze", 10: "Free Space"
+                1: "Leaning Walls",
+                2: "Chalk",
+                3: "Mirrors",
+                4: "Time Bomb",
+                5: "One Step Forward...",
+                6: "Compress",
+                7: "Outside",
+                8: "Salt",
+                9: "Abnormal Maze",
+                10: "Free Space",
             },
             SphereChoices.ENTROPY: {
-                1: "Shell Game", 2: "Avatar", 3: "Heart", 4: "Domino",
-                5: "Crack", 6: "Dust", 7: "Bone Field", 8: "The Shadow",
-                9: "Regress", 10: "Unravel"
+                1: "Shell Game",
+                2: "Avatar",
+                3: "Heart",
+                4: "Domino",
+                5: "Crack",
+                6: "Dust",
+                7: "Bone Field",
+                8: "The Shadow",
+                9: "Regress",
+                10: "Unravel",
             },
             SphereChoices.FORCES: {
-                1: "Machine", 2: "Spin", 3: "Gap", 4: "Fire",
-                5: "Storm", 6: "Geiger", 7: "Hole", 8: "Quake",
-                9: "Chill", 10: "Illusion"
+                1: "Machine",
+                2: "Spin",
+                3: "Gap",
+                4: "Fire",
+                5: "Storm",
+                6: "Geiger",
+                7: "Hole",
+                8: "Quake",
+                9: "Chill",
+                10: "Illusion",
             },
             SphereChoices.LIFE: {
-                1: "Mouse", 2: "Tree", 3: "Elephant", 4: "Child",
-                5: "All as One", 6: "Brood", 7: "Skeleton Hedge", 8: "Mortal",
-                9: "This Thing Called ENT", 10: "Boil"
+                1: "Mouse",
+                2: "Tree",
+                3: "Elephant",
+                4: "Child",
+                5: "All as One",
+                6: "Brood",
+                7: "Skeleton Hedge",
+                8: "Mortal",
+                9: "This Thing Called ENT",
+                10: "Boil",
             },
             SphereChoices.MATTER: {
-                1: "Heavy", 2: "Pipes", 3: "Midas", 4: "Just Right",
-                5: "Vase", 6: "Rocks Fall", 7: "Sliding Tower", 8: "Deep",
-                9: "Slush", 10: "Disappearing Floor"
+                1: "Heavy",
+                2: "Pipes",
+                3: "Midas",
+                4: "Just Right",
+                5: "Vase",
+                6: "Rocks Fall",
+                7: "Sliding Tower",
+                8: "Deep",
+                9: "Slush",
+                10: "Disappearing Floor",
             },
             SphereChoices.MIND: {
-                1: "Two Guards", 2: "Ten Chambers", 3: "A Better You", 4: "Trials",
-                5: "Instructions", 6: "Rage", 7: "Mirrors", 8: "Babble",
-                9: "Speak Friend", 10: "Vigenère"
+                1: "Two Guards",
+                2: "Ten Chambers",
+                3: "A Better You",
+                4: "Trials",
+                5: "Instructions",
+                6: "Rage",
+                7: "Mirrors",
+                8: "Babble",
+                9: "Speak Friend",
+                10: "Vigenère",
             },
             SphereChoices.PRIME: {
-                1: "Kiss the Chef", 2: "Desert", 3: "Drone", 4: "Sinking Ship",
-                5: "Zap", 6: "Tapestry", 7: "Dust", 8: "Hedge Door",
-                9: "Tall", 10: "Pythagorean Cup"
+                1: "Kiss the Chef",
+                2: "Desert",
+                3: "Drone",
+                4: "Sinking Ship",
+                5: "Zap",
+                6: "Tapestry",
+                7: "Dust",
+                8: "Hedge Door",
+                9: "Tall",
+                10: "Pythagorean Cup",
             },
             SphereChoices.SPIRIT: {
-                1: "The Dance", 2: "Utopia", 3: "Sleep", 4: "Snow Globe",
-                5: "Below", 6: "Bell, Book, and Candle", 7: "Starchild", 8: "Card King",
-                9: "Noir", 10: "The Bottle Plant"
+                1: "The Dance",
+                2: "Utopia",
+                3: "Sleep",
+                4: "Snow Globe",
+                5: "Below",
+                6: "Bell, Book, and Candle",
+                7: "Starchild",
+                8: "Card King",
+                9: "Noir",
+                10: "The Bottle Plant",
             },
             SphereChoices.TIME: {
-                1: "Save a Life", 2: "Trade", 3: "Search", 4: "Safe",
-                5: "Hallway", 6: "Good Guess", 7: "Trigger", 8: "Quantum Gravity",
-                9: "Double Cat", 10: "Big Maze"
+                1: "Save a Life",
+                2: "Trade",
+                3: "Search",
+                4: "Safe",
+                5: "Hallway",
+                6: "Good Guess",
+                7: "Trigger",
+                8: "Quantum Gravity",
+                9: "Double Cat",
+                10: "Big Maze",
             },
         }
 
@@ -455,9 +512,7 @@ class ParadoxAtmosphere(models.Model):
     """An atmosphere element for a paradox realm"""
 
     realm = models.ForeignKey(
-        ParadoxRealm,
-        on_delete=models.CASCADE,
-        related_name='realm_atmospheres'
+        ParadoxRealm, on_delete=models.CASCADE, related_name="realm_atmospheres"
     )
 
     paradigm = models.CharField(
@@ -487,7 +542,7 @@ class ParadoxAtmosphere(models.Model):
             realm=realm,
             paradigm=paradigm,
             atmosphere_number=roll,
-            description=description
+            description=description,
         )
 
         if save:
@@ -672,7 +727,9 @@ class ParadoxAtmosphere(models.Model):
             },
         }
 
-        return atmospheres.get(paradigm, {}).get(roll, f"Atmosphere element {roll} for {paradigm}")
+        return atmospheres.get(paradigm, {}).get(
+            roll, f"Atmosphere element {roll} for {paradigm}"
+        )
 
     def __str__(self):
         return f"{self.get_paradigm_display()} Atmosphere #{self.atmosphere_number}"

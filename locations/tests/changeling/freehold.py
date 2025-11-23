@@ -2,11 +2,10 @@
 Tests for Freehold creation, both multi-step and direct.
 Tests cover the complete creation workflow from Book of Freeholds.
 """
-from django.contrib.auth.models import User
-from django.test import TestCase, Client
-from django.urls import reverse
-
 from characters.models.core import Human
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from locations.models.changeling import Freehold
 
 
@@ -20,10 +19,7 @@ class TestFreeholdMultiStepCreation(TestCase):
         self.client.login(username="testuser", password="testpass")
 
         # Create a character for the user (needed for owned_by)
-        self.character = Human.objects.create(
-            name="Test Changeling",
-            owner=self.user
-        )
+        self.character = Human.objects.create(name="Test Changeling", owner=self.user)
 
     def test_step1_basics_creates_freehold(self):
         """Test Step 1: Creating freehold with basics sets creation_status = 1"""
@@ -54,7 +50,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="academy",
             creation_status=1,
             status="Un",
-            owned_by=self.character
+            owned_by=self.character,
         )
 
         url = reverse("locations:changeling:update:freehold", args=[freehold.pk])
@@ -148,16 +144,18 @@ class TestFreeholdMultiStepCreation(TestCase):
         response = self.client.get(url)
 
         # Should render powers template (step 3)
-        self.assertTemplateUsed(response, "locations/changeling/freehold/chargen/powers.html")
+        self.assertTemplateUsed(
+            response, "locations/changeling/freehold/chargen/powers.html"
+        )
 
     def test_feature_point_calculation(self):
         """Test that feature points are calculated correctly"""
         freehold = Freehold.objects.create(
             name="Test Freehold",
             balefire=4,  # 4 points
-            size=3,      # 3 points
-            sanctuary=2, # 2 points
-            resources=2, # 2 points
+            size=3,  # 3 points
+            sanctuary=2,  # 2 points
+            resources=2,  # 2 points
             passages=3,  # 2 points (first free, +2)
             powers=["glamour_to_dross", "resonant_dreams"],  # 2 + 2 = 4 points
         )
@@ -389,9 +387,7 @@ class TestFreeholdModel(TestCase):
     def test_archetype_display_with_benefit(self):
         """Test get_archetype_display_with_benefit() method"""
         freehold = Freehold.objects.create(
-            name="Test",
-            archetype="academy",
-            academy_ability="Occult"
+            name="Test", archetype="academy", academy_ability="Occult"
         )
 
         display = freehold.get_archetype_display_with_benefit()
@@ -402,8 +398,7 @@ class TestFreeholdModel(TestCase):
     def test_has_power(self):
         """Test has_power() method"""
         freehold = Freehold.objects.create(
-            name="Test",
-            powers=["glamour_to_dross", "warning_call"]
+            name="Test", powers=["glamour_to_dross", "warning_call"]
         )
 
         self.assertTrue(freehold.has_power("glamour_to_dross"))
@@ -413,7 +408,9 @@ class TestFreeholdModel(TestCase):
     def test_size_description(self):
         """Test get_size_description() method"""
         freehold = Freehold.objects.create(name="Test", size=0)
-        self.assertEqual(freehold.get_size_description(), "Miniscule, out in the open with no walls")
+        self.assertEqual(
+            freehold.get_size_description(), "Miniscule, out in the open with no walls"
+        )
 
         freehold.size = 3
         freehold.save()

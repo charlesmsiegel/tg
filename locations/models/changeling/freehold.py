@@ -37,6 +37,7 @@ class Freehold(LocationModel):
 
     Based on Book of Freeholds for Changeling: The Dreaming 20th Anniversary Edition.
     """
+
     type = "freehold"
 
     # Core archetype
@@ -44,57 +45,57 @@ class Freehold(LocationModel):
         max_length=20,
         choices=ArchetypeChoices.choices,
         default=ArchetypeChoices.HEARTH,
-        help_text="The role this freehold plays in changeling society"
+        help_text="The role this freehold plays in changeling society",
     )
 
     # Aspect - the story/theme of the freehold
     aspect = models.TextField(
         blank=True,
-        help_text="The underlying dream or story of this freehold (e.g., 'birthplace of chimerical creatures')"
+        help_text="The underlying dream or story of this freehold (e.g., 'birthplace of chimerical creatures')",
     )
 
     # Quirks - unique features
     quirks = models.TextField(
         blank=True,
-        help_text="Unique features or oddities of this freehold that don't match holders' desires"
+        help_text="Unique features or oddities of this freehold that don't match holders' desires",
     )
 
     # Ratings (0-5 dots)
     balefire = models.IntegerField(
         default=1,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        help_text="Rating of the balefire, determines Glamour/dross generation (0-5 dots)"
+        help_text="Rating of the balefire, determines Glamour/dross generation (0-5 dots)",
     )
 
     size = models.IntegerField(
         default=1,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        help_text="Physical size of the freehold (0-5 dots)"
+        help_text="Physical size of the freehold (0-5 dots)",
     )
 
     sanctuary = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        help_text="Defense rating, grants bonus dice for defense and threshold (0-5 dots)"
+        help_text="Defense rating, grants bonus dice for defense and threshold (0-5 dots)",
     )
 
     resources = models.IntegerField(
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        help_text="Mundane or chimerical resources generated (0-5 dots)"
+        help_text="Mundane or chimerical resources generated (0-5 dots)",
     )
 
     passages = models.IntegerField(
         default=1,
         validators=[MinValueValidator(0), MaxValueValidator(20)],
-        help_text="Number of trods/raths connected to this freehold (one free, additional cost 1 feature point each)"
+        help_text="Number of trods/raths connected to this freehold (one free, additional cost 1 feature point each)",
     )
 
     # Powers - stored as JSON array of power choices
     powers = models.JSONField(
         default=list,
         blank=True,
-        help_text="List of special powers this freehold possesses"
+        help_text="List of special powers this freehold possesses",
     )
 
     # Archetype-specific fields
@@ -102,7 +103,7 @@ class Freehold(LocationModel):
     academy_ability = models.CharField(
         max_length=50,
         blank=True,
-        help_text="The Ability this Academy teaches as its specialty (for Academy archetype)"
+        help_text="The Ability this Academy teaches as its specialty (for Academy archetype)",
     )
 
     # Hearth - Leadership or Socialize choice
@@ -110,7 +111,7 @@ class Freehold(LocationModel):
         max_length=20,
         choices=HearthAbilityChoices.choices,
         blank=True,
-        help_text="Which ability Hearth grants bonus to (for Hearth archetype)"
+        help_text="Which ability Hearth grants bonus to (for Hearth archetype)",
     )
 
     # Dual Nature - second archetype
@@ -118,31 +119,29 @@ class Freehold(LocationModel):
         max_length=20,
         choices=ArchetypeChoices.choices,
         blank=True,
-        help_text="Second archetype if Dual Nature power is taken"
+        help_text="Second archetype if Dual Nature power is taken",
     )
 
     dual_nature_ability = models.CharField(
         max_length=50,
         blank=True,
-        help_text="Associated ability for dual nature archetype if applicable"
+        help_text="Associated ability for dual nature archetype if applicable",
     )
 
     # Resource details
     resource_description = models.TextField(
-        blank=True,
-        help_text="Description of what resources this freehold generates"
+        blank=True, help_text="Description of what resources this freehold generates"
     )
 
     # Passage details
     passage_description = models.TextField(
-        blank=True,
-        help_text="Description of trods/raths and where they lead"
+        blank=True, help_text="Description of trods/raths and where they lead"
     )
 
     # Balefire appearance
     balefire_description = models.TextField(
         blank=True,
-        help_text="Description of what the balefire looks like and where it's located"
+        help_text="Description of what the balefire looks like and where it's located",
     )
 
     # Multi-step creation tracking
@@ -217,7 +216,7 @@ class Freehold(LocationModel):
         total = self.balefire + self.size + self.sanctuary + self.resources
         # Passages: first is free, rest cost 1 each
         if self.passages > 1:
-            total += (self.passages - 1)
+            total += self.passages - 1
 
         # Powers
         power_costs = {
@@ -235,6 +234,7 @@ class Freehold(LocationModel):
     def get_holdings_required(self):
         """Calculate Holdings dots required (feature points / 3, rounded up)"""
         import math
+
         return math.ceil(self.get_total_feature_points() / 3)
 
     def has_power(self, power_name):

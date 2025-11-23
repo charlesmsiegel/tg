@@ -616,7 +616,11 @@ template_chaotician, _ = CharacterTemplate.objects.get_or_create(
         },
         "willpower": 5,
         "quintessence": 3,
-        "specialties": ["Intelligence (Patterns)", "Appearance (Impressive)", "Science (Intuitive Mathematics)"],
+        "specialties": [
+            "Intelligence (Patterns)",
+            "Appearance (Impressive)",
+            "Science (Intuitive Mathematics)",
+        ],
         "equipment": "Laptop computer, pistol, leather jacket, hand-held radio scanner",
         "is_official": True,
         "is_public": True,
@@ -691,7 +695,9 @@ try:
 except Practice.DoesNotExist:
     realityhacking, _ = Practice.objects.get_or_create(
         name="Reality Hacking",
-        defaults={"description": "Digital manipulation of reality through code and technology"}
+        defaults={
+            "description": "Digital manipulation of reality through code and technology"
+        },
     )
 
 try:
@@ -910,8 +916,12 @@ sharri_powell.description = (
 sharri_powell.add_source("Virtual Adepts (1st Edition)", 23, 33)
 
 print("Virtual Adepts 1st Edition data loaded successfully!")
-print(f"  - {MageFaction.objects.filter(parent__name='Virtual Adepts').count()} factions/legions")
-print(f"  - {Effect.objects.filter(sources__name__contains='Virtual Adepts (1st Edition)').count()} effects")
+print(
+    f"  - {MageFaction.objects.filter(parent__name='Virtual Adepts').count()} factions/legions"
+)
+print(
+    f"  - {Effect.objects.filter(sources__name__contains='Virtual Adepts (1st Edition)').count()} effects"
+)
 print(f"  - 11 named characters")
 print(f"  - 6 character templates")
 print(f"  - 5 rotes")

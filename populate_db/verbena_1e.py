@@ -3,14 +3,14 @@ Verbena Tradition Book (1st Edition)
 Guardians of the Mythic Threads
 """
 
-from core.models import Book, CharacterTemplate
-from characters.models.mage.effect import Effect
-from characters.models.mage.rote import Rote
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
+from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
+from characters.models.mage.rote import Rote
+from core.models import Book, CharacterTemplate
 
 # ==============================================================================
 # BOOK
@@ -22,7 +22,7 @@ verbena_book = Book.objects.get_or_create(
     gameline="mta",
     defaults={
         "url": "https://www.storytellersvault.com/product/432/Tradition-Book-Verbena",
-    }
+    },
 )[0]
 
 # ==============================================================================
@@ -39,7 +39,7 @@ effect_sense_fleeting_moment = Effect.objects.get_or_create(
         "to do a specific thing, and may even be successful at discerning whether or not the thing "
         "should be done at all. Each success on the magick roll lowers the difficulty for one "
         "specific non-magickal task by 1. This is usually coincidental."
-    }
+    },
 )[0]
 effect_sense_fleeting_moment.add_source("Tradition Book: Verbena", 63)
 
@@ -53,7 +53,7 @@ effect_bloodsight = Effect.objects.get_or_create(
         "him to the presence of any foreign substances including bullets, drugs, and alcohol. "
         "The Verbena also uses this rote to determine someone's lineage. Each success provides one "
         "fact about the target's physical state."
-    }
+    },
 )[0]
 effect_bloodsight.add_source("Tradition Book: Verbena", 63)
 
@@ -68,9 +68,9 @@ effect_dowsing = Effect.objects.get_or_create(
         "forms attracted to the moisture, and the volume of liquid present. This is useful both "
         "for discovering underground resources and for finding water in arid environments. "
         "Each success provides one more piece of information about the liquid."
-    }
+    },
 )[0]
-effect_dowsing.add_source("Tradition Book: Verbena", 63-64)
+effect_dowsing.add_source("Tradition Book: Verbena", 63 - 64)
 
 # Banishing Blessing (•• Entropy, •• Mind)
 effect_banishing_blessing = Effect.objects.get_or_create(
@@ -85,7 +85,7 @@ effect_banishing_blessing = Effect.objects.get_or_create(
         "free airline ticket voucher and flies to Paris for a week, or wrangles a car ride even when "
         "the last possibility has dried up. Each success sends the target away for more and more time. "
         "The Effect is always beneficial rather than harmful; this is seen as a more subtle means to be rid of others."
-    }
+    },
 )[0]
 effect_banishing_blessing.add_source("Tradition Book: Verbena", 64)
 
@@ -103,7 +103,7 @@ effect_calling_wind_lord = Effect.objects.get_or_create(
         "she rolls, the greater the change. These changes must be gradual and slow; speeding the Effect "
         "can result in vulgar magick. The weather-alteration affects the sky within immediate sight of "
         "the Verbena, lasts a 'normal' length of time, and cannot create phenomena out of nothing."
-    }
+    },
 )[0]
 effect_calling_wind_lord.add_source("Tradition Book: Verbena", 64)
 
@@ -121,7 +121,7 @@ effect_circle_ward = Effect.objects.get_or_create(
         "hold up against many kinds of direct magickal attack. Each success on the roll gives the Verbena "
         "+1 to her countermagick roll for the scene, as long as she stays within the circle. "
         "This rote cannot be maintained for more than one scene per point of stamina."
-    }
+    },
 )[0]
 effect_circle_ward.add_source("Tradition Book: Verbena", 64)
 
@@ -139,7 +139,7 @@ effect_taliesins_song = Effect.objects.get_or_create(
         "for the magick's usual duration. This Effect can be resisted by Willpower if the target is aware "
         "that some coercion is being used. Taliesin's Song is not terribly effective against other mages "
         "(who may be aware that they are being bewitched), but is quite useful when dealing with Sleepers."
-    }
+    },
 )[0]
 effect_taliesins_song.add_source("Tradition Book: Verbena", 64)
 
@@ -157,7 +157,7 @@ effect_translocation = Effect.objects.get_or_create(
         "Five successes on the roll cause the user to arrive almost instantaneously. Note that this Effect can "
         "be coincidental at night or with few witnesses, and the area around the traveler is in deep wilderness "
         "or on a lonely road."
-    }
+    },
 )[0]
 effect_translocation.add_source("Tradition Book: Verbena", 64)
 
@@ -176,9 +176,9 @@ mother_celene = MtAHuman.objects.get_or_create(
         "nature": "Judge",
         "demeanor": "Traditionalist",
         "essence": "Pattern",
-    }
+    },
 )[0]
-mother_celene.add_source("Tradition Book: Verbena", 4-5)
+mother_celene.add_source("Tradition Book: Verbena", 4 - 5)
 
 # Rhianna Flamedancer - Priestess and Teacher
 rhianna_flamedancer = Mage.objects.get_or_create(
@@ -194,9 +194,9 @@ rhianna_flamedancer = Mage.objects.get_or_create(
         "life": 3,
         "prime": 2,
         "spirit": 2,
-    }
+    },
 )[0]
-rhianna_flamedancer.add_source("Tradition Book: Verbena", 14-15)
+rhianna_flamedancer.add_source("Tradition Book: Verbena", 14 - 15)
 
 # Talien - Technopagan Bard and Loremaster
 talien = Mage.objects.get_or_create(
@@ -217,9 +217,9 @@ talien = Mage.objects.get_or_create(
         "mind": 1,
         "prime": 1,
         "time": 1,
-    }
+    },
 )[0]
-talien.add_source("Tradition Book: Verbena", 16-27)
+talien.add_source("Tradition Book: Verbena", 16 - 27)
 
 # Lindara - Shapeshifter Teacher
 lindara = Mage.objects.get_or_create(
@@ -236,9 +236,9 @@ lindara = Mage.objects.get_or_create(
         "life": 4,
         "mind": 2,
         "matter": 1,
-    }
+    },
 )[0]
-lindara.add_source("Tradition Book: Verbena", 29-37)
+lindara.add_source("Tradition Book: Verbena", 29 - 37)
 
 # Bear - Gruff Teacher
 bear_verbena = MtAHuman.objects.get_or_create(
@@ -250,9 +250,9 @@ bear_verbena = MtAHuman.objects.get_or_create(
         "concept": "Gruff Teacher",
         "nature": "Curmudgeon",
         "demeanor": "Bravo",
-    }
+    },
 )[0]
-bear_verbena.add_source("Tradition Book: Verbena", 33-37)
+bear_verbena.add_source("Tradition Book: Verbena", 33 - 37)
 
 # Neasha Morningshade - Council Spokesperson
 neasha_morningshade = Mage.objects.get_or_create(
@@ -274,7 +274,7 @@ neasha_morningshade = Mage.objects.get_or_create(
         "prime": 3,
         "mind": 2,
         "spirit": 3,
-    }
+    },
 )[0]
 neasha_morningshade.add_source("Tradition Book: Verbena", 67)
 
@@ -297,7 +297,7 @@ sam_haine = Mage.objects.get_or_create(
         "mind": 2,
         "matter": 2,
         "correspondence": 2,
-    }
+    },
 )[0]
 sam_haine.add_source("Tradition Book: Verbena", 68)
 
@@ -314,7 +314,7 @@ nightshade = Mage.objects.get_or_create(
         "life": 5,
         "prime": 4,
         "spirit": 4,
-    }
+    },
 )[0]
 nightshade.add_source("Tradition Book: Verbena", 67)
 
@@ -335,9 +335,9 @@ lilith = MtAHuman.objects.get_or_create(
         "concept": "Legendary First Verbena",
         "nature": "Visionary",
         "essence": "Primordial",
-    }
+    },
 )[0]
-lilith.add_source("Tradition Book: Verbena", 65-66)
+lilith.add_source("Tradition Book: Verbena", 65 - 66)
 
 # Calantha - Black Fury Garou Ally
 calantha = MtAHuman.objects.get_or_create(
@@ -348,9 +348,9 @@ calantha = MtAHuman.objects.get_or_create(
         "suffered the same persecutions as the Verbena during the Burning Times.",
         "concept": "Garou Ally",
         "nature": "Survivor",
-    }
+    },
 )[0]
-calantha.add_source("Tradition Book: Verbena", 41-42)
+calantha.add_source("Tradition Book: Verbena", 41 - 42)
 
 # ==============================================================================
 # CHARACTER TEMPLATES (Chapter 4)
@@ -421,7 +421,7 @@ avenging_witch = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-avenging_witch.add_source("Tradition Book: Verbena", 48-49)
+avenging_witch.add_source("Tradition Book: Verbena", 48 - 49)
 
 # Template: Bard
 bard = CharacterTemplate.objects.get_or_create(
@@ -488,7 +488,7 @@ bard = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-bard.add_source("Tradition Book: Verbena", 50-51)
+bard.add_source("Tradition Book: Verbena", 50 - 51)
 
 # Template: Eco-Terrorist Druid
 druid = CharacterTemplate.objects.get_or_create(
@@ -560,7 +560,7 @@ druid = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-druid.add_source("Tradition Book: Verbena", 52-53)
+druid.add_source("Tradition Book: Verbena", 52 - 53)
 
 # Template: Shapeshifter
 shapeshifter = CharacterTemplate.objects.get_or_create(
@@ -625,7 +625,7 @@ shapeshifter = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-shapeshifter.add_source("Tradition Book: Verbena", 54-55)
+shapeshifter.add_source("Tradition Book: Verbena", 54 - 55)
 
 # Template: Healer/Medicine Man
 healer = CharacterTemplate.objects.get_or_create(
@@ -692,7 +692,7 @@ healer = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-healer.add_source("Tradition Book: Verbena", 56-57)
+healer.add_source("Tradition Book: Verbena", 56 - 57)
 
 # Template: Neo-Pagan
 neo_pagan = CharacterTemplate.objects.get_or_create(
@@ -760,7 +760,7 @@ neo_pagan = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0]
-neo_pagan.add_source("Tradition Book: Verbena", 58-59)
+neo_pagan.add_source("Tradition Book: Verbena", 58 - 59)
 
 # ==============================================================================
 # PRACTICES (Verbena-specific magical styles)

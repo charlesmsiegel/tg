@@ -65,13 +65,17 @@ class SectorForm(forms.ModelForm):
             {"placeholder": "Sector name (e.g., 'Spy's Demise')"}
         )
         self.fields["description"].widget.attrs.update(
-            {"placeholder": "Describe the sector's appearance, purpose, and general atmosphere..."}
+            {
+                "placeholder": "Describe the sector's appearance, purpose, and general atmosphere..."
+            }
         )
         self.fields["genre_theme"].widget.attrs.update(
             {"placeholder": "e.g., Film Noir, Cyberpunk, Medieval Fantasy"}
         )
         self.fields["constraints"].widget.attrs.update(
-            {"placeholder": "Describe constraint protocols: genre enforcement, tech requirements, paradigm restrictions..."}
+            {
+                "placeholder": "Describe constraint protocols: genre enforcement, tech requirements, paradigm restrictions..."
+            }
         )
         self.fields["password_hint"].widget.attrs.update(
             {"placeholder": "Hint for sector password (if applicable)"}
@@ -83,7 +87,9 @@ class SectorForm(forms.ModelForm):
             {"placeholder": "e.g., Iteration X, The Bartender, Virtual Adepts"}
         )
         self.fields["hazards"].widget.attrs.update(
-            {"placeholder": "Environmental hazards, hostile entities, security measures, etc."}
+            {
+                "placeholder": "Environmental hazards, hostile entities, security measures, etc."
+            }
         )
         self.fields["notable_features"].widget.attrs.update(
             {"placeholder": "Landmarks, AROs, unique properties, special locations..."}
@@ -109,7 +115,7 @@ class SectorForm(forms.ModelForm):
         if requires_password and not password_hint:
             self.add_error(
                 "password_hint",
-                "Password hint is recommended when password is required."
+                "Password hint is recommended when password is required.",
             )
 
         # Validate restricted sector has security measures
@@ -118,7 +124,7 @@ class SectorForm(forms.ModelForm):
             if not requires_password and not approved_users:
                 self.add_error(
                     "approved_users",
-                    "Restricted sectors should have either a password or approved users list."
+                    "Restricted sectors should have either a password or approved users list.",
                 )
 
         # Validate corruption level
@@ -128,7 +134,7 @@ class SectorForm(forms.ModelForm):
         if corruption_level >= 8 and is_reformattable:
             self.add_error(
                 "is_reformattable",
-                "Heavily corrupted sectors (8+) are typically unreformattable."
+                "Heavily corrupted sectors (8+) are typically unreformattable.",
             )
 
         # Validate power rating for warzones
@@ -138,7 +144,7 @@ class SectorForm(forms.ModelForm):
         if sector_class == "warzone" and power_rating < 7:
             self.add_error(
                 "power_rating",
-                "Warzones should have power rating of 7 to handle combat."
+                "Warzones should have power rating of 7 to handle combat.",
             )
 
         # Validate time dilation for hung sectors
@@ -148,7 +154,7 @@ class SectorForm(forms.ModelForm):
         if temporal_instability and time_dilation == 1.00:
             self.add_error(
                 "time_dilation",
-                "Temporally unstable sectors should have unusual time dilation."
+                "Temporally unstable sectors should have unusual time dilation.",
             )
 
         return cleaned_data

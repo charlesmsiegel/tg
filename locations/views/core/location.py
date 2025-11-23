@@ -1,5 +1,4 @@
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
-from core.mixins import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView

@@ -8,22 +8,21 @@ Owners must use the XP/freebie spending system to modify stats.
 Only Chronicle Head STs and Admins can directly edit mechanical fields.
 """
 
-from django import forms
-
+from characters.models.changeling.changeling import Changeling
+from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from characters.models.demon.demon import Demon
+from characters.models.demon.dtfhuman import DtFHuman
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.garou import Garou
 from characters.models.werewolf.wtahuman import WtAHuman
-from characters.models.changeling.changeling import Changeling
-from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from characters.models.demon.demon import Demon
-from characters.models.demon.dtfhuman import DtFHuman
+from django import forms
 
 
 class LimitedCharacterEditForm(forms.ModelForm):
@@ -44,30 +43,36 @@ class LimitedCharacterEditForm(forms.ModelForm):
     class Meta:
         model = Character
         fields = [
-            'notes',
-            'description',
-            'public_info',
-            'image',
+            "notes",
+            "description",
+            "public_info",
+            "image",
         ]
         widgets = {
-            'notes': forms.Textarea(attrs={
-                'rows': 6,
-                'placeholder': 'Personal notes and journal entries...'
-            }),
-            'description': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Physical description, personality, mannerisms...'
-            }),
-            'public_info': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Information visible to other players...'
-            }),
+            "notes": forms.Textarea(
+                attrs={
+                    "rows": 6,
+                    "placeholder": "Personal notes and journal entries...",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Physical description, personality, mannerisms...",
+                }
+            ),
+            "public_info": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Information visible to other players...",
+                }
+            ),
         }
         help_texts = {
-            'notes': 'Private notes only visible to you and storytellers',
-            'description': 'Physical description and character details',
-            'public_info': 'Information other players can see about your character',
-            'image': 'Character portrait (will require ST approval)',
+            "notes": "Private notes only visible to you and storytellers",
+            "description": "Physical description and character details",
+            "public_info": "Information other players can see about your character",
+            "image": "Character portrait (will require ST approval)",
         }
 
 
@@ -83,42 +88,46 @@ class LimitedHumanEditForm(forms.ModelForm):
     class Meta:
         model = Human
         fields = [
-            'notes',
-            'description',
-            'public_info',
-            'image',
-            'history',
-            'goals',
+            "notes",
+            "description",
+            "public_info",
+            "image",
+            "history",
+            "goals",
         ]
         widgets = {
-            'notes': forms.Textarea(attrs={
-                'rows': 6,
-                'placeholder': 'Personal notes and journal entries...'
-            }),
-            'description': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Physical description, personality, mannerisms...'
-            }),
-            'public_info': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Information visible to other players...'
-            }),
-            'history': forms.Textarea(attrs={
-                'rows': 6,
-                'placeholder': 'Character background and history...'
-            }),
-            'goals': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Character goals and motivations...'
-            }),
+            "notes": forms.Textarea(
+                attrs={
+                    "rows": 6,
+                    "placeholder": "Personal notes and journal entries...",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Physical description, personality, mannerisms...",
+                }
+            ),
+            "public_info": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Information visible to other players...",
+                }
+            ),
+            "history": forms.Textarea(
+                attrs={"rows": 6, "placeholder": "Character background and history..."}
+            ),
+            "goals": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Character goals and motivations..."}
+            ),
         }
         help_texts = {
-            'notes': 'Private notes only visible to you and storytellers',
-            'description': 'Physical description and character details',
-            'public_info': 'Information other players can see about your character',
-            'history': 'Your character\'s background story',
-            'goals': 'What your character wants to achieve',
-            'image': 'Character portrait (will require ST approval)',
+            "notes": "Private notes only visible to you and storytellers",
+            "description": "Physical description and character details",
+            "public_info": "Information other players can see about your character",
+            "history": "Your character's background story",
+            "goals": "What your character wants to achieve",
+            "image": "Character portrait (will require ST approval)",
         }
 
 

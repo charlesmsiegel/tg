@@ -3,18 +3,18 @@ Populate database with game objects from "Testaments of the First Cabal" / "The 
 This sourcebook details the First Cabal of the Nine Mystick Traditions and the Great Betrayal of 1470.
 """
 
-from core.models import Book
+from characters.models.mage.effect import Effect
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
-from characters.models.mage.faction import MageFaction
-from characters.models.mage.effect import Effect
 from characters.models.mage.sphere import Sphere
+from core.models import Book
 from items.models.mage.artifact import Artifact
 from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
+from locations.models.core.location import LocationModel
 from locations.models.mage.chantry import Chantry
 from locations.models.mage.realm import Realm
-from locations.models.core.location import LocationModel
 
 # =============================================================================
 # BOOK

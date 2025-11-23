@@ -1,5 +1,5 @@
 from django import forms
-from locations.models.mage import ParadoxRealm, ParadoxObstacle, ParadoxAtmosphere
+from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
 
 
 class ParadoxObstacleForm(forms.ModelForm):
@@ -7,13 +7,13 @@ class ParadoxObstacleForm(forms.ModelForm):
 
     class Meta:
         model = ParadoxObstacle
-        fields = ['sphere', 'obstacle_number', 'order', 'name', 'description']
+        fields = ["sphere", "obstacle_number", "order", "name", "description"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs.update({'placeholder': 'Enter obstacle name'})
-        self.fields['description'].widget.attrs.update(
-            {'placeholder': 'Enter obstacle description', 'rows': 3}
+        self.fields["name"].widget.attrs.update({"placeholder": "Enter obstacle name"})
+        self.fields["description"].widget.attrs.update(
+            {"placeholder": "Enter obstacle description", "rows": 3}
         )
 
 
@@ -31,12 +31,12 @@ class ParadoxAtmosphereForm(forms.ModelForm):
 
     class Meta:
         model = ParadoxAtmosphere
-        fields = ['paradigm', 'atmosphere_number', 'description']
+        fields = ["paradigm", "atmosphere_number", "description"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['description'].widget.attrs.update(
-            {'placeholder': 'Enter atmosphere description', 'rows': 3}
+        self.fields["description"].widget.attrs.update(
+            {"placeholder": "Enter atmosphere description", "rows": 3}
         )
 
 
@@ -77,7 +77,7 @@ class ParadoxRealmForm(forms.ModelForm):
     generate_random = forms.BooleanField(
         required=False,
         initial=False,
-        help_text="Check this to automatically generate a random paradox realm"
+        help_text="Check this to automatically generate a random paradox realm",
     )
 
     def __init__(self, *args, **kwargs):

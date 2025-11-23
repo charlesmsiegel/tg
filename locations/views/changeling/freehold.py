@@ -10,6 +10,7 @@ from locations.models.changeling import Freehold
 
 class FreeholdDetailView(ViewPermissionMixin, DetailView):
     """Detail view for a Freehold"""
+
     model = Freehold
     template_name = "locations/changeling/freehold/detail.html"
 
@@ -23,6 +24,7 @@ class FreeholdDetailView(ViewPermissionMixin, DetailView):
 
 class FreeholdListView(ListView):
     """List view for all Freeholds"""
+
     model = Freehold
     ordering = ["name"]
     template_name = "locations/changeling/freehold/list.html"
@@ -30,6 +32,7 @@ class FreeholdListView(ListView):
 
 class FreeholdCreateView(LoginRequiredMixin, FormView):
     """Create view for a new Freehold"""
+
     template_name = "locations/changeling/freehold/form.html"
     form_class = FreeholdForm
     success_message = "Freehold '{name}' created successfully!"
@@ -48,13 +51,14 @@ class FreeholdCreateView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if hasattr(self, 'object'):
-            context['object'] = self.object
+        if hasattr(self, "object"):
+            context["object"] = self.object
         return context
 
 
 class FreeholdUpdateView(EditPermissionMixin, UpdateView):
     """Update view for an existing Freehold"""
+
     model = Freehold
     form_class = FreeholdForm
     template_name = "locations/changeling/freehold/form.html"

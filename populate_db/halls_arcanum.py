@@ -9,11 +9,11 @@ sourcebook (1996) for Mage: The Ascension, including:
 - Organizations
 """
 
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
-from characters.models.mage.faction import MageFaction
-from items.models.mage.wonder import Wonder
 from core.models import Book
+from items.models.mage.wonder import Wonder
 
 # =============================================================================
 # BOOK

@@ -30,43 +30,41 @@ class Sector(LocationModel):
     # Power and Security
     power_rating = models.IntegerField(
         default=5,
-        help_text="Forces/Prime Effects exceeding this generate Paradox (Warzones: 7, Corrupted: 5+)"
+        help_text="Forces/Prime Effects exceeding this generate Paradox (Warzones: 7, Corrupted: 5+)",
     )
     security_level = models.IntegerField(
-        default=0,
-        help_text="Difficulty to hack/breach (0=open, 10=maximum)"
+        default=0, help_text="Difficulty to hack/breach (0=open, 10=maximum)"
     )
 
     # Access Control
     requires_password = models.BooleanField(default=False)
     password_hint = models.CharField(max_length=200, blank=True)
     approved_users = models.TextField(
-        blank=True,
-        help_text="List of approved user types/credentials (one per line)"
+        blank=True, help_text="List of approved user types/credentials (one per line)"
     )
 
     # Constraint Protocols
     constraints = models.TextField(
         blank=True,
-        help_text="Custom physics/rules for this sector (genre enforcement, tech requirements, etc.)"
+        help_text="Custom physics/rules for this sector (genre enforcement, tech requirements, etc.)",
     )
     genre_theme = models.CharField(
         max_length=100,
         blank=True,
-        help_text="e.g., 'Film Noir Detective', 'Medieval Fantasy', 'Cyberpunk', etc."
+        help_text="e.g., 'Film Noir Detective', 'Medieval Fantasy', 'Cyberpunk', etc.",
     )
 
     # Size and Structure
     size_rating = models.IntegerField(
         default=1,
-        help_text="1=Room, 2=Building, 3=Block, 4=Neighborhood, 5=City, 6=Region"
+        help_text="1=Room, 2=Building, 3=Block, 4=Neighborhood, 5=City, 6=Region",
     )
 
     # Administrator
     administrator = models.CharField(
         max_length=200,
         blank=True,
-        help_text="Who controls this sector (Convention, Tradition, individual, etc.)"
+        help_text="Who controls this sector (Convention, Tradition, individual, etc.)",
     )
 
     # Reality Zone effects
@@ -75,27 +73,24 @@ class Sector(LocationModel):
     )
     difficulty_modifier = models.IntegerField(
         default=0,
-        help_text="Modifier to Arete rolls for compatible/incompatible paradigms"
+        help_text="Modifier to Arete rolls for compatible/incompatible paradigms",
     )
 
     # Special Properties
     has_lag = models.BooleanField(
-        default=False,
-        help_text="Sector showing signs of impending Whiteout"
+        default=False, help_text="Sector showing signs of impending Whiteout"
     )
     paradox_risk_modifier = models.IntegerField(
-        default=0,
-        help_text="Additional Paradox points generated in this sector"
+        default=0, help_text="Additional Paradox points generated in this sector"
     )
 
     # Corrupted/Junklands specific
     is_reformattable = models.BooleanField(
         default=True,
-        help_text="Can this sector be reformatted? (False for Corrupted Web)"
+        help_text="Can this sector be reformatted? (False for Corrupted Web)",
     )
     corruption_level = models.IntegerField(
-        default=0,
-        help_text="0=none, 10=completely corrupted"
+        default=0, help_text="0=none, 10=completely corrupted"
     )
 
     # Temporal effects
@@ -103,17 +98,15 @@ class Sector(LocationModel):
         max_digits=5,
         decimal_places=2,
         default=1.00,
-        help_text="Time flow ratio (1.0=normal, 2.0=twice as fast, 0.5=half speed)"
+        help_text="Time flow ratio (1.0=normal, 2.0=twice as fast, 0.5=half speed)",
     )
     temporal_instability = models.BooleanField(
-        default=False,
-        help_text="Time flows unpredictably (Hung Sectors)"
+        default=False, help_text="Time flows unpredictably (Hung Sectors)"
     )
 
     # ARO Information
     aro_count = models.IntegerField(
-        default=0,
-        help_text="Number of Augmented Reality Objects in this sector"
+        default=0, help_text="Number of Augmented Reality Objects in this sector"
     )
     aro_density = models.CharField(
         max_length=20,
@@ -122,9 +115,9 @@ class Sector(LocationModel):
             ("sparse", "Sparse"),
             ("moderate", "Moderate"),
             ("dense", "Dense"),
-            ("overwhelming", "Overwhelming")
+            ("overwhelming", "Overwhelming"),
         ],
-        default="moderate"
+        default="moderate",
     )
 
     # Streamland specific
@@ -134,15 +127,14 @@ class Sector(LocationModel):
             ("trickle", "Trickle"),
             ("steady", "Steady"),
             ("high", "High"),
-            ("torrent", "Torrent")
+            ("torrent", "Torrent"),
         ],
-        blank=True
+        blank=True,
     )
 
     # Population
     estimated_users = models.IntegerField(
-        default=0,
-        help_text="Approximate number of regular users/visitors"
+        default=0, help_text="Approximate number of regular users/visitors"
     )
 
     # Connections
@@ -151,17 +143,16 @@ class Sector(LocationModel):
         symmetrical=False,
         blank=True,
         related_name="conduits_from",
-        help_text="Sectors this one has conduits/hot links to"
+        help_text="Sectors this one has conduits/hot links to",
     )
 
     # Notes
     hazards = models.TextField(
         blank=True,
-        help_text="Environmental hazards, hostile entities, security measures, etc."
+        help_text="Environmental hazards, hostile entities, security measures, etc.",
     )
     notable_features = models.TextField(
-        blank=True,
-        help_text="Landmarks, AROs, unique properties, etc."
+        blank=True, help_text="Landmarks, AROs, unique properties, etc."
     )
 
     class Meta:
@@ -217,7 +208,9 @@ class Sector(LocationModel):
 
             # Check if user credentials match approved users
             if self.approved_users:
-                approved_list = [u.strip() for u in self.approved_users.split('\n') if u.strip()]
+                approved_list = [
+                    u.strip() for u in self.approved_users.split("\n") if u.strip()
+                ]
                 return any(cred in user_credentials for cred in approved_list)
 
         return False

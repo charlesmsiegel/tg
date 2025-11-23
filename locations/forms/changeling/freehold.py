@@ -33,12 +33,39 @@ class FreeholdForm(forms.ModelForm):
             "dimension_barrier",
         )
         widgets = {
-            "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Enter freehold description"}),
-            "aspect": forms.Textarea(attrs={"rows": 2, "placeholder": "E.g., 'birthplace of chimerical creatures' or 'sexy nightclub with hidden primal darkness'"}),
-            "quirks": forms.Textarea(attrs={"rows": 3, "placeholder": "Unique features that don't respond to holders' wishes"}),
-            "resource_description": forms.Textarea(attrs={"rows": 2, "placeholder": "What resources does this freehold generate?"}),
-            "passage_description": forms.Textarea(attrs={"rows": 2, "placeholder": "Describe trods/raths and where they lead"}),
-            "balefire_description": forms.Textarea(attrs={"rows": 2, "placeholder": "What does the balefire look like and where is it?"}),
+            "description": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Enter freehold description"}
+            ),
+            "aspect": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                    "placeholder": "E.g., 'birthplace of chimerical creatures' or 'sexy nightclub with hidden primal darkness'",
+                }
+            ),
+            "quirks": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Unique features that don't respond to holders' wishes",
+                }
+            ),
+            "resource_description": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                    "placeholder": "What resources does this freehold generate?",
+                }
+            ),
+            "passage_description": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                    "placeholder": "Describe trods/raths and where they lead",
+                }
+            ),
+            "balefire_description": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                    "placeholder": "What does the balefire look like and where is it?",
+                }
+            ),
             "powers": forms.CheckboxSelectMultiple(),
         }
 
@@ -47,15 +74,21 @@ class FreeholdForm(forms.ModelForm):
 
         # Set placeholders
         self.fields["name"].widget.attrs.update({"placeholder": "Enter freehold name"})
-        self.fields["academy_ability"].widget.attrs.update({"placeholder": "E.g., Melee, Kenning"})
-        self.fields["dual_nature_ability"].widget.attrs.update({"placeholder": "If dual nature second archetype is Academy"})
+        self.fields["academy_ability"].widget.attrs.update(
+            {"placeholder": "E.g., Melee, Kenning"}
+        )
+        self.fields["dual_nature_ability"].widget.attrs.update(
+            {"placeholder": "If dual nature second archetype is Academy"}
+        )
 
         # Make parent and owned_by not required
         self.fields["parent"].required = False
         self.fields["owned_by"].required = False
 
         # Set help text
-        self.fields["balefire"].help_text = "0-5 dots. Determines Glamour/dross generation"
+        self.fields[
+            "balefire"
+        ].help_text = "0-5 dots. Determines Glamour/dross generation"
         self.fields["size"].help_text = "0-5 dots. Determines physical size"
         self.fields["sanctuary"].help_text = "0-5 dots. Grants defense bonuses"
         self.fields["resources"].help_text = "0-5 dots. Mundane or chimerical resources"
@@ -79,19 +112,29 @@ class FreeholdForm(forms.ModelForm):
 
         # Validate Academy archetype has ability
         if archetype == "academy" and not cleaned_data.get("academy_ability"):
-            raise forms.ValidationError("Academy archetype requires an associated ability")
+            raise forms.ValidationError(
+                "Academy archetype requires an associated ability"
+            )
 
         # Validate Hearth archetype has ability choice
         if archetype == "hearth" and not cleaned_data.get("hearth_ability"):
-            raise forms.ValidationError("Hearth archetype requires choosing Leadership or Socialize")
+            raise forms.ValidationError(
+                "Hearth archetype requires choosing Leadership or Socialize"
+            )
 
         # Validate Dual Nature has second archetype
         if "dual_nature" in powers and not cleaned_data.get("dual_nature_archetype"):
             raise forms.ValidationError("Dual Nature power requires a second archetype")
 
         # Validate Dual Nature Academy has ability
-        if "dual_nature" in powers and cleaned_data.get("dual_nature_archetype") == "academy" and not cleaned_data.get("dual_nature_ability"):
-            raise forms.ValidationError("Dual Nature Academy requires an associated ability")
+        if (
+            "dual_nature" in powers
+            and cleaned_data.get("dual_nature_archetype") == "academy"
+            and not cleaned_data.get("dual_nature_ability")
+        ):
+            raise forms.ValidationError(
+                "Dual Nature Academy requires an associated ability"
+            )
 
         # Calculate feature points
         balefire = cleaned_data.get("balefire", 0)
@@ -104,7 +147,7 @@ class FreeholdForm(forms.ModelForm):
 
         # First passage is free
         if passages > 1:
-            feature_points += (passages - 1)
+            feature_points += passages - 1
 
         # Add power costs
         power_costs = {

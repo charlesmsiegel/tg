@@ -4,15 +4,16 @@ Book: Akashic Brotherhood (Balance, Ascension and the Cosmic All)
 Author: Emrey Barnes
 """
 
+from characters.models.mage.effect import Effect
+from characters.models.mage.focus import Instrument, Paradigm, Practice
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
-from characters.models.mage.focus import Instrument, Practice, Paradigm
-from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
+from game.models import Book
 from items.models.mage.wonder import Wonder
 from locations.models.mage.chantry import Chantry
 from locations.models.mage.node import Node
-from game.models import Book
+
 
 def populate_ab_1e():
     """Populate Akashic Brotherhood content"""
@@ -26,7 +27,7 @@ def populate_ab_1e():
             "system": "M20",  # or appropriate system
             "publisher": "White Wolf",
             "publication_date": "1994",
-        }
+        },
     )
 
     # ========================================
@@ -38,7 +39,7 @@ def populate_ab_1e():
         defaults={
             "description": "Reality is an interconnected whole. All things are part of the Cosmic All, the unified field of existence. By understanding one's place in this totality, one can manipulate the patterns of reality.",
             "book": book,
-        }
+        },
     )
 
     paradigm_drahma, _ = Paradigm.objects.get_or_create(
@@ -46,7 +47,7 @@ def populate_ab_1e():
         defaults={
             "description": "What comes around goes around. The cycle of action and reaction, karma and rebirth. Understanding Drahma allows one to predict and direct destiny itself.",
             "book": book,
-        }
+        },
     )
 
     # ========================================
@@ -58,7 +59,7 @@ def populate_ab_1e():
         defaults={
             "description": "More than martial arts - the refining of being through movement, breath, and focus. Do encompasses the physical, mental, spiritual and primal aspects of existence.",
             "book": book,
-        }
+        },
     )
 
     practice_meditation, _ = Practice.objects.get_or_create(
@@ -66,7 +67,7 @@ def populate_ab_1e():
         defaults={
             "description": "Deep contemplative practices to achieve connection with the inner self and the flow of the Cosmic All.",
             "book": book,
-        }
+        },
     )
 
     practice_breath, _ = Practice.objects.get_or_create(
@@ -74,7 +75,7 @@ def populate_ab_1e():
         defaults={
             "description": "Relearning to breathe properly, returning to the 'prenatal' breathing that links into the spark-of-life. This primal power circulates rejuvenating force through the whole being.",
             "book": book,
-        }
+        },
     )
 
     # ========================================
@@ -86,7 +87,7 @@ def populate_ab_1e():
         defaults={
             "description": "A cloth belt that binds the Forces Sphere within the practitioner, serving as both symbol and focus.",
             "book": book,
-        }
+        },
     )
 
     instrument_magick_papers, _ = Instrument.objects.get_or_create(
@@ -94,7 +95,7 @@ def populate_ab_1e():
         defaults={
             "description": "Slips of yellow paper inscribed with characters in red ink (often mixed with the practitioner's blood). The inscription determines powers, size indicates strength.",
             "book": book,
-        }
+        },
     )
 
     instrument_prayer_beads, _ = Instrument.objects.get_or_create(
@@ -102,7 +103,7 @@ def populate_ab_1e():
         defaults={
             "description": "Sacred beads used for meditation, chanting, and focusing will.",
             "book": book,
-        }
+        },
     )
 
     # ========================================
@@ -122,7 +123,7 @@ def populate_ab_1e():
             "status": "App",
             "willpower": 9,
             "quintessence": 15,
-        }
+        },
     )
 
     # Gentle Mountain - Major NPC
@@ -138,7 +139,7 @@ def populate_ab_1e():
             "status": "App",
             "willpower": 10,
             "quintessence": 20,
-        }
+        },
     )
 
     # Fall Breeze - Major NPC
@@ -152,7 +153,7 @@ def populate_ab_1e():
             "book": book,
             "status": "App",
             "willpower": 6,
-        }
+        },
     )
 
     # Battering Ram - Protagonist
@@ -167,7 +168,7 @@ def populate_ab_1e():
             "book": book,
             "status": "App",
             "willpower": 5,
-        }
+        },
     )
 
     # Nichiba - The Weaponless Defender
@@ -181,7 +182,7 @@ def populate_ab_1e():
             "arete": 4,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     # Cheng Sa - The Woodcutter
@@ -195,7 +196,7 @@ def populate_ab_1e():
             "arete": 4,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     # Darumha
@@ -209,7 +210,7 @@ def populate_ab_1e():
             "arete": 3,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     # Ma Yee Fuk - Antagonist/Nephandi
@@ -222,7 +223,7 @@ def populate_ab_1e():
             "arete": 5,
             "book": book,
             "status": "Dec",
-        }
+        },
     )
 
     # Akasha - Ascended
@@ -236,7 +237,7 @@ def populate_ab_1e():
             "book": book,
             "status": "App",
             "notes": "Ascended - no longer incarnate",
-        }
+        },
     )
 
     # Historical Figures
@@ -245,7 +246,7 @@ def populate_ab_1e():
         defaults={
             "description": "Historical Akashic Brother who employed the Long-range Eyes rote to spy on enemies.",
             "book": book,
-        }
+        },
     )
 
     vu_zhang, _ = MtAHuman.objects.get_or_create(
@@ -253,7 +254,7 @@ def populate_ab_1e():
         defaults={
             "description": "Student whose girlfriend Glowing Orchid was captured by wizard Yu Fang. Used Sure Footing rote to scale vertical cliff face.",
             "book": book,
-        }
+        },
     )
 
     glowing_orchid, _ = MtAHuman.objects.get_or_create(
@@ -261,7 +262,7 @@ def populate_ab_1e():
         defaults={
             "description": "Vu Zhang's girlfriend, captured by Yu Fang. Member of the Brotherhood.",
             "book": book,
-        }
+        },
     )
 
     yu_fang, _ = Mage.objects.get_or_create(
@@ -271,7 +272,7 @@ def populate_ab_1e():
             "tradition": "Unknown",
             "arete": 4,
             "book": book,
-        }
+        },
     )
 
     quiet_meadow, _ = MtAHuman.objects.get_or_create(
@@ -279,7 +280,7 @@ def populate_ab_1e():
         defaults={
             "description": "Battering Ram's mortal mate in a past incarnation during the Grand Convocation era.",
             "book": book,
-        }
+        },
     )
 
     # Technocracy/Iteration X
@@ -289,7 +290,7 @@ def populate_ab_1e():
             "description": "Battering Ram's manager, revealed to be an Iteration X cyborg assassin. Half human, half machine with spinning blade weapons in hands. Destroyed by Raging Eagle.",
             "book": book,
             "notes": "Iteration X HIT Mark - deceased",
-        }
+        },
     )
 
     # Other Tradition Mages
@@ -303,7 +304,7 @@ def populate_ab_1e():
             "arete": 5,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     dimitri, _ = Mage.objects.get_or_create(
@@ -316,7 +317,7 @@ def populate_ab_1e():
             "arete": 2,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     wlakar_fahir, _ = Mage.objects.get_or_create(
@@ -328,7 +329,7 @@ def populate_ab_1e():
             "arete": 5,
             "book": book,
             "status": "App",
-        }
+        },
     )
 
     qi_lee_hin, _ = Mage.objects.get_or_create(
@@ -340,7 +341,7 @@ def populate_ab_1e():
             "arete": 3,
             "book": book,
             "notes": "Spirit guide/entity",
-        }
+        },
     )
 
     # ========================================
@@ -359,7 +360,7 @@ def populate_ab_1e():
             "requires_correspondence": 2,
             "requires_mind": 1,
             "effect_type": "Perception",
-        }
+        },
     )
 
     rote_long_range_eyes, _ = Rote.objects.get_or_create(
@@ -369,7 +370,7 @@ def populate_ab_1e():
             "tradition": "Akashic Brotherhood",
             "description": "Employed by Pang Xiao to spy on his enemies. Power of the celestial personae of Long-range Eyes.",
             "book": book,
-        }
+        },
     )
 
     # Sure Footing
@@ -383,7 +384,7 @@ def populate_ab_1e():
             "primary_sphere_level": 3,
             "requires_prime": 2,
             "effect_type": "Physical",
-        }
+        },
     )
 
     rote_sure_footing, _ = Rote.objects.get_or_create(
@@ -393,7 +394,7 @@ def populate_ab_1e():
             "tradition": "Akashic Brotherhood",
             "description": "Allows running up near-vertical cliff faces and impossible surfaces. Used by Vu Zhang to scale Yu Fang's mountain fortress.",
             "book": book,
-        }
+        },
     )
 
     # Flash-bomb Stunt
@@ -406,7 +407,7 @@ def populate_ab_1e():
             "primary_sphere": "Forces",
             "primary_sphere_level": 2,
             "effect_type": "Attack",
-        }
+        },
     )
 
     rote_flash_bomb, _ = Rote.objects.get_or_create(
@@ -416,7 +417,7 @@ def populate_ab_1e():
             "tradition": "Akashic Brotherhood",
             "description": "Method of blinding opponents for attack and evasion. Taught to those who battle in Ascension Wars.",
             "book": book,
-        }
+        },
     )
 
     # Smoke-bomb Trick
@@ -430,7 +431,7 @@ def populate_ab_1e():
             "primary_sphere_level": 2,
             "requires_prime": 2,
             "effect_type": "Defense",
-        }
+        },
     )
 
     rote_smoke_bomb, _ = Rote.objects.get_or_create(
@@ -440,7 +441,7 @@ def populate_ab_1e():
             "tradition": "Akashic Brotherhood",
             "description": "Creates blinding smoke cloud. Taught to Ascension War combatants.",
             "book": book,
-        }
+        },
     )
 
     # Summon Weapon
@@ -455,7 +456,7 @@ def populate_ab_1e():
             "requires_mind": 1,
             "alternate_spheres": "Matter 2, Prime 2, Mind 1",
             "effect_type": "Utility",
-        }
+        },
     )
 
     rote_summon_weapon, _ = Rote.objects.get_or_create(
@@ -465,7 +466,7 @@ def populate_ab_1e():
             "tradition": "Akashic Brotherhood",
             "description": "Ancient rote allowing monks to summon sacred weapons. Usually vulgar but can be explained by bounces, handy companions, or ricochets.",
             "book": book,
-        }
+        },
     )
 
     # Focus of the Blow
@@ -479,7 +480,7 @@ def populate_ab_1e():
             "primary_sphere_level": 1,
             "requires_mind": 1,
             "effect_type": "Enhancement",
-        }
+        },
     )
 
     rote_focus_blow, _ = Rote.objects.get_or_create(
@@ -490,7 +491,7 @@ def populate_ab_1e():
             "description": "Teaching rote used by Thundering Spring River Sparrow to help older students perfect Do execution.",
             "book": book,
             "requires_maneuver": "Punch, Kick, Flying Kick or Throw",
-        }
+        },
     )
 
     # Spirit Wounder
@@ -503,7 +504,7 @@ def populate_ab_1e():
             "primary_sphere": "Spirit",
             "primary_sphere_level": 3,
             "effect_type": "Attack",
-        }
+        },
     )
 
     rote_spirit_wounder, _ = Rote.objects.get_or_create(
@@ -514,7 +515,7 @@ def populate_ab_1e():
             "description": "Ancient Yogi rote for contending with less cooperative Umbral entities. Essential for spirit combat.",
             "book": book,
             "requires_maneuver": "Punch, Kick or Throw",
-        }
+        },
     )
 
     # Repeating Blow
@@ -530,7 +531,7 @@ def populate_ab_1e():
             "requires_mind": 1,
             "requires_prime": 2,
             "effect_type": "Attack",
-        }
+        },
     )
 
     rote_repeating_blow, _ = Rote.objects.get_or_create(
@@ -541,7 +542,7 @@ def populate_ab_1e():
             "description": "Created by Ah Mu to shatter boulders and crack cliffs. One of the most popular attacks for skilled Brothers. Each success adds damage multiplier (max x4 at 5 successes, +1 damage per success above 5). Can reach 20+ damage dice. Extremely vulgar.",
             "book": book,
             "requires_maneuver": "Punch or Kick",
-        }
+        },
     )
 
     # ========================================
@@ -560,7 +561,7 @@ def populate_ab_1e():
             "spheres_required": "Correspondence 2, Forces 2",
             "activation_cost": 1,
             "notes": "Used in Ascension Wars against Nephandi, demons, and vampires. Beam of light is vulgar magick. Uses 1 Quintessence per turn.",
-        }
+        },
     )
 
     # Limitless Bow
@@ -575,7 +576,7 @@ def populate_ab_1e():
             "spheres_required": "Matter 3, Prime 3",
             "activation_cost": 1,
             "notes": "Difficulty 5 to activate, check duration chart. Removing arrow ends duration immediately but that arrow persists.",
-        }
+        },
     )
 
     # Battering Ram's Sword
@@ -589,7 +590,7 @@ def populate_ab_1e():
             "book": book,
             "spheres_required": "Forces 2, Prime 2",
             "notes": "Dedicated focus. Can only be used by its owner.",
-        }
+        },
     )
 
     # Generic Kemian Prayer Beads
@@ -603,7 +604,7 @@ def populate_ab_1e():
             "book": book,
             "spheres_required": "Prime 2",
             "notes": "Gentle Mountain wears a set of these.",
-        }
+        },
     )
 
     # ========================================
@@ -618,7 +619,7 @@ def populate_ab_1e():
             "gauntlet_rating": 3,
             "book": book,
             "reality_zone_rating": 4,
-        }
+        },
     )
 
     node_inner_truth, _ = Node.objects.get_or_create(
@@ -629,7 +630,7 @@ def populate_ab_1e():
             "points": 5,
             "resonance": "Meditative, Balanced, Ancient",
             "book": book,
-        }
+        },
     )
 
     # The Akashic Record
@@ -641,7 +642,7 @@ def populate_ab_1e():
             "book": book,
             "reality_zone_rating": 5,
             "notes": "Access requires Mind magick. Composed of both written texts and collective mind/spirit pool. Falling into the Record can cause Quiet.",
-        }
+        },
     )
 
     node_akashic_record, _ = Node.objects.get_or_create(
@@ -653,7 +654,7 @@ def populate_ab_1e():
             "resonance": "Knowledge, Memory, Timeless, Unity",
             "book": book,
             "notes": "Access restricted to advanced Brothers.",
-        }
+        },
     )
 
     # Raging Eagle's Cavern
@@ -664,7 +665,7 @@ def populate_ab_1e():
             "gauntlet_rating": 4,
             "book": book,
             "reality_zone_rating": 3,
-        }
+        },
     )
 
     # Shaolin Temple (Historical)
@@ -676,13 +677,17 @@ def populate_ab_1e():
             "book": book,
             "status": "Ret",
             "notes": "Destroyed in historical incident. Now controlled by Celestial Chorus mages.",
-        }
+        },
     )
 
     print("✓ Created Akashic Brotherhood paradigms and practices")
     print("✓ Created Akashic Brotherhood instruments and foci")
-    print("✓ Created major NPCs: Raging Eagle, Gentle Mountain, Fall Breeze, Battering Ram")
-    print("✓ Created supporting characters: Nichiba, Cheng Sa, Darumha, Ma Yee Fuk, Akasha")
+    print(
+        "✓ Created major NPCs: Raging Eagle, Gentle Mountain, Fall Breeze, Battering Ram"
+    )
+    print(
+        "✓ Created supporting characters: Nichiba, Cheng Sa, Darumha, Ma Yee Fuk, Akasha"
+    )
     print("✓ Created historical figures and Sleepers")
     print("✓ Created Other Tradition mages: DuMonte, Dimitri, Wlakar Fahir")
     print("✓ Created Technocracy antagonists")
@@ -692,8 +697,10 @@ def populate_ab_1e():
     print("✓ Created 3 Nodes")
     print("\nAkashic Brotherhood content population complete!")
 
+
 if __name__ == "__main__":
     import os
+
     import django
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")

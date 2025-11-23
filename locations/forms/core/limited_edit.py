@@ -8,7 +8,6 @@ Only Chronicle Head STs and Admins can directly edit mechanical fields.
 """
 
 from django import forms
-
 from locations.models.core.location import LocationModel
 
 
@@ -29,22 +28,26 @@ class LimitedLocationEditForm(forms.ModelForm):
     class Meta:
         model = LocationModel
         fields = [
-            'description',
-            'public_info',
-            'image',
+            "description",
+            "public_info",
+            "image",
         ]
         widgets = {
-            'description': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Location description, features, atmosphere...'
-            }),
-            'public_info': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'Information visible to other players...'
-            }),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Location description, features, atmosphere...",
+                }
+            ),
+            "public_info": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Information visible to other players...",
+                }
+            ),
         }
         help_texts = {
-            'description': 'Detailed description of the location',
-            'public_info': 'Information other players can see about this location',
-            'image': 'Location image (will require ST approval)',
+            "description": "Detailed description of the location",
+            "public_info": "Information other players can see about this location",
+            "image": "Location image (will require ST approval)",
         }

@@ -73,7 +73,9 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, MessageMixin, UpdateView):
+class HumanUpdateView(
+    EditPermissionMixin, ApprovedUserContextMixin, MessageMixin, UpdateView
+):
     """
     Update view for Human characters.
     Only STs and Admins can directly edit character fields.

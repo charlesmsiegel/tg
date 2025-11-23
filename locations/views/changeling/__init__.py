@@ -1,8 +1,13 @@
-from .freehold import FreeholdDetailView, FreeholdListView, FreeholdCreateView, FreeholdUpdateView
 from .creation import (
     FreeholdBasicsView,
+    FreeholdCreationView,
+    FreeholdDetailsView,
     FreeholdFeaturesView,
     FreeholdPowersView,
-    FreeholdDetailsView,
-    FreeholdCreationView,
+)
+from .freehold import (
+    FreeholdCreateView,
+    FreeholdDetailView,
+    FreeholdListView,
+    FreeholdUpdateView,
 )

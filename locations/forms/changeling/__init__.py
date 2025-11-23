@@ -1,7 +1,7 @@
-from .freehold import FreeholdForm
 from .creation import (
     FreeholdBasicsForm,
+    FreeholdDetailsForm,
     FreeholdFeaturesForm,
     FreeholdPowersForm,
-    FreeholdDetailsForm,
 )
+from .freehold import FreeholdForm

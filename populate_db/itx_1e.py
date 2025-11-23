@@ -584,7 +584,9 @@ cyberfascists.add_source(itx_1e, 67)
 
 print("✓ Iteration X sourcebook data populated successfully!")
 print(f"  - Created {iteration_x.name} Convention with 3 Methodologies")
-print(f"  - Created {Effect.objects.filter(name__contains='Primium').count() + Effect.objects.filter(name__contains='Nanotech').count() + 20} Technocratic Effects")
+print(
+    f"  - Created {Effect.objects.filter(name__contains='Primium').count() + Effect.objects.filter(name__contains='Nanotech').count() + 20} Technocratic Effects"
+)
 print(f"  - Created 5 named character mages")
 print(f"  - Created 10+ AES and template characters")
 print(f"  - Created HIT Mark templates (I-VI)")

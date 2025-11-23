@@ -2,11 +2,11 @@ from characters.models.werewolf.spirit_character import SpiritCharacter
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 

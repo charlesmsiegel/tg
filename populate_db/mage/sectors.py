@@ -24,7 +24,7 @@ public_grid = Sector.objects.get_or_create(
 - Search engine indexed content
 - Public forums and communities""",
         "hazards": "Information overload, trolls, viral misinformation, data scrapers",
-    }
+    },
 )[0]
 public_grid.add_source("The Operative's Dossier", 66)
 
@@ -51,7 +51,7 @@ warzone_gladiator = Sector.objects.get_or_create(
 - Leaderboards and rankings
 - Automated healing zones""",
         "hazards": "Aggressive combatants, stray fire, arena hazards, permanent icon damage",
-    }
+    },
 )[0]
 warzone_gladiator.add_source("The Operative's Dossier", 66)
 
@@ -90,7 +90,7 @@ VIOLATION: Using anachronistic tech is vulgar with witnesses (+2 difficulty)""",
 - Jazz band provides atmospheric cover
 - Bourbon flows freely (non-digital, somehow)""",
         "hazards": "Genre purists, information brokers, double agents, memory wipes for violations",
-    }
+    },
 )[0]
 spys_demise.add_source("The Operative's Dossier", 67)
 
@@ -126,7 +126,7 @@ tech_vault = Sector.objects.get_or_create(
 - AI-assisted calculation tools
 - Quantum computing resources""",
         "hazards": "Automated defense systems, HIT Marks, surveillance, immediate de-rez for intruders",
-    }
+    },
 )[0]
 tech_vault.add_source("The Operative's Dossier", 67)
 
@@ -157,7 +157,7 @@ corrupted_zone = Sector.objects.get_or_create(
 - Ghostly echoes of former users
 - Fragments of destroyed AROs""",
         "hazards": "EXTREME DANGER: All Programs generate Paradox. Whiteout risk constant. 89 fatalities from reformat attempts. Recommend AVOID.",
-    }
+    },
 )[0]
 corrupted_zone.add_source("The Operative's Dossier", 66)
 
@@ -183,7 +183,7 @@ hung_sector = Sector.objects.get_or_create(
 - Temporal echoes visible
 - Past and present overlap""",
         "hazards": "Temporal prison risk, causality violations, extreme Paradox, may never escape",
-    }
+    },
 )[0]
 hung_sector.add_source("The Operative's Dossier", 66)
 
@@ -213,7 +213,7 @@ abandoned_hub = Sector.objects.get_or_create(
 - Echoing data transmissions
 - Preserved but lifeless""",
         "hazards": "Eerie atmosphere, malfunctioning security, ghost processes, psychological effects",
-    }
+    },
 )[0]
 abandoned_hub.add_source("The Operative's Dossier", 67)
 
@@ -243,7 +243,7 @@ digital_graveyard = Sector.objects.get_or_create(
 - Connection maps
 - Death date markers""",
         "hazards": "CAUTION: Psychological trauma risk. Ghost-like EDEs aggressive. Near Entropic Space boundary. Bring backup.",
-    }
+    },
 )[0]
 digital_graveyard.add_source("The Operative's Dossier", 70)
 
@@ -272,7 +272,7 @@ dev_null = Sector.objects.get_or_create(
 - Fragmented memories
 - Lost information""",
         "hazards": "EXTREME DANGER: Collapsing data piles cause lethal damage. Missing information occasionally recoverable. Dataphyte risk CATASTROPHIC.",
-    }
+    },
 )[0]
 dev_null.add_source("The Operative's Dossier", 67)
 
@@ -301,7 +301,7 @@ streamland = Sector.objects.get_or_create(
 - Video games, television, streaming services
 - Find anything with Perception + Computer (diff 7-8)""",
         "hazards": "Information overload, temporary data only, finding specific streams difficult, no privacy",
-    }
+    },
 )[0]
 streamland.add_source("The Operative's Dossier", 67)
 
@@ -328,7 +328,7 @@ virgin_expanse = Sector.objects.get_or_create(
 - No existing structures
 - Pure information space""",
         "hazards": "Requires advanced Data/Correspondence to access, easy to get lost, no landmarks, no help available",
-    }
+    },
 )[0]
 virgin_expanse.add_source("The Operative's Dossier", 66)
 
@@ -365,9 +365,9 @@ dark_web_hub = Sector.objects.get_or_create(
 - Whistleblower dead drops
 - Hidden service directories""",
         "hazards": "CAUTION: Illegal activity, Reality Deviants (Virtual Adepts, Glass Walkers), Nephandi lairs, botnets, surveillance risk",
-    }
+    },
 )[0]
-dark_web_hub.add_source("The Operative's Dossier", 70-71)
+dark_web_hub.add_source("The Operative's Dossier", 70 - 71)
 
 # Ultima Thule Research Sector
 ultima_thule_sector = Sector.objects.get_or_create(
@@ -393,9 +393,9 @@ ultima_thule_sector = Sector.objects.get_or_create(
 - Sample analysis data
 - Distorted communication channels""",
         "hazards": "Severe communication delay, messages garbled, temporal distortion, isolation, may lose contact entirely",
-    }
+    },
 )[0]
-ultima_thule_sector.add_source("The Operative's Dossier", 22-24)
+ultima_thule_sector.add_source("The Operative's Dossier", 22 - 24)
 
 # Arcology X Sector
 arcology_x_sector = Sector.objects.get_or_create(
@@ -422,9 +422,9 @@ arcology_x_sector = Sector.objects.get_or_create(
 - Resource distribution
 - Citizen happiness monitoring""",
         "hazards": "Total surveillance, potential TE attacks (Noah Campeau), Virtual Adept intrusions, system havoc risk",
-    }
+    },
 )[0]
-arcology_x_sector.add_source("The Operative's Dossier", 13-15)
+arcology_x_sector.add_source("The Operative's Dossier", 13 - 15)
 
 # ====================
 # FAMOUS SECTORS FROM THE OPERATIVE'S DOSSIER
@@ -461,9 +461,9 @@ the_seer = Sector.objects.get_or_create(
 - Research collaboration spaces
 - The Seer's omniscient guidance""",
         "hazards": "The Seer's judgment (harsh for unworthy), information overload, guardian constructs, knowledge seekers may never leave",
-    }
+    },
 )[0]
-the_seer.add_source("The Operative's Dossier", 122-123)
+the_seer.add_source("The Operative's Dossier", 122 - 123)
 
 # Paradise Island - Tropical Resort Sector
 paradise_island = Sector.objects.get_or_create(
@@ -495,7 +495,7 @@ paradise_island = Sector.objects.get_or_create(
 - Relaxation zones
 - Entertainment venues""",
         "hazards": "Addictive environment, users lose track of time, physical body neglect, difficulty leaving",
-    }
+    },
 )[0]
 paradise_island.add_source("The Operative's Dossier", 123)
 
@@ -527,7 +527,7 @@ the_galleon = Sector.objects.get_or_create(
 - Port towns for trading
 - Buried treasure (encrypted data)""",
         "hazards": "Pirate attacks, naval combat, sea monsters, scurvy (data corruption), storms",
-    }
+    },
 )[0]
 the_galleon.add_source("The Operative's Dossier", 123)
 
@@ -559,9 +559,9 @@ ghastenburg_castle = Sector.objects.get_or_create(
 - Dungeon crawling zones
 - Tournament grounds""",
         "hazards": "Dragon attacks, dungeon traps, orc raids, magic backfire, permanent character death possible",
-    }
+    },
 )[0]
-ghastenburg_castle.add_source("The Operative's Dossier", 123-124)
+ghastenburg_castle.add_source("The Operative's Dossier", 123 - 124)
 
 # The Playground - Defunct Gaming Sector
 the_playground = Sector.objects.get_or_create(
@@ -588,7 +588,7 @@ the_playground = Sector.objects.get_or_create(
 - Pre-Crash gaming archives
 - Nostalgic artifacts""",
         "hazards": "Corrupted code, ghost processes, emotional trauma (nostalgia), collapsing data structures",
-    }
+    },
 )[0]
 the_playground.add_source("The Operative's Dossier", 124)
 
@@ -623,7 +623,7 @@ nw_high_school = Sector.objects.get_or_create(
 - Curriculum libraries
 - Student assessment systems""",
         "hazards": "Heavy surveillance, indoctrination attempts, HIT Mark presence, immediate de-rez for 'disruption'",
-    }
+    },
 )[0]
 nw_high_school.add_source("The Operative's Dossier", 124)
 
@@ -651,7 +651,7 @@ the_crater = Sector.objects.get_or_create(
 - Fighter registration
 - Victory leaderboards""",
         "hazards": "EXTREME DANGER: Unregulated combat, permanent icon damage possible, aggressive fighters, rigged matches",
-    }
+    },
 )[0]
 the_crater.add_source("The Operative's Dossier", 124)
 
@@ -685,7 +685,7 @@ club_dionysus = Sector.objects.get_or_create(
 - DJ platforms
 - Chill-out spaces""",
         "hazards": "Addictive experiences, loss of self-control, consciousness overload, difficulty distinguishing real from digital",
-    }
+    },
 )[0]
 club_dionysus.add_source("The Operative's Dossier", 125)
 
@@ -717,7 +717,7 @@ ground_zero = Sector.objects.get_or_create(
 - Neutral arbitration services
 - News feeds and bulletin boards""",
         "hazards": "Information brokers (costly), surveillance by all factions, deals may be dangerous, neutral ground violations rare but catastrophic",
-    }
+    },
 )[0]
 ground_zero.add_source("The Operative's Dossier", 125)
 
@@ -749,7 +749,7 @@ pool_of_reflection = Sector.objects.get_or_create(
 - Truth revelation zones
 - Serenity enforcement""",
         "hazards": "Confronting inner demons, truth too harsh to bear, loss of identity, spiritual crisis",
-    }
+    },
 )[0]
 pool_of_reflection.add_source("The Operative's Dossier", 126)
 
@@ -783,7 +783,7 @@ mecha_sector = Sector.objects.get_or_create(
 - Pilot training sims
 - Tournament brackets""",
         "hazards": "EXTREME DANGER: Massive combat damage, mecha destruction, pilot trauma, collateral damage zones",
-    }
+    },
 )[0]
 mecha_sector.add_source("The Operative's Dossier", 126)
 
@@ -815,7 +815,7 @@ the_matterhorn = Sector.objects.get_or_create(
 - Rescue systems
 - Climbing leaderboards""",
         "hazards": "Falling damage, environmental hazards (avalanches, storms), exhaustion, altitude sickness (data degradation)",
-    }
+    },
 )[0]
 the_matterhorn.add_source("The Operative's Dossier", 126)
 
@@ -850,7 +850,7 @@ net_sphinx_library = Sector.objects.get_or_create(
 - The Net-sphinx's chamber
 - Knowledge rewards""",
         "hazards": "Riddle failure consequences, Net-sphinx's wrath, cursed knowledge, maze-like structure, may be trapped",
-    }
+    },
 )[0]
 net_sphinx_library.add_source("The Operative's Dossier", 127)
 

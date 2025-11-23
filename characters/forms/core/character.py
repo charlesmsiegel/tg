@@ -33,32 +33,40 @@ class LimitedCharacterForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Add placeholders for better UX
-        self.fields["concept"].widget.attrs.update({
-            "placeholder": "Enter character concept"
-        })
-        self.fields["description"].widget.attrs.update({
-            "placeholder": "Describe your character's appearance, personality, history, etc.",
-            "rows": 6,
-        })
-        self.fields["public_info"].widget.attrs.update({
-            "placeholder": "Information that other players can see about your character",
-            "rows": 4,
-        })
-        self.fields["notes"].widget.attrs.update({
-            "placeholder": "Private notes (only you and STs can see these)",
-            "rows": 4,
-        })
+        self.fields["concept"].widget.attrs.update(
+            {"placeholder": "Enter character concept"}
+        )
+        self.fields["description"].widget.attrs.update(
+            {
+                "placeholder": "Describe your character's appearance, personality, history, etc.",
+                "rows": 6,
+            }
+        )
+        self.fields["public_info"].widget.attrs.update(
+            {
+                "placeholder": "Information that other players can see about your character",
+                "rows": 4,
+            }
+        )
+        self.fields["notes"].widget.attrs.update(
+            {
+                "placeholder": "Private notes (only you and STs can see these)",
+                "rows": 4,
+            }
+        )
 
         # Image is optional
         self.fields["image"].required = False
 
         # Add help text
-        self.fields["public_info"].help_text = (
+        self.fields[
+            "public_info"
+        ].help_text = (
             "This information is visible to other players based on visibility settings."
         )
-        self.fields["notes"].help_text = (
-            "Private notes visible only to you and storytellers."
-        )
+        self.fields[
+            "notes"
+        ].help_text = "Private notes visible only to you and storytellers."
 
     def save(self, commit=True):
         """

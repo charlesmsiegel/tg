@@ -23,7 +23,9 @@ def main():
         print("Usage: python scripts/debug/debug_populate.py <path_to_populate_script>")
         print("\nExample:")
         print("    python scripts/debug/debug_populate.py populate_db/rotes.py")
-        print("    python scripts/debug/debug_populate.py populate_db/merits_and_flaws.py")
+        print(
+            "    python scripts/debug/debug_populate.py populate_db/merits_and_flaws.py"
+        )
         sys.exit(1)
 
     script_path = Path(sys.argv[1])

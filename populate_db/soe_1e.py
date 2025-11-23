@@ -3,20 +3,20 @@ Sons of Ether Tradition Book (1st Edition) - Paradigma Journal
 Populates characters, wonders, rotes, locations, and other game objects
 """
 
+from characters.models.core.ability_block import Ability
+from characters.models.core.meritflaw import MeritFlaw
+from characters.models.core.specialty import Specialty
+from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
-from characters.models.mage.faction import MageFaction
-from characters.models.core.ability_block import Ability
-from characters.models.core.specialty import Specialty
-from characters.models.core.meritflaw import MeritFlaw
-from items.models.mage.wonder import Wonder
-from items.models.mage.artifact import Artifact
-from items.models.mage.talisman import Talisman
-from locations.models.mage.chantry import Chantry
-from locations.models.mage.node import Node
-from locations.models.mage.library import Library
 from core.models import Book
 from game.models import ObjectType
+from items.models.mage.artifact import Artifact
+from items.models.mage.talisman import Talisman
+from items.models.mage.wonder import Wonder
+from locations.models.mage.chantry import Chantry
+from locations.models.mage.library import Library
+from locations.models.mage.node import Node
 
 
 def add_source():
@@ -27,7 +27,7 @@ def add_source():
             "type": "mage",
             "edition": 1,
             "year": 1994,
-        }
+        },
     )
     return soe
 
@@ -40,7 +40,7 @@ def create_factions(soe):
         name="Sons of Ether",
         defaults={
             "description": "Scientists dedicated to progressive science and grand theories"
-        }
+        },
     )
     sons_of_ether.add_source("Sons of Ether Tradition Book", parent_name="Traditions")
 
@@ -50,7 +50,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Scientists obsessed with exploration of Etherspace and the unknown reaches"
-        }
+        },
     )
     ethernauts.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -59,7 +59,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Dedicated to Science for the betterment of humankind and a better tomorrow"
-        }
+        },
     )
     utopians.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -68,7 +68,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Also called Webslingers, obsessed with the Digital Web as the next battleground"
-        }
+        },
     )
     cybernauts.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -77,7 +77,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Reformers seeking to change Victorian standards and equalize power in the Tradition"
-        }
+        },
     )
     progressivists.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -86,7 +86,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Conservative Scientists who resist change to the Tradition's structure"
-        }
+        },
     )
     traditionalists.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -95,7 +95,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Obsessed with their theories to exclusion of ethics and common sense"
-        }
+        },
     )
     mad_scientists.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -104,7 +104,7 @@ def create_factions(soe):
         parent=sons_of_ether,
         defaults={
             "description": "Also called Pulp Heroes, embrace cliff-hanger serials and ray gun adventures"
-        }
+        },
     )
     adventurers.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -113,7 +113,7 @@ def create_factions(soe):
         name="Electrodyne Engineers",
         defaults={
             "description": "Precursor to Sons of Ether, founded 1865, defected from Technocracy in 1904"
-        }
+        },
     )
     electrodyne.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
 
@@ -128,13 +128,13 @@ def create_characters(soe):
         name="Doctor Eon",
         defaults={
             "description": "Master of many Sciences and Spheres, especially Life and Time. "
-                         "Hero of pulp adventures from 1935-1951. Known for physical superiority "
-                         "and scientific regimen. Supposedly died in 1951 but may still live in the future.",
+            "Hero of pulp adventures from 1935-1951. Known for physical superiority "
+            "and scientific regimen. Supposedly died in 1951 but may still live in the future.",
             "willpower": 9,
             "arete": 5,
             "essence": "Questing",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     doctor_eon.resonance.set_resonance({"dynamic": 3, "static": 2})
     doctor_eon.spheres.set_rank("life", 5)
@@ -149,9 +149,9 @@ def create_characters(soe):
         name='Joe "Lucky Skunk" Ross',
         defaults={
             "description": "Acolyte and member of Doctor Eon's Terrific Trio. Expert in electricity, "
-                         "jack-of-all-trades. Author of pulp accounts of Doc Eon's adventures. "
-                         "Large, strong, but clever despite his humble manner.",
-        }
+            "jack-of-all-trades. Author of pulp accounts of Doc Eon's adventures. "
+            "Large, strong, but clever despite his humble manner.",
+        },
     )
     joe_ross.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -160,7 +160,7 @@ def create_characters(soe):
         name='Frank "Bull" Barrett',
         defaults={
             "description": "Member of Doctor Eon's Terrific Trio. Expert in physics and mechanical engineering.",
-        }
+        },
     )
     bull_barrett.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -169,8 +169,8 @@ def create_characters(soe):
         name='Simon "Sesquipedalian" Smith',
         defaults={
             "description": "Member of Doctor Eon's Terrific Trio. Expert mathematician and astronomer. "
-                         "Known for using long, obscure words.",
-        }
+            "Known for using long, obscure words.",
+        },
     )
     simon_smith.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -179,14 +179,14 @@ def create_characters(soe):
         name="Czar Vargo",
         defaults={
             "description": "Greatest Son of Ether, missing since 1914. Born son of Black Sea fisherman, "
-                         "showed genius early. Inventor of the Conversion Engine. Attempted to seize "
-                         "world leadership in 1914 to prevent war, forced to retreat. Possibly commands "
-                         "fleet in Deep Umbra. Master of Forces.",
+            "showed genius early. Inventor of the Conversion Engine. Attempted to seize "
+            "world leadership in 1914 to prevent war, forced to retreat. Possibly commands "
+            "fleet in Deep Umbra. Master of Forces.",
             "willpower": 10,
             "arete": 6,
             "essence": "Dynamic",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     czar_vargo.resonance.set_resonance({"dynamic": 5})
     czar_vargo.spheres.set_rank("forces", 6)
@@ -199,9 +199,9 @@ def create_characters(soe):
         name="Count Roland",
         defaults={
             "description": "Doctor in Sons of Ether who discovered young Czar Vargo when the boy was 12. "
-                         "Mentor to Vargo.",
+            "Mentor to Vargo.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     count_roland.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -210,14 +210,14 @@ def create_characters(soe):
         name="Professor Elias",
         defaults={
             "description": "Created by Doctor Waldman from dead flesh. The being Mary Shelley used as "
-                         "model for Frankenstein's monster. Fled to Hollow Earth, studied with Goro monks, "
-                         "Awakened. Returned to find creator dead. Now studies in far north. Virtuous "
-                         "despite reputation. Near-ageless.",
+            "model for Frankenstein's monster. Fled to Hollow Earth, studied with Goro monks, "
+            "Awakened. Returned to find creator dead. Now studies in far north. Virtuous "
+            "despite reputation. Near-ageless.",
             "willpower": 8,
             "arete": 4,
             "essence": "Primordial",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     elias.spheres.set_rank("life", 5)
     elias.spheres.set_rank("matter", 4)
@@ -229,11 +229,11 @@ def create_characters(soe):
         name="Doctor Waldman",
         defaults={
             "description": "Austrian Son of Ether who created life from dead matter. Creator of Elias. "
-                         "Killed by peasant mob who burned his castle. Had caustic, sexist personality. "
-                         "May have aided Byron and Shelley against vampires.",
+            "Killed by peasant mob who burned his castle. Had caustic, sexist personality. "
+            "May have aided Byron and Shelley against vampires.",
             "faction_name": "Sons of Ether",
             "status": "Dec",  # Deceased
-        }
+        },
     )
     waldman.spheres.set_rank("life", 5)
     waldman.spheres.set_rank("matter", 4)
@@ -244,14 +244,14 @@ def create_characters(soe):
         name="Doctor Alexis Hastings",
         defaults={
             "description": "Physical chemist fascinated by alchemy and electricity. Believes electricity "
-                         "is key to transformation. Tinkerer who loves to manipulate devices. Enthusiastic "
-                         "contributor to Paradigma. Advocates collaboration. Studies Matter and Forces "
-                         "almost exclusively. Shy and conservative to strangers, energetic with friends.",
+            "is key to transformation. Tinkerer who loves to manipulate devices. Enthusiastic "
+            "contributor to Paradigma. Advocates collaboration. Studies Matter and Forces "
+            "almost exclusively. Shy and conservative to strangers, energetic with friends.",
             "willpower": 7,
             "arete": 4,
             "essence": "Dynamic",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     alexis.spheres.set_rank("matter", 4)
     alexis.spheres.set_rank("forces", 4)
@@ -263,30 +263,32 @@ def create_characters(soe):
         name="Captain Tiberius",
         defaults={
             "description": "Commander of the starship Etherjammer. Ethernaut exploring space. "
-                         "Leads expeditions to mysterious Planet X. Has built close-knit team of acolytes. "
-                         "Uses Velikovsky's theories for navigation.",
+            "Leads expeditions to mysterious Planet X. Has built close-knit team of acolytes. "
+            "Uses Velikovsky's theories for navigation.",
             "willpower": 8,
             "arete": 4,
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     captain_tiberius.spheres.set_rank("correspondence", 4)
     captain_tiberius.spheres.set_rank("forces", 3)
     captain_tiberius.spheres.set_rank("spirit", 3)
-    captain_tiberius.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
+    captain_tiberius.add_source(
+        "Sons of Ether Tradition Book", "The Birth of True Science"
+    )
 
     # Arerus
     arerus, _ = Mage.objects.get_or_create(
         name="Arerus",
         defaults={
             "description": "Ancient Trojan philosopher, first philosopher before Thales. Author of "
-                         "Kitab al Alacir (Book of Ether). Believed to have lived during siege of Troy. "
-                         "Father of Sons of Ether philosophy. Posited that everything is One Essence "
-                         "(Ether) and becomes Many through action of mind. First to set forth scientific "
-                         "principles for magick. Possibly a follower of Heraclitus.",
+            "Kitab al Alacir (Book of Ether). Believed to have lived during siege of Troy. "
+            "Father of Sons of Ether philosophy. Posited that everything is One Essence "
+            "(Ether) and becomes Many through action of mind. First to set forth scientific "
+            "principles for magick. Possibly a follower of Heraclitus.",
             "status": "Dec",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     arerus.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
 
@@ -295,9 +297,9 @@ def create_characters(soe):
         name="Sir Lawrence Cabot",
         defaults={
             "description": "Scholar who wrote influential commentaries on Kitab al Alacir. "
-                         "Influenced all modern translations of Arerus' work.",
+            "Influenced all modern translations of Arerus' work.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     sir_lawrence.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
 
@@ -306,9 +308,9 @@ def create_characters(soe):
         name="Lorenzo Golo",
         defaults={
             "description": "Former member of House Verditius in Order of Hermes. Broke away to form "
-                         "his own House, founding what would become Sons of Ether lineage.",
+            "his own House, founding what would become Sons of Ether lineage.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     lorenzo_golo.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -317,12 +319,12 @@ def create_characters(soe):
         name="General Karl Haushofer",
         defaults={
             "description": "Black magician behind Hitler's rise to power. Led Nazi Thule Society. "
-                         "Pursued Doctor Eon into Hollow Earth. Possessed Mental Thrall Helmet and "
-                         "Ray Projector. Allied with Mechanocracy. Fell into Smoky God trying to escape, "
-                         "believing he was falling toward river but actually falling up due to Hollow "
-                         "Earth physics.",
+            "Pursued Doctor Eon into Hollow Earth. Possessed Mental Thrall Helmet and "
+            "Ray Projector. Allied with Mechanocracy. Fell into Smoky God trying to escape, "
+            "believing he was falling toward river but actually falling up due to Hollow "
+            "Earth physics.",
             "status": "Dec",
-        }
+        },
     )
     haushofer.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -331,11 +333,11 @@ def create_characters(soe):
         name="Master Scientist Wells",
         defaults={
             "description": "Master Scientist who warns against any dealings with Nephandi. "
-                         "Has seen great minds fall to corruption, including Doctor Gordon.",
+            "Has seen great minds fall to corruption, including Doctor Gordon.",
             "willpower": 9,
             "arete": 5,
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     master_wells.add_source("Sons of Ether Tradition Book", "Opinions")
 
@@ -344,11 +346,11 @@ def create_characters(soe):
         name="Doctor Gordon",
         defaults={
             "description": "Renowned biologist who was corrupted by Nephandi and became barabbi. "
-                         "Dangerous - his understanding of biology turned to evil uses. "
-                         "To be reported immediately if encountered.",
+            "Dangerous - his understanding of biology turned to evil uses. "
+            "To be reported immediately if encountered.",
             "faction_name": "Nephandi",
             "status": "App",  # Active threat
-        }
+        },
     )
     doctor_gordon.add_source("Sons of Ether Tradition Book", "Opinions")
 
@@ -357,9 +359,9 @@ def create_characters(soe):
         name="Arnold Johnson",
         defaults={
             "description": "90-year-old Sleeper who witnessed Czar Vargo's 1914 takeover attempt. "
-                         "One of few who still remembers despite New World Order's efforts. "
-                         "Was 12 years old at the time. Became conspiracy theorist.",
-        }
+            "One of few who still remembers despite New World Order's efforts. "
+            "Was 12 years old at the time. Became conspiracy theorist.",
+        },
     )
     arnold.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
 
@@ -368,9 +370,9 @@ def create_characters(soe):
         name="Jet Boy",
         defaults={
             "description": "Protege of Doctor Danvers. Equipped with advanced jet backpack. "
-                         "Used Rubberon and dart gun with knockout agent. Fought Nazis in WWII. "
-                         "Deplores taking life.",
-        }
+            "Used Rubberon and dart gun with knockout agent. Fought Nazis in WWII. "
+            "Deplores taking life.",
+        },
     )
     jetboy.add_source("Sons of Ether Tradition Book", "World War II")
 
@@ -379,9 +381,9 @@ def create_characters(soe):
         name="Doctor Danvers",
         defaults={
             "description": "Inventor and mentor to Jet Boy. Created jet backpack and Rubberon. "
-                         "Fought for Allies in WWII.",
+            "Fought for Allies in WWII.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     doctor_danvers.add_source("Sons of Ether Tradition Book", "World War II")
 
@@ -390,11 +392,11 @@ def create_characters(soe):
         name="Heylel Teomim",
         defaults={
             "description": "Hermaphrodite Solificati representative to First Cabal in 1466. "
-                         "Known for pride and arrogance. Turned barabbi and led Cabal into trap. "
-                         "Condemned to gilgul and death. Called 'Heylel Thoabath' (Abomination) after "
-                         "betrayal. Tarnished Solificati reputation, leading to their eventual dissolution.",
+            "Known for pride and arrogance. Turned barabbi and led Cabal into trap. "
+            "Condemned to gilgul and death. Called 'Heylel Thoabath' (Abomination) after "
+            "betrayal. Tarnished Solificati reputation, leading to their eventual dissolution.",
             "status": "Dec",
-        }
+        },
     )
     heylel.add_source("Sons of Ether Tradition Book", "The Birth of True Science")
 
@@ -403,9 +405,9 @@ def create_characters(soe):
         name="Professor Vorgel",
         defaults={
             "description": "Called the social phenomenon of acolytes surpassing masters 'The Pinnochio Urge'. "
-                         "Brilliant but arrogant, claims no one equals his intellect.",
+            "Brilliant but arrogant, claims no one equals his intellect.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     vorgel.add_source("Sons of Ether Tradition Book", "A Much-Maligned Monster")
 
@@ -414,10 +416,10 @@ def create_characters(soe):
         name="Dame Aromika",
         defaults={
             "description": "Female Son of Ether, now calling herself an Electrodyne Diva. "
-                         "Frustrated with sexism in Tradition. Created Hate Ray but denied recognition "
-                         "three times for being a woman.",
+            "Frustrated with sexism in Tradition. Created Hate Ray but denied recognition "
+            "three times for being a woman.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     dame_aromika.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -426,11 +428,11 @@ def create_characters(soe):
         name="Doctor von Allmen",
         defaults={
             "description": "Infamous Nazi renegade who created KRAUZE II warbots. His mechanical army "
-                         "never left Rhineland Chantry - destroyed by Doctor Eon and Jetboy using Paradox. "
-                         "Escaped capture.",
+            "never left Rhineland Chantry - destroyed by Doctor Eon and Jetboy using Paradox. "
+            "Escaped capture.",
             "faction_name": "Sons of Ether",
             "status": "Ret",  # Renegade
-        }
+        },
     )
     von_allmen.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -439,10 +441,10 @@ def create_characters(soe):
         name="Doctor Brannon Rotham",
         defaults={
             "description": "Early 20th century premier Son of Ether. Inventor of R.U.N.T.I.S. suit, "
-                         "Bio-Luminescence rote, Battery Man rote, and other formulae. Studied Spirit "
-                         "Sphere intensely. Had three servants: Leland (hunchback), Owen, and Lakie.",
+            "Bio-Luminescence rote, Battery Man rote, and other formulae. Studied Spirit "
+            "Sphere intensely. Had three servants: Leland (hunchback), Owen, and Lakie.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     rotham.spheres.set_rank("spirit", 4)
     rotham.spheres.set_rank("forces", 4)
@@ -454,9 +456,9 @@ def create_characters(soe):
         name='David Wayne "The Exterminator" Clarkus',
         defaults={
             "description": "Inventor of Infernal Mole-Blower for fighting mutant moles of Yuk Yuk IV. "
-                         "Also used device against Nephandi.",
+            "Also used device against Nephandi.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     clarkus.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -465,8 +467,8 @@ def create_characters(soe):
         name="Garrett Rhys",
         defaults={
             "description": "Cult of Ecstasy photographer and stuntman. Friend of Doctor Rotham. "
-                         "Uses Hyperphoto Zoom Lens with Spirit Film.",
-        }
+            "Uses Hyperphoto Zoom Lens with Spirit Film.",
+        },
     )
     garrett.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -475,9 +477,9 @@ def create_characters(soe):
         name="X-Cel",
         defaults={
             "description": "Virtual Adept who collaborated with Doctor Alexis Hastings on laptop design. "
-                         "Intuitive grasp of complex models despite lack of formal training.",
+            "Intuitive grasp of complex models despite lack of formal training.",
             "faction_name": "Virtual Adepts",
-        }
+        },
     )
     xcel.add_source("Sons of Ether Tradition Book", "Virtual Adepts")
 
@@ -486,9 +488,9 @@ def create_characters(soe):
         name="Professor Pixel",
         defaults={
             "description": "Cybernaut who believes Digital Web is the next battleground. "
-                         "Claims no one will care about astronomical theories in ten years.",
+            "Claims no one will care about astronomical theories in ten years.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     pixel.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -497,9 +499,9 @@ def create_characters(soe):
         name="Lord Craven",
         defaults={
             "description": "New World Order member who orchestrated destruction of ether theory. "
-                         "Wrote note authorizing Michelson-Morley experiment. Suggested recruiting "
-                         "Einstein. Suffered nervous heart condition when Electrodyne Engineers defected.",
-        }
+            "Wrote note authorizing Michelson-Morley experiment. Suggested recruiting "
+            "Einstein. Suffered nervous heart condition when Electrodyne Engineers defected.",
+        },
     )
     lord_craven.add_source("Sons of Ether Tradition Book", "Betrayal and Rebellion")
 
@@ -508,9 +510,9 @@ def create_characters(soe):
         name="Professor Dubious",
         defaults={
             "description": "Creator of Oxygen Engine on Victoria Station. Personally repairs it when needed. "
-                         "Never explained how it works - generates oxygen from various materials, mostly rocks.",
+            "Never explained how it works - generates oxygen from various materials, mostly rocks.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     dubious.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -519,9 +521,9 @@ def create_characters(soe):
         name="Colonel Arno Valiant",
         defaults={
             "description": "Discovered Etherspace in 1888 by piloting balloon past the sky. "
-                         "Stalwart adventurer who theorized ether winds could be navigated.",
+            "Stalwart adventurer who theorized ether winds could be navigated.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     valiant.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -530,9 +532,9 @@ def create_characters(soe):
         name="Captain John Cleve Symmes",
         defaults={
             "description": "First Son of Ether to uncover secrets of Hollow Earth in mid-1800s. "
-                         "Attempted to gain government funding for expedition, creating Hollow Earth craze.",
+            "Attempted to gain government funding for expedition, creating Hollow Earth craze.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     symmes.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -541,9 +543,9 @@ def create_characters(soe):
         name="Olaf Jansen",
         defaults={
             "description": "Scandinavian sailor who traveled to Hollow Earth with his father. "
-                         "Account published by Willis George Emerson in 1908 as 'The Smoky God'. "
-                         "Described land of giants worshipping interior sun.",
-        }
+            "Account published by Willis George Emerson in 1908 as 'The Smoky God'. "
+            "Described land of giants worshipping interior sun.",
+        },
     )
     olaf.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -552,43 +554,49 @@ def create_characters(soe):
         name="Lord Dunhampton",
         defaults={
             "description": "British Earl living in France. Called first Electrodyne Engineers meeting "
-                         "to order in 1866. Pompous, gave lengthy speech.",
+            "to order in 1866. Pompous, gave lengthy speech.",
             "faction_name": "Electrodyne Engineers",
-        }
+        },
     )
-    dunhampton.add_source("Sons of Ether Tradition Book", "Formation of the Modern Tradition")
+    dunhampton.add_source(
+        "Sons of Ether Tradition Book", "Formation of the Modern Tradition"
+    )
 
     # Professor Jacques Etienne
     etienne, _ = Mage.objects.get_or_create(
         name="Professor Jacques Etienne",
         defaults={
             "description": "Well-regarded Professor who gave forthright speech at first Electrodyne "
-                         "Engineers meeting explaining purpose: alliance of world's scientists to "
-                         "quickly advance sciences together.",
+            "Engineers meeting explaining purpose: alliance of world's scientists to "
+            "quickly advance sciences together.",
             "faction_name": "Electrodyne Engineers",
-        }
+        },
     )
-    etienne.add_source("Sons of Ether Tradition Book", "Formation of the Modern Tradition")
+    etienne.add_source(
+        "Sons of Ether Tradition Book", "Formation of the Modern Tradition"
+    )
 
     # Sir Jarriet
     jarriet, _ = MtAHuman.objects.get_or_create(
         name="Sir Jarriet",
         defaults={
             "description": "Audience member who disrupted first Electrodyne Engineers meeting. "
-                         "Accused them of naivete and contempt for national differences. "
-                         "Led walkout from the hall.",
-        }
+            "Accused them of naivete and contempt for national differences. "
+            "Led walkout from the hall.",
+        },
     )
-    jarriet.add_source("Sons of Ether Tradition Book", "Formation of the Modern Tradition")
+    jarriet.add_source(
+        "Sons of Ether Tradition Book", "Formation of the Modern Tradition"
+    )
 
     # Earl Glamm
     glamm, _ = Mage.objects.get_or_create(
         name="Earl Glamm",
         defaults={
             "description": "Prestigious and brilliant Doctor. Gracious host of London Sons of Ether "
-                         "club in his Manor.",
+            "club in his Manor.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     glamm.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -597,9 +605,9 @@ def create_characters(soe):
         name="Earl Oberon",
         defaults={
             "description": "Chronicler of the Great Hall and Assembly of Science. "
-                         "Described governing structure of Tradition.",
+            "Described governing structure of Tradition.",
             "faction_name": "Sons of Ether",
-        }
+        },
     )
     oberon.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -613,15 +621,17 @@ def create_wonders(soe):
         defaults={
             "rank": 5,
             "description": "Czar Vargo's advanced device that converts air into energy at unbelievable rate. "
-                         "Displayed at Paris Exhibition 1900. Allowed creation of airships. "
-                         "Some believe modified engine actually converts ether into energy. "
-                         "Uses solar panels, batteries, and Tesla coils.",
+            "Displayed at Paris Exhibition 1900. Allowed creation of airships. "
+            "Some believe modified engine actually converts ether into energy. "
+            "Uses solar panels, batteries, and Tesla coils.",
             "arete": 5,
             "quintessence_max": 20,
             "background_cost": 5,
-        }
+        },
     )
-    conversion_engine.add_source("Sons of Ether Tradition Book", "Paris Exhibition, 1900")
+    conversion_engine.add_source(
+        "Sons of Ether Tradition Book", "Paris Exhibition, 1900"
+    )
 
     # Solar Conversion Engine
     solar_engine, _ = Artifact.objects.get_or_create(
@@ -629,13 +639,13 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Doctor Eon's energy conversion device. Converts sun's rays into electric power "
-                         "for his ship. Solar panels collect and store rays, large batteries transfer "
-                         "energy into Tesla coils. General Haushofer sought to combine with Ray Projector "
-                         "to create fusion gun powered by Smoky God.",
+            "for his ship. Solar panels collect and store rays, large batteries transfer "
+            "energy into Tesla coils. General Haushofer sought to combine with Ray Projector "
+            "to create fusion gun powered by Smoky God.",
             "arete": 4,
             "quintessence_max": 15,
             "background_cost": 4,
-        }
+        },
     )
     solar_engine.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -645,13 +655,13 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Large helmet studded with coils and wires. Forces subjects to divulge all "
-                         "their secrets through mental control. Used by General Haushofer. "
-                         "Can be resisted with Science of Om mental control techniques, and effect "
-                         "can be projected outward if user knows how.",
+            "their secrets through mental control. Used by General Haushofer. "
+            "Can be resisted with Science of Om mental control techniques, and effect "
+            "can be projected outward if user knows how.",
             "arete": 4,
             "quintessence_max": 10,
             "background_cost": 4,
-        }
+        },
     )
     thrall_helmet.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -661,13 +671,13 @@ def create_wonders(soe):
         defaults={
             "rank": 3,
             "description": "Enormous telephoto lens fitting any 35mm camera. Uses Correspondence Sensing "
-                         "to focus on distant locations and photograph them. Spirit Film reveals true nature "
-                         "of subjects - how they appear in Near Umbra, including Avatars and pattern spiders. "
-                         "Created by Dr. Rotham for Garrett Rhys. Usually coincidental.",
+            "to focus on distant locations and photograph them. Spirit Film reveals true nature "
+            "of subjects - how they appear in Near Umbra, including Avatars and pattern spiders. "
+            "Created by Dr. Rotham for Garrett Rhys. Usually coincidental.",
             "arete": 3,
             "quintessence_max": 15,
             "background_cost": 3,
-        }
+        },
     )
     zoom_lens.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -677,13 +687,13 @@ def create_wonders(soe):
         defaults={
             "rank": 3,
             "description": "Steel box with small gas engine, gears, and holes for road flares. "
-                         "Forces irritating viscous smoke into animal burrows, also works on larger subjects "
-                         "like Nephandi. Causes coughing spasms, potential blindness and incapacitation. "
-                         "Created by David Wayne Clarkus. Uses Forces 2, Matter 2, Prime 2.",
+            "Forces irritating viscous smoke into animal burrows, also works on larger subjects "
+            "like Nephandi. Causes coughing spasms, potential blindness and incapacitation. "
+            "Created by David Wayne Clarkus. Uses Forces 2, Matter 2, Prime 2.",
             "arete": 4,
             "quintessence_max": 20,
             "background_cost": 3,
-        }
+        },
     )
     mole_blower.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -693,15 +703,15 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Rotham's Umbra Navigation, Transportation and Illumination System. "
-                         "Full-metal suit resembling cross between diving suit and Robby the Robot. "
-                         "Air-tight with internal food/water (72 hours). Penetrates Gauntlet. "
-                         "+4 soak dice, +2 difficulty on Dex rolls. Boosts Strength to 6. "
-                         "Ether Jets allow flight in Near Umbra. Removing suit ejects wearer from Umbra. "
-                         "Created by Dr. Brannon Rotham.",
+            "Full-metal suit resembling cross between diving suit and Robby the Robot. "
+            "Air-tight with internal food/water (72 hours). Penetrates Gauntlet. "
+            "+4 soak dice, +2 difficulty on Dex rolls. Boosts Strength to 6. "
+            "Ether Jets allow flight in Near Umbra. Removing suit ejects wearer from Umbra. "
+            "Created by Dr. Brannon Rotham.",
             "arete": 4,
             "quintessence_max": 20,
             "background_cost": 4,
-        }
+        },
     )
     runtis.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -711,13 +721,13 @@ def create_wonders(soe):
         defaults={
             "rank": 5,
             "description": "Nazi Doctor von Allmen's robots. Can fly, fire beam weaponry, sustain heavy "
-                         "damage (5 soak dice, 7 health levels). Stupid (no Mind Science). "
-                         "Quickly deplete Primal Force Batteries. Highly vulgar. Army destroyed by "
-                         "Doctor Eon and Jetboy using Paradox. Uses Prime 2, Matter 3, Forces 4.",
+            "damage (5 soak dice, 7 health levels). Stupid (no Mind Science). "
+            "Quickly deplete Primal Force Batteries. Highly vulgar. Army destroyed by "
+            "Doctor Eon and Jetboy using Paradox. Uses Prime 2, Matter 3, Forces 4.",
             "arete": 5,
             "quintessence_max": 20,
             "background_cost": 5,
-        }
+        },
     )
     warbot.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -727,12 +737,12 @@ def create_wonders(soe):
         defaults={
             "rank": 2,
             "description": "Goggles that allow wearer to sense perturbations in the ether. "
-                         "Necessary tool to accommodate lack of natural ability to perceive ether. "
-                         "Often manufactured in Gernsback Continuum.",
+            "Necessary tool to accommodate lack of natural ability to perceive ether. "
+            "Often manufactured in Gernsback Continuum.",
             "arete": 2,
             "quintessence_max": 5,
             "background_cost": 2,
-        }
+        },
     )
     goggles.add_source("Sons of Ether Tradition Book", "What Is Ether?")
 
@@ -742,11 +752,11 @@ def create_wonders(soe):
         defaults={
             "rank": 3,
             "description": "Advanced jet backpack invented by Doctor Danvers for Jet Boy. "
-                         "Allows flight. Can be repaired with Rubberon if ruptured.",
+            "Allows flight. Can be repaired with Rubberon if ruptured.",
             "arete": 3,
             "quintessence_max": 10,
             "background_cost": 3,
-        }
+        },
     )
     jetpack.add_source("Sons of Ether Tradition Book", "World War II")
 
@@ -756,10 +766,10 @@ def create_wonders(soe):
         defaults={
             "rank": 2,
             "description": "Vacuum-packed pellet of expandable rubber base. Hardens within minutes "
-                         "of air exposure and sticks to whatever it's applied to. "
-                         "Invented by Doctor Danvers. Used for quick repairs.",
+            "of air exposure and sticks to whatever it's applied to. "
+            "Invented by Doctor Danvers. Used for quick repairs.",
             "background_cost": 2,
-        }
+        },
     )
     rubberon.add_source("Sons of Ether Tradition Book", "World War II")
 
@@ -772,7 +782,7 @@ def create_wonders(soe):
             "arete": 4,
             "quintessence_max": 15,
             "background_cost": 4,
-        }
+        },
     )
     cudd_beam.add_source("Sons of Ether Tradition Book", "Theory and Practice")
 
@@ -785,7 +795,7 @@ def create_wonders(soe):
             "arete": 3,
             "quintessence_max": 10,
             "background_cost": 3,
-        }
+        },
     )
     tel_phone.add_source("Sons of Ether Tradition Book", "Theory and Practice")
 
@@ -795,11 +805,11 @@ def create_wonders(soe):
         defaults={
             "rank": 3,
             "description": "Doctor Headspace's device. Seductive spinning motion defeats even "
-                         "Men in Black mental shields and sunglasses. Used to escape New World Order.",
+            "Men in Black mental shields and sunglasses. Used to escape New World Order.",
             "arete": 3,
             "quintessence_max": 10,
             "background_cost": 3,
-        }
+        },
     )
     hypnodisc.add_source("Sons of Ether Tradition Book", "Opinions")
 
@@ -809,11 +819,11 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Device created by Dame Aromika. She was denied recognition three times "
-                         "for being a woman, leading to her frustration with Tradition sexism.",
+            "for being a woman, leading to her frustration with Tradition sexism.",
             "arete": 4,
             "quintessence_max": 15,
             "background_cost": 4,
-        }
+        },
     )
     hate_ray.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -823,11 +833,11 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Massive tank used by Doctor Eon and Terrific Trio to reach Hollow Earth. "
-                         "Can tunnel through earth. Used to transport equipment including Solar Conversion Engine.",
+            "Can tunnel through earth. Used to transport equipment including Solar Conversion Engine.",
             "arete": 4,
             "quintessence_max": 20,
             "background_cost": 4,
-        }
+        },
     )
     tank.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -837,11 +847,11 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Haushofer's own design. Could be combined with Solar Conversion Engine "
-                         "to create massively powerful fusion gun fueled by inner sun's energies.",
+            "to create massively powerful fusion gun fueled by inner sun's energies.",
             "arete": 4,
             "quintessence_max": 15,
             "background_cost": 4,
-        }
+        },
     )
     ray_projector.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -851,13 +861,13 @@ def create_wonders(soe):
         defaults={
             "rank": 5,
             "description": "Huge Device employing Spirit Effect Outward Journeys. Required to escape "
-                         "Earth's orbit and shift into Etherspace. Has 8 dice, needs 15 successes "
-                         "(difficulty 8) on extended roll. Requires great time and Quintessence. "
-                         "Always vulgar. Can take ~24 Paradox points before shutdown/explosion.",
+            "Earth's orbit and shift into Etherspace. Has 8 dice, needs 15 successes "
+            "(difficulty 8) on extended roll. Requires great time and Quintessence. "
+            "Always vulgar. Can take ~24 Paradox points before shutdown/explosion.",
             "arete": 5,
             "quintessence_max": 30,
             "background_cost": 5,
-        }
+        },
     )
     dag.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -867,12 +877,12 @@ def create_wonders(soe):
         defaults={
             "rank": 4,
             "description": "Created by Professor Dubious for Victoria Station. Constantly generates "
-                         "oxygen from materials (mostly rocks) fed into it. Professor never explained "
-                         "how it works and personally repairs it. Rarely breaks down.",
+            "oxygen from materials (mostly rocks) fed into it. Professor never explained "
+            "how it works and personally repairs it. Rarely breaks down.",
             "arete": 4,
             "quintessence_max": 20,
             "background_cost": 4,
-        }
+        },
     )
     oxygen_engine.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -891,9 +901,9 @@ def create_rotes(soe):
         name="Find Reality Flaw",
         defaults={
             "description": "Detects Paradox damage to reality. With 4+ successes, determines exact "
-                         "Paradox amount released and pinpoints any Paradox Flaws' location and size. "
-                         "With 6+ successes, offers solution to correct them. Uses Prime 1, Entropy 1.",
-        }
+            "Paradox amount released and pinpoints any Paradox Flaws' location and size. "
+            "With 6+ successes, offers solution to correct them. Uses Prime 1, Entropy 1.",
+        },
     )
     find_flaw.add_source("Sons of Ether Tradition Book", "Additional Formulas")
 
@@ -902,9 +912,9 @@ def create_rotes(soe):
         name="General Anesthesia",
         defaults={
             "description": "For every success, caster ignores penalties of one wound level for duration "
-                         "of magickal Effect. Cannot be permanent. Won't negate damage taken after effect. "
-                         "Used by Dr. Rotham. Uses Mind 1, Life 1.",
-        }
+            "of magickal Effect. Cannot be permanent. Won't negate damage taken after effect. "
+            "Used by Dr. Rotham. Uses Mind 1, Life 1.",
+        },
     )
     anesthesia.add_source("Sons of Ether Tradition Book", "Additional Formulas")
 
@@ -913,11 +923,11 @@ def create_rotes(soe):
         name="Knock Out",
         defaults={
             "description": "Non-lethal formula for immobilizing subjects. Stuns target's brain for "
-                         "double the turns scored. Uses Mind 3 understanding of psyche with Prime 2 "
-                         "Rubbing the Bone. More potent than Euthanatos version - focuses on neural "
-                         "pattern instead of biological body. Target resists with Willpower (diff 8), "
-                         "each success canceling one of Scientist's. Created by Dr. Rotham.",
-        }
+            "double the turns scored. Uses Mind 3 understanding of psyche with Prime 2 "
+            "Rubbing the Bone. More potent than Euthanatos version - focuses on neural "
+            "pattern instead of biological body. Target resists with Willpower (diff 8), "
+            "each success canceling one of Scientist's. Created by Dr. Rotham.",
+        },
     )
     knockout.add_source("Sons of Ether Tradition Book", "Additional Formulas")
 
@@ -926,10 +936,10 @@ def create_rotes(soe):
         name="Bio-Luminescence",
         defaults={
             "description": "Converts flesh and blood into glow-in-the-dark substance. Each success = "
-                         "more brightness: 1 succ = 1 ft, 2 = 5 ft, 3 = 10 ft, 4 = 15 ft, etc. "
-                         "Glow can be concentrated on body parts (teeth, eyes). Originally for safer "
-                         "Halloween. Uses Forces 3, Life 3.",
-        }
+            "more brightness: 1 succ = 1 ft, 2 = 5 ft, 3 = 10 ft, 4 = 15 ft, etc. "
+            "Glow can be concentrated on body parts (teeth, eyes). Originally for safer "
+            "Halloween. Uses Forces 3, Life 3.",
+        },
     )
     biolum.add_source("Sons of Ether Tradition Book", "Additional Formulas")
 
@@ -938,11 +948,11 @@ def create_rotes(soe):
         name="Battery Man",
         defaults={
             "description": "Converts body into wet cell storing electrical energy from household socket. "
-                         "Each success = 10,000 volts stored. Stored in nervous system. Can discharge to: "
-                         "electrocute (successes x3 damage), charge batteries, short-circuit equipment, "
-                         "light bulbs, zap things. Must discharge within 1 hour or suffer 1 Health/success. "
-                         "Dr. Rotham warns of potential cancer/second head growth. Uses Life 4, Forces 2.",
-        }
+            "Each success = 10,000 volts stored. Stored in nervous system. Can discharge to: "
+            "electrocute (successes x3 damage), charge batteries, short-circuit equipment, "
+            "light bulbs, zap things. Must discharge within 1 hour or suffer 1 Health/success. "
+            "Dr. Rotham warns of potential cancer/second head growth. Uses Life 4, Forces 2.",
+        },
     )
     battery_man.add_source("Sons of Ether Tradition Book", "Additional Formulas")
 
@@ -951,10 +961,10 @@ def create_rotes(soe):
         name="Science of Om",
         defaults={
             "description": "Method of mental control learned from Goro monks. Normally for "
-                         "self-meditation, but can be magnified by devices to project mental control "
-                         "outward. Doctor Eon used this to overcome Mental Thrall Helmet and turn "
-                         "its effects on Haushofer. Mind-based technique.",
-        }
+            "self-meditation, but can be magnified by devices to project mental control "
+            "outward. Doctor Eon used this to overcome Mental Thrall Helmet and turn "
+            "its effects on Haushofer. Mind-based technique.",
+        },
     )
     science_om.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -967,13 +977,13 @@ def create_locations(soe):
         name="The Great Hall",
         defaults={
             "description": "Governing body of Sons of Ether. Resplendent mansion just outside Paris "
-                         "with connection to Horizon. True Great Hall exists in Horizon - majestic "
-                         "building in classical Parisian style. Assembly of Science meets here to vote "
-                         "on important matters. Meritocracy - only proven wise admitted, but disputes "
-                         "resolved democratically. Young Scientists can witness Master Scientists debate. "
-                         "Portal to Gernsback Continuum located here - strictly controlled access.",
+            "with connection to Horizon. True Great Hall exists in Horizon - majestic "
+            "building in classical Parisian style. Assembly of Science meets here to vote "
+            "on important matters. Meritocracy - only proven wise admitted, but disputes "
+            "resolved democratically. Young Scientists can witness Master Scientists debate. "
+            "Portal to Gernsback Continuum located here - strictly controlled access.",
             "gauntlet": 3,
-        }
+        },
     )
     great_hall.add_source("Sons of Ether Tradition Book", "The Old Boys Club")
 
@@ -982,13 +992,13 @@ def create_locations(soe):
         name="Victoria Station",
         defaults={
             "description": "Space station orbiting the moon. Pure Victorian-era design with brass and wood. "
-                         "Protected by mysterious Faerie allies who mend broken objects and maintain orbit. "
-                         "Main departure point for Etherspace. Three Professors, six acolytes on staff. "
-                         "Comfortable with port windows viewing distant stars. Oxygen Engine provides air. "
-                         "Some want to rename it (Bradbury Outpost, Moon City 1, Arcadia Station). "
-                         "Connected to Horizon Realm.",
+            "Protected by mysterious Faerie allies who mend broken objects and maintain orbit. "
+            "Main departure point for Etherspace. Three Professors, six acolytes on staff. "
+            "Comfortable with port windows viewing distant stars. Oxygen Engine provides air. "
+            "Some want to rename it (Bradbury Outpost, Moon City 1, Arcadia Station). "
+            "Connected to Horizon Realm.",
             "gauntlet": 2,
-        }
+        },
     )
     victoria.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -997,15 +1007,15 @@ def create_locations(soe):
         name="Gernsback Continuum",
         defaults={
             "description": "Recent Horizon Realm connected to Great Hall in Paris. Based on William Gibson "
-                         "story and Hugo Gernsback's vision. Art-deco future with ray guns, metal zeppelins, "
-                         "sleek saucers. Major playground for new theories and Sciences. Host to Wars of Science "
-                         "(duels with zeppelins and ray weaponry). Entertainment includes piloting etherflyers. "
-                         "Best place to observe ether behavior. Many ether goggles manufactured here. "
-                         "Forces +2, Matter +2, Prime +1 to all effects.",
+            "story and Hugo Gernsback's vision. Art-deco future with ray guns, metal zeppelins, "
+            "sleek saucers. Major playground for new theories and Sciences. Host to Wars of Science "
+            "(duels with zeppelins and ray weaponry). Entertainment includes piloting etherflyers. "
+            "Best place to observe ether behavior. Many ether goggles manufactured here. "
+            "Forces +2, Matter +2, Prime +1 to all effects.",
             "quintessence_max": 10,
             "ratio": 3,
             "gauntlet": 2,
-        }
+        },
     )
     gernsback.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -1014,17 +1024,17 @@ def create_locations(soe):
         name="The Hollow Earth",
         defaults={
             "description": "Very old Realm, shunted from material world to Horizon outpost. "
-                         "Portal via North Pole cave - miles of lightless caverns to Summit of Inner Sun. "
-                         "Inner tropical world with dinosaurs, ancient mammals, legendary beasts. "
-                         "Lost tribes from naked savages to enlightened Goro monks. Inner sun called Smoky God. "
-                         "Inhabitants include: Vril (superior beings with energy weapons), deros (degenerated "
-                         "robots from Atlantean Space Gods), Morcegos (bat-people). Aurora Borealis is reflection "
-                         "from Smoky God through pole gap. Fading fast, may cease to exist. "
-                         "Life magick -1 difficulty. Discovered by Captain John Cleve Symmes.",
+            "Portal via North Pole cave - miles of lightless caverns to Summit of Inner Sun. "
+            "Inner tropical world with dinosaurs, ancient mammals, legendary beasts. "
+            "Lost tribes from naked savages to enlightened Goro monks. Inner sun called Smoky God. "
+            "Inhabitants include: Vril (superior beings with energy weapons), deros (degenerated "
+            "robots from Atlantean Space Gods), Morcegos (bat-people). Aurora Borealis is reflection "
+            "from Smoky God through pole gap. Fading fast, may cease to exist. "
+            "Life magick -1 difficulty. Discovered by Captain John Cleve Symmes.",
             "quintessence_max": 15,
             "ratio": 4,
             "gauntlet": 4,
-        }
+        },
     )
     hollow_earth.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -1033,16 +1043,16 @@ def create_locations(soe):
         name="Etherspace",
         defaults={
             "description": "Not a Horizon Realm but Deep Umbra area. Resembles outer space but filled "
-                         "with breathable ether pressure-equalized to Earth. Ether winds blow in eddies "
-                         "and currents - regular channels that often shift. Celestial body pull helps "
-                         "navigation. Must pass Barriers (Gauntlet and Horizon) requiring powerful "
-                         "Dimensional Attunement Generators (15 successes, diff 8). Always vulgar. "
-                         "Dangerous: Void Engineer sentries, getting lost, Nephandi, demon hordes. "
-                         "Discovered by Colonel Arno Valiant in 1888. Correspondence +1 to all ratings.",
+            "with breathable ether pressure-equalized to Earth. Ether winds blow in eddies "
+            "and currents - regular channels that often shift. Celestial body pull helps "
+            "navigation. Must pass Barriers (Gauntlet and Horizon) requiring powerful "
+            "Dimensional Attunement Generators (15 successes, diff 8). Always vulgar. "
+            "Dangerous: Void Engineer sentries, getting lost, Nephandi, demon hordes. "
+            "Discovered by Colonel Arno Valiant in 1888. Correspondence +1 to all ratings.",
             "quintessence_max": 20,
             "ratio": 5,
             "gauntlet": 9,  # Extremely hard to reach
-        }
+        },
     )
     etherspace.add_source("Sons of Ether Tradition Book", "Realms of Adventure")
 
@@ -1051,11 +1061,11 @@ def create_locations(soe):
         name="Agharta",
         defaults={
             "description": "Ancient city in Hollow Earth. Home to Goro monks who teach Science of Om. "
-                         "Located in caverns beneath Inner Sun summit. Doctor Eon and Terrific Trio "
-                         "allied with monks to halt Nazi invasion. Lan Ko was high priest. "
-                         "Place of meditation and peace, guards world from destruction.",
+            "Located in caverns beneath Inner Sun summit. Doctor Eon and Terrific Trio "
+            "allied with monks to halt Nazi invasion. Lan Ko was high priest. "
+            "Place of meditation and peace, guards world from destruction.",
             "gauntlet": 3,
-        }
+        },
     )
     agharta.add_source("Sons of Ether Tradition Book", "Into the Hollow Earth")
 
@@ -1064,22 +1074,24 @@ def create_locations(soe):
         name="Symposium Manor",
         defaults={
             "description": "Prestigious Paris manor where first Electrodyne Engineers meeting was held "
-                         "January 1, 1866. Lord Dunhampton presided. Meeting fell short when Sir Jarriet "
-                         "led walkout over nationalist concerns.",
+            "January 1, 1866. Lord Dunhampton presided. Meeting fell short when Sir Jarriet "
+            "led walkout over nationalist concerns.",
             "gauntlet": 4,
-        }
+        },
     )
-    symposium.add_source("Sons of Ether Tradition Book", "Formation of the Modern Tradition")
+    symposium.add_source(
+        "Sons of Ether Tradition Book", "Formation of the Modern Tradition"
+    )
 
     # Rhineland Chantry
     rhineland, _ = Chantry.objects.get_or_create(
         name="Rhineland Chantry",
         defaults={
             "description": "Nazi chantry where Doctor von Allmen created KRAUZE II warbots. "
-                         "Leveled by Doctor Eon and Jetboy using Paradox. Von Allmen escaped.",
+            "Leveled by Doctor Eon and Jetboy using Paradox. Von Allmen escaped.",
             "status": "Dec",  # Destroyed
             "gauntlet": 4,
-        }
+        },
     )
     rhineland.add_source("Sons of Ether Tradition Book", "Strange Devices")
 
@@ -1094,15 +1106,15 @@ def create_books(soe):
             "edition": 1,
             "year": -1200,  # Approximate, ancient Troy
             "description": "The 'Book of Ether' by Arerus of Troy. First philosophical text, "
-                         "predating Thales. Divided into two sections: metaphysics (natural philosophy) "
-                         "and mysticism (study of thought). Posits everything is variations on single "
-                         "Essence (Ether) which becomes Many through mind's action. Everything is One. "
-                         "Greatly influenced Aristotle who translated it to Greek and derived Fifth Essence. "
-                         "Scientific principles for workings of magick. Everyone has potential to work it. "
-                         "Famous English translation by Lord Edmund (1900). Other translations: Fleming (1945), "
-                         "Doctor Electrik (1956), Forthright (1981). Standard reading for all Sons of Ether. "
-                         "Reading it often triggers Awakening in those with potential.",
-        }
+            "predating Thales. Divided into two sections: metaphysics (natural philosophy) "
+            "and mysticism (study of thought). Posits everything is variations on single "
+            "Essence (Ether) which becomes Many through mind's action. Everything is One. "
+            "Greatly influenced Aristotle who translated it to Greek and derived Fifth Essence. "
+            "Scientific principles for workings of magick. Everyone has potential to work it. "
+            "Famous English translation by Lord Edmund (1900). Other translations: Fleming (1945), "
+            "Doctor Electrik (1956), Forthright (1981). Standard reading for all Sons of Ether. "
+            "Reading it often triggers Awakening in those with potential.",
+        },
     )
 
     paradigma, _ = Book.objects.get_or_create(
@@ -1112,12 +1124,12 @@ def create_books(soe):
             "edition": 1,
             "year": 1907,
             "description": "Journal of the Progressive Sciences. Nonprofit scientific and educational journal "
-                         "serving Sons of Ether since 1907. Published quarterly. Copies available to all members. "
-                         "Back issues available by request. Edited by Doctor William Bridges. "
-                         "For 'increase and diffusion of True Science.' Contributors include hundreds of "
-                         "Professors, Doctors, and Scientists. Standard place for publication of theories. "
-                         "Appearance before local club (editors) often required for publication.",
-        }
+            "serving Sons of Ether since 1907. Published quarterly. Copies available to all members. "
+            "Back issues available by request. Edited by Doctor William Bridges. "
+            "For 'increase and diffusion of True Science.' Contributors include hundreds of "
+            "Professors, Doctors, and Scientists. Standard place for publication of theories. "
+            "Appearance before local club (editors) often required for publication.",
+        },
     )
 
     paradigma.add_source("Sons of Ether Tradition Book", "Prelude")
@@ -1132,9 +1144,9 @@ def create_merits_flaws(soe):
         defaults={
             "ratings": [0],
             "description": "Social phenomenon named by Professor Vorgel. The dream of every young acolyte "
-                         "to one day wield the powers of their master. Can lead to resentment if teacher "
-                         "is possessive and falsifies progress records.",
-        }
+            "to one day wield the powers of their master. Can lead to resentment if teacher "
+            "is possessive and falsifies progress records.",
+        },
     )
     pinnochio.add_source("Sons of Ether Tradition Book", "A Much-Maligned Monster")
 
@@ -1170,9 +1182,10 @@ def populate_soe():
 
 if __name__ == "__main__":
     import os
+
     import django
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tg.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
     django.setup()
 
     populate_soe()

@@ -3,26 +3,27 @@ Populate database with characters, items, and locations from The Chaos Factor.
 This sourcebook details Samuel Haight's final confrontation in Mexico City.
 """
 
-from characters.models.mage.mage import Mage
-from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import Instrument, Practice, Paradigm
-from characters.models.mage.sphere import Sphere
-from characters.models.mage.effect import Effect
-from characters.models.mage.rote import Rote
-from characters.models.werewolf.wtahuman import WtAHuman
-from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.tribe import Tribe
-from characters.models.werewolf.renown import RenownRating
-from characters.models.vampire.vtm import Vampire
-from characters.models.vampire.vtm_human import VtMHuman
+import random
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute, AttributeRating
+from characters.models.mage.effect import Effect
+from characters.models.mage.faction import MageFaction
+from characters.models.mage.focus import Instrument, Paradigm, Practice
+from characters.models.mage.mage import Mage
+from characters.models.mage.rote import Rote
+from characters.models.mage.sphere import Sphere
+from characters.models.vampire.vtm import Vampire
+from characters.models.vampire.vtm_human import VtMHuman
+from characters.models.werewolf.garou import Werewolf
+from characters.models.werewolf.renown import RenownRating
+from characters.models.werewolf.tribe import Tribe
+from characters.models.werewolf.wtahuman import WtAHuman
+from core.models import Language
 from items.models.mage.wonder import Wonder
 from items.models.werewolf.fetish import Fetish
+from locations.models.core.location import City, Location
 from locations.models.mage.node import Node
-from locations.models.core.location import Location, City
-from core.models import Language
-import random
 
 
 def create_chaos_factor_data():
@@ -44,42 +45,38 @@ def create_factions():
         name="New World Order",
         defaults={
             "description": "Technocratic Convention focused on social control and information management"
-        }
+        },
     )
 
     MageFaction.objects.get_or_create(
         name="Iteration X",
         defaults={
             "description": "Technocratic Convention focused on technology and machinery"
-        }
+        },
     )
 
     MageFaction.objects.get_or_create(
         name="Syndicate",
         defaults={
             "description": "Technocratic Convention focused on economics and wealth"
-        }
+        },
     )
 
     MageFaction.objects.get_or_create(
         name="Progenitors",
         defaults={
             "description": "Technocratic Convention focused on biology and life sciences"
-        }
+        },
     )
 
     MageFaction.objects.get_or_create(
         name="Celestial Chorus",
-        defaults={
-            "description": "Tradition focused on Unity and the One"
-        }
+        defaults={"description": "Tradition focused on Unity and the One"},
     )
 
     MageFaction.objects.get_or_create(
         name="Nephandi",
-        defaults={
-            "description": "Fallen mages who serve entropy and corruption"
-        }
+        defaults={"description": "Fallen mages who serve entropy and corruption"},
     )
 
     # Werewolf Tribes
@@ -87,24 +84,21 @@ def create_factions():
         name="Bone Gnawers",
         defaults={
             "willpower": 4,
-            "description": "Urban survivors, the tribe of the homeless and downtrodden"
-        }
+            "description": "Urban survivors, the tribe of the homeless and downtrodden",
+        },
     )
 
     Tribe.objects.get_or_create(
         name="Black Spiral Dancers",
-        defaults={
-            "willpower": 3,
-            "description": "Fallen Garou corrupted by the Wyrm"
-        }
+        defaults={"willpower": 3, "description": "Fallen Garou corrupted by the Wyrm"},
     )
 
     Tribe.objects.get_or_create(
         name="Skin Dancers",
         defaults={
             "willpower": 5,
-            "description": "False Garou created through dark rituals using the skins of true werewolves"
-        }
+            "description": "False Garou created through dark rituals using the skins of true werewolves",
+        },
     )
 
 
@@ -112,22 +106,21 @@ def create_paradigms_and_practices():
     """Create paradigms and practices for mages."""
     Paradigm.objects.get_or_create(
         name="A Mechanistic Cosmos",
-        defaults={"description": "The universe operates like a vast machine"}
+        defaults={"description": "The universe operates like a vast machine"},
     )
 
     Paradigm.objects.get_or_create(
         name="Divine Order and Earthly Chaos",
-        defaults={"description": "Reality reflects the will of the One"}
+        defaults={"description": "Reality reflects the will of the One"},
     )
 
     Practice.objects.get_or_create(
         name="Cybernetics",
-        defaults={"description": "Integration of technology and consciousness"}
+        defaults={"description": "Integration of technology and consciousness"},
     )
 
     Practice.objects.get_or_create(
-        name="High Ritual Magick",
-        defaults={"description": "Formal ceremonial magic"}
+        name="High Ritual Magick", defaults={"description": "Formal ceremonial magic"}
     )
 
 
@@ -306,7 +299,7 @@ def create_major_npcs():
         willpower=9,
         age=45,
         apparent_age=45,
-        description="The Skinner. A Kinfolk turned false Garou through dark rituals, now wielding stolen magical power."
+        description="The Skinner. A Kinfolk turned false Garou through dark rituals, now wielding stolen magical power.",
     )
     haight.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=2)
     haight.spheres.create(sphere=Sphere.objects.get(name="Entropy"), rating=3)
@@ -343,7 +336,7 @@ def create_major_npcs():
         willpower=10,
         age=6500,
         apparent_age=20,
-        description="Ancient Baali Methuselah, once known as Huitzilopoctli, Aztec god of war. Servant of the demon Baal."
+        description="Ancient Baali Methuselah, once known as Huitzilopoctli, Aztec god of war. Servant of the demon Baal.",
     )
 
     # Cardinal Melinda Galbraith - Sabbat leader
@@ -370,7 +363,7 @@ def create_major_npcs():
         willpower=9,
         age=850,
         apparent_age=30,
-        description="Cardinal of Mexico City, leader of the Sabbat in Mexico. Former thrall of Helena."
+        description="Cardinal of Mexico City, leader of the Sabbat in Mexico. Former thrall of Helena.",
     )
 
     # Monte Diaz / Quetzalcoatl - New World Order leader
@@ -398,7 +391,7 @@ def create_major_npcs():
         willpower=7,
         age=500,
         apparent_age=40,
-        description="Possesses the body of the Oracle Quetzalcoatl. Leader of Technocracy forces in Mexico City."
+        description="Possesses the body of the Oracle Quetzalcoatl. Leader of Technocracy forces in Mexico City.",
     )
     monte.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=4)
     monte.spheres.create(sphere=Sphere.objects.get(name="Forces"), rating=5)
@@ -430,7 +423,7 @@ def create_major_npcs():
         computer=5,
         arete=6,
         willpower=9,
-        description="Leader of Iteration X in Mexico City. Poses as the Virgin of Guadalupe."
+        description="Leader of Iteration X in Mexico City. Poses as the Virgin of Guadalupe.",
     )
     maria.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=5)
     maria.spheres.create(sphere=Sphere.objects.get(name="Forces"), rating=4)
@@ -462,7 +455,7 @@ def create_major_npcs():
         arete=8,
         willpower=10,
         age=600,
-        description="Ancient Celestial Chorus mage who has protected Mexico City for centuries."
+        description="Ancient Celestial Chorus mage who has protected Mexico City for centuries.",
     )
     sahagun.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=3)
     sahagun.spheres.create(sphere=Sphere.objects.get(name="Forces"), rating=5)
@@ -501,7 +494,7 @@ def create_major_npcs():
         honor=0,
         wisdom=0,
         willpower=8,
-        description="Leader of the Sweet Water Sept in Mexico City. A metis warrior."
+        description="Leader of the Sweet Water Sept in Mexico City. A metis warrior.",
     )
 
     # Amelio Santa Lucien - Nephandi leader
@@ -528,7 +521,7 @@ def create_major_npcs():
         arete=7,
         willpower=8,
         age=2000,
-        description="Leader of the Nephandi in the Underbelly of the Wyrm. Member of the Sepulchre."
+        description="Leader of the Nephandi in the Underbelly of the Wyrm. Member of the Sepulchre.",
     )
     amelio.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=2)
     amelio.spheres.create(sphere=Sphere.objects.get(name="Entropy"), rating=5)
@@ -569,7 +562,7 @@ def create_minor_npcs():
         occult=5,
         arete=6,
         willpower=7,
-        description="Syndicate leader in Mexico City. Controls much of the city's criminal economy."
+        description="Syndicate leader in Mexico City. Controls much of the city's criminal economy.",
     )
     robert.spheres.create(sphere=Sphere.objects.get(name="Correspondence"), rating=3)
     robert.spheres.create(sphere=Sphere.objects.get(name="Forces"), rating=3)
@@ -600,7 +593,7 @@ def create_minor_npcs():
         occult=5,
         arete=7,
         willpower=8,
-        description="Mad Progenitor conducting horrific experiments in Mexico City."
+        description="Mad Progenitor conducting horrific experiments in Mexico City.",
     )
     niles.spheres.create(sphere=Sphere.objects.get(name="Entropy"), rating=4)
     niles.spheres.create(sphere=Sphere.objects.get(name="Forces"), rating=3)
@@ -634,7 +627,7 @@ def create_minor_npcs():
         willpower=8,
         age=143,
         apparent_age=27,
-        description="Black Hand Dominion in Mexico City. Old West gunslinger turned vampire hunter."
+        description="Black Hand Dominion in Mexico City. Old West gunslinger turned vampire hunter.",
     )
 
     # Archbishop Alicia Barrows - Malkavian Antitribu
@@ -661,7 +654,7 @@ def create_minor_npcs():
         willpower=10,
         age=593,
         apparent_age=18,
-        description="Malkavian Archbishop of Mexico City. Obsessed with preventing Gehenna."
+        description="Malkavian Archbishop of Mexico City. Obsessed with preventing Gehenna.",
     )
 
     # Harzomatuili - Black Spiral Dancer Leader
@@ -692,7 +685,7 @@ def create_minor_npcs():
         wisdom=0,
         willpower=8,
         age=500,
-        description="Leader of the Black Spiral Dancers in the Underbelly of the Wyrm."
+        description="Leader of the Black Spiral Dancers in the Underbelly of the Wyrm.",
     )
 
     print("Created minor NPCs from The Chaos Factor")
@@ -946,9 +939,13 @@ def create_templates():
         willpower=7,
         description="Fallen mage who serves the Wyrm. Works to corrupt others and spread darkness.",
     )
-    nephandi_corruptor.spheres.create(sphere=Sphere.objects.get(name="Entropy"), rating=3)
+    nephandi_corruptor.spheres.create(
+        sphere=Sphere.objects.get(name="Entropy"), rating=3
+    )
     nephandi_corruptor.spheres.create(sphere=Sphere.objects.get(name="Mind"), rating=3)
-    nephandi_corruptor.spheres.create(sphere=Sphere.objects.get(name="Spirit"), rating=2)
+    nephandi_corruptor.spheres.create(
+        sphere=Sphere.objects.get(name="Spirit"), rating=2
+    )
     nephandi_corruptor.spheres.create(sphere=Sphere.objects.get(name="Prime"), rating=2)
 
     # Nosferatu Antitribu Warren Dweller Template
@@ -990,8 +987,8 @@ def create_items():
         name="Staff of the World Tree",
         rank=5,
         description="A massive staff carved from the World Tree of the Crombey Farm Chantry. "
-                   "Glows with stolen Quintessence and grants powerful countermagick abilities. "
-                   "The staff is actually a Paradox battery that will eventually explode.",
+        "Glows with stolen Quintessence and grants powerful countermagick abilities. "
+        "The staff is actually a Paradox battery that will eventually explode.",
         background="Stolen by Samuel Haight from the Verbena Chantry. Made from a branch of their sacred World Tree.",
         quintessence_max=200,
         is_unique=True,
@@ -1002,7 +999,7 @@ def create_items():
         name="Sun Lamp",
         rank=4,
         description="A device that releases stored and magnified solar radiation in a beam. "
-                   "Designed to harm vampires with artificial sunlight.",
+        "Designed to harm vampires with artificial sunlight.",
         background="Created by Samuel Haight using Forces and Prime magic to store solar energy.",
         quintessence_max=20,
         is_unique=True,
@@ -1013,7 +1010,7 @@ def create_items():
         name="The Virgin's Tear",
         rank=4,
         description="A sacrificial dagger with a four-foot blade. Enchanted to allow the bearer "
-                   "to return to the Caul of the Pandemonium from anywhere when heavily injured.",
+        "to return to the Caul of the Pandemonium from anywhere when heavily injured.",
         background="Used by Amelio Santa Lucien in dark rituals.",
         quintessence_max=10,
         is_unique=True,
@@ -1025,7 +1022,7 @@ def create_items():
         rank=4,
         gnosis=6,
         description="A massive silver-edged machete that grants 1 Rage point per turn, "
-                   "but only for attacking with the weapon. Allows at least two strikes per round.",
+        "but only for attacking with the weapon. Allows at least two strikes per round.",
         background="Father Machete's signature weapon.",
         is_unique=True,
     )
@@ -1036,8 +1033,8 @@ def create_items():
         rank=4,
         gnosis=5,
         description="A battered leather bag with several pockets that can store Gnosis. "
-                   "Weighs normally for the bearer but becomes extremely heavy (thousands of pounds) "
-                   "for anyone trying to take it by force. Causes 4 extra dice of damage when used as a weapon.",
+        "Weighs normally for the bearer but becomes extremely heavy (thousands of pounds) "
+        "for anyone trying to take it by force. Causes 4 extra dice of damage when used as a weapon.",
         background="Carried by Mother Baggy Pants of the Sweet Water Sept.",
         is_unique=True,
     )
@@ -1048,8 +1045,8 @@ def create_items():
         rank=5,
         gnosis=8,
         description="A wooden skull mask that allows the wearer to be completely ignored by everyone, "
-                   "even in Crinos form. The wearer can take any form and not be noticed. "
-                   "Effect ends if the wearer makes a violent action against a target.",
+        "even in Crinos form. The wearer can take any form and not be noticed. "
+        "Effect ends if the wearer makes a violent action against a target.",
         background="Special fetish created by the Bone Gnawers of Mexico City for the Days of the Dead.",
         is_unique=False,
     )
@@ -1060,8 +1057,8 @@ def create_items():
         rank=4,
         gnosis=8,
         description="A small thunderwyrm preserved in amber. When activated, calls any thunderwyrms "
-                   "within 50 miles to aid the bearer. If none exist, the egg hatches and the "
-                   "thunderwyrm doubles in size and becomes a willing slave. Single use if hatched.",
+        "within 50 miles to aid the bearer. If none exist, the egg hatches and the "
+        "thunderwyrm doubles in size and becomes a willing slave. Single use if hatched.",
         background="Carried by Harzomatuili, leader of the Black Spiral Dancers.",
         is_unique=True,
     )
@@ -1076,7 +1073,7 @@ def create_locations():
     mexico_city = City.objects.create(
         name="Mexico City",
         description="Capital of Mexico and largest city in the Americas. Home to over 20 million people. "
-                   "Stronghold of the Sabbat in North America. Heavily polluted and corrupt.",
+        "Stronghold of the Sabbat in North America. Heavily polluted and corrupt.",
         population=20000000,
     )
 
@@ -1085,8 +1082,8 @@ def create_locations():
         name="The Underbelly of the Wyrm",
         parent=mexico_city,
         description="A massive underground complex beneath Mexico City, combining a Black Spiral Dancer Hive, "
-                   "Nephandi Labyrinth, and Nosferatu Warren. Home to the Pandemonium, a living cancerous entity "
-                   "that serves as a Caul for the Nephandi. Contains several powerful hidden Nodes.",
+        "Nephandi Labyrinth, and Nosferatu Warren. Home to the Pandemonium, a living cancerous entity "
+        "that serves as a Caul for the Nephandi. Contains several powerful hidden Nodes.",
         gauntlet_rating=2,
     )
 
@@ -1096,8 +1093,8 @@ def create_locations():
         parent=underbelly,
         rank=5,
         description="A massive, pulsing black entity growing from the ruins of Huitzilopoctli's pyramid. "
-                   "Living cancerous growth that filters mage Avatars through corruption. Contains the Nephandi Caul "
-                   "and connection to the Black Spiral. Defended by corrupted Men in Black.",
+        "Living cancerous growth that filters mage Avatars through corruption. Contains the Nephandi Caul "
+        "and connection to the Black Spiral. Defended by corrupted Men in Black.",
         quintessence_per_week=50,
         quintessence_form="Angst and suffering",
         gauntlet_rating=2,
@@ -1109,8 +1106,8 @@ def create_locations():
         parent=mexico_city,
         rank=4,
         description="Powerful Node and holy site. One of the few Nodes not held by the Technocracy. "
-                   "Considered Holy Ground. Original temple to Tonantzin destroyed by Conquistadors. "
-                   "The Celestial Chorus maintains strong influence here.",
+        "Considered Holy Ground. Original temple to Tonantzin destroyed by Conquistadors. "
+        "The Celestial Chorus maintains strong influence here.",
         quintessence_per_week=20,
         quintessence_form="Faith and devotion",
         gauntlet_rating=4,
@@ -1120,8 +1117,8 @@ def create_locations():
     paraiso = Location.objects.create(
         name="Paraiso Vista",
         description="A small, peaceful town of 432 people about 80 miles north of Mexico City. "
-                   "Completely untouched by the Wyrm and modern corruption. Protected by Huitzilopoctli "
-                   "for 300 years as his personal preserve. The people want for nothing and live in harmony.",
+        "Completely untouched by the Wyrm and modern corruption. Protected by Huitzilopoctli "
+        "for 300 years as his personal preserve. The people want for nothing and live in harmony.",
         population=432,
     )
 
@@ -1130,17 +1127,17 @@ def create_locations():
         name="Dragon's Lair",
         parent=paraiso,
         description="Hidden Haven of Shaitan/Huitzilopoctli carved into a mountain north of Paraiso Vista. "
-                   "Entrance hidden behind a stream, concealed by a massive stone dragon head. "
-                   "Contains the bodies of four failed Childer, an antechamber with four preserved hearts, "
-                   "and the main chamber with a stone altar and Shaitan's resting place.",
+        "Entrance hidden behind a stream, concealed by a massive stone dragon head. "
+        "Contains the bodies of four failed Childer, an antechamber with four preserved hearts, "
+        "and the main chamber with a stone altar and Shaitan's resting place.",
     )
 
     # Tower of Al Durab
     tower = Location.objects.create(
         name="Tower of Al Durab",
         description="A legendary Hermetic Chantry in the Jordanian desert. Changes size and appearance constantly. "
-                   "Home to isolationist mages dedicated to studying the Kabbalah. Protected by golems and sand storms. "
-                   "No new members have joined in over 400 years. All mages here are Masters or Oracles.",
+        "Home to isolationist mages dedicated to studying the Kabbalah. Protected by golems and sand storms. "
+        "No new members have joined in over 400 years. All mages here are Masters or Oracles.",
         gauntlet_rating=3,
     )
 
@@ -1149,8 +1146,8 @@ def create_locations():
         name="Lake Tezcoco",
         parent=mexico_city,
         description="Ancient lake where Tenochtitlan once stood. Now heavily polluted. "
-                   "Waters run deep over the Underbelly of the Wyrm. Contains a scale model of ancient Tenochtitlan "
-                   "that causes visions and plants seeds of Wyrm corruption. Swarming with Banes.",
+        "Waters run deep over the Underbelly of the Wyrm. Contains a scale model of ancient Tenochtitlan "
+        "that causes visions and plants seeds of Wyrm corruption. Swarming with Banes.",
         gauntlet_rating=2,
     )
 
@@ -1159,7 +1156,7 @@ def create_locations():
         name="Zona Rosa",
         parent=mexico_city,
         description="Wealthy shopping district with elegant restaurants and international shops. "
-                   "The only 'safe' area in Mexico City during most times. During Days of the Dead, anything goes.",
+        "The only 'safe' area in Mexico City during most times. During Days of the Dead, anything goes.",
         population=50000,
     )
 
@@ -1168,8 +1165,8 @@ def create_locations():
         name="Alameda Park",
         parent=mexico_city,
         description="260 square mile park in the heart of Mexico City. Home territory of the Sweet Water Sept "
-                   "of Bone Gnawers. Contains museums, monuments, and the Olympic Sports Center. "
-                   "No formal caern exists here, but the Bone Gnawers defend it fiercely.",
+        "of Bone Gnawers. Contains museums, monuments, and the Olympic Sports Center. "
+        "No formal caern exists here, but the Bone Gnawers defend it fiercely.",
     )
 
     print("Created locations from The Chaos Factor")
