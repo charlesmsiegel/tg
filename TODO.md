@@ -39,28 +39,19 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Quality & Redundancy Cleanup
 
-6. **Consolidate QuerySet and Manager Methods**
-   - **Files**: `core/models.py:36-106`
-   - **Impact**: HIGH - 70+ lines of duplicate code, maintenance burden
-   - **Issue**: Six methods are duplicated identically between `ModelQuerySet` and `ModelManager`:
-     - `pending_approval_for_user()` - lines 36-48 (QuerySet) vs 74-86 (Manager)
-     - `visible()` - lines 50-52 vs 88-90
-     - `for_chronicle()` - lines 54-56 vs 92-94
-     - `owned_by()` - lines 58-60 vs 96-98
-     - `with_pending_images()` - lines 62-64 vs 100-102
-     - `for_user_chronicles()` - lines 66-68 vs 104-106
-   - **Action**: Use Django's `QuerySet.as_manager()` or `PolymorphicManager.from_queryset()` pattern
-   - **Solution**:
-     ```python
-     # Keep methods only in ModelQuerySet class
-     class ModelQuerySet(PolymorphicQuerySet):
-         def pending_approval_for_user(self, user):
-             # ... existing implementation ...
-         # ... other methods ...
-
-     # Use from_queryset() to create manager automatically
-     ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
-     ```
+6. **✅ COMPLETED: Consolidate QuerySet and Manager Methods**
+   - **Files**: `core/models.py:71-73` (consolidated)
+   - **Impact**: HIGH - Eliminated 70+ lines of duplicate code
+   - **Solution Implemented**: Used `PolymorphicManager.from_queryset()` pattern
+   - **Result**: All six methods now defined once in `ModelQuerySet`:
+     - `pending_approval_for_user()`
+     - `visible()`
+     - `for_chronicle()`
+     - `owned_by()`
+     - `with_pending_images()`
+     - `for_user_chronicles()`
+   - **Manager Creation**: `ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)`
+   - **Completed**: 2025-11-23
 
 7. **Eliminate Duplicate Limited Edit Forms**
    - **Files**: `characters/forms/core/limited_edit.py:125-207`
