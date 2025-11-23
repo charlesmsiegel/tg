@@ -39,10 +39,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Quality
 
-1. **Find source for "Slow Healing" merit**
-   - **File**: `populate_db/merits_and_flaws_INC.py:14`
-   - **Issue**: The "Slow Healing" merit (3 pt flaw) for Mage/Sorcerer needs source book verification and page number
-   - **Impact**: Documentation completeness
+_(No items currently tracked)_
 
 ---
 
