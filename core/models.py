@@ -489,6 +489,11 @@ class CharacterTemplate(Model):
         help_text="e.g., 'mage', 'vampire', 'werewolf', 'changeling', 'wraith', 'demon'",
     )
     concept = models.CharField(max_length=200, blank=True)
+    faction = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Optional faction/clan/tribe/tradition name (e.g., 'Brujah', 'Glass Walkers', 'Virtual Adepts')",
+    )
 
     # Character Data (stored as JSON)
     basic_info = models.JSONField(

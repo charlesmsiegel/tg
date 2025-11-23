@@ -59,4 +59,45 @@ urlpatterns = [
         views.HouseRuleUpdateView.as_view(),
         name="update_houserule",
     ),
+    # Character Template Management (ST only)
+    path(
+        "templates/",
+        views.CharacterTemplateListView.as_view(),
+        name="character_template_list",
+    ),
+    path(
+        "templates/create/",
+        views.CharacterTemplateCreateView.as_view(),
+        name="character_template_create",
+    ),
+    path(
+        "templates/<int:pk>/",
+        views.CharacterTemplateDetailView.as_view(),
+        name="character_template_detail",
+    ),
+    path(
+        "templates/<int:pk>/edit/",
+        views.CharacterTemplateUpdateView.as_view(),
+        name="character_template_update",
+    ),
+    path(
+        "templates/<int:pk>/delete/",
+        views.CharacterTemplateDeleteView.as_view(),
+        name="character_template_delete",
+    ),
+    path(
+        "templates/<int:pk>/export/",
+        views.CharacterTemplateExportView.as_view(),
+        name="character_template_export",
+    ),
+    path(
+        "templates/import/",
+        views.CharacterTemplateImportView.as_view(),
+        name="character_template_import",
+    ),
+    path(
+        "templates/<int:pk>/create-npc/",
+        views.CharacterTemplateQuickNPCView.as_view(),
+        name="character_template_create_npc",
+    ),
 ]

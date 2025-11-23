@@ -395,13 +395,113 @@ Templates track:
 
 View statistics in admin interface.
 
+## Recent Enhancements (Implemented)
+
+- [x] **User-created templates (Storyteller-only)** - STs can now create custom templates via `/templates/create/`
+- [x] **Template variations by clan/tribe/tradition** - Templates can specify faction (Brujah, Glass Walkers, etc.)
+- [x] **Template import/export (JSON)** - Export templates as JSON and import community templates
+- [x] **NPC quick-creation from templates** - One-click NPC creation from any template
+
+## User-Created Templates (ST Only)
+
+Storytellers can create custom templates for their chronicles:
+
+### Creating a Template
+1. Navigate to `/templates/create/`
+2. Fill in basic info (name, gameline, character type, faction)
+3. Add character data in JSON format (attributes, abilities, backgrounds, etc.)
+4. Choose visibility (public or chronicle-only)
+5. Save the template
+
+### Managing Templates
+- **List all templates**: `/templates/`
+- **Filter templates**: By gameline, character type, ownership
+- **Edit template**: Click "Edit" on template detail page (owner only)
+- **Delete template**: Click "Delete" on template detail page (owner only)
+- **Export template**: Download as JSON for sharing
+
+### Template JSON Format
+Templates use JSON fields for character data:
+- `basic_info`: Nature, demeanor, concept (use `"FK:Model:Name"` for foreign keys)
+- `attributes`: Numeric ratings for strength, dexterity, etc.
+- `abilities`: Numeric ratings for skills
+- `backgrounds`: List of `{"name": "Background", "rating": 3}` objects
+- `powers`: Disciplines, spheres, gifts, etc.
+- `merits_flaws`: List of `{"name": "Merit", "rating": 2}` objects
+- `specialties`: List of `"Ability (Specialty)"` strings
+- `languages`: List of language names
+
+## Faction-Specific Templates
+
+Templates can specify factions (clans, tribes, traditions) for specialized builds:
+
+### Available Faction Templates
+**Vampire Clans:**
+- Brujah Brawler - Street fighter with Celerity/Potence
+- Tremere Scholar - Blood mage with Thaumaturgy
+- Toreador Artist - Passionate creator with Presence/Auspex
+
+**Werewolf Tribes:**
+- Glass Walker Hacker - Tech-savvy urbanite
+- Red Talon Predator - Wild hunter (lupus-born)
+
+**Mage Traditions:**
+- Verbena Herbalist - Primal life mage
+- Order of Hermes Magus - Ceremonial wizard
+- Akashic Brotherhood Monk - Martial artist mage
+
+Load faction templates:
+```bash
+python populate_db/character_templates/faction_templates.py
+```
+
+## Template Import/Export
+
+### Exporting Templates
+1. Navigate to template detail page
+2. Click "Export JSON" button
+3. Save the downloaded `.json` file
+
+### Importing Templates
+1. Navigate to `/templates/import/`
+2. Upload a `.json` file
+3. Choose visibility settings
+4. Click "Import"
+
+**Import Validation:**
+- Maximum file size: 5MB
+- Required fields: name, gameline, character_type
+- Imported templates are marked as user-created (not official)
+- Can edit after import
+
+### Sharing Templates
+Export templates to share with other players/STs. Community members can:
+1. Export their custom templates
+2. Share JSON files online
+3. Import into their own games
+4. Modify and adapt as needed
+
+## Quick NPC Creation
+
+Create NPCs instantly from any template:
+
+1. Navigate to template detail page
+2. Click "Quick NPC" button
+3. Confirm creation
+4. NPC is created with:
+   - Name: `[Concept] (NPC)`
+   - Status: Automatically approved
+   - NPC flag: Set to true
+   - All template data applied
+
+**ST Workflow:**
+- Need a Brujah gang member? → Click "Quick NPC" on Brujah Brawler template
+- Need a Virtual Adept hacker? → Click "Quick NPC" on Virtual Adept Hacker template
+- Customize the NPC after creation as needed
+
 ## Future Enhancements
 
-- [ ] User-created templates (Storyteller-only)
-- [ ] Template variations by clan/tribe/tradition
-- [ ] Template import/export (JSON)
-- [ ] Template voting/ratings
-- [ ] NPC quick-creation from templates
+- [ ] Template voting/ratings - Let users rate templates they've used
 
 ## Troubleshooting
 
