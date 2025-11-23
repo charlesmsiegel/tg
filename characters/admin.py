@@ -506,6 +506,16 @@ class ApocalypticFormTraitAdmin(admin.ModelAdmin):
     list_filter = ("cost", "high_torment_only")
 
 
+from characters.models.demon.ritual import Ritual
+
+
+@admin.register(Ritual)
+class RitualAdmin(admin.ModelAdmin):
+    list_display = ("name", "house", "primary_lore", "primary_lore_rating", "base_cost")
+    list_filter = ("house", "primary_lore")
+    search_fields = ("name", "description")
+
+
 # Wraith Models
 
 

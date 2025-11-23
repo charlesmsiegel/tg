@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from locations.models.core.location import LocationModel
 
 
@@ -66,6 +67,9 @@ class Reliquary(LocationModel):
     class Meta:
         verbose_name = "Reliquary"
         verbose_name_plural = "Reliquaries"
+
+    def get_absolute_url(self):
+        return reverse("locations:demon:reliquary", kwargs={"pk": self.pk})
 
     def get_heading(self):
         return "dtf_heading"

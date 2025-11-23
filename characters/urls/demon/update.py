@@ -5,6 +5,7 @@ from characters.views.demon import (
     DtFHumanUpdateView,
     LoreUpdateView,
     PactUpdateView,
+    RitualUpdateView,
     ThrallUpdateView,
     VisageUpdateView,
 )
@@ -19,4 +20,5 @@ urls = [
     path("visage/<int:pk>/", VisageUpdateView.as_view(), name="visage"),
     path("lore/<int:pk>/", LoreUpdateView.as_view(), name="lore"),
     path("pact/<int:pk>/", PactUpdateView.as_view(), name="pact"),
+    path("ritual/<int:pk>/", RitualUpdateView.as_view(), name="ritual"),
 ]

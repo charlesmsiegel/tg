@@ -1,0 +1,75 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header">
+                <h5 class="tg-card-title dtf_heading">Relic Information</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="row mb-3">
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.get_relic_type_display }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Complexity:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.complexity }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Permanent:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_permanent|yesno:"Yes,No" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Difficulty:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.difficulty }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">Dice Pool:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.dice_pool }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div style="display: inline-block; padding: 12px 24px; border-radius: 8px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; color: var(--theme-text-secondary); margin-right: 8px;">House:</span>
+                            {% if object.house %}
+                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.house.name }}</span>
+                            {% else %}
+                                <span class="text-muted">None</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if object.lore_used %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">Lore Used</div>
+                                <div style="color: var(--theme-text-primary);">{{ object.lore_used }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if object.material %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">Material</div>
+                                <div style="color: var(--theme-text-primary);">{{ object.material }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

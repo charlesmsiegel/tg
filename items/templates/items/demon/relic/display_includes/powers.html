@@ -1,0 +1,14 @@
+{% if object.power %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title dtf_heading">Powers & Effects</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 24px;">
+                    <div style="line-height: 1.6;">{{ object.power|linebreaks }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

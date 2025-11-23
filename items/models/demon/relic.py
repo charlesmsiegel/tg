@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from items.models.core import ItemModel
 
 
@@ -55,6 +56,9 @@ class Relic(ItemModel):
 
     def __str__(self):
         return f"{self.name} ({self.get_relic_type_display()})"
+
+    def get_absolute_url(self):
+        return reverse("items:demon:relic", kwargs={"pk": self.pk})
 
     def set_complexity(self, complexity):
         """Set the complexity level (1-10)."""

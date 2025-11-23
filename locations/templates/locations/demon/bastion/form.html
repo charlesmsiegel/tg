@@ -1,0 +1,20 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Bastion
+{% endblock creation_title %}
+{% block other %}
+    <div class="row mb-3">
+        <div class="col-sm-4">
+            <label for="{{ form.ritual_strength.id_for_label }}">Ritual Strength</label>
+            {{ form.ritual_strength }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.warding_level.id_for_label }}">Warding Level</label>
+            {{ form.warding_level }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.consecration_date.id_for_label }}">Consecration Date</label>
+            {{ form.consecration_date }}
+        </div>
+    </div>
+{% endblock other %}
