@@ -277,18 +277,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: This is a specific, actionable subset of broader validation work
     - **Independence**: Standalone task - can be done independently
 
-11. **Fix class name typo**
-    - **File**: `accounts/forms.py:24`
-    - **Issue**: `CustomUSerCreationForm` should be `CustomUserCreationForm`
-    - **Action**:
-      1. Rename class in forms.py
-      2. Search codebase for imports: `grep -r "CustomUSerCreationForm"`
-      3. Update all import references
-      4. Search templates for form references
-    - **Context**: Simple typo fix - 'USer' should be 'User'
-    - **Independence**: Standalone task - can be done independently
-
-12. **Fix Status Validation Redundancy**
+11. **Fix Status Validation Redundancy**
     - **Files**: `characters/models/core/character.py:122-188`
     - **Impact**: LOW - Confusing but functional
     - **Issue**: Status validation happens in three places with contradictory behavior:
@@ -305,7 +294,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Testing
 
-13. **Add tests for Character model**
+12. **Add tests for Character model**
     - **Current**: Only `accounts/tests.py` has substantial tests
     - **Goal**: Add comprehensive tests for Character model as starting point
     - **Files**: Create `characters/tests/core/test_character.py`
@@ -321,7 +310,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Use Django's unittest framework (see existing `accounts/tests.py` as template)
     - **Independence**: Standalone task - can be done independently
 
-14. **Standardize CBV patterns in game/views.py**
+13. **Standardize CBV patterns in game/views.py**
     - **File**: `game/views.py`
     - **Issue**: Views inherit from View but don't follow CBV patterns
     - **Action**:
@@ -349,7 +338,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Development Tools
 
-15. **Add Django Debug Toolbar**
+14. **Add Django Debug Toolbar**
     - **Files**: `tg/settings.py`, `requirements.txt`, `tg/urls.py`
     - **Issue**: No visibility into query performance and N+1 issues
     - **Action**:
@@ -367,7 +356,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Toolbar shows queries, templates, cache hits, etc. in browser
     - **Independence**: Standalone task - can be done independently
 
-16. **Configure structured logging**
+15. **Configure structured logging**
     - **Files**: `tg/settings.py`
     - **Issue**: No logging configuration makes debugging production issues difficult
     - **Action**:
@@ -413,7 +402,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Structured logging helps track errors and debug issues in production
     - **Independence**: Standalone task - can be done independently
 
-17. **Add caching configuration**
+16. **Add caching configuration**
     - **Files**: `tg/settings.py`
     - **Issue**: No caching configured, expensive queries run repeatedly
     - **Action**:
@@ -440,7 +429,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Start with local-memory cache, upgrade to Redis in production
     - **Independence**: Standalone task - can be done independently
 
-18. **Centralize hardcoded choices**
+17. **Centralize hardcoded choices**
     - **Files**: `game/models.py:18-35`, `accounts/models.py:28-48`
     - **Issue**: Choices duplicated across files (status choices, relationship types, etc.)
     - **Action**:
@@ -470,7 +459,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Quality Improvements
 
-19. **Simplify Gameline Detection**
+18. **Simplify Gameline Detection**
     - **Files**: `core/models.py:352-372`
     - **Impact**: LOW - Fragile string parsing
     - **Issue**: Models detect gameline by parsing class module path strings
@@ -492,7 +481,7 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Explicit is better than implicit - fragile string parsing can break with refactoring
     - **Independence**: Standalone task - can be done independently
 
-20. **Simplify Observer Permission Check**
+19. **Simplify Observer Permission Check**
     - **Files**: `core/permissions.py:156-164`
     - **Impact**: LOW - Works but could be cleaner
     - **Issue**: Checking observer status requires ContentType lookup
