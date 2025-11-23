@@ -70,13 +70,17 @@ Each gameline has its own module under `characters/models/{gameline}/`, `items/m
 - `tg/settings.py` - Django configuration (uses .env), gameline configuration
 - `core/models.py` - Base polymorphic models, Book, HouseRule
 - `core/mixins.py` - All view mixins (permission, message, user checks)
+- `core/permissions.py` - PermissionManager and permission checking logic
 - `characters/models/core/character.py` - Base Character class
 - `accounts/models.py` - Profile model with ST logic
 - `SOURCES/STYLE.md` - UI design guide (use `tg-card` not Bootstrap `card`)
+- `README.md` - Project overview and quick start guide
 - `TODO.md` - Known technical debt and planned improvements
 - `populate_db/` - 80+ scripts for loading game mechanics data
 - `docs/design/` - Design documentation (permissions, validation)
-- `docs/guides/` - Implementation guides (migrations, permissions)
+- `docs/guides/` - Implementation guides (migrations, permissions, limited forms)
+- `docs/deployment/` - Deployment guides for staging and production
+- `docs/testing/` - Test documentation and reports
 
 ## Coding Standards
 
@@ -159,9 +163,22 @@ if request.user.profile.is_st():
     # Allow ST-only actions
 ```
 
+**Limited Forms for Owners:**
+Owners can only edit descriptive fields. Use limited forms in update views:
+```python
+# characters/views/core/character.py
+def get_form_class(self):
+    if self.request.user.profile.is_st() or self.request.user.is_staff:
+        return CharacterForm  # Full form with all fields
+    return LimitedCharacterEditForm  # Only notes, description, public_info, image
+```
+
+See `docs/guides/limited_owner_forms.md` for implementation details.
+
 **Guidelines:**
 - Use **PermissionManager** for detail/update/delete views and object-specific permissions
 - Use **is_st()** for general role checks, forms, and templates
+- Use **Limited forms** for owner editing to restrict mechanical field changes
 - Permission mixins handle view-level checks automatically
 - See `docs/design/permissions_system.md` for comprehensive documentation
 
