@@ -67,13 +67,161 @@ Each gameline has its own module under `characters/models/{gameline}/`, `items/m
 
 ## Important Files
 
-- `tg/settings.py` - Django configuration (uses .env)
+- `tg/settings.py` - Django configuration (uses .env), gameline configuration
 - `core/models.py` - Base polymorphic models, Book, HouseRule
+- `core/mixins.py` - All view mixins (permission, message, user checks)
 - `characters/models/core/character.py` - Base Character class
 - `accounts/models.py` - Profile model with ST logic
 - `SOURCES/STYLE.md` - UI design guide (use `tg-card` not Bootstrap `card`)
-- `PRACTICE_VIOLATIONS.md` - Known technical debt and security issues
+- `TODO.md` - Known technical debt and planned improvements
 - `populate_db/` - 80+ scripts for loading game mechanics data
+- `docs/design/` - Design documentation (permissions, validation)
+- `docs/guides/` - Implementation guides (migrations, permissions)
+
+## Coding Standards
+
+### Gameline Configuration
+Gameline data is centralized in `tg/settings.py`. **Always use settings for gameline data**:
+
+```python
+# tg/settings.py defines:
+GAMELINES = {
+    'wod': {'name': 'World of Darkness', 'short': '', 'app_name': 'wod'},
+    'vtm': {'name': 'Vampire: the Masquerade', 'short': 'VtM', 'app_name': 'vampire'},
+    'wta': {'name': 'Werewolf: the Apocalypse', 'short': 'WtA', 'app_name': 'werewolf'},
+    'mta': {'name': 'Mage: the Ascension', 'short': 'MtA', 'app_name': 'mage'},
+    'wto': {'name': 'Wraith: the Oblivion', 'short': 'WtO', 'app_name': 'wraith'},
+    'ctd': {'name': 'Changeling: the Dreaming', 'short': 'CtD', 'app_name': 'changeling'},
+    'dtf': {'name': 'Demon: the Fallen', 'short': 'DtF', 'app_name': 'demon'},
+}
+GAMELINE_CHOICES = [(key, val['name']) for key, val in GAMELINES.items()]
+
+# In your code - use settings, don't hardcode:
+from django.conf import settings
+gameline_name = settings.GAMELINES.get(gameline, {}).get('name', gameline)
+
+# For model choices:
+gameline = models.CharField(choices=settings.GAMELINE_CHOICES, ...)
+```
+
+### View Mixins
+All view mixins are consolidated in `core/mixins.py`. **Always import from `core.mixins`**:
+
+```python
+# Correct - consolidated imports
+from core.mixins import (
+    ViewPermissionMixin,      # Requires VIEW_FULL permission
+    EditPermissionMixin,      # Requires EDIT_FULL permission
+    MessageMixin,             # Success/error messages
+    SpecialUserMixin,         # Special user access
+)
+
+# Deprecated - old scattered imports (still work but avoid)
+from core.views.message_mixin import SuccessMessageMixin
+from core.views.approved_user_mixin import SpecialUserMixin
+```
+
+**Available Mixins:**
+- **Permission Mixins**: `ViewPermissionMixin`, `EditPermissionMixin`, `SpendXPPermissionMixin`, `SpendFreebiesPermissionMixin`, `VisibilityFilterMixin`, `OwnerRequiredMixin`, `STRequiredMixin`
+- **Message Mixins**: `SuccessMessageMixin`, `ErrorMessageMixin`, `MessageMixin`, `DeleteMessageMixin`
+- **User Check Mixins**: `SpecialUserMixin`
+
+### Permission Patterns
+Two permission systems exist - use the right one for the context:
+
+**Use PermissionManager (object-level):**
+```python
+# In views - checking permissions on specific objects
+class CharacterDetailView(ViewPermissionMixin, DetailView):
+    # ViewPermissionMixin automatically checks VIEW_FULL permission
+    pass
+
+# In code - explicit permission checks
+from core.permissions import PermissionManager
+pm = PermissionManager()
+if pm.check_permission(user, character, 'edit_full'):
+    # Allow editing
+```
+
+**Use is_st() (role-based):**
+```python
+# In forms - to determine available options
+if user.profile.is_st():
+    # Show ST-only form fields
+
+# In templates - to show/hide UI elements
+{% if user.profile.is_st %}
+    <!-- ST-only controls -->
+{% endif %}
+
+# General storyteller checks (not object-specific)
+if request.user.profile.is_st():
+    # Allow ST-only actions
+```
+
+**Guidelines:**
+- Use **PermissionManager** for detail/update/delete views and object-specific permissions
+- Use **is_st()** for general role checks, forms, and templates
+- Permission mixins handle view-level checks automatically
+- See `docs/design/permissions_system.md` for comprehensive documentation
+
+### View Class Patterns
+Follow Django's class-based view patterns:
+
+```python
+from django.views.generic import DetailView, UpdateView
+from core.mixins import ViewPermissionMixin, MessageMixin
+
+# Good - proper CBV pattern
+class CharacterDetailView(ViewPermissionMixin, DetailView):
+    model = Character
+    template_name = 'characters/character/detail.html'
+
+    def get_queryset(self):
+        # Use select_related/prefetch_related to prevent N+1 queries
+        return super().get_queryset().select_related('owner').prefetch_related('merits_and_flaws')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['additional_data'] = self.get_additional_data()
+        return context
+
+# Good - update view with messages
+class CharacterUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
+    model = Character
+    form_class = CharacterForm
+    success_message = "Character updated successfully"
+```
+
+### Preventing N+1 Queries
+Always use `select_related()` and `prefetch_related()` in querysets:
+
+```python
+# Bad - causes N+1 queries
+characters = Character.objects.all()
+for char in characters:
+    print(char.owner.username)  # Query per character!
+
+# Good - single query with join
+characters = Character.objects.select_related('owner')
+for char in characters:
+    print(char.owner.username)  # No additional queries
+
+# Good - prefetch related objects
+chronicle = Chronicle.objects.prefetch_related('storytellers', 'allowed_objects').get(pk=pk)
+```
+
+### Error Handling in Views
+Use `get_object_or_404()` instead of `.get()`:
+
+```python
+# Bad - raises 500 error
+character = Character.objects.get(pk=pk)  # DoesNotExist = 500 error
+
+# Good - returns proper 404
+from django.shortcuts import get_object_or_404
+character = get_object_or_404(Character, pk=pk)  # DoesNotExist = 404 response
+```
 
 ## Template Styling Conventions
 
