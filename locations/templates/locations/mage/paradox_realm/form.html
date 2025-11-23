@@ -1,0 +1,13 @@
+{% extends "core/form.html" %}
+
+{% block creation_title %}
+    {% if object.pk %}
+        Update Paradox Realm
+    {% else %}
+        Create Paradox Realm
+    {% endif %}
+{% endblock creation_title %}
+
+{% block contents %}
+    {% include "locations/mage/paradox_realm/form_include.html" %}
+{% endblock contents %}

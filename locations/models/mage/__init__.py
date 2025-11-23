@@ -1,7 +1,7 @@
 from .chantry import Chantry
 from .library import Library
 from .node import Node, NodeMeritFlawRating, NodeResonanceRating
-from .paradox_realm import ParadoxRealm
+from .paradox_realm import ParadoxRealm, ParadoxObstacle, ParadoxAtmosphere
 from .reality_zone import RealityZone, ZoneRating
 from .realm import HorizonRealm
 from .sanctum import Sanctum

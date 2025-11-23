@@ -13,6 +13,12 @@ from .library import (
     LibraryUpdateView,
 )
 from .node import NodeCreateView, NodeDetailView, NodeListView, NodeUpdateView
+from .paradox_realm import (
+    ParadoxRealmCreateView,
+    ParadoxRealmDetailView,
+    ParadoxRealmListView,
+    ParadoxRealmUpdateView,
+)
 from .reality_zone import (
     RealityZoneCreateView,
     RealityZoneDetailView,
