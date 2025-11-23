@@ -74,6 +74,13 @@ class Reliquary(LocationModel):
     def get_heading(self):
         return "dtf_heading"
 
+    def get_update_url(self):
+        return reverse("locations:demon:update:reliquary", args=[str(self.id)])
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("locations:demon:create:reliquary")
+
     def is_damaged(self):
         """Check if the reliquary has taken damage"""
         return self.current_health_levels < self.max_health_levels

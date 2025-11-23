@@ -1,0 +1,80 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Domain
+{% endblock creation_title %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title vtm_heading">Domain Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.parent.id_for_label }}" class="form-label">Parent Location</label>
+                    {{ form.parent }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.size.id_for_label }}" class="form-label">Size (1-5 dots)</label>
+                    {{ form.size }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.population.id_for_label }}" class="form-label">Population (1-5 dots)</label>
+                    {{ form.population }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.control.id_for_label }}" class="form-label">Control (1-5 dots)</label>
+                    {{ form.control }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.domain_type.id_for_label }}" class="form-label">Domain Type</label>
+                    {{ form.domain_type }}
+                    <small class="form-text text-muted">E.g., 'Nightclub district', 'University campus', 'Industrial park'</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_elysium }}
+                        <label class="form-check-label" for="{{ form.is_elysium.id_for_label }}">
+                            Contains Elysium
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_rack }}
+                        <label class="form-check-label" for="{{ form.has_rack.id_for_label }}">
+                            Contains Rack
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_disputed }}
+                        <label class="form-check-label" for="{{ form.is_disputed.id_for_label }}">
+                            Contested Territory
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}

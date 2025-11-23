@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title vtm_heading">Havens</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:vampire:create:haven' %}" class="btn btn-primary mb-3">Create New Haven</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Size</th>
+                        <th>Security</th>
+                        <th>Location Quality</th>
+                        <th>Total Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for haven in object_list %}
+                    <tr>
+                        <td><a href="{{ haven.get_absolute_url }}">{{ haven.name }}</a></td>
+                        <td>{% if haven.parent %}<a href="{{ haven.parent.get_absolute_url }}">{{ haven.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ haven.get_size_display }}</td>
+                        <td>{{ haven.security|dots }}</td>
+                        <td>{{ haven.location|dots }}</td>
+                        <td>{{ haven.total_rating|dots:10 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No havens found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

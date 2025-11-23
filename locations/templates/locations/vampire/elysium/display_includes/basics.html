@@ -1,0 +1,82 @@
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Elysium Properties</h5>
+        </div>
+        <div class="tg-card-body text-center" style="padding: 20px;">
+            <!-- Prestige -->
+            <div class="mb-4">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.prestige|dots }}</div>
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Prestige</div>
+                </div>
+            </div>
+
+            {% if object.elysium_type %}
+            <div class="mb-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05); width: 100%; text-align: center;">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.elysium_type }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if object.keeper_name %}
+            <div class="mb-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05); width: 100%; text-align: center;">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Keeper:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.keeper_name }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Features & Rules</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            <div class="row">
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_protected|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Protected</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_protected|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.allows_weapons|yesno:'rgba(255,165,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Weapons</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.allows_weapons|yesno:"Allowed,Forbidden" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_blood_dolls|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Blood Dolls</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_blood_dolls|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_art_collection|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Art Collection</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_art_collection|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_library|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Library</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_library|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_court|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Court Location</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_court|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

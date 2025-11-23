@@ -1,12 +1,11 @@
 {% extends "locations/core/location/detail.html" %}
 {% load sanitize_text dots %}
 {% block objectname %}
-    <!-- Page Header with Demon styling -->
-    <div class="tg-card header-card mb-4" data-gameline="dtf">
+    <!-- Page Header with Vampire styling -->
+    <div class="tg-card header-card mb-4" data-gameline="vtm">
         <div class="tg-card-header">
-            <h1 class="tg-card-title dtf_heading">
+            <h1 class="tg-card-title vtm_heading">
                 {{ object.name }}
-                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
             </h1>
             {% if object.parent %}
                 <p class="tg-card-subtitle mb-0">
@@ -18,6 +17,6 @@
 {% endblock objectname %}
 {% block model_specific %}
     <div class="row mb-4">
-        {% include "locations/demon/bastion/display_includes/basics.html" %}
+        {% include "locations/vampire/rack/display_includes/basics.html" %}
     </div>
 {% endblock model_specific %}

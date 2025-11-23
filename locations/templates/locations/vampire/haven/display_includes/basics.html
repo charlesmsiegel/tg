@@ -1,0 +1,80 @@
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Haven Statistics</h5>
+        </div>
+        <div class="tg-card-body text-center" style="padding: 20px;">
+            <!-- Total Rating -->
+            <div class="mb-4">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.total_rating|dots:10 }}</div>
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Total Rating</div>
+                </div>
+            </div>
+
+            <!-- Component Ratings -->
+            <div class="row">
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.get_size_display }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Size</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.security|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Security</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.location|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Location</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Haven Features</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            <div class="row">
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_guardian|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Guardian</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_guardian|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_luxury|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Luxury</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_luxury|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_hidden|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Hidden</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_hidden|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_library|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Library</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_library|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_workshop|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Workshop</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_workshop|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

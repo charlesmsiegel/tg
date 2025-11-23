@@ -1,7 +1,7 @@
 from django.urls import path
 from locations import views
 
-app_name = "locations:update"
+app_name = "demon:update"
 urls = [
     path(
         "bastion/<pk>/",
