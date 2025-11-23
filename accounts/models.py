@@ -19,6 +19,22 @@ from locations.models.core.location import LocationModel
 
 
 class Profile(models.Model):
+    """User profile extending Django's default User model.
+
+    Architecture Decision: This project uses Django's default User model with a
+    OneToOne Profile extension rather than a custom User model. While AbstractUser
+    is recommended for new projects, this approach was chosen because:
+
+    - The project was already in production when custom users became best practice
+    - Migration would require complex data migration with high risk
+    - Current approach works well with all Django/third-party packages
+    - Performance is acceptable with proper use of select_related()
+
+    See docs/design/user_model_architecture.md for detailed trade-off analysis.
+
+    For new Django projects, use AbstractUser from the start.
+    """
+
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, help_text="The user this profile belongs to"
     )

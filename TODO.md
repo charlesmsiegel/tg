@@ -439,10 +439,11 @@ Models needing full implementation:
 
 ## 📚 Long-term Improvements
 
-- [ ] **Consider custom User model**
+- [x] **Consider custom User model**
   - Currently using Profile extension of Django User
-  - Document trade-offs of current approach
-  - For new projects, AbstractUser is preferred
+  - Documented trade-offs of current approach in `docs/design/user_model_architecture.md`
+  - **Decision**: Keep current User + Profile approach (migration risk too high)
+  - For new projects, AbstractUser is preferred (documented in design doc)
 
 - [ ] **Add migration best practices**
   - Create data migrations for schema changes
