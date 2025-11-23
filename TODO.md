@@ -13,13 +13,13 @@ This document tracks remaining work across the codebase with context about what 
    - **Action**: Review and update vulnerable dependencies
    - **Check**: https://github.com/charlesmsiegel/tg/security/dependabot
 
-2. **Fix security settings for production**
-   - **File**: `tg/settings.py:27-29`
-   - **Issue**: DEBUG=True, ALLOWED_HOSTS=["*"] in settings
-   - **Action**: Move to environment-based configuration
-   - Set `DEBUG = False` in production
-   - Configure proper `ALLOWED_HOSTS` from environment
-   - Create environment-specific settings files (base.py, development.py, production.py)
+2. **Complete production security configuration**
+   - **File**: `tg/settings.py:27-33`
+   - **Status**: ✅ Partially fixed - DEBUG and ALLOWED_HOSTS now use environment variables
+   - **Remaining Actions**:
+     - Configure proper SECRET_KEY from environment (currently commented out)
+     - Create environment-specific settings files (base.py, development.py, production.py)
+     - Add additional security headers and CSRF settings for production
 
 3. **Add authentication to views**
    - **Files**: Multiple views in `game/views.py`
@@ -37,9 +37,67 @@ This document tracks remaining work across the codebase with context about what 
    - **Issue**: Using `.get()` causes 500 errors instead of proper 404 responses
    - **Action**: Replace all `.get()` calls in views with `get_object_or_404()`
 
-### Code Quality
+### Code Quality & Redundancy Cleanup
 
-_(No items currently tracked)_
+6. **Consolidate QuerySet and Manager Methods**
+   - **Files**: `core/models.py:36-106`
+   - **Impact**: HIGH - 70+ lines of duplicate code, maintenance burden
+   - **Issue**: Six methods are duplicated identically between `ModelQuerySet` and `ModelManager`:
+     - `pending_approval_for_user()` - lines 36-48 (QuerySet) vs 74-86 (Manager)
+     - `visible()` - lines 50-52 vs 88-90
+     - `for_chronicle()` - lines 54-56 vs 92-94
+     - `owned_by()` - lines 58-60 vs 96-98
+     - `with_pending_images()` - lines 62-64 vs 100-102
+     - `for_user_chronicles()` - lines 66-68 vs 104-106
+   - **Action**: Use Django's `QuerySet.as_manager()` or `PolymorphicManager.from_queryset()` pattern
+   - **Solution**:
+     ```python
+     # Keep methods only in ModelQuerySet class
+     class ModelQuerySet(PolymorphicQuerySet):
+         def pending_approval_for_user(self, user):
+             # ... existing implementation ...
+         # ... other methods ...
+
+     # Use from_queryset() to create manager automatically
+     ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
+     ```
+
+7. **Eliminate Duplicate Limited Edit Forms**
+   - **Files**: `characters/forms/core/limited_edit.py:125-207`
+   - **Impact**: HIGH - 82 lines of boilerplate code
+   - **Issue**: 12 form classes that differ ONLY by their `Meta.model` attribute:
+     - LimitedMageEditForm, LimitedMtAHumanEditForm, LimitedVampireEditForm
+     - LimitedVtMHumanEditForm, LimitedGarouEditForm, LimitedWtAHumanEditForm
+     - LimitedChangelingEditForm, LimitedCtDHumanEditForm, LimitedWraithEditForm
+     - LimitedWtOHumanEditForm, LimitedDemonEditForm, LimitedDtFHumanEditForm
+   - **Action**: Create factory function or generic form
+   - **Solution**:
+     ```python
+     def create_limited_edit_form(model_class):
+         """Factory function to create a limited edit form for a specific model."""
+         class GeneratedLimitedEditForm(LimitedHumanEditForm):
+             class Meta(LimitedHumanEditForm.Meta):
+                 model = model_class
+         GeneratedLimitedEditForm.__name__ = f'Limited{model_class.__name__}EditForm'
+         return GeneratedLimitedEditForm
+     ```
+
+8. **Update Deprecated Mixin Import Paths**
+   - **Files Affected**: 18 character view files
+   - **Impact**: MEDIUM - Confusing import patterns, extra files to maintain
+   - **Issue**: Despite consolidation to `core.mixins`, many files still import from deprecated shims
+   - **Files Using Old Imports**:
+     - characters/views/wraith/wtohuman.py
+     - characters/views/werewolf/wtahuman.py, garou.py, fomor.py, fera.py
+     - characters/views/vampire/vtmhuman.py, ghoul_chargen.py, vampire_chargen.py
+     - characters/views/mage/sorcerer.py, mtahuman.py, mage.py, companion.py
+     - characters/views/changeling/changeling.py, ctdhuman.py
+     - characters/views/demon/demon_chargen.py, dtfhuman_chargen.py, thrall_chargen.py
+     - characters/views/wraith/wraith_chargen.py
+   - **Action**: Update imports from `from core.views.approved_user_mixin import SpecialUserMixin` to `from core.mixins import SpecialUserMixin`
+   - **After**: Delete backward compatibility shims:
+     - `core/views/message_mixin.py`
+     - `core/views/approved_user_mixin.py`
 
 ---
 
@@ -62,72 +120,164 @@ _(No items currently tracked)_
 
 ### Code Architecture
 
-1. **Move business logic out of forms**
+3. **Dual XP Tracking Systems (Needs Data Migration)**
+   - **Files**: `characters/models/core/character.py:116-530`
+   - **Impact**: HIGH - Two parallel systems creating maintenance burden
+   - **Issue**: Character maintains TWO complete XP tracking implementations:
+     - **Old JSONField System** (deprecated): `spent_xp = models.JSONField(default=list)`
+     - **New Model-Based System**: `XPSpendingRequest` model
+     - **Compatibility Layer**: `has_pending_xp_or_model_requests()`, `total_spent_xp_combined()`
+   - **Action**:
+     1. Create data migration to convert JSONField data to XPSpendingRequest records
+     2. Update all views using old system
+     3. Update templates displaying `spent_xp` JSONField
+     4. Remove old methods (lines 294-374)
+     5. Remove `spent_xp` field
+     6. Remove compatibility methods (lines 491-530)
+
+4. **Move business logic out of forms**
    - **File**: `accounts/forms.py:89-96`
    - **Issue**: SceneXP.save() contains business logic
    - **Action**: Move XP award logic to model methods
    - Keep forms focused on data validation
 
-2. **Address fat models with complex inheritance**
+5. **Address fat models with complex inheritance**
    - **Files**: `characters/models/core/`
    - **Issue**: Human class has 7+ parent classes
    - **Action**: Consider composition over inheritance
    - Evaluate proxy models for polymorphic behavior
 
-3. **Move signal registration to apps.py**
+6. **Move signal registration to apps.py**
    - **File**: `accounts/models.py:264-268`
    - **Issue**: Signal registered in models.py
    - **Action**: Move to `accounts/apps.py` ready() method
    - Create separate `accounts/signals.py` module
 
+7. **Simplify remove_from_organizations() Method**
+   - **Files**: `characters/models/core/character.py:206-258`
+   - **Impact**: MEDIUM - Tight coupling, hard to extend
+   - **Issue**: Method has 9 different `hasattr()` checks for different organizational structures
+   - **Action**: Refactor using Django signals or registry pattern
+   - Let each related model handle its own cleanup
+   - Reduces coupling and improves extensibility
+
+8. **Simplify Custom QuerySet Initialization**
+   - **Files**: `core/models.py:25-34`
+   - **Impact**: MEDIUM - Fragile internal query manipulation
+   - **Issue**: `ModelQuerySet.__init__()` manually manipulates internal `query.select_related` dictionary
+   - **Action**: Consider removing and relying on polymorphic library optimization, or use cleaner override pattern
+
+9. **Simplify filter_queryset_for_user Implementation**
+   - **Files**: `core/permissions.py:310-381`
+   - **Impact**: MEDIUM - Hard to maintain, performance concerns
+   - **Issue**: Uses broad exception handling and complex subqueries
+   - **Action**: Replace broad `except Exception` with proper field checking
+   - Consider breaking into smaller, testable methods
+   - Profile performance of current vs simpler approaches
+
 ### Model & Data Validation
 
-1. **Add model validation**
-   - **Files**: Most models across all apps
-   - **Issue**: Most models lack `clean()` methods
-   - **Action**: Add validation in `clean()` for data integrity
-   - Call `full_clean()` in `save()` methods
+10. **Add model validation**
+    - **Files**: Most models across all apps
+    - **Issue**: Most models lack `clean()` methods
+    - **Action**: Add validation in `clean()` for data integrity
+    - Call `full_clean()` in `save()` methods
 
-2. **Fix class name typo**
-   - **File**: `accounts/forms.py:24`
-   - **Issue**: `CustomUSerCreationForm` should be `CustomUserCreationForm`
-   - **Action**: Update class name and all references
+11. **Fix class name typo**
+    - **File**: `accounts/forms.py:24`
+    - **Issue**: `CustomUSerCreationForm` should be `CustomUserCreationForm`
+    - **Action**: Update class name and all references
+
+12. **Fix Status Validation Redundancy**
+    - **Files**: `characters/models/core/character.py:122-188`
+    - **Impact**: LOW - Confusing but functional
+    - **Issue**: Status validation happens in three places with contradictory behavior
+    - **Action**: Decide on validation strategy (strict, lenient, or clear opt-out)
+    - Remove try/except that swallows ValidationError
 
 ### Testing
 
-1. **Improve test coverage**
-   - **Current**: Only `accounts/tests.py` has substantial tests
-   - **Goal**: 80%+ coverage across all apps
-   - **Action**: Add comprehensive test suite using Django's unittest framework
-   - Test all views, forms, and model methods
+13. **Improve test coverage**
+    - **Current**: Only `accounts/tests.py` has substantial tests
+    - **Goal**: 80%+ coverage across all apps
+    - **Action**: Add comprehensive test suite using Django's unittest framework
+    - Test all views, forms, and model methods
 
-2. **Standardize CBV patterns**
-   - **File**: `game/views.py`
-   - **Issue**: Views inherit from View but don't follow CBV patterns
-   - **Action**: Use proper Django generic views (DetailView, ListView, etc.)
-   - Follow standard `get_context_data()` pattern
+14. **Standardize CBV patterns**
+    - **File**: `game/views.py`
+    - **Issue**: Views inherit from View but don't follow CBV patterns
+    - **Action**: Use proper Django generic views (DetailView, ListView, etc.)
+    - Follow standard `get_context_data()` pattern
 
 ### Development Tools
 
-1. **Add Django Debug Toolbar**
-   - Configure in development settings
-   - Helps identify N+1 queries and performance issues
+15. **Add Django Debug Toolbar**
+    - Configure in development settings
+    - Helps identify N+1 queries and performance issues
 
-2. **Configure logging**
-   - Add LOGGING configuration to settings
-   - Set up file and console handlers
-   - Configure per-app log levels
+16. **Configure logging**
+    - Add LOGGING configuration to settings
+    - Set up file and console handlers
+    - Configure per-app log levels
 
-3. **Add caching configuration**
-   - Configure Redis or Memcached for caching
-   - Use `@cache_page` decorator for appropriate views
-   - Cache expensive querysets
+17. **Add caching configuration**
+    - Configure Redis or Memcached for caching
+    - Use `@cache_page` decorator for appropriate views
+    - Cache expensive querysets
 
-4. **Centralize hardcoded choices**
-   - **Files**: `game/models.py:18-35`, `accounts/models.py:28-48`
-   - **Issue**: Choices duplicated across files
-   - **Action**: Create `core/constants.py` for shared choices
-   - Use constants throughout codebase
+18. **Centralize hardcoded choices**
+    - **Files**: `game/models.py:18-35`, `accounts/models.py:28-48`
+    - **Issue**: Choices duplicated across files
+    - **Action**: Create `core/constants.py` for shared choices
+    - Use constants throughout codebase
+
+### Code Quality Improvements
+
+19. **Simplify Gameline Detection**
+    - **Files**: `core/models.py:352-372`
+    - **Impact**: LOW - Fragile string parsing
+    - **Issue**: Models detect gameline by parsing class module path strings
+    - **Action**: Use gameline class attribute and settings lookup
+    - Use existing `get_gameline_name()` utility from `core/utils.py:75-87`
+
+20. **Simplify Observer Permission Check**
+    - **Files**: `core/permissions.py:156-164`
+    - **Impact**: LOW - Works but could be cleaner
+    - **Issue**: Checking observer status requires ContentType lookup
+    - **Action**: Use GenericRelation directly instead of ContentType lookup
+
+21. **Refactor SpecialUserMixin ST Check**
+    - **Files**: `core/mixins.py:250`
+    - **Impact**: LOW - Minor redundancy
+    - **Issue**: Queries `STRelationship` directly instead of using `user.profile.is_st()`
+    - **Action**: Replace direct query with canonical `is_st()` method
+    - Use `.exists()` instead of `.count() > 0`
+
+22. **Consolidate ST Check Logic in Template Tags**
+    - **Files**: `core/templatetags/permissions.py:147-163`
+    - **Impact**: LOW - Minor redundancy
+    - **Issue**: The `is_st()` template tag reimplements admin/ST checking logic
+    - **Action**: Investigate if object-specific ST checking is needed
+    - If not, delegate to canonical `user.profile.is_st()` method
+
+23. **Remove Unnecessary ApprovedUserContextMixin**
+    - **Files**: `characters/views/core/character.py:112`, `core/mixins.py:197-213`
+    - **Impact**: LOW - Minor code smell
+    - **Issue**: Just adds `is_approved_user=True` to context when permission mixin already verified access
+    - **Action**: Remove mixin and add context flags directly where needed
+
+24. **Optimize at_freebie_step() QuerySet Method**
+    - **Files**: `characters/models/core/character.py:68-84`
+    - **Impact**: LOW - Performance issue but likely not called often
+    - **Issue**: Method evaluates entire queryset to filter it
+    - **Action**: Make `freebie_step` a database field or use annotations
+    - Or remove queryset method and filter in Python where needed
+
+25. **Reduce Hardcoded Field Lists in AbilityBlock**
+    - **Files**: `characters/models/core/ability_block.py:13-45`
+    - **Impact**: LOW - Maintenance burden but rarely changes
+    - **Issue**: Ability names hardcoded in model class attributes, duplicating field definitions
+    - **Action**: Use model introspection, move to constants, or generate fields programmatically
 
 ---
 
@@ -135,7 +285,7 @@ _(No items currently tracked)_
 
 ### Demon Gameline Implementation (CRITICAL GAP)
 
-**Status**: 11 models defined but NO admin registration, views, URLs, or templates implemented
+**Status**: 11 models defined but incomplete admin/views/templates
 
 Models needing full implementation:
 - [ ] **Demon** - Base demon character class
@@ -179,26 +329,6 @@ Models needing full implementation:
 
 - [ ] **ApocalypticFormTrait** - Apocalyptic form special ability
   - Verify if admin/views needed
-
-### Wraith Locations (CRITICAL GAP)
-
-**Status**: 2 models defined but NO admin registration, views, URLs, or templates implemented
-
-- [ ] **Haunt** - Haunted location in the living world
-  - File: `locations/models/wraith/haunt.py`
-  - Status: ❌ NO VIEWS/ADMIN
-  - Needs: Full implementation (admin, views, forms, templates, URLs)
-  - Fields: Fetter strength, manifestation difficulty
-
-- [ ] **Necropolis** - Wraith city in the Shadowlands
-  - File: `locations/models/wraith/necropolis.py`
-  - Status: ❌ NO VIEWS/ADMIN
-  - Needs: Full implementation (admin, views, forms, templates, URLs)
-  - Fields: Hierarchy control, guild presence
-
-- [ ] **Thorn** - Demon weakness
-  - File: `characters/models/demon/thorn.py`
-  - Needs: Admin, reference data views, populate script
 
 ### Game App Models - Limited Implementations
 
@@ -404,33 +534,38 @@ Models needing full implementation:
 
 1. **Security Issues** (High Priority) 🔥
    - Address dependency vulnerabilities
-   - Fix production security settings
+   - Complete production security configuration
    - Add authentication to unprotected views
    - Implement proper authorization checks
 
-2. **Permissions System - Staging Deployment** (High Priority) 🔥
+2. **Code Quality Cleanup** (High Priority) 🔥
+   - Consolidate QuerySet/Manager methods (#6)
+   - Eliminate duplicate Limited Edit Forms (#7)
+   - Update deprecated mixin imports (#8)
+
+3. **Permissions System - Staging Deployment** (High Priority) 🔥
    - Development complete - All tests passing (37/37)
    - Deploy to staging environment
    - Run automated tests in staging
    - Conduct user acceptance testing
 
-3. **Validation System - Staging Deployment** (High Priority) 🔥
+4. **Validation System - Staging Deployment** (High Priority) 🔥
    - Development complete - All tests passing
    - Deploy to staging environment
    - Monitor for validation errors
    - Track performance impact
 
-4. **Code Quality** (Medium Priority)
+5. **Architecture Improvements** (Medium Priority)
+   - Migrate dual XP tracking systems (#3)
    - Fix N+1 query problems
    - Replace `.get()` with `get_object_or_404()`
    - Add model validation
    - Improve test coverage
 
-5. **Model Implementation Gaps** (Low Priority - but large scope)
-   - **Priority 1**: Complete Demon character implementation (12 models)
-   - **Priority 2**: Complete Wraith location implementation (2 models)
-   - **Priority 3**: Complete partial implementations (Vampire/Wraith/Changeling/Demon items and locations)
-   - **Priority 4**: Enhance Game app models with better views/templates
+6. **Model Implementation Gaps** (Low Priority - but large scope)
+   - **Priority 1**: Complete Demon character implementation (11 models)
+   - **Priority 2**: Complete partial implementations (Vampire/Wraith/Changeling/Demon items and locations)
+   - **Priority 3**: Enhance Game app models with better views/templates
 
 ---
 
@@ -455,5 +590,23 @@ Models needing full implementation:
 
 ---
 
+## 📊 Summary Statistics
+
+**Total Open Items**: ~60 items across all priorities
+
+**By Priority**:
+- 🔴 High Priority: 8 items (security + critical code quality)
+- 🟡 Medium Priority: 17 items (performance + architecture + testing)
+- 🟢 Low Priority: ~35 items (feature completeness + polish)
+- 🔵 Deployment: 7 items (staging + production deployments)
+
+**Estimated Effort**:
+- High Priority Security/Code Quality: 16-32 hours
+- Medium Priority Architecture: 20-40 hours
+- Low Priority Features: 80-120 hours (large scope)
+- Deployment: 8-16 hours per system (permissions + validation)
+
+---
+
 **Last Updated**: 2025-11-23
-**Version**: 3.0
+**Version**: 4.0 (Consolidated from TODO.md, TODO_REDUNDANCY.md, TODO_OVERCOMPLEX.md)
