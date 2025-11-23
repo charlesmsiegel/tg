@@ -2,7 +2,12 @@ import itertools
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    StorytellerRequiredMixin,
+    ViewPermissionMixin,
+)
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
@@ -41,13 +46,6 @@ from game.models import (
 )
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
-
-
-class StorytellerRequiredMixin(UserPassesTestMixin):
-    """Mixin that requires the user to be a storyteller."""
-
-    def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.profile.is_st()
 
 
 class ChronicleDetailView(LoginRequiredMixin, View):
@@ -285,6 +283,12 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
         submit_entry = request.POST.get("submit_entry")
         submit_response = request.POST.get("submit_response")
         if submit_entry is not None:
+            # Check that user owns the character/journal
+            if self.object.character.owner != request.user:
+                messages.error(
+                    request, "You can only add entries to your own journal."
+                )
+                raise PermissionDenied("You can only add entries to your own journal")
             f = JournalEntryForm(request.POST, instance=self.object)
             if f.is_valid():
                 f.save()
@@ -294,6 +298,10 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
                     request, "Failed to add journal entry. Please check your input."
                 )
         if submit_response is not None:
+            # Check that user is a storyteller
+            if not request.user.profile.is_st():
+                messages.error(request, "Only storytellers can add ST responses.")
+                raise PermissionDenied("Only storytellers can add ST responses")
             tmp = [x for x in request.POST.keys() if "entry" in x][0]
             tmp = tmp.split("-")[1]
             entry = get_object_or_404(JournalEntry, pk=tmp)
@@ -342,7 +350,7 @@ class StoryListView(ListView):
     template_name = "game/story/list.html"
 
 
-class StoryCreateView(MessageMixin, CreateView):
+class StoryCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
     model = Story
     fields = ["name"]
     template_name = "game/story/form.html"
@@ -353,7 +361,7 @@ class StoryCreateView(MessageMixin, CreateView):
         return reverse("game:story:detail", kwargs={"pk": self.object.pk})
 
 
-class StoryUpdateView(MessageMixin, UpdateView):
+class StoryUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
     model = Story
     fields = ["name"]
     template_name = "game/story/form.html"
