@@ -1,0 +1,49 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}
+        Edit Wraith Artifact
+    {% else %}
+        Create Wraith Artifact
+    {% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name }}
+        </div>
+        <div class="col-md-4">
+            <label for="{{ form.level.id_for_label }}" class="form-label">Level</label>
+            {{ form.level }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.artifact_type.id_for_label }}" class="form-label">Artifact Type</label>
+            {{ form.artifact_type }}
+        </div>
+        <div class="col-md-6">
+            <label for="{{ form.material.id_for_label }}" class="form-label">Material</label>
+            {{ form.material }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.corpus.id_for_label }}" class="form-label">Corpus</label>
+            {{ form.corpus }}
+        </div>
+        <div class="col-md-6">
+            <label for="{{ form.pathos_cost.id_for_label }}" class="form-label">Pathos Cost</label>
+            {{ form.pathos_cost }}
+        </div>
+    </div>
+{% endblock contents %}

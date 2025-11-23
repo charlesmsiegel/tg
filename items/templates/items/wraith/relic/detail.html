@@ -1,0 +1,39 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title wto_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Level:</strong>
+                        </div>
+                        <div class="col-6">{{ object.level|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Background Cost:</strong>
+                        </div>
+                        <div class="col-6">{{ object.background_cost }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Rarity:</strong>
+                        </div>
+                        <div class="col-6">{{ object.get_rarity_display }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-6">
+                            <strong>Pathos Cost:</strong>
+                        </div>
+                        <div class="col-6">{{ object.pathos_cost }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock additional_stats %}

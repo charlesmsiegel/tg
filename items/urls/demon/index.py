@@ -1,6 +1,11 @@
 from django.urls import path
 from items import views
 
+app_name = "demon:list"
 urls = [
-    path("relic/", views.demon.RelicListView.as_view(), name="relic"),
+    path(
+        "relics/",
+        views.demon.RelicListView.as_view(),
+        name="relic",
+    ),
 ]

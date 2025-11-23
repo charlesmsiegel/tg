@@ -1,0 +1,93 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title vtm_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Power Level:</strong>
+                        </div>
+                        <div class="col-6">{{ object.power_level|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Background Cost:</strong>
+                        </div>
+                        <div class="col-6">{{ object.background_cost }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Cursed:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if object.is_cursed %}
+                                <span class="tg-badge badge-dec">Yes</span>
+                            {% else %}
+                                <span class="tg-badge badge-app">No</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Unique:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if object.is_unique %}
+                                <span class="tg-badge badge-app">Yes</span>
+                            {% else %}
+                                No
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-6">
+                            <strong>Requires Blood:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if object.requires_blood %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if object.powers %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title vtm_heading">Powers & Effects</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.powers }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if object.history %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title vtm_heading">History & Lore</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.history }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock additional_stats %}

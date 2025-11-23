@@ -1,0 +1,71 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}
+        Edit Treasure
+    {% else %}
+        Create Treasure
+    {% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name }}
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.rating.id_for_label }}" class="form-label">Rating</label>
+            {{ form.rating }}
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.treasure_type.id_for_label }}" class="form-label">Type</label>
+            {{ form.treasure_type }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.creator.id_for_label }}" class="form-label">Creator</label>
+            {{ form.creator }}
+        </div>
+        <div class="col-md-6">
+            <div class="form-check" style="margin-top: 32px;">
+                {{ form.permanence }}
+                <label class="form-check-label" for="{{ form.permanence.id_for_label }}">
+                    Permanent
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.creation_method.id_for_label }}" class="form-label">Creation Method</label>
+            {{ form.creation_method }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.glamour_storage.id_for_label }}" class="form-label">Glamour Storage</label>
+            {{ form.glamour_storage }}
+        </div>
+        <div class="col-md-6">
+            <label for="{{ form.glamour_affinity.id_for_label }}" class="form-label">Glamour Affinity</label>
+            {{ form.glamour_affinity }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.special_abilities.id_for_label }}" class="form-label">Special Abilities</label>
+            {{ form.special_abilities }}
+        </div>
+    </div>
+{% endblock contents %}

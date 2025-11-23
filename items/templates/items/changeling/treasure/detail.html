@@ -5,27 +5,21 @@
         <div class="col-md-6 mb-3">
             <div class="tg-card h-100">
                 <div class="tg-card-header">
-                    <h5 class="tg-card-title dtf_heading">Properties</h5>
+                    <h5 class="tg-card-title ctd_heading">Properties</h5>
                 </div>
                 <div class="tg-card-body">
                     <div class="row mb-2">
                         <div class="col-6">
-                            <strong>Relic Type:</strong>
+                            <strong>Rating:</strong>
                         </div>
-                        <div class="col-6">{{ object.get_relic_type_display }}</div>
+                        <div class="col-6">{{ object.rating|dots }}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Complexity:</strong>
-                        </div>
-                        <div class="col-6">{{ object.complexity|dots:10 }}</div>
-                    </div>
-                    {% if object.house %}
+                    {% if object.treasure_type %}
                         <div class="row mb-2">
                             <div class="col-6">
-                                <strong>House:</strong>
+                                <strong>Type:</strong>
                             </div>
-                            <div class="col-6">{{ object.house.name }}</div>
+                            <div class="col-6">{{ object.get_treasure_type_display }}</div>
                         </div>
                     {% endif %}
                     <div class="row mb-0">
@@ -33,7 +27,7 @@
                             <strong>Permanent:</strong>
                         </div>
                         <div class="col-6">
-                            {% if object.is_permanent %}
+                            {% if object.permanence %}
                                 <span class="tg-badge badge-app">Yes</span>
                             {% else %}
                                 <span class="tg-badge badge-dec">No</span>
@@ -46,65 +40,67 @@
         <div class="col-md-6 mb-3">
             <div class="tg-card h-100">
                 <div class="tg-card-header">
-                    <h5 class="tg-card-title dtf_heading">Mechanics</h5>
+                    <h5 class="tg-card-title ctd_heading">Glamour</h5>
                 </div>
                 <div class="tg-card-body">
                     <div class="row mb-2">
                         <div class="col-6">
-                            <strong>Difficulty:</strong>
+                            <strong>Storage:</strong>
                         </div>
-                        <div class="col-6">{{ object.difficulty }}</div>
+                        <div class="col-6">{{ object.glamour_storage }}</div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-6">
-                            <strong>Dice Pool:</strong>
+                    {% if object.glamour_affinity %}
+                        <div class="row mb-0">
+                            <div class="col-6">
+                                <strong>Affinity:</strong>
+                            </div>
+                            <div class="col-6">{{ object.glamour_affinity }}</div>
                         </div>
-                        <div class="col-6">{{ object.dice_pool }}</div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    {% if object.lore_used %}
+    {% if object.creator or object.creation_method %}
         <div class="row mb-4">
             <div class="col-12">
                 <div class="tg-card">
                     <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Lore Used</h5>
+                        <h5 class="tg-card-title ctd_heading">Creation</h5>
                     </div>
                     <div class="tg-card-body">
-                        <p style="margin-bottom: 0;">{{ object.lore_used }}</p>
+                        {% if object.creator %}
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <strong>Creator:</strong>
+                                </div>
+                                <div class="col-9">{{ object.creator }}</div>
+                            </div>
+                        {% endif %}
+                        {% if object.creation_method %}
+                            <div class="row mb-0">
+                                <div class="col-3">
+                                    <strong>Method:</strong>
+                                </div>
+                                <div class="col-9" style="white-space: pre-wrap;">{{ object.creation_method }}</div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
 
-    {% if object.material %}
+    {% if object.special_abilities %}
         <div class="row mb-4">
             <div class="col-12">
                 <div class="tg-card">
                     <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Material</h5>
+                        <h5 class="tg-card-title ctd_heading">Special Abilities</h5>
                     </div>
                     <div class="tg-card-body">
-                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.material }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    {% if object.power %}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="tg-card">
-                    <div class="tg-card-header">
-                        <h5 class="tg-card-title dtf_heading">Power & Effects</h5>
-                    </div>
-                    <div class="tg-card-body">
-                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.power }}</p>
+                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.special_abilities }}</p>
                     </div>
                 </div>
             </div>
