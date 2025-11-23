@@ -291,67 +291,51 @@ Models needing full implementation:
   - Consider: Freehold, Trod, Hollow, Dreamscape
   - Needs: Research source material, define models, implement full stack
 
-### Django Messages Framework - Remaining Views
+### Django Messages Framework - Implementation Status
 
 **File**: `MESSAGING_IMPLEMENTATION.md`
 
-The following views still need `MessageMixin` added for user feedback:
+**Status**: Core implementation complete. All existing views with CBV create/update patterns now have MessageMixin.
 
-#### Characters
-- [ ] `characters/views/core/npc.py` - NPCCreateView, NPCUpdateView
-- [ ] `characters/views/core/human.py` - Base views (consider inheritance implications)
+#### Completed ✅
+- [x] **All MessageMixin imports consolidated** - Updated 87 files to use `core.mixins` instead of `core.views.message_mixin`
+- [x] **Base Human views** - `characters/views/core/human.py` - HumanCreateView, HumanUpdateView
+- [x] **Mage locations** - Chantry, Node, Sanctum, Library (Create/Update views)
+- [x] **Werewolf locations** - Caern (Create/Update views)
+- [x] **Wraith locations** - Haunt (Create/Update views)
+- [x] **Werewolf items** - Talen, Fetish (already had MessageMixin, imports updated)
+- [x] **Core reference data** - Book, HouseRule, Language, NewsItem (already had MessageMixin, imports updated)
+- [x] **Game-specific reference data** - All existing views for Mage, Werewolf, Vampire, Changeling, Wraith, Demon reference data
 
-#### Items
+#### Cannot Implement (Architecture Limitation)
+- **NPC views** (`characters/views/core/npc.py`) - Uses custom View classes with manual `messages.success()` calls. Cannot use MessageMixin with non-CBV views. Current implementation is correct.
+
+#### Blocked by Missing Implementation
+These views don't exist yet and will need MessageMixin when created:
 
 **Vampire Items:**
-- [ ] `items/views/vampire/*.py` - Haven components, Domain views
-
-**Werewolf Items:**
-- [ ] `items/views/werewolf/rite.py`
-- [ ] Other werewolf item views
+- [ ] Haven components, Domain views - No views exist yet
+- [ ] Artifact, Bloodstone views - No views exist yet
 
 **Changeling Items:**
-- [ ] `items/views/changeling/*.py` - Treasure views, Token views
+- [ ] Treasure views - Admin exists, no views yet
+- [ ] Token views - Not implemented
 
 **Wraith Items:**
-- [ ] `items/views/wraith/*.py` - Artifact views, Relic views
+- [ ] WraithRelic views - Admin exists, no views yet
+- [ ] Artifact views - Admin exists, no views yet
 
-#### Locations
-
-**Mage Locations:**
-- [ ] `locations/views/mage/chantry.py` - ChantryCreateView, ChantryUpdateView
-- [ ] `locations/views/mage/node.py` - Node CRUD views
-- [ ] `locations/views/mage/sanctum.py` - Sanctum CRUD views
-- [ ] `locations/views/mage/library.py` - Library CRUD views
-- [ ] Other mage location views
+**Demon Items:**
+- [ ] Relic views - Admin exists, no views yet
 
 **Vampire Locations:**
-- [ ] `locations/views/vampire/haven.py` - HavenCreateView, HavenUpdateView
-- [ ] `locations/views/vampire/domain.py` - Domain CRUD views
-- [ ] Other vampire location views
-
-**Werewolf Locations:**
-- [ ] `locations/views/werewolf/caern.py` - Caern CRUD views
-- [ ] Other werewolf location views
+- [ ] Haven, Domain, Elysium, Rack views - No views exist yet
 
 **Changeling Locations:**
-- [ ] `locations/views/changeling/freehold.py` - Freehold CRUD views
-- [ ] Other changeling location views
+- [ ] Freehold views - No models/views exist yet
 
-**Wraith Locations:**
-- [ ] `locations/views/wraith/haunt.py` - Haunt CRUD views
-- [ ] Other wraith location views
-
-#### Core/Reference Data
-- [ ] `core/views/*.py` - Book, SourceMaterial, HouseRule views
-
-#### Game-Specific Reference Data
-- [ ] Mage spheres, practices, tenets, factions
-- [ ] Werewolf gifts, rites, breeds, tribes
-- [ ] Vampire clans, disciplines, paths
-- [ ] Changeling arts, realms, kiths
-- [ ] Wraith arcanoi, guilds, circles
-- [ ] Demon lores, factions, houses
+**Demon Locations:**
+- [ ] Bastion, Reliquary views - No views exist yet
 
 ### Character Template System Enhancements
 
@@ -604,6 +588,7 @@ The following views still need `MessageMixin` added for user feedback:
 | Model Implementation Gaps | - | - | 60+ models |
 | Feature Completeness | - | - | 35+ views |
 | Template Enhancements | - | - | 1 feature (4 completed ✅) |
+| MessageMixin Implementation | ✅ **Complete** | - | 8 blocked items |
 | Code Quality & Best Practices | - | - | 20+ items |
 | Deployment | - | 3 items (5 completed ✅) | - |
 
@@ -658,5 +643,6 @@ The following views still need `MessageMixin` added for user feedback:
    - **Priority 4**: Enhance Game app models with better views/templates
 
 6. **Feature Completeness** (Low Priority)
-   - Add MessageMixin to remaining views
-   - Complete remaining template system enhancement (voting/ratings)
+   - ✅ ~~Add MessageMixin to remaining views~~ - **COMPLETE**
+   - Implement template system enhancements
+   - Add MessageMixin to new views as they are created
