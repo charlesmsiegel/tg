@@ -36,7 +36,9 @@ CSRF_COOKIE_SECURE = True
 # HTTP Strict Transport Security (HSTS)
 # Tells browsers to only access the site via HTTPS for the specified time period
 SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "31536000"))  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True") == "True"
+SECURE_HSTS_INCLUDE_SUBDOMAINS = (
+    os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True") == "True"
+)
 SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", "True") == "True"
 
 # Content Security
@@ -73,10 +75,14 @@ if CSRF_TRUSTED_ORIGINS == [""]:
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_AGE = int(os.environ.get("SESSION_COOKIE_AGE", "1209600"))  # 2 weeks default
+SESSION_COOKIE_AGE = int(
+    os.environ.get("SESSION_COOKIE_AGE", "1209600")
+)  # 2 weeks default
 
 # Close session when browser closes
-SESSION_EXPIRE_AT_BROWSER_CLOSE = os.environ.get("SESSION_EXPIRE_AT_BROWSER_CLOSE", "False") == "True"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = (
+    os.environ.get("SESSION_EXPIRE_AT_BROWSER_CLOSE", "False") == "True"
+)
 
 # Additional Security Headers
 # ===========================
@@ -164,7 +170,9 @@ if admin_emails:
         if email:
             # Format: "Name <email@example.com>" or just "email@example.com"
             if "<" in email:
-                ADMINS.append(tuple(email.split("<")[0].strip(), email.split("<")[1].rstrip(">")))
+                ADMINS.append(
+                    tuple(email.split("<")[0].strip(), email.split("<")[1].rstrip(">"))
+                )
             else:
                 ADMINS.append(("Admin", email))
 

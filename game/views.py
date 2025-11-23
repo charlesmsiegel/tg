@@ -285,9 +285,7 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
         if submit_entry is not None:
             # Check that user owns the character/journal
             if self.object.character.owner != request.user:
-                messages.error(
-                    request, "You can only add entries to your own journal."
-                )
+                messages.error(request, "You can only add entries to your own journal.")
                 raise PermissionDenied("You can only add entries to your own journal")
             f = JournalEntryForm(request.POST, instance=self.object)
             if f.is_valid():
