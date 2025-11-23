@@ -131,85 +131,42 @@ class LimitedHumanEditForm(forms.ModelForm):
         }
 
 
-class LimitedMageEditForm(LimitedHumanEditForm):
-    """Limited edit form for Mage characters."""
+def create_limited_edit_form(model_class):
+    """
+    Factory function to create a limited edit form for a specific character model.
 
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Mage
+    Args:
+        model_class: The character model class (e.g., Mage, Vampire, Garou)
 
+    Returns:
+        A LimitedHumanEditForm subclass configured for the specified model
 
-class LimitedMtAHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for MtA Human characters."""
+    Example:
+        >>> LimitedMageEditForm = create_limited_edit_form(Mage)
+        >>> form = LimitedMageEditForm(instance=mage_instance)
+    """
 
-    class Meta(LimitedHumanEditForm.Meta):
-        model = MtAHuman
+    class GeneratedLimitedEditForm(LimitedHumanEditForm):
+        class Meta(LimitedHumanEditForm.Meta):
+            model = model_class
 
+    # Set a meaningful name for the generated class
+    GeneratedLimitedEditForm.__name__ = f"Limited{model_class.__name__}EditForm"
+    GeneratedLimitedEditForm.__qualname__ = f"Limited{model_class.__name__}EditForm"
 
-class LimitedVampireEditForm(LimitedHumanEditForm):
-    """Limited edit form for Vampire characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Vampire
-
-
-class LimitedVtMHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for VtM Human characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = VtMHuman
+    return GeneratedLimitedEditForm
 
 
-class LimitedGarouEditForm(LimitedHumanEditForm):
-    """Limited edit form for Garou characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Werewolf
-
-
-class LimitedWtAHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for WtA Human characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = WtAHuman
-
-
-class LimitedChangelingEditForm(LimitedHumanEditForm):
-    """Limited edit form for Changeling characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Changeling
-
-
-class LimitedCtDHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for CtD Human characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = CtDHuman
-
-
-class LimitedWraithEditForm(LimitedHumanEditForm):
-    """Limited edit form for Wraith characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Wraith
-
-
-class LimitedWtOHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for WtO Human characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = WtOHuman
-
-
-class LimitedDemonEditForm(LimitedHumanEditForm):
-    """Limited edit form for Demon characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = Demon
-
-
-class LimitedDtFHumanEditForm(LimitedHumanEditForm):
-    """Limited edit form for DtF Human characters."""
-
-    class Meta(LimitedHumanEditForm.Meta):
-        model = DtFHuman
+# Generate limited edit forms for all gameline-specific character types
+LimitedMageEditForm = create_limited_edit_form(Mage)
+LimitedMtAHumanEditForm = create_limited_edit_form(MtAHuman)
+LimitedVampireEditForm = create_limited_edit_form(Vampire)
+LimitedVtMHumanEditForm = create_limited_edit_form(VtMHuman)
+LimitedGarouEditForm = create_limited_edit_form(Garou)
+LimitedWtAHumanEditForm = create_limited_edit_form(WtAHuman)
+LimitedChangelingEditForm = create_limited_edit_form(Changeling)
+LimitedCtDHumanEditForm = create_limited_edit_form(CtDHuman)
+LimitedWraithEditForm = create_limited_edit_form(Wraith)
+LimitedWtOHumanEditForm = create_limited_edit_form(WtOHuman)
+LimitedDemonEditForm = create_limited_edit_form(Demon)
+LimitedDtFHumanEditForm = create_limited_edit_form(DtFHuman)
