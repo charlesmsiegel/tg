@@ -1,7 +1,6 @@
 from typing import Any
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
@@ -30,7 +29,7 @@ class NodeListView(ListView):
     template_name = "locations/mage/node/list.html"
 
 
-class NodeCreateView(LoginRequiredMixin, FormView):
+class NodeCreateView(LoginRequiredMixin, MessageMixin, FormView):
     template_name = "locations/mage/node/form.html"
     form_class = NodeForm
     success_message = "Node '{name}' created successfully!"
@@ -44,7 +43,7 @@ class NodeCreateView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class NodeUpdateView(EditPermissionMixin, UpdateView):
+class NodeUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Node
     fields = [
         "name",

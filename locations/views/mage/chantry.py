@@ -5,12 +5,12 @@ from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.views.generic import DictView
-from core.views.message_mixin import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -51,7 +51,7 @@ class ChantryListView(ListView):
     template_name = "locations/mage/chantry/list.html"
 
 
-class ChantryCreateView(LoginRequiredMixin, CreateView):
+class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Chantry
     fields = [
         "name",
@@ -85,7 +85,7 @@ class ChantryCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-class ChantryUpdateView(EditPermissionMixin, UpdateView):
+class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Chantry
     fields = [
         "name",

@@ -1,5 +1,6 @@
 from core.mixins import (
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
@@ -14,7 +15,7 @@ class HauntDetailView(ViewPermissionMixin, DetailView):
     template_name = "locations/wraith/haunt/detail.html"
 
 
-class HauntCreateView(LoginRequiredMixin, CreateView):
+class HauntCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Haunt
     fields = [
         "name",
@@ -32,7 +33,7 @@ class HauntCreateView(LoginRequiredMixin, CreateView):
     error_message = "Failed to create haunt. Please correct the errors below."
 
 
-class HauntUpdateView(EditPermissionMixin, UpdateView):
+class HauntUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Haunt
     fields = [
         "name",

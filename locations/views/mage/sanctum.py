@@ -1,5 +1,4 @@
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.sanctum import SanctumForm
@@ -17,7 +16,7 @@ class SanctumListView(ListView):
     template_name = "locations/mage/sanctum/list.html"
 
 
-class SanctumCreateView(LoginRequiredMixin, FormView):
+class SanctumCreateView(LoginRequiredMixin, MessageMixin, FormView):
     form_class = SanctumForm
     template_name = "locations/mage/sanctum/form.html"
     success_message = "Sanctum '{name}' created successfully!"
@@ -31,7 +30,7 @@ class SanctumCreateView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class SanctumUpdateView(EditPermissionMixin, UpdateView):
+class SanctumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Sanctum
     fields = ["name", "description", "parent"]
     template_name = "locations/mage/sanctum/form.html"

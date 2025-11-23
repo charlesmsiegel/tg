@@ -8,7 +8,7 @@ from accounts.forms import (
 from accounts.models import Profile
 from characters.models.core import Character
 from characters.models.mage.rote import Rote
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView

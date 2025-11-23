@@ -3,7 +3,7 @@ from typing import Any
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.human import HumanDetailView
 from core.mixins import ApprovedUserContextMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 

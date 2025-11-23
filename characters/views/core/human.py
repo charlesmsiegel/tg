@@ -13,6 +13,7 @@ from core.forms.language import HumanLanguageForm
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
+    MessageMixin,
     SpendFreebiesPermissionMixin,
 )
 from core.models import Language
@@ -32,7 +33,7 @@ class HumanDetailView(CharacterDetailView):
     template_name = "characters/core/human/detail.html"
 
 
-class HumanCreateView(LoginRequiredMixin, CreateView):
+class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create view for Human characters."""
 
     model = Human
@@ -63,6 +64,8 @@ class HumanCreateView(LoginRequiredMixin, CreateView):
         "appearance",
     ]
     template_name = "characters/core/human/form.html"
+    success_message = "Human created successfully."
+    error_message = "Error creating Human."
 
     def form_valid(self, form):
         if not form.instance.owner:
@@ -70,7 +73,7 @@ class HumanCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, MessageMixin, UpdateView):
     """
     Update view for Human characters.
     Only STs and Admins can directly edit character fields.
@@ -105,6 +108,8 @@ class HumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView)
         "appearance",
     ]
     template_name = "characters/core/human/form.html"
+    success_message = "Human updated successfully."
+    error_message = "Error updating Human."
 
 
 class HumanBasicsView(LoginRequiredMixin, CreateView):

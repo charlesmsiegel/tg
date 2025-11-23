@@ -6,7 +6,7 @@ from core.mixins import (
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 

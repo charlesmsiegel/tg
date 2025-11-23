@@ -1,6 +1,6 @@
 from typing import Any
 
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from items.models.mage import WonderResonanceRating
 from items.models.mage.artifact import Artifact
