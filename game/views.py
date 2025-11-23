@@ -258,7 +258,7 @@ class ChronicleScenesDetailView(LoginRequiredMixin, View):
         return render(request, "game/scenes/detail.html", context)
 
 
-class CommandsView(TemplateView):
+class CommandsView(LoginRequiredMixin, TemplateView):
     template_name = "game/scene/commands.html"
 
 
@@ -321,30 +321,30 @@ class JournalDetailView(ViewPermissionMixin, DetailView):
         )
 
 
-class ChronicleListView(ListView):
+class ChronicleListView(LoginRequiredMixin, ListView):
     model = Chronicle
     ordering = ["name"]
     template_name = "game/chronicle/list.html"
 
 
-class SceneListView(ListView):
+class SceneListView(LoginRequiredMixin, ListView):
     model = Scene
     ordering = ["-date_of_scene", "-date_played"]
     template_name = "game/scene/list.html"
 
 
-class JournalListView(ListView):
+class JournalListView(LoginRequiredMixin, ListView):
     model = Journal
     ordering = ["character__name"]
     template_name = "game/journal/list.html"
 
 
-class StoryDetailView(DetailView):
+class StoryDetailView(LoginRequiredMixin, DetailView):
     model = Story
     template_name = "game/story/detail.html"
 
 
-class StoryListView(ListView):
+class StoryListView(LoginRequiredMixin, ListView):
     model = Story
     ordering = ["name"]
     template_name = "game/story/list.html"
