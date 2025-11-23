@@ -1,0 +1,49 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title vtm_heading">Racks</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:vampire:create:rack' %}" class="btn btn-primary mb-3">Create New Rack</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Quality</th>
+                        <th>Population</th>
+                        <th>Risk</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rack in object_list %}
+                    <tr>
+                        <td><a href="{{ rack.get_absolute_url }}">{{ rack.name }}</a></td>
+                        <td>{% if rack.parent %}<a href="{{ rack.parent.get_absolute_url }}">{{ rack.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ rack.rack_type|default:"-" }}</td>
+                        <td>{{ rack.quality|dots }}</td>
+                        <td>{{ rack.population_density|dots }}</td>
+                        <td>{{ rack.risk_level|dots }}</td>
+                        <td>
+                            {% if rack.is_protected %}<span class="tg-badge badge-pill" style="background-color: rgba(0,255,0,0.2);">Protected</span>{% endif %}
+                            {% if rack.is_exclusive %}<span class="tg-badge badge-pill" style="background-color: rgba(0,0,255,0.2);">Exclusive</span>{% endif %}
+                            {% if rack.is_contested %}<span class="tg-badge badge-pill" style="background-color: rgba(255,0,0,0.2);">Contested</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No racks found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

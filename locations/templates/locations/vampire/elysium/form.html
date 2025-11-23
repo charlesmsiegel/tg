@@ -1,0 +1,106 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Elysium
+{% endblock creation_title %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title vtm_heading">Elysium Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.parent.id_for_label }}" class="form-label">Parent Location</label>
+                    {{ form.parent }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.prestige.id_for_label }}" class="form-label">Prestige (1-5)</label>
+                    {{ form.prestige }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.elysium_type.id_for_label }}" class="form-label">Elysium Type</label>
+                    {{ form.elysium_type }}
+                    <small class="form-text text-muted">E.g., 'Museum', 'Opera House', 'Cathedral'</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.keeper_name.id_for_label }}" class="form-label">Keeper of Elysium</label>
+                    {{ form.keeper_name }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Rules & Restrictions</h6>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_protected }}
+                        <label class="form-check-label" for="{{ form.is_protected.id_for_label }}">
+                            Violence Forbidden
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.allows_weapons }}
+                        <label class="form-check-label" for="{{ form.allows_weapons.id_for_label }}">
+                            Weapons Allowed
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_blood_dolls }}
+                        <label class="form-check-label" for="{{ form.has_blood_dolls.id_for_label }}">
+                            Blood Dolls Available
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Features</h6>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_art_collection }}
+                        <label class="form-check-label" for="{{ form.has_art_collection.id_for_label }}">
+                            Art Collection
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_library }}
+                        <label class="form-check-label" for="{{ form.has_library.id_for_label }}">
+                            Contains Library
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_court }}
+                        <label class="form-check-label" for="{{ form.is_court.id_for_label }}">
+                            Prince Holds Court Here
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}

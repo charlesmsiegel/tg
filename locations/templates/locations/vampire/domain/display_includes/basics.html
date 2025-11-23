@@ -1,0 +1,77 @@
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Domain Statistics</h5>
+        </div>
+        <div class="tg-card-body text-center" style="padding: 20px;">
+            <!-- Total Rating -->
+            <div class="mb-4">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.total_rating|dots:10 }}</div>
+                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Total Rating</div>
+                </div>
+            </div>
+
+            <!-- Component Ratings -->
+            <div class="row">
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.size|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Size</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.population|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Population</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.control|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Control</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Domain Features</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            {% if object.domain_type %}
+            <div class="mb-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05); width: 100%; text-align: center;">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.domain_type }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_elysium|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Elysium</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_elysium|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.has_rack|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Has Rack</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_rack|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_disputed|yesno:'rgba(255,0,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Disputed</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_disputed|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Rack
+{% endblock creation_title %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title vtm_heading">Rack Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.parent.id_for_label }}" class="form-label">Parent Location</label>
+                    {{ form.parent }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.rack_type.id_for_label }}" class="form-label">Rack Type</label>
+                    {{ form.rack_type }}
+                    <small class="form-text text-muted">E.g., 'Nightclub', 'Hospital', 'University'</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.blood_quality.id_for_label }}" class="form-label">Blood Quality</label>
+                    {{ form.blood_quality }}
+                    <small class="form-text text-muted">Special qualities of blood available</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.quality.id_for_label }}" class="form-label">Quality (1-5 dots)</label>
+                    {{ form.quality }}
+                    <small class="form-text text-muted">Quality and safety of hunting</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.population_density.id_for_label }}" class="form-label">Population Density (1-5 dots)</label>
+                    {{ form.population_density }}
+                    <small class="form-text text-muted">Number of available vessels</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.risk_level.id_for_label }}" class="form-label">Risk Level (1-5)</label>
+                    {{ form.risk_level }}
+                    <small class="form-text text-muted">1=very safe, 5=very dangerous</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.masquerade_risk.id_for_label }}" class="form-label">Masquerade Risk (1-5)</label>
+                    {{ form.masquerade_risk }}
+                    <small class="form-text text-muted">1=very low, 5=very high</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Status</h6>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_protected }}
+                        <label class="form-check-label" for="{{ form.is_protected.id_for_label }}">
+                            Protected by Law/Custom
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_exclusive }}
+                        <label class="form-check-label" for="{{ form.is_exclusive.id_for_label }}">
+                            Exclusive Rights
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.is_contested }}
+                        <label class="form-check-label" for="{{ form.is_contested.id_for_label }}">
+                            Contested Territory
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}

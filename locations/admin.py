@@ -1,6 +1,7 @@
 from django.contrib import admin
 from locations.models.changeling import Freehold
 from locations.models.core import City, LocationModel
+from locations.models.demon import Bastion, Reliquary
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 from locations.models.mage.library import Library
