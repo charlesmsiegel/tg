@@ -75,6 +75,8 @@ class TestKinfolk(TestCase):
         rt = Tribe.objects.create(name="Red Talons")
         self.kinfolk.set_tribe(rt)
         self.assertFalse(self.kinfolk.add_background("resources"))
+        self.assertFalse(self.kinfolk.add_background("allies"))
+        self.assertFalse(self.kinfolk.add_background("contacts"))
         sl = Tribe.objects.create(name="Shadow Lords")
         self.kinfolk.set_tribe(sl)
         self.assertFalse(self.kinfolk.add_background("mentor"))
