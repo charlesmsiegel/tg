@@ -1,6 +1,7 @@
 from django.contrib import admin
 from locations.models.changeling import Freehold
 from locations.models.core import City, LocationModel
+from locations.models.demon import Bastion, Reliquary
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 from locations.models.mage.library import Library
@@ -102,3 +103,20 @@ admin.site.register(HavenMeritFlawRating)
 class FreeholdAdmin(admin.ModelAdmin):
     list_display = ("name", "archetype", "balefire", "size", "sanctuary", "resources")
     list_filter = ("archetype",)
+
+
+# Demon locations
+@admin.register(Bastion)
+class BastionAdmin(admin.ModelAdmin):
+    list_display = ("name", "ritual_strength", "warding_level", "consecration_date")
+
+
+@admin.register(Reliquary)
+class ReliquaryAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "reliquary_type",
+        "current_health_levels",
+        "max_health_levels",
+        "soak_rating",
+    )

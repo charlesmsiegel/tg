@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title vtm_heading">Elysiums</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:vampire:create:elysium' %}" class="btn btn-primary mb-3">Create New Elysium</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Prestige</th>
+                        <th>Type</th>
+                        <th>Keeper</th>
+                        <th>Court</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for elysium in object_list %}
+                    <tr>
+                        <td><a href="{{ elysium.get_absolute_url }}">{{ elysium.name }}</a></td>
+                        <td>{% if elysium.parent %}<a href="{{ elysium.parent.get_absolute_url }}">{{ elysium.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ elysium.prestige|dots }}</td>
+                        <td>{{ elysium.elysium_type|default:"-" }}</td>
+                        <td>{{ elysium.keeper_name|default:"-" }}</td>
+                        <td>{{ elysium.is_court|yesno:"Yes,No" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No elysiums found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

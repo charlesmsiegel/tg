@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title dtf_heading">Reliquaries</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:demon:create:reliquary' %}" class="btn btn-primary mb-3">Create New Reliquary</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Health</th>
+                        <th>Soak</th>
+                        <th>Powers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reliquary in object_list %}
+                    <tr>
+                        <td><a href="{{ reliquary.get_absolute_url }}">{{ reliquary.name }}</a></td>
+                        <td>{% if reliquary.parent %}<a href="{{ reliquary.parent.get_absolute_url }}">{{ reliquary.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ reliquary.get_reliquary_type_display }}</td>
+                        <td>
+                            {{ reliquary.current_health_levels }}/{{ reliquary.max_health_levels }}
+                            {% if reliquary.is_damaged %}
+                            <span class="tg-badge badge-pill" style="background-color: rgba(255,0,0,0.2);">Damaged</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ reliquary.soak_rating }}</td>
+                        <td>
+                            {% if reliquary.has_pervasiveness %}<span class="tg-badge badge-pill" style="background-color: rgba(0,255,0,0.2);">P</span>{% endif %}
+                            {% if reliquary.has_manifestation %}<span class="tg-badge badge-pill" style="background-color: rgba(0,0,255,0.2);">M</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No reliquaries found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

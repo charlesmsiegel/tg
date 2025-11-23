@@ -1,0 +1,89 @@
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Rack Statistics</h5>
+        </div>
+        <div class="tg-card-body text-center" style="padding: 20px;">
+            {% if object.rack_type %}
+            <div class="mb-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05); width: 100%; text-align: center;">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.rack_type }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Component Ratings -->
+            <div class="row">
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.quality|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Quality</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.population_density|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Population</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if object.blood_quality %}
+            <div class="mt-3">
+                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05); width: 100%; text-align: center;">
+                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Blood Quality:</span>
+                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.blood_quality }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-header text-center">
+            <h5 class="tg-card-title vtm_heading">Risk & Status</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            <!-- Risk Levels -->
+            <div class="row mb-3">
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.risk_level|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Risk Level</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.masquerade_risk|dots }}</div>
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Masquerade Risk</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Flags -->
+            <div class="row">
+                <div class="col-4 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_protected|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Protected</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_protected|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-4 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_exclusive|yesno:'rgba(0,255,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Exclusive</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_exclusive|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+                <div class="col-4 mb-2">
+                    <div style="padding: 8px; border-radius: 4px; background-color: {{ object.is_contested|yesno:'rgba(255,0,0,0.1),rgba(0,0,0,0.02)' }};">
+                        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 2px;">Contested</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.is_contested|yesno:"Yes,No" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

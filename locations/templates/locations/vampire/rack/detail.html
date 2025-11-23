@@ -1,0 +1,22 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+{% block objectname %}
+    <!-- Page Header with Vampire styling -->
+    <div class="tg-card header-card mb-4" data-gameline="vtm">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title vtm_heading">
+                {{ object.name }}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
+{% block model_specific %}
+    <div class="row mb-4">
+        {% include "locations/vampire/rack/display_includes/basics.html" %}
+    </div>
+{% endblock model_specific %}

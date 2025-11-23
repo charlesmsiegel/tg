@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from locations.models.core.location import LocationModel
 
 
@@ -31,3 +32,10 @@ class Bastion(LocationModel):
 
     def get_heading(self):
         return "dtf_heading"
+
+    def get_update_url(self):
+        return reverse("locations:demon:update:bastion", args=[str(self.id)])
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("locations:demon:create:bastion")
