@@ -1,4 +1,5 @@
 from django.contrib import admin
+from locations.models.changeling import Freehold
 from locations.models.core import City, LocationModel
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
@@ -94,3 +95,10 @@ class RackAdmin(admin.ModelAdmin):
 
 
 admin.site.register(HavenMeritFlawRating)
+
+
+# Changeling locations
+@admin.register(Freehold)
+class FreeholdAdmin(admin.ModelAdmin):
+    list_display = ("name", "archetype", "balefire", "size", "sanctuary", "resources")
+    list_filter = ("archetype",)
