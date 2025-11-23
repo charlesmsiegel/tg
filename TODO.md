@@ -49,11 +49,13 @@ This document consolidates all remaining TODOs across the codebase with context 
 
 **File**: `VALIDATION_IMPLEMENTATION_SUMMARY.md`
 
-- [ ] **Add integration tests for transactions**
-  - Test `spend_xp()` atomicity with concurrent requests
-  - Test `approve_xp_spend()` rollback on failure
-  - Test `award_xp()` all-or-nothing behavior
-  - Verify race condition prevention with `select_for_update()`
+- [x] **Add integration tests for transactions** ✅ COMPLETED
+  - **Implementation**: `characters/tests/core/test_transaction_integration.py`
+  - Test `spend_xp()` atomicity with concurrent requests ✅
+  - Test `approve_xp_spend()` rollback on failure ✅
+  - Test `award_xp()` all-or-nothing behavior ✅
+  - Verify race condition prevention with `select_for_update()` ✅
+  - **Note**: Tests use pytest. Run with: `pytest characters/tests/core/test_transaction_integration.py -v`
 
 ### XP/Freebie Migration Testing
 
@@ -633,8 +635,8 @@ Future enhancements for the CharacterTemplate system:
 
 2. **Testing** (Medium Priority)
    - ✅ XP/Freebie Migration Testing - COMPLETED
-   - Add integration tests for atomic transactions (Validation System)
-   - Test all permission scenarios (Permissions System)
+   - ✅ Add integration tests for atomic transactions (COMPLETED)
+   - Test all permission scenarios
    - Update test coverage
 3. **Testing** (Medium Priority)
    - ✅ All permission scenarios tested (37/37 passing)
