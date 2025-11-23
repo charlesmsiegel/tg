@@ -1,5 +1,6 @@
 from typing import Any
 
+from characters.forms.core import LimitedCharacterForm
 from characters.models.core import Character
 from core.mixins import (
     ApprovedUserContextMixin,
@@ -136,8 +137,5 @@ class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateV
             # STs and admins get all fields
             return super().get_form_class()
         else:
-            # Owners get limited fields
-            # You should create a LimitedCharacterForm that only includes
-            # notes, description, etc. For now, we'll use all fields
-            # TODO: Create LimitedCharacterForm with only editable fields
-            return super().get_form_class()
+            # Owners get limited fields (descriptive only)
+            return LimitedCharacterForm
