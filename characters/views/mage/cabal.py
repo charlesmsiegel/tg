@@ -1,7 +1,7 @@
 from characters.forms.mage.cabal import CabalForm
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django import forms
 from django.views.generic import CreateView, DetailView, UpdateView
 

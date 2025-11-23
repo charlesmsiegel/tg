@@ -1,5 +1,5 @@
 from characters.models.werewolf.pack import Pack
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 

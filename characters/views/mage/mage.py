@@ -43,7 +43,7 @@ from core.mixins import (
 )
 from core.models import Language
 from core.views.approved_user_mixin import SpecialUserMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages

@@ -1,5 +1,5 @@
 from core.models import NewsItem
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 

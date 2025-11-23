@@ -3,7 +3,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
 from characters.models.core.statistic import Statistic
-from core.views.message_mixin import MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 

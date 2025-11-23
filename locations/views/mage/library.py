@@ -1,5 +1,4 @@
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
-from core.views.message_mixin import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.library import LibraryForm
@@ -17,7 +16,7 @@ class LibraryListView(ListView):
     template_name = "locations/mage/library/list.html"
 
 
-class LibraryCreateView(LoginRequiredMixin, FormView):
+class LibraryCreateView(LoginRequiredMixin, MessageMixin, FormView):
     template_name = "locations/mage/library/form.html"
     form_class = LibraryForm
     success_message = "Library '{name}' created successfully!"
@@ -31,7 +30,7 @@ class LibraryCreateView(LoginRequiredMixin, FormView):
         return self.object.get_absolute_url()
 
 
-class LibraryUpdateView(EditPermissionMixin, UpdateView):
+class LibraryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Library
     fields = ["name", "description", "parent", "rank", "faction", "books"]
     template_name = "locations/mage/library/form.html"
