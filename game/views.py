@@ -3,6 +3,7 @@ import itertools
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
 from core.mixins import (
+    CharacterOwnerOrSTMixin,
     EditPermissionMixin,
     MessageMixin,
     StorytellerRequiredMixin,
@@ -451,7 +452,7 @@ class WeeklyXPRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class WeeklyXPRequestDetailView(LoginRequiredMixin, DetailView):
+class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
     model = WeeklyXPRequest
     template_name = "game/weekly_xp_request/detail.html"
 
@@ -478,6 +479,25 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     success_message = "Weekly XP request submitted successfully!"
     error_message = "Failed to submit XP request. Please correct the errors below."
 
+    def dispatch(self, request, *args, **kwargs):
+        """Check that user owns the character before allowing access."""
+        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
+
+        # Allow admins and staff
+        if request.user.is_superuser or request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check that user owns the character
+        if character.owner != request.user:
+            messages.error(
+                request, "You can only submit requests for your own characters."
+            )
+            raise PermissionDenied(
+                "You can only submit requests for your own characters"
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["character"] = get_object_or_404(
@@ -487,15 +507,6 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        # Check that user owns the character
-        if form.character.owner != self.request.user:
-            messages.error(
-                self.request, "You can only submit requests for your own characters."
-            )
-            raise PermissionDenied(
-                "You can only submit requests for your own characters"
-            )
-
         # Check if request already exists
         if WeeklyXPRequest.objects.filter(
             character=form.character, week=form.week
@@ -573,7 +584,7 @@ class StoryXPRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class StoryXPRequestDetailView(LoginRequiredMixin, DetailView):
+class StoryXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
     model = StoryXPRequest
     template_name = "game/story_xp_request/detail.html"
 

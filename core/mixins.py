@@ -402,3 +402,38 @@ class StorytellerRequiredMixin:
             raise PermissionDenied("Only storytellers can perform this action")
 
         return super().dispatch(request, *args, **kwargs)
+
+
+class CharacterOwnerOrSTMixin:
+    """
+    Mixin that restricts access to character owners, storytellers, and admins.
+
+    This is for views related to objects that have a 'character' attribute
+    (like XP requests, journal entries, etc.).
+
+    Usage:
+        class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
+            model = WeeklyXPRequest
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user is owner or ST before dispatching."""
+        # Get the object first
+        obj = self.get_object()
+
+        # Allow admins
+        if request.user.is_superuser or request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check if user is a storyteller
+        if request.user.is_authenticated and request.user.profile.is_st():
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check if user is the character owner
+        if hasattr(obj, "character") and obj.character:
+            if obj.character.owner == request.user:
+                return super().dispatch(request, *args, **kwargs)
+
+        raise PermissionDenied(
+            "Only the character owner or storytellers can access this"
+        )
