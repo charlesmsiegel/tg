@@ -377,3 +377,28 @@ class DeleteMessageMixin:
             messages.success(request, message)
 
         return super().delete(request, *args, **kwargs)
+
+
+class StorytellerRequiredMixin:
+    """
+    Mixin that restricts access to storytellers and admins only.
+
+    Checks if the user has storyteller status via profile.is_st().
+    This is for general ST-only operations, not chronicle-specific.
+
+    Usage:
+        class StoryCreateView(StorytellerRequiredMixin, CreateView):
+            model = Story
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user is ST before dispatching."""
+        # Allow admins
+        if request.user.is_superuser or request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check if user is a storyteller
+        if not request.user.is_authenticated or not request.user.profile.is_st():
+            raise PermissionDenied("Only storytellers can perform this action")
+
+        return super().dispatch(request, *args, **kwargs)
