@@ -1,0 +1,108 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Story XP Request - {{ object.character.name }}
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="wod">
+            <div class="tg-card-header text-center">
+                <h1 class="tg-card-title wod_heading">Story XP Request</h1>
+                <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
+                    {{ object.character.name }} - {{ object.story.name }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Details -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title wod_heading">Request Details</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Character</div>
+                            <div style="font-weight: 700; color: var(--theme-text-primary);"><a href="{{ object.character.get_absolute_url }}">{{ object.character.name }}</a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Player</div>
+                            <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.character.owner.username }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 4px;">Story</div>
+                            <div style="font-weight: 700; color: var(--theme-text-primary);"><a href="{{ object.story.get_absolute_url }}">{{ object.story.name }}</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- XP Categories -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title wod_heading">Story XP Categories</h5>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div class="tg-table-responsive">
+                    <table class="tg-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Awarded</th>
+                                <th>XP Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Story Success</td>
+                                <td>{% if object.success %}✓{% else %}—{% endif %}</td>
+                                <td>{% if object.success %}1{% else %}0{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Story Danger</td>
+                                <td>{% if object.danger %}✓{% else %}—{% endif %}</td>
+                                <td>{% if object.danger %}1{% else %}0{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Character Growth</td>
+                                <td>{% if object.growth %}✓{% else %}—{% endif %}</td>
+                                <td>{% if object.growth %}1{% else %}0{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Drama and Roleplaying</td>
+                                <td>{% if object.drama %}✓{% else %}—{% endif %}</td>
+                                <td>{% if object.drama %}1{% else %}0{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Duration Bonus</td>
+                                <td>{{ object.duration }} sessions</td>
+                                <td>{{ object.duration }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 600;">
+                                <td colspan="2">Total Story XP</td>
+                                <td>
+                                    {% widthratio object.success 1 1|add:object.danger|add:object.growth|add:object.drama|add:object.duration as total_xp %}
+                                    {{ total_xp }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="{% url 'game:story_xp_request:list' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+{% endblock content %}

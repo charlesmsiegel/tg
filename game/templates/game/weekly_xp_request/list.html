@@ -1,0 +1,87 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Weekly XP Requests
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wod_heading">Weekly XP Requests</h3>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                {% if is_st and pending_count > 0 %}
+                    <div class="alert alert-info mb-4 text-center">
+                        <strong>{{ pending_count }}</strong> pending request{{ pending_count|pluralize }} awaiting review
+                    </div>
+                {% endif %}
+
+                {% if object_list %}
+                    <div class="tg-table-responsive">
+                        <table class="tg-table">
+                            <thead>
+                                <tr>
+                                    <th>Week</th>
+                                    <th>Character</th>
+                                    {% if is_st %}
+                                        <th>Player</th>
+                                    {% endif %}
+                                    <th>Status</th>
+                                    <th>Total XP</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in object_list %}
+                                    <tr>
+                                        <td><a href="{{ request.week.get_absolute_url }}">{{ request.week }}</a></td>
+                                        <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                                        {% if is_st %}
+                                            <td>{{ request.character.owner.username }}</td>
+                                        {% endif %}
+                                        <td>
+                                            {% if request.approved %}
+                                                <span class="tg-badge badge-app">Approved</span>
+                                            {% else %}
+                                                <span class="tg-badge badge-sub">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ request.total_xp }}</td>
+                                        <td><a href="{% url 'game:weekly_xp_request:detail' request.pk %}" class="btn btn-sm btn-primary">View</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if is_paginated %}
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item active">
+                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <p class="text-center text-muted">No XP requests found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
