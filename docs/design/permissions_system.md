@@ -1563,6 +1563,8 @@ class Migration(migrations.Migration):
 
 ## Testing Strategy
 
+**Note:** Examples below use pytest syntax for brevity. The actual implementation uses Django's unittest framework (`from django.test import TestCase`). Run tests with `python manage.py test`.
+
 ### Unit Tests
 
 **File:** `core/tests/test_permissions.py`

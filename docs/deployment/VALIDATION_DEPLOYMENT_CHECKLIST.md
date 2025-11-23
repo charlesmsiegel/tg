@@ -27,8 +27,8 @@ Complete checklist for deploying the validation system from development → stag
 
 - [x] **Run full test suite**
   ```bash
-  pytest characters/tests/core/test_validation_constraints.py -v
-  pytest --tb=short
+  python manage.py test characters.tests.core.test_validation_constraints --verbosity=2
+  python manage.py test
   ```
   Expected: 89 tests passing
 
@@ -40,7 +40,7 @@ Complete checklist for deploying the validation system from development → stag
 
 - [ ] **Performance testing**
   ```bash
-  pytest characters/tests/performance/test_xp_performance.py
+  python manage.py test characters.tests.performance.test_xp_performance
   ```
   Expected: < 100ms per XP operation
 
@@ -118,7 +118,7 @@ Complete checklist for deploying the validation system from development → stag
 
 - [ ] **Run test suite**
   ```bash
-  pytest characters/tests/core/test_validation_constraints.py -v
+  python manage.py test characters.tests.core.test_validation_constraints --verbosity=2
   pytest
   ```
 

@@ -121,10 +121,12 @@ This testing implementation provides comprehensive coverage for the XP/Freebie m
    python manage.py migrate
 
    # Run all migration tests
-   pytest game/tests_xp_freebie_migration.py -v
+   python manage.py test game.tests_xp_freebie_migration --verbosity=2
 
-   # Run with coverage
-   pytest game/tests_xp_freebie_migration.py --cov=game --cov-report=html
+   # Run with coverage (requires coverage.py)
+   coverage run --source='game' manage.py test game.tests_xp_freebie_migration
+   coverage report
+   coverage html
    ```
 
 2. **Review Test Results:**

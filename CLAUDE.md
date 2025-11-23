@@ -18,9 +18,9 @@ python manage.py collectstatic
 python manage.py runserver
 
 # Testing
-pytest                                    # Run all tests
-pytest characters/tests/                  # Run app-specific tests
-pytest -v accounts/tests.py::TestClass::test_method  # Run single test
+python manage.py test                     # Run all tests
+python manage.py test characters          # Run app-specific tests
+python manage.py test characters.tests.TestClass.test_method  # Run single test
 
 # Database seeding
 bash setup_db.sh                          # Loads all game data from populate_db/
@@ -347,4 +347,4 @@ See `SOURCES/STYLE.md` for complete style guide with examples.
 
 ## Testing
 
-Tests organized by app and gameline: `characters/tests/vampire/`, `items/tests/mage/`, etc. Uses pytest-django. Run `pytest -v` for verbose output.
+Tests organized by app and gameline: `characters/tests/vampire/`, `items/tests/mage/`, etc. Uses Django's unittest framework. Run `python manage.py test --verbosity=2` for verbose output.

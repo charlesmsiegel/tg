@@ -55,7 +55,7 @@ pip install -r requirements.txt
 
 # Note: If jsmin fails to install (TinyMCE dependency), you can skip it for development:
 pip install Django==5.1.7 django-polymorphic==3.1.0 django-smart-selects==1.6.0 \
-            requests==2.32.3 pillow pytest pytest-django bleach python-dotenv numpy==1.26.4
+            requests==2.32.3 pillow  bleach python-dotenv numpy==1.26.4
 ```
 
 ### Step 3: Set Up Environment Variables

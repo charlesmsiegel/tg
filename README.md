@@ -124,7 +124,7 @@ tg/
 - **Database**: SQLite (development) / PostgreSQL (production)
 - **ORM**: Django ORM with django-polymorphic for inheritance
 - **Frontend**: Bootstrap 5 with custom TG styling
-- **Testing**: pytest with pytest-django
+- **Testing**: Django's unittest framework
 - **Dependencies**: See [requirements.txt](requirements.txt)
 
 ## Game Lines Supported
@@ -141,16 +141,19 @@ tg/
 
 ```bash
 # Run all tests
-pytest
+python manage.py test
 
 # Run specific app tests
-pytest characters/tests/
+python manage.py test characters
 
 # Run with verbose output
-pytest -v
+python manage.py test --verbosity=2
 
-# Run specific test
-pytest characters/tests/core/test_permissions.py::TestOwnerPermissions
+# Run specific test class
+python manage.py test characters.tests.core.test_permissions.TestOwnerPermissions
+
+# Run specific test method
+python manage.py test characters.tests.core.test_permissions.TestOwnerPermissions.test_owner_can_view_full
 ```
 
 ## Contributing
@@ -183,9 +186,9 @@ python manage.py shell
 python manage.py createsuperuser
 
 # Testing
-pytest                                    # All tests
-pytest characters/tests/                  # App-specific tests
-pytest -v                                 # Verbose output
+python manage.py test                     # All tests
+python manage.py test characters          # App-specific tests
+python manage.py test --verbosity=2       # Verbose output
 
 # Data Management
 bash setup_db.sh                          # Load all game data
