@@ -13,12 +13,12 @@ from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from characters.models.demon.demon import Demon
-from characters.models.demon.dtfhuman import DtFHuman
+from characters.models.demon.dtf_human import DtFHuman
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
-from characters.models.werewolf.garou import Garou
+from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
@@ -163,7 +163,7 @@ class LimitedGarouEditForm(LimitedHumanEditForm):
     """Limited edit form for Garou characters."""
 
     class Meta(LimitedHumanEditForm.Meta):
-        model = Garou
+        model = Werewolf
 
 
 class LimitedWtAHumanEditForm(LimitedHumanEditForm):
