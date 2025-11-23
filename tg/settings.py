@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "polymorphic",
     "core",
     "django.contrib.humanize",
+    "crispy_forms",
+    "crispy_bootstrap4",
 ]
 
 MIDDLEWARE = [
@@ -315,3 +317,4 @@ LOGGING = {
         },
     },
 }
+CRISPY_TEMPLATE_PACK = "bootstrap4"
