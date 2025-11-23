@@ -46,7 +46,7 @@ Each gameline has its own module under `characters/models/{gameline}/`, `items/m
 
 ### Key Patterns
 
-**User Profile** - One-to-one with Django User. Tracks theme preferences, ST status, approval queues. Key methods: `is_st()`, `st_relations()`, `objects_to_approve()`.
+**User Profile** - One-to-one with Django User. Tracks theme preferences, ST status, approval queues. Key methods: `is_st()`, `st_relations()`, `objects_to_approve()`. Note: This project uses Profile extension rather than custom User model - see `docs/design/user_model_architecture.md` for rationale.
 
 **Chronicle System** - `Chronicle` defines campaigns with storytellers and players. `Scene` handles sessions with participants and XP. `Story` groups multiple scenes.
 
@@ -77,7 +77,7 @@ Each gameline has its own module under `characters/models/{gameline}/`, `items/m
 - `README.md` - Project overview and quick start guide
 - `TODO.md` - Known technical debt and planned improvements
 - `populate_db/` - 80+ scripts for loading game mechanics data
-- `docs/design/` - Design documentation (permissions, validation)
+- `docs/design/` - Design documentation (permissions, validation, user model architecture)
 - `docs/guides/` - Implementation guides (migrations, permissions, limited forms)
 - `docs/deployment/` - Deployment guides for staging and production
 - `docs/testing/` - Test documentation and reports
