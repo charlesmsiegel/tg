@@ -137,7 +137,7 @@ The following views still need `MessageMixin` added for user feedback:
 
 ### Character Template System Enhancements
 
-**File**: `TEMPLATE_SYSTEM_README.md`
+**File**: `characters/docs/template_system.md`
 
 Future enhancements for the CharacterTemplate system:
 
@@ -165,6 +165,119 @@ Future enhancements for the CharacterTemplate system:
   - One-click NPC creation from template
   - Auto-populate NPC fields from template data
   - Faster ST workflow for creating multiple NPCs
+
+### Code Quality & Best Practices
+
+**Source**: Consolidated from best practice violations analysis
+
+#### Critical Security Issues
+- [ ] **Fix security settings in production**
+  - `tg/settings.py:27-29` - Move to environment-based configuration
+  - Set `DEBUG = False` in production
+  - Configure proper `ALLOWED_HOSTS` instead of `["*"]`
+  - Create environment-specific settings files (base.py, development.py, production.py)
+
+- [ ] **Add authentication to views**
+  - Multiple views lack `LoginRequiredMixin` or authentication checks
+  - `game/views.py` - ChronicleDetailView, SceneDetailView, ChronicleScenesDetailView
+  - Add `LoginRequiredMixin` to all views that require authentication
+
+- [ ] **Implement authorization checks**
+  - `game/views.py:113-119` and throughout - No permission validation
+  - Users can close any scene, post as any character, approve XP without ST status
+  - Create permission mixins (e.g., `StorytellerRequiredMixin`)
+  - Add permission checks before allowing actions
+
+- [ ] **Replace `.get()` with `get_object_or_404()`**
+  - `game/views.py:27, 76, 87, 121, 134, 250` - Using `.get()` causes 500 errors
+  - Replace with `get_object_or_404()` for proper 404 responses
+
+#### Performance Issues
+- [ ] **Fix N+1 query problems**
+  - `accounts/models.py:115-121` - st_relations() causes N queries
+  - `game/models.py:196-205` - weekly_characters() queries per scene
+  - `accounts/models.py:163-170` - rotes_to_approve() queries per rote
+  - Use `select_related()`, `prefetch_related()`, and proper querysets
+
+- [ ] **Add database indexes**
+  - `game/models.py:322-328` - Post model lacks indexes on frequently queried fields
+  - Add `db_index=True` to datetime_created and other frequently filtered fields
+  - Create composite indexes for common query patterns
+
+#### Code Architecture
+- [ ] **Move business logic out of forms**
+  - `accounts/forms.py:89-96` - SceneXP.save() contains business logic
+  - Move XP award logic to model methods
+  - Keep forms focused on data validation
+
+- [ ] **Address fat models with complex inheritance**
+  - `characters/models/core/` - Human class has 7+ parent classes
+  - Consider composition over inheritance
+  - Evaluate proxy models for polymorphic behavior
+
+- [ ] **Move signal registration to apps.py**
+  - `accounts/models.py:264-268` - Signal registered in models.py
+  - Move to `accounts/apps.py` ready() method
+  - Create separate `accounts/signals.py` module
+
+#### Model & Data Validation
+- [ ] **Add model validation**
+  - Most models lack `clean()` methods
+  - Add validation in `clean()` for data integrity
+  - Call `full_clean()` in `save()` methods
+
+- [ ] **Fix class name typo**
+  - `accounts/forms.py:24` - `CustomUSerCreationForm` should be `CustomUserCreationForm`
+  - Update all references
+
+#### Testing & Code Quality
+- [ ] **Improve test coverage**
+  - Only `accounts/tests.py` has actual tests
+  - Add comprehensive test suite using pytest-django
+  - Test all views, forms, and model methods
+  - Aim for 80%+ coverage
+
+- [ ] **Standardize CBV patterns**
+  - `game/views.py` - Views inherit from View but don't follow CBV patterns
+  - Use proper Django generic views (DetailView, ListView, etc.)
+  - Follow standard `get_context_data()` pattern
+
+- [ ] **Centralize hardcoded choices**
+  - `game/models.py:18-35`, `accounts/models.py:28-48` - Choices duplicated
+  - Create `core/constants.py` for shared choices
+  - Use constants throughout codebase
+
+#### Development Tools
+- [ ] **Add Django Debug Toolbar**
+  - Configure in development settings
+  - Helps identify N+1 queries and performance issues
+
+- [ ] **Configure logging**
+  - Add LOGGING configuration to settings
+  - Set up file and console handlers
+  - Configure per-app log levels
+
+- [ ] **Add caching configuration**
+  - Configure Redis or Memcached for caching
+  - Use `@cache_page` decorator for appropriate views
+  - Cache expensive querysets
+
+#### Long-term Improvements
+- [ ] **Consider custom User model**
+  - Currently using Profile extension of Django User
+  - Document trade-offs of current approach
+  - For new projects, AbstractUser is preferred
+
+- [ ] **Add migration best practices**
+  - Create data migrations for schema changes
+  - Periodically squash old migrations
+  - Test migrations in CI/CD pipeline
+
+- [ ] **Improve code style consistency**
+  - `accounts/models.py:116` - `str` variable shadows built-in
+  - Add docstrings to complex methods
+  - Use black/ruff for formatting
+  - Consider mypy for type checking
 
 ---
 
@@ -236,6 +349,7 @@ Future enhancements for the CharacterTemplate system:
 | Testing | - | 9 items | 6 items |
 | Feature Completeness | - | - | 35+ views |
 | Template Enhancements | - | - | 5 features |
+| Code Quality & Best Practices | - | - | 20+ items |
 | Deployment | - | 8 items | - |
 
 ---
