@@ -68,42 +68,9 @@ class ModelQuerySet(PolymorphicQuerySet):
         return self.filter(chronicle__in=user.chronicle_set.all())
 
 
-class ModelManager(PolymorphicManager):
-    """Base manager with common query methods"""
-
-    def pending_approval_for_user(self, user):
-        """
-        Objects awaiting approval in user's chronicles (optimized).
-        Default implementation uses status in ['Un', 'Sub'].
-        Override in subclasses if different status logic is needed.
-        """
-        return (
-            self.filter(
-                status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all()
-            )
-            .select_related("chronicle", "owner")
-            .order_by("name")
-        )
-
-    def visible(self):
-        """Objects with display=True (visible to users)"""
-        return self.filter(display=True)
-
-    def for_chronicle(self, chronicle):
-        """Objects in a specific chronicle"""
-        return self.filter(chronicle=chronicle)
-
-    def owned_by(self, user):
-        """Objects owned by a specific user"""
-        return self.filter(owner=user)
-
-    def with_pending_images(self):
-        """Objects with images awaiting approval"""
-        return self.filter(image_status="sub").exclude(image="")
-
-    def for_user_chronicles(self, user):
-        """Objects in any of the user's chronicles"""
-        return self.filter(chronicle__in=user.chronicle_set.all())
+# Create ModelManager from the QuerySet to expose all QuerySet methods on the manager
+# This eliminates duplication - all query methods are defined once in ModelQuerySet
+ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
 
 
 class Book(models.Model):
