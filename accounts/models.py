@@ -5,12 +5,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from game.models import (
-    Chronicle,
     Journal,
     Scene,
     Story,
     STRelationship,
-    UserSceneReadStatus,
     Week,
     WeeklyXPRequest,
 )
@@ -170,6 +168,11 @@ class Profile(models.Model):
         return {r: list(r.mage_set.all()) for r in rotes}
 
     def objects_to_approve(self):
+        """Get all objects pending approval for this user's chronicles.
+
+        Returns a combined list of characters, items, locations, and rotes
+        that are pending approval for chronicles where this user is a storyteller.
+        """
         to_approve = list(self.characters_to_approve())
         to_approve.extend(list(self.items_to_approve()))
         to_approve.extend(list(self.locations_to_approve()))
@@ -202,6 +205,16 @@ class Profile(models.Model):
         return Journal.objects.filter(journalentry__st_message="").distinct()
 
     def get_unfulfilled_weekly_xp_requests(self):
+        """Get character/week pairs that need XP requests created.
+
+        Returns a list of (character, week) tuples where:
+        - The character belongs to this user
+        - The character is associated with the week
+        - No WeeklyXPRequest exists for this character/week combination
+        - The character is not an NPC
+
+        This helps track which weekly XP requests the user still needs to submit.
+        """
         char_list = self.my_characters()
         char_week_pairs = Week.characters.through.objects.filter(
             charactermodel_id__in=char_list
@@ -226,6 +239,15 @@ class Profile(models.Model):
         return [pair for pair in results if not pair[0].npc]
 
     def get_unfulfilled_weekly_xp_requests_to_approve(self):
+        """Get all character/week pairs with unapproved XP requests for storyteller review.
+
+        Returns a list of (character, week) tuples where:
+        - A WeeklyXPRequest exists for the character/week combination
+        - The request has not yet been approved
+        - The character is associated with the week
+
+        This is used by storytellers to review and approve pending weekly XP requests.
+        """
         char_list = Character.objects.all()
 
         char_week_pairs = Week.characters.through.objects.filter(
@@ -246,6 +268,11 @@ class Profile(models.Model):
         return [(char_map[c], all_weeks[w]) for (c, w) in result_pairs]
 
     def xp_spend_requests(self):
+        """Get all characters waiting for XP spend approval.
+
+        Returns a list of characters that have pending XP spending requests
+        awaiting storyteller approval.
+        """
         chars = Character.objects.all()
         return [x for x in chars if x.waiting_for_xp_spend()]
 
