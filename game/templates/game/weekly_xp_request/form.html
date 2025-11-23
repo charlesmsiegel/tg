@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Submit Weekly XP Request
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wod_heading">Submit Weekly XP Request</h3>
+                <div style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-top: 8px;">
+                    {{ character.name }} - {{ week }}
+                </div>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="alert alert-info mb-4">
+                    <strong>Note:</strong> You automatically receive 1 XP for finishing a scene. You may claim up to 4 additional XP by selecting the categories below and providing the relevant scenes.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if field.name != 'finishing' %}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-weight: 600; color: var(--theme-text-secondary);">{{ field.label }}</label>
+                                    {% if field.help_text %}
+                                        <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ field.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    {{ field }}
+                                </div>
+                            </div>
+                            {% if field.errors %}
+                                <div class="row mb-3">
+                                    <div class="col-md-8 offset-md-4">
+                                        <div class="text-danger" style="font-size: 0.875rem;">{{ field.errors }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-8 offset-md-4">
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                            <a href="{{ week.get_absolute_url }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

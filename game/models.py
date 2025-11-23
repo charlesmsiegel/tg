@@ -59,6 +59,9 @@ class SettingElement(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("game:setting_element:detail", kwargs={"pk": self.pk})
+
 
 class Gameline(models.Model):
     name = models.CharField(max_length=100, default="")
@@ -231,6 +234,9 @@ class Week(models.Model):
 
     def __str__(self):
         return f"{self.start_date } - { self.end_date }"
+
+    def get_absolute_url(self):
+        return reverse("game:week:detail", kwargs={"pk": self.pk})
 
     def finished_scenes(self):
         # Subquery to get the most recent datetime_created for each Scene
