@@ -93,6 +93,35 @@ core.models.Model (abstract polymorphic base)
 
 ---
 
+## Vampire: The Masquerade (4 models)
+
+### Vampire Territories
+- **`Domain`** - Territory controlled by a vampire
+  - Size, population, control ratings (1-5)
+  - Total Domain Background value
+  - Domain type (commercial, residential, industrial, etc.)
+  - Special features (Elysium, Rack, disputed)
+
+- **`Haven`** - Vampire's private sanctuary
+  - Security rating
+  - Size and luxury level
+  - Location type
+  - Special features and defenses
+
+- **`Elysium`** - Neutral ground for vampire society
+  - Type (opera house, gallery, etc.)
+  - Prince's endorsement
+  - Security and rules
+  - Events held
+
+- **`Rack`** - Quality hunting grounds
+  - Population density
+  - Security level
+  - Ease of feeding
+  - Risks and complications
+
+---
+
 ## Wraith: The Oblivion (2 models) ⚠️ **INCOMPLETE**
 
 > **Status:** Models defined but no admin registration, views, URLs, or templates implemented.
@@ -110,13 +139,33 @@ core.models.Model (abstract polymorphic base)
 
 ---
 
+## Demon: The Fallen (2 models)
+
+### Demon Strongholds
+- **`Bastion`** - Fortified stronghold of the Earthbound
+  - Ritual strength (0-10)
+  - Warding level
+  - Consecration date
+  - Serves as sanctuary for Earthbound and cults
+
+- **`Reliquary`** - Location that serves as an Earthbound's vessel
+  - Reliquary type (location, perfect object, improvised object)
+  - Location size and boundaries
+  - Health levels and soak rating
+  - Pervasiveness (sense everything within)
+  - Manifestation capabilities
+
+---
+
 ## File Locations
 
 - **Models:** `locations/models/`
   - `core/` - Shared location models
   - `mage/` - MtA locations
   - `werewolf/` - WtA locations
+  - `vampire/` - VtM locations
   - `wraith/` - WtO locations (incomplete)
+  - `demon/` - DtF locations
 
 - **Admin:** `locations/admin.py` (9 models registered)
 - **Views:** `locations/views/` (organized by gameline)
@@ -132,9 +181,10 @@ core.models.Model (abstract polymorphic base)
 | Core | 2 | ✅ | ✅ | ✅ | Complete |
 | Mage | 11 | ✅ | ✅ | ✅ | Complete |
 | Werewolf | 1 | ✅ | ✅ | ✅ | Complete |
+| Vampire | 4 | ⚠️ | ⚠️ | ⚠️ | Partial |
 | Wraith | 2 | ❌ | ❌ | ❌ | **Incomplete** |
+| Demon | 2 | ⚠️ | ⚠️ | ⚠️ | Partial |
 | Changeling | 0 | N/A | N/A | N/A | Not started |
-| Demon | 0 | N/A | N/A | N/A | Not started |
 
 ---
 
