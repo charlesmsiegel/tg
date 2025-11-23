@@ -13,8 +13,11 @@ from items.models.mage.artifact import Artifact
 from items.models.mage.grimoire import Grimoire
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 from items.models.mage.talisman import Talisman
+from items.models.changeling import Treasure
+from items.models.demon import Relic
 from items.models.vampire import Bloodstone, VampireArtifact
 from items.models.werewolf.fetish import Fetish
+from items.models.wraith import WraithArtifact, WraithRelic
 
 
 @admin.register(ItemModel)
@@ -85,3 +88,19 @@ from items.models.demon.relic import Relic
 class RelicAdmin(admin.ModelAdmin):
     list_display = ("name", "relic_type", "complexity", "house", "difficulty")
     list_filter = ("relic_type", "house")
+    
+# Wraith items
+@admin.register(WraithRelic)
+class WraithRelicAdmin(admin.ModelAdmin):
+    list_display = ("name", "level", "rarity", "background_cost", "pathos_cost")
+
+
+@admin.register(WraithArtifact)
+class WraithArtifactAdmin(admin.ModelAdmin):
+    list_display = ("name", "level", "artifact_type", "material", "corpus")
+
+
+# Changeling items
+@admin.register(Treasure)
+class TreasureAdmin(admin.ModelAdmin):
+    list_display = ("name", "rating", "treasure_type", "permanence", "glamour_storage")

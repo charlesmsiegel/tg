@@ -79,3 +79,13 @@ class Relic(ItemModel):
             self.save()
             return True
         return False
+
+    def get_update_url(self):
+        return reverse("items:demon:update:relic", args=[str(self.id)])
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("items:demon:create:relic")
+
+    def get_heading(self):
+        return "dtf_heading"

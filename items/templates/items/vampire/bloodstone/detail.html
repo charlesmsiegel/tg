@@ -1,0 +1,56 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title vtm_heading">Blood Storage</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Blood Stored:</strong>
+                        </div>
+                        <div class="col-6">{{ object.blood_stored }} / {{ object.max_blood }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-6">
+                            <strong>Status:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if object.is_active %}
+                                <span class="tg-badge badge-app">Active</span>
+                            {% else %}
+                                <span class="tg-badge badge-dec">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title vtm_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Creator Generation:</strong>
+                        </div>
+                        <div class="col-6">{{ object.created_by_generation }}</div>
+                    </div>
+                    {% if object.stone_type %}
+                        <div class="row mb-0">
+                            <div class="col-6">
+                                <strong>Stone Type:</strong>
+                            </div>
+                            <div class="col-6">{{ object.stone_type }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock additional_stats %}
