@@ -14,12 +14,7 @@ This document consolidates all remaining TODOs across the codebase with context 
    - **Related**: Part of permissions system - owners should have limited edit access
    - **Impact**: Security/gameplay integrity
 
-2. **Add tribal restrictions for Kinfolk backgrounds**
-   - **File**: `characters/views/werewolf/kinfolk.py:255`
-   - **Context**: `KinfolkBackgroundsView` doesn't enforce tribal restrictions on background choices. Some backgrounds may be restricted based on the Kinfolk's associated tribe.
-   - **Impact**: Character creation rules enforcement
-
-3. **Find source for "Slow Healing" merit**
+2. **Find source for "Slow Healing" merit**
    - **File**: `populate_db/merits_and_flaws_INC.py:14`
    - **Context**: The "Slow Healing" merit (3 pt flaw) for Mage/Sorcerer needs source book verification and page number.
    - **Impact**: Documentation completeness
@@ -543,7 +538,7 @@ Future enhancements for the CharacterTemplate system:
 
 | Category | High Priority | Medium Priority | Low Priority |
 |----------|--------------|-----------------|--------------|
-| Code TODOs | 3 items | - | - |
+| Code TODOs | 2 items | - | - |
 | Testing | - | 9 items | 6 items |
 | Model Implementation Gaps | - | - | 60+ models |
 | Feature Completeness | - | - | 35+ views |
@@ -565,7 +560,7 @@ Future enhancements for the CharacterTemplate system:
 
 1. **Code Quality** (High Priority)
    - Implement `LimitedCharacterForm` for owner editing
-   - Add tribal restrictions for Kinfolk backgrounds
+   - Find source for "Slow Healing" merit
 
 2. **Testing** (Medium Priority)
    - Add integration tests for atomic transactions
