@@ -565,27 +565,47 @@ These views don't exist yet and will need MessageMixin when created:
 
 ### Validation System Deployment
 
-**File**: `VALIDATION_IMPLEMENTATION_SUMMARY.md`
+**Files**:
+- `docs/deployment/` - Complete deployment documentation
+- `core/management/commands/validate_data_integrity.py` - Pre-deployment validation
+- `core/management/commands/monitor_validation.py` - Post-deployment monitoring
+
+- [x] **Create deployment tools and documentation**
+  - Created `validate_data_integrity.py` command for pre-deployment data validation
+  - Created `monitor_validation.py` command for health monitoring
+  - Created comprehensive deployment guides (staging and production)
+  - Created deployment checklist with sign-off procedures
+  - All tools committed to branch `claude/deploy-validation-staging-013V3YCrnPRoKSA3SJz5Tvnq`
 
 - [ ] **Deploy to staging**
-  - Deploy transaction protection and constraints
-  - Test XP spending workflows
-  - Verify constraint violations are caught
+  - Run `python manage.py validate_data_integrity --fix` to prepare data
+  - Apply migrations to add database constraints
+  - Test XP spending workflows (player and ST)
+  - Test scene XP award workflow
+  - Verify constraint violations are caught and handled gracefully
+  - Monitor for 1 week (see staging deployment guide)
 
-- [ ] **Monitor for validation errors**
+- [ ] **Monitor for validation errors in staging**
+  - Run `python manage.py monitor_validation` daily
   - Watch logs for CheckConstraint violations
   - Monitor for transaction rollbacks
-  - Track performance impact
+  - Track performance impact (< 10% degradation target)
+  - Collect user feedback from STs and players
 
 - [ ] **Deploy to production**
-  - Final deployment of validation system
-  - Monitor database constraint violations
-  - Alert on any data integrity issues
+  - Complete staging sign-off (1 week soak period)
+  - Schedule maintenance window
+  - Backup production database
+  - Follow production deployment checklist
+  - Apply migrations to add constraints
+  - Monitor actively for 24 hours
 
-- [ ] **Monitor database constraint violations**
-  - Set up alerts for constraint violations
+- [ ] **Monitor database constraint violations in production**
+  - Set up hourly cron job: `python manage.py monitor_validation --json`
+  - Configure alerts for health score < 90
   - Log violations for analysis
-  - Fix any existing invalid data
+  - Track metrics: XP success rate, response times, constraint violations
+  - Weekly review of validation health reports
 
 ---
 
