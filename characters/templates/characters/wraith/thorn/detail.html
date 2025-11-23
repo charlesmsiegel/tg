@@ -1,0 +1,105 @@
+{% extends "core/object.html" %}
+{% load sanitize_text dots %}
+
+{% block contents %}
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h5 class="tg-card-title wto_heading">Thorn Details</h5>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.get_thorn_type_display }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Type</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.point_cost }}</div>
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Point Cost</div>
+                    </div>
+                </div>
+                {% if object.activation_cost %}
+                    <div class="col-md-4 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.activation_cost }}</div>
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Activation Cost</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if object.activation_trigger %}
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Activation Trigger</div>
+                            <div style="line-height: 1.6; color: var(--theme-text-primary);">{{ object.activation_trigger|sanitize_html }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if object.mechanical_description %}
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Mechanical Description</div>
+                            <div style="line-height: 1.6; color: var(--theme-text-primary);">{{ object.mechanical_description|sanitize_html }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if object.resistance_system %}
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Resistance System</div>
+                            <div style="line-height: 1.6; color: var(--theme-text-primary);">{{ object.resistance_system|sanitize_html }}</div>
+                        </div>
+                    </div>
+                    {% if object.resistance_difficulty %}
+                        <div class="col-md-4">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.resistance_difficulty }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Resistance Difficulty</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="row">
+                {% if object.duration %}
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Duration:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.duration }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if object.frequency_limitation %}
+                    <div class="col-md-6 mb-3">
+                        <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                            <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Frequency:</span>
+                            <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.frequency_limitation }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if object.limitations %}
+                <div class="row">
+                    <div class="col-12">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Limitations</div>
+                            <div style="line-height: 1.6; color: var(--theme-text-primary);">{{ object.limitations|sanitize_html }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock contents %}

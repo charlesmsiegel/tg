@@ -1,0 +1,156 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Thorns
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="wto">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title wto_heading">Thorns</h1>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <button class="btn btn-link"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#filterPanel"
+                        aria-expanded="false"
+                        aria-controls="filterPanel">
+                    <i class="fas fa-filter"></i> Filter Thorns
+                </button>
+            </div>
+            <div class="collapse" id="filterPanel">
+                <div class="tg-card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="nameFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
+                            <input type="text" class="form-control" id="nameFilter" placeholder="Search by name...">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="typeFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Type</label>
+                            <select class="form-select" id="typeFilter">
+                                <option value="">All Types</option>
+                                <option value="individual">Individual Thorn</option>
+                                <option value="collective">Collective Thorn</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="costFilter" class="form-label" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Point Cost</label>
+                            <select class="form-select" id="costFilter">
+                                <option value="">All Costs</option>
+                                {% for cost in point_costs %}
+                                    <option value="{{ cost }}">{{ cost }} point{{ cost|pluralize }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-secondary" id="clearFilters">Clear Filters</button>
+                            <span class="ms-3" id="resultCount" style="font-weight: 600; color: var(--theme-text-secondary);"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thorns List -->
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 0;">
+                <div id="thornsList">
+                    {% for obj in object_list %}
+                        <div class="thorn-item"
+                             data-name="{{ obj.name|lower }}"
+                             data-type="{{ obj.thorn_type }}"
+                             data-cost="{{ obj.point_cost }}"
+                             style="border-bottom: 1px solid rgba(0,0,0,0.1);">
+                            <div style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary); text-decoration: none;">
+                                    {{ obj.name }}
+                                </a>
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <span class="tg-badge badge-pill" style="background-color: rgba(0,0,0,0.1); color: var(--theme-text-secondary);">
+                                        {{ obj.get_thorn_type_display }}
+                                    </span>
+                                    <span style="font-size: 0.85rem; color: var(--theme-text-secondary);">
+                                        {{ obj.point_cost }} point{{ obj.point_cost|pluralize }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div style="padding: 20px; text-align: center; color: var(--theme-text-secondary);">
+                            No thorns found.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameFilter = document.getElementById('nameFilter');
+            const typeFilter = document.getElementById('typeFilter');
+            const costFilter = document.getElementById('costFilter');
+            const clearButton = document.getElementById('clearFilters');
+            const resultCount = document.getElementById('resultCount');
+            const thornItems = document.querySelectorAll('.thorn-item');
+
+            function filterThorns() {
+                const nameValue = nameFilter.value.toLowerCase();
+                const typeValue = typeFilter.value;
+                const costValue = costFilter.value;
+
+                let visibleCount = 0;
+
+                thornItems.forEach(function(item) {
+                    const itemName = item.getAttribute('data-name');
+                    const itemType = item.getAttribute('data-type');
+                    const itemCost = item.getAttribute('data-cost');
+
+                    let showItem = true;
+
+                    // Filter by name
+                    if (nameValue && !itemName.includes(nameValue)) {
+                        showItem = false;
+                    }
+
+                    // Filter by type
+                    if (typeValue && itemType !== typeValue) {
+                        showItem = false;
+                    }
+
+                    // Filter by cost
+                    if (costValue && itemCost !== costValue) {
+                        showItem = false;
+                    }
+
+                    item.style.display = showItem ? '' : 'none';
+                    if (showItem) visibleCount++;
+                });
+
+                // Update result count
+                resultCount.textContent = `Showing ${visibleCount} of ${thornItems.length} thorns`;
+            }
+
+            // Add event listeners
+            nameFilter.addEventListener('input', filterThorns);
+            typeFilter.addEventListener('change', filterThorns);
+            costFilter.addEventListener('change', filterThorns);
+
+            clearButton.addEventListener('click', function() {
+                nameFilter.value = '';
+                typeFilter.value = '';
+                costFilter.value = '';
+                filterThorns();
+            });
+
+            // Initial count
+            filterThorns();
+        });
+    </script>
+{% endblock content %}
