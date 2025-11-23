@@ -1,0 +1,72 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Create Freehold - Step 1: Basics</h1>
+                <p class="tg-card-subtitle mb-0">Name, Archetype, Aspect, and Acquisition</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="mb-4">
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                    Step 1 of 4
+                </div>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 24px;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="alert alert-info mt-4">
+                        <h6><strong>Archetype Benefits:</strong></h6>
+                        <ul class="mb-0">
+                            <li><strong>Academy:</strong> -2 difficulty on chosen Ability</li>
+                            <li><strong>Hearth:</strong> -2 difficulty on Leadership or Socialize</li>
+                            <li><strong>Homestead:</strong> -2 difficulty on Survival or Animal Ken</li>
+                            <li><strong>Manor:</strong> -2 difficulty on Etiquette</li>
+                            <li><strong>Market:</strong> -2 difficulty on Persuasion or Subterfuge</li>
+                            <li><strong>Repository:</strong> -2 difficulty on Lore</li>
+                            <li><strong>Stronghold:</strong> -2 difficulty on Firearms or Melee</li>
+                            <li><strong>Thorpe:</strong> -2 difficulty on Empathy (multiple balefires)</li>
+                            <li><strong>Workshop:</strong> -2 difficulty on Craft</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            Next: Features <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <a href="{% url 'locations:changeling:freehold:list' %}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="tg-card mt-4">
+            <div class="tg-card-body" style="padding: 20px;">
+                <h6 class="ctd_heading mb-3">About Freeholds</h6>
+                <p>
+                    Freeholds are constructed places between the Dreaming and the Autumn World where changelings
+                    work, socialize, hold court, and take refuge from Banality. They are typically built atop
+                    Glades and are held by freeholders who have bonded their souls to the balefire.
+                </p>
+                <p class="mb-0">
+                    <strong>Aspect:</strong> This is the underlying dream or story of your freehold. It could be tied to the
+                    location's history, the emotions it evokes, or the legends associated with it. For example:
+                    "birthplace of chimerical creatures," "ancient font of memories," or "sexy nightclub with hidden primal darkness."
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

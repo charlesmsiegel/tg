@@ -145,6 +145,10 @@ class Freehold(LocationModel):
         help_text="Description of what the balefire looks like and where it's located"
     )
 
+    # Multi-step creation tracking
+    # 0 = not started, 1 = basics done, 2 = features done, 3 = powers done, 4 = details done, 5 = complete
+    # Similar to character creation_status
+
     class Meta:
         verbose_name = "Freehold"
         verbose_name_plural = "Freeholds"

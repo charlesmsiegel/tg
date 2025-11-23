@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags dots %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Create Freehold - Step 2: Features</h1>
+                <p class="tg-card-subtitle mb-0">Allocate feature points (Balefire, Size, Sanctuary, Resources, Passages)</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="mb-4">
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    Step 2 of 4
+                </div>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 24px;">
+                <form method="post" id="featuresForm">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="alert alert-info mt-4" id="featurePointsDisplay">
+                        <strong>Feature Points:</strong> <span id="totalPoints">0</span> points
+                        (<span id="holdingsRequired">0</span> Holdings dots required)
+                        <div class="mt-2">
+                            <small>Each Holdings dot = 3 feature points</small>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-secondary">
+                        <h6><strong>Feature Descriptions:</strong></h6>
+                        <ul class="mb-0">
+                            <li><strong>Balefire:</strong> Heart of the freehold, generates Glamour/dross daily</li>
+                            <li><strong>Size:</strong> Physical area (0=miniscule, 5=countryside/town)</li>
+                            <li><strong>Sanctuary:</strong> Defense rating, grants bonus dice and threshold</li>
+                            <li><strong>Resources:</strong> Mundane or chimerical resources generated</li>
+                            <li><strong>Passages:</strong> Trods/raths (first is free, others cost 1 point each)</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            Next: Powers <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <a href="{% url 'locations:changeling:freehold:list' %}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const balefire = document.querySelector('[name="balefire"]');
+            const size = document.querySelector('[name="size"]');
+            const sanctuary = document.querySelector('[name="sanctuary"]');
+            const resources = document.querySelector('[name="resources"]');
+            const passages = document.querySelector('[name="passages"]');
+
+            function calculatePoints() {
+                const b = parseInt(balefire.value) || 0;
+                const si = parseInt(size.value) || 0;
+                const sa = parseInt(sanctuary.value) || 0;
+                const r = parseInt(resources.value) || 0;
+                const p = parseInt(passages.value) || 1;
+
+                let total = b + si + sa + r;
+                if (p > 1) {
+                    total += (p - 1);
+                }
+
+                const holdings = Math.ceil(total / 3);
+
+                document.getElementById('totalPoints').textContent = total;
+                document.getElementById('holdingsRequired').textContent = holdings;
+            }
+
+            [balefire, size, sanctuary, resources, passages].forEach(field => {
+                field.addEventListener('change', calculatePoints);
+                field.addEventListener('input', calculatePoints);
+            });
+
+            calculatePoints();
+        });
+    </script>
+{% endblock content %}
