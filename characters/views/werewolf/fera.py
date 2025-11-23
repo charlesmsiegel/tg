@@ -26,11 +26,11 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
+    SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from core.views.approved_user_mixin import SpecialUserMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView

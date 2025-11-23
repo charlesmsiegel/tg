@@ -29,12 +29,12 @@ from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
+    SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.models import Language
-from core.views.approved_user_mixin import SpecialUserMixin
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
