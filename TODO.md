@@ -8,11 +8,13 @@ This document consolidates all remaining TODOs across the codebase with context 
 
 ### Python Code TODOs
 
-1. **Create LimitedCharacterForm for owner editing**
-   - **File**: `characters/views/core/character.py:142`
-   - **Context**: Currently, character owners can edit all fields when they should only be able to edit descriptive fields (notes, description, etc.). Need to create a limited form that restricts editing to non-mechanical fields.
-   - **Related**: Part of permissions system - owners should have limited edit access
-   - **Impact**: Security/gameplay integrity
+1. **✅ COMPLETED: Create LimitedCharacterForm for owner editing**
+   - **File**: `characters/views/core/character.py:140` ✅
+   - **Form**: `characters/forms/core/character.py` ✅
+   - **Tests**: `characters/tests/core/test_character_forms_views.py` ✅ (15 tests)
+   - **Context**: Character owners now restricted to editing only descriptive fields (concept, description, public_info, notes, image). Mechanical fields (xp, status, chronicle, etc.) protected from owner editing.
+   - **Impact**: Security/gameplay integrity - RESOLVED
+   - **Completed**: 2025-01-23
 
 2. **Find source for "Slow Healing" merit**
    - **File**: `populate_db/merits_and_flaws_INC.py:14`
@@ -27,10 +29,11 @@ This document consolidates all remaining TODOs across the codebase with context 
 
 **File**: `APPLYING_PERMISSIONS_GUIDE.md`
 
-- [ ] **Create limited forms for owner editing**
-  - Implement forms that restrict owners to editing only descriptive fields
-  - Apply to all character/item/location edit views
-  - Test that mechanical fields are properly protected
+- [x] **Create limited forms for owner editing** ✅
+  - ✅ Character forms: `LimitedCharacterForm` implemented with comprehensive tests
+  - [ ] Item forms: Apply same pattern to item edit views
+  - [ ] Location forms: Apply same pattern to location edit views
+  - ✅ Test that mechanical fields are properly protected (15 tests cover security)
 
 - [ ] **Test all permission scenarios**
   - Test as Owner, Chronicle Member, Storyteller, Stranger
@@ -591,8 +594,8 @@ Future enhancements for the CharacterTemplate system:
 
 | Category | High Priority | Medium Priority | Low Priority |
 |----------|--------------|-----------------|--------------|
-| Code TODOs | 2 items | - | - |
-| Testing | - | 8 items (1 ✅ completed) | 6 items |
+| Code TODOs | 1 items (2 completed ✅) | - | - |
+| Testing | - | 8 items (1 completed ✅) | 6 items |
 | Model Implementation Gaps | - | - | 60+ models |
 | Feature Completeness | - | - | 35+ views |
 | Template Enhancements | - | - | 5 features |
@@ -623,9 +626,10 @@ Future enhancements for the CharacterTemplate system:
    - Run automated tests in staging
    - Conduct user acceptance testing
 
-2. **Code Quality** (High Priority)
-   - Implement `LimitedCharacterForm` for owner editing
-   - Find source for "Slow Healing" merit
+1. **Code Quality** (High Priority)
+   - ✅ ~~Implement `LimitedCharacterForm` for owner editing~~ COMPLETED
+   - Add tribal restrictions for Kinfolk backgrounds
+   - Extend limited form pattern to items and locations
 
 2. **Testing** (Medium Priority)
    - ✅ XP/Freebie Migration Testing - COMPLETED
