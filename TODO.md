@@ -357,32 +357,35 @@ The following views still need `MessageMixin` added for user feedback:
 
 **File**: `characters/docs/template_system.md`
 
-Future enhancements for the CharacterTemplate system:
+**Status**: 4 of 5 features completed ✅
 
-- [ ] **User-created templates (Storyteller-only)**
-  - Allow STs to create custom templates for their chronicles
-  - Restrict template creation to users with ST permissions
-  - Add template management interface
+- [x] **User-created templates (Storyteller-only)** ✅ COMPLETED
+  - STs can create custom templates via `/templates/create/`
+  - Template management interface with filtering and search at `/templates/`
+  - Owner-based permissions (edit/delete own templates only)
+  - **Files**: `core/views/character_template.py`, `core/forms/character_template.py`, `core/templates/core/character_template/*.html`
 
-- [ ] **Template variations by clan/tribe/tradition**
-  - Create specialized templates for each faction
-  - E.g., "Brujah Brawler", "Glass Walker Hacker", "Verbena Herbalist"
-  - Populate with faction-appropriate backgrounds and powers
+- [x] **Template variations by clan/tribe/tradition** ✅ COMPLETED
+  - Added `faction` field to CharacterTemplate model
+  - Created 8 faction-specific templates (Brujah, Tremere, Toreador, Glass Walkers, Red Talons, Verbena, Order of Hermes, Akashic)
+  - **File**: `populate_db/character_templates/faction_templates.py`
 
-- [ ] **Template import/export (JSON)**
-  - Export templates as JSON for sharing
-  - Import community-created templates
-  - Validation on import to prevent malicious data
+- [x] **Template import/export (JSON)** ✅ COMPLETED
+  - Export templates as JSON via "Export JSON" button on detail pages
+  - Import community templates at `/templates/import/`
+  - Validation: 5MB max file size, required field checks
+  - **Views**: `CharacterTemplateExportView`, `CharacterTemplateImportView`
 
 - [ ] **Template voting/ratings**
   - Let users rate templates they've used
   - Display popular templates first
   - Add comments/feedback on templates
 
-- [ ] **NPC quick-creation from templates**
-  - One-click NPC creation from template
-  - Auto-populate NPC fields from template data
-  - Faster ST workflow for creating multiple NPCs
+- [x] **NPC quick-creation from templates** ✅ COMPLETED
+  - One-click NPC creation via "Quick NPC" button on template detail pages
+  - Auto-populates NPC with all template data
+  - Sets NPC flag and auto-approves
+  - **View**: `CharacterTemplateQuickNPCView` at `/templates/<id>/create-npc/`
 
 ### Code Quality & Best Practices
 
@@ -600,7 +603,7 @@ Future enhancements for the CharacterTemplate system:
 | Testing | - | 8 items (1 completed ✅) | 6 items |
 | Model Implementation Gaps | - | - | 60+ models |
 | Feature Completeness | - | - | 35+ views |
-| Template Enhancements | - | - | 5 features |
+| Template Enhancements | - | - | 1 feature (4 completed ✅) |
 | Code Quality & Best Practices | - | - | 20+ items |
 | Deployment | - | 3 items (5 completed ✅) | - |
 
@@ -656,4 +659,4 @@ Future enhancements for the CharacterTemplate system:
 
 6. **Feature Completeness** (Low Priority)
    - Add MessageMixin to remaining views
-   - Implement template system enhancements
+   - Complete remaining template system enhancement (voting/ratings)
