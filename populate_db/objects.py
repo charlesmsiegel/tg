@@ -121,6 +121,7 @@ ObjectType.objects.get_or_create(name="library", type="loc", gameline="mta")
 node = ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")[0]
 ObjectType.objects.get_or_create(name="sector", type="loc", gameline="mta")
 ObjectType.objects.get_or_create(name="horizon_realm", type="loc", gameline="mta")
+ObjectType.objects.get_or_create(name="paradox_realm", type="loc", gameline="mta")
 ObjectType.objects.get_or_create(name="sanctum", type="loc", gameline="mta")[0]
 ObjectType.objects.get_or_create(name="reality_zone", type="loc", gameline="mta")[0]
 

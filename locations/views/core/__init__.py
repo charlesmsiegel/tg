@@ -10,6 +10,7 @@ from locations.models.core.location import LocationModel
 from locations.models.mage.chantry import Chantry
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
+from locations.models.mage.paradox_realm import ParadoxRealm
 from locations.models.mage.reality_zone import RealityZone
 from locations.models.mage.realm import HorizonRealm
 from locations.models.mage.sanctum import Sanctum
@@ -29,6 +30,7 @@ class GenericLocationDetailView(DictView):
         "sector": mage.SectorDetailView,
         "library": mage.LibraryDetailView,
         "horizon_realm": mage.RealmDetailView,
+        "paradox_realm": mage.ParadoxRealmDetailView,
         "caern": werewolf.CaernDetailView,
         "sanctum": mage.SanctumDetailView,
         "chantry": mage.ChantryCreationView,
@@ -47,6 +49,7 @@ class LocationIndexView(View):
         "sector": Sector,
         "library": Library,
         "horizon_realm": HorizonRealm,
+        "paradox_realm": ParadoxRealm,
         "caern": Caern,
         "chantry": Chantry,
         "sanctum": Sanctum,
