@@ -1,6 +1,6 @@
-# Validation System Deployment
+# Deployment Documentation
 
-This directory contains all documentation and tools for deploying the validation system to staging and production environments.
+This directory contains all documentation and tools for deploying major features to staging and production environments.
 
 ## Overview
 
@@ -38,7 +38,26 @@ Follow the complete checklist:
 
 ## Documentation
 
-### Deployment Guides
+### Permissions System Deployment
+
+1. **[permissions_deployment_guide.md](permissions_deployment_guide.md)** - Comprehensive deployment guide
+   - Prerequisites and system requirements
+   - Development, staging, and production deployment
+   - Testing procedures (automated and manual)
+   - Rollback plans
+   - Monitoring and troubleshooting
+
+2. **[permissions_staging_checklist.md](permissions_staging_checklist.md)** - Quick reference checklist
+   - Step-by-step deployment checklist
+   - Manual testing scenarios
+   - Sign-off procedures
+
+3. **[permissions_deployment_summary.md](permissions_deployment_summary.md)** - Executive summary
+   - Deployment status and readiness
+   - Test results
+   - Risk assessment
+
+### Validation System Deployment
 
 1. **[VALIDATION_STAGING_DEPLOYMENT.md](VALIDATION_STAGING_DEPLOYMENT.md)** - Comprehensive staging deployment guide
    - Pre-deployment checklist

@@ -31,10 +31,10 @@ This document consolidates all remaining TODOs across the codebase with context 
 
 - [x] **Create limited forms for owner editing** ✅
   - ✅ Character forms: `LimitedCharacterForm` implemented with comprehensive tests
-  - [ ] Item forms: Apply same pattern to item edit views
-  - [ ] Location forms: Apply same pattern to location edit views
-  - ✅ Test that mechanical fields are properly protected (15 tests cover security)
-**Implementation Details**: See `IMPLEMENTATION_SUMMARY.md`
+  - ✅ Item forms: `LimitedItemEditForm` implemented
+  - ✅ Location forms: `LimitedLocationEditForm` implemented
+  - ✅ Test that mechanical fields are properly protected (30+ tests cover security)
+**Implementation Details**: See `docs/guides/limited_owner_forms.md`
 
 - [x] **Create limited forms for owner editing**
   - ✅ Created `LimitedCharacterEditForm`, `LimitedItemEditForm`, `LimitedLocationEditForm`
@@ -74,7 +74,7 @@ This document consolidates all remaining TODOs across the codebase with context 
 **Test Files Created**:
 - `game/tests_xp_freebie_migration.py` - 29 automated unit tests
 - `docs/testing/xp_freebie_migration_test_report.md` - Comprehensive test guide with 6 manual scenarios
-- `XP_FREEBIE_MIGRATION_TEST_SUMMARY.md` - Executive summary
+- `docs/testing/xp_freebie_migration_test_summary.md` - Executive summary
 
 **Reference**: `docs/guides/view_template_migration.md`
 
@@ -501,7 +501,10 @@ These views don't exist yet and will need MessageMixin when created:
 ### Permissions System Deployment
 
 **Status**: ✅ **READY FOR STAGING** - Development phase complete
-**Documentation**: `DEPLOYMENT_GUIDE.md`, `STAGING_DEPLOYMENT_CHECKLIST.md`, `DEPLOYMENT_SUMMARY.md`
+**Documentation**: See `docs/deployment/` for all deployment guides
+- `docs/deployment/permissions_deployment_guide.md`
+- `docs/deployment/permissions_staging_checklist.md`
+- `docs/deployment/permissions_deployment_summary.md`
 **Branch**: `claude/deploy-permissions-system-01VmQQEaQuGQX8RgsTfnxLY4`
 
 #### Development Phase (COMPLETE) ✅
@@ -565,8 +568,12 @@ These views don't exist yet and will need MessageMixin when created:
 
 ### Validation System Deployment
 
-**Files**:
-- `docs/deployment/` - Complete deployment documentation
+**Status**: ✅ **READY FOR STAGING** - Development phase complete
+**Documentation**: See `docs/deployment/` for all deployment guides
+- `docs/deployment/README.md` - Overview and quick start
+- `docs/deployment/VALIDATION_STAGING_DEPLOYMENT.md` - Comprehensive guide
+- `docs/deployment/VALIDATION_DEPLOYMENT_CHECKLIST.md` - Deployment checklist
+**Tools**:
 - `core/management/commands/validate_data_integrity.py` - Pre-deployment validation
 - `core/management/commands/monitor_validation.py` - Post-deployment monitoring
 
