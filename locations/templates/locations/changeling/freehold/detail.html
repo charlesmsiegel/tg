@@ -1,0 +1,47 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+
+{% block objectname %}
+    <!-- Page Header with Changeling styling -->
+    <div class="tg-card header-card mb-4" data-gameline="ctd">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title ctd_heading">
+                {{ object.name }}
+                {% if object.balefire %}<small><span class="dots colored-dots">{{ object.balefire|dots }}</span></small>{% endif %}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+            <p class="tg-card-subtitle mb-0">
+                <strong>{{ object.get_archetype_display }}</strong>
+                {% if object.aspect %} — {{ object.aspect }}{% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock objectname %}
+
+{% block model_specific %}
+    <div class="row mb-4">
+        {% include "locations/changeling/freehold/display_includes/basics.html" %}
+        {% include "locations/changeling/freehold/display_includes/features.html" %}
+    </div>
+
+    {% if object.powers %}
+        {% include "locations/changeling/freehold/display_includes/powers.html" %}
+    {% endif %}
+
+    {% if object.quirks %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card h-100">
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <h6 class="ctd_heading mb-3">Quirks</h6>
+                        <p style="line-height: 1.6; margin-bottom: 0;">{{ object.quirks|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock model_specific %}

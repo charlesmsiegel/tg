@@ -1,0 +1,105 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">
+                    {% if object %}Edit{% else %}Create{% endif %} Freehold
+                </h1>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 24px;">
+                <form method="post" id="freeholdForm">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    {% if feature_points %}
+                        <div class="alert alert-info mt-3">
+                            <strong>Feature Points:</strong> {{ feature_points }} points
+                            ({{ holdings_required }} Holdings dots required)
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Update{% else %}Create{% endif %} Freehold
+                        </button>
+                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'locations:changeling:freehold:list' %}{% endif %}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="tg-card mt-4">
+            <div class="tg-card-body" style="padding: 20px;">
+                <h6 class="ctd_heading mb-3">Freehold Creation Guide</h6>
+
+                <p><strong>Feature Points:</strong> Each Holdings dot = 3 feature points</p>
+
+                <p><strong>Archetypes:</strong></p>
+                <ul>
+                    <li><strong>Academy:</strong> -2 difficulty on chosen Ability</li>
+                    <li><strong>Hearth:</strong> -2 difficulty on Leadership or Socialize</li>
+                    <li><strong>Homestead:</strong> -2 difficulty on Survival or Animal Ken, produces chimerical goods</li>
+                    <li><strong>Manor:</strong> -2 difficulty on Etiquette</li>
+                    <li><strong>Market:</strong> -2 difficulty on Persuasion or Subterfuge</li>
+                    <li><strong>Repository:</strong> -2 difficulty on Lore</li>
+                    <li><strong>Stronghold:</strong> -2 difficulty on Firearms or Melee</li>
+                    <li><strong>Thorpe:</strong> -2 difficulty on Empathy (multiple balefires)</li>
+                    <li><strong>Workshop:</strong> -2 difficulty on Craft, creates chimerical items</li>
+                </ul>
+
+                <p><strong>Powers:</strong></p>
+                <ul>
+                    <li><strong>Warning Call (•):</strong> Alerts freeholders to intruders</li>
+                    <li><strong>Glamour to Dross (••):</strong> Converts unused Glamour to dross nightly</li>
+                    <li><strong>Resonant Dreams (••):</strong> +2 dice on checks matching freehold's Aspect</li>
+                    <li><strong>Call Forth the Flame (•••):</strong> Produces Covenant Embers</li>
+                    <li><strong>Dual Nature (•••):</strong> Gains benefits from two Archetypes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic form behavior for archetype-specific fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const archetypeField = document.querySelector('[name="archetype"]');
+            const academyAbility = document.querySelector('[name="academy_ability"]').closest('.form-group');
+            const hearthAbility = document.querySelector('[name="hearth_ability"]').closest('.form-group');
+            const powersField = document.querySelector('[name="powers"]');
+            const dualNatureArchetype = document.querySelector('[name="dual_nature_archetype"]').closest('.form-group');
+            const dualNatureAbility = document.querySelector('[name="dual_nature_ability"]').closest('.form-group');
+
+            function updateFieldVisibility() {
+                const selectedArchetype = archetypeField.value;
+                const selectedPowers = Array.from(document.querySelectorAll('[name="powers"]:checked')).map(cb => cb.value);
+
+                // Show/hide archetype-specific fields
+                academyAbility.style.display = selectedArchetype === 'academy' ? 'block' : 'none';
+                hearthAbility.style.display = selectedArchetype === 'hearth' ? 'block' : 'none';
+
+                // Show/hide dual nature fields
+                const hasDualNature = selectedPowers.includes('dual_nature');
+                dualNatureArchetype.style.display = hasDualNature ? 'block' : 'none';
+                dualNatureAbility.style.display = hasDualNature ? 'block' : 'none';
+            }
+
+            archetypeField.addEventListener('change', updateFieldVisibility);
+            if (powersField) {
+                document.querySelectorAll('[name="powers"]').forEach(cb => {
+                    cb.addEventListener('change', updateFieldVisibility);
+                });
+            }
+
+            updateFieldVisibility();
+        });
+    </script>
+{% endblock content %}

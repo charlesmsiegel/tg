@@ -1,1 +1,1 @@
-from . import core, mage, vampire, werewolf, wraith
+from . import changeling, core, mage, vampire, werewolf, wraith

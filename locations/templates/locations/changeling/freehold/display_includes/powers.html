@@ -1,0 +1,48 @@
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 24px;">
+                <h6 class="ctd_heading mb-3">Powers</h6>
+
+                <div class="row">
+                    {% for power in object.powers %}
+                        <div class="col-md-6 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <h6 style="margin-bottom: 8px; color: var(--theme-text-primary);">
+                                    {% if power == "warning_call" %}
+                                        <span class="dots colored-dots">●</span> Warning Call
+                                    {% elif power == "glamour_to_dross" %}
+                                        <span class="dots colored-dots">●●</span> Glamour to Dross
+                                    {% elif power == "resonant_dreams" %}
+                                        <span class="dots colored-dots">●●</span> Resonant Dreams
+                                    {% elif power == "call_forth_flame" %}
+                                        <span class="dots colored-dots">●●●</span> Call Forth the Flame
+                                    {% elif power == "dual_nature" %}
+                                        <span class="dots colored-dots">●●●</span> Dual Nature
+                                    {% else %}
+                                        {{ power|title }}
+                                    {% endif %}
+                                </h6>
+                                <p style="margin-bottom: 0; line-height: 1.6; font-size: 0.9rem;">
+                                    {% if power == "warning_call" %}
+                                        The freehold immediately alerts freeholders to intruders and their location. Rolls Sanctuary rating to penetrate obfuscation effects.
+                                    {% elif power == "glamour_to_dross" %}
+                                        Every evening, unclaimed Glamour converts to dross (stops at 2x balefire rating).
+                                    {% elif power == "resonant_dreams" %}
+                                        Freeholders gain +2 dice on checks that resonate with the freehold's Aspect while within.
+                                    {% elif power == "call_forth_flame" %}
+                                        After nights equal to balefire rating, the freehold produces a Covenant Ember for creating Covenants of Flame.
+                                    {% elif power == "dual_nature" %}
+                                        The freehold draws on two separate Archetypes, gaining benefits from both.
+                                    {% else %}
+                                        Custom power
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

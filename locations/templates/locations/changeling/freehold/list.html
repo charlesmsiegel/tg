@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% load dots %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Freeholds</h1>
+            </div>
+        </div>
+
+        {% if object_list %}
+            <div class="row">
+                {% for freehold in object_list %}
+                    <div class="col-md-6 mb-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <h5 class="tg-card-title">
+                                    <a href="{{ freehold.get_absolute_url }}">{{ freehold.name }}</a>
+                                    {% if freehold.balefire %}<span class="dots colored-dots">{{ freehold.balefire|dots }}</span>{% endif %}
+                                </h5>
+                                <h6 class="tg-card-subtitle mb-2" style="color: var(--theme-text-secondary);">
+                                    {{ freehold.get_archetype_display }}
+                                </h6>
+                                {% if freehold.aspect %}
+                                    <p class="mb-2" style="font-style: italic; color: var(--theme-text-secondary);">
+                                        {{ freehold.aspect|truncatewords:15 }}
+                                    </p>
+                                {% endif %}
+                                {% if freehold.description %}
+                                    <p class="mb-2">{{ freehold.description|truncatewords:25 }}</p>
+                                {% endif %}
+                                <div style="margin-top: 12px;">
+                                    <span class="tg-badge badge-pill">
+                                        Size {{ freehold.size }}
+                                    </span>
+                                    {% if freehold.sanctuary > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Sanctuary {{ freehold.sanctuary }}
+                                        </span>
+                                    {% endif %}
+                                    {% if freehold.powers %}
+                                        <span class="tg-badge badge-pill">
+                                            {{ freehold.powers|length }} Power{% if freehold.powers|length != 1 %}s{% endif %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 40px;">
+                    <p class="mb-0">No freeholds have been created yet.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'locations:changeling:create:freehold' %}" class="btn btn-primary">Create New Freehold</a>
+        </div>
+    </div>
+{% endblock content %}
