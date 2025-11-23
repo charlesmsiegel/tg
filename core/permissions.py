@@ -149,9 +149,9 @@ class PermissionManager:
                     roles.add(Role.GAME_ST)
 
             # Player check - user has a character in same chronicle
-            if hasattr(user, "characters"):
-                if user.characters.filter(chronicle=obj.chronicle).exists():
-                    roles.add(Role.PLAYER)
+            from characters.models.core.character import Character
+            if Character.objects.filter(owner=user, chronicle=obj.chronicle).exists():
+                roles.add(Role.PLAYER)
 
         # Observer check (uses generic relation)
         if hasattr(obj, "observers"):
