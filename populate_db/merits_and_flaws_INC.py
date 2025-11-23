@@ -11,12 +11,6 @@ from populate_db.objects import (
     werewolf,
 )
 
-# TODO: Find Source and Confirm
-mf = MeritFlaw.objects.get_or_create(name="Slow Healing")[0]
-mf.add_ratings([3])
-mf.allowed_types.add(mage)
-mf.allowed_types.add(sorcerer)
-
 # W20
 mf = MeritFlaw.objects.get_or_create(name="Acute Sense (Werewolf)")[0]
 mf.add_ratings([1])
