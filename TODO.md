@@ -327,15 +327,6 @@ Models needing full implementation:
   - Consider: Freehold, Trod, Hollow, Dreamscape
   - Needs: Research source material, define models, implement full stack
 
-### Character Template Enhancements
-
-**Status**: 4 of 5 features completed ✅
-
-- [ ] **Template voting/ratings**
-  - Let users rate templates they've used
-  - Display popular templates first
-  - Add comments/feedback on templates
-
 ---
 
 ## 🔵 Deployment & Environment
