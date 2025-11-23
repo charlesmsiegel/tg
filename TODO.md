@@ -1,113 +1,142 @@
 # TODO List
 
-This document consolidates all remaining TODOs across the codebase with context about what needs to be done.
+This document tracks remaining work across the codebase with context about what needs to be done.
 
 ---
 
-## 🔴 High Priority - Code TODOs
+## 🔴 High Priority
 
-### Python Code TODOs
+### Security
 
-1. **✅ COMPLETED: Create LimitedCharacterForm for owner editing**
-   - **File**: `characters/views/core/character.py:140` ✅
-   - **Form**: `characters/forms/core/character.py` ✅
-   - **Tests**: `characters/tests/core/test_character_forms_views.py` ✅ (15 tests)
-   - **Context**: Character owners now restricted to editing only descriptive fields (concept, description, public_info, notes, image). Mechanical fields (xp, status, chronicle, etc.) protected from owner editing.
-   - **Impact**: Security/gameplay integrity - RESOLVED
-   - **Completed**: 2025-01-23
+1. **Address dependency vulnerabilities**
+   - **Status**: 9 vulnerabilities detected (1 critical, 3 high, 4 moderate, 1 low)
+   - **Action**: Review and update vulnerable dependencies
+   - **Check**: https://github.com/charlesmsiegel/tg/security/dependabot
 
-2. **Find source for "Slow Healing" merit**
+2. **Fix security settings for production**
+   - **File**: `tg/settings.py:27-29`
+   - **Issue**: DEBUG=True, ALLOWED_HOSTS=["*"] in settings
+   - **Action**: Move to environment-based configuration
+   - Set `DEBUG = False` in production
+   - Configure proper `ALLOWED_HOSTS` from environment
+   - Create environment-specific settings files (base.py, development.py, production.py)
+
+3. **Add authentication to views**
+   - **Files**: Multiple views in `game/views.py`
+   - **Issue**: ChronicleDetailView, SceneDetailView, ChronicleScenesDetailView lack `LoginRequiredMixin`
+   - **Action**: Add `LoginRequiredMixin` to all views that require authentication
+
+4. **Implement authorization checks**
+   - **Files**: `game/views.py` throughout
+   - **Issue**: Users can close any scene, post as any character, approve XP without ST status
+   - **Action**: Create permission mixins (e.g., `StorytellerRequiredMixin`)
+   - Add permission checks before allowing actions
+
+5. **Replace `.get()` with `get_object_or_404()`**
+   - **Files**: `game/views.py:27, 76, 87, 121, 134, 250`
+   - **Issue**: Using `.get()` causes 500 errors instead of proper 404 responses
+   - **Action**: Replace all `.get()` calls in views with `get_object_or_404()`
+
+### Code Quality
+
+1. **Find source for "Slow Healing" merit**
    - **File**: `populate_db/merits_and_flaws_INC.py:14`
-   - **Context**: The "Slow Healing" merit (3 pt flaw) for Mage/Sorcerer needs source book verification and page number.
+   - **Issue**: The "Slow Healing" merit (3 pt flaw) for Mage/Sorcerer needs source book verification and page number
    - **Impact**: Documentation completeness
 
 ---
 
-## 🟡 Medium Priority - Testing & Quality
+## 🟡 Medium Priority
 
-### Permissions System Testing
+### Performance
 
-**Status**: ✅ **COMPLETED** (2025-11-23)
+1. **Fix N+1 query problems**
+   - **Files**:
+     - `accounts/models.py:115-121` - st_relations() causes N queries
+     - `game/models.py:196-205` - weekly_characters() queries per scene
+     - `accounts/models.py:163-170` - rotes_to_approve() queries per rote
+   - **Action**: Use `select_related()`, `prefetch_related()`, and proper querysets
 
-- [x] **Create limited forms for owner editing** ✅
-  - ✅ Character forms: `LimitedCharacterForm` implemented with comprehensive tests
-  - ✅ Item forms: `LimitedItemEditForm` implemented
-  - ✅ Location forms: `LimitedLocationEditForm` implemented
-  - ✅ Test that mechanical fields are properly protected (30+ tests cover security)
-**Implementation Details**: See `docs/guides/limited_owner_forms.md`
+2. **Add database indexes**
+   - **File**: `game/models.py:322-328`
+   - **Issue**: Post model lacks indexes on frequently queried fields
+   - **Action**: Add `db_index=True` to datetime_created and other frequently filtered fields
+   - Create composite indexes for common query patterns
 
-- [x] **Create limited forms for owner editing**
-  - ✅ Created `LimitedCharacterEditForm`, `LimitedItemEditForm`, `LimitedLocationEditForm`
-  - ✅ Applied to all character/item/location edit views
-  - ✅ Owners restricted to editing: notes, description, public_info, image, history, goals
-  - ✅ Mechanical fields protected (attributes, abilities, backgrounds, stats, etc.)
-  - ✅ Status-based restrictions enforced (submitted, deceased, retired)
+### Code Architecture
 
-- [x] **Test all permission scenarios**
-  - ✅ Created comprehensive test suite: `core/tests/test_permissions_comprehensive.py`
-  - ✅ Tested as Owner, Chronicle Member (Player), Storyteller (Head ST & Game ST), Stranger
-  - ✅ Verified visibility tiers (FULL, PARTIAL, NONE)
-  - ✅ Ensured 404s returned for unauthorized access (not 403, prevents information leakage)
+1. **Move business logic out of forms**
+   - **File**: `accounts/forms.py:89-96`
+   - **Issue**: SceneXP.save() contains business logic
+   - **Action**: Move XP award logic to model methods
+   - Keep forms focused on data validation
 
-- [x] **Update corresponding tests**
-  - ✅ Added 30+ unit tests for permission checks
-  - ✅ Added integration tests for view access
-  - ✅ Tested permission edge cases (status transitions, form field restrictions)
-  - ✅ Verified form-based security (owners cannot edit mechanical fields via POST)
+2. **Address fat models with complex inheritance**
+   - **Files**: `characters/models/core/`
+   - **Issue**: Human class has 7+ parent classes
+   - **Action**: Consider composition over inheritance
+   - Evaluate proxy models for polymorphic behavior
 
-### Validation System Testing
+3. **Move signal registration to apps.py**
+   - **File**: `accounts/models.py:264-268`
+   - **Issue**: Signal registered in models.py
+   - **Action**: Move to `accounts/apps.py` ready() method
+   - Create separate `accounts/signals.py` module
 
-**File**: `VALIDATION_IMPLEMENTATION_SUMMARY.md`
+### Model & Data Validation
 
-- [x] **Add integration tests for transactions** ✅ COMPLETED
-  - **Implementation**: `characters/tests/core/test_transaction_integration.py`
-  - Test `spend_xp()` atomicity with concurrent requests ✅
-  - Test `approve_xp_spend()` rollback on failure ✅
-  - Test `award_xp()` all-or-nothing behavior ✅
-  - Verify race condition prevention with `select_for_update()` ✅
-  - **Note**: Tests use pytest. Run with: `pytest characters/tests/core/test_transaction_integration.py -v`
+1. **Add model validation**
+   - **Files**: Most models across all apps
+   - **Issue**: Most models lack `clean()` methods
+   - **Action**: Add validation in `clean()` for data integrity
+   - Call `full_clean()` in `save()` methods
 
-### XP/Freebie Migration Testing
+2. **Fix class name typo**
+   - **File**: `accounts/forms.py:24`
+   - **Issue**: `CustomUSerCreationForm` should be `CustomUserCreationForm`
+   - **Action**: Update class name and all references
 
-**Status**: ✅ **COMPLETED**
+### Testing
 
-**Test Files Created**:
-- `game/tests_xp_freebie_migration.py` - 29 automated unit tests
-- `docs/testing/xp_freebie_migration_test_report.md` - Comprehensive test guide with 6 manual scenarios
-- `docs/testing/xp_freebie_migration_test_summary.md` - Executive summary
+1. **Improve test coverage**
+   - **Current**: Only `accounts/tests.py` has substantial tests
+   - **Goal**: 80%+ coverage across all apps
+   - **Action**: Add comprehensive test suite using pytest-django
+   - Test all views, forms, and model methods
 
-**Reference**: `docs/guides/view_template_migration.md`
+2. **Standardize CBV patterns**
+   - **File**: `game/views.py`
+   - **Issue**: Views inherit from View but don't follow CBV patterns
+   - **Action**: Use proper Django generic views (DetailView, ListView, etc.)
+   - Follow standard `get_context_data()` pattern
 
-Testing checklist completed:
-- [x] Display of XP/freebie history works correctly
-  - 4 automated tests + Manual Scenario 6 (Template Display)
-- [x] Total spent calculations are accurate
-  - 4 automated tests + Manual Scenario 3 (Dual-System Totals)
-- [x] New requests are created properly
-  - 2 automated tests + Manual Scenarios 1 & 4
-- [x] Approval workflow functions (if applicable)
-  - 4 automated tests + Manual Scenario 2 (Approval Workflow)
-- [x] Both JSONField and model data display during transition
-  - 4 automated tests (TestDualSystemSupport class)
-- [x] No regressions in existing functionality
-  - 6 automated tests (TestBackwardCompatibility + edge cases)
+### Development Tools
 
-**Test Coverage**: 29 automated tests covering XPSpendingRequest, FreebieSpendingRecord, dual-system support, approval workflows, database indexes, edge cases, and backward compatibility
+1. **Add Django Debug Toolbar**
+   - Configure in development settings
+   - Helps identify N+1 queries and performance issues
 
-**Next Steps**:
-1. Run tests in Django environment: `pytest game/tests_xp_freebie_migration.py -v`
-2. Perform manual testing using scenarios in test report
-3. Update views/templates to use new model system (see migration guide)
+2. **Configure logging**
+   - Add LOGGING configuration to settings
+   - Set up file and console handlers
+   - Configure per-app log levels
+
+3. **Add caching configuration**
+   - Configure Redis or Memcached for caching
+   - Use `@cache_page` decorator for appropriate views
+   - Cache expensive querysets
+
+4. **Centralize hardcoded choices**
+   - **Files**: `game/models.py:18-35`, `accounts/models.py:28-48`
+   - **Issue**: Choices duplicated across files
+   - **Action**: Create `core/constants.py` for shared choices
+   - Use constants throughout codebase
 
 ---
 
 ## 🟢 Low Priority - Feature Completeness
 
-### Model Implementation Gaps
-
-**Source**: Extracted from app MODELS.md files (accounts, characters, game, items, locations)
-
-#### Characters App - Demon Gameline (CRITICAL GAP)
+### Demon Gameline Implementation (CRITICAL GAP)
 
 **Status**: 11 models defined but NO admin registration, views, URLs, or templates implemented
 
@@ -158,17 +187,33 @@ Models needing full implementation:
 - [ ] **ApocalypticFormTrait** - Apocalyptic form special ability
   - Verify if admin/views needed
 
-#### Game App - Journal System
+### Wraith Locations (CRITICAL GAP)
 
-- [ ] **Journal** - Character journal (NOT in admin)
+**Status**: 2 models defined but NO admin registration, views, URLs, or templates implemented
+
+- [ ] **Haunt** - Haunted location in the living world
+  - File: `locations/models/wraith/haunt.py`
+  - Status: ❌ NO VIEWS/ADMIN
+  - Needs: Full implementation (admin, views, forms, templates, URLs)
+  - Fields: Fetter strength, manifestation difficulty
+
+- [ ] **Necropolis** - Wraith city in the Shadowlands
+  - File: `locations/models/wraith/necropolis.py`
+  - Status: ❌ NO VIEWS/ADMIN
+  - Needs: Full implementation (admin, views, forms, templates, URLs)
+  - Fields: Hierarchy control, guild presence
+
+### Game App Models - Limited Implementations
+
+- [ ] **Journal** - Character journal
   - File: `game/models.py`
+  - Status: NOT in admin
   - Needs: Admin registration, improved management views
 
-- [ ] **JournalEntry** - Individual journal entry (NOT in admin)
+- [ ] **JournalEntry** - Individual journal entry
   - File: `game/models.py`
+  - Status: NOT in admin
   - Needs: Admin registration, improved creation/edit views, templates
-
-#### Game App - Limited Implementations
 
 - [ ] **Week** - Weekly time period
   - Status: Admin ✅, Views ⚠️, Templates ⚠️
@@ -206,8 +251,9 @@ Models needing full implementation:
   - Status: Admin ✅, Views ⚠️ (configuration model)
   - Needs: Verify views are sufficient for configuration
 
-#### Items App - Vampire Items (2 models)
+### Items - Partial Implementations
 
+**Vampire Items (2 models)**:
 - [ ] **Artifact** (Vampire) - Vampire artifact
   - File: `items/models/vampire/artifact.py`
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
@@ -218,8 +264,7 @@ Models needing full implementation:
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
   - Needs: Complete CRUD implementation
 
-#### Items App - Wraith Items (2 models)
-
+**Wraith Items (2 models)**:
 - [ ] **WraithRelic** - Wraith relic from life
   - File: `items/models/wraith/relic.py`
   - Status: Admin ✅, Views ⚠️, Templates ⚠️
@@ -230,38 +275,21 @@ Models needing full implementation:
   - Status: Admin ✅, Views ⚠️, Templates ⚠️
   - Needs: Complete views and templates
 
-#### Items App - Changeling Items (1 model)
-
+**Changeling Items (1 model)**:
 - [ ] **Treasure** - Changeling treasure
   - File: `items/models/changeling/treasure.py`
   - Status: Admin ✅, Views ⚠️, Templates ⚠️
   - Needs: Complete views and templates
 
-#### Items App - Demon Items (1 model)
-
+**Demon Items (1 model)**:
 - [ ] **Relic** (Demon) - Demon relic
   - File: `items/models/demon/relic.py`
   - Status: Admin ✅, Views ⚠️, Templates ⚠️
   - Needs: Complete views and templates
 
-#### Locations App - Wraith Locations (CRITICAL GAP)
+### Locations - Partial Implementations
 
-**Status**: 2 models defined but NO admin registration, views, URLs, or templates implemented
-
-- [ ] **Haunt** - Haunted location in the living world
-  - File: `locations/models/wraith/haunt.py`
-  - Status: ❌ NO VIEWS/ADMIN
-  - Needs: Full implementation (admin, views, forms, templates, URLs)
-  - Fields: Fetter strength, manifestation difficulty
-
-- [ ] **Necropolis** - Wraith city in the Shadowlands
-  - File: `locations/models/wraith/necropolis.py`
-  - Status: ❌ NO VIEWS/ADMIN
-  - Needs: Full implementation (admin, views, forms, templates, URLs)
-  - Fields: Hierarchy control, guild presence
-
-#### Locations App - Vampire Locations (4 models)
-
+**Vampire Locations (4 models)**:
 - [ ] **Domain** - Territory controlled by a vampire
   - File: `locations/models/vampire/domain.py`
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
@@ -282,8 +310,7 @@ Models needing full implementation:
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
   - Needs: Complete CRUD implementation
 
-#### Locations App - Demon Locations (2 models)
-
+**Demon Locations (2 models)**:
 - [ ] **Bastion** - Fortified stronghold of the Earthbound
   - File: `locations/models/demon/bastion.py`
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
@@ -294,205 +321,20 @@ Models needing full implementation:
   - Status: Admin ⚠️, Views ⚠️, Templates ⚠️
   - Needs: Complete CRUD implementation
 
-#### Locations App - Changeling Locations
-
+**Changeling Locations**:
 - [ ] **Changeling location models** - NOT STARTED
   - No location models exist for Changeling gameline
   - Consider: Freehold, Trod, Hollow, Dreamscape
   - Needs: Research source material, define models, implement full stack
 
-### Django Messages Framework - Implementation Status
-
-**File**: `MESSAGING_IMPLEMENTATION.md`
-
-**Status**: Core implementation complete. All existing views with CBV create/update patterns now have MessageMixin.
-
-#### Completed ✅
-- [x] **All MessageMixin imports consolidated** - Updated 87 files to use `core.mixins` instead of `core.views.message_mixin`
-- [x] **Base Human views** - `characters/views/core/human.py` - HumanCreateView, HumanUpdateView
-- [x] **Mage locations** - Chantry, Node, Sanctum, Library (Create/Update views)
-- [x] **Werewolf locations** - Caern (Create/Update views)
-- [x] **Wraith locations** - Haunt (Create/Update views)
-- [x] **Werewolf items** - Talen, Fetish (already had MessageMixin, imports updated)
-- [x] **Core reference data** - Book, HouseRule, Language, NewsItem (already had MessageMixin, imports updated)
-- [x] **Game-specific reference data** - All existing views for Mage, Werewolf, Vampire, Changeling, Wraith, Demon reference data
-
-#### Cannot Implement (Architecture Limitation)
-- **NPC views** (`characters/views/core/npc.py`) - Uses custom View classes with manual `messages.success()` calls. Cannot use MessageMixin with non-CBV views. Current implementation is correct.
-
-#### Blocked by Missing Implementation
-These views don't exist yet and will need MessageMixin when created:
-
-**Vampire Items:**
-- [ ] Haven components, Domain views - No views exist yet
-- [ ] Artifact, Bloodstone views - No views exist yet
-
-**Changeling Items:**
-- [ ] Treasure views - Admin exists, no views yet
-- [ ] Token views - Not implemented
-
-**Wraith Items:**
-- [ ] WraithRelic views - Admin exists, no views yet
-- [ ] Artifact views - Admin exists, no views yet
-
-**Demon Items:**
-- [ ] Relic views - Admin exists, no views yet
-
-**Vampire Locations:**
-- [ ] Haven, Domain, Elysium, Rack views - No views exist yet
-
-**Changeling Locations:**
-- [ ] Freehold views - No models/views exist yet
-
-**Demon Locations:**
-- [ ] Bastion, Reliquary views - No views exist yet
-
-### Character Template System Enhancements
-
-**File**: `characters/docs/template_system.md`
+### Character Template Enhancements
 
 **Status**: 4 of 5 features completed ✅
-
-- [x] **User-created templates (Storyteller-only)** ✅ COMPLETED
-  - STs can create custom templates via `/templates/create/`
-  - Template management interface with filtering and search at `/templates/`
-  - Owner-based permissions (edit/delete own templates only)
-  - **Files**: `core/views/character_template.py`, `core/forms/character_template.py`, `core/templates/core/character_template/*.html`
-
-- [x] **Template variations by clan/tribe/tradition** ✅ COMPLETED
-  - Added `faction` field to CharacterTemplate model
-  - Created 8 faction-specific templates (Brujah, Tremere, Toreador, Glass Walkers, Red Talons, Verbena, Order of Hermes, Akashic)
-  - **File**: `populate_db/character_templates/faction_templates.py`
-
-- [x] **Template import/export (JSON)** ✅ COMPLETED
-  - Export templates as JSON via "Export JSON" button on detail pages
-  - Import community templates at `/templates/import/`
-  - Validation: 5MB max file size, required field checks
-  - **Views**: `CharacterTemplateExportView`, `CharacterTemplateImportView`
 
 - [ ] **Template voting/ratings**
   - Let users rate templates they've used
   - Display popular templates first
   - Add comments/feedback on templates
-
-- [x] **NPC quick-creation from templates** ✅ COMPLETED
-  - One-click NPC creation via "Quick NPC" button on template detail pages
-  - Auto-populates NPC with all template data
-  - Sets NPC flag and auto-approves
-  - **View**: `CharacterTemplateQuickNPCView` at `/templates/<id>/create-npc/`
-
-### Code Quality & Best Practices
-
-**Source**: Consolidated from best practice violations analysis
-
-#### Critical Security Issues
-- [ ] **Fix security settings in production**
-  - `tg/settings.py:27-29` - Move to environment-based configuration
-  - Set `DEBUG = False` in production
-  - Configure proper `ALLOWED_HOSTS` instead of `["*"]`
-  - Create environment-specific settings files (base.py, development.py, production.py)
-
-- [ ] **Add authentication to views**
-  - Multiple views lack `LoginRequiredMixin` or authentication checks
-  - `game/views.py` - ChronicleDetailView, SceneDetailView, ChronicleScenesDetailView
-  - Add `LoginRequiredMixin` to all views that require authentication
-
-- [ ] **Implement authorization checks**
-  - `game/views.py:113-119` and throughout - No permission validation
-  - Users can close any scene, post as any character, approve XP without ST status
-  - Create permission mixins (e.g., `StorytellerRequiredMixin`)
-  - Add permission checks before allowing actions
-
-- [ ] **Replace `.get()` with `get_object_or_404()`**
-  - `game/views.py:27, 76, 87, 121, 134, 250` - Using `.get()` causes 500 errors
-  - Replace with `get_object_or_404()` for proper 404 responses
-
-#### Performance Issues
-- [ ] **Fix N+1 query problems**
-  - `accounts/models.py:115-121` - st_relations() causes N queries
-  - `game/models.py:196-205` - weekly_characters() queries per scene
-  - `accounts/models.py:163-170` - rotes_to_approve() queries per rote
-  - Use `select_related()`, `prefetch_related()`, and proper querysets
-
-- [ ] **Add database indexes**
-  - `game/models.py:322-328` - Post model lacks indexes on frequently queried fields
-  - Add `db_index=True` to datetime_created and other frequently filtered fields
-  - Create composite indexes for common query patterns
-
-#### Code Architecture
-- [ ] **Move business logic out of forms**
-  - `accounts/forms.py:89-96` - SceneXP.save() contains business logic
-  - Move XP award logic to model methods
-  - Keep forms focused on data validation
-
-- [ ] **Address fat models with complex inheritance**
-  - `characters/models/core/` - Human class has 7+ parent classes
-  - Consider composition over inheritance
-  - Evaluate proxy models for polymorphic behavior
-
-- [ ] **Move signal registration to apps.py**
-  - `accounts/models.py:264-268` - Signal registered in models.py
-  - Move to `accounts/apps.py` ready() method
-  - Create separate `accounts/signals.py` module
-
-#### Model & Data Validation
-- [ ] **Add model validation**
-  - Most models lack `clean()` methods
-  - Add validation in `clean()` for data integrity
-  - Call `full_clean()` in `save()` methods
-
-- [ ] **Fix class name typo**
-  - `accounts/forms.py:24` - `CustomUSerCreationForm` should be `CustomUserCreationForm`
-  - Update all references
-
-#### Testing & Code Quality
-- [ ] **Improve test coverage**
-  - Only `accounts/tests.py` has actual tests
-  - Add comprehensive test suite using pytest-django
-  - Test all views, forms, and model methods
-  - Aim for 80%+ coverage
-
-- [ ] **Standardize CBV patterns**
-  - `game/views.py` - Views inherit from View but don't follow CBV patterns
-  - Use proper Django generic views (DetailView, ListView, etc.)
-  - Follow standard `get_context_data()` pattern
-
-- [ ] **Centralize hardcoded choices**
-  - `game/models.py:18-35`, `accounts/models.py:28-48` - Choices duplicated
-  - Create `core/constants.py` for shared choices
-  - Use constants throughout codebase
-
-#### Development Tools
-- [ ] **Add Django Debug Toolbar**
-  - Configure in development settings
-  - Helps identify N+1 queries and performance issues
-
-- [ ] **Configure logging**
-  - Add LOGGING configuration to settings
-  - Set up file and console handlers
-  - Configure per-app log levels
-
-- [ ] **Add caching configuration**
-  - Configure Redis or Memcached for caching
-  - Use `@cache_page` decorator for appropriate views
-  - Cache expensive querysets
-
-#### Long-term Improvements
-- [ ] **Consider custom User model**
-  - Currently using Profile extension of Django User
-  - Document trade-offs of current approach
-  - For new projects, AbstractUser is preferred
-
-- [ ] **Add migration best practices**
-  - Create data migrations for schema changes
-  - Periodically squash old migrations
-  - Test migrations in CI/CD pipeline
-
-- [ ] **Improve code style consistency**
-  - `accounts/models.py:116` - `str` variable shadows built-in
-  - Add docstrings to complex methods
-  - Use black/ruff for formatting
-  - Consider mypy for type checking
 
 ---
 
@@ -500,49 +342,9 @@ These views don't exist yet and will need MessageMixin when created:
 
 ### Permissions System Deployment
 
-**Status**: ✅ **READY FOR STAGING** - Development phase complete
-**Documentation**: See `docs/deployment/` for all deployment guides
-- `docs/deployment/permissions_deployment_guide.md`
-- `docs/deployment/permissions_staging_checklist.md`
-- `docs/deployment/permissions_deployment_summary.md`
+**Status**: ✅ **READY FOR STAGING** - Development complete
+**Documentation**: `docs/deployment/` - All deployment guides
 **Branch**: `claude/deploy-permissions-system-01VmQQEaQuGQX8RgsTfnxLY4`
-
-#### Development Phase (COMPLETE) ✅
-
-- [x] **Create and activate virtual environment**
-  - ✅ Set up Python 3.11 environment
-  - ✅ Dependencies isolated and installed
-
-- [x] **Install dependencies**
-  - ✅ All core packages installed (Django 5.1.7, django-polymorphic, etc.)
-  - ✅ All packages verified working
-
-- [x] **Create database migrations**
-  - ✅ Migrations created for core app (Observer model)
-  - ✅ Migrations applied successfully to all apps
-  - ✅ No migration conflicts
-
-- [x] **Fix critical bugs**
-  - ✅ Fixed player role detection in `core/permissions.py`
-  - ✅ Players can now view other players' characters in same chronicle
-
-- [x] **Create comprehensive test script**
-  - ✅ `test_permissions_deployment.py` created
-  - ✅ Tests all 7 user roles (Owner, Head ST, Game ST, Player, Observer, Stranger, Admin)
-  - ✅ 37 test scenarios validated
-  - ✅ **100% pass rate achieved** (37/37 tests passing)
-
-- [x] **Create deployment documentation**
-  - ✅ `DEPLOYMENT_GUIDE.md` - Comprehensive 600+ line guide
-  - ✅ `STAGING_DEPLOYMENT_CHECKLIST.md` - Quick reference checklist
-  - ✅ `DEPLOYMENT_SUMMARY.md` - Executive summary and status
-  - ✅ Includes rollback procedures and troubleshooting
-
-- [x] **Test with different user roles**
-  - ✅ Automated testing with Owner, Chronicle Member, ST, Stranger accounts
-  - ✅ Visibility tiers verified (FULL, PARTIAL, NONE)
-  - ✅ 404s returned correctly for unauthorized access
-  - ✅ All permission types validated (VIEW, EDIT, SPEND_XP, etc.)
 
 #### Staging Phase (PENDING)
 
@@ -550,7 +352,7 @@ These views don't exist yet and will need MessageMixin when created:
   - Deploy permissions system to staging environment
   - Run `python test_permissions_deployment.py` (expect 37/37 passing)
   - Performance testing under load
-  - Follow `STAGING_DEPLOYMENT_CHECKLIST.md`
+  - Follow `docs/deployment/permissions_staging_checklist.md`
 
 - [ ] **User acceptance testing**
   - Get feedback from real users in staging
@@ -564,25 +366,17 @@ These views don't exist yet and will need MessageMixin when created:
   - Final deployment of permissions system
   - Monitor error logs closely for first 24 hours
   - Be ready to rollback if issues arise
-  - Follow production procedures in `DEPLOYMENT_GUIDE.md`
+  - Follow production procedures in deployment guide
 
 ### Validation System Deployment
 
-**Status**: ✅ **READY FOR STAGING** - Development phase complete
-**Documentation**: See `docs/deployment/` for all deployment guides
-- `docs/deployment/README.md` - Overview and quick start
-- `docs/deployment/VALIDATION_STAGING_DEPLOYMENT.md` - Comprehensive guide
-- `docs/deployment/VALIDATION_DEPLOYMENT_CHECKLIST.md` - Deployment checklist
+**Status**: ✅ **READY FOR STAGING** - Development complete
+**Documentation**: `docs/deployment/` - All deployment guides
 **Tools**:
-- `core/management/commands/validate_data_integrity.py` - Pre-deployment validation
-- `core/management/commands/monitor_validation.py` - Post-deployment monitoring
+- `core/management/commands/validate_data_integrity.py`
+- `core/management/commands/monitor_validation.py`
 
-- [x] **Create deployment tools and documentation**
-  - Created `validate_data_integrity.py` command for pre-deployment data validation
-  - Created `monitor_validation.py` command for health monitoring
-  - Created comprehensive deployment guides (staging and production)
-  - Created deployment checklist with sign-off procedures
-  - All tools committed to branch `claude/deploy-validation-staging-013V3YCrnPRoKSA3SJz5Tvnq`
+#### Staging Phase (PENDING)
 
 - [ ] **Deploy to staging**
   - Run `python manage.py validate_data_integrity --fix` to prepare data
@@ -598,6 +392,8 @@ These views don't exist yet and will need MessageMixin when created:
   - Monitor for transaction rollbacks
   - Track performance impact (< 10% degradation target)
   - Collect user feedback from STs and players
+
+#### Production Phase (PENDING)
 
 - [ ] **Deploy to production**
   - Complete staging sign-off (1 week soak period)
@@ -616,63 +412,31 @@ These views don't exist yet and will need MessageMixin when created:
 
 ---
 
-## 📊 Priority Summary
-
-| Category | High Priority | Medium Priority | Low Priority |
-|----------|--------------|-----------------|--------------|
-| Code TODOs | 1 items (2 completed ✅) | - | - |
-| Testing | - | 6 items (3 completed ✅) | 6 items |
-| Model Implementation Gaps | - | - | 60+ models |
-| Feature Completeness | - | - | 35+ views |
-| Template Enhancements | - | - | 1 feature (4 completed ✅) |
-| MessageMixin Implementation | ✅ **Complete** | - | 8 blocked items |
-| Code Quality & Best Practices | - | - | 20+ items |
-| Deployment | - | 3 items (5 completed ✅) | - |
-
-**Testing Progress**:
-- ✅ XP/Freebie Migration Testing - COMPLETED (29 automated tests + 6 manual scenarios)
-- ⚠️ Permissions System Testing - Pending
-- ⚠️ Validation System Integration Tests - Pending
-
-**Model Implementation Gap Breakdown:**
-- **CRITICAL**: Demon characters (12 models) - No views/admin
-- **CRITICAL**: Wraith locations (2 models) - No views/admin
-- **Partial**: Vampire items (2 models), Wraith items (2 models), Changeling items (1 model), Demon items (1 model)
-- **Partial**: Vampire locations (4 models), Demon locations (2 models)
-- **Partial**: Game app models (10 models with limited views)
-- **Not Started**: Changeling locations (no models exist)
-
----
-
 ## 🎯 Recommended Next Steps
 
-1. **Permissions System - Staging Deployment** (High Priority) 🔥
-   - ✅ **Development Complete** - All tests passing (37/37)
-   - **NEXT**: Deploy to staging environment
-   - Follow `STAGING_DEPLOYMENT_CHECKLIST.md`
+1. **Security Issues** (High Priority) 🔥
+   - Address dependency vulnerabilities
+   - Fix production security settings
+   - Add authentication to unprotected views
+   - Implement proper authorization checks
+
+2. **Permissions System - Staging Deployment** (High Priority) 🔥
+   - Development complete - All tests passing (37/37)
+   - Deploy to staging environment
    - Run automated tests in staging
    - Conduct user acceptance testing
 
-1. **Code Quality** (High Priority)
-   - ✅ ~~Implement `LimitedCharacterForm` for owner editing~~ ✅ **COMPLETED**
-   - Add tribal restrictions for Kinfolk backgrounds
-   - Extend limited form pattern to items and locations
+3. **Validation System - Staging Deployment** (High Priority) 🔥
+   - Development complete - All tests passing
+   - Deploy to staging environment
+   - Monitor for validation errors
+   - Track performance impact
 
-2. **Testing** (Medium Priority)
-   - ✅ XP/Freebie Migration Testing - COMPLETED
-   - ✅ Add integration tests for atomic transactions (COMPLETED)
-   - Test all permission scenarios
-   - Update test coverage
-3. **Testing** (Medium Priority)
-   - ✅ All permission scenarios tested (37/37 passing)
-   - Add integration tests for atomic transactions
-   - ~~Test all permission scenarios~~ ✅ **COMPLETED**
-   - ~~Update test coverage~~ ✅ **COMPLETED** (permissions system fully tested)
-
-4. **Deployment - After Staging Success** (Medium Priority)
-   - Deploy permissions system to production
-   - Deploy validation systems
-   - Monitor for issues
+4. **Code Quality** (Medium Priority)
+   - Fix N+1 query problems
+   - Replace `.get()` with `get_object_or_404()`
+   - Add model validation
+   - Improve test coverage
 
 5. **Model Implementation Gaps** (Low Priority - but large scope)
    - **Priority 1**: Complete Demon character implementation (12 models)
@@ -680,7 +444,27 @@ These views don't exist yet and will need MessageMixin when created:
    - **Priority 3**: Complete partial implementations (Vampire/Wraith/Changeling/Demon items and locations)
    - **Priority 4**: Enhance Game app models with better views/templates
 
-6. **Feature Completeness** (Low Priority)
-   - ✅ ~~Add MessageMixin to remaining views~~ - **COMPLETE**
-   - Implement template system enhancements
-   - Add MessageMixin to new views as they are created
+---
+
+## 📚 Long-term Improvements
+
+- [ ] **Consider custom User model**
+  - Currently using Profile extension of Django User
+  - Document trade-offs of current approach
+  - For new projects, AbstractUser is preferred
+
+- [ ] **Add migration best practices**
+  - Create data migrations for schema changes
+  - Periodically squash old migrations
+  - Test migrations in CI/CD pipeline
+
+- [ ] **Improve code style consistency**
+  - `accounts/models.py:116` - `str` variable shadows built-in
+  - Add docstrings to complex methods
+  - Use black/ruff for formatting
+  - Consider mypy for type checking
+
+---
+
+**Last Updated**: 2025-11-23
+**Version**: 3.0
