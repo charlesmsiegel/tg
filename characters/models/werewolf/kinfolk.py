@@ -102,7 +102,7 @@ class Kinfolk(WtAHuman):
             if background in ["pure_breed", "mentor"]:
                 return False
         if self.tribe.name == "Red Talons":
-            if background == "resources":
+            if background in ["resources", "allies", "contacts"]:
                 return False
         if self.tribe.name == "Shadow Lords":
             if background == "mentor":
