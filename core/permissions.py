@@ -130,6 +130,9 @@ class PermissionManager:
             roles.add(Role.OWNER)
         elif hasattr(obj, "user") and obj.user == user:
             roles.add(Role.OWNER)
+        elif hasattr(obj, "owned_by") and obj.owned_by and hasattr(obj.owned_by, "owner") and obj.owned_by.owner == user:
+            # For locations/items owned through characters
+            roles.add(Role.OWNER)
 
         # Chronicle Head ST check
         if hasattr(obj, "chronicle") and obj.chronicle:

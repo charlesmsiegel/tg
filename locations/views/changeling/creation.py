@@ -4,7 +4,7 @@ Follows the pattern from character creation (DictView).
 """
 from typing import Any
 
-from core.mixins import EditPermissionMixin
+from core.mixins import SpendFreebiesPermissionMixin
 from core.views.generic import DictView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -31,8 +31,8 @@ class FreeholdBasicsView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # Set owner if not set
-        if not form.instance.owned_by and self.request.user.profile.characters.exists():
-            form.instance.owned_by = self.request.user.profile.characters.first()
+        if not form.instance.owned_by and self.request.user.profile.my_characters().exists():
+            form.instance.owned_by = self.request.user.profile.my_characters().first()
 
         # Set initial creation status
         form.instance.creation_status = 1
@@ -44,7 +44,7 @@ class FreeholdBasicsView(LoginRequiredMixin, CreateView):
         return self.object.get_update_url()
 
 
-class FreeholdFeaturesView(EditPermissionMixin, UpdateView):
+class FreeholdFeaturesView(SpendFreebiesPermissionMixin, UpdateView):
     """
     Step 2: Feature allocation (Balefire, Size, Sanctuary, Resources, Passages).
     Requires creation_status = 1.
@@ -77,7 +77,7 @@ class FreeholdFeaturesView(EditPermissionMixin, UpdateView):
         return self.object.get_update_url()
 
 
-class FreeholdPowersView(EditPermissionMixin, UpdateView):
+class FreeholdPowersView(SpendFreebiesPermissionMixin, UpdateView):
     """
     Step 3: Powers selection.
     Requires creation_status = 2.
@@ -106,7 +106,7 @@ class FreeholdPowersView(EditPermissionMixin, UpdateView):
         return self.object.get_update_url()
 
 
-class FreeholdDetailsView(EditPermissionMixin, UpdateView):
+class FreeholdDetailsView(SpendFreebiesPermissionMixin, UpdateView):
     """
     Step 4: Final details and descriptions.
     Requires creation_status = 3.
