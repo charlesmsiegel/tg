@@ -166,10 +166,6 @@ Models needing full implementation:
   - File: `characters/models/demon/thrall.py`
   - Needs: Admin, creation/management views, templates
 
-- [ ] **Thorn** - Demon weakness
-  - File: `characters/models/demon/thorn.py`
-  - Needs: Admin, reference data views, populate script
-
 - [ ] **DemonFaction** - Demon faction
   - File: `characters/models/demon/faction.py`
   - Needs: Admin, reference data views, populate script
@@ -202,6 +198,10 @@ Models needing full implementation:
   - Status: ❌ NO VIEWS/ADMIN
   - Needs: Full implementation (admin, views, forms, templates, URLs)
   - Fields: Hierarchy control, guild presence
+
+- [ ] **Thorn** - Demon weakness
+  - File: `characters/models/demon/thorn.py`
+  - Needs: Admin, reference data views, populate script
 
 ### Game App Models - Limited Implementations
 
