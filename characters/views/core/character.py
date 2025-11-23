@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.forms.core import LimitedCharacterForm
+from characters.forms.core.limited_edit import LimitedCharacterEditForm
 from characters.models.core import Character
 from core.mixins import (
     ApprovedUserContextMixin,
@@ -126,7 +127,8 @@ class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateV
     def get_form_class(self):
         """
         Return different form based on user permissions.
-        Owners get limited fields, STs get full access.
+        Owners get limited fields (notes, description, etc.) via LimitedCharacterEditForm.
+        STs and admins get full access to all fields via the default form.
         """
         # Check if user has full edit permission
         has_full_edit = PermissionManager.user_has_permission(
@@ -134,8 +136,8 @@ class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateV
         )
 
         if has_full_edit:
-            # STs and admins get all fields
+            # STs and admins get all fields (ModelForm with fields="__all__")
             return super().get_form_class()
         else:
-            # Owners get limited fields (descriptive only)
-            return LimitedCharacterForm
+            # Owners get limited fields (notes, description, public_info, image)
+            return LimitedCharacterEditForm
