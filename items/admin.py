@@ -75,3 +75,13 @@ class VampireArtifactAdmin(admin.ModelAdmin):
 @admin.register(Bloodstone)
 class BloodstoneAdmin(admin.ModelAdmin):
     list_display = ("name", "blood_stored", "max_blood", "is_active")
+
+
+# Demon items
+from items.models.demon.relic import Relic
+
+
+@admin.register(Relic)
+class RelicAdmin(admin.ModelAdmin):
+    list_display = ("name", "relic_type", "complexity", "house", "difficulty")
+    list_filter = ("relic_type", "house")

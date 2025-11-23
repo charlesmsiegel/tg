@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from locations.models.core.location import LocationModel
 
 
@@ -28,6 +29,9 @@ class Bastion(LocationModel):
     class Meta:
         verbose_name = "Bastion"
         verbose_name_plural = "Bastions"
+
+    def get_absolute_url(self):
+        return reverse("locations:demon:bastion", kwargs={"pk": self.pk})
 
     def get_heading(self):
         return "dtf_heading"

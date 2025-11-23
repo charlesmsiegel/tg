@@ -8,6 +8,7 @@ from characters.views.demon import (
     DtFHumanTemplateSelectView,
     LoreDetailView,
     PactDetailView,
+    RitualDetailView,
     ThrallCharacterCreationView,
     ThrallDetailView,
     VisageDetailView,
@@ -23,6 +24,7 @@ urls = [
     path("visage/<int:pk>/", VisageDetailView.as_view(), name="visage"),
     path("lore/<int:pk>/", LoreDetailView.as_view(), name="lore"),
     path("pact/<int:pk>/", PactDetailView.as_view(), name="pact"),
+    path("ritual/<int:pk>/", RitualDetailView.as_view(), name="ritual"),
     # Staged character creation routes
     path(
         "demon/<int:pk>/chargen/",

@@ -1,0 +1,44 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Reliquary
+{% endblock creation_title %}
+{% block other %}
+    <div class="row mb-3">
+        <div class="col-sm-6">
+            <label for="{{ form.reliquary_type.id_for_label }}">Reliquary Type</label>
+            {{ form.reliquary_type }}
+        </div>
+        <div class="col-sm-6">
+            <label for="{{ form.location_size.id_for_label }}">Location Size</label>
+            {{ form.location_size }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-4">
+            <label for="{{ form.max_health_levels.id_for_label }}">Max Health Levels</label>
+            {{ form.max_health_levels }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.current_health_levels.id_for_label }}">Current Health Levels</label>
+            {{ form.current_health_levels }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.soak_rating.id_for_label }}">Soak Rating</label>
+            {{ form.soak_rating }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-4">
+            <label for="{{ form.has_pervasiveness.id_for_label }}">Has Pervasiveness</label>
+            {{ form.has_pervasiveness }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.has_manifestation.id_for_label }}">Has Manifestation</label>
+            {{ form.has_manifestation }}
+        </div>
+        <div class="col-sm-4">
+            <label for="{{ form.manifestation_range.id_for_label }}">Manifestation Range (yards)</label>
+            {{ form.manifestation_range }}
+        </div>
+    </div>
+{% endblock other %}

@@ -25,6 +25,7 @@ from .house import (
 )
 from .lore import LoreCreateView, LoreDetailView, LoreListView, LoreUpdateView
 from .pact import PactCreateView, PactDetailView, PactListView, PactUpdateView
+from .ritual import RitualCreateView, RitualDetailView, RitualListView, RitualUpdateView
 from .thrall import ThrallCreateView, ThrallDetailView, ThrallUpdateView
 from .thrall_chargen import (
     ThrallBasicsView,

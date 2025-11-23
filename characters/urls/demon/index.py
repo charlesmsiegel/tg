@@ -3,6 +3,7 @@ from characters.views.demon import (  # DemonListView,; DtFHumanListView,; Thral
     DemonHouseListView,
     LoreListView,
     PactListView,
+    RitualListView,
     VisageListView,
 )
 from django.urls import path
@@ -16,4 +17,5 @@ urls = [
     path("visage/", VisageListView.as_view(), name="visage"),
     path("lore/", LoreListView.as_view(), name="lore"),
     path("pact/", PactListView.as_view(), name="pact"),
+    path("ritual/", RitualListView.as_view(), name="ritual"),
 ]

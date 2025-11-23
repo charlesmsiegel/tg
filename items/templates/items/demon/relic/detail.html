@@ -1,0 +1,9 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% load sanitize_text %}
+{% block contents %}
+    {% block additional_stats %}
+        {% include "items/demon/relic/display_includes/basics.html" %}
+        {% include "items/demon/relic/display_includes/powers.html" %}
+    {% endblock additional_stats %}
+{% endblock contents %}

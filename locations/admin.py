@@ -102,3 +102,26 @@ admin.site.register(HavenMeritFlawRating)
 class FreeholdAdmin(admin.ModelAdmin):
     list_display = ("name", "archetype", "balefire", "size", "sanctuary", "resources")
     list_filter = ("archetype",)
+
+
+# Demon locations
+from locations.models.demon.bastion import Bastion
+from locations.models.demon.reliquary import Reliquary
+
+
+@admin.register(Bastion)
+class BastionAdmin(admin.ModelAdmin):
+    list_display = ("name", "ritual_strength", "warding_level", "consecration_date")
+    list_filter = ("ritual_strength", "warding_level")
+
+
+@admin.register(Reliquary)
+class ReliquaryAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "reliquary_type",
+        "max_health_levels",
+        "current_health_levels",
+        "soak_rating",
+    )
+    list_filter = ("reliquary_type",)
