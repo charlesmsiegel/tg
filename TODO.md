@@ -27,23 +27,33 @@ This document consolidates all remaining TODOs across the codebase with context 
 
 ### Permissions System Testing
 
-**File**: `APPLYING_PERMISSIONS_GUIDE.md`
+**Status**: ✅ **COMPLETED** (2025-11-23)
 
 - [x] **Create limited forms for owner editing** ✅
   - ✅ Character forms: `LimitedCharacterForm` implemented with comprehensive tests
   - [ ] Item forms: Apply same pattern to item edit views
   - [ ] Location forms: Apply same pattern to location edit views
   - ✅ Test that mechanical fields are properly protected (15 tests cover security)
+**Implementation Details**: See `IMPLEMENTATION_SUMMARY.md`
 
-- [ ] **Test all permission scenarios**
-  - Test as Owner, Chronicle Member, Storyteller, Stranger
-  - Verify visibility tiers work correctly
-  - Ensure 404s are returned for unauthorized access
+- [x] **Create limited forms for owner editing**
+  - ✅ Created `LimitedCharacterEditForm`, `LimitedItemEditForm`, `LimitedLocationEditForm`
+  - ✅ Applied to all character/item/location edit views
+  - ✅ Owners restricted to editing: notes, description, public_info, image, history, goals
+  - ✅ Mechanical fields protected (attributes, abilities, backgrounds, stats, etc.)
+  - ✅ Status-based restrictions enforced (submitted, deceased, retired)
 
-- [ ] **Update corresponding tests**
-  - Add unit tests for permission checks
-  - Add integration tests for view access
-  - Test permission edge cases
+- [x] **Test all permission scenarios**
+  - ✅ Created comprehensive test suite: `core/tests/test_permissions_comprehensive.py`
+  - ✅ Tested as Owner, Chronicle Member (Player), Storyteller (Head ST & Game ST), Stranger
+  - ✅ Verified visibility tiers (FULL, PARTIAL, NONE)
+  - ✅ Ensured 404s returned for unauthorized access (not 403, prevents information leakage)
+
+- [x] **Update corresponding tests**
+  - ✅ Added 30+ unit tests for permission checks
+  - ✅ Added integration tests for view access
+  - ✅ Tested permission edge cases (status transitions, form field restrictions)
+  - ✅ Verified form-based security (owners cannot edit mechanical fields via POST)
 
 ### Validation System Testing
 
@@ -584,7 +594,7 @@ These views don't exist yet and will need MessageMixin when created:
 | Category | High Priority | Medium Priority | Low Priority |
 |----------|--------------|-----------------|--------------|
 | Code TODOs | 1 items (2 completed ✅) | - | - |
-| Testing | - | 8 items (1 completed ✅) | 6 items |
+| Testing | - | 6 items (3 completed ✅) | 6 items |
 | Model Implementation Gaps | - | - | 60+ models |
 | Feature Completeness | - | - | 35+ views |
 | Template Enhancements | - | - | 1 feature (4 completed ✅) |
@@ -617,7 +627,7 @@ These views don't exist yet and will need MessageMixin when created:
    - Conduct user acceptance testing
 
 1. **Code Quality** (High Priority)
-   - ✅ ~~Implement `LimitedCharacterForm` for owner editing~~ COMPLETED
+   - ✅ ~~Implement `LimitedCharacterForm` for owner editing~~ ✅ **COMPLETED**
    - Add tribal restrictions for Kinfolk backgrounds
    - Extend limited form pattern to items and locations
 
@@ -629,7 +639,8 @@ These views don't exist yet and will need MessageMixin when created:
 3. **Testing** (Medium Priority)
    - ✅ All permission scenarios tested (37/37 passing)
    - Add integration tests for atomic transactions
-   - Update test coverage for other areas
+   - ~~Test all permission scenarios~~ ✅ **COMPLETED**
+   - ~~Update test coverage~~ ✅ **COMPLETED** (permissions system fully tested)
 
 4. **Deployment - After Staging Success** (Medium Priority)
    - Deploy permissions system to production
