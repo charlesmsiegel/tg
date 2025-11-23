@@ -1,0 +1,205 @@
+{% extends "core/base.html" %}
+
+{% block heading %}{% if object %}Edit Template{% else %}Create Template{% endif %}{% endblock %}
+
+{% block content %}
+<div class="tg-card mb-4" data-gameline="wod">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title">{% if object %}Edit Template: {{ object.name }}{% else %}Create New Character Template{% endif %}</h4>
+        <p class="tg-card-subtitle">{% if object %}Update your custom template{% else %}Create a custom character template for quick character creation{% endif %}</p>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Basic Information -->
+            <div class="mb-4">
+                <h6 style="margin-bottom: 16px; font-weight: 600; color: var(--theme-text-primary);">Basic Information</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small">{{ form.name.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.name.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.concept.id_for_label }}" class="form-label">{{ form.concept.label }}</label>
+                        {{ form.concept }}
+                        {% if form.concept.errors %}
+                            <div class="text-danger small">{{ form.concept.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.concept.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.gameline.id_for_label }}" class="form-label">{{ form.gameline.label }}</label>
+                        {{ form.gameline }}
+                        {% if form.gameline.errors %}
+                            <div class="text-danger small">{{ form.gameline.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.gameline.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.character_type.id_for_label }}" class="form-label">{{ form.character_type.label }}</label>
+                        {{ form.character_type }}
+                        {% if form.character_type.errors %}
+                            <div class="text-danger small">{{ form.character_type.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.character_type.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.faction.id_for_label }}" class="form-label">{{ form.faction.label }}</label>
+                        {{ form.faction }}
+                        {% if form.faction.errors %}
+                            <div class="text-danger small">{{ form.faction.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.faction.help_text }}</div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.description.help_text }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character Data (JSON Fields) -->
+            <div class="mb-4">
+                <h6 style="margin-bottom: 16px; font-weight: 600; color: var(--theme-text-primary);">Character Data (JSON Format)</h6>
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i> Enter character data in JSON format. Use double quotes for keys and string values.
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.basic_info.id_for_label }}" class="form-label">{{ form.basic_info.label }}</label>
+                        {{ form.basic_info }}
+                        {% if form.basic_info.errors %}
+                            <div class="text-danger small">{{ form.basic_info.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.basic_info.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.attributes.id_for_label }}" class="form-label">{{ form.attributes.label }}</label>
+                        {{ form.attributes }}
+                        {% if form.attributes.errors %}
+                            <div class="text-danger small">{{ form.attributes.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.attributes.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.abilities.id_for_label }}" class="form-label">{{ form.abilities.label }}</label>
+                        {{ form.abilities }}
+                        {% if form.abilities.errors %}
+                            <div class="text-danger small">{{ form.abilities.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.abilities.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.backgrounds.id_for_label }}" class="form-label">{{ form.backgrounds.label }}</label>
+                        {{ form.backgrounds }}
+                        {% if form.backgrounds.errors %}
+                            <div class="text-danger small">{{ form.backgrounds.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.backgrounds.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.powers.id_for_label }}" class="form-label">{{ form.powers.label }}</label>
+                        {{ form.powers }}
+                        {% if form.powers.errors %}
+                            <div class="text-danger small">{{ form.powers.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.powers.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.merits_flaws.id_for_label }}" class="form-label">{{ form.merits_flaws.label }}</label>
+                        {{ form.merits_flaws }}
+                        {% if form.merits_flaws.errors %}
+                            <div class="text-danger small">{{ form.merits_flaws.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.merits_flaws.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.specialties.id_for_label }}" class="form-label">{{ form.specialties.label }}</label>
+                        {{ form.specialties }}
+                        {% if form.specialties.errors %}
+                            <div class="text-danger small">{{ form.specialties.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.specialties.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.languages.id_for_label }}" class="form-label">{{ form.languages.label }}</label>
+                        {{ form.languages }}
+                        {% if form.languages.errors %}
+                            <div class="text-danger small">{{ form.languages.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.languages.help_text }}</div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.equipment.id_for_label }}" class="form-label">{{ form.equipment.label }}</label>
+                        {{ form.equipment }}
+                        {% if form.equipment.errors %}
+                            <div class="text-danger small">{{ form.equipment.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.equipment.help_text }}</div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="{{ form.suggested_freebie_spending.id_for_label }}" class="form-label">{{ form.suggested_freebie_spending.label }}</label>
+                        {{ form.suggested_freebie_spending }}
+                        {% if form.suggested_freebie_spending.errors %}
+                            <div class="text-danger small">{{ form.suggested_freebie_spending.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.suggested_freebie_spending.help_text }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadata & Permissions -->
+            <div class="mb-4">
+                <h6 style="margin-bottom: 16px; font-weight: 600; color: var(--theme-text-primary);">Template Settings</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            {{ form.is_public }}
+                            <label class="form-check-label" for="{{ form.is_public.id_for_label }}">
+                                {{ form.is_public.label }}
+                            </label>
+                        </div>
+                        {% if form.is_public.errors %}
+                            <div class="text-danger small">{{ form.is_public.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.is_public.help_text }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.chronicle.id_for_label }}" class="form-label">{{ form.chronicle.label }}</label>
+                        {{ form.chronicle }}
+                        {% if form.chronicle.errors %}
+                            <div class="text-danger small">{{ form.chronicle.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">{{ form.chronicle.help_text }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit buttons -->
+            <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.1);">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> {% if object %}Update Template{% else %}Create Template{% endif %}
+                </button>
+                <a href="{% if object %}{% url 'core:character_template_detail' object.pk %}{% else %}{% url 'core:character_template_list' %}{% endif %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

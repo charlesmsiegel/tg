@@ -1,6 +1,16 @@
 from . import generic
 from .approved_user_mixin import SpecialUserMixin
 from .book import BookCreateView, BookDetailView, BookListView, BookUpdateView
+from .character_template import (
+    CharacterTemplateCreateView,
+    CharacterTemplateDeleteView,
+    CharacterTemplateDetailView,
+    CharacterTemplateExportView,
+    CharacterTemplateImportView,
+    CharacterTemplateListView,
+    CharacterTemplateQuickNPCView,
+    CharacterTemplateUpdateView,
+)
 from .generic import DictView, MultipleFormsetsMixin
 from .home import HomeListView
 from .houserules import (

@@ -38,6 +38,7 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
         "name",
         "gameline",
         "character_type",
+        "faction",
         "concept",
         "is_official",
         "is_public",
@@ -64,6 +65,7 @@ class CharacterTemplateAdmin(admin.ModelAdmin):
                     "name",
                     "gameline",
                     "character_type",
+                    "faction",
                     "concept",
                     "description",
                 )

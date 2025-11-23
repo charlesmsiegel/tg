@@ -1,0 +1,115 @@
+{% extends "core/base.html" %}
+
+{% block heading %}Import Template{% endblock %}
+
+{% block content %}
+<div class="tg-card mb-4" data-gameline="wod">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title">Import Character Template</h4>
+        <p class="tg-card-subtitle">Upload a template JSON file to import</p>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>Import Guidelines:</strong>
+            <ul style="margin-bottom: 0; margin-top: 8px;">
+                <li>Templates must be in valid JSON format</li>
+                <li>Maximum file size: 5MB</li>
+                <li>Imported templates are automatically marked as user-created (not official)</li>
+                <li>You can edit the template after import</li>
+            </ul>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="{{ form.json_file.id_for_label }}" class="form-label">{{ form.json_file.label }}</label>
+                {{ form.json_file }}
+                {% if form.json_file.errors %}
+                    <div class="text-danger small">{{ form.json_file.errors }}</div>
+                {% endif %}
+                <div class="form-text">{{ form.json_file.help_text }}</div>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    {{ form.is_public }}
+                    <label class="form-check-label" for="{{ form.is_public.id_for_label }}">
+                        {{ form.is_public.label }}
+                    </label>
+                </div>
+                {% if form.is_public.errors %}
+                    <div class="text-danger small">{{ form.is_public.errors }}</div>
+                {% endif %}
+                <div class="form-text">{{ form.is_public.help_text }}</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.chronicle.id_for_label }}" class="form-label">{{ form.chronicle.label }}</label>
+                {{ form.chronicle }}
+                {% if form.chronicle.errors %}
+                    <div class="text-danger small">{{ form.chronicle.errors }}</div>
+                {% endif %}
+                <div class="form-text">{{ form.chronicle.help_text }}</div>
+            </div>
+
+            <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.1);">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-upload"></i> Import Template
+                </button>
+                <a href="{% url 'core:character_template_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+
+        <div class="mt-5 pt-4" style="border-top: 1px solid rgba(0,0,0,0.1);">
+            <h6 style="margin-bottom: 16px;">Example JSON Format:</h6>
+            <div style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px; font-family: monospace; font-size: 0.875rem;">
+                <pre style="margin: 0; white-space: pre-wrap;">{
+  "name": "Virtual Adept Hacker",
+  "gameline": "mta",
+  "character_type": "mage",
+  "concept": "Tech-savvy digital mage",
+  "description": "A skilled hacker who uses technology...",
+  "basic_info": {
+    "nature": "FK:Archetype:Architect",
+    "demeanor": "FK:Archetype:Loner"
+  },
+  "attributes": {
+    "strength": 2,
+    "dexterity": 3,
+    "intelligence": 4
+  },
+  "abilities": {
+    "computer": 4,
+    "investigation": 3
+  },
+  "backgrounds": [
+    {"name": "Resources", "rating": 2}
+  ],
+  "powers": {
+    "correspondence": 2,
+    "forces": 1
+  },
+  "merits_flaws": [],
+  "specialties": ["Computer (Hacking)"],
+  "languages": ["English"],
+  "equipment": "Laptop, smartphone, hacking tools",
+  "suggested_freebie_spending": {
+    "arete": 4,
+    "willpower": 3
+  }
+}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

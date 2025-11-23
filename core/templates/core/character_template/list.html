@@ -1,0 +1,155 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+
+{% block heading %}Character Template Management{% endblock %}
+
+{% block content %}
+<div class="tg-card mb-4" data-gameline="wod">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title">Character Templates</h4>
+        <p class="tg-card-subtitle">Create and manage character templates for quick character creation</p>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <!-- Action buttons -->
+        <div class="mb-4" style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="{% url 'core:character_template_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Template
+            </a>
+            <a href="{% url 'core:character_template_import' %}" class="btn btn-secondary">
+                <i class="fas fa-file-import"></i> Import Template
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-4" style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px;">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="filter" class="form-label" style="font-weight: 600; font-size: 0.875rem;">Filter by Type</label>
+                    <select name="filter" id="filter" class="form-control" onchange="this.form.submit()">
+                        <option value="all" {% if filter == 'all' %}selected{% endif %}>All Templates</option>
+                        <option value="mine" {% if filter == 'mine' %}selected{% endif %}>My Templates</option>
+                        <option value="official" {% if filter == 'official' %}selected{% endif %}>Official</option>
+                        <option value="community" {% if filter == 'community' %}selected{% endif %}>Community</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="gameline" class="form-label" style="font-weight: 600; font-size: 0.875rem;">Gameline</label>
+                    <select name="gameline" id="gameline" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Gamelines</option>
+                        <option value="vtm" {% if gameline == 'vtm' %}selected{% endif %}>Vampire</option>
+                        <option value="wta" {% if gameline == 'wta' %}selected{% endif %}>Werewolf</option>
+                        <option value="mta" {% if gameline == 'mta' %}selected{% endif %}>Mage</option>
+                        <option value="wto" {% if gameline == 'wto' %}selected{% endif %}>Wraith</option>
+                        <option value="ctd" {% if gameline == 'ctd' %}selected{% endif %}>Changeling</option>
+                        <option value="dtf" {% if gameline == 'dtf' %}selected{% endif %}>Demon</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="character_type" class="form-label" style="font-weight: 600; font-size: 0.875rem;">Character Type</label>
+                    <input type="text" name="character_type" id="character_type" class="form-control" value="{{ character_type }}" placeholder="e.g., mage, vampire">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Apply</button>
+                    <a href="{% url 'core:character_template_list' %}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Template list -->
+        {% if templates %}
+            <div class="row">
+                {% for template in templates %}
+                    <div class="col-md-6 mb-3">
+                        <div class="tg-card h-100" data-gameline="{{ template.gameline }}">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                    <div style="flex: 1;">
+                                        <h5 class="tg-card-title mb-2">
+                                            <a href="{% url 'core:character_template_detail' template.pk %}" style="text-decoration: none; color: inherit;">
+                                                {{ template.name }}
+                                            </a>
+                                        </h5>
+                                        <p class="tg-card-subtitle mb-2">{{ template.concept }}</p>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        {% if template.is_official %}
+                                            <span class="tg-badge badge-app">Official</span>
+                                        {% else %}
+                                            <span class="tg-badge badge-sub">User</span>
+                                        {% endif %}
+                                        {% if template.is_public %}
+                                            <span class="tg-badge badge-pill" style="background-color: #6c757d;">Public</span>
+                                        {% else %}
+                                            <span class="tg-badge badge-pill" style="background-color: #fd7e14;">Private</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 12px;">
+                                    <span style="font-size: 0.875rem; color: var(--theme-text-secondary);">
+                                        <i class="fas fa-gamepad"></i> {{ template.get_gameline_display }} - {{ template.character_type|title }}
+                                    </span>
+                                </div>
+
+                                <p style="font-size: 0.875rem; color: var(--theme-text-secondary); margin-bottom: 12px;">
+                                    {{ template.description|truncatewords:20 }}
+                                </p>
+
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
+                                    <div style="font-size: 0.75rem; color: var(--theme-text-secondary);">
+                                        <i class="fas fa-user"></i> {% if template.owner %}{{ template.owner.username }}{% else %}System{% endif %} |
+                                        <i class="fas fa-download"></i> {{ template.times_used }} uses
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="{% url 'core:character_template_detail' template.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                                        {% if template.owner == user or user.is_superuser %}
+                                            <a href="{% url 'core:character_template_update' template.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="mt-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if filter %}&filter={{ filter }}{% endif %}{% if gameline %}&gameline={{ gameline }}{% endif %}{% if character_type %}&character_type={{ character_type }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter %}&filter={{ filter }}{% endif %}{% if gameline %}&gameline={{ gameline }}{% endif %}{% if character_type %}&character_type={{ character_type }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter %}&filter={{ filter }}{% endif %}{% if gameline %}&gameline={{ gameline }}{% endif %}{% if character_type %}&character_type={{ character_type }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filter %}&filter={{ filter }}{% endif %}{% if gameline %}&gameline={{ gameline }}{% endif %}{% if character_type %}&character_type={{ character_type }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div style="text-align: center; padding: 40px; color: var(--theme-text-secondary);">
+                <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 16px; opacity: 0.3;"></i>
+                <p style="font-size: 1.125rem; margin-bottom: 8px;">No templates found</p>
+                <p style="font-size: 0.875rem;">Create your first template or adjust your filters</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "core/base.html" %}
+
+{% block heading %}Delete Template{% endblock %}
+
+{% block content %}
+<div class="tg-card mb-4" data-gameline="{{ object.gameline }}">
+    <div class="tg-card-header">
+        <h4 class="tg-card-title {{ object.get_heading }}">Delete Template</h4>
+        <p class="tg-card-subtitle">Are you sure you want to delete "{{ object.name }}"?</p>
+    </div>
+    <div class="tg-card-body" style="padding: 24px;">
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Warning:</strong> This action cannot be undone. Deleting this template will permanently remove it from the system.
+        </div>
+
+        <div class="mb-4" style="padding: 16px; background-color: rgba(0,0,0,0.02); border-radius: 6px;">
+            <h6 style="margin-bottom: 12px;">Template Details:</h6>
+            <ul style="margin-bottom: 0;">
+                <li><strong>Name:</strong> {{ object.name }}</li>
+                <li><strong>Concept:</strong> {{ object.concept }}</li>
+                <li><strong>Gameline:</strong> {{ object.get_gameline_display }}</li>
+                <li><strong>Character Type:</strong> {{ object.character_type|title }}</li>
+                <li><strong>Times Used:</strong> {{ object.times_used }}</li>
+            </ul>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Yes, Delete Template
+                </button>
+                <a href="{% url 'core:character_template_detail' object.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
