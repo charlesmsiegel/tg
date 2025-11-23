@@ -46,25 +46,27 @@ python manage.py migrate
 ### Run All Migration Tests
 ```bash
 # Run all XP/freebie migration tests
-pytest game/tests_xp_freebie_migration.py -v
+python manage.py test game.tests_xp_freebie_migration --verbosity=2
 
-# Run with coverage report
-pytest game/tests_xp_freebie_migration.py -v --cov=game --cov-report=html
+# Run with coverage report (requires coverage.py)
+coverage run --source='game' manage.py test game.tests_xp_freebie_migration
+coverage report
+coverage html
 
 # Run specific test class
-pytest game/tests_xp_freebie_migration.py::TestXPSpendingRequest -v
+python manage.py test game.tests_xp_freebie_migration.TestXPSpendingRequest
 
 # Run specific test
-pytest game/tests_xp_freebie_migration.py::TestXPSpendingRequest::test_create_xp_spending_request -v
+python manage.py test game.tests_xp_freebie_migration.TestXPSpendingRequest.test_create_xp_spending_request
 ```
 
 ### Run Related Tests
 ```bash
 # Run existing XP transaction tests
-pytest characters/tests/core/test_validation_constraints.py::TestXPTransactions -v
+python manage.py test characters.tests.core.test_validation_constraints.TestXPTransactions
 
 # Run all game tests
-pytest game/tests.py game/tests_integration.py -v
+python manage.py test game
 ```
 
 ## Manual Testing Guide

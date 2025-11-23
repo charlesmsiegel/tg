@@ -101,7 +101,7 @@ This document tracks remaining work across the codebase with context about what 
 1. **Improve test coverage**
    - **Current**: Only `accounts/tests.py` has substantial tests
    - **Goal**: 80%+ coverage across all apps
-   - **Action**: Add comprehensive test suite using pytest-django
+   - **Action**: Add comprehensive test suite using Django's unittest framework
    - Test all views, forms, and model methods
 
 2. **Standardize CBV patterns**

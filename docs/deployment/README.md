@@ -213,13 +213,13 @@ def clean(self):
 **Run tests:**
 ```bash
 # All validation tests
-pytest characters/tests/core/test_validation_constraints.py -v
+python manage.py test characters.tests.core.test_validation_constraints --verbosity=2
 
 # Specific test class
-pytest characters/tests/core/test_validation_constraints.py::TestXPTransactions -v
+python manage.py test characters.tests.core.test_validation_constraints.TestXPTransactions
 
 # All tests
-pytest
+python manage.py test
 ```
 
 ## Deployment Timeline

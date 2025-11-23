@@ -190,10 +190,10 @@ python manage.py shell
 
 ```bash
 # Run all validation tests
-pytest characters/tests/core/test_validation_constraints.py -v
+python manage.py test characters.tests.core.test_validation_constraints --verbosity=2
 
 # Run all tests to ensure nothing broke
-pytest --tb=short
+python manage.py test
 
 # Expected: All tests passing
 ```

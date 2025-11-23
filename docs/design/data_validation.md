@@ -805,6 +805,8 @@ django.db.utils.IntegrityError: CHECK constraint failed: characters_character_xp
 
 ### Step 3: Add Tests
 
+**Note:** Examples below use pytest syntax for brevity. The actual implementation uses Django's unittest framework (`from django.test import TestCase`). Run tests with `python manage.py test`.
+
 ```python
 # characters/tests/core/test_character_validation.py
 
