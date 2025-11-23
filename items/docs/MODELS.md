@@ -94,6 +94,18 @@ core.models.Model (abstract polymorphic base)
 
 ---
 
+## Vampire: The Masquerade (2 models)
+
+### Vampire Items
+- **`Artifact`** - Vampire artifact
+  - Note: Different from Mage/Wraith Artifact (same name, different models)
+  - Vampire-specific magical item
+- **`Bloodstone`** - Mystical bloodstone
+  - Stores vitae
+  - Vampire blood magic item
+
+---
+
 ## Wraith: The Oblivion (2 models)
 
 ### Wraith Items
@@ -101,7 +113,7 @@ core.models.Model (abstract polymorphic base)
   - Connection to living world
   - Corpus-reinforced object
 - **`Artifact`** - Wraith artifact
-  - Note: Different from Mage Artifact (same name, different model)
+  - Note: Different from Mage/Vampire Artifact (same name, different model)
   - Oblivion-forged items
 
 ---
@@ -131,6 +143,7 @@ core.models.Model (abstract polymorphic base)
   - `core/` - Shared item models (weapons, materials)
   - `mage/` - MtA items
   - `werewolf/` - WtA items
+  - `vampire/` - VtM items
   - `wraith/` - WtO items
   - `changeling/` - CtD items
   - `demon/` - DtF items
@@ -149,6 +162,7 @@ core.models.Model (abstract polymorphic base)
 | Core | 8 | ✅ | ✅ | ✅ | Complete |
 | Mage | 7 | ✅ | ✅ | ✅ | Complete |
 | Werewolf | 2 | ✅ | ✅ | ✅ | Complete |
+| Vampire | 2 | ⚠️ | ⚠️ | ⚠️ | Partial |
 | Wraith | 2 | ✅ | ⚠️ | ⚠️ | Partial |
 | Changeling | 1 | ✅ | ⚠️ | ⚠️ | Partial |
 | Demon | 1 | ✅ | ⚠️ | ⚠️ | Partial |
