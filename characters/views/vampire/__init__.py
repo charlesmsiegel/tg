@@ -26,6 +26,12 @@ from .ghoul_chargen import (
     GhoulSpecialtiesView,
 )
 from .path import PathCreateView, PathDetailView, PathListView, PathUpdateView
+from .revenant import (
+    RevenantCreateView,
+    RevenantDetailView,
+    RevenantListView,
+    RevenantUpdateView,
+)
 from .sect import (
     VampireSectCreateView,
     VampireSectDetailView,

@@ -68,6 +68,8 @@ from characters.models.vampire import (
     Discipline,
     Ghoul,
     Path,
+    Revenant,
+    RevenantFamily,
     Vampire,
     VampireClan,
     VampireSect,
@@ -315,6 +317,8 @@ admin.site.register(HouseFaction)
 admin.site.register(VtMHuman)
 admin.site.register(Vampire)
 admin.site.register(Ghoul)
+admin.site.register(Revenant)
+admin.site.register(RevenantFamily)
 admin.site.register(VampireClan)
 admin.site.register(VampireSect)
 admin.site.register(VampireTitle)
