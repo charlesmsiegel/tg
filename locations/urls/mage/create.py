@@ -29,6 +29,11 @@ urls = [
         name="sanctum",
     ),
     path(
+        "demesne/",
+        views.mage.DemesneCreateView.as_view(),
+        name="demesne",
+    ),
+    path(
         "library/",
         views.mage.LibraryCreateView.as_view(),
         name="library",

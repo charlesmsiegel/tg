@@ -1,0 +1,53 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+{% block objectname %}
+    <!-- Page Header with Mage styling -->
+    <div class="tg-card header-card mb-4" data-gameline="mta">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title mta_heading">
+                {{ object.name }}
+                {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
+
+{% block model_specific %}
+    <!-- Demesne-specific information -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h6 class="mta_heading mb-0">Demesne Properties</h6>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            <div class="row">
+                {% if object.size %}
+                    <div class="col-md-6 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Size</div>
+                            <div style="color: var(--theme-text-primary);">{{ object.size }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if object.accessibility %}
+                    <div class="col-md-6 mb-3">
+                        <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Accessibility</div>
+                            <div style="color: var(--theme-text-primary);">{{ object.get_accessibility_display }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}
+
+{% block reality_zone %}
+    {% if object.reality_zone %}
+        {% include "locations/mage/reality_zone/display_includes/reality_zone.html" with object=object.reality_zone %}
+    {% endif %}
+{% endblock reality_zone %}

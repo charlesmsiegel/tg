@@ -34,6 +34,11 @@ urls = [
         name="sanctum",
     ),
     path(
+        "demesne/<pk>/",
+        views.mage.DemesneUpdateView.as_view(),
+        name="demesne",
+    ),
+    path(
         "chantry/<pk>/",
         views.mage.ChantryUpdateView.as_view(),
         name="chantry",

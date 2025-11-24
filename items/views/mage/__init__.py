@@ -11,6 +11,12 @@ from .grimoire import (
     GrimoireListView,
     GrimoireUpdateView,
 )
+from .periapt import (
+    PeriaptCreateView,
+    PeriaptDetailView,
+    PeriaptListView,
+    PeriaptUpdateView,
+)
 from .sorcerer_artifact import (
     SorcererArtifactCreateView,
     SorcererArtifactDetailView,

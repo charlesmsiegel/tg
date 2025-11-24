@@ -1,4 +1,5 @@
 from .chantry import Chantry
+from .demesne import Demesne
 from .library import Library
 from .node import Node, NodeMeritFlawRating, NodeResonanceRating
 from .paradox_realm import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm

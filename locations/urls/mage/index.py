@@ -13,6 +13,7 @@ urls = [
         name="paradox_realm",
     ),
     path("sanctum/", views.mage.SanctumListView.as_view(), name="sanctum"),
+    path("demesne/", views.mage.DemesneListView.as_view(), name="demesne"),
     path(
         "reality_zone/",
         views.mage.RealityZoneListView.as_view(),

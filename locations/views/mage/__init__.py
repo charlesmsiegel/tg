@@ -6,6 +6,12 @@ from .chantry import (
     ChantryListView,
     ChantryUpdateView,
 )
+from .demesne import (
+    DemesneCreateView,
+    DemesneDetailView,
+    DemesneListView,
+    DemesneUpdateView,
+)
 from .library import (
     LibraryCreateView,
     LibraryDetailView,
