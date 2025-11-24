@@ -58,29 +58,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Quality & Redundancy Cleanup
 
-6. **Eliminate Duplicate Limited Edit Forms**
-   - **Files**: `characters/forms/core/limited_edit.py:125-207`
-   - **Impact**: HIGH - 82 lines of boilerplate code
-   - **Issue**: 12 form classes that differ ONLY by their `Meta.model` attribute:
-     - LimitedMageEditForm, LimitedMtAHumanEditForm, LimitedVampireEditForm
-     - LimitedVtMHumanEditForm, LimitedGarouEditForm, LimitedWtAHumanEditForm
-     - LimitedChangelingEditForm, LimitedCtDHumanEditForm, LimitedWraithEditForm
-     - LimitedWtOHumanEditForm, LimitedDemonEditForm, LimitedDtFHumanEditForm
-   - **Action**:
-     1. Create factory function at top of file after imports:
-        ```python
-        def create_limited_edit_form(model_class):
-            """Factory function to create a limited edit form for a specific model."""
-            class GeneratedLimitedEditForm(LimitedHumanEditForm):
-                class Meta(LimitedHumanEditForm.Meta):
-                    model = model_class
-            GeneratedLimitedEditForm.__name__ = f'Limited{model_class.__name__}EditForm'
-            return GeneratedLimitedEditForm
-        ```
-     2. Replace all 12 duplicate class definitions with factory calls
-     3. Update any imports in view files if needed
-   - **Context**: Forms only differ by Meta.model, all inherit same fields/behavior from LimitedHumanEditForm
-   - **Independence**: Standalone task - can be done independently
+**Note**: Task #6 "Eliminate Duplicate Limited Edit Forms" was completed - factory function implemented in `characters/forms/core/limited_edit.py`.
 
 7. **Update Deprecated Mixin Import Paths**
    - **Files Affected**: 18 character view files
@@ -944,7 +922,7 @@ Models needing full implementation:
    - Update deprecated mixin imports (High #7) - 1-2 hours
 
 2. **Code Quality Cleanup** (High Priority - Independent) 🔥
-   - Eliminate duplicate Limited Edit Forms (High #6) - 1-2 hours
+   - ✅ ~~Eliminate duplicate Limited Edit Forms~~ - COMPLETED
    - Centralize hardcoded choices (Medium #18) - 2-3 hours
    - Move signal registration to apps.py (Medium #6) - 30 minutes
 
@@ -998,10 +976,10 @@ Models needing full implementation:
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~55 items across all priorities
+**Total Open Items**: ~54 items across all priorities
 
 **By Priority**:
-- 🔴 High Priority: 7 items (security + critical code quality)
+- 🔴 High Priority: 6 items (security + critical code quality)
 - 🟡 Medium Priority: 25 items (performance + architecture + testing + tools)
 - 🟢 Low Priority: ~50 items (feature completeness + polish)
 - 🔵 Deployment: 7 items (staging + production deployments)
