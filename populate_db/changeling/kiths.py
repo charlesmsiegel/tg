@@ -91,3 +91,40 @@ Kith.objects.get_or_create(
     frailty="Bond of Duty",
     description="Trolls are the stalwart guardians and oath-keepers of the Kithain. Large, strong, and seemingly primitive, Trolls are actually among the most honorable and trustworthy of all changelings. They serve as bodyguards, knights, and champions, taking their oaths and duties with absolute seriousness. A Troll's word is their bond, and they will fulfill their promises regardless of personal cost. Their birthrights reflect their role as protectors and warriors. Titan's Power grants them exceptional strength and resilience, allowing them to stand against threats that would overwhelm smaller kith. Strong of Will and Body provides enhanced physical and mental resistance, making Trolls difficult to harm, manipulate, or break. They are living fortresses who stand between danger and those they've sworn to protect. The Bond of Duty is both the Troll's greatest strength and their defining frailty. Trolls are compelled to honor their oaths and fulfill their duties, even when doing so costs them dearly. They cannot break a promise without suffering severe spiritual consequences, and clever enemies can bind Trolls with carefully worded oaths. However, this same quality makes Trolls the most trusted companions in all the Dreaming - a Troll's promise is absolutely reliable.",
 )[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", 112)
+
+# Thallain - Dark/evil counterparts to the noble kiths
+Kith.objects.get_or_create(
+    name="Boggart",
+    affinity="actor",
+    birthrights=["Slippery Customer", "Knavery"],
+    frailty="Oathbreaker",
+    description="Boggarts are the twisted, evil cousins of Boggans. Where Boggans are helpful and industrious, Boggarts are spiteful saboteurs who take pleasure in ruining the work of others. They appear as twisted, malformed creatures with cruel features. Their birthrights make them masters of mischief and destruction. Slippery Customer allows them to escape bonds, grasps, and confinement with supernatural ease. Knavery grants them the ability to intuitively understand how to break, sabotage, or corrupt anything they encounter. Boggarts are compulsive destroyers who cannot resist undoing good work. Their frailty, Oathbreaker, means they are physically incapable of keeping their word - any promise they make will eventually be broken, often in the most harmful way possible.",
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", "Denizens of the Dreaming")
+Kith.objects.get_or_create(
+    name="Ogre",
+    affinity="nature",
+    birthrights=["Brute Strength", "Terrible Appetite"],
+    frailty="Hideous",
+    description="Ogres are monstrous, brutish Thallain who embody raw violence and cruelty. Far larger and more savage than Trolls, Ogres revel in causing pain and fear. Their birthrights reflect their nature as predators. Brute Strength grants them superhuman power, allowing them to tear apart obstacles and victims alike. Terrible Appetite means they can consume anything, including human flesh, and are driven to feast on the weak and helpless. Unlike Redcaps who eat out of curiosity, Ogres eat out of hunger and malice. Their frailty is Hideous - Ogres are so repulsive that they cannot hide their monstrous nature, causing revulsion and fear in all who see them.",
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", "Denizens of the Dreaming")
+Kith.objects.get_or_create(
+    name="Beastie",
+    affinity="nature",
+    birthrights=["Shapeshifting", "Beast Nature"],
+    frailty="Uncontrollable Rage",
+    description="Beasties are the dark mirror of Pookas, savage shapeshifters who take the form of predatory animals. Where Pookas are playful tricksters, Beasties are vicious hunters who revel in the kill. Their birthrights allow them to assume animal forms (typically wolves, bears, or other predators) with full predatory instincts, and they gain enhanced senses for tracking prey. Their frailty is Uncontrollable Rage - when wounded or threatened, Beasties fly into a berserk fury and attack anything nearby, unable to distinguish friend from foe.",
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", "Denizens of the Dreaming")
+Kith.objects.get_or_create(
+    name="Boogie",
+    affinity="prop",
+    birthrights=["Hide and Seek", "Terror"],
+    frailty="Banished by Bravery",
+    description="Boogies are living nightmares, the things that hide under beds and in closets. They are masters of fear, feeding on terror and taking pleasure in tormenting the helpless. Their birthrights make them perfect stalkers. Hide and Seek allows them to become invisible in shadows and tight spaces, emerging only to strike. Terror grants them the ability to instill supernatural fear in their victims, paralyzing them with dread. Boogies are cowards at heart - their frailty, Banished by Bravery, means they must flee from anyone who stands up to them with true courage.",
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", "Denizens of the Dreaming")
+Kith.objects.get_or_create(
+    name="Aithu",
+    affinity="time",
+    birthrights=["Unearthly Beauty", "Cruel Charm"],
+    frailty="Addiction to Suffering",
+    description="Aithus are the dark nobility, corrupted Sidhe-like beings who embody the cruel and capricious nature of dark faerie tales. They possess terrible beauty that draws victims to them, only to destroy them. Their birthrights include Unearthly Beauty (like Sidhe) and Cruel Charm, which allows them to manipulate and control others through a combination of attraction and fear. Unlike Sidhe who may be noble, Aithus delight in causing suffering. Their frailty is Addiction to Suffering - Aithus must regularly inflict pain, humiliation, or despair on others or they begin to weaken and fade.",
+)[0].add_source("Changeling: the Dreaming 20th Anniversary Edition", "Denizens of the Dreaming")
