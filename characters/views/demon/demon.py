@@ -1,3 +1,4 @@
+from characters.forms.core.limited_edit import LimitedDemonEditForm
 from characters.models.demon import Demon
 from core.mixins import (
     ApprovedUserContextMixin,
@@ -6,9 +7,11 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    VisibilityFilterMixin,
 )
+from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class DemonDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
@@ -193,6 +196,36 @@ class DemonUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView)
     success_message = "Demon '{name}' updated successfully!"
     error_message = "Failed to update demon. Please correct the errors below."
 
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields (notes, description, etc.) via LimitedDemonEditForm.
+        STs and admins get full access to all fields via the default form.
+        """
+        # Check if user has full edit permission
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+
+        if has_full_edit:
+            # STs and admins get all fields
+            return super().get_form_class()
+        else:
+            # Owners get limited fields (notes, description, public_info, image, history, goals)
+            return LimitedDemonEditForm
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class DemonListView(VisibilityFilterMixin, ListView):
+    model = Demon
+    template_name = "characters/demon/demon/list.html"
+    context_object_name = "demons"
+    paginate_by = 25
+
+    def get_queryset(self):
+        """Get filtered queryset based on permissions."""
+        qs = super().get_queryset()
+        return qs.select_related("owner", "house", "faction", "chronicle").order_by("name")

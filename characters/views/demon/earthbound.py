@@ -1,32 +1,27 @@
-from characters.forms.core.limited_edit import LimitedDtFHumanEditForm
-from characters.models.demon import DtFHuman
+from characters.forms.core.limited_edit import LimitedEarthboundEditForm
+from characters.models.demon import Earthbound
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DtFHumanDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
-    model = DtFHuman
-    template_name = "characters/demon/dtfhuman/detail.html"
+class EarthboundDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+    model = Earthbound
+    template_name = "characters/demon/earthbound/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
 
-class DtFHumanCreateView(MessageMixin, CreateView):
-    model = DtFHuman
-    success_message = "DtF Human created successfully."
-    error_message = "Error creating DtF Human."
+class EarthboundCreateView(MessageMixin, CreateView):
+    model = Earthbound
     fields = [
         "name",
         "description",
@@ -89,14 +84,50 @@ class DtFHumanCreateView(MessageMixin, CreateView):
         "history",
         "goals",
         "notes",
+        "house",
+        "urge_flesh",
+        "urge_thought",
+        "urge_emotion",
+        "faith",
+        "temporary_faith",
+        "max_faith",
+        "torment",
+        "temporary_torment",
+        "conviction",
+        "courage",
+        "conscience",
+        "reliquary_type",
+        "reliquary_description",
+        "reliquary_materials",
+        "reliquary_max_health",
+        "reliquary_current_health",
+        "reliquary_soak",
+        "visage_features",
+        "visage_grotesqueries",
+        "total_form_points",
+        "can_manifest",
+        "manifestation_range",
+        "cult_size",
+        "worship_ritual_frequency",
+        "known_celestial_names",
+        "known_true_names",
+        "mastery_rating",
+        "indoctrination",
+        "recall",
+        "tactics",
+        "torture",
+        "celestial_name",
+        "true_name",
+        "date_summoned",
+        "time_in_stasis",
     ]
-    template_name = "characters/demon/dtfhuman/form.html"
+    template_name = "characters/demon/earthbound/form.html"
+    success_message = "Earthbound '{name}' created successfully!"
+    error_message = "Failed to create earthbound. Please correct the errors below."
 
 
-class DtFHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
-    model = DtFHuman
-    success_message = "DtF Human updated successfully."
-    error_message = "Error updating DtF Human."
+class EarthboundUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+    model = Earthbound
     fields = [
         "name",
         "description",
@@ -159,13 +190,51 @@ class DtFHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateVi
         "history",
         "goals",
         "notes",
+        "house",
+        "urge_flesh",
+        "urge_thought",
+        "urge_emotion",
+        "faith",
+        "temporary_faith",
+        "max_faith",
+        "torment",
+        "temporary_torment",
+        "conviction",
+        "courage",
+        "conscience",
+        "reliquary_type",
+        "reliquary_description",
+        "reliquary_materials",
+        "reliquary_max_health",
+        "reliquary_current_health",
+        "reliquary_soak",
+        "visage_features",
+        "visage_grotesqueries",
+        "total_form_points",
+        "can_manifest",
+        "manifestation_range",
+        "cult_size",
+        "worship_ritual_frequency",
+        "known_celestial_names",
+        "known_true_names",
+        "mastery_rating",
+        "indoctrination",
+        "recall",
+        "tactics",
+        "torture",
+        "celestial_name",
+        "true_name",
+        "date_summoned",
+        "time_in_stasis",
     ]
-    template_name = "characters/demon/dtfhuman/form.html"
+    template_name = "characters/demon/earthbound/form.html"
+    success_message = "Earthbound '{name}' updated successfully!"
+    error_message = "Failed to update earthbound. Please correct the errors below."
 
     def get_form_class(self):
         """
         Return different form based on user permissions.
-        Owners get limited fields (notes, description, etc.) via LimitedDtFHumanEditForm.
+        Owners get limited fields (notes, description, etc.) via LimitedEarthboundEditForm.
         STs and admins get full access to all fields via the default form.
         """
         # Check if user has full edit permission
@@ -178,20 +247,20 @@ class DtFHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateVi
             return super().get_form_class()
         else:
             # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedDtFHumanEditForm
+            return LimitedEarthboundEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
 
-class DtFHumanListView(VisibilityFilterMixin, ListView):
-    model = DtFHuman
-    template_name = "characters/demon/dtfhuman/list.html"
-    context_object_name = "dtfhumans"
+class EarthboundListView(VisibilityFilterMixin, ListView):
+    model = Earthbound
+    template_name = "characters/demon/earthbound/list.html"
+    context_object_name = "earthbounds"
     paginate_by = 25
 
     def get_queryset(self):
         """Get filtered queryset based on permissions."""
         qs = super().get_queryset()
-        return qs.select_related("owner", "chronicle").order_by("name")
+        return qs.select_related("owner", "house", "chronicle").order_by("name")

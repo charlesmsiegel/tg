@@ -1,0 +1,34 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="tg-card header-card mb-4" data-gameline="dtf">
+                    <div class="tg-card-header">
+                        <h1 class="tg-card-title dtf_heading">
+                            {% if object %}
+                                Edit Earthbound: {{ object.name }}
+                            {% else %}
+                                Create Earthbound
+                            {% endif %}
+                        </h1>
+                    </div>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Update{% else %}Create{% endif %}
+                        </button>
+                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'characters:index' %}{% endif %}"
+                           class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

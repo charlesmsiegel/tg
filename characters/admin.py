@@ -31,6 +31,7 @@ from characters.models.demon import (
     DemonFaction,
     DemonHouse,
     DtFHuman,
+    Earthbound,
     Lore,
     LoreRating,
     Pact,
@@ -550,6 +551,21 @@ admin.site.register(Pact)
 class ThrallAdmin(admin.ModelAdmin):
     list_display = ("name", "owner", "master", "faith_potential")
     list_filter = ("owner", "master")
+
+
+@admin.register(Earthbound)
+class EarthboundAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "owner",
+        "house",
+        "faith",
+        "torment",
+        "reliquary_type",
+        "chronicle",
+        "status",
+    )
+    list_filter = ("owner", "house", "reliquary_type", "chronicle", "status")
 
 
 @admin.register(ApocalypticFormTrait)
