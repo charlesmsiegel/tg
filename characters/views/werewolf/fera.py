@@ -4,14 +4,20 @@ from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
+from characters.models.werewolf.ajaba import Ajaba
+from characters.models.werewolf.ananasi import Ananasi
 from characters.models.werewolf.bastet import Bastet
 from characters.models.werewolf.corax import Corax
 from characters.models.werewolf.fera import Fera
 from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.grondr import Grondr
 from characters.models.werewolf.gurahl import Gurahl
+from characters.models.werewolf.kitsune import Kitsune
 from characters.models.werewolf.mokole import Mokole
+from characters.models.werewolf.nagah import Nagah
 from characters.models.werewolf.nuwisha import Nuwisha
 from characters.models.werewolf.ratkin import Ratkin
+from characters.models.werewolf.rokea import Rokea
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
@@ -167,6 +173,18 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
             fields = ["breed", "role"]
         elif isinstance(obj, Gurahl):
             fields = ["breed", "auspice"]
+        elif isinstance(obj, Ananasi):
+            fields = ["breed", "aspect"]
+        elif isinstance(obj, Rokea):
+            fields = ["breed", "auspice"]
+        elif isinstance(obj, Kitsune):
+            fields = ["breed", "path"]
+        elif isinstance(obj, Nagah):
+            fields = ["breed", "auspice"]
+        elif isinstance(obj, Ajaba):
+            fields = ["breed", "auspice"]
+        elif isinstance(obj, Grondr):
+            fields = ["breed", "auspice"]
         else:
             # Generic Fera
             fields = ["breed", "faction"]
@@ -217,6 +235,28 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
                 form.fields[
                     "auspice"
                 ].help_text = "Choose your auspice (seasonal role)."
+        elif isinstance(obj, Ananasi):
+            if "aspect" in form.fields:
+                form.fields[
+                    "aspect"
+                ].help_text = "Choose your aspect (role among the Ananasi)."
+        elif isinstance(obj, Rokea):
+            if "auspice" in form.fields:
+                form.fields[
+                    "auspice"
+                ].help_text = "Choose your auspice (time of birth)."
+        elif isinstance(obj, Kitsune):
+            if "path" in form.fields:
+                form.fields["path"].help_text = "Choose your path (role in society)."
+        elif isinstance(obj, Nagah):
+            if "auspice" in form.fields:
+                form.fields["auspice"].help_text = "Choose your auspice (role as assassin)."
+        elif isinstance(obj, Ajaba):
+            if "auspice" in form.fields:
+                form.fields["auspice"].help_text = "Choose your auspice (lunar cycle)."
+        elif isinstance(obj, Grondr):
+            if "auspice" in form.fields:
+                form.fields["auspice"].help_text = "Choose your auspice (seasonal role)."
 
         return form
 
@@ -249,6 +289,24 @@ class FeraBreedFactionView(SpecialUserMixin, UpdateView):
             if "role" in form.changed_data and form.cleaned_data.get("role"):
                 obj.set_role(form.cleaned_data["role"])
         elif isinstance(obj, Gurahl):
+            if "auspice" in form.changed_data:
+                obj.set_auspice(form.cleaned_data["auspice"])
+        elif isinstance(obj, Ananasi):
+            if "aspect" in form.changed_data:
+                obj.set_aspect(form.cleaned_data["aspect"])
+        elif isinstance(obj, Rokea):
+            if "auspice" in form.changed_data:
+                obj.set_auspice(form.cleaned_data["auspice"])
+        elif isinstance(obj, Kitsune):
+            if "path" in form.changed_data:
+                obj.set_path(form.cleaned_data["path"])
+        elif isinstance(obj, Nagah):
+            if "auspice" in form.changed_data:
+                obj.set_auspice(form.cleaned_data["auspice"])
+        elif isinstance(obj, Ajaba):
+            if "auspice" in form.changed_data:
+                obj.set_auspice(form.cleaned_data["auspice"])
+        elif isinstance(obj, Grondr):
             if "auspice" in form.changed_data:
                 obj.set_auspice(form.cleaned_data["auspice"])
 
@@ -395,6 +453,54 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
         elif isinstance(obj, Gurahl) and obj.auspice:
             auspice_perm = GiftPermission.objects.filter(
                 shifter="gurahl", condition=obj.auspice
+            ).first()
+            if auspice_perm:
+                context["auspice_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=auspice_perm
+                ).order_by("name")
+        elif isinstance(obj, Ananasi) and obj.aspect:
+            aspect_perm = GiftPermission.objects.filter(
+                shifter="ananasi", condition=obj.aspect
+            ).first()
+            if aspect_perm:
+                context["aspect_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=aspect_perm
+                ).order_by("name")
+        elif isinstance(obj, Rokea) and obj.auspice:
+            auspice_perm = GiftPermission.objects.filter(
+                shifter="rokea", condition=obj.auspice
+            ).first()
+            if auspice_perm:
+                context["auspice_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=auspice_perm
+                ).order_by("name")
+        elif isinstance(obj, Kitsune) and obj.path:
+            path_perm = GiftPermission.objects.filter(
+                shifter="kitsune", condition=obj.path
+            ).first()
+            if path_perm:
+                context["path_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=path_perm
+                ).order_by("name")
+        elif isinstance(obj, Nagah) and obj.auspice:
+            auspice_perm = GiftPermission.objects.filter(
+                shifter="nagah", condition=obj.auspice
+            ).first()
+            if auspice_perm:
+                context["auspice_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=auspice_perm
+                ).order_by("name")
+        elif isinstance(obj, Ajaba) and obj.auspice:
+            auspice_perm = GiftPermission.objects.filter(
+                shifter="ajaba", condition=obj.auspice
+            ).first()
+            if auspice_perm:
+                context["auspice_gifts"] = Gift.objects.filter(
+                    rank=1, allowed=auspice_perm
+                ).order_by("name")
+        elif isinstance(obj, Grondr) and obj.auspice:
+            auspice_perm = GiftPermission.objects.filter(
+                shifter="grondr", condition=obj.auspice
             ).first()
             if auspice_perm:
                 context["auspice_gifts"] = Gift.objects.filter(

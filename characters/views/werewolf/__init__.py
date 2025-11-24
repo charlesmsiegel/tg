@@ -11,6 +11,12 @@ from .charm import (
     SpiritCharmListView,
     SpiritCharmUpdateView,
 )
+from .drone import (
+    DroneBasicsView,
+    DroneCharacterCreationView,
+    DroneDetailView,
+    DroneUpdateView,
+)
 from .fera import (
     FeraBasicsView,
     FeraCharacterCreationView,
@@ -62,6 +68,11 @@ from .renownincident import (
     RenownIncidentUpdateView,
 )
 from .rite import RiteCreateView, RiteDetailView, RiteListView, RiteUpdateView
+from .septposition import (
+    SeptPositionCreateView,
+    SeptPositionDetailView,
+    SeptPositionUpdateView,
+)
 from .spirit import SpiritCreateView, SpiritDetailView, SpiritUpdateView
 from .totem import TotemCreateView, TotemDetailView, TotemListView, TotemUpdateView
 from .tribe import TribeCreateView, TribeDetailView, TribeListView, TribeUpdateView

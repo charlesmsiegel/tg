@@ -1,0 +1,43 @@
+{% extends "characters/core/character/detail.html" %}
+
+{% block objectname %}{{ object.name }}{% endblock %}
+
+{% block model_specific %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="tg-card" data-gameline="wta">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title wta_heading">Sept Position Details</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                                    Position Name
+                                </div>
+                                <div style="font-size: 1.25rem; font-weight: 700; color: var(--theme-text-primary);">
+                                    {{ object.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if object.description %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div style="padding: 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                    <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary); margin-bottom: 8px;">
+                                        Responsibilities
+                                    </div>
+                                    <div style="line-height: 1.6; color: var(--theme-text-primary);">
+                                        {{ object.description|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}

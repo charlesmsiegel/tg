@@ -82,4 +82,14 @@ urls = [
         views.werewolf.FomoriPowerCreateView.as_view(),
         name="fomoripower",
     ),
+    path(
+        "drone/",
+        views.werewolf.DroneBasicsView.as_view(),
+        name="drone",
+    ),
+    path(
+        "septposition/",
+        views.werewolf.SeptPositionCreateView.as_view(),
+        name="septposition",
+    ),
 ]

@@ -76,6 +76,46 @@ urls = [
         name="gurahl",
     ),
     path(
+        "ananasi/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="ananasi",
+    ),
+    path(
+        "rokea/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="rokea",
+    ),
+    path(
+        "kitsune/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="kitsune",
+    ),
+    path(
+        "nagah/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="nagah",
+    ),
+    path(
+        "ajaba/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="ajaba",
+    ),
+    path(
+        "grondr/<pk>/",
+        views.werewolf.FeraDetailView.as_view(),
+        name="grondr",
+    ),
+    path(
+        "drone/<pk>/",
+        views.werewolf.DroneDetailView.as_view(),
+        name="drone",
+    ),
+    path(
+        "septposition/<pk>/",
+        views.werewolf.SeptPositionDetailView.as_view(),
+        name="septposition",
+    ),
+    path(
         "wtahuman/<int:pk>/template/",
         views.werewolf.WtAHumanTemplateSelectView.as_view(),
         name="wtahuman_template",
