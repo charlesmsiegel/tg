@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -108,6 +109,28 @@ class Book(models.Model):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        """Validate book data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Book name is required"
+
+        # Validate gameline is in valid choices
+        valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
+        if self.gameline not in valid_gamelines:
+            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class BookReference(models.Model):
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
@@ -119,6 +142,23 @@ class BookReference(models.Model):
 
     def __str__(self):
         return f"<i>{self.book}</i> p. {self.page}"
+
+    def clean(self):
+        """Validate book reference data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate page number is non-negative
+        if self.page < 0:
+            errors["page"] = "Page number cannot be negative"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Observer(models.Model):
@@ -157,6 +197,39 @@ class Observer(models.Model):
 
     def __str__(self):
         return f"{self.user.username} observing {self.content_object}"
+
+    def clean(self):
+        """Validate observer data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate user is provided
+        if not self.user_id:
+            errors["user"] = "Observer must have a user"
+
+        # Validate content_type and object_id are provided
+        if not self.content_type_id:
+            errors["content_type"] = "Content type is required"
+
+        if not self.object_id:
+            errors["object_id"] = "Object ID is required"
+
+        # Validate the content object actually exists
+        if self.content_type_id and self.object_id:
+            try:
+                model_class = self.content_type.model_class()
+                if not model_class.objects.filter(pk=self.object_id).exists():
+                    errors["object_id"] = f"No {model_class.__name__} with ID {self.object_id} exists"
+            except Exception:
+                pass  # If content_type isn't loaded yet, skip this check
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class PermissionMixin(models.Model):
@@ -337,6 +410,32 @@ class Model(PermissionMixin, PolymorphicModel):
         elif short == "Wraith":
             return "Wraith: the Oblivion"
 
+    def clean(self):
+        """Validate model data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Name is required"
+
+        # Validate status is in valid choices
+        if self.status not in self.status_keys:
+            errors["status"] = f"Invalid status '{self.status}'. Must be one of: {', '.join(self.status_keys)}"
+
+        # Validate image_status is in valid choices
+        valid_image_statuses = ["sub", "app"]
+        if self.image_status not in valid_image_statuses:
+            errors["image_status"] = f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(valid_image_statuses)}"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class NewsItem(models.Model):
     title = models.CharField(default="", max_length=100)
@@ -356,6 +455,27 @@ class NewsItem(models.Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("create_newsitem")
+
+    def clean(self):
+        """Validate news item data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate title is not empty
+        if not self.title or not self.title.strip():
+            errors["title"] = "Title is required"
+
+        # Validate content is not empty
+        if not self.content or not self.content.strip():
+            errors["content"] = "Content is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Language(models.Model):
@@ -381,6 +501,27 @@ class Language(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def clean(self):
+        """Validate language data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Language name is required"
+
+        # Validate frequency is non-negative
+        if self.frequency < 0:
+            errors["frequency"] = "Frequency cannot be negative"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class Number(models.Model):
     value = models.IntegerField(default=0)
@@ -398,6 +539,23 @@ class Noun(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        """Validate noun data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Noun name is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class HouseRule(models.Model):
@@ -424,6 +582,28 @@ class HouseRule(models.Model):
         bookref = BookReference.objects.get_or_create(book=book, page=page_number)[0]
         self.sources.add(bookref)
         return self
+
+    def clean(self):
+        """Validate house rule data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "House rule name is required"
+
+        # Validate gameline is in valid choices
+        valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
+        if self.gameline not in valid_gamelines:
+            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class CharacterTemplate(Model):
@@ -613,6 +793,25 @@ class CharacterTemplate(Model):
         self.times_used += 1
         self.save(update_fields=["times_used"])
 
+    def clean(self):
+        """Validate character template data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate character_type is not empty
+        if not self.character_type or not self.character_type.strip():
+            errors["character_type"] = "Character type is required"
+
+        # Validate gameline is in valid choices (already done in Model, but verify)
+        valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
+        if self.gameline not in valid_gamelines:
+            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+
+        if errors:
+            raise ValidationError(errors)
+
+    # Note: save() method inherited from Model base class already calls full_clean()
+
 
 class TemplateApplication(models.Model):
     """
@@ -641,3 +840,20 @@ class TemplateApplication(models.Model):
         return (
             f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
         )
+
+    def clean(self):
+        """Validate template application data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate character is provided
+        if not self.character_id:
+            errors["character"] = "Character is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)

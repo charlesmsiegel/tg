@@ -51,6 +51,33 @@ class ObjectType(models.Model):
             + self.name
         )
 
+    def clean(self):
+        """Validate object type data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Object type name is required"
+
+        # Validate type is in valid choices
+        valid_types = ["char", "loc", "obj"]
+        if self.type not in valid_types:
+            errors["type"] = f"Invalid type '{self.type}'. Must be one of: {', '.join(valid_types)}"
+
+        # Validate gameline is in valid choices
+        valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
+        if self.gameline not in valid_gamelines:
+            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class SettingElement(models.Model):
     name = models.CharField(max_length=100, default="")
@@ -62,12 +89,46 @@ class SettingElement(models.Model):
     def get_absolute_url(self):
         return reverse("game:setting_element:detail", kwargs={"pk": self.pk})
 
+    def clean(self):
+        """Validate setting element data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Setting element name is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class Gameline(models.Model):
     name = models.CharField(max_length=100, default="")
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        """Validate gameline data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Gameline name is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Chronicle(models.Model):
@@ -184,6 +245,27 @@ class Chronicle(models.Model):
         """Check if user is a game ST in this chronicle."""
         return self.game_storytellers.filter(id=user.id).exists()
 
+    def clean(self):
+        """Validate chronicle data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Chronicle name is required"
+
+        # Validate year is reasonable
+        if self.year and (self.year < 1000 or self.year > 9999):
+            errors["year"] = "Year must be between 1000 and 9999"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class STRelationshipManager(models.Manager):
     """Custom manager for STRelationship with optimized queries."""
@@ -210,6 +292,27 @@ class STRelationship(models.Model):
             ),
         ]
 
+    def clean(self):
+        """Validate ST relationship data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate required foreign keys
+        if not self.user_id:
+            errors["user"] = "User is required"
+        if not self.chronicle_id:
+            errors["chronicle"] = "Chronicle is required"
+        if not self.gameline_id:
+            errors["gameline"] = "Gameline is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class Story(models.Model):
     name = models.CharField(max_length=100, default="")
@@ -219,6 +322,23 @@ class Story(models.Model):
 
     def get_absolute_url(self):
         return reverse("game:story:detail", kwargs={"pk": self.pk})
+
+    def clean(self):
+        """Validate story data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate name is not empty
+        if not self.name or not self.name.strip():
+            errors["name"] = "Story name is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Week(models.Model):
@@ -272,6 +392,23 @@ class Week(models.Model):
             .distinct()
             .order_by("name")
         )
+
+    def clean(self):
+        """Validate week data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate end_date is provided
+        if not self.end_date:
+            errors["end_date"] = "End date is required"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class SceneQuerySet(models.QuerySet):
