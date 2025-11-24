@@ -1,4 +1,4 @@
-from . import changeling, demon, mage, mummy, vampire, werewolf, wraith
+from . import changeling, demon, hunter, mage, mummy, vampire, werewolf, wraith
 from .core import (
     ItemModel,
     Material,

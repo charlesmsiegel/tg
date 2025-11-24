@@ -58,6 +58,11 @@
   color: var(--gameline-wto);
 }
 
+.header-card[data-gameline="htr"] .tg-card-title {
+  font-family: var(--font-family-htr);
+  color: var(--gameline-htr);
+}
+
 @media (max-width: 768px) {
   .header-card .tg-card-header {
     flex-direction: column;
@@ -310,6 +315,11 @@
 
 .tg-badge.badge-wto {
   background-color: var(--gameline-wto);
+  color: var(--color-white);
+}
+
+.tg-badge.badge-htr {
+  background-color: var(--gameline-htr);
   color: var(--color-white);
 }
 

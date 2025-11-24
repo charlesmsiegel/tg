@@ -231,6 +231,11 @@ GAMELINES = {
         "short": "MtR",
         "app_name": "mummy",
     },
+    "htr": {
+        "name": "Hunter: the Reckoning",
+        "short": "HtR",
+        "app_name": "hunter",
+    },
 }
 
 # Helper to get gameline choices for model fields
