@@ -75,16 +75,24 @@ from characters.models.vampire import (
     VtMHuman,
 )
 from characters.models.werewolf import (
+    Ajaba,
+    Ananasi,
     BattleScar,
     Camp,
+    Drone,
     Fomor,
     FomoriPower,
     Gift,
     GiftPermission,
+    Grondr,
     Kinfolk,
+    Kitsune,
+    Nagah,
     Pack,
     RenownIncident,
     Rite,
+    Rokea,
+    SeptPosition,
     SpiritCharacter,
     SpiritCharm,
     Totem,
@@ -408,6 +416,46 @@ class FomorAdmin(admin.ModelAdmin):
 
 @admin.register(FomoriPower)
 class FomoriPowerAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(Ananasi)
+class AnanasiAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "aspect", "cunning", "obedience", "wisdom")
+
+
+@admin.register(Rokea)
+class RokeaAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "auspice", "valor", "harmony", "innovation")
+
+
+@admin.register(Kitsune)
+class KitsuneAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "path", "chie", "toku", "kagayaki")
+
+
+@admin.register(Nagah)
+class NagahAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "auspice", "obligation", "wisdom", "subtlety")
+
+
+@admin.register(Ajaba)
+class AjabaAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "auspice", "ferocity", "obligation", "wisdom")
+
+
+@admin.register(Grondr)
+class GrondrAdmin(admin.ModelAdmin):
+    list_display = ("name", "breed", "auspice", "glory", "honor", "wisdom")
+
+
+@admin.register(Drone)
+class DroneAdmin(admin.ModelAdmin):
+    list_display = ("name", "bane_name", "bane_type", "rage", "gnosis")
+
+
+@admin.register(SeptPosition)
+class SeptPositionAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
