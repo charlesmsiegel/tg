@@ -107,3 +107,6 @@ remove_pycache.sh
 selenium_fix.sh
 SOURCES/
 populate_db/chronicles/
+
+### Claude Code ###
+.claude/settings.local.json
