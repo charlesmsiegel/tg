@@ -2,22 +2,20 @@
 Unit tests for permissions system.
 """
 
-import pytest
 from characters.models import Character
 from core.models import Observer
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
 from django.contrib.auth.models import User
+from django.test import TestCase
 from game.models import Chronicle
 
 
-@pytest.mark.django_db
-class TestPermissionManager:
+class TestPermissionManager(TestCase):
     """Tests for PermissionManager core functionality."""
 
-    @pytest.fixture
-    def users(self):
-        """Create test users."""
-        return {
+    def setUp(self):
+        """Create test users and data."""
+        self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com"),
             "head_st": User.objects.create_user("head_st", "head_st@test.com"),
             "game_st": User.objects.create_user("game_st", "game_st@test.com"),
@@ -27,319 +25,376 @@ class TestPermissionManager:
             "admin": User.objects.create_user("admin", "admin@test.com", is_staff=True),
         }
 
-    @pytest.fixture
-    def chronicle(self, users):
-        """Create test chronicle."""
-        chron = Chronicle.objects.create(
-            name="Test Chronicle", head_st=users["head_st"]
+        # Create test chronicle
+        self.chronicle = Chronicle.objects.create(
+            name="Test Chronicle", head_st=self.users["head_st"]
         )
         # Add game ST
-        chron.game_storytellers.add(users["game_st"])
-        return chron
+        self.chronicle.game_storytellers.add(self.users["game_st"])
 
-    @pytest.fixture
-    def character(self, users, chronicle):
-        """Create test character."""
-        char = Character.objects.create(
+        # Create test character
+        self.character = Character.objects.create(
             name="Test Character",
-            owner=users["owner"],
-            chronicle=chronicle,
+            owner=self.users["owner"],
+            chronicle=self.chronicle,
             status="App",
         )
 
         # Add observer
-        char.add_observer(users["observer"], users["owner"])
+        self.character.add_observer(self.users["observer"], self.users["owner"])
 
         # Add player character to chronicle
         Character.objects.create(
             name="Player's Character",
-            owner=users["player"],
-            chronicle=chronicle,
+            owner=self.users["player"],
+            chronicle=self.chronicle,
             status="App",
         )
 
-        return char
-
     # Role Detection Tests
 
-    def test_role_detection_owner(self, users, character):
+    def test_role_detection_owner(self):
         """Test that owner role is detected."""
-        roles = PermissionManager.get_user_roles(users["owner"], character)
-        assert Role.OWNER in roles
+        roles = PermissionManager.get_user_roles(self.users["owner"], self.character)
+        self.assertIn(Role.OWNER, roles)
 
-    def test_role_detection_head_st(self, users, character):
+    def test_role_detection_head_st(self):
         """Test that chronicle head ST role is detected."""
-        roles = PermissionManager.get_user_roles(users["head_st"], character)
-        assert Role.CHRONICLE_HEAD_ST in roles
+        roles = PermissionManager.get_user_roles(self.users["head_st"], self.character)
+        self.assertIn(Role.CHRONICLE_HEAD_ST, roles)
 
-    def test_role_detection_game_st(self, users, character):
+    def test_role_detection_game_st(self):
         """Test that game ST role is detected."""
-        roles = PermissionManager.get_user_roles(users["game_st"], character)
-        assert Role.GAME_ST in roles
+        roles = PermissionManager.get_user_roles(self.users["game_st"], self.character)
+        self.assertIn(Role.GAME_ST, roles)
 
-    def test_role_detection_player(self, users, character):
+    def test_role_detection_player(self):
         """Test that player role is detected."""
-        roles = PermissionManager.get_user_roles(users["player"], character)
-        assert Role.PLAYER in roles
+        roles = PermissionManager.get_user_roles(self.users["player"], self.character)
+        self.assertIn(Role.PLAYER, roles)
 
-    def test_role_detection_observer(self, users, character):
+    def test_role_detection_observer(self):
         """Test that observer role is detected."""
-        roles = PermissionManager.get_user_roles(users["observer"], character)
-        assert Role.OBSERVER in roles
+        roles = PermissionManager.get_user_roles(self.users["observer"], self.character)
+        self.assertIn(Role.OBSERVER, roles)
 
-    def test_role_detection_stranger(self, users, character):
+    def test_role_detection_stranger(self):
         """Test that stranger has no special roles."""
-        roles = PermissionManager.get_user_roles(users["stranger"], character)
-        assert Role.OWNER not in roles
-        assert Role.CHRONICLE_HEAD_ST not in roles
-        assert Role.GAME_ST not in roles
-        assert Role.PLAYER not in roles
-        assert Role.OBSERVER not in roles
-        assert Role.AUTHENTICATED in roles
+        roles = PermissionManager.get_user_roles(self.users["stranger"], self.character)
+        self.assertNotIn(Role.OWNER, roles)
+        self.assertNotIn(Role.CHRONICLE_HEAD_ST, roles)
+        self.assertNotIn(Role.GAME_ST, roles)
+        self.assertNotIn(Role.PLAYER, roles)
+        self.assertNotIn(Role.OBSERVER, roles)
+        self.assertIn(Role.AUTHENTICATED, roles)
 
     # Owner Permission Tests
 
-    def test_owner_can_view_full(self, users, character):
+    def test_owner_can_view_full(self):
         """Test owner has full view permission."""
-        assert PermissionManager.user_has_permission(
-            users["owner"], character, Permission.VIEW_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.VIEW_FULL
+            )
         )
 
-    def test_owner_cannot_edit_full(self, users, character):
+    def test_owner_cannot_edit_full(self):
         """Test owner does NOT have full edit permission."""
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.EDIT_FULL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.EDIT_FULL
+            )
         )
 
-    def test_owner_can_edit_limited(self, users, character):
+    def test_owner_can_edit_limited(self):
         """Test owner has limited edit permission (notes/journals)."""
-        assert PermissionManager.user_has_permission(
-            users["owner"], character, Permission.EDIT_LIMITED
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.EDIT_LIMITED
+            )
         )
 
-    def test_owner_can_spend_xp_when_approved(self, users, character):
+    def test_owner_can_spend_xp_when_approved(self):
         """Test owner can spend XP on approved character."""
-        character.status = "App"
-        assert PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_XP
+        self.character.status = "App"
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_XP
+            )
         )
 
-    def test_owner_cannot_spend_xp_when_unfinished(self, users, character):
+    def test_owner_cannot_spend_xp_when_unfinished(self):
         """Test owner cannot spend XP on unfinished character."""
-        character.status = "Un"
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_XP
+        self.character.status = "Un"
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_XP
+            )
         )
 
-    def test_owner_can_spend_freebies_when_unfinished(self, users, character):
+    def test_owner_can_spend_freebies_when_unfinished(self):
         """Test owner can spend freebies on unfinished character."""
-        character.status = "Un"
-        assert PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_FREEBIES
+        self.character.status = "Un"
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_FREEBIES
+            )
         )
 
     # ST Permission Tests
 
-    def test_head_st_can_view_full(self, users, character):
+    def test_head_st_can_view_full(self):
         """Test head ST has full view permission."""
-        assert PermissionManager.user_has_permission(
-            users["head_st"], character, Permission.VIEW_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["head_st"], self.character, Permission.VIEW_FULL
+            )
         )
 
-    def test_head_st_can_edit_full(self, users, character):
+    def test_head_st_can_edit_full(self):
         """Test head ST has full edit permission."""
-        assert PermissionManager.user_has_permission(
-            users["head_st"], character, Permission.EDIT_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["head_st"], self.character, Permission.EDIT_FULL
+            )
         )
 
-    def test_game_st_can_view_full(self, users, character):
+    def test_game_st_can_view_full(self):
         """Test game ST has full view permission."""
-        assert PermissionManager.user_has_permission(
-            users["game_st"], character, Permission.VIEW_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["game_st"], self.character, Permission.VIEW_FULL
+            )
         )
 
-    def test_game_st_cannot_edit(self, users, character):
+    def test_game_st_cannot_edit(self):
         """Test game ST does NOT have edit permission (read-only)."""
-        assert not PermissionManager.user_has_permission(
-            users["game_st"], character, Permission.EDIT_FULL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["game_st"], self.character, Permission.EDIT_FULL
+            )
         )
-        assert not PermissionManager.user_has_permission(
-            users["game_st"], character, Permission.EDIT_LIMITED
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["game_st"], self.character, Permission.EDIT_LIMITED
+            )
         )
 
-    def test_head_st_can_approve(self, users, character):
+    def test_head_st_can_approve(self):
         """Test head ST has approve permission."""
-        assert PermissionManager.user_has_permission(
-            users["head_st"], character, Permission.APPROVE
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["head_st"], self.character, Permission.APPROVE
+            )
         )
 
     # Player and Observer Permission Tests
 
-    def test_player_can_view_partial(self, users, character):
+    def test_player_can_view_partial(self):
         """Test player has partial view permission."""
-        assert PermissionManager.user_has_permission(
-            users["player"], character, Permission.VIEW_PARTIAL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["player"], self.character, Permission.VIEW_PARTIAL
+            )
         )
 
-    def test_player_cannot_view_full(self, users, character):
+    def test_player_cannot_view_full(self):
         """Test player does NOT have full view permission."""
-        assert not PermissionManager.user_has_permission(
-            users["player"], character, Permission.VIEW_FULL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["player"], self.character, Permission.VIEW_FULL
+            )
         )
 
-    def test_player_cannot_edit(self, users, character):
+    def test_player_cannot_edit(self):
         """Test player cannot edit."""
-        assert not PermissionManager.user_has_permission(
-            users["player"], character, Permission.EDIT_FULL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["player"], self.character, Permission.EDIT_FULL
+            )
         )
-        assert not PermissionManager.user_has_permission(
-            users["player"], character, Permission.EDIT_LIMITED
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["player"], self.character, Permission.EDIT_LIMITED
+            )
         )
 
-    def test_observer_can_view_partial(self, users, character):
+    def test_observer_can_view_partial(self):
         """Test observer has partial view permission."""
-        assert PermissionManager.user_has_permission(
-            users["observer"], character, Permission.VIEW_PARTIAL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["observer"], self.character, Permission.VIEW_PARTIAL
+            )
         )
 
-    def test_stranger_cannot_view(self, users, character):
+    def test_stranger_cannot_view(self):
         """Test stranger has no view permission."""
-        assert not PermissionManager.user_has_permission(
-            users["stranger"], character, Permission.VIEW_FULL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["stranger"], self.character, Permission.VIEW_FULL
+            )
         )
-        assert not PermissionManager.user_has_permission(
-            users["stranger"], character, Permission.VIEW_PARTIAL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["stranger"], self.character, Permission.VIEW_PARTIAL
+            )
         )
 
     # Admin Permission Tests
 
-    def test_admin_can_do_everything(self, users, character):
+    def test_admin_can_do_everything(self):
         """Test admin has all permissions."""
-        admin = users["admin"]
-        assert PermissionManager.user_has_permission(
-            admin, character, Permission.VIEW_FULL
+        admin = self.users["admin"]
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                admin, self.character, Permission.VIEW_FULL
+            )
         )
-        assert PermissionManager.user_has_permission(
-            admin, character, Permission.EDIT_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                admin, self.character, Permission.EDIT_FULL
+            )
         )
-        assert PermissionManager.user_has_permission(
-            admin, character, Permission.DELETE
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                admin, self.character, Permission.DELETE
+            )
         )
-        assert PermissionManager.user_has_permission(
-            admin, character, Permission.APPROVE
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                admin, self.character, Permission.APPROVE
+            )
         )
 
     # Visibility Tier Tests
 
-    def test_visibility_tier_owner(self, users, character):
+    def test_visibility_tier_owner(self):
         """Test owner gets FULL visibility tier."""
-        tier = PermissionManager.get_visibility_tier(users["owner"], character)
-        assert tier == VisibilityTier.FULL
+        tier = PermissionManager.get_visibility_tier(self.users["owner"], self.character)
+        self.assertEqual(tier, VisibilityTier.FULL)
 
-    def test_visibility_tier_game_st(self, users, character):
+    def test_visibility_tier_game_st(self):
         """Test game ST gets FULL visibility tier (but can't edit)."""
-        tier = PermissionManager.get_visibility_tier(users["game_st"], character)
-        assert tier == VisibilityTier.FULL
+        tier = PermissionManager.get_visibility_tier(self.users["game_st"], self.character)
+        self.assertEqual(tier, VisibilityTier.FULL)
 
-    def test_visibility_tier_player(self, users, character):
+    def test_visibility_tier_player(self):
         """Test player gets PARTIAL visibility tier."""
-        tier = PermissionManager.get_visibility_tier(users["player"], character)
-        assert tier == VisibilityTier.PARTIAL
+        tier = PermissionManager.get_visibility_tier(self.users["player"], self.character)
+        self.assertEqual(tier, VisibilityTier.PARTIAL)
 
-    def test_visibility_tier_stranger(self, users, character):
+    def test_visibility_tier_stranger(self):
         """Test stranger gets NONE visibility tier."""
-        tier = PermissionManager.get_visibility_tier(users["stranger"], character)
-        assert tier == VisibilityTier.NONE
+        tier = PermissionManager.get_visibility_tier(self.users["stranger"], self.character)
+        self.assertEqual(tier, VisibilityTier.NONE)
 
     # Status-Based Restriction Tests
 
-    def test_status_restriction_submitted(self, users, character):
+    def test_status_restriction_submitted(self):
         """Test owner cannot spend XP/freebies on submitted character."""
-        character.status = "Sub"
-        character.save()
+        self.character.status = "Sub"
+        self.character.save()
 
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_XP
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_XP
+            )
         )
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_FREEBIES
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_FREEBIES
+            )
         )
 
         # But head ST still can
-        assert PermissionManager.user_has_permission(
-            users["head_st"], character, Permission.EDIT_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["head_st"], self.character, Permission.EDIT_FULL
+            )
         )
 
-    def test_status_restriction_deceased(self, users, character):
+    def test_status_restriction_deceased(self):
         """Test owner cannot edit deceased character, but head ST and admin can."""
-        character.status = "Dec"
-        character.save()
+        self.character.status = "Dec"
+        self.character.save()
 
         # Owner cannot edit
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.SPEND_XP
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.SPEND_XP
+            )
         )
-        assert not PermissionManager.user_has_permission(
-            users["owner"], character, Permission.EDIT_LIMITED
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["owner"], self.character, Permission.EDIT_LIMITED
+            )
         )
 
         # Head ST can still edit (configurable)
-        assert PermissionManager.user_has_permission(
-            users["head_st"], character, Permission.EDIT_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["head_st"], self.character, Permission.EDIT_FULL
+            )
         )
 
         # Admin can still edit
-        assert PermissionManager.user_has_permission(
-            users["admin"], character, Permission.EDIT_FULL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                self.users["admin"], self.character, Permission.EDIT_FULL
+            )
         )
 
     # Observer Management Tests
 
-    def test_add_observer(self, users, character):
+    def test_add_observer(self):
         """Test adding an observer."""
         new_observer = User.objects.create_user("new_obs", "obs@test.com")
 
         # Add as observer
-        character.add_observer(new_observer, users["owner"])
+        self.character.add_observer(new_observer, self.users["owner"])
 
         # Check observer can view
-        assert PermissionManager.user_has_permission(
-            new_observer, character, Permission.VIEW_PARTIAL
+        self.assertTrue(
+            PermissionManager.user_has_permission(
+                new_observer, self.character, Permission.VIEW_PARTIAL
+            )
         )
 
-    def test_remove_observer(self, users, character):
+    def test_remove_observer(self):
         """Test removing an observer."""
         # Remove existing observer
-        character.remove_observer(users["observer"])
+        self.character.remove_observer(self.users["observer"])
 
         # Check observer can no longer view
-        assert not PermissionManager.user_has_permission(
-            users["observer"], character, Permission.VIEW_PARTIAL
+        self.assertFalse(
+            PermissionManager.user_has_permission(
+                self.users["observer"], self.character, Permission.VIEW_PARTIAL
+            )
         )
 
     # Model Method Tests
 
-    def test_model_user_can_view(self, users, character):
+    def test_model_user_can_view(self):
         """Test model's user_can_view method."""
-        assert character.user_can_view(users["owner"])
-        assert character.user_can_view(users["head_st"])
-        assert not character.user_can_view(users["stranger"])
+        self.assertTrue(self.character.user_can_view(self.users["owner"]))
+        self.assertTrue(self.character.user_can_view(self.users["head_st"]))
+        self.assertFalse(self.character.user_can_view(self.users["stranger"]))
 
-    def test_model_user_can_edit(self, users, character):
+    def test_model_user_can_edit(self):
         """Test model's user_can_edit method (EDIT_FULL)."""
-        assert not character.user_can_edit(users["owner"])
-        assert character.user_can_edit(users["head_st"])
-        assert not character.user_can_edit(users["game_st"])
+        self.assertFalse(self.character.user_can_edit(self.users["owner"]))
+        self.assertTrue(self.character.user_can_edit(self.users["head_st"]))
+        self.assertFalse(self.character.user_can_edit(self.users["game_st"]))
 
-    def test_model_user_can_spend_xp(self, users, character):
+    def test_model_user_can_spend_xp(self):
         """Test model's user_can_spend_xp method."""
-        character.status = "App"
-        assert character.user_can_spend_xp(users["owner"])
-        assert not character.user_can_spend_xp(users["player"])
+        self.character.status = "App"
+        self.assertTrue(self.character.user_can_spend_xp(self.users["owner"]))
+        self.assertFalse(self.character.user_can_spend_xp(self.users["player"]))
 
-    def test_model_user_can_spend_freebies(self, users, character):
+    def test_model_user_can_spend_freebies(self):
         """Test model's user_can_spend_freebies method."""
-        character.status = "Un"
-        assert character.user_can_spend_freebies(users["owner"])
-        character.status = "App"
-        assert not character.user_can_spend_freebies(users["owner"])
+        self.character.status = "Un"
+        self.assertTrue(self.character.user_can_spend_freebies(self.users["owner"]))
+        self.character.status = "App"
+        self.assertFalse(self.character.user_can_spend_freebies(self.users["owner"]))

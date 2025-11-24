@@ -12,18 +12,17 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import pytest
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
+from django.test import TransactionTestCase
 from game.models import Chronicle, Scene
 
 
-@pytest.mark.django_db(transaction=True)
-class TestConcurrentXPSpending:
+class TestConcurrentXPSpending(TransactionTestCase):
     """Test concurrent XP spending with race condition prevention."""
 
     def test_concurrent_spend_xp_race_condition_prevented(self):
@@ -78,16 +77,16 @@ class TestConcurrentXPSpending:
         character.refresh_from_db()
 
         # One should succeed, one should fail with insufficient XP
-        assert len(successful_spends) == 1, "Only one spend should succeed"
-        assert len(errors) == 1, "One spend should fail"
+        self.assertEqual(len(successful_spends), 1, "Only one spend should succeed")
+        self.assertEqual(len(errors), 1, "One spend should fail")
 
         # The error should be about insufficient XP
-        assert isinstance(errors[0], ValidationError)
-        assert "Insufficient XP" in str(errors[0])
+        self.assertIsInstance(errors[0], ValidationError)
+        self.assertIn("Insufficient XP", str(errors[0]))
 
         # Character should have 4 XP (10 - 6)
-        assert character.xp == 4
-        assert len(character.spent_xp) == 1
+        self.assertEqual(character.xp, 4)
+        self.assertEqual(len(character.spent_xp), 1)
 
     def test_concurrent_spend_xp_multiple_small_spends(self):
         """
@@ -130,10 +129,10 @@ class TestConcurrentXPSpending:
         character.refresh_from_db()
 
         # All should succeed
-        assert len(successful_spends) == 5
-        assert len(errors) == 0
-        assert character.xp == 5  # 20 - 15
-        assert len(character.spent_xp) == 5
+        self.assertEqual(len(successful_spends), 5)
+        self.assertEqual(len(errors), 0)
+        self.assertEqual(character.xp, 5)  # 20 - 15
+        self.assertEqual(len(character.spent_xp), 5)
 
     def test_concurrent_spend_xp_exceeds_balance(self):
         """
@@ -177,16 +176,15 @@ class TestConcurrentXPSpending:
 
         # Some should succeed, some should fail
         # At most 2 can succeed (2 * 4 = 8 <= 10)
-        assert len(successful_spends) <= 2
-        assert len(errors) >= 3
+        self.assertLessEqual(len(successful_spends), 2)
+        self.assertGreaterEqual(len(errors), 3)
 
         # Character XP should never be negative
-        assert character.xp >= 0
-        assert character.xp == 10 - (len(successful_spends) * 4)
+        self.assertGreaterEqual(character.xp, 0)
+        self.assertEqual(character.xp, 10 - (len(successful_spends) * 4))
 
 
-@pytest.mark.django_db(transaction=True)
-class TestApproveXPSpendRollback:
+class TestApproveXPSpendRollback(TransactionTestCase):
     """Test approve_xp_spend transaction rollback on failures."""
 
     def test_approve_xp_spend_rollback_on_invalid_trait(self):
@@ -221,7 +219,7 @@ class TestApproveXPSpendRollback:
 
         # Verify that the approval status did NOT change
         character.refresh_from_db()
-        assert character.spent_xp[0]["approved"] == "Pending"
+        self.assertEqual(character.spent_xp[0]["approved"], "Pending")
 
     def test_approve_xp_spend_rollback_on_constraint_violation(self):
         """
@@ -252,8 +250,8 @@ class TestApproveXPSpendRollback:
 
         # Verify rollback
         human.refresh_from_db()
-        assert human.spent_xp[0]["approved"] == "Pending"
-        assert human.strength == 3  # Unchanged
+        self.assertEqual(human.spent_xp[0]["approved"], "Pending")
+        self.assertEqual(human.strength, 3)  # Unchanged
 
     def test_approve_xp_spend_success_updates_both(self):
         """
@@ -279,9 +277,9 @@ class TestApproveXPSpendRollback:
 
         # Verify both changes persisted
         human.refresh_from_db()
-        assert human.spent_xp[0]["approved"] == "Approved"
-        assert human.strength == 4
-        assert "approved_at" in human.spent_xp[0]
+        self.assertEqual(human.spent_xp[0]["approved"], "Approved")
+        self.assertEqual(human.strength, 4)
+        self.assertIn("approved_at", human.spent_xp[0])
 
     def test_concurrent_approval_prevented(self):
         """
@@ -325,18 +323,17 @@ class TestApproveXPSpendRollback:
         thread2.join()
 
         # Only one should succeed
-        assert len(successful_approvals) == 1
-        assert len(errors) == 1
-        assert "already processed" in str(errors[0])
+        self.assertEqual(len(successful_approvals), 1)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("already processed", str(errors[0]))
 
         # Verify final state
         human.refresh_from_db()
-        assert human.spent_xp[0]["approved"] == "Approved"
-        assert human.strength == 4
+        self.assertEqual(human.spent_xp[0]["approved"], "Approved")
+        self.assertEqual(human.strength, 4)
 
 
-@pytest.mark.django_db(transaction=True)
-class TestAwardXPAtomicity:
+class TestAwardXPAtomicity(TransactionTestCase):
     """Test award_xp all-or-nothing behavior."""
 
     def test_award_xp_all_or_nothing_success(self):
@@ -359,15 +356,15 @@ class TestAwardXPAtomicity:
             count = scene.award_xp(awards)
 
         # All should receive XP
-        assert count == 3
+        self.assertEqual(count, 3)
         char1.refresh_from_db()
         char2.refresh_from_db()
         char3.refresh_from_db()
 
-        assert char1.xp == 1
-        assert char2.xp == 1
-        assert char3.xp == 1
-        assert scene.xp_given is True
+        self.assertEqual(char1.xp, 1)
+        self.assertEqual(char2.xp, 1)
+        self.assertEqual(char3.xp, 1)
+        self.assertTrue(scene.xp_given)
 
     def test_award_xp_rollback_on_character_error(self):
         """
@@ -389,9 +386,9 @@ class TestAwardXPAtomicity:
         # Award should succeed since both characters exist
         count = scene.award_xp(awards)
 
-        assert count == 2
+        self.assertEqual(count, 2)
         char1.refresh_from_db()
-        assert char1.xp == 1
+        self.assertEqual(char1.xp, 1)
 
     def test_award_xp_prevents_double_award(self):
         """
@@ -408,18 +405,18 @@ class TestAwardXPAtomicity:
 
         # First award succeeds
         count = scene.award_xp(awards)
-        assert count == 1
+        self.assertEqual(count, 1)
 
         char1.refresh_from_db()
-        assert char1.xp == 1
+        self.assertEqual(char1.xp, 1)
 
         # Second award fails
-        with pytest.raises(ValidationError, match="already been awarded"):
+        with self.assertRaisesMessage(ValidationError, "already been awarded"):
             scene.award_xp(awards)
 
         # XP unchanged
         char1.refresh_from_db()
-        assert char1.xp == 1
+        self.assertEqual(char1.xp, 1)
 
     def test_concurrent_award_xp_prevented(self):
         """
@@ -477,15 +474,15 @@ class TestAwardXPAtomicity:
         thread2.join()
 
         # Only one should succeed
-        assert len(successful_awards) == 1
-        assert len(errors) == 1
-        assert "already been awarded" in str(errors[0])
+        self.assertEqual(len(successful_awards), 1)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("already been awarded", str(errors[0]))
 
         # Characters should have XP awarded only once
         char1.refresh_from_db()
         char2.refresh_from_db()
-        assert char1.xp == 1
-        assert char2.xp == 1
+        self.assertEqual(char1.xp, 1)
+        self.assertEqual(char2.xp, 1)
 
     def test_award_xp_selective_awards(self):
         """
@@ -505,19 +502,18 @@ class TestAwardXPAtomicity:
 
         count = scene.award_xp(awards)
 
-        assert count == 2
+        self.assertEqual(count, 2)
 
         char1.refresh_from_db()
         char2.refresh_from_db()
         char3.refresh_from_db()
 
-        assert char1.xp == 1
-        assert char2.xp == 0  # No XP
-        assert char3.xp == 1
+        self.assertEqual(char1.xp, 1)
+        self.assertEqual(char2.xp, 0)  # No XP
+        self.assertEqual(char3.xp, 1)
 
 
-@pytest.mark.django_db(transaction=True)
-class TestSelectForUpdateLocking:
+class TestSelectForUpdateLocking(TransactionTestCase):
     """Test select_for_update() prevents race conditions."""
 
     def test_select_for_update_locks_row(self):
@@ -561,11 +557,11 @@ class TestSelectForUpdateLocking:
         thread2.join()
 
         # First should complete before second (due to locking)
-        assert completion_order == ["first", "second"]
+        self.assertEqual(completion_order, ["first", "second"])
 
         # Both modifications should apply
         character.refresh_from_db()
-        assert character.xp == 12  # 10 + 1 + 1
+        self.assertEqual(character.xp, 12)  # 10 + 1 + 1
 
     def test_select_for_update_without_transaction_warning(self):
         """
@@ -582,7 +578,7 @@ class TestSelectForUpdateLocking:
             locked_char.save()
 
         character.refresh_from_db()
-        assert character.xp == 15
+        self.assertEqual(character.xp, 15)
 
     def test_multiple_row_locking(self):
         """
@@ -608,12 +604,11 @@ class TestSelectForUpdateLocking:
         char1.refresh_from_db()
         char2.refresh_from_db()
 
-        assert char1.xp == 15
-        assert char2.xp == 30
+        self.assertEqual(char1.xp, 15)
+        self.assertEqual(char2.xp, 30)
 
 
-@pytest.mark.django_db(transaction=True)
-class TestTransactionIntegrityScenarios:
+class TestTransactionIntegrityScenarios(TransactionTestCase):
     """Integration tests for complex transaction scenarios."""
 
     def test_spend_and_approve_workflow(self):
@@ -635,9 +630,9 @@ class TestTransactionIntegrityScenarios:
             )
 
         human.refresh_from_db()
-        assert human.xp == 15
-        assert len(human.spent_xp) == 1
-        assert human.spent_xp[0]["approved"] == "Pending"
+        self.assertEqual(human.xp, 15)
+        self.assertEqual(len(human.spent_xp), 1)
+        self.assertEqual(human.spent_xp[0]["approved"], "Pending")
 
         # Approve XP
         with transaction.atomic():
@@ -646,8 +641,8 @@ class TestTransactionIntegrityScenarios:
             )
 
         human.refresh_from_db()
-        assert human.strength == 4
-        assert human.spent_xp[0]["approved"] == "Approved"
+        self.assertEqual(human.strength, 4)
+        self.assertEqual(human.spent_xp[0]["approved"], "Approved")
 
     def test_multiple_spends_and_selective_approval(self):
         """
@@ -667,17 +662,17 @@ class TestTransactionIntegrityScenarios:
         human.spend_xp("dexterity", "Dexterity", 5, "attributes")
 
         human.refresh_from_db()
-        assert human.xp == 20
-        assert len(human.spent_xp) == 2
+        self.assertEqual(human.xp, 20)
+        self.assertEqual(len(human.spent_xp), 2)
 
         # Approve strength
         human.approve_xp_spend(0, "strength", 4)
 
         human.refresh_from_db()
-        assert human.strength == 4
-        assert human.dexterity == 3  # Not yet approved
-        assert human.spent_xp[0]["approved"] == "Approved"
-        assert human.spent_xp[1]["approved"] == "Pending"
+        self.assertEqual(human.strength, 4)
+        self.assertEqual(human.dexterity, 3)  # Not yet approved
+        self.assertEqual(human.spent_xp[0]["approved"], "Approved")
+        self.assertEqual(human.spent_xp[1]["approved"], "Pending")
 
     def test_rollback_preserves_initial_state(self):
         """
@@ -703,8 +698,5 @@ class TestTransactionIntegrityScenarios:
 
         # State should be unchanged
         character.refresh_from_db()
-        assert character.xp == initial_xp
-        assert len(character.spent_xp) == 0
-
-
-# Run tests with: pytest characters/tests/core/test_transaction_integration.py -v
+        self.assertEqual(character.xp, initial_xp)
+        self.assertEqual(len(character.spent_xp), 0)
