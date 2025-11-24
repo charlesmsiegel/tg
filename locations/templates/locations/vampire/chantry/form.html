@@ -1,0 +1,128 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Tremere Chantry
+{% endblock creation_title %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title vtm_heading">Chantry Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.parent.id_for_label }}" class="form-label">Parent Location</label>
+                    {{ form.parent }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.size.id_for_label }}" class="form-label">Size (1-5 dots)</label>
+                    {{ form.size }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.security_level.id_for_label }}" class="form-label">Security Level (1-5 dots)</label>
+                    {{ form.security_level }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.library_rating.id_for_label }}" class="form-label">Library Rating (0-5 dots)</label>
+                    {{ form.library_rating }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.ritual_rooms.id_for_label }}" class="form-label">Ritual Rooms</label>
+                    {{ form.ritual_rooms }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.blood_vault_capacity.id_for_label }}" class="form-label">Blood Vault Capacity</label>
+                    {{ form.blood_vault_capacity }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.pyramid_level.id_for_label }}" class="form-label">Pyramid Level (1-5)</label>
+                    {{ form.pyramid_level }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.regent_name.id_for_label }}" class="form-label">Regent Name</label>
+                    {{ form.regent_name }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.resident_count.id_for_label }}" class="form-label">Resident Count</label>
+                    {{ form.resident_count }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.apprentice_count.id_for_label }}" class="form-label">Apprentice Count</label>
+                    {{ form.apprentice_count }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.reports_to.id_for_label }}" class="form-label">Reports To</label>
+                    {{ form.reports_to }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Features</h6>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_wards }}
+                        <label class="form-check-label" for="{{ form.has_wards.id_for_label }}">
+                            Has Wards
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_sanctum }}
+                        <label class="form-check-label" for="{{ form.has_sanctum.id_for_label }}">
+                            Has Sanctum
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_blood_forge }}
+                        <label class="form-check-label" for="{{ form.has_blood_forge.id_for_label }}">
+                            Has Blood Forge
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_scrying_chamber }}
+                        <label class="form-check-label" for="{{ form.has_scrying_chamber.id_for_label }}">
+                            Has Scrying Chamber
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        {{ form.has_gargoyle_guardians }}
+                        <label class="form-check-label" for="{{ form.has_gargoyle_guardians.id_for_label }}">
+                            Has Gargoyle Guardians
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}

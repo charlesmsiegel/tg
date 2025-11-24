@@ -24,6 +24,11 @@ urls = [
         name="ghoul",
     ),
     path(
+        "revenant/<pk>/",
+        views.vampire.RevenantUpdateView.as_view(),
+        name="revenant",
+    ),
+    path(
         "clan/<pk>/",
         views.vampire.VampireClanUpdateView.as_view(),
         name="clan",

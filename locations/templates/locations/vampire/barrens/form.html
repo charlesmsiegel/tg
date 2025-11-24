@@ -1,0 +1,169 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Barrens
+{% endblock creation_title %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title vtm_heading">Barrens Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.parent.id_for_label }}" class="form-label">Parent Location</label>
+                    {{ form.parent }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.size.id_for_label }}" class="form-label">Size (1-5 dots)</label>
+                    {{ form.size }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.danger_level.id_for_label }}" class="form-label">Danger Level (1-5)</label>
+                    {{ form.danger_level }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.population_density.id_for_label }}" class="form-label">Population Density (0-5)</label>
+                    {{ form.population_density }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.barrens_type.id_for_label }}" class="form-label">Barrens Type</label>
+                    {{ form.barrens_type }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.controlling_faction.id_for_label }}" class="form-label">Controlling Faction</label>
+                    {{ form.controlling_faction }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Control Status</h6>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.is_contested }}
+                        <label class="form-check-label" for="{{ form.is_contested.id_for_label }}">
+                            Contested
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.is_anarch_territory }}
+                        <label class="form-check-label" for="{{ form.is_anarch_territory.id_for_label }}">
+                            Anarch Territory
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.is_sabbat_territory }}
+                        <label class="form-check-label" for="{{ form.is_sabbat_territory.id_for_label }}">
+                            Sabbat Territory
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.is_unclaimed }}
+                        <label class="form-check-label" for="{{ form.is_unclaimed.id_for_label }}">
+                            Unclaimed
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Resources</h6>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.has_feeding_grounds }}
+                        <label class="form-check-label" for="{{ form.has_feeding_grounds.id_for_label }}">
+                            Has Feeding Grounds
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.has_shelter }}
+                        <label class="form-check-label" for="{{ form.has_shelter.id_for_label }}">
+                            Has Shelter
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.has_resources }}
+                        <label class="form-check-label" for="{{ form.has_resources.id_for_label }}">
+                            Has Resources
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="{{ form.feeding_quality.id_for_label }}" class="form-label">Feeding Quality (1-5)</label>
+                    {{ form.feeding_quality }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h6 class="vtm_heading mb-2">Threats</h6>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.lupine_activity }}
+                        <label class="form-check-label" for="{{ form.lupine_activity.id_for_label }}">
+                            Lupine Activity
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.hunter_activity }}
+                        <label class="form-check-label" for="{{ form.hunter_activity.id_for_label }}">
+                            Hunter Activity
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        {{ form.mortal_gang_activity }}
+                        <label class="form-check-label" for="{{ form.mortal_gang_activity.id_for_label }}">
+                            Mortal Gang Activity
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="{{ form.masquerade_threat.id_for_label }}" class="form-label">Masquerade Threat (1-5)</label>
+                    {{ form.masquerade_threat }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.notable_locations.id_for_label }}" class="form-label">Notable Locations</label>
+                    {{ form.notable_locations }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}

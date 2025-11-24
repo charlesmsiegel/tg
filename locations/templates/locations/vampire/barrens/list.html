@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title vtm_heading">Barrens</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:vampire:create:barrens' %}" class="btn btn-primary mb-3">Create New Barrens</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Control</th>
+                        <th>Size</th>
+                        <th>Danger Level</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for barrens in object_list %}
+                    <tr>
+                        <td><a href="{{ barrens.get_absolute_url }}">{{ barrens.name }}</a></td>
+                        <td>{% if barrens.parent %}<a href="{{ barrens.parent.get_absolute_url }}">{{ barrens.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ barrens.get_control_status }}</td>
+                        <td>{{ barrens.size|dots }}</td>
+                        <td>{{ barrens.danger_level|dots }}</td>
+                        <td>{{ barrens.barrens_type|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No barrens found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

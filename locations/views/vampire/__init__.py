@@ -1,5 +1,12 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from locations.models.vampire import Domain, Elysium, Haven, Rack
+from locations.models.vampire import (
+    Barrens,
+    Domain,
+    Elysium,
+    Haven,
+    Rack,
+    TremereChantry,
+)
 
 
 # Haven Views
@@ -194,3 +201,133 @@ class RackListView(ListView):
     model = Rack
     ordering = ["name"]
     template_name = "locations/vampire/rack/list.html"
+
+
+# TremereChantry Views
+class TremereChantryDetailView(DetailView):
+    model = TremereChantry
+    template_name = "locations/vampire/chantry/detail.html"
+
+
+class TremereChantryCreateView(CreateView):
+    model = TremereChantry
+    fields = [
+        "name",
+        "description",
+        "parent",
+        "size",
+        "security_level",
+        "library_rating",
+        "ritual_rooms",
+        "blood_vault_capacity",
+        "regent_name",
+        "resident_count",
+        "apprentice_count",
+        "has_wards",
+        "has_sanctum",
+        "has_blood_forge",
+        "has_scrying_chamber",
+        "has_gargoyle_guardians",
+        "pyramid_level",
+        "reports_to",
+    ]
+    template_name = "locations/vampire/chantry/form.html"
+
+
+class TremereChantryUpdateView(UpdateView):
+    model = TremereChantry
+    fields = [
+        "name",
+        "description",
+        "parent",
+        "size",
+        "security_level",
+        "library_rating",
+        "ritual_rooms",
+        "blood_vault_capacity",
+        "regent_name",
+        "resident_count",
+        "apprentice_count",
+        "has_wards",
+        "has_sanctum",
+        "has_blood_forge",
+        "has_scrying_chamber",
+        "has_gargoyle_guardians",
+        "pyramid_level",
+        "reports_to",
+    ]
+    template_name = "locations/vampire/chantry/form.html"
+
+
+class TremereChantryListView(ListView):
+    model = TremereChantry
+    ordering = ["name"]
+    template_name = "locations/vampire/chantry/list.html"
+
+
+# Barrens Views
+class BarrensDetailView(DetailView):
+    model = Barrens
+    template_name = "locations/vampire/barrens/detail.html"
+
+
+class BarrensCreateView(CreateView):
+    model = Barrens
+    fields = [
+        "name",
+        "description",
+        "parent",
+        "size",
+        "danger_level",
+        "population_density",
+        "is_contested",
+        "is_anarch_territory",
+        "is_sabbat_territory",
+        "is_unclaimed",
+        "controlling_faction",
+        "has_feeding_grounds",
+        "feeding_quality",
+        "has_shelter",
+        "has_resources",
+        "masquerade_threat",
+        "lupine_activity",
+        "hunter_activity",
+        "mortal_gang_activity",
+        "barrens_type",
+        "notable_locations",
+    ]
+    template_name = "locations/vampire/barrens/form.html"
+
+
+class BarrensUpdateView(UpdateView):
+    model = Barrens
+    fields = [
+        "name",
+        "description",
+        "parent",
+        "size",
+        "danger_level",
+        "population_density",
+        "is_contested",
+        "is_anarch_territory",
+        "is_sabbat_territory",
+        "is_unclaimed",
+        "controlling_faction",
+        "has_feeding_grounds",
+        "feeding_quality",
+        "has_shelter",
+        "has_resources",
+        "masquerade_threat",
+        "lupine_activity",
+        "hunter_activity",
+        "mortal_gang_activity",
+        "barrens_type",
+        "notable_locations",
+    ]
+    template_name = "locations/vampire/barrens/form.html"
+
+
+class BarrensListView(ListView):
+    model = Barrens
+    ordering = ["name"]
+    template_name = "locations/vampire/barrens/list.html"
