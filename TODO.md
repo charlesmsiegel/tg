@@ -46,21 +46,11 @@ This document tracks remaining work across the codebase with context about what 
    - **Dependencies**: Requires authentication (task #3) to be in place
    - **Independence**: Can be done after task #3 is complete
 
-5. **Replace `.get()` with `get_object_or_404()`**
-   - **Files**: `game/views.py:27, 76, 87, 121, 134, 250`
-   - **Issue**: Using `.get()` causes 500 errors instead of proper 404 responses
-   - **Action**:
-     - Import: `from django.shortcuts import get_object_or_404`
-     - Replace: `Chronicle.objects.get(pk=pk)` → `get_object_or_404(Chronicle, pk=pk)`
-     - Apply to all `.get()` calls in view methods
-   - **Context**: get_object_or_404 raises Http404 (user-friendly) instead of DoesNotExist (500 error)
-   - **Independence**: Standalone task - can be done independently
-
 ### Code Quality & Redundancy Cleanup
 
 **Note**: Task #6 "Eliminate Duplicate Limited Edit Forms" was completed - factory function implemented in `characters/forms/core/limited_edit.py`.
 
-7. **Update Deprecated Mixin Import Paths**
+6. **Update Deprecated Mixin Import Paths**
    - **Files Affected**: 18 character view files
    - **Impact**: MEDIUM - Confusing import patterns, extra files to maintain
    - **Issue**: Despite consolidation to `core.mixins`, many files still import from deprecated shims
@@ -917,9 +907,8 @@ Models needing full implementation:
 
 1. **Security Quick Wins** (High Priority - Independent) 🔥
    - Fix class name typo (Medium #11) - 5 minutes
-   - Replace `.get()` with `get_object_or_404()` (High #5) - 30 minutes
    - Add authentication to views (High #3) - 1 hour
-   - Update deprecated mixin imports (High #7) - 1-2 hours
+   - Update deprecated mixin imports (High #6) - 1-2 hours
 
 2. **Code Quality Cleanup** (High Priority - Independent) 🔥
    - ✅ ~~Eliminate duplicate Limited Edit Forms~~ - COMPLETED
@@ -985,12 +974,12 @@ Models needing full implementation:
 - 🔵 Deployment: 7 items (staging + production deployments)
 
 **By Independence**:
-- ✅ Fully Independent: ~40 items (can be done immediately)
+- ✅ Fully Independent: ~39 items (can be done immediately)
 - ⚠️ Minor Dependencies: ~10 items (depends on 1-2 other tasks)
 - 🔗 Complex Dependencies: ~5 items (large refactors requiring planning)
 
 **Estimated Effort** (for independent tasks):
-- High Priority Quick Wins: 4-8 hours
+- High Priority Quick Wins: 3.5-7.5 hours
 - Medium Priority Tools & Testing: 8-16 hours
 - Performance Improvements: 4-8 hours
 - Code Quality Cleanup: 4-8 hours
@@ -998,4 +987,4 @@ Models needing full implementation:
 ---
 
 **Last Updated**: 2025-11-23
-**Version**: 5.0 (Removed completed tasks, added context and independence)
+**Version**: 5.1 (Removed completed 404 error handling task)
