@@ -1,1 +1,1 @@
-from . import core, mage
+from . import core, mage, vampire

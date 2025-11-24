@@ -52,6 +52,9 @@ class VampireArtifact(ItemModel):
         verbose_name = "Vampire Artifact"
         verbose_name_plural = "Vampire Artifacts"
 
+    def get_absolute_url(self):
+        return reverse("items:vampire:artifact", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("items:vampire:update:artifact", args=[str(self.id)])
 
