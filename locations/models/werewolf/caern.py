@@ -5,6 +5,7 @@ from locations.models.core.location import LocationModel
 
 class Caern(LocationModel):
     type = "caern"
+    gameline = "wta"
 
     rank = models.IntegerField(default=0)
 

@@ -40,6 +40,7 @@ class Chantry(BackgroundBlock, LocationModel):
     }
 
     type = "chantry"
+    gameline = "mta"
 
     faction = models.ForeignKey(
         "characters.MageFaction", blank=True, null=True, on_delete=models.SET_NULL

@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Totem(Model):
     type = "totem"
+    gameline = "wta"
 
     TYPES = [
         ("respect", "Respect"),

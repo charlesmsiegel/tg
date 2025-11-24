@@ -8,6 +8,7 @@ class Thrall(DtFHuman):
     """Mortal servant bound to a demon through a pact."""
 
     type = "thrall"
+    gameline = "dtf"
 
     freebie_step = 6
 

@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Coterie(Group):
     type = "coterie"
+    gameline = "vtm"
 
     class Meta:
         verbose_name = "Coterie"

@@ -7,6 +7,7 @@ class DemonFaction(Model):
     """Represents one of the five major demon factions (Luciferans, Faustians, etc.)."""
 
     type = "demon_faction"
+    gameline = "dtf"
 
     philosophy = models.TextField(default="")
     goal = models.TextField(default="")

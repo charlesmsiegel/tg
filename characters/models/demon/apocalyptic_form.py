@@ -7,6 +7,7 @@ class ApocalypticFormTrait(Model):
     """Represents a specific ability/trait available in apocalyptic form."""
 
     type = "apocalyptic_form_trait"
+    gameline = "dtf"
 
     # Description of what this trait does
     description = models.TextField(default="")

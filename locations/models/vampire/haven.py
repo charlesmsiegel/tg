@@ -21,6 +21,7 @@ class Haven(LocationModel):
     """
 
     type = "haven"
+    gameline = "vtm"
 
     # Haven attributes (Background dots)
     size = models.IntegerField(default=1, choices=HavenSizeChoices.choices)

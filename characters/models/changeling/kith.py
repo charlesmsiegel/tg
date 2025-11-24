@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Kith(Model):
     type = "kith"
+    gameline = "ctd"
 
     affinity = models.CharField(max_length=20, default="")
     birthrights = models.JSONField(default=list)

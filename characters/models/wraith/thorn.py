@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Thorn(Model):
     type = "thorn"
+    gameline = "wto"
 
     THORN_TYPE_CHOICES = [
         ("individual", "Individual Thorn"),

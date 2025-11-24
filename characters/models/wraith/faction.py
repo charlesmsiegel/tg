@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class WraithFaction(Model):
     type = "wraith_faction"
+    gameline = "wto"
 
     FACTION_TYPE_CHOICES = [
         ("legion", "Legion"),

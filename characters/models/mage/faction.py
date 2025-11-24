@@ -10,6 +10,7 @@ from .focus import Paradigm, Practice
 
 class MageFaction(Model):
     type = "mage_faction"
+    gameline = "mta"
 
     languages = models.ManyToManyField(Language, blank=True)
     affinities = models.ManyToManyField(Sphere, blank=True)

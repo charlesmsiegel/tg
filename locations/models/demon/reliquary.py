@@ -13,6 +13,7 @@ class Reliquary(LocationModel):
     """
 
     type = "reliquary"
+    gameline = "dtf"
 
     # Reliquary types
     RELIQUARY_TYPES = [

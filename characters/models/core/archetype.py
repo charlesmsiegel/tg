@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Archetype(Model):
     type = "archetype"
+    gameline = "wod"
 
     class Meta:
         verbose_name = "Archetype"

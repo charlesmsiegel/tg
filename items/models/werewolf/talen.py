@@ -10,6 +10,7 @@ class Talen(Wonder):
     """
 
     type = "talen"
+    gameline = "wta"
 
     gnosis = models.IntegerField(default=0)
     spirit = models.CharField(default="", max_length=200)

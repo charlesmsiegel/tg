@@ -8,6 +8,7 @@ from game.models import ObjectType
 
 class MeritFlaw(Model):
     type = "merit_flaw"
+    gameline = "wod"
 
     ratings = models.ManyToManyField(Number, blank=True)
     max_rating = models.IntegerField(default=0)

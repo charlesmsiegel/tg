@@ -10,6 +10,7 @@ class VampireSect(Model):
     """
 
     type = "vampire_sect"
+    gameline = "vtm"
 
     # Sect description
     philosophy = models.TextField(blank=True)

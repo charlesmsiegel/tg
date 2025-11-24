@@ -10,6 +10,7 @@ class Domain(LocationModel):
     """
 
     type = "domain"
+    gameline = "vtm"
 
     # Domain size and quality
     size = models.IntegerField(

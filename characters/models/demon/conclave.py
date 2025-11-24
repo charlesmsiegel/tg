@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Conclave(Group):
     type = "conclave"
+    gameline = "dtf"
 
     class Meta:
         verbose_name = "Conclave"

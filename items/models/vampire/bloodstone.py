@@ -10,6 +10,7 @@ class Bloodstone(ItemModel):
     """
 
     type = "bloodstone"
+    gameline = "vtm"
 
     # Blood storage
     blood_stored = models.IntegerField(

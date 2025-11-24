@@ -6,6 +6,7 @@ from django.urls import reverse
 
 class Tribe(Model):
     type = "tribe"
+    gameline = "wta"
 
     willpower = models.IntegerField(default=3)
 

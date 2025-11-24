@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Specialty(Model):
     type = "specialty"
+    gameline = "wod"
 
     stat = models.CharField(max_length=100)
 

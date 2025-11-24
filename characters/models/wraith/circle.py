@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Circle(Group):
     type = "circle"
+    gameline = "wto"
 
     class Meta:
         verbose_name = "Circle"

@@ -5,6 +5,7 @@ from items.models.core import ItemModel
 
 class WraithArtifact(ItemModel):
     type = "artifact"
+    gameline = "wto"
 
     level = models.IntegerField(default=1)
     background_cost = models.IntegerField(default=0)

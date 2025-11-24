@@ -7,6 +7,7 @@ class Ritual(Model):
     """Represents a Demon ritual that can be learned and performed."""
 
     type = "ritual"
+    gameline = "dtf"
 
     # Which house this ritual belongs to
     house = models.ForeignKey(

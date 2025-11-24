@@ -57,6 +57,7 @@ class ParadoxRealm(HorizonRealm):
     """
 
     type = "paradox_realm"
+    gameline = "mta"
 
     primary_sphere = models.CharField(
         max_length=20,

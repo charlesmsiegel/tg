@@ -7,6 +7,7 @@ class Relic(ItemModel):
     """Demonic artifact or relic."""
 
     type = "relic"
+    gameline = "dtf"
 
     # Type of relic
     relic_type = models.CharField(

@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class SpiritCharm(Model):
     type = "spirit_charm"
+    gameline = "wta"
 
     essence_cost = models.IntegerField(default=0)
     point_cost = models.IntegerField(default=0)

@@ -7,6 +7,7 @@ class Haunt(LocationModel):
     """Faith-rich location where the Veil is weakened."""
 
     type = "haunt"
+    gameline = "wto"
 
     rank = models.IntegerField(default=1)
     shroud_rating = models.IntegerField(default=5)

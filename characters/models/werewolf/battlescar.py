@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class BattleScar(Model):
     type = "battle_scar"
+    gameline = "wta"
 
     glory = models.IntegerField(default=0)
 

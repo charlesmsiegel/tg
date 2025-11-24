@@ -6,6 +6,7 @@ from django.urls import reverse
 
 class RenownIncident(Model):
     type = "renown_incident"
+    gameline = "wta"
 
     glory = models.IntegerField(default=0)
     honor = models.IntegerField(default=0)

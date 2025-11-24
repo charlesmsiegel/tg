@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Motley(Group):
     type = "motley"
+    gameline = "ctd"
 
     class Meta:
         verbose_name = "Motley"

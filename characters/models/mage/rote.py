@@ -9,6 +9,7 @@ from django.urls import reverse
 
 class Rote(Model):
     type = "rote"
+    gameline = "mta"
 
     effect = models.ForeignKey(Effect, on_delete=models.SET_NULL, null=True)
     practice = models.ForeignKey(

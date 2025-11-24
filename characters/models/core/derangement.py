@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class Derangement(Model):
     type = "derangement"
+    gameline = "wod"
 
     class Meta:
         verbose_name = "Derangement"

@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Rite(Model):
     type = "rite"
+    gameline = "wta"
 
     level = models.IntegerField(default=0)
     rite_type = models.CharField(max_length=100, default="")

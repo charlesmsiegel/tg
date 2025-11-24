@@ -10,6 +10,7 @@ class Cantrip(Model):
     """
 
     type = "cantrip"
+    gameline = "ctd"
 
     # Art system
     art = models.CharField(

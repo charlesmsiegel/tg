@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Guild(Model):
     type = "guild"
+    gameline = "wto"
 
     GUILD_TYPE_CHOICES = [
         ("greater", "Greater Guild"),

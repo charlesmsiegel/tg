@@ -305,6 +305,7 @@ class PermissionMixin(models.Model):
 
 class Model(PermissionMixin, PolymorphicModel):
     type = "model"
+    gameline = "wod"  # Default gameline; override in subclasses
 
     name = models.CharField(max_length=100)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -390,25 +391,24 @@ class Model(PermissionMixin, PolymorphicModel):
         return self
 
     def get_gameline(self):
-        s = str(self.__class__).split(" ")[-1].split(".")[2]
-        if s == "core":
-            return "World of Darkness"
-        return str(self.__class__).split(" ")[-1].split(".")[2].title()
+        """
+        Get the gameline code for this model.
+
+        Returns:
+            str: Gameline code (e.g., 'vtm', 'wta', 'wod')
+        """
+        return self.__class__.gameline
 
     def get_full_gameline(self):
-        short = self.get_gameline()
-        if short == "World of Darkness":
-            return short
-        elif short == "Vampire":
-            return "Vampire: the Masquerade"
-        elif short == "Werewolf":
-            return "Werewolf: the Apocalypse"
-        elif short == "Mage":
-            return "Mage: the Ascension"
-        elif short == "Changeling":
-            return "Changeling: the Dreaming"
-        elif short == "Wraith":
-            return "Wraith: the Oblivion"
+        """
+        Get the full gameline name for this model.
+
+        Returns:
+            str: Full gameline name from settings (e.g., 'Vampire: the Masquerade')
+        """
+        from core.utils import get_gameline_name
+
+        return get_gameline_name(self.get_gameline())
 
     def clean(self):
         """Validate model data before saving."""
