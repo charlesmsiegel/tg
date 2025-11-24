@@ -1,1 +1,1 @@
-from . import changeling, core, demon, mage, mummy, vampire, werewolf, wraith
+from . import changeling, core, demon, hunter, mage, mummy, vampire, werewolf, wraith

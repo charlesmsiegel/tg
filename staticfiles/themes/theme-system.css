@@ -29,13 +29,15 @@
   --gameline-mta: #4b0082;
   --gameline-ctd: #ff69b4;
   --gameline-wto: #2f4f4f;
-  
+  --gameline-htr: #d4a017;
+
   /* Gameline Light Variants (for backgrounds) */
   --gameline-vtm-light: rgba(139, 0, 0, 0.1);
   --gameline-wta-light: rgba(34, 139, 34, 0.1);
   --gameline-mta-light: rgba(75, 0, 130, 0.1);
   --gameline-ctd-light: rgba(255, 105, 180, 0.1);
   --gameline-wto-light: rgba(47, 79, 79, 0.1);
+  --gameline-htr-light: rgba(212, 160, 23, 0.1);
   
   /* Interactive States */
   --color-hover-overlay: rgba(0, 0, 0, 0.05);
@@ -84,6 +86,7 @@
   --font-family-mta: "Abbess", serif;
   --font-family-ctd: "Kells", serif;
   --font-family-wto: "MatrixTall", serif;
+  --font-family-htr: "Futura PT", sans-serif;
   --font-family-wod: "OPTIProtea", serif;
   
   /* Border Radius */
@@ -133,6 +136,7 @@
     --gameline-mta: #9370db;
     --gameline-ctd: #ff69b4;
     --gameline-wto: #708090;
+    --gameline-htr: #ffa500;
   }
 }
 
@@ -163,6 +167,7 @@
   --gameline-mta: #4b0082;
   --gameline-ctd: #ff69b4;
   --gameline-wto: #2f4f4f;
+  --gameline-htr: #d4a017;
 }
 
 .theme-dark {
@@ -191,4 +196,5 @@
   --gameline-mta: #9370db;
   --gameline-ctd: #ff69b4;
   --gameline-wto: #708090;
+  --gameline-htr: #ffa500;
 }
