@@ -1,5 +1,6 @@
 from characters.models.core import CharacterModel
 from core.models import Model, ModelManager, ModelQuerySet
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from game.models import Scene
@@ -64,3 +65,29 @@ class LocationModel(Model):
             return [self.owned_by]
         else:
             return []
+
+    def clean(self):
+        """Validate location data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate gauntlet is in valid range (0-10)
+        if self.gauntlet < 0 or self.gauntlet > 10:
+            errors["gauntlet"] = "Gauntlet must be between 0 and 10"
+
+        # Validate shroud is in valid range (0-10)
+        if self.shroud < 0 or self.shroud > 10:
+            errors["shroud"] = "Shroud must be between 0 and 10"
+
+        # Validate dimension_barrier is in valid range (0-10)
+        if self.dimension_barrier < 0 or self.dimension_barrier > 10:
+            errors["dimension_barrier"] = "Dimension barrier must be between 0 and 10"
+
+        # Validate creation_status is non-negative
+        if self.creation_status < 0:
+            errors["creation_status"] = "Creation status cannot be negative"
+
+        if errors:
+            raise ValidationError(errors)
+
+    # Note: save() method inherited from Model base class already calls full_clean()
