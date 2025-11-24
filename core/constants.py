@@ -11,6 +11,7 @@ class GameLine:
     WTO = "wto"
     CTD = "ctd"
     DTF = "dtf"
+    MTR = "mtr"
 
     CHOICES = [
         (WOD, "World of Darkness"),
@@ -20,6 +21,7 @@ class GameLine:
         (WTO, "Wraith: the Oblivion"),
         (CTD, "Changeling: the Dreaming"),
         (DTF, "Demon: the Fallen"),
+        (MTR, "Mummy: the Resurrection"),
     ]
 
     # URL path mappings for gamelines
@@ -34,6 +36,7 @@ class GameLine:
         ("wraith", "wraith", "wraith"),
         ("changeling", "changeling", "changeling"),
         ("demon", "demon", "demon"),
+        ("mummy", "mummy", "mummy"),
     ]
 
 
