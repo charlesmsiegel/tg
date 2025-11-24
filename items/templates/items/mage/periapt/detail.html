@@ -1,0 +1,52 @@
+{% extends "items/mage/wonder/detail.html" %}
+{% load sanitize_text dots %}
+
+{% block model_specific %}
+    {{ block.super }}
+    <!-- Periapt-specific information -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h6 class="mta_heading mb-0">Periapt Properties</h6>
+        </div>
+        <div class="tg-card-body" style="padding: 20px;">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Arete</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.arete }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Charges</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary);">{{ object.current_charges }}/{{ object.max_charges }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 4px;">Type</div>
+                        <div style="font-weight: 700; color: var(--theme-text-primary);">{% if object.is_consumable %}Consumable{% else %}Rechargeable{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}
+
+{% block powers %}
+    {% if object.power %}
+        <div class="tg-card mb-4">
+            <div class="tg-card-header">
+                <h6 class="mta_heading mb-0">Power</h6>
+            </div>
+            <div class="tg-card-body" style="padding: 20px;">
+                <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                    <a href="{{ object.power.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ object.power.name }}</a>
+                    {% if object.power.description %}
+                        <p class="mt-2 mb-0" style="color: var(--theme-text-secondary);">{{ object.power.description|sanitize_html }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock powers %}

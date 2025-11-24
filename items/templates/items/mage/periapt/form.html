@@ -1,0 +1,29 @@
+{% extends "items/mage/wonder/form.html" %}
+{% block creation_title %}
+    Create Periapt
+{% endblock creation_title %}
+{% block powers %}
+    <div class="col-sm mta_heading">
+        <h2>Powers</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm">Arete</div>
+        <div class="col-sm">{{ form.arete }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Max Charges</div>
+        <div class="col-sm">{{ form.max_charges }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Current Charges</div>
+        <div class="col-sm">{{ form.current_charges }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Consumable</div>
+        <div class="col-sm">{{ form.is_consumable }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Power</div>
+        <div class="col-sm">{{ form.power }}</div>
+    </div>
+{% endblock powers %}

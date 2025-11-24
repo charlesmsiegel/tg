@@ -1,0 +1,43 @@
+{% load widget_tweaks %}
+<div class="row">
+    <div class="col-sm">
+        <h2 class="mta_heading">Basic Information</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">Name</div>
+    <div class="col-sm">{{ form.name }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Description</div>
+    <div class="col-sm">{{ form.description }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Parent Location</div>
+    <div class="col-sm">{{ form.parent }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Rank</div>
+    <div class="col-sm">{{ form.rank }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Size</div>
+    <div class="col-sm">{{ form.size }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Accessibility</div>
+    <div class="col-sm">{{ form.accessibility }}</div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-sm">
+        <h2 class="mta_heading">Reality Zone</h2>
+    </div>
+</div>
+{{ form.reality_zone_formset.management_form }}
+{% for form_item in form.reality_zone_formset %}
+    <div class="row">
+        <div class="col-sm">{{ form_item.practice }}</div>
+        <div class="col-sm">{{ form_item.rating }}</div>
+    </div>
+{% endfor %}

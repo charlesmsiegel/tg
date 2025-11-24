@@ -23,6 +23,11 @@ urls = [
         name="talisman",
     ),
     path(
+        "periapt/<pk>/",
+        views.mage.PeriaptUpdateView.as_view(),
+        name="periapt",
+    ),
+    path(
         "grimoire/<pk>/",
         views.mage.GrimoireUpdateView.as_view(),
         name="grimoire",
