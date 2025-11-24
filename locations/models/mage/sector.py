@@ -6,6 +6,7 @@ from locations.models.mage.reality_zone import RealityZone
 
 class Sector(LocationModel):
     type = "sector"
+    gameline = "mta"
 
     SECTOR_CLASS = [
         ("virgin", "Virgin Web"),

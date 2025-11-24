@@ -8,6 +8,7 @@ class Lore(Model):
     """Represents one of the 23 Lore types."""
 
     type = "lore"
+    gameline = "dtf"
 
     property_name = models.CharField(max_length=100, unique=True)
 

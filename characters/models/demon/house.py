@@ -7,6 +7,7 @@ class DemonHouse(Model):
     """Represents one of the seven Houses of the Fallen."""
 
     type = "house"
+    gameline = "dtf"
 
     celestial_name = models.CharField(max_length=100, unique=True)
     starting_torment = models.IntegerField(default=3)

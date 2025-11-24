@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class FomoriPower(Model):
     type = "fomoripower"
+    gameline = "wta"
 
     class Meta:
         verbose_name = "Fomori Power"

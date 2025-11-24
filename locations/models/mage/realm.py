@@ -6,6 +6,7 @@ from locations.models.mage.reality_zone import RealityZone
 
 class HorizonRealm(LocationModel):
     type = "horizon_realm"
+    gameline = "mta"
 
     reality_zone = models.ForeignKey(
         RealityZone, blank=True, null=True, on_delete=models.SET_NULL

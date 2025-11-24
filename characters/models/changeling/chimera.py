@@ -10,6 +10,7 @@ class Chimera(Model):
     """
 
     type = "chimera"
+    gameline = "ctd"
 
     # Chimera type and nature
     chimera_type = models.CharField(

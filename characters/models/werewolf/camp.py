@@ -6,6 +6,7 @@ from django.urls import reverse
 
 class Camp(Model):
     type = "camp"
+    gameline = "wta"
 
     tribe = models.ForeignKey(Tribe, blank=True, null=True, on_delete=models.SET_NULL)
     camp_type = models.CharField(

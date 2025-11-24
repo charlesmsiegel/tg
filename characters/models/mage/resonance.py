@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Resonance(Model):
     type = "resonance"
+    gameline = "mta"
 
     correspondence = models.BooleanField(default=False)
     time = models.BooleanField(default=False)

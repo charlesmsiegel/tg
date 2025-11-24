@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class ShadowArchetype(Model):
     type = "shadow_archetype"
+    gameline = "wto"
 
     point_cost = models.IntegerField(default=1)
     core_function = models.TextField(default="")

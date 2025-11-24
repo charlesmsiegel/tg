@@ -10,6 +10,7 @@ class Rack(LocationModel):
     """
 
     type = "rack"
+    gameline = "vtm"
 
     # Quality of feeding ground
     quality = models.IntegerField(

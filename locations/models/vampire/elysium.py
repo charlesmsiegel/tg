@@ -10,6 +10,7 @@ class Elysium(LocationModel):
     """
 
     type = "elysium"
+    gameline = "vtm"
 
     # Elysium prestige
     prestige = models.IntegerField(

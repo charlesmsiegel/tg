@@ -7,6 +7,7 @@ from locations.models.core.location import LocationModel
 
 class Library(LocationModel):
     type = "library"
+    gameline = "mta"
 
     rank = models.IntegerField(default=1)
     faction = models.ForeignKey(

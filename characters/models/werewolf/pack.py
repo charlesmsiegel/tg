@@ -7,6 +7,7 @@ from django.urls import reverse
 
 class Pack(Group):
     type = "pack"
+    gameline = "wta"
 
     totem = models.ForeignKey(Totem, null=True, blank=True, on_delete=models.SET_NULL)
 

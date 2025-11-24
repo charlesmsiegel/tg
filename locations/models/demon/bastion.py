@@ -12,6 +12,7 @@ class Bastion(LocationModel):
     """
 
     type = "bastion"
+    gameline = "dtf"
 
     # Bastion-specific fields
     ritual_strength = models.IntegerField(

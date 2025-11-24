@@ -7,6 +7,7 @@ from .location import LocationModel
 
 class City(LocationModel):
     type = "city"
+    gameline = "wod"
 
     population = models.IntegerField(default=0)
     characters = models.ManyToManyField(Character, blank=True)

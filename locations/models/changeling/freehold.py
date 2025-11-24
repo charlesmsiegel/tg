@@ -39,6 +39,7 @@ class Freehold(LocationModel):
     """
 
     type = "freehold"
+    gameline = "ctd"
 
     # Core archetype
     archetype = models.CharField(

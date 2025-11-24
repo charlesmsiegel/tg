@@ -4,6 +4,7 @@ from django.urls import reverse
 
 class HouseFaction(Model):
     type = "house_faction"
+    gameline = "ctd"
 
     class Meta:
         verbose_name = "House Faction"

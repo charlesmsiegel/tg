@@ -5,6 +5,7 @@ from locations.models.core import LocationModel
 
 class Necropolis(LocationModel):
     type = "necropolis"
+    gameline = "wto"
 
     REGION_CHOICES = [
         ("stygia", "Stygia"),

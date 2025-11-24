@@ -5,6 +5,7 @@ from items.models.mage.wonder import Wonder
 
 class Fetish(Wonder):
     type = "fetish"
+    gameline = "wta"
 
     gnosis = models.IntegerField(default=0)
     spirit = models.CharField(default="", max_length=100)

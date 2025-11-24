@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Effect(Model):
     type = "effect"
+    gameline = "mta"
 
     correspondence = models.IntegerField(default=0)
     time = models.IntegerField(default=0)

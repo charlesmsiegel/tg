@@ -7,6 +7,7 @@ from django.urls import reverse
 
 class Cabal(Group):
     type = "cabal"
+    gameline = "mta"
 
     class Meta:
         verbose_name = "Cabal"

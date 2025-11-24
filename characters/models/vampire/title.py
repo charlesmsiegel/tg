@@ -12,6 +12,7 @@ class VampireTitle(Model):
     """
 
     type = "vampire_title"
+    gameline = "vtm"
 
     # Title attributes
     sect = models.ForeignKey(

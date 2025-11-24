@@ -26,6 +26,7 @@ class ZoneRating(models.Model):
 
 class RealityZone(models.Model):
     type = "reality_zone"
+    gameline = "mta"
 
     name = models.CharField(max_length=100)
     practices = models.ManyToManyField(Practice, through=ZoneRating, blank=True)

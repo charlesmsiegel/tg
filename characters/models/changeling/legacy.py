@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Legacy(Model):
     type = "legacy"
+    gameline = "ctd"
 
     court = models.CharField(
         max_length=20,

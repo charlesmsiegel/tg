@@ -13,6 +13,7 @@ class GiftPermission(models.Model):
 
 class Gift(Model):
     type = "gift"
+    gameline = "wta"
 
     rank = models.IntegerField(default=0)
     allowed = models.ManyToManyField(GiftPermission, blank=True)

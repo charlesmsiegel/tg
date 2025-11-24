@@ -12,6 +12,7 @@ class Treasure(ItemModel):
     """
 
     type = "treasure"
+    gameline = "ctd"
 
     rating = models.IntegerField(
         default=1,

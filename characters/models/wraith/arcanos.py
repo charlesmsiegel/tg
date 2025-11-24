@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class Arcanos(Model):
     type = "arcanos"
+    gameline = "wto"
 
     ARCANOS_TYPE_CHOICES = [
         ("standard", "Standard Arcanos"),

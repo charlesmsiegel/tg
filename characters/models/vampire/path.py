@@ -10,6 +10,7 @@ class Path(Model):
     """
 
     type = "path"
+    gameline = "vtm"
 
     # Path attributes - which virtues this path requires
     requires_conviction = models.BooleanField(

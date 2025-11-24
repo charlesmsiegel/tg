@@ -12,6 +12,7 @@ class VampireClan(Model):
     """
 
     type = "vampire_clan"
+    gameline = "vtm"
 
     # Clan attributes
     nickname = models.CharField(max_length=100, blank=True)

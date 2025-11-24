@@ -6,6 +6,7 @@ from django.urls import reverse
 
 class House(Model):
     type = "house"
+    gameline = "ctd"
 
     court = models.CharField(
         max_length=20,

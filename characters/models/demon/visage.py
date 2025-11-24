@@ -8,6 +8,7 @@ class Visage(Model):
     """Represents a specific visage/aspect of an apocalyptic form."""
 
     type = "visage"
+    gameline = "dtf"
 
     house = models.ForeignKey(
         DemonHouse,

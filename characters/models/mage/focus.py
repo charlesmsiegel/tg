@@ -7,6 +7,7 @@ from django.urls import reverse
 
 class Instrument(Model):
     type = "instrument"
+    gameline = "mta"
 
     class Meta:
         verbose_name = "Instrument"
@@ -28,6 +29,7 @@ class Instrument(Model):
 
 class Practice(Model):
     type = "practice"
+    gameline = "mta"
 
     abilities = models.ManyToManyField(Ability, blank=True)
     instruments = models.ManyToManyField(Instrument, blank=True)
@@ -132,6 +134,7 @@ class CorruptedPractice(Practice):
 
 class Tenet(Model):
     type = "tenet"
+    gameline = "mta"
 
     tenet_type = models.CharField(
         max_length=3,
@@ -175,6 +178,7 @@ class Tenet(Model):
 
 class Paradigm(Model):
     type = "paradigm"
+    gameline = "mta"
 
     tenets = models.ManyToManyField(Tenet, blank=True)
 
