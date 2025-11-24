@@ -1,0 +1,26 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Byway
+{% endblock creation_title %}
+{% block other %}
+    <div class="row">
+        <div class="col-sm">{{ form.danger_level }}</div>
+        <div class="col-sm">{{ form.stability }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.origin }}</div>
+        <div class="col-sm">{{ form.destination }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.travel_time }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.maelstrom_proximity }}</div>
+        <div class="col-sm">{{ form.spectral_activity }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.has_waystation }}</div>
+        <div class="col-sm">{{ form.patrolled }}</div>
+        <div class="col-sm">{{ form.haunted }}</div>
+    </div>
+{% endblock other %}

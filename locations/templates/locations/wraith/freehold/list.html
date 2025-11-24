@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Wraith Freeholds
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wto_heading">Wraith Freeholds</h3>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="text-center mb-4">
+                    <a href="{% url 'locations:wraith:create:freehold' %}" class="btn btn-primary">Create New Freehold</a>
+                </div>
+                <div class="row">
+                    {% for obj in object_list %}
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj.name }}</a>
+                                    <div style="font-size: 0.85rem; color: var(--theme-text-secondary); margin-top: 4px;">
+                                        {{ obj.get_government_type_display }} - Pop: {{ obj.population }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No freeholds found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
