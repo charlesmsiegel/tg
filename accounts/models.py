@@ -2,6 +2,7 @@ from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
@@ -203,6 +204,32 @@ class Profile(models.Model):
 
     def item_images_to_approve(self):
         return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
+
+    def clean(self):
+        """Validate profile data before saving."""
+        super().clean()
+        errors = {}
+
+        # Validate theme is in valid choices
+        if self.theme not in self.theme_list:
+            errors["theme"] = f"Invalid theme '{self.theme}'. Must be one of: {', '.join(self.theme_list)}"
+
+        # Validate preferred_heading is in valid choices
+        valid_headings = ["wod_heading", "vtm_heading", "wta_heading", "mta_heading", "ctd_heading", "wto_heading"]
+        if self.preferred_heading not in valid_headings:
+            errors["preferred_heading"] = f"Invalid preferred heading '{self.preferred_heading}'. Must be one of: {', '.join(valid_headings)}"
+
+        # Validate user is provided
+        if not self.user_id:
+            errors["user"] = "Profile must be associated with a user"
+
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        """Ensure validation runs on save."""
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username
