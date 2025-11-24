@@ -1,0 +1,22 @@
+{% extends "locations/core/location/form.html" %}
+{% block creation_title %}
+    Create Citadel
+{% endblock creation_title %}
+{% block other %}
+    <div class="row">
+        <div class="col-sm">{{ form.purpose }}</div>
+        <div class="col-sm">{{ form.defense_rating }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.garrison_size }}</div>
+        <div class="col-sm">{{ form.commander }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.controlling_faction }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">{{ form.has_soulforges }}</div>
+        <div class="col-sm">{{ form.has_prison }}</div>
+        <div class="col-sm">{{ form.has_gateway }}</div>
+    </div>
+{% endblock other %}

@@ -144,8 +144,12 @@ ObjectType.objects.get_or_create(name="artifact", type="obj", gameline="wto")
 ObjectType.objects.get_or_create(name="relic", type="obj", gameline="wto")
 
 # WtO Location Objects
+ObjectType.objects.get_or_create(name="byway", type="loc", gameline="wto")
+ObjectType.objects.get_or_create(name="citadel", type="loc", gameline="wto")
 ObjectType.objects.get_or_create(name="haunt", type="loc", gameline="wto")
 ObjectType.objects.get_or_create(name="necropolis", type="loc", gameline="wto")
+ObjectType.objects.get_or_create(name="nihil", type="loc", gameline="wto")
+ObjectType.objects.get_or_create(name="wraith_freehold", type="loc", gameline="wto")
 
 # DtF Character Objects
 demon = ObjectType.objects.get_or_create(name="demon", type="char", gameline="dtf")[0]
