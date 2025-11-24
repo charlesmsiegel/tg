@@ -226,6 +226,11 @@ GAMELINES = {
         "short": "DtF",
         "app_name": "demon",
     },
+    "mtr": {
+        "name": "Mummy: the Resurrection",
+        "short": "MtR",
+        "app_name": "mummy",
+    },
 }
 
 # Helper to get gameline choices for model fields
