@@ -1,3 +1,4 @@
+from characters.forms.core.limited_edit import LimitedThrallEditForm
 from characters.models.demon import Thrall
 from core.mixins import (
     ApprovedUserContextMixin,
@@ -6,9 +7,11 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    VisibilityFilterMixin,
 )
+from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class ThrallDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
@@ -168,3 +171,33 @@ class ThrallUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView
         "conscience",
     ]
     template_name = "characters/demon/thrall/form.html"
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields (notes, description, etc.) via LimitedThrallEditForm.
+        STs and admins get full access to all fields via the default form.
+        """
+        # Check if user has full edit permission
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+
+        if has_full_edit:
+            # STs and admins get all fields
+            return super().get_form_class()
+        else:
+            # Owners get limited fields (notes, description, public_info, image, history, goals)
+            return LimitedThrallEditForm
+
+
+class ThrallListView(VisibilityFilterMixin, ListView):
+    model = Thrall
+    template_name = "characters/demon/thrall/list.html"
+    context_object_name = "thralls"
+    paginate_by = 25
+
+    def get_queryset(self):
+        """Get filtered queryset based on permissions."""
+        qs = super().get_queryset()
+        return qs.select_related("owner", "master", "chronicle").order_by("name")

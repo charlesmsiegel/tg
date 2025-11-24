@@ -14,6 +14,8 @@ from characters.models.core.character import Character
 from characters.models.core.human import Human
 from characters.models.demon.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
+from characters.models.demon.earthbound import Earthbound
+from characters.models.demon.thrall import Thrall
 from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vampire import Vampire
@@ -170,3 +172,5 @@ LimitedWraithEditForm = create_limited_edit_form(Wraith)
 LimitedWtOHumanEditForm = create_limited_edit_form(WtOHuman)
 LimitedDemonEditForm = create_limited_edit_form(Demon)
 LimitedDtFHumanEditForm = create_limited_edit_form(DtFHuman)
+LimitedThrallEditForm = create_limited_edit_form(Thrall)
+LimitedEarthboundEditForm = create_limited_edit_form(Earthbound)

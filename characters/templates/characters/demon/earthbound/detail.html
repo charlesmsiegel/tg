@@ -1,0 +1,258 @@
+{% extends "characters/demon/dtfhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+
+{% block creation_title %}
+    Create Earthbound
+{% endblock creation_title %}
+
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>House:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {% if object.house %}
+                                <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Celestial Name:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.celestial_name|default:"-" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Urges Section #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Urges</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_flesh|dots }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Flesh)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_thought|dots }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Thought)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_emotion|dots }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Emotion)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Reliquary Section #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Reliquary</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Type:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.get_reliquary_type_display }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Description:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.reliquary_description|default:"-" }}</div>
+                    </div>
+                    {% if object.reliquary_materials %}
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <strong>Materials:</strong>
+                            </div>
+                            <div class="col-sm-9">{{ object.reliquary_materials }}</div>
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Health:</span>
+                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.reliquary_current_health }}/{{ object.reliquary_max_health }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Soak:</span>
+                                <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.reliquary_soak }}</span>
+                            </div>
+                        </div>
+                        {% if object.reliquary_type == "location" %}
+                            <div class="col-md-4 mb-3">
+                                <div style="display: inline-block; padding: 10px 24px; border-radius: 6px; background-color: rgba(0,0,0,0.05);">
+                                    <span style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-right: 8px;">Range:</span>
+                                    <span style="font-weight: 700; color: var(--theme-text-primary);">{{ object.manifestation_range }} yards</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+
+{% block powers %}
+    {{ block.super }}
+
+    {# Lores Section #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Lores</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row">
+                        {% for lore_name, lore_value in object.get_lores.items %}
+                            {% if lore_value > 0 %}
+                                <div class="col-md-6 mb-2">
+                                    <strong>{{ lore_name|title }}:</strong> {{ lore_value|dots }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Visage Features Section #}
+    {% if object.visage_features %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Apocalyptic Form</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Features:</strong>
+                            </div>
+                        </div>
+                        {% for feature in object.visage_features %}
+                            <div class="row mb-2">
+                                <div class="col-sm-8">{{ feature.name }}</div>
+                                <div class="col-sm-4">Cost: {{ feature.cost }}</div>
+                            </div>
+                        {% endfor %}
+                        {% if object.visage_grotesqueries %}
+                            <div class="row mt-3 mb-2">
+                                <div class="col-12">
+                                    <strong>Grotesqueries:</strong>
+                                </div>
+                            </div>
+                            {% for grotesque in object.visage_grotesqueries %}
+                                <div class="row mb-1">
+                                    <div class="col-12">{{ grotesque }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Cult Section #}
+    {% if object.cult_size %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Cult</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-3">
+                                <strong>Size:</strong>
+                            </div>
+                            <div class="col-sm-9">{{ object.cult_size }}</div>
+                        </div>
+                        {% if object.worship_ritual_frequency %}
+                            <div class="row mb-0">
+                                <div class="col-sm-3">
+                                    <strong>Worship Frequency:</strong>
+                                </div>
+                                <div class="col-sm-9">{{ object.worship_ritual_frequency }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock powers %}
