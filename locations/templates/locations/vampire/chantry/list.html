@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% load dots %}
+{% block content %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h1 class="tg-card-title vtm_heading">Tremere Chantries</h1>
+    </div>
+    <div class="tg-card-body">
+        <a href="{% url 'locations:vampire:create:chantry' %}" class="btn btn-primary mb-3">Create New Chantry</a>
+
+        {% if object_list %}
+        <div class="tg-table-responsive">
+            <table class="tg-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Regent</th>
+                        <th>Size</th>
+                        <th>Security</th>
+                        <th>Pyramid Level</th>
+                        <th>Total Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for chantry in object_list %}
+                    <tr>
+                        <td><a href="{{ chantry.get_absolute_url }}">{{ chantry.name }}</a></td>
+                        <td>{% if chantry.parent %}<a href="{{ chantry.parent.get_absolute_url }}">{{ chantry.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{{ chantry.regent_name|default:"-" }}</td>
+                        <td>{{ chantry.size|dots }}</td>
+                        <td>{{ chantry.security_level|dots }}</td>
+                        <td>{{ chantry.pyramid_level|dots }}</td>
+                        <td>{{ chantry.total_rating|dots:10 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No chantries found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -23,4 +23,14 @@ urls = [
         views.vampire.RackDetailView.as_view(),
         name="rack",
     ),
+    path(
+        "chantry/<pk>/",
+        views.vampire.TremereChantryDetailView.as_view(),
+        name="chantry",
+    ),
+    path(
+        "barrens/<pk>/",
+        views.vampire.BarrensDetailView.as_view(),
+        name="barrens",
+    ),
 ]

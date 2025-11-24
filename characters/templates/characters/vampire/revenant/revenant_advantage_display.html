@@ -1,0 +1,31 @@
+{% load dots %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+            </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <!-- Willpower Row -->
+                <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Willpower:</span>
+                        <span class="dots">{{ object.willpower|dots:10 }}</span>
+                    </div>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Temporary Willpower:</span>
+                        <span class="dots">{{ object.temporary_willpower|boxes:10 }}</span>
+                    </div>
+                </div>
+
+                <!-- Blood Pool Row -->
+                <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Blood Pool:</span>
+                        <span class="dots">{{ object.blood_pool|boxes:10 }}/{{ object.max_blood_pool }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
