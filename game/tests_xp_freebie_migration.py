@@ -12,21 +12,20 @@ Tests cover the testing checklist from VIEW_TEMPLATE_MIGRATION_GUIDE.md:
 
 from datetime import datetime
 
-import pytest
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.test import TestCase
 from django.utils import timezone
 from game.models import Chronicle, FreebieSpendingRecord, XPSpendingRequest
 
 
-@pytest.mark.django_db
-class TestXPSpendingRequest:
+class TestXPSpendingRequest(TestCase):
     """Test XPSpendingRequest model and methods."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -46,15 +45,15 @@ class TestXPSpendingRequest:
             cost=6,
         )
 
-        assert request is not None
-        assert isinstance(request, XPSpendingRequest)
-        assert request.character == self.char
-        assert request.trait_name == "Alertness"
-        assert request.trait_type == "ability"
-        assert request.trait_value == 3
-        assert request.cost == 6
-        assert request.approved == "Pending"
-        assert request.created_at is not None
+        self.assertIsNotNone(request)
+        self.assertIsInstance(request, XPSpendingRequest)
+        self.assertEqual(request.character, self.char)
+        self.assertEqual(request.trait_name, "Alertness")
+        self.assertEqual(request.trait_type, "ability")
+        self.assertEqual(request.trait_value, 3)
+        self.assertEqual(request.cost, 6)
+        self.assertEqual(request.approved, "Pending")
+        self.assertIsNotNone(request.created_at)
 
     def test_get_pending_xp_requests(self):
         """Test retrieving pending XP requests."""
@@ -69,8 +68,8 @@ class TestXPSpendingRequest:
 
         # Check pending requests
         pending = self.char.get_pending_xp_requests()
-        assert pending.count() == 1
-        assert pending.first().trait_name == "Strength"
+        self.assertEqual(pending.count(), 1)
+        self.assertEqual(pending.first().trait_name, "Strength")
 
     def test_get_xp_spending_history(self):
         """Test retrieving full XP spending history."""
@@ -78,8 +77,8 @@ class TestXPSpendingRequest:
         self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
 
         history = self.char.get_xp_spending_history()
-        assert history.count() == 2
-        assert all(isinstance(r, XPSpendingRequest) for r in history)
+        self.assertEqual(history.count(), 2)
+        self.assertTrue(all(isinstance(r, XPSpendingRequest) for r in history))
 
     def test_approve_xp_request(self):
         """Test approving an XP spending request."""
@@ -88,13 +87,13 @@ class TestXPSpendingRequest:
         # Approve it
         approved_request = self.char.approve_xp_request(request.id, self.user)
 
-        assert approved_request.approved == "Approved"
-        assert approved_request.approved_by == self.user
-        assert approved_request.approved_at is not None
+        self.assertEqual(approved_request.approved, "Approved")
+        self.assertEqual(approved_request.approved_by, self.user)
+        self.assertIsNotNone(approved_request.approved_at)
 
         # Refresh from DB to confirm
         request.refresh_from_db()
-        assert request.approved == "Approved"
+        self.assertEqual(request.approved, "Approved")
 
     def test_deny_xp_request(self):
         """Test denying an XP spending request."""
@@ -103,9 +102,9 @@ class TestXPSpendingRequest:
         # Deny it
         denied_request = self.char.deny_xp_request(request.id, self.user)
 
-        assert denied_request.approved == "Denied"
-        assert denied_request.approved_by == self.user
-        assert denied_request.approved_at is not None
+        self.assertEqual(denied_request.approved, "Denied")
+        self.assertEqual(denied_request.approved_by, self.user)
+        self.assertIsNotNone(denied_request.approved_at)
 
     def test_approve_already_approved_request_fails(self):
         """Test that approving an already approved request fails."""
@@ -113,33 +112,32 @@ class TestXPSpendingRequest:
         self.char.approve_xp_request(request.id, self.user)
 
         # Try to approve again
-        with pytest.raises(XPSpendingRequest.DoesNotExist):
+        with self.assertRaises(XPSpendingRequest.DoesNotExist):
             self.char.approve_xp_request(request.id, self.user)
 
     def test_has_pending_xp_model_requests(self):
         """Test checking for pending XP model requests."""
-        assert not self.char.has_pending_xp_model_requests()
+        self.assertFalse(self.char.has_pending_xp_model_requests())
 
         self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        assert self.char.has_pending_xp_model_requests()
+        self.assertTrue(self.char.has_pending_xp_model_requests())
 
         # Approve it
         request = self.char.xp_spendings.first()
         self.char.approve_xp_request(request.id, self.user)
-        assert not self.char.has_pending_xp_model_requests()
+        self.assertFalse(self.char.has_pending_xp_model_requests())
 
     def test_xp_spending_request_string_representation(self):
         """Test XPSpendingRequest __str__ method."""
         request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
         expected = f"{self.char.name} - Alertness (6 XP) - Pending"
-        assert str(request) == expected
+        self.assertEqual(str(request), expected)
 
 
-@pytest.mark.django_db
-class TestFreebieSpendingRecord:
+class TestFreebieSpendingRecord(TestCase):
     """Test FreebieSpendingRecord model and methods."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -159,14 +157,14 @@ class TestFreebieSpendingRecord:
             cost=5,
         )
 
-        assert record is not None
-        assert isinstance(record, FreebieSpendingRecord)
-        assert record.character == self.human
-        assert record.trait_name == "Strength"
-        assert record.trait_type == "attribute"
-        assert record.trait_value == 4
-        assert record.cost == 5
-        assert record.created_at is not None
+        self.assertIsNotNone(record)
+        self.assertIsInstance(record, FreebieSpendingRecord)
+        self.assertEqual(record.character, self.human)
+        self.assertEqual(record.trait_name, "Strength")
+        self.assertEqual(record.trait_type, "attribute")
+        self.assertEqual(record.trait_value, 4)
+        self.assertEqual(record.cost, 5)
+        self.assertIsNotNone(record.created_at)
 
     def test_get_freebie_spending_history(self):
         """Test retrieving freebie spending history."""
@@ -174,8 +172,8 @@ class TestFreebieSpendingRecord:
         self.human.create_freebie_spending_record("Alertness", "ability", 2, 2)
 
         history = self.human.get_freebie_spending_history()
-        assert history.count() == 2
-        assert all(isinstance(r, FreebieSpendingRecord) for r in history)
+        self.assertEqual(history.count(), 2)
+        self.assertTrue(all(isinstance(r, FreebieSpendingRecord) for r in history))
 
     def test_total_freebies_from_model(self):
         """Test calculating total freebies from model records."""
@@ -184,7 +182,7 @@ class TestFreebieSpendingRecord:
         self.human.create_freebie_spending_record("Alertness", "ability", 2, 2)
 
         total = self.human.total_freebies_from_model()
-        assert total == initial_freebies + 7  # 5 + 2
+        self.assertEqual(total, initial_freebies + 7)  # 5 + 2
 
     def test_freebie_spending_record_string_representation(self):
         """Test FreebieSpendingRecord __str__ method."""
@@ -192,14 +190,13 @@ class TestFreebieSpendingRecord:
             "Strength", "attribute", 4, 5
         )
         expected = f"{self.human.name} - Strength (5 freebies)"
-        assert str(record) == expected
+        self.assertEqual(str(record), expected)
 
 
-@pytest.mark.django_db
-class TestDualSystemSupport:
+class TestDualSystemSupport(TestCase):
     """Test that both JSONField and model systems work together during migration."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -230,12 +227,12 @@ class TestDualSystemSupport:
         ]
         self.char.save()
 
-        assert self.char.has_pending_xp_or_model_requests()
+        self.assertTrue(self.char.has_pending_xp_or_model_requests())
 
     def test_has_pending_xp_or_model_requests_model(self):
         """Test checking for pending XP in model."""
         self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        assert self.char.has_pending_xp_or_model_requests()
+        self.assertTrue(self.char.has_pending_xp_or_model_requests())
 
     def test_has_pending_xp_or_model_requests_both(self):
         """Test checking for pending XP in both systems."""
@@ -254,7 +251,7 @@ class TestDualSystemSupport:
         # Model
         self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
 
-        assert self.char.has_pending_xp_or_model_requests()
+        self.assertTrue(self.char.has_pending_xp_or_model_requests())
 
     def test_total_spent_xp_combined_jsonfield_only(self):
         """Test total XP calculation from JSONField only."""
@@ -284,7 +281,7 @@ class TestDualSystemSupport:
         self.char.save()
 
         total = self.char.total_spent_xp_combined()
-        assert total == 14  # 6 + 8, excluding pending
+        self.assertEqual(total, 14)  # 6 + 8, excluding pending
 
     def test_total_spent_xp_combined_model_only(self):
         """Test total XP calculation from model only."""
@@ -298,7 +295,7 @@ class TestDualSystemSupport:
         # Leave request3 pending
 
         total = self.char.total_spent_xp_combined()
-        assert total == 14  # 6 + 8, excluding pending
+        self.assertEqual(total, 14)  # 6 + 8, excluding pending
 
     def test_total_spent_xp_combined_both_systems(self):
         """Test total XP calculation from both systems combined."""
@@ -319,7 +316,7 @@ class TestDualSystemSupport:
         self.char.approve_xp_request(request.id, self.user)
 
         total = self.char.total_spent_xp_combined()
-        assert total == 14  # 6 + 8 from both systems
+        self.assertEqual(total, 14)  # 6 + 8 from both systems
 
     def test_total_freebies_combined_jsonfield_only(self):
         """Test total freebies calculation from JSONField only."""
@@ -332,7 +329,7 @@ class TestDualSystemSupport:
 
         # JSONField total
         jsonfield_total = sum(x["cost"] for x in self.human.spent_freebies)
-        assert jsonfield_total == 7
+        self.assertEqual(jsonfield_total, 7)
 
     def test_total_freebies_from_model_only(self):
         """Test total freebies calculation from model only."""
@@ -341,14 +338,13 @@ class TestDualSystemSupport:
         self.human.create_freebie_spending_record("Alertness", "ability", 2, 2)
 
         total = self.human.total_freebies_from_model()
-        assert total == initial_freebies + 7  # 5 + 2
+        self.assertEqual(total, initial_freebies + 7)  # 5 + 2
 
 
-@pytest.mark.django_db
-class TestXPSpendingIndexes:
+class TestXPSpendingIndexes(TestCase):
     """Test that database indexes work correctly for performance."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -373,10 +369,10 @@ class TestXPSpendingIndexes:
 
         # This query should use the index
         pending = self.char.xp_spendings.filter(approved="Pending")
-        assert pending.count() == 2
+        self.assertEqual(pending.count(), 2)
 
         approved = self.char.xp_spendings.filter(approved="Approved")
-        assert approved.count() == 3
+        self.assertEqual(approved.count(), 3)
 
     def test_order_by_created_at(self):
         """Test ordering by created_at (indexed)."""
@@ -387,15 +383,14 @@ class TestXPSpendingIndexes:
 
         # This query should use the index
         history = self.char.xp_spendings.order_by("-created_at")
-        assert history.first() == request3
-        assert history.last() == request1
+        self.assertEqual(history.first(), request3)
+        self.assertEqual(history.last(), request1)
 
 
-@pytest.mark.django_db
-class TestFreebieSpendingIndexes:
+class TestFreebieSpendingIndexes(TestCase):
     """Test that database indexes work correctly for freebie records."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -416,7 +411,7 @@ class TestFreebieSpendingIndexes:
 
         # This query should use the index
         records = self.human.freebie_spendings.all()
-        assert records.count() == 5
+        self.assertEqual(records.count(), 5)
 
     def test_order_by_created_at(self):
         """Test ordering by created_at (indexed)."""
@@ -426,15 +421,14 @@ class TestFreebieSpendingIndexes:
 
         # This query should use the index
         history = self.human.freebie_spendings.order_by("-created_at")
-        assert history.first() == record3
-        assert history.last() == record1
+        self.assertEqual(history.first(), record3)
+        self.assertEqual(history.last(), record1)
 
 
-@pytest.mark.django_db
-class TestMigrationEdgeCases:
+class TestMigrationEdgeCases(TestCase):
     """Test edge cases during migration."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -453,9 +447,9 @@ class TestMigrationEdgeCases:
 
     def test_empty_jsonfield_and_no_model_records(self):
         """Test character with no spending in either system."""
-        assert not self.char.has_pending_xp_or_model_requests()
-        assert self.char.total_spent_xp_combined() == 0
-        assert self.char.get_xp_spending_history().count() == 0
+        self.assertFalse(self.char.has_pending_xp_or_model_requests())
+        self.assertEqual(self.char.total_spent_xp_combined(), 0)
+        self.assertEqual(self.char.get_xp_spending_history().count(), 0)
 
     def test_malformed_jsonfield_data(self):
         """Test handling of malformed JSONField data."""
@@ -467,7 +461,7 @@ class TestMigrationEdgeCases:
 
         # Should not crash
         total = self.char.total_spent_xp_combined()
-        assert total >= 0  # May be 0 if malformed data is skipped
+        self.assertGreaterEqual(total, 0)  # May be 0 if malformed data is skipped
 
     def test_character_with_only_denied_requests(self):
         """Test character with only denied XP requests."""
@@ -477,24 +471,23 @@ class TestMigrationEdgeCases:
         self.char.deny_xp_request(request1.id, self.user)
         self.char.deny_xp_request(request2.id, self.user)
 
-        assert not self.char.has_pending_xp_or_model_requests()
-        assert self.char.total_spent_xp_combined() == 0  # Denied requests don't count
+        self.assertFalse(self.char.has_pending_xp_or_model_requests())
+        self.assertEqual(self.char.total_spent_xp_combined(), 0)  # Denied requests don't count
 
     def test_freebie_record_with_zero_cost(self):
         """Test freebie record with zero cost (edge case)."""
         record = self.human.create_freebie_spending_record(
             "Free Trait", "special", 1, 0
         )
-        assert record.cost == 0
+        self.assertEqual(record.cost, 0)
         total = self.human.total_freebies_from_model()
-        assert total == self.human.freebies  # Zero cost shouldn't affect total
+        self.assertEqual(total, self.human.freebies)  # Zero cost shouldn't affect total
 
 
-@pytest.mark.django_db
-class TestBackwardCompatibility:
+class TestBackwardCompatibility(TestCase):
     """Test that new system doesn't break existing JSONField functionality."""
 
-    def setup_method(self):
+    def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -519,8 +512,8 @@ class TestBackwardCompatibility:
         self.char.save()
         self.char.refresh_from_db()
 
-        assert len(self.char.spent_xp) == 1
-        assert self.char.spent_xp[0]["trait"] == "Alertness"
+        self.assertEqual(len(self.char.spent_xp), 1)
+        self.assertEqual(self.char.spent_xp[0]["trait"], "Alertness")
 
     def test_can_append_to_jsonfield(self):
         """Test that appending to JSONField still works."""
@@ -539,10 +532,4 @@ class TestBackwardCompatibility:
         self.char.save()
         self.char.refresh_from_db()
 
-        assert len(self.char.spent_xp) == 1
-
-
-# Run tests with:
-# pytest game/tests_xp_freebie_migration.py -v
-# pytest game/tests_xp_freebie_migration.py -v -k "test_create_xp"
-# pytest game/tests_xp_freebie_migration.py -v --cov=game --cov-report=html
+        self.assertEqual(len(self.char.spent_xp), 1)

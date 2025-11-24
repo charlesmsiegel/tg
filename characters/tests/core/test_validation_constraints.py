@@ -8,7 +8,6 @@ Tests the following features:
 - Status transition state machine
 """
 
-import pytest
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.character import Character
@@ -16,11 +15,11 @@ from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
+from django.test import TestCase
 from game.models import Chronicle, Gameline, ObjectType, Scene, STRelationship
 
 
-@pytest.mark.django_db
-class TestCharacterConstraints:
+class TestCharacterConstraints(TestCase):
     """Test database constraints and model validation on Character model."""
 
     def test_xp_cannot_be_negative_db_constraint(self):
@@ -28,7 +27,7 @@ class TestCharacterConstraints:
         character = Character.objects.create(name="Test", xp=0)
         character.xp = -100
 
-        with pytest.raises(IntegrityError, match="xp_non_negative"):
+        with self.assertRaisesMessage(IntegrityError, "xp_non_negative"):
             character.save(
                 skip_validation=True
             )  # Bypass model validation to test DB constraint
@@ -38,7 +37,7 @@ class TestCharacterConstraints:
         character = Character.objects.create(name="Test", xp=0)
         character.xp = -100
 
-        with pytest.raises(ValidationError, match="XP cannot be negative"):
+        with self.assertRaisesMessage(ValidationError, "XP cannot be negative"):
             character.full_clean()
 
     def test_valid_status_values_db_constraint(self):
@@ -46,7 +45,7 @@ class TestCharacterConstraints:
         character = Character.objects.create(name="Test", status="Un")
         character.status = "Invalid"
 
-        with pytest.raises(IntegrityError, match="valid_status"):
+        with self.assertRaisesMessage(IntegrityError, "valid_status"):
             character.save(skip_validation=True)
 
     def test_status_transition_deceased_is_final(self):
@@ -54,7 +53,7 @@ class TestCharacterConstraints:
         character = Character.objects.create(name="Test", status="Dec")
 
         character.status = "App"
-        with pytest.raises(ValidationError, match="Cannot transition"):
+        with self.assertRaisesMessage(ValidationError, "Cannot transition"):
             character.full_clean()
 
     def test_status_transition_valid(self):
@@ -71,7 +70,7 @@ class TestCharacterConstraints:
         character.full_clean()
         character.save()
 
-        assert character.status == "App"
+        self.assertEqual(character.status, "App")
 
     def test_status_transition_invalid(self):
         """Invalid status transitions are blocked"""
@@ -79,12 +78,11 @@ class TestCharacterConstraints:
 
         # Un -> App is invalid (must go through Sub)
         character.status = "App"
-        with pytest.raises(ValidationError, match="Cannot transition from Un to App"):
+        with self.assertRaisesMessage(ValidationError, "Cannot transition from Un to App"):
             character.full_clean()
 
 
-@pytest.mark.django_db
-class TestAttributeConstraints:
+class TestAttributeConstraints(TestCase):
     """Test attribute range constraints (1-10)."""
 
     def test_strength_minimum_constraint(self):
@@ -92,7 +90,7 @@ class TestAttributeConstraints:
         human = Human.objects.create(name="Test", strength=1)
         human.strength = 0
 
-        with pytest.raises(IntegrityError, match="strength_range"):
+        with self.assertRaisesMessage(IntegrityError, "strength_range"):
             human.save()
 
     def test_strength_maximum_constraint(self):
@@ -100,7 +98,7 @@ class TestAttributeConstraints:
         human = Human.objects.create(name="Test", strength=10)
         human.strength = 11
 
-        with pytest.raises(IntegrityError, match="strength_range"):
+        with self.assertRaisesMessage(IntegrityError, "strength_range"):
             human.save()
 
     def test_all_attributes_have_constraints(self):
@@ -121,7 +119,7 @@ class TestAttributeConstraints:
         ]:
             # Test minimum
             setattr(human, attr, 0)
-            with pytest.raises(IntegrityError):
+            with self.assertRaises(IntegrityError):
                 human.save()
 
             # Reset
@@ -130,7 +128,7 @@ class TestAttributeConstraints:
 
             # Test maximum
             setattr(human, attr, 11)
-            with pytest.raises(IntegrityError):
+            with self.assertRaises(IntegrityError):
                 human.save()
 
             # Reset to valid value
@@ -158,12 +156,11 @@ class TestAttributeConstraints:
         human.save()  # Should not raise
         human.refresh_from_db()
 
-        assert human.strength == 10
-        assert human.dexterity == 10
+        self.assertEqual(human.strength, 10)
+        self.assertEqual(human.dexterity, 10)
 
 
-@pytest.mark.django_db
-class TestAbilityConstraints:
+class TestAbilityConstraints(TestCase):
     """Test ability range constraints (0-10)."""
 
     def test_alertness_minimum_constraint(self):
@@ -171,7 +168,7 @@ class TestAbilityConstraints:
         human = Human.objects.create(name="Test", alertness=0)
         human.alertness = -1
 
-        with pytest.raises(IntegrityError, match="alertness_range"):
+        with self.assertRaisesMessage(IntegrityError, "alertness_range"):
             human.save()
 
     def test_alertness_maximum_constraint(self):
@@ -179,7 +176,7 @@ class TestAbilityConstraints:
         human = Human.objects.create(name="Test", alertness=5)
         human.alertness = 11
 
-        with pytest.raises(IntegrityError, match="alertness_range"):
+        with self.assertRaisesMessage(IntegrityError, "alertness_range"):
             human.save()
 
     def test_abilities_valid_range(self):
@@ -196,12 +193,11 @@ class TestAbilityConstraints:
         human.save()  # Should not raise
         human.refresh_from_db()
 
-        assert human.alertness == 10
-        assert human.academics == 10
+        self.assertEqual(human.alertness, 10)
+        self.assertEqual(human.academics, 10)
 
 
-@pytest.mark.django_db
-class TestWillpowerConstraints:
+class TestWillpowerConstraints(TestCase):
     """Test willpower constraints."""
 
     def test_willpower_minimum_constraint(self):
@@ -209,7 +205,7 @@ class TestWillpowerConstraints:
         human = Human.objects.create(name="Test", willpower=1, temporary_willpower=1)
         human.willpower = 0
 
-        with pytest.raises(IntegrityError, match="willpower_range"):
+        with self.assertRaisesMessage(IntegrityError, "willpower_range"):
             human.save()
 
     def test_willpower_maximum_constraint(self):
@@ -217,7 +213,7 @@ class TestWillpowerConstraints:
         human = Human.objects.create(name="Test", willpower=10, temporary_willpower=10)
         human.willpower = 11
 
-        with pytest.raises(IntegrityError, match="willpower_range"):
+        with self.assertRaisesMessage(IntegrityError, "willpower_range"):
             human.save()
 
     def test_temporary_willpower_minimum_constraint(self):
@@ -225,7 +221,7 @@ class TestWillpowerConstraints:
         human = Human.objects.create(name="Test", willpower=5, temporary_willpower=0)
         human.temporary_willpower = -1
 
-        with pytest.raises(IntegrityError, match="temp_willpower_range"):
+        with self.assertRaisesMessage(IntegrityError, "temp_willpower_range"):
             human.save()
 
     def test_temporary_willpower_cannot_exceed_permanent(self):
@@ -233,7 +229,7 @@ class TestWillpowerConstraints:
         human = Human.objects.create(name="Test", willpower=5, temporary_willpower=5)
         human.temporary_willpower = 6
 
-        with pytest.raises(IntegrityError, match="temp_not_exceeds_max"):
+        with self.assertRaisesMessage(IntegrityError, "temp_not_exceeds_max"):
             human.save()
 
     def test_willpower_valid_values(self):
@@ -243,12 +239,11 @@ class TestWillpowerConstraints:
         human.save()  # Should not raise
         human.refresh_from_db()
 
-        assert human.willpower == 7
-        assert human.temporary_willpower == 5
+        self.assertEqual(human.willpower, 7)
+        self.assertEqual(human.temporary_willpower, 5)
 
 
-@pytest.mark.django_db
-class TestXPTransactions:
+class TestXPTransactions(TestCase):
     """Test transaction atomicity for XP operations."""
 
     def test_spend_xp_atomicity(self):
@@ -265,16 +260,16 @@ class TestXPTransactions:
         )
 
         character.refresh_from_db()
-        assert character.xp == 5
-        assert len(character.spent_xp) == 1
-        assert character.spent_xp[0]["cost"] == 5
-        assert character.spent_xp[0]["approved"] == "Pending"
+        self.assertEqual(character.xp, 5)
+        self.assertEqual(len(character.spent_xp), 1)
+        self.assertEqual(character.spent_xp[0]["cost"], 5)
+        self.assertEqual(character.spent_xp[0]["approved"], "Pending")
 
     def test_spend_xp_insufficient_xp(self):
         """Spending more XP than available raises ValidationError"""
         character = Character.objects.create(name="Test", xp=3)
 
-        with pytest.raises(ValidationError, match="Insufficient XP"):
+        with self.assertRaisesMessage(ValidationError, "Insufficient XP"):
             character.spend_xp(
                 trait_name="strength",
                 trait_display="Strength",
@@ -284,8 +279,8 @@ class TestXPTransactions:
 
         # Character state should be unchanged
         character.refresh_from_db()
-        assert character.xp == 3
-        assert len(character.spent_xp) == 0
+        self.assertEqual(character.xp, 3)
+        self.assertEqual(len(character.spent_xp), 0)
 
     def test_spend_xp_rollback_on_error(self):
         """If spending fails, entire transaction rolls back"""
@@ -305,8 +300,8 @@ class TestXPTransactions:
 
         # Refresh and verify no changes
         character.refresh_from_db()
-        assert character.xp == initial_xp
-        assert len(character.spent_xp) == 0
+        self.assertEqual(character.xp, initial_xp)
+        self.assertEqual(len(character.spent_xp), 0)
 
     def test_approve_xp_spend_atomicity(self):
         """XP approval is atomic - approval and trait increase together"""
@@ -327,15 +322,15 @@ class TestXPTransactions:
         )
 
         human.refresh_from_db()
-        assert human.strength == 4
-        assert human.spent_xp[0]["approved"] == "Approved"
-        assert "approved_at" in human.spent_xp[0]
+        self.assertEqual(human.strength, 4)
+        self.assertEqual(human.spent_xp[0]["approved"], "Approved")
+        self.assertIn("approved_at", human.spent_xp[0])
 
     def test_approve_xp_spend_invalid_index(self):
         """Approving invalid spend index raises ValidationError"""
         human = Human.objects.create(name="Test", xp=10)
 
-        with pytest.raises(ValidationError, match="Invalid spend index"):
+        with self.assertRaisesMessage(ValidationError, "Invalid spend index"):
             human.approve_xp_spend(
                 spend_index=99, trait_property_name="strength", new_value=4
             )
@@ -350,7 +345,7 @@ class TestXPTransactions:
         human.approve_xp_spend(0, "strength", 4)
 
         # Try to approve again
-        with pytest.raises(ValidationError, match="already processed"):
+        with self.assertRaisesMessage(ValidationError, "already processed"):
             human.approve_xp_spend(0, "strength", 5)
 
     def test_concurrent_xp_spending_prevented(self):
@@ -364,18 +359,17 @@ class TestXPTransactions:
         record = character.spend_xp("test1", "Test 1", 5, "test")
 
         character.refresh_from_db()
-        assert character.xp == 5
+        self.assertEqual(character.xp, 5)
 
         # Another spend
         record2 = character.spend_xp("test2", "Test 2", 3, "test")
 
         character.refresh_from_db()
-        assert character.xp == 2
-        assert len(character.spent_xp) == 2
+        self.assertEqual(character.xp, 2)
+        self.assertEqual(len(character.spent_xp), 2)
 
 
-@pytest.mark.django_db
-class TestSceneXPAwards:
+class TestSceneXPAwards(TestCase):
     """Test transaction atomicity for scene XP awards."""
 
     def test_award_xp_atomicity(self):
@@ -398,15 +392,15 @@ class TestSceneXPAwards:
         count = scene.award_xp(awards)
 
         # Verify
-        assert count == 2
+        self.assertEqual(count, 2)
         char1.refresh_from_db()
         char2.refresh_from_db()
         char3.refresh_from_db()
 
-        assert char1.xp == 1
-        assert char2.xp == 1
-        assert char3.xp == 0
-        assert scene.xp_given is True
+        self.assertEqual(char1.xp, 1)
+        self.assertEqual(char2.xp, 1)
+        self.assertEqual(char3.xp, 0)
+        self.assertTrue(scene.xp_given)
 
     def test_award_xp_idempotent(self):
         """Cannot award XP twice for the same scene"""
@@ -420,12 +414,12 @@ class TestSceneXPAwards:
         scene.award_xp({char1: True})
 
         # Second award should fail
-        with pytest.raises(ValidationError, match="already been awarded"):
+        with self.assertRaisesMessage(ValidationError, "already been awarded"):
             scene.award_xp({char1: True})
 
         # Character should still have only 1 XP
         char1.refresh_from_db()
-        assert char1.xp == 1
+        self.assertEqual(char1.xp, 1)
 
     def test_award_xp_rollback_on_error(self):
         """If XP award fails partway, all changes roll back"""
@@ -444,8 +438,7 @@ class TestSceneXPAwards:
         # In a real scenario with validation errors, rollback would occur
 
 
-@pytest.mark.django_db
-class TestSTRelationshipConstraints:
+class TestSTRelationshipConstraints(TestCase):
     """Test STRelationship uniqueness constraint."""
 
     def test_unique_st_relationship(self):
@@ -458,7 +451,7 @@ class TestSTRelationshipConstraints:
         STRelationship.objects.create(user=user, chronicle=chronicle, gameline=gameline)
 
         # Duplicate should fail
-        with pytest.raises(IntegrityError, match="unique_st_per_chronicle_gameline"):
+        with self.assertRaisesMessage(IntegrityError, "unique_st_per_chronicle_gameline"):
             STRelationship.objects.create(
                 user=user, chronicle=chronicle, gameline=gameline
             )
@@ -480,14 +473,13 @@ class TestSTRelationshipConstraints:
         )
 
         # Should succeed
-        assert rel1.pk != rel2.pk
-        assert (
-            STRelationship.objects.filter(user=user, chronicle=chronicle).count() == 2
+        self.assertNotEqual(rel1.pk, rel2.pk)
+        self.assertEqual(
+            STRelationship.objects.filter(user=user, chronicle=chronicle).count(), 2
         )
 
 
-@pytest.mark.django_db
-class TestAgeConstraints:
+class TestAgeConstraints(TestCase):
     """Test age validation constraints."""
 
     def test_age_minimum(self):
@@ -495,7 +487,7 @@ class TestAgeConstraints:
         human = Human.objects.create(name="Test", age=0)
         human.age = -1
 
-        with pytest.raises(IntegrityError, match="reasonable_age"):
+        with self.assertRaisesMessage(IntegrityError, "reasonable_age"):
             human.save()
 
     def test_age_maximum(self):
@@ -503,7 +495,7 @@ class TestAgeConstraints:
         human = Human.objects.create(name="Test", age=500)
         human.age = 501
 
-        with pytest.raises(IntegrityError, match="reasonable_age"):
+        with self.assertRaisesMessage(IntegrityError, "reasonable_age"):
             human.save()
 
     def test_age_null_allowed(self):
@@ -512,7 +504,7 @@ class TestAgeConstraints:
         human.save()  # Should not raise
 
         human.refresh_from_db()
-        assert human.age is None
+        self.assertIsNone(human.age)
 
     def test_apparent_age_reasonable(self):
         """Apparent age constrained to 0-200"""
@@ -520,30 +512,29 @@ class TestAgeConstraints:
         human.save()  # Should not raise
 
         human.apparent_age = 201
-        with pytest.raises(IntegrityError, match="reasonable_apparent_age"):
+        with self.assertRaisesMessage(IntegrityError, "reasonable_apparent_age"):
             human.save()
 
 
-@pytest.mark.django_db
-class TestModelValidationIntegration:
+class TestModelValidationIntegration(TestCase):
     """Integration tests for complete validation flow."""
 
     def test_character_creation_with_invalid_data(self):
         """Creating character with invalid data raises appropriate errors"""
         # Invalid XP
-        with pytest.raises(IntegrityError):
+        with self.assertRaises(IntegrityError):
             Character.objects.create(name="Test", xp=-10)
 
         # Invalid status
-        with pytest.raises(IntegrityError):
+        with self.assertRaises(IntegrityError):
             Character.objects.create(name="Test", status="BadStatus")
 
     def test_human_creation_with_invalid_attributes(self):
         """Creating human with invalid attributes raises errors"""
-        with pytest.raises(IntegrityError):
+        with self.assertRaises(IntegrityError):
             Human.objects.create(name="Test", strength=0)
 
-        with pytest.raises(IntegrityError):
+        with self.assertRaises(IntegrityError):
             Human.objects.create(name="Test", dexterity=11)
 
     def test_full_validation_chain(self):
@@ -555,7 +546,7 @@ class TestModelValidationIntegration:
 
         # Model validation
         human.xp = -5
-        with pytest.raises(ValidationError):
+        with self.assertRaises(ValidationError):
             human.full_clean()
 
         # Reset
@@ -563,7 +554,7 @@ class TestModelValidationIntegration:
 
         # DB constraint validation
         human.strength = 11
-        with pytest.raises(IntegrityError):
+        with self.assertRaises(IntegrityError):
             human.save()
 
         # Reset
@@ -571,13 +562,10 @@ class TestModelValidationIntegration:
         human.save()
 
         # Transaction validation
-        with pytest.raises(ValidationError, match="Insufficient XP"):
+        with self.assertRaisesMessage(ValidationError, "Insufficient XP"):
             human.spend_xp("strength", "Strength", 25, "attributes")
 
         # Valid operation
         record = human.spend_xp("strength", "Strength", 5, "attributes")
-        assert record is not None
-        assert human.xp == 15
-
-
-# Run tests with: pytest characters/tests/core/test_validation_constraints.py -v
+        self.assertIsNotNone(record)
+        self.assertEqual(human.xp, 15)
