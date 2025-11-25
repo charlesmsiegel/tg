@@ -672,10 +672,10 @@ class PostManager(models.Manager):
 
 class Post(models.Model):
     character = models.ForeignKey(
-        "characters.CharacterModel", on_delete=models.SET_NULL, null=True
+        "characters.CharacterModel", on_delete=models.SET_NULL, null=True, db_index=True
     )
     display_name = models.CharField(max_length=100)
-    scene = models.ForeignKey("game.Scene", on_delete=models.SET_NULL, null=True)
+    scene = models.ForeignKey("game.Scene", on_delete=models.SET_NULL, null=True, db_index=True)
     message = models.TextField(default="")
     datetime_created = models.DateTimeField(default=now, db_index=True)
 
@@ -685,8 +685,12 @@ class Post(models.Model):
         verbose_name = "Post"
         verbose_name_plural = "Posts"
         indexes = [
+            # Ordering posts by creation time
             models.Index(fields=["-datetime_created"]),
+            # Scene-based queries (most common - get posts for a scene chronologically)
             models.Index(fields=["scene", "-datetime_created"]),
+            # Character-based queries (get all posts by a character chronologically)
+            models.Index(fields=["character", "-datetime_created"]),
         ]
 
     def __str__(self):
