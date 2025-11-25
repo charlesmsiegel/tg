@@ -382,13 +382,14 @@ class Week(models.Model):
     def weekly_characters(self):
         """Get all characters who participated in scenes this week.
 
-        Optimized to avoid N+1 query issues.
+        Optimized to avoid N+1 query issues by prefetching owner and chronicle.
         """
         from characters.models.core.human import Human
 
         scene_ids = self.finished_scenes().values_list("id", flat=True)
         return (
             Human.objects.filter(scenes__id__in=scene_ids, npc=False)
+            .select_related("owner", "chronicle")
             .distinct()
             .order_by("name")
         )
