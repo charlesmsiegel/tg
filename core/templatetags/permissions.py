@@ -144,28 +144,57 @@ def is_owner(context, obj):
 
 
 @register.simple_tag(takes_context=True)
-def is_st(context, obj):
-    """Check if current user is ST of object's chronicle."""
-    user = context["request"].user
+def is_st(context, obj=None):
+    """
+    Check if current user is a storyteller.
 
-    # Admin check
+    IMPORTANT: This checks if the user is an ST for ANY chronicle, not
+    a specific chronicle. For object-specific ST checks (e.g., "is this
+    user an ST of this character's chronicle?"), use the permission system
+    instead via PermissionManager.get_user_roles() which checks for the
+    CHRONICLE_HEAD_ST or GAME_ST roles.
+
+    This template tag delegates to user.profile.is_st() for consistency.
+
+    Usage in templates:
+        {% is_st as user_is_st %}
+        {% if user_is_st %}
+            <!-- Show ST-only UI -->
+        {% endif %}
+
+    For object-specific checks, use the permission tags instead:
+        {% user_has_permission object 'EDIT_FULL' as can_edit %}
+        {% user_roles object as roles %}
+
+    Args:
+        obj: Optional object parameter (ignored, kept for backwards compatibility)
+
+    Returns:
+        Boolean indicating if user is an ST for any chronicle
+    """
+    user = context["request"].user
+    if not user.is_authenticated:
+        return False
+
+    # Admin users are always considered STs
     if user.is_superuser or user.is_staff:
         return True
 
-    # Chronicle ST check
-    if hasattr(obj, "chronicle") and obj.chronicle:
-        if hasattr(obj.chronicle, "head_st") and obj.chronicle.head_st == user:
-            return True
-        if hasattr(obj.chronicle, "head_storytellers"):
-            if obj.chronicle.head_storytellers.filter(id=user.id).exists():
-                return True
-
-    return False
+    # Delegate to canonical Profile method
+    return user.profile.is_st()
 
 
 @register.simple_tag(takes_context=True)
 def is_game_st(context, obj):
-    """Check if current user is game ST (read-only) of object's chronicle."""
+    """
+    Check if current user is game ST (read-only) of object's chronicle.
+
+    NOTE: For comprehensive role-based checks, prefer using the permission
+    system via PermissionManager.get_user_roles() which will return the
+    GAME_ST role if applicable.
+
+    This tag is retained for backwards compatibility with existing templates.
+    """
     user = context["request"].user
 
     if hasattr(obj, "chronicle") and obj.chronicle:
@@ -173,26 +202,3 @@ def is_game_st(context, obj):
             return obj.chronicle.game_storytellers.filter(id=user.id).exists()
 
     return False
-
-
-@register.inclusion_tag("core/includes/permission_controls.html", takes_context=True)
-def permission_controls(context, obj):
-    """
-    Render permission control buttons for an object.
-
-    Usage:
-        {% permission_controls object %}
-    """
-    user = context["request"].user
-
-    return {
-        "object": obj,
-        "user": user,
-        "can_view": obj.user_can_view(user),
-        "can_edit": obj.user_can_edit(user),
-        "can_spend_xp": obj.user_can_spend_xp(user),
-        "can_spend_freebies": obj.user_can_spend_freebies(user),
-        "is_owner": is_owner(context, obj),
-        "is_st": is_st(context, obj),
-        "visibility_tier": obj.get_visibility_tier(user),
-    }
