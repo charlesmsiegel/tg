@@ -46,3 +46,18 @@ except ImportError:
 # Simplified logging for development
 LOGGING["loggers"]["django"]["level"] = "INFO"  # noqa: F405
 LOGGING["loggers"]["tg"]["level"] = "DEBUG"  # noqa: F405
+
+# Cache Configuration for Development
+# ====================================
+# Use local memory cache for development (no Redis required)
+# This provides caching functionality without external dependencies
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": 300,  # Default timeout: 5 minutes
+        "OPTIONS": {
+            "MAX_ENTRIES": 1000,
+        },
+    }
+}

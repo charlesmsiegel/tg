@@ -19,3 +19,7 @@ python-dotenv==1.0.1
 setuptools>=78.1.1
 # Security: Update cryptography to latest version
 cryptography>=46.0.0
+
+# Caching dependencies
+django-redis==5.4.0
+redis==5.2.1
