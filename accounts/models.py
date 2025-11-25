@@ -163,7 +163,7 @@ class Profile(models.Model):
     def rotes_to_approve(self):
         """Get rotes pending approval with their associated mages.
 
-        Optimized to avoid N+1 query issues by using prefetch_related.
+        Optimized to avoid N+1 query issues by using select_related and prefetch_related.
         """
         from django.db.models import Prefetch
 
@@ -172,7 +172,10 @@ class Profile(models.Model):
                 status__in=["Un", "Sub"],
                 chronicle__in=self.user.chronicle_set.all(),
             )
-            .prefetch_related(Prefetch("mage_set", queryset=Mage.objects.all()))
+            .select_related("chronicle")
+            .prefetch_related(
+                Prefetch("mage_set", queryset=Mage.objects.select_related("owner"))
+            )
             .order_by("name")
         )
         return {r: list(r.mage_set.all()) for r in rotes}
