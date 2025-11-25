@@ -23,17 +23,6 @@ class ModelQuerySet(PolymorphicQuerySet):
     Character is VtMHuman, Mage, Garou, etc.).
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._result_cache = None
-        # Default optimization: always select_related polymorphic_ctype
-        # to avoid N+1 ContentType lookups during polymorphic resolution
-        # In Django, query.select_related is False when not set, dict when set
-        if self.query.select_related is False:
-            self.query.select_related = {}
-        if "polymorphic_ctype" not in self.query.select_related:
-            self.query.select_related["polymorphic_ctype"] = {}
-
     def pending_approval_for_user(self, user):
         """
         Objects awaiting approval in user's chronicles (optimized).
@@ -69,9 +58,19 @@ class ModelQuerySet(PolymorphicQuerySet):
         return self.filter(chronicle__in=user.chronicle_set.all())
 
 
-# Create ModelManager from the QuerySet to expose all QuerySet methods on the manager
-# This eliminates duplication - all query methods are defined once in ModelQuerySet
-ModelManager = PolymorphicManager.from_queryset(ModelQuerySet)
+# Create custom manager with polymorphic_ctype optimization
+class ModelManager(PolymorphicManager.from_queryset(ModelQuerySet)):
+    """
+    Manager for polymorphic models with automatic ContentType optimization.
+
+    Applies select_related('polymorphic_ctype') by default to prevent N+1 queries
+    when resolving polymorphic types. Uses Django's standard get_queryset() pattern
+    instead of fragile internal query manipulation.
+    """
+
+    def get_queryset(self):
+        """Return queryset with polymorphic_ctype optimization applied."""
+        return super().get_queryset().select_related('polymorphic_ctype')
 
 
 class Book(models.Model):
