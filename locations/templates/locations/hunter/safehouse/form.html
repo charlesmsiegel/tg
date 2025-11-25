@@ -1,0 +1,89 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Safehouse
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Parent Location</div>
+        <div class="col-sm">{{ form.parent }}</div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Size & Capacity</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Size</div>
+        <div class="col-sm">{{ form.size }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Capacity</div>
+        <div class="col-sm">{{ form.capacity }}</div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Resources</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Security Level</div>
+        <div class="col-sm">{{ form.security_level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Armory Level</div>
+        <div class="col-sm">{{ form.armory_level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Surveillance Level</div>
+        <div class="col-sm">{{ form.surveillance_level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Medical Facilities</div>
+        <div class="col-sm">{{ form.medical_facilities }}</div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Status</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Compromised</div>
+        <div class="col-sm">{{ form.is_compromised }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Mobile</div>
+        <div class="col-sm">{{ form.is_mobile }}</div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Features</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Has Panic Room</div>
+        <div class="col-sm">{{ form.has_panic_room }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Has Escape Routes</div>
+        <div class="col-sm">{{ form.has_escape_routes }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Has Dead Drop</div>
+        <div class="col-sm">{{ form.has_dead_drop }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Has Communications</div>
+        <div class="col-sm">{{ form.has_communications }}</div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Cover</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Legal Owner</div>
+        <div class="col-sm">{{ form.legal_owner }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Cover Story</div>
+        <div class="col-sm">{{ form.cover_story }}</div>
+    </div>
+{% endblock contents %}

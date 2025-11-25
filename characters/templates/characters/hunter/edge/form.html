@@ -1,0 +1,38 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Edge
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Virtue</div>
+        <div class="col-sm">{{ form.virtue }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Level</div>
+        <div class="col-sm">{{ form.level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Cost</div>
+        <div class="col-sm">{{ form.cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Duration</div>
+        <div class="col-sm">{{ form.duration }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">System</div>
+        <div class="col-sm">{{ form.system }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Book</div>
+        <div class="col-sm">{{ form.book }}</div>
+    </div>
+{% endblock contents %}

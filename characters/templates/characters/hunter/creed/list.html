@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Hunter Creeds
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="htr">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title htr_heading">Hunter Creeds</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body">
+                            {% for obj in object_list %}
+                                <div class="row mb-2">
+                                    <div class="col-sm-6">
+                                        <a href="{% url 'characters:hunter:creed' obj.pk %}">{{ obj.name }}</a>
+                                        {% if obj.nickname %}
+                                            <span class="text-muted">({{ obj.nickname }})</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-sm-6 text-muted">
+                                        {{ obj.get_primary_virtue_display }}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="row">
+                                    <div class="col-sm">No creeds found.</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{% url 'characters:hunter:create:creed' %}" class="tg-btn btn-primary">Create Creed</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

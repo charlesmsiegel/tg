@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Edge(models.Model):
@@ -41,3 +42,6 @@ class Edge(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_virtue_display()}, Level {self.level})"
+
+    def get_absolute_url(self):
+        return reverse("characters:hunter:edge", kwargs={"pk": self.pk})
