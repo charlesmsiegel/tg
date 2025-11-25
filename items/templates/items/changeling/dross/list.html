@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Dross
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title ctd_heading">Dross</h3>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                <div class="row">
+                    {% for obj in object_list %}
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <div class="tg-card h-100">
+                                <div class="tg-card-body text-center" style="padding: 16px;">
+                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj }}</a>
+                                    <div class="text-muted small">{{ obj.get_quality_display }} - {{ obj.get_physical_form_display }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No dross found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

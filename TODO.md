@@ -53,11 +53,6 @@ This document tracks remaining work across the codebase with context about what 
 3. ❌ **Hunter items** - HunterGear, HunterRelic need views
 4. ❌ **Hunter locations** - Safehouse, HuntingGround need views
 
-### Items - Minor Gaps
-
-⚠️ **Dross (Changeling)** - Model exists but incomplete views
-- **What remains**: Create list/create/update views and templates
-
 ### Game App - Enhancement Opportunities
 
 These models work but could have better user-facing views:
@@ -117,10 +112,10 @@ These models work but could have better user-facing views:
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~9 items
+**Total Open Items**: ~8 items
 
 **By Priority**:
-- 🟢 Low Priority: ~5 items (feature completeness - Mummy, Hunter, Dross, Game enhancements)
+- 🟢 Low Priority: ~4 items (feature completeness - Mummy, Hunter, Game enhancements)
 - 🔵 Deployment: 6 items (staging + production)
 
 ---
@@ -128,6 +123,9 @@ These models work but could have better user-facing views:
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.5)
+- **Dross (Changeling) CRUD views** - Created DrossDetailView, DrossCreateView, DrossUpdateView, DrossListView in `items/views/changeling/`. Added detail, form, and list templates. Fixed changeling URL structure to match standard pattern.
 
 ### Removed 2025-11-25 (v7.4)
 - **Improve code style consistency** - Added black (24.3.0), ruff (0.3.4), pre-commit (3.7.0) to requirements. Created `.pre-commit-config.yaml` and configured `pyproject.toml` with formatting rules.
@@ -173,4 +171,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.4 (Added code quality tools - black, ruff, pre-commit)
+**Version**: 7.5 (Added Dross CRUD views and templates)

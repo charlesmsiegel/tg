@@ -1,0 +1,107 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}
+        Edit Dross
+    {% else %}
+        Create Dross
+    {% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name }}
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.quality.id_for_label }}" class="form-label">Quality</label>
+            {{ form.quality }}
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.glamour_value.id_for_label }}" class="form-label">Glamour Value</label>
+            {{ form.glamour_value }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="{{ form.physical_form.id_for_label }}" class="form-label">Physical Form</label>
+            {{ form.physical_form }}
+        </div>
+        <div class="col-md-4">
+            <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+            {{ form.color }}
+        </div>
+        <div class="col-md-4">
+            <label for="{{ form.source.id_for_label }}" class="form-label">Source</label>
+            {{ form.source }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.resonance.id_for_label }}" class="form-label">Resonance</label>
+            {{ form.resonance }}
+            <small class="text-muted">Emotional or thematic resonance (joy, sorrow, courage, etc.)</small>
+        </div>
+        <div class="col-md-3">
+            <div class="form-check" style="margin-top: 32px;">
+                {{ form.is_stable }}
+                <label class="form-check-label" for="{{ form.is_stable.id_for_label }}">
+                    Stable
+                </label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.decay_rate.id_for_label }}" class="form-label">Decay Rate</label>
+            {{ form.decay_rate }}
+            <small class="text-muted">If unstable</small>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="{{ form.special_effects.id_for_label }}" class="form-label">Special Effects</label>
+            {{ form.special_effects }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.restricted_to.id_for_label }}" class="form-label">Restricted To</label>
+            {{ form.restricted_to }}
+            <small class="text-muted">Can only be used by specific kiths, courts, or individuals</small>
+        </div>
+        <div class="col-md-3">
+            <div class="form-check" style="margin-top: 32px;">
+                {{ form.is_consumable }}
+                <label class="form-check-label" for="{{ form.is_consumable.id_for_label }}">
+                    Consumable
+                </label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label for="{{ form.estimated_value.id_for_label }}" class="form-label">Estimated Value</label>
+            {{ form.estimated_value }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="{{ form.recharge_method.id_for_label }}" class="form-label">Recharge Method</label>
+            {{ form.recharge_method }}
+            <small class="text-muted">If renewable, how does it recharge?</small>
+        </div>
+        <div class="col-md-6">
+            <label for="{{ form.container_description.id_for_label }}" class="form-label">Container</label>
+            {{ form.container_description }}
+            <small class="text-muted">What contains this dross (vial, pouch, etc.)</small>
+        </div>
+    </div>
+{% endblock contents %}

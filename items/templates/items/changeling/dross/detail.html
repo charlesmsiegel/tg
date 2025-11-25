@@ -1,0 +1,166 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title ctd_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Quality:</strong>
+                        </div>
+                        <div class="col-6">{{ object.get_quality_display }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Form:</strong>
+                        </div>
+                        <div class="col-6">{{ object.get_physical_form_display }}</div>
+                    </div>
+                    {% if object.color %}
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Color:</strong>
+                            </div>
+                            <div class="col-6">{{ object.color }}</div>
+                        </div>
+                    {% endif %}
+                    <div class="row mb-0">
+                        <div class="col-6">
+                            <strong>Stable:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if object.is_stable %}
+                                <span class="tg-badge badge-app">Yes</span>
+                            {% else %}
+                                <span class="tg-badge badge-dec">No</span>
+                                {% if object.decay_rate %}
+                                    <span class="text-muted ms-1">({{ object.decay_rate }})</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title ctd_heading">Glamour</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Value:</strong>
+                        </div>
+                        <div class="col-6">{{ object.glamour_value|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Source:</strong>
+                        </div>
+                        <div class="col-6">{{ object.get_source_display }}</div>
+                    </div>
+                    {% if object.resonance %}
+                        <div class="row mb-0">
+                            <div class="col-6">
+                                <strong>Resonance:</strong>
+                            </div>
+                            <div class="col-6">{{ object.resonance }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if object.special_effects %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title ctd_heading">Special Effects</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="white-space: pre-wrap; margin-bottom: 0;">{{ object.special_effects }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if object.restricted_to or not object.is_consumable %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title ctd_heading">Usage</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% if object.restricted_to %}
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <strong>Restricted To:</strong>
+                                </div>
+                                <div class="col-9">{{ object.restricted_to }}</div>
+                            </div>
+                        {% endif %}
+                        <div class="row mb-2">
+                            <div class="col-3">
+                                <strong>Consumable:</strong>
+                            </div>
+                            <div class="col-9">
+                                {% if object.is_consumable %}
+                                    <span class="tg-badge badge-sub">Yes - consumed when used</span>
+                                {% else %}
+                                    <span class="tg-badge badge-app">No - renewable</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if object.recharge_method %}
+                            <div class="row mb-0">
+                                <div class="col-3">
+                                    <strong>Recharge:</strong>
+                                </div>
+                                <div class="col-9" style="white-space: pre-wrap;">{{ object.recharge_method }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if object.container_description or object.estimated_value %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title ctd_heading">Container & Value</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% if object.container_description %}
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <strong>Container:</strong>
+                                </div>
+                                <div class="col-9" style="white-space: pre-wrap;">{{ object.container_description }}</div>
+                            </div>
+                        {% endif %}
+                        {% if object.estimated_value %}
+                            <div class="row mb-0">
+                                <div class="col-3">
+                                    <strong>Estimated Value:</strong>
+                                </div>
+                                <div class="col-9">{{ object.estimated_value }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock additional_stats %}

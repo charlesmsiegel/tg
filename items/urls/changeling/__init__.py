@@ -2,10 +2,9 @@ from django.urls import include, path
 
 from . import create, detail, index, update
 
-app_name = "changeling"
-urlpatterns = [
-    path("", include((index.urls, index.app_name))),
-    path("detail/", include((detail.urls, detail.app_name))),
-    path("create/", include((create.urls, create.app_name))),
-    path("update/", include((update.urls, update.app_name))),
+urls = [
+    path("create/", include((create.urls, "changeling_create"), namespace="create")),
+    path("update/", include((update.urls, "changeling_update"), namespace="update")),
+    path("list/", include((index.urls, "changeling_list"), namespace="list")),
+    path("", include(detail.urls)),
 ]
