@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load json_filters %}
 {% block title %}
     Journals
 {% endblock title %}
@@ -9,21 +10,106 @@
                 <h3 class="tg-card-title wod_heading">Journals</h3>
             </div>
             <div class="tg-card-body" style="padding: 24px;">
+                <!-- Filter Buttons -->
+                <div class="text-center mb-4">
+                    <div class="btn-group" role="group" aria-label="Filter journals">
+                        <a href="?filter=all" class="btn {% if current_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            All Journals
+                        </a>
+                        <a href="?filter=mine" class="btn {% if current_filter == 'mine' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            My Journals
+                        </a>
+                        {% if request.user.profile.is_st %}
+                            <a href="?filter=st" class="btn {% if current_filter == 'st' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                My Chronicles
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Journal Grid -->
                 <div class="row">
                     {% for obj in object_list %}
                         <div class="col-sm-6 col-md-4 mb-3">
                             <div class="tg-card h-100">
-                                <div class="tg-card-body text-center" style="padding: 16px;">
-                                    <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ obj }}</a>
+                                <div class="tg-card-body" style="padding: 16px;">
+                                    <div class="text-center mb-2">
+                                        <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem; color: var(--theme-text-primary);">
+                                            {{ obj.character.name }}
+                                        </a>
+                                    </div>
+                                    <div class="text-center mb-2">
+                                        <span class="tg-badge badge-pill {{ obj.character.gameline }}">
+                                            {{ obj.character.get_gameline_display }}
+                                        </span>
+                                    </div>
+                                    <div class="row text-center" style="font-size: 0.85rem;">
+                                        <div class="col-6">
+                                            <div style="color: var(--theme-text-secondary);">Entries</div>
+                                            <div style="font-weight: 600;">{{ journal_stats|get_item:obj.pk|get_item:"entry_count"|default:"0" }}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div style="color: var(--theme-text-secondary);">Latest</div>
+                                            <div style="font-weight: 600;">
+                                                {% with latest=journal_stats|get_item:obj.pk|get_item:"latest_entry" %}
+                                                    {% if latest %}
+                                                        {{ latest|date:"M j" }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if obj.character.owner %}
+                                        <div class="text-center mt-2" style="font-size: 0.75rem; color: var(--theme-text-secondary);">
+                                            Owner: {{ obj.character.owner.username }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     {% empty %}
                         <div class="col-12 text-center">
-                            <p class="text-muted">No journals found.</p>
+                            <p class="text-muted">
+                                {% if current_filter == 'mine' %}
+                                    You don't have any journals yet. Create a character to get started!
+                                {% elif current_filter == 'st' %}
+                                    No journals found in your chronicles.
+                                {% else %}
+                                    No journals found.
+                                {% endif %}
+                            </p>
                         </div>
                     {% endfor %}
                 </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav aria-label="Journal pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?filter={{ current_filter }}&page=1">&laquo; First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?filter={{ current_filter }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?filter={{ current_filter }}&page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?filter={{ current_filter }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
             </div>
         </div>
     </div>

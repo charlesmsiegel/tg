@@ -11,71 +11,131 @@
             <div class="tg-card header-card mb-4" data-gameline="{{ object.character.gameline }}">
                 <div class="tg-card-header text-center">
                     <h1 class="tg-card-title {{ object.character.get_heading }}">{{ object }}</h1>
+                    <p class="mb-0" style="color: var(--theme-text-secondary);">
+                        <a href="{{ object.character.get_absolute_url }}" style="color: inherit;">
+                            {{ object.character.name }}
+                        </a>
+                        &bull;
+                        {{ object.character.get_gameline_display }}
+                        {% if object.character.chronicle %}
+                            &bull;
+                            {{ object.character.chronicle.name }}
+                        {% endif %}
+                    </p>
                 </div>
             </div>
 
             <!-- New Entry Form -->
-            <div class="tg-card mb-4">
-                <div class="tg-card-header text-center">
-                    <h3 class="tg-card-title">Add New Entry</h3>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        <div class="row mb-3">
-                            <div class="col-md-3 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ new_entry_form.date.id_for_label }}" class="tg-form-label">Date</label>
-                                    {{ new_entry_form.date|add_class:"tg-form-control" }}
+            {% if object.character.owner == request.user %}
+                <div class="tg-card mb-4">
+                    <div class="tg-card-header">
+                        <h3 class="tg-card-title {{ object.character.get_heading }}">Add New Entry</h3>
+                    </div>
+                    <div class="tg-card-body" style="padding: 24px;">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-md-3 mb-3">
+                                    <div class="tg-form-group">
+                                        <label for="{{ new_entry_form.date.id_for_label }}" class="tg-form-label">
+                                            In-Game Date
+                                        </label>
+                                        {{ new_entry_form.date|add_class:"tg-form-control" }}
+                                        <small class="text-muted">When did this happen in-game?</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 mb-3">
+                                    <div class="tg-form-group">
+                                        <label for="{{ new_entry_form.message.id_for_label }}" class="tg-form-label">
+                                            Journal Entry
+                                        </label>
+                                        {{ new_entry_form.message|add_class:"tg-form-control"|add_attr:"rows:6"|add_attr:"placeholder:Write about your character's thoughts, experiences, or events..." }}
+                                        <small class="text-muted">
+                                            Write from your character's perspective. You can use [quote] and [/quote] tags for dialogue.
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-9 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ new_entry_form.message.id_for_label }}" class="tg-form-label">Journal Entry</label>
-                                    {{ new_entry_form.message|add_class:"tg-form-control" }}
-                                </div>
+                            <div class="text-end">
+                                <button type="submit" name="submit_entry" class="tg-btn btn-primary">
+                                    Submit Entry
+                                </button>
                             </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" name="submit_entry" class="tg-btn btn-primary">Submit Entry</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <!-- Journal Entries -->
+            {% else %}
+                <div class="alert alert-info mb-4">
+                    Only the character's owner can add journal entries.
+                </div>
+            {% endif %}
+
+            <!-- Entry Count -->
             {% regroup st_response_forms by entry.date.date as date_groups %}
+            {% if date_groups %}
+                <div class="mb-3 text-muted text-center">
+                    {{ st_response_forms|length }} entr{{ st_response_forms|length|pluralize:"y,ies" }} across {{ date_groups|length }} date{{ date_groups|length|pluralize }}
+                </div>
+            {% endif %}
+
+            <!-- Journal Entries -->
             {% for date_group in date_groups %}
                 <div class="tg-card mb-4">
-                    <div class="tg-card-header text-center">
-                        <h4 class="tg-card-title {{ object.character.get_heading }}">{{ date_group.grouper }}</h4>
+                    <div class="tg-card-header">
+                        <h4 class="tg-card-title {{ object.character.get_heading }}">
+                            {{ date_group.grouper|date:"l, F j, Y" }}
+                        </h4>
                     </div>
                     <div class="tg-card-body" style="padding: 20px;">
                         {% for form in date_group.list %}
-                            <div class="mb-4" style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                            <div class="mb-4{% if not forloop.last %} pb-4{% endif %}" style="{% if not forloop.last %}border-bottom: 1px solid rgba(0,0,0,0.1);{% endif %}">
                                 <!-- Player Entry -->
                                 <div class="mb-3">
-                                    <h6 style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px;">Entry</h6>
-                                    <p class="mb-0" style="line-height: 1.6;">{{ form.entry.message|quote_tag|sanitize_html }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 0;">
+                                            Entry
+                                        </h6>
+                                        <small class="text-muted">{{ form.entry.datetime_created|date:"g:i A" }}</small>
+                                    </div>
+                                    <div style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02); line-height: 1.6;">
+                                        {{ form.entry.message|quote_tag|sanitize_html }}
+                                    </div>
                                 </div>
-                                
+
                                 <!-- ST Response -->
                                 {% if form.entry.st_message %}
                                     {% if form.entry.st_message != 'Read' %}
-                                        <div class="mb-3" style="padding: 12px; border-left: 4px solid var(--color-info); background-color: rgba(23, 162, 184, 0.1);">
-                                            <h6 class="st" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">ST Response</h6>
-                                            <p class="mb-0 st" style="line-height: 1.6;">{{ form.entry.st_message|quote_tag|sanitize_html }}</p>
+                                        <div class="mb-3" style="padding: 16px; border-left: 4px solid var(--color-info); background-color: rgba(23, 162, 184, 0.1); border-radius: 0 8px 8px 0;">
+                                            <h6 class="st" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                                                ST Response
+                                            </h6>
+                                            <div class="st" style="line-height: 1.6;">{{ form.entry.st_message|quote_tag|sanitize_html }}</div>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted small">
+                                            <i class="fas fa-check"></i> Acknowledged by ST
                                         </div>
                                     {% endif %}
                                 {% else %}
                                     {% if request.user.profile.is_st %}
-                                        <form method="post" action="">
-                                            {% csrf_token %}
-                                            <div class="tg-form-group mb-3">
-                                                <label for="{{ form.st_message.id_for_label }}" class="tg-form-label">ST Response</label>
-                                                {{ form.st_message|add_class:"tg-form-control" }}
-                                            </div>
-                                            <button type="submit" name="submit_response" value="{{ form.entry.pk }}" class="tg-btn btn-primary btn-sm">Submit ST Response</button>
-                                        </form>
+                                        <div style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02);">
+                                            <form method="post" action="">
+                                                {% csrf_token %}
+                                                <div class="tg-form-group mb-3">
+                                                    <label for="{{ form.st_message.id_for_label }}" class="tg-form-label">
+                                                        ST Response
+                                                    </label>
+                                                    {{ form.st_message|add_class:"tg-form-control"|add_attr:"rows:3"|add_attr:"placeholder:Respond to this entry or type 'Read' to acknowledge..." }}
+                                                </div>
+                                                <button type="submit" name="submit_response" value="{{ form.entry.pk }}" class="tg-btn btn-primary btn-sm">
+                                                    Submit Response
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted small">
+                                            <i class="fas fa-clock"></i> Awaiting ST response
+                                        </div>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -85,18 +145,36 @@
             {% empty %}
                 <div class="tg-card mb-4">
                     <div class="tg-card-body text-center" style="padding: 40px;">
-                        <p class="text-muted mb-0">No journal entries yet</p>
+                        <p class="text-muted mb-0">
+                            {% if object.character.owner == request.user %}
+                                No journal entries yet. Start writing about your character's experiences!
+                            {% else %}
+                                No journal entries yet.
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
             {% endfor %}
 
-            <!-- Commands Link -->
+            <!-- Navigation Links -->
             <div class="tg-card">
                 <div class="tg-card-body text-center" style="padding: 20px;">
+                    <a href="{{ object.character.get_absolute_url }}" class="tg-btn btn-outline-secondary me-2">
+                        Back to Character
+                    </a>
+                    <a href="{% url 'game:journals' %}" class="tg-btn btn-outline-primary me-2">
+                        All Journals
+                    </a>
                     <a href="{% url 'game:commands' %}" class="tg-btn btn-outline-primary">
-                        <i class="fas fa-list"></i> List of Commands
+                        Commands Reference
                     </a>
                 </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="container py-4">
+            <div class="alert alert-warning">
+                You do not have permission to view this journal.
             </div>
         </div>
     {% endif %}
