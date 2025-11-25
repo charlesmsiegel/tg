@@ -1,28 +1,25 @@
 from datetime import date, timedelta
 
+from characters.managers import BackgroundManager, MeritFlawManager
 from characters.models.core.ability_block import Ability, AbilityBlock
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute, AttributeBlock
-from characters.models.core.background_block import BackgroundBlock
 from characters.models.core.character import Character
 from characters.models.core.derangement import Derangement
 from characters.models.core.health_block import HealthBlock
-from characters.models.core.human_url_block import HumanUrlBlock
-from characters.models.core.merit_flaw_block import MeritFlawBlock
+from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from core.models import Language
-from core.utils import add_dot
+from core.utils import add_dot, get_short_gameline_name
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, F, Q
+from django.urls import reverse
 
 
 class Human(
-    HumanUrlBlock,
     AbilityBlock,
-    MeritFlawBlock,
     HealthBlock,
-    BackgroundBlock,
     AttributeBlock,
     Character,
 ):
@@ -83,6 +80,18 @@ class Human(
     specialties = models.ManyToManyField(Specialty, blank=True)
 
     languages = models.ManyToManyField(Language, blank=True)
+
+    # Merit/Flaw management (formerly from MeritFlawBlock)
+    merits_and_flaws = models.ManyToManyField(
+        MeritFlaw,
+        blank=True,
+        through="MeritFlawRating",
+        related_name="flawed",
+    )
+
+    # Background management (formerly from BackgroundBlock)
+    # Note: backgrounds are managed dynamically through BackgroundRating model
+    # No direct fields needed here - see background_manager property
 
     willpower = models.IntegerField(
         default=3, validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -145,6 +154,110 @@ class Human(
                 violation_error_message="Apparent age must be between 0 and 200",
             ),
         ]
+
+    # ========================================================================
+    # Manager Properties (Composition over Inheritance)
+    # ========================================================================
+
+    @property
+    def merit_flaw_manager(self):
+        """
+        Lazy-loaded manager for merit/flaw operations.
+
+        This replaces direct inheritance from MeritFlawBlock with composition.
+
+        Returns:
+            MeritFlawManager: Manager instance for this character
+        """
+        if not hasattr(self, "_merit_flaw_manager"):
+            self._merit_flaw_manager = MeritFlawManager(self)
+        return self._merit_flaw_manager
+
+    @property
+    def background_manager(self):
+        """
+        Lazy-loaded manager for background operations.
+
+        This replaces direct inheritance from BackgroundBlock with composition.
+
+        Returns:
+            BackgroundManager: Manager instance for this character
+        """
+        if not hasattr(self, "_background_manager"):
+            self._background_manager = BackgroundManager(self)
+        return self._background_manager
+
+    # ========================================================================
+    # URL Methods (formerly from HumanUrlBlock)
+    # ========================================================================
+
+    @staticmethod
+    def get_gameline_for_url(gameline):
+        """
+        Get formatted gameline prefix for URL generation.
+
+        Args:
+            gameline: Gameline code (e.g., 'vtm', 'wta')
+
+        Returns:
+            str: Formatted gameline prefix with colon, or empty string
+        """
+        g = get_short_gameline_name(gameline)
+        if g:
+            g += ":"
+        return g
+
+    def get_full_update_url(self):
+        """
+        Get URL for full character update view.
+
+        Returns:
+            str: URL path for full update view
+        """
+        return reverse(
+            f"characters:{self.get_gameline_for_url(self.gameline)}update:{self.type}_full",
+            kwargs={"pk": self.pk},
+        )
+
+    def get_update_url(self):
+        """
+        Get URL for character update view.
+
+        Returns:
+            str: URL path for update view
+        """
+        return reverse(
+            f"characters:{self.get_gameline_for_url(self.gameline)}update:{self.type}",
+            kwargs={"pk": self.pk},
+        )
+
+    @classmethod
+    def get_full_creation_url(cls):
+        """
+        Get URL for full character creation view.
+
+        Returns:
+            str: URL path for full creation view
+        """
+        return reverse(
+            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full"
+        )
+
+    @classmethod
+    def get_creation_url(cls):
+        """
+        Get URL for character creation view.
+
+        Returns:
+            str: URL path for creation view
+        """
+        return reverse(
+            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}"
+        )
+
+    # ========================================================================
+    # Freebie and XP Methods
+    # ========================================================================
 
     def total_freebies(self):
         return self.freebies + sum([x["cost"] for x in self.spent_freebies])
@@ -391,6 +504,105 @@ class Human(
         existing_specialties = [x.stat for x in self.specialties.all()]
         stats = [x.property_name for x in stats]
         return [x for x in stats if x not in existing_specialties]
+
+    # ========================================================================
+    # Backward Compatibility Delegates
+    # These methods delegate to the manager classes for backward compatibility.
+    # New code should use character.merit_flaw_manager or character.background_manager
+    # ========================================================================
+
+    # MeritFlawBlock backward compatibility
+    def num_languages(self):
+        """DEPRECATED: Use character.merit_flaw_manager.num_languages()"""
+        return self.merit_flaw_manager.num_languages()
+
+    def get_mf_and_rating_list(self):
+        """DEPRECATED: Use character.merit_flaw_manager.get_mf_and_rating_list()"""
+        return self.merit_flaw_manager.get_mf_and_rating_list()
+
+    def add_mf(self, mf, rating):
+        """DEPRECATED: Use character.merit_flaw_manager.add_mf()"""
+        return self.merit_flaw_manager.add_mf(mf, rating)
+
+    def filter_mfs(self):
+        """DEPRECATED: Use character.merit_flaw_manager.filter_mfs()"""
+        return self.merit_flaw_manager.filter_mfs()
+
+    def mf_rating(self, mf):
+        """DEPRECATED: Use character.merit_flaw_manager.mf_rating()"""
+        return self.merit_flaw_manager.mf_rating(mf)
+
+    def has_max_flaws(self):
+        """DEPRECATED: Use character.merit_flaw_manager.has_max_flaws()"""
+        return self.merit_flaw_manager.has_max_flaws()
+
+    def total_flaws(self):
+        """DEPRECATED: Use character.merit_flaw_manager.total_flaws()"""
+        return self.merit_flaw_manager.total_flaws()
+
+    def total_merits(self):
+        """DEPRECATED: Use character.merit_flaw_manager.total_merits()"""
+        return self.merit_flaw_manager.total_merits()
+
+    def meritflaw_freebies(self, form):
+        """DEPRECATED: Use character.merit_flaw_manager.meritflaw_freebies()"""
+        return self.merit_flaw_manager.meritflaw_freebies(form)
+
+    # BackgroundBlock backward compatibility
+    def total_background_rating(self, bg_name):
+        """DEPRECATED: Use character.background_manager.total_background_rating()"""
+        return self.background_manager.total_background_rating(bg_name)
+
+    def get_backgrounds(self):
+        """DEPRECATED: Use character.background_manager.get_backgrounds()"""
+        return self.background_manager.get_backgrounds()
+
+    def add_background(self, background, maximum=5):
+        """DEPRECATED: Use character.background_manager.add_background()"""
+        return self.background_manager.add_background(background, maximum)
+
+    def total_backgrounds(self):
+        """DEPRECATED: Use character.background_manager.total_backgrounds()"""
+        return self.background_manager.total_backgrounds()
+
+    def filter_backgrounds(self, minimum=0, maximum=5):
+        """DEPRECATED: Use character.background_manager.filter_backgrounds()"""
+        return self.background_manager.filter_backgrounds(minimum, maximum)
+
+    def has_backgrounds(self):
+        """DEPRECATED: Use character.background_manager.has_backgrounds()"""
+        return self.background_manager.has_backgrounds()
+
+    def new_background_freebies(self, form):
+        """DEPRECATED: Use character.background_manager.new_background_freebies()"""
+        return self.background_manager.new_background_freebies(form)
+
+    def existing_background_freebies(self, form):
+        """DEPRECATED: Use character.background_manager.existing_background_freebies()"""
+        return self.background_manager.existing_background_freebies(form)
+
+    # Dynamic background properties (for backward compatibility with old property system)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Create dynamic properties for all allowed backgrounds
+        for bg in self.allowed_backgrounds:
+            if not hasattr(self.__class__, bg):
+                setattr(
+                    self.__class__,
+                    bg,
+                    property(
+                        lambda self, bg_name=bg: self.background_manager.get_background_property(
+                            bg_name
+                        ),
+                        lambda self, value, bg_name=bg: self.background_manager.set_background_property(
+                            bg_name, value
+                        ),
+                    ),
+                )
+
+    # ========================================================================
+    # XP and Freebie Spending Methods
+    # ========================================================================
 
     def spend_xp(self, trait):
         """Spend XP on common human traits (attributes, abilities, backgrounds, willpower).
