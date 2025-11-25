@@ -11,7 +11,6 @@ from core.permissions import Permission, PermissionManager, VisibilityTier
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from game.models import STRelationship
 
 
 class PermissionRequiredMixin:
@@ -247,7 +246,7 @@ class SpecialUserMixin:
             return True
         if not user.is_authenticated:
             return False
-        if STRelationship.objects.filter(user=user).count() > 0:
+        if user.profile.is_st():
             return True
         return False
 
