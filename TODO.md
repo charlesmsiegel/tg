@@ -176,16 +176,15 @@ These models work but could have better user-facing views:
 - 🟢 Low Priority: ~6 items (feature completeness - Mummy, Hunter gamelines)
 - 🔵 Deployment: 6 items (staging + production)
 
-**Completed This Session**:
-- Authorization checks in game/views.py ✅
-- filter_queryset_for_user cleanup ✅
-- Dependency updates (bleach 6.3.0) ✅
-
 ---
 
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.1)
+- **Implement authorization checks in game/views.py** - Chronicle-specific ST check for scene closing, character ownership checks for adding/posting
+- **Simplify filter_queryset_for_user** - Refactored into helper methods, removed duplicate observer filter code
 
 ### Removed 2025-11-25 (v7.0)
 - **Fix N+1 query problems** - All methods optimized: `st_relations()` uses `for_user_optimized()`, `weekly_characters()` uses `select_related()`, `rotes_to_approve()` uses `prefetch_related()` with Prefetch
@@ -218,4 +217,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.0 (Major cleanup - removed 9 verified completed items, updated statistics)
+**Version**: 7.1 (Resolved authorization checks and filter_queryset_for_user)
