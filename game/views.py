@@ -143,10 +143,17 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
         scene = self.object
 
         if "close_scene" in request.POST.keys():
-            # Only storytellers can close scenes
-            if not request.user.profile.is_st():
-                messages.error(request, "Only storytellers can close scenes.")
-                raise PermissionDenied("Only storytellers can close scenes")
+            # Only storytellers for THIS chronicle can close scenes
+            is_admin = request.user.is_superuser or request.user.is_staff
+            is_chronicle_st = False
+            if scene.chronicle:
+                is_chronicle_st = (
+                    scene.chronicle.head_st == request.user
+                    or scene.chronicle.storytellers.filter(pk=request.user.pk).exists()
+                )
+            if not (is_admin or is_chronicle_st):
+                messages.error(request, "You are not a storyteller for this chronicle.")
+                raise PermissionDenied("You are not a storyteller for this chronicle")
             scene.close()
             messages.success(request, f"Scene '{scene.name}' closed successfully!")
         elif "character_to_add" in request.POST.keys():
