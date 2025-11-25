@@ -15,17 +15,7 @@ This document tracks remaining work across the codebase with context about what 
    - **Context**: Run `pip list --outdated` and check Dependabot alerts
    - **Independence**: Standalone task - can be done independently
 
-2. **Complete production security configuration**
-   - **File**: `tg/settings.py:27-33`
-   - **Status**: ✅ Partially fixed - DEBUG and ALLOWED_HOSTS now use environment variables
-   - **Remaining Actions**:
-     - Configure proper SECRET_KEY from environment (currently commented out)
-     - Create environment-specific settings files (base.py, development.py, production.py)
-     - Add additional security headers and CSRF settings for production
-   - **Context**: Follow Django deployment checklist: https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-   - **Independence**: Standalone task - can be done independently
-
-3. **Add authentication to views**
+2. **Add authentication to views**
    - **Files**: `game/views.py` - ChronicleDetailView, SceneDetailView, ChronicleScenesDetailView
    - **Issue**: Views lack `LoginRequiredMixin`, allowing unauthenticated access
    - **Action**:
@@ -35,7 +25,7 @@ This document tracks remaining work across the codebase with context about what 
    - **Context**: LoginRequiredMixin redirects unauthenticated users to login page
    - **Independence**: Standalone task - can be done independently
 
-4. **Implement authorization checks**
+3. **Implement authorization checks**
    - **Files**: `game/views.py` throughout
    - **Issue**: Users can close any scene, post as any character, approve XP without ST status
    - **Action**:
@@ -43,8 +33,8 @@ This document tracks remaining work across the codebase with context about what 
      - Use existing `user.profile.is_st()` method for ST-only actions
      - Add checks like `if not request.user.profile.is_st(): return HttpResponseForbidden()`
    - **Context**: See `core/permissions.py` for PermissionManager and `accounts/models.py` for is_st() method
-   - **Dependencies**: Requires authentication (task #3) to be in place
-   - **Independence**: Can be done after task #3 is complete
+   - **Dependencies**: Requires authentication (task #2) to be in place
+   - **Independence**: Can be done after task #2 is complete
 
 ### Code Quality & Redundancy Cleanup
 
