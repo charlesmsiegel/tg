@@ -10,6 +10,7 @@ from typing import Set
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Exists, OuterRef, Q
 
 
@@ -313,12 +314,134 @@ class PermissionManager:
         )
 
     @staticmethod
+    def _model_has_field(model, field_name: str) -> bool:
+        """
+        Check if model has a specific field.
+
+        Args:
+            model: Django model class
+            field_name: Name of the field to check
+
+        Returns:
+            True if field exists, False otherwise
+        """
+        try:
+            model._meta.get_field(field_name)
+            return True
+        except FieldDoesNotExist:
+            return False
+
+    @staticmethod
+    def _get_chronicle_related_model(queryset):
+        """
+        Get the Chronicle model from a queryset's chronicle foreign key.
+
+        Args:
+            queryset: QuerySet to check
+
+        Returns:
+            Chronicle model class or None if no chronicle field exists
+        """
+        try:
+            chronicle_field = queryset.model._meta.get_field("chronicle")
+            return chronicle_field.related_model
+        except FieldDoesNotExist:
+            return None
+
+    @staticmethod
+    def _build_owner_filter(user: User, model) -> Q:
+        """
+        Build Q filter for objects owned by user.
+
+        Args:
+            user: Django User instance
+            model: Model class to check
+
+        Returns:
+            Q object or empty Q() if no owner field
+        """
+        if PermissionManager._model_has_field(model, "owner"):
+            return Q(owner=user)
+        return Q()
+
+    @staticmethod
+    def _build_chronicle_st_filters(user: User, chronicle_model) -> Q:
+        """
+        Build Q filters for chronicle storyteller relationships.
+
+        Args:
+            user: Django User instance
+            chronicle_model: Chronicle model class
+
+        Returns:
+            Q object with all chronicle ST filters combined
+        """
+        filters = Q()
+
+        # Head ST (ForeignKey)
+        if PermissionManager._model_has_field(chronicle_model, "head_st"):
+            filters |= Q(chronicle__head_st=user)
+
+        # Game storytellers (M2M)
+        if PermissionManager._model_has_field(chronicle_model, "game_storytellers"):
+            filters |= Q(chronicle__game_storytellers=user)
+
+        return filters
+
+    @staticmethod
+    def _build_player_chronicle_filter(user: User, model) -> Q:
+        """
+        Build Q filter for objects in chronicles where user is a player.
+
+        Args:
+            user: Django User instance
+            model: Model class being filtered
+
+        Returns:
+            Q object for player access or empty Q()
+        """
+        if not PermissionManager._model_has_field(model, "chronicle"):
+            return Q()
+
+        if not PermissionManager._model_has_field(model, "status"):
+            return Q()
+
+        from characters.models import Character
+
+        # User has an approved character in the same chronicle
+        player_chronicle_subquery = Character.objects.filter(
+            owner=user, chronicle=OuterRef("chronicle"), status="App"
+        )
+        return Q(Exists(player_chronicle_subquery), status="App")
+
+    @staticmethod
+    def _build_observer_filter(user: User, model) -> Q:
+        """
+        Build Q filter for objects user is observing.
+
+        Uses a subquery for better performance instead of fetching IDs.
+
+        Args:
+            user: Django User instance
+            model: Model class being filtered
+
+        Returns:
+            Q object for observer access
+        """
+        from core.models import Observer
+
+        ct = ContentType.objects.get_for_model(model)
+        observer_subquery = Observer.objects.filter(
+            content_type=ct, user=user, object_id=OuterRef("id")
+        )
+        return Q(Exists(observer_subquery))
+
+    @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """
         Filter queryset to only objects user can view.
 
-        This is complex and requires careful Q() object construction.
-        Optimized to minimize database queries.
+        Refactored to use proper field checking and helper methods for maintainability.
 
         Args:
             user: Django User instance
@@ -327,9 +450,9 @@ class PermissionManager:
         Returns:
             Filtered QuerySet
         """
+        # Anonymous users see nothing (or only PUBLIC visibility)
         if not user.is_authenticated:
-            # Anonymous users see nothing (or only PUBLIC visibility)
-            if hasattr(queryset.model, "visibility"):
+            if PermissionManager._model_has_field(queryset.model, "visibility"):
                 return queryset.filter(visibility="PUB")
             return queryset.none()
 
@@ -337,51 +460,25 @@ class PermissionManager:
         if user.is_superuser or user.is_staff:
             return queryset
 
-        # Build complex Q object
+        # Build filters using helper methods
         filters = Q()
 
-        # Objects user owns
-        try:
-            queryset.model._meta.get_field("owner")
-            filters |= Q(owner=user)
-        except Exception:
-            pass
+        # 1. Objects user owns
+        filters |= PermissionManager._build_owner_filter(user, queryset.model)
 
-        # Objects in chronicles where user is head ST
-        if hasattr(queryset.model, "chronicle"):
-            filters |= Q(chronicle__head_st=user)
-            # Or if using M2M for head storytellers
-            try:
-                if hasattr(queryset.model, "chronicle__head_storytellers"):
-                    filters |= Q(chronicle__head_storytellers=user)
-            except Exception:
-                pass
-
-        # Objects in chronicles where user is game ST (can view all)
-        if hasattr(queryset.model, "chronicle"):
-            try:
-                if hasattr(queryset.model, "chronicle__game_storytellers"):
-                    filters |= Q(chronicle__game_storytellers=user)
-            except Exception:
-                pass
-
-        # Objects in chronicles user plays in
-        if hasattr(queryset.model, "chronicle"):
-            # User has a character in the chronicle
-            from characters.models import Character
-
-            player_chronicle_subquery = Character.objects.filter(
-                user=user, chronicle=OuterRef("chronicle"), status="App"
+        # 2. Chronicle storyteller access
+        chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
+        if chronicle_model:
+            filters |= PermissionManager._build_chronicle_st_filters(
+                user, chronicle_model
             )
-            filters |= Q(Exists(player_chronicle_subquery), status="App")
 
-        # Objects user is explicitly observing
-        ct = ContentType.objects.get_for_model(queryset.model)
-        from core.models import Observer
-
-        observer_ids = Observer.objects.filter(content_type=ct, user=user).values_list(
-            "object_id", flat=True
+        # 3. Objects in chronicles where user is a player
+        filters |= PermissionManager._build_player_chronicle_filter(
+            user, queryset.model
         )
-        filters |= Q(id__in=observer_ids)
+
+        # 4. Objects user is explicitly observing
+        filters |= PermissionManager._build_observer_filter(user, queryset.model)
 
         return queryset.filter(filters).distinct()

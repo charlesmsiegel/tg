@@ -560,5 +560,310 @@ class TestLimitedFormPermissions(TestCase):
             },
         )
 
-        self.character.refresh_from_db()
-        self.assertEqual(self.character.status, original_status)
+        character.refresh_from_db()
+        assert character.status == original_status
+
+
+@pytest.mark.django_db
+class TestFilterQuerysetForUser:
+    """Test filter_queryset_for_user method and helper methods."""
+
+    @pytest.fixture
+    def users(self):
+        """Create test users."""
+        return {
+            "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
+            "head_st": User.objects.create_user(
+                "head_st", "head_st@test.com", "password123"
+            ),
+            "game_st": User.objects.create_user(
+                "game_st", "game_st@test.com", "password123"
+            ),
+            "player": User.objects.create_user(
+                "player", "player@test.com", "password123"
+            ),
+            "observer": User.objects.create_user(
+                "observer", "observer@test.com", "password123"
+            ),
+            "stranger": User.objects.create_user(
+                "stranger", "stranger@test.com", "password123"
+            ),
+            "admin": User.objects.create_user(
+                "admin",
+                "admin@test.com",
+                "password123",
+                is_staff=True,
+                is_superuser=True,
+            ),
+        }
+
+    @pytest.fixture
+    def chronicle(self, users):
+        """Create test chronicle."""
+        chron = Chronicle.objects.create(
+            name="Test Chronicle",
+            description="A test chronicle for filter tests",
+        )
+        chron.head_st = users["head_st"]
+        chron.save()
+        chron.game_storytellers.add(users["game_st"])
+        return chron
+
+    @pytest.fixture
+    def characters(self, users, chronicle):
+        """Create multiple test characters for different scenarios."""
+        owner_char = Human.objects.create(
+            name="Owner Character",
+            owner=users["owner"],
+            chronicle=chronicle,
+            status="App",
+            concept="Owner Concept",
+        )
+
+        player_char = Human.objects.create(
+            name="Player Character",
+            owner=users["player"],
+            chronicle=chronicle,
+            status="App",
+            concept="Player Concept",
+        )
+
+        stranger_char = Human.objects.create(
+            name="Stranger Character",
+            owner=users["stranger"],
+            chronicle=chronicle,
+            status="App",
+            concept="Stranger Concept",
+        )
+
+        # Add observer relationship
+        Observer.objects.create(
+            content_object=stranger_char,
+            user=users["observer"],
+            granted_by=users["stranger"],
+        )
+
+        return {
+            "owner": owner_char,
+            "player": player_char,
+            "stranger": stranger_char,
+        }
+
+    def test_admin_sees_all_characters(self, users, characters):
+        """Admin should see all characters."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["admin"], qs)
+        assert filtered.count() == 3
+        assert characters["owner"] in filtered
+        assert characters["player"] in filtered
+        assert characters["stranger"] in filtered
+
+    def test_owner_sees_own_character(self, users, characters):
+        """Owner should see their own character."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["owner"], qs)
+        assert characters["owner"] in filtered
+
+    def test_owner_sees_chronicle_characters_as_player(self, users, characters):
+        """Owner should see other characters in same chronicle (as a player)."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["owner"], qs)
+        # Owner should see their own character and other approved characters in chronicle
+        assert characters["owner"] in filtered
+        assert characters["player"] in filtered
+        assert characters["stranger"] in filtered
+
+    def test_head_st_sees_chronicle_characters(self, users, characters):
+        """Head ST should see all characters in their chronicle."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["head_st"], qs)
+        assert filtered.count() == 3
+        assert characters["owner"] in filtered
+        assert characters["player"] in filtered
+        assert characters["stranger"] in filtered
+
+    def test_game_st_sees_chronicle_characters(self, users, characters):
+        """Game ST should see all characters in their chronicle."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["game_st"], qs)
+        assert filtered.count() == 3
+        assert characters["owner"] in filtered
+        assert characters["player"] in filtered
+        assert characters["stranger"] in filtered
+
+    def test_player_sees_own_and_chronicle_characters(self, users, characters):
+        """Player should see their own character and other approved characters in chronicle."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["player"], qs)
+        assert characters["player"] in filtered
+        assert characters["owner"] in filtered
+        assert characters["stranger"] in filtered
+
+    def test_observer_sees_observed_character(self, users, characters):
+        """Observer should see the character they're observing."""
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["observer"], qs)
+        assert characters["stranger"] in filtered
+
+    def test_stranger_without_chronicle_sees_nothing(self):
+        """Stranger with no chronicle connection should see nothing."""
+        stranger = User.objects.create_user(
+            "total_stranger", "stranger@test.com", "password123"
+        )
+        owner = User.objects.create_user("owner2", "owner2@test.com", "password123")
+        chronicle = Chronicle.objects.create(name="Other Chronicle")
+
+        char = Human.objects.create(
+            name="Isolated Character",
+            owner=owner,
+            chronicle=chronicle,
+            status="App",
+            concept="Isolated",
+        )
+
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(stranger, qs)
+        assert char not in filtered
+        assert filtered.count() == 0
+
+    def test_anonymous_user_sees_nothing(self, characters):
+        """Anonymous users should see nothing."""
+        from django.contrib.auth.models import AnonymousUser
+
+        anonymous = AnonymousUser()
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(anonymous, qs)
+        assert filtered.count() == 0
+
+    def test_filter_only_approved_characters_for_players(self, users, chronicle):
+        """Players should only see approved characters, not unfinished ones."""
+        # Create unfinished character
+        unfinished_char = Human.objects.create(
+            name="Unfinished Character",
+            owner=users["stranger"],
+            chronicle=chronicle,
+            status="Un",
+            concept="Unfinished",
+        )
+
+        qs = Human.objects.all()
+        filtered = PermissionManager.filter_queryset_for_user(users["player"], qs)
+
+        # Player should not see unfinished character (unless they own it)
+        if users["player"] != users["stranger"]:
+            assert unfinished_char not in filtered
+
+
+@pytest.mark.django_db
+class TestFilterQuerysetHelperMethods:
+    """Test the helper methods used by filter_queryset_for_user."""
+
+    def test_model_has_field_returns_true_for_existing_field(self):
+        """_model_has_field should return True for existing fields."""
+        assert PermissionManager._model_has_field(Human, "owner")
+        assert PermissionManager._model_has_field(Human, "chronicle")
+        assert PermissionManager._model_has_field(Human, "status")
+        assert PermissionManager._model_has_field(Human, "name")
+
+    def test_model_has_field_returns_false_for_nonexistent_field(self):
+        """_model_has_field should return False for non-existent fields."""
+        assert not PermissionManager._model_has_field(Human, "nonexistent_field")
+        assert not PermissionManager._model_has_field(Human, "fake_attribute")
+
+    def test_get_chronicle_related_model_returns_chronicle(self):
+        """_get_chronicle_related_model should return Chronicle model."""
+        qs = Human.objects.all()
+        chronicle_model = PermissionManager._get_chronicle_related_model(qs)
+        assert chronicle_model == Chronicle
+
+    def test_get_chronicle_related_model_returns_none_for_no_chronicle(self):
+        """_get_chronicle_related_model should return None if no chronicle field."""
+        from django.contrib.auth.models import Group
+
+        qs = Group.objects.all()
+        chronicle_model = PermissionManager._get_chronicle_related_model(qs)
+        assert chronicle_model is None
+
+    def test_build_owner_filter(self):
+        """_build_owner_filter should build Q filter for owner."""
+        user = User.objects.create_user("test", "test@test.com", "password123")
+        q = PermissionManager._build_owner_filter(user, Human)
+
+        # Q object should filter by owner=user
+        assert isinstance(q, Q)
+        # Create a character owned by user and verify filter works
+        char = Human.objects.create(
+            name="Test", owner=user, status="App", concept="Test"
+        )
+        results = Human.objects.filter(q)
+        assert char in results
+
+    def test_build_chronicle_st_filters(self):
+        """_build_chronicle_st_filters should build Q filters for STs."""
+        head_st = User.objects.create_user("head_st", "head@test.com", "password123")
+        game_st = User.objects.create_user("game_st", "game@test.com", "password123")
+
+        chronicle = Chronicle.objects.create(name="Test")
+        chronicle.head_st = head_st
+        chronicle.save()
+        chronicle.game_storytellers.add(game_st)
+
+        # Test head ST filter
+        q_head = PermissionManager._build_chronicle_st_filters(head_st, Chronicle)
+        assert isinstance(q_head, Q)
+
+        # Test game ST filter
+        q_game = PermissionManager._build_chronicle_st_filters(game_st, Chronicle)
+        assert isinstance(q_game, Q)
+
+    def test_build_player_chronicle_filter(self):
+        """_build_player_chronicle_filter should build Q filter for players."""
+        player = User.objects.create_user("player", "player@test.com", "password123")
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+
+        # Create player's character
+        player_char = Human.objects.create(
+            name="Player Char",
+            owner=player,
+            chronicle=chronicle,
+            status="App",
+            concept="Test",
+        )
+
+        # Create another character in same chronicle
+        other_char = Human.objects.create(
+            name="Other Char",
+            owner=User.objects.create_user("other", "other@test.com", "password123"),
+            chronicle=chronicle,
+            status="App",
+            concept="Other",
+        )
+
+        q = PermissionManager._build_player_chronicle_filter(player, Human)
+        assert isinstance(q, Q)
+
+        # Filter should return characters in chronicles where player has a character
+        results = Human.objects.filter(q)
+        assert other_char in results
+
+    def test_build_observer_filter(self):
+        """_build_observer_filter should build Q filter for observers."""
+        observer = User.objects.create_user(
+            "observer", "observer@test.com", "password123"
+        )
+        owner = User.objects.create_user("owner", "owner@test.com", "password123")
+
+        char = Human.objects.create(
+            name="Observed", owner=owner, status="App", concept="Test"
+        )
+
+        Observer.objects.create(
+            content_object=char, user=observer, granted_by=owner
+        )
+
+        q = PermissionManager._build_observer_filter(observer, Human)
+        assert isinstance(q, Q)
+
+        # Filter should return observed characters
+        results = Human.objects.filter(q)
+        assert char in results
