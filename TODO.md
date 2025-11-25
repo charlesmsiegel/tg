@@ -115,23 +115,13 @@ These models work but could have better user-facing views:
 
 ---
 
-## 📚 Long-term Improvements
-
-1. ❌ **Add migration best practices**
-   - Periodically squash migrations: `python manage.py squashmigrations`
-   - Test migrations in CI/CD
-   - Document migration procedures
-
----
-
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~10 items
+**Total Open Items**: ~9 items
 
 **By Priority**:
 - 🟢 Low Priority: ~5 items (feature completeness - Mummy, Hunter, Dross, Game enhancements)
 - 🔵 Deployment: 6 items (staging + production)
-- 📚 Long-term: 1 item (migration best practices)
 
 ---
 
