@@ -1,0 +1,81 @@
+{% extends "items/core/item/detail.html" %}
+{% block model_specific %}
+    {% load dots %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Relic Details</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Power Level:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.power_level|dots }}</div>
+                        <div class="col-sm-3"><strong>Background Cost:</strong></div>
+                        <div class="col-sm-3">{{ object.background_cost }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Blessed:</strong></div>
+                        <div class="col-sm-3">{% if object.is_blessed %}Yes{% else %}No{% endif %}</div>
+                        <div class="col-sm-3"><strong>Cursed:</strong></div>
+                        <div class="col-sm-3">{% if object.is_cursed %}Yes{% else %}No{% endif %}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Requires Faith:</strong></div>
+                        <div class="col-sm-3">{% if object.requires_faith %}Yes{% else %}No{% endif %}</div>
+                        <div class="col-sm-3"><strong>Unique:</strong></div>
+                        <div class="col-sm-3">{% if object.is_unique %}Yes{% else %}No{% endif %}</div>
+                    </div>
+                    {% if object.activation_cost %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Activation Cost:</strong></div>
+                            <div class="col-sm-9">{{ object.activation_cost }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.powers %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Powers</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="line-height: 1.6;">{{ object.powers }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.origin %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Origin</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="line-height: 1.6;">{{ object.origin }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.limitations %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Limitations</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="line-height: 1.6;">{{ object.limitations }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock model_specific %}

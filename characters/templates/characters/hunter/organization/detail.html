@@ -1,0 +1,106 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="htr">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
+                            <div class="tg-card-subtitle">{{ object.get_organization_type_display }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.philosophy %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Philosophy</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.philosophy }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.goals %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Goals</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.goals }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title htr_heading">Resources</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.resources }} / 5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.leader %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Leader</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">
+                                    <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.members.all %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Members</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                {% for member in object.members.all %}
+                                    <div class="row mb-1">
+                                        <div class="col-sm">
+                                            <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{% url 'characters:hunter:update:organization' object.pk %}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

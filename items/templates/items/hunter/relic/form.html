@@ -1,0 +1,54 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Hunter Relic
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Power Level</div>
+        <div class="col-sm">{{ form.power_level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Background Cost</div>
+        <div class="col-sm">{{ form.background_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Blessed</div>
+        <div class="col-sm">{{ form.is_blessed }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Cursed</div>
+        <div class="col-sm">{{ form.is_cursed }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Requires Faith</div>
+        <div class="col-sm">{{ form.requires_faith }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Unique</div>
+        <div class="col-sm">{{ form.is_unique }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Powers</div>
+        <div class="col-sm">{{ form.powers }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Activation Cost</div>
+        <div class="col-sm">{{ form.activation_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Origin</div>
+        <div class="col-sm">{{ form.origin }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Limitations</div>
+        <div class="col-sm">{{ form.limitations }}</div>
+    </div>
+{% endblock contents %}

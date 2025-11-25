@@ -1,0 +1,30 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Creed
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Nickname</div>
+        <div class="col-sm">{{ form.nickname }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Primary Virtue</div>
+        <div class="col-sm">{{ form.primary_virtue }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Philosophy</div>
+        <div class="col-sm">{{ form.philosophy }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Favored Edges</div>
+        <div class="col-sm">{{ form.favored_edges }}</div>
+    </div>
+{% endblock contents %}

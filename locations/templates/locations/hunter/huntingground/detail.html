@@ -1,0 +1,100 @@
+{% extends "locations/core/location/detail.html" %}
+{% block model_specific %}
+    {% load dots %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Territory Details</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Size:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.size|dots }}</div>
+                        <div class="col-sm-3"><strong>Population:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.population|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Supernatural Activity:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.supernatural_activity|dots }}</div>
+                        <div class="col-sm-3"><strong>Control Level:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.control_level|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Contact Network:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.contact_network|dots }}</div>
+                        <div class="col-sm-3"><strong>Surveillance:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.surveillance_coverage|dots }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3"><strong>Total Rating:</strong></div>
+                        <div class="col-sm-3">{{ object.total_rating }}</div>
+                        <div class="col-sm-3"><strong>Contested:</strong></div>
+                        <div class="col-sm-3">{% if object.is_contested %}Yes{% else %}No{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.primary_threat %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Threat Information</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Primary Threat:</strong></div>
+                            <div class="col-sm-9">{{ object.get_primary_threat_display }}</div>
+                        </div>
+                        {% if object.threat_description %}
+                            <div class="row mb-0">
+                                <div class="col-sm-3"><strong>Details:</strong></div>
+                                <div class="col-sm-9">{{ object.threat_description }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.last_incident or object.incident_log %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Incident Log</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% if object.last_incident %}
+                            <div class="row mb-2">
+                                <div class="col-sm-3"><strong>Last Incident:</strong></div>
+                                <div class="col-sm-9">{{ object.last_incident }}</div>
+                            </div>
+                        {% endif %}
+                        {% if object.incident_log %}
+                            <div class="row mb-0">
+                                <div class="col-sm-12">{{ object.incident_log }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.key_locations %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Key Locations</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <p style="line-height: 1.6;">{{ object.key_locations }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock model_specific %}

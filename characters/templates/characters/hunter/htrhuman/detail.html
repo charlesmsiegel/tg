@@ -1,0 +1,93 @@
+{% extends "characters/core/human/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h6 class="htr_heading">Backgrounds</h6>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="htr_heading">Other</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Allies</div>
+                        <div class="col-sm dots">{{ object.allies|dots }}</div>
+                        <div class="col-sm">Willpower</div>
+                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Influence</div>
+                        <div class="col-sm dots">{{ object.influence|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm">Resources</div>
+                        <div class="col-sm dots">{{ object.resources|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}

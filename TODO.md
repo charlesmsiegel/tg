@@ -44,14 +44,16 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Hunter Gameline Implementation
 
-⚠️ **Status**: Models exist but very limited implementation
+✅ **Status**: Full CRUD implementation complete
 
-**What remains:**
-
-1. ❌ **Hunter character views** - Need full CRUD for Hunter, HtRHuman
-2. ❌ **Hunter reference data** - Creed, Edge, HunterOrganization need views
-3. ❌ **Hunter items** - HunterGear, HunterRelic need views
-4. ❌ **Hunter locations** - Safehouse, HuntingGround need views
+**What's done:**
+- Hunter and HtRHuman character views (detail, create, update, list)
+- Creed, Edge, HunterOrganization reference data views (detail, create, update, list)
+- HunterGear, HunterRelic item views (detail, create, update, list)
+- Safehouse, HuntingGround location views (detail, create, update, list)
+- All templates for character, item, and location types
+- URL patterns for all Hunter routes
+- Limited edit forms for owner editing
 
 ---
 
@@ -100,10 +102,10 @@ This document tracks remaining work across the codebase with context about what 
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~8 items
+**Total Open Items**: ~7 items
 
 **By Priority**:
-- 🟢 Low Priority: ~2 items (feature completeness - Mummy, Hunter gamelines)
+- 🟢 Low Priority: ~1 item (feature completeness - Mummy gameline)
 - 🔵 Deployment: 6 items (staging + production)
 
 ---
@@ -111,6 +113,9 @@ This document tracks remaining work across the codebase with context about what 
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.8)
+- **Hunter Gameline Implementation** - Full CRUD for Hunter, HtRHuman, Creed, Edge, HunterOrganization, HunterGear, HunterRelic, Safehouse, HuntingGround. Views, URL patterns, templates, and limited edit forms all implemented.
 
 ### Removed 2025-11-25 (v7.7)
 - **WeeklyXPRequest batch approval** - Added `WeeklyXPRequestBatchApproveView` for STs to approve multiple XP requests at once. Updated week detail template with checkbox selection, "Select All" functionality, and batch approve button with live count display.
@@ -165,4 +170,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.7 (Added XP batch approval for STs)
+**Version**: 7.8 (Added full Hunter gameline CRUD implementation)

@@ -1,0 +1,197 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Human (Hunter)
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Concept</div>
+        <div class="col-sm">{{ form.concept }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Nature</div>
+        <div class="col-sm">{{ form.nature }}</div>
+        <div class="col-sm">Demeanor</div>
+        <div class="col-sm">{{ form.demeanor }}</div>
+    </div>
+    <div class="row">
+        <h2 class="col-sm htr_heading">Attributes</h2>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Physical</h3>
+        <h3 class="col-sm htr_heading">Social</h3>
+        <h3 class="col-sm htr_heading">Mental</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Strength</div>
+        <div class="col-sm">{{ form.strength }}</div>
+        <div class="col-sm">Charisma</div>
+        <div class="col-sm">{{ form.charisma }}</div>
+        <div class="col-sm">Perception</div>
+        <div class="col-sm">{{ form.perception }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Dexterity</div>
+        <div class="col-sm">{{ form.dexterity }}</div>
+        <div class="col-sm">Manipulation</div>
+        <div class="col-sm">{{ form.manipulation }}</div>
+        <div class="col-sm">Intelligence</div>
+        <div class="col-sm">{{ form.intelligence }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Stamina</div>
+        <div class="col-sm">{{ form.stamina }}</div>
+        <div class="col-sm">Appearance</div>
+        <div class="col-sm">{{ form.appearance }}</div>
+        <div class="col-sm">Wits</div>
+        <div class="col-sm">{{ form.wits }}</div>
+    </div>
+    <div class="row">
+        <h2 class="col-sm htr_heading">Abilities</h2>
+    </div>
+    <div class="row">
+        <h3 class="col-sm htr_heading">Talents</h3>
+        <h3 class="col-sm htr_heading">Skills</h3>
+        <h3 class="col-sm htr_heading">Knowledges</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm">Alertness</div>
+        <div class="col-sm">{{ form.alertness }}</div>
+        <div class="col-sm">Crafts</div>
+        <div class="col-sm">{{ form.crafts }}</div>
+        <div class="col-sm">Academics</div>
+        <div class="col-sm">{{ form.academics }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Athletics</div>
+        <div class="col-sm">{{ form.athletics }}</div>
+        <div class="col-sm">Drive</div>
+        <div class="col-sm">{{ form.drive }}</div>
+        <div class="col-sm">Computer</div>
+        <div class="col-sm">{{ form.computer }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Brawl</div>
+        <div class="col-sm">{{ form.brawl }}</div>
+        <div class="col-sm">Etiquette</div>
+        <div class="col-sm">{{ form.etiquette }}</div>
+        <div class="col-sm">Investigation</div>
+        <div class="col-sm">{{ form.investigation }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Empathy</div>
+        <div class="col-sm">{{ form.empathy }}</div>
+        <div class="col-sm">Firearms</div>
+        <div class="col-sm">{{ form.firearms }}</div>
+        <div class="col-sm">Medicine</div>
+        <div class="col-sm">{{ form.medicine }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Expression</div>
+        <div class="col-sm">{{ form.expression }}</div>
+        <div class="col-sm">Melee</div>
+        <div class="col-sm">{{ form.melee }}</div>
+        <div class="col-sm">Science</div>
+        <div class="col-sm">{{ form.science }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Intimidation</div>
+        <div class="col-sm">{{ form.intimidation }}</div>
+        <div class="col-sm">Stealth</div>
+        <div class="col-sm">{{ form.stealth }}</div>
+        <div class="col-sm">Finance</div>
+        <div class="col-sm">{{ form.finance }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Streetwise</div>
+        <div class="col-sm">{{ form.streetwise }}</div>
+        <div class="col-sm">Animal Ken</div>
+        <div class="col-sm">{{ form.animal_ken }}</div>
+        <div class="col-sm">Law</div>
+        <div class="col-sm">{{ form.law }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Subterfuge</div>
+        <div class="col-sm">{{ form.subterfuge }}</div>
+        <div class="col-sm">Larceny</div>
+        <div class="col-sm">{{ form.larceny }}</div>
+        <div class="col-sm">Occult</div>
+        <div class="col-sm">{{ form.occult }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Awareness</div>
+        <div class="col-sm">{{ form.awareness }}</div>
+        <div class="col-sm">Performance</div>
+        <div class="col-sm">{{ form.performance }}</div>
+        <div class="col-sm">Politics</div>
+        <div class="col-sm">{{ form.politics }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Leadership</div>
+        <div class="col-sm">{{ form.leadership }}</div>
+        <div class="col-sm">Repair</div>
+        <div class="col-sm">{{ form.repair }}</div>
+        <div class="col-sm">Technology</div>
+        <div class="col-sm">{{ form.technology }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm">Survival</div>
+        <div class="col-sm">{{ form.survival }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <h2 class="col-sm htr_heading">Advantages</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm">Allies</div>
+        <div class="col-sm">{{ form.allies }}</div>
+        <div class="col-sm">Willpower</div>
+        <div class="col-sm">{{ form.willpower }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Influence</div>
+        <div class="col-sm">{{ form.influence }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Resources</div>
+        <div class="col-sm">{{ form.resources }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Status</div>
+        <div class="col-sm">{{ form.status_background }}</div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Specialties</div>
+        <div class="col-sm">{{ form.specialties }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Merits and Flaws</div>
+        <div class="col-sm">{{ form.merits_and_flaws }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">History</div>
+        <div class="col-sm">{{ form.history }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Goals</div>
+        <div class="col-sm">{{ form.goals }}</div>
+        <div class="col-sm">Notes</div>
+        <div class="col-sm">{{ form.notes }}</div>
+    </div>
+{% endblock contents %}

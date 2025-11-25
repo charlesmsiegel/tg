@@ -1,0 +1,61 @@
+{% extends "items/core/item/detail.html" %}
+{% block model_specific %}
+    {% load dots %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Gear Details</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Gear Type:</strong></div>
+                        <div class="col-sm-9">{{ object.get_gear_type_display }}</div>
+                    </div>
+                    {% if object.damage %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Damage:</strong></div>
+                            <div class="col-sm-9">{{ object.damage }}</div>
+                        </div>
+                    {% endif %}
+                    {% if object.range %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Range:</strong></div>
+                            <div class="col-sm-9">{{ object.range }}</div>
+                        </div>
+                    {% endif %}
+                    {% if object.rate %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Rate:</strong></div>
+                            <div class="col-sm-9">{{ object.rate }}</div>
+                        </div>
+                    {% endif %}
+                    {% if object.capacity %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Capacity:</strong></div>
+                            <div class="col-sm-9">{{ object.capacity }}</div>
+                        </div>
+                    {% endif %}
+                    {% if object.concealability %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Concealability:</strong></div>
+                            <div class="col-sm-9">{{ object.concealability }}</div>
+                        </div>
+                    {% endif %}
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Availability:</strong></div>
+                        <div class="col-sm-9">{{ object.availability }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Legality:</strong></div>
+                        <div class="col-sm-9">{{ object.get_legality_display }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3"><strong>Requires Training:</strong></div>
+                        <div class="col-sm-9">{% if object.requires_training %}Yes{% else %}No{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}

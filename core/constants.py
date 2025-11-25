@@ -37,6 +37,7 @@ class GameLine:
         ("changeling", "changeling", "changeling"),
         ("demon", "demon", "demon"),
         ("mummy", "mummy", "mummy"),
+        ("hunter", "hunter", "hunter"),
     ]
 
 

@@ -1,0 +1,87 @@
+{% extends "locations/core/location/detail.html" %}
+{% block model_specific %}
+    {% load dots %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Safehouse Details</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Size:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.size|dots }}</div>
+                        <div class="col-sm-3"><strong>Capacity:</strong></div>
+                        <div class="col-sm-3">{{ object.capacity }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Security:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.security_level|dots }}</div>
+                        <div class="col-sm-3"><strong>Armory:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.armory_level|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Surveillance:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.surveillance_level|dots }}</div>
+                        <div class="col-sm-3"><strong>Medical:</strong></div>
+                        <div class="col-sm-3 dots">{{ object.medical_facilities|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Total Rating:</strong></div>
+                        <div class="col-sm-3">{{ object.total_rating }}</div>
+                        <div class="col-sm-3"><strong>Compromised:</strong></div>
+                        <div class="col-sm-3">{% if object.is_compromised %}Yes{% else %}No{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Features</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">{% if object.is_mobile %}✓{% else %}✗{% endif %} Mobile</div>
+                        <div class="col-sm-6">{% if object.has_panic_room %}✓{% else %}✗{% endif %} Panic Room</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-6">{% if object.has_escape_routes %}✓{% else %}✗{% endif %} Escape Routes</div>
+                        <div class="col-sm-6">{% if object.has_dead_drop %}✓{% else %}✗{% endif %} Dead Drop</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-6">{% if object.has_communications %}✓{% else %}✗{% endif %} Secure Communications</div>
+                        <div class="col-sm-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.cover_story or object.legal_owner %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title htr_heading">Cover</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% if object.legal_owner %}
+                            <div class="row mb-2">
+                                <div class="col-sm-3"><strong>Legal Owner:</strong></div>
+                                <div class="col-sm-9">{{ object.legal_owner }}</div>
+                            </div>
+                        {% endif %}
+                        {% if object.cover_story %}
+                            <div class="row mb-0">
+                                <div class="col-sm-3"><strong>Cover Story:</strong></div>
+                                <div class="col-sm-9">{{ object.cover_story }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock model_specific %}

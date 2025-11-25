@@ -1,0 +1,90 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="htr">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
+                            {% if object.nickname %}
+                                <div class="tg-card-subtitle">{{ object.nickname }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title htr_heading">Primary Virtue</h5>
+                        </div>
+                        <div class="tg-card-body">
+                            <p style="line-height: 1.6;">{{ object.get_primary_virtue_display }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.philosophy %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Philosophy</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.philosophy }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.description %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Description</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.favored_edges %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Favored Edges</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">
+                                    {% for edge in object.favored_edges %}
+                                        {{ edge }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{% url 'characters:hunter:update:creed' object.pk %}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

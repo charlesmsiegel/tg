@@ -1,0 +1,100 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="centertext container">
+        <div class="container py-4">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card header-card" data-gameline="htr">
+                        <div class="tg-card-header">
+                            <h1 class="tg-card-title htr_heading">{{ object.name }}</h1>
+                            <div class="tg-card-subtitle">{{ object.get_virtue_display }} - Level {{ object.level }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if object.cost %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Cost</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.cost }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.duration %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Duration</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.duration }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.system %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">System</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.system }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.description %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Description</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.description|sanitize_html }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if object.book %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="tg-card">
+                            <div class="tg-card-header">
+                                <h5 class="tg-card-title htr_heading">Source</h5>
+                            </div>
+                            <div class="tg-card-body">
+                                <p style="line-height: 1.6;">{{ object.book.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body text-center">
+                            <a href="{% url 'characters:hunter:update:edge' object.pk %}" class="tg-btn btn-primary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,209 @@
+{% extends "characters/hunter/htrhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Name:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3">
+                            <strong>Nature:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Player:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3">
+                            <strong>Demeanor:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Concept:</strong>
+                        </div>
+                        <div class="col-sm-9">{{ object.concept }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3">
+                            <strong>Creed:</strong>
+                        </div>
+                        <div class="col-sm-3">
+                            {% if object.creed %}
+                                <a href="{% url 'characters:hunter:creed' object.creed.pk %}">{{ object.creed }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-3">
+                            <strong>Primary Virtue:</strong>
+                        </div>
+                        <div class="col-sm-3">{{ object.get_primary_virtue_display }}</div>
+                    </div>
+                    {% if object.imbuing_date %}
+                        <div class="row mb-0">
+                            <div class="col-sm-3">
+                                <strong>Imbuing Date:</strong>
+                            </div>
+                            <div class="col-sm-9">{{ object.imbuing_date }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Virtues</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Temporary</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Willpower</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Conviction</div>
+                        <div class="col-sm dots">{{ object.conviction|dots }}</div>
+                        <div class="col-sm">Temp. Conv.</div>
+                        <div class="col-sm dots">{{ object.temporary_conviction|dots }}</div>
+                        <div class="col-sm">Willpower</div>
+                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Vision</div>
+                        <div class="col-sm dots">{{ object.vision|dots }}</div>
+                        <div class="col-sm">Temp. Vision</div>
+                        <div class="col-sm dots">{{ object.temporary_vision|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm">Zeal</div>
+                        <div class="col-sm dots">{{ object.zeal|dots }}</div>
+                        <div class="col-sm">Temp. Zeal</div>
+                        <div class="col-sm dots">{{ object.temporary_zeal|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}
+{% block powers %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title htr_heading">Edges</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Conviction (Judgement)</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Vision (Defense)</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="htr_heading">Zeal (Redemption)</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Discern</div>
+                        <div class="col-sm dots">{{ object.discern|dots }}</div>
+                        <div class="col-sm">Illuminate</div>
+                        <div class="col-sm dots">{{ object.illuminate|dots }}</div>
+                        <div class="col-sm">Demand</div>
+                        <div class="col-sm dots">{{ object.demand|dots }}</div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Burden</div>
+                        <div class="col-sm dots">{{ object.burden|dots }}</div>
+                        <div class="col-sm">Ward</div>
+                        <div class="col-sm dots">{{ object.ward|dots }}</div>
+                        <div class="col-sm">Confront</div>
+                        <div class="col-sm dots">{{ object.confront|dots }}</div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Balance</div>
+                        <div class="col-sm dots">{{ object.balance|dots }}</div>
+                        <div class="col-sm">Cleave</div>
+                        <div class="col-sm dots">{{ object.cleave|dots }}</div>
+                        <div class="col-sm">Donate</div>
+                        <div class="col-sm dots">{{ object.donate|dots }}</div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Expose</div>
+                        <div class="col-sm dots">{{ object.expose|dots }}</div>
+                        <div class="col-sm">Hide</div>
+                        <div class="col-sm dots">{{ object.hide|dots }}</div>
+                        <div class="col-sm">Becalm</div>
+                        <div class="col-sm dots">{{ object.becalm|dots }}</div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Investigate</div>
+                        <div class="col-sm dots">{{ object.investigate|dots }}</div>
+                        <div class="col-sm">Blaze</div>
+                        <div class="col-sm dots">{{ object.blaze|dots }}</div>
+                        <div class="col-sm">Respire</div>
+                        <div class="col-sm dots">{{ object.respire|dots }}</div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm">Witness</div>
+                        <div class="col-sm dots">{{ object.witness|dots }}</div>
+                        <div class="col-sm">Radiate</div>
+                        <div class="col-sm dots">{{ object.radiate|dots }}</div>
+                        <div class="col-sm">Rejuvenate</div>
+                        <div class="col-sm dots">{{ object.rejuvenate|dots }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm">Prosecute</div>
+                        <div class="col-sm dots">{{ object.prosecute|dots }}</div>
+                        <div class="col-sm">Vengeance</div>
+                        <div class="col-sm dots">{{ object.vengeance|dots }}</div>
+                        <div class="col-sm">Redeem</div>
+                        <div class="col-sm dots">{{ object.redeem|dots }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock powers %}
+{% block equipment %}
+    {% include "characters/core/human/equipment_block.html" %}
+{% endblock equipment %}
