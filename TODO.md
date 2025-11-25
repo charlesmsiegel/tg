@@ -509,18 +509,6 @@ This document tracks remaining work across the codebase with context about what 
       4. Deleted `ApprovedUserContextMixin` class definition from `core/mixins.py`
     - **Result**: All views using permission mixins now automatically get `is_approved_user=True` in their context without needing a separate mixin
 
-24. **Optimize at_freebie_step() QuerySet Method**
-    - **Files**: `characters/models/core/character.py:68-84`
-    - **Impact**: LOW - Performance issue but likely not called often
-    - **Issue**: Method evaluates entire queryset to filter it (loads all characters into memory)
-    - **Current**: `return [char for char in self.all() if char.freebie_step()]`
-    - **Action**:
-      1. Option A: Add `freebie_step_complete` boolean field to Character model
-      2. Option B: Remove queryset method, filter in Python where needed
-      3. Option C: Use annotation if logic allows database calculation
-    - **Context**: List comprehension defeats queryset lazy evaluation
-    - **Independence**: Standalone task - can be done independently
-
 25. **Reduce Hardcoded Field Lists in AbilityBlock**
     - **Files**: `characters/models/core/ability_block.py:13-45`
     - **Impact**: LOW - Maintenance burden but rarely changes
