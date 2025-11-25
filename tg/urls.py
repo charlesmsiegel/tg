@@ -33,6 +33,16 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+# Django Debug Toolbar (development only)
+if settings.DEBUG:
+    try:
+        import debug_toolbar
+        urlpatterns = [
+            path("__debug__/", include(debug_toolbar.urls)),
+        ] + urlpatterns
+    except ImportError:
+        pass
+
 # Custom error handlers
 handler403 = "core.views.errors.error_403"
 handler404 = "core.views.errors.error_404"

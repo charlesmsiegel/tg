@@ -4,6 +4,7 @@ django-smart-selects==1.7.2
 django-tinymce4-lite==1.8.0
 django-crispy-forms==2.5
 crispy-bootstrap4==2025.6
+django-debug-toolbar==6.1.0
 requests==2.32.5
 # python==3.10 - note for setting up environment, it should be 3.10
 pillow==11.3.0
