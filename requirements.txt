@@ -24,3 +24,8 @@ cryptography>=46.0.0
 # Caching dependencies
 django-redis==5.4.0
 redis==5.2.1
+
+# Code quality tools
+black==24.3.0
+ruff==0.3.4
+pre-commit==3.7.0
