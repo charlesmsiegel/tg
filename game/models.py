@@ -316,6 +316,7 @@ class STRelationship(models.Model):
 
 class Story(models.Model):
     name = models.CharField(max_length=100, default="")
+    xp_given = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -339,6 +340,59 @@ class Story(models.Model):
         """Ensure validation runs on save."""
         self.full_clean()
         super().save(*args, **kwargs)
+
+    @transaction.atomic
+    def award_xp(self, character_awards):
+        """Award XP to characters based on XP categories.
+
+        This operation is atomic - either all characters receive XP or none do.
+
+        Args:
+            character_awards: Dict mapping Character objects to dicts with keys:
+                             'success', 'danger', 'growth', 'drama', 'duration'
+                             Each boolean key awards 1 XP, duration is an integer.
+
+        Raises:
+            ValidationError: If XP has already been awarded for this story
+        """
+        from django.core.exceptions import ValidationError
+
+        # Lock the story to prevent concurrent awards
+        story = Story.objects.select_for_update().get(pk=self.pk)
+
+        if story.xp_given:
+            raise ValidationError(
+                "XP has already been awarded for this story", code="xp_already_given"
+            )
+
+        # Award to all characters atomically
+        from characters.models import Character
+
+        awarded_count = 0
+        for char, xp_categories in character_awards.items():
+            # Calculate total XP for this character
+            total_gain = xp_categories.get("duration", 0)
+            if xp_categories.get("success", False):
+                total_gain += 1
+            if xp_categories.get("danger", False):
+                total_gain += 1
+            if xp_categories.get("growth", False):
+                total_gain += 1
+            if xp_categories.get("drama", False):
+                total_gain += 1
+
+            if total_gain > 0:
+                # Lock each character row to prevent race conditions
+                locked_char = Character.objects.select_for_update().get(pk=char.pk)
+                locked_char.xp += total_gain
+                locked_char.save(update_fields=["xp"])
+                awarded_count += 1
+
+        # Mark story as complete
+        story.xp_given = True
+        story.save(update_fields=["xp_given"])
+
+        return awarded_count
 
 
 class Week(models.Model):

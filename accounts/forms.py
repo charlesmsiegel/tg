@@ -3,7 +3,6 @@ from characters.models.core.human import Human
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
-from django.db import transaction
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -135,21 +134,8 @@ class StoryXP(forms.Form):
             )
 
     def save(self, commit=True):
-        with transaction.atomic():
-            for char in self.cleaned_data.keys():
-                total_gain = self.cleaned_data[char]["duration"]
-                if self.cleaned_data[char]["success"]:
-                    total_gain += 1
-                if self.cleaned_data[char]["danger"]:
-                    total_gain += 1
-                if self.cleaned_data[char]["growth"]:
-                    total_gain += 1
-                if self.cleaned_data[char]["drama"]:
-                    total_gain += 1
-                char.xp += total_gain
-                char.save()
-            self.story.xp_given = True
-            self.story.save()
+        """Save XP awards using the Story model's business logic."""
+        self.story.award_xp(self.cleaned_data)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -187,8 +173,7 @@ class FreebieAwardForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        with transaction.atomic():
-            self.character.freebies += self.cleaned_data["backstory_freebies"]
-            self.character.freebies_approved = True
-            self.character.save()
-        return self.character
+        """Save freebie awards using the Character model's business logic."""
+        return self.character.award_backstory_freebies(
+            self.cleaned_data["backstory_freebies"]
+        )

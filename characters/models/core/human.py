@@ -307,6 +307,43 @@ class Human(
         spent = self.freebie_spendings.aggregate(total=Sum("cost"))["total"] or 0
         return self.freebies + spent
 
+    @transaction.atomic
+    def award_backstory_freebies(self, amount):
+        """Award backstory freebies to this character.
+
+        This method awards bonus freebie points (typically for backstory) and
+        marks the character's freebies as approved. This operation is atomic.
+
+        Args:
+            amount: Number of freebie points to award (0-15 typically)
+
+        Raises:
+            ValidationError: If freebies have already been approved or amount is invalid
+        """
+        from django.core.exceptions import ValidationError
+
+        # Lock the character to prevent concurrent awards
+        character = Human.objects.select_for_update().get(pk=self.pk)
+
+        if character.freebies_approved:
+            raise ValidationError(
+                "Freebies have already been approved for this character",
+                code="freebies_already_approved",
+            )
+
+        if amount < 0 or amount > 15:
+            raise ValidationError(
+                "Backstory freebies must be between 0 and 15",
+                code="invalid_amount",
+            )
+
+        # Award the freebies
+        character.freebies += amount
+        character.freebies_approved = True
+        character.save(update_fields=["freebies", "freebies_approved"])
+
+        return character
+
     def is_group_member(self):
         from characters.models.core.group import Group
 
