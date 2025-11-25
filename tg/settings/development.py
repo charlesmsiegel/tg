@@ -43,9 +43,28 @@ try:
 except ImportError:
     pass
 
-# Simplified logging for development
+# Development logging configuration
+# ===================================
+# More verbose logging for development with DEBUG level for all apps
+
+# Enable DEBUG level for Django core (useful for development)
 LOGGING["loggers"]["django"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["django.db.backends"]["handlers"] = ["console_debug"]  # noqa: F405
+LOGGING["loggers"]["django.db.backends"]["level"] = "DEBUG"  # noqa: F405  # Shows SQL queries
+
+# Set all app loggers to DEBUG in development
 LOGGING["loggers"]["tg"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["accounts"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["characters"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["game"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["items"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["locations"]["level"] = "DEBUG"  # noqa: F405
+LOGGING["loggers"]["core"]["level"] = "DEBUG"  # noqa: F405
+
+# Add console_debug handler for verbose output in development
+for logger_name in ["tg", "accounts", "characters", "game", "items", "locations", "core"]:
+    if "console_debug" not in LOGGING["loggers"][logger_name]["handlers"]:  # noqa: F405
+        LOGGING["loggers"][logger_name]["handlers"].append("console_debug")  # noqa: F405
 
 # Cache Configuration for Development
 # ====================================
