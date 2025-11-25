@@ -49,11 +49,19 @@ from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
 
-class ChronicleDetailView(LoginRequiredMixin, View):
+class ChronicleDetailView(LoginRequiredMixin, DetailView):
     """View for displaying chronicle details. Requires authentication."""
 
-    def get_context(self, pk):
-        chronicle = get_object_or_404(Chronicle, pk=pk)
+    model = Chronicle
+    template_name = "game/chronicle/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('storytellers', 'allowed_objects')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        chronicle = self.object
+
         top_locations = (
             LocationModel.objects.top_level()
             .filter(chronicle=chronicle)
@@ -63,8 +71,7 @@ class ChronicleDetailView(LoginRequiredMixin, View):
             Character.objects.active().player_characters().with_group_ordering()
         )
 
-        return {
-            "object": chronicle,
+        context.update({
             "character_list": characters.filter(chronicle=chronicle),
             "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
             "form": SceneCreationForm(chronicle=chronicle),
@@ -72,15 +79,12 @@ class ChronicleDetailView(LoginRequiredMixin, View):
             "active_scenes": Scene.objects.active_for_chronicle(chronicle),
             "story_form": StoryForm(),
             "header": chronicle.headings,
-        }
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context(kwargs["pk"])
-        return render(request, "game/chronicle/detail.html", context)
+        })
+        return context
 
     def post(self, request, *args, **kwargs):
-        context = self.get_context(kwargs["pk"])
-        chronicle = context["object"]
+        self.object = self.get_object()
+        chronicle = self.object
 
         # Check if user is a storyteller for this chronicle
         if not request.user.profile.is_st():
@@ -103,49 +107,46 @@ class ChronicleDetailView(LoginRequiredMixin, View):
                 request, f"Scene '{request.POST['name']}' created successfully!"
             )
             return redirect(scene)
-        return render(request, "game/chronicle/detail.html", context)
+        return self.render_to_response(self.get_context_data())
 
 
-class SceneDetailView(LoginRequiredMixin, View):
+class SceneDetailView(LoginRequiredMixin, DetailView):
     """View for displaying scene details. Requires authentication."""
 
-    def get_context(self, pk, user):
-        scene = get_object_or_404(Scene, pk=pk)
-        if user is not None and user.is_authenticated:
-            a = AddCharForm(user=user, scene=scene)
-            num_chars = (a.fields["character_to_add"].queryset).count()
-            return {
-                "object": scene,
-                "posts": Post.objects.for_scene_optimized(scene),
-                "add_char_form": a,
-                "num_chars": num_chars,
+    model = Scene
+    template_name = "game/scene/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('location', 'chronicle')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        scene = self.object
+        user = self.request.user
+
+        context["posts"] = Post.objects.for_scene_optimized(scene)
+
+        if user.is_authenticated:
+            add_char_form = AddCharForm(user=user, scene=scene)
+            context.update({
+                "add_char_form": add_char_form,
+                "num_chars": add_char_form.fields["character_to_add"].queryset.count(),
                 "num_logged_in_chars": scene.characters.owned_by(user).count(),
                 "first_char": scene.characters.owned_by(user).first(),
-                "post_form": PostForm,
-            }
-        return {
-            "object": scene,
-            "posts": Post.objects.for_scene_optimized(scene),
-        }
+                "post_form": PostForm(user=user, scene=scene),
+            })
 
-    def get(self, request, *args, **kwargs):
-        context = self.get_context(kwargs["pk"], request.user)
-        if request.user.is_authenticated:
-            context["post_form"] = context["post_form"](
-                user=request.user, scene=context["object"]
-            )
-        return render(request, "game/scene/detail.html", context)
+        return context
 
     def post(self, request, *args, **kwargs):
-        context = self.get_context(kwargs["pk"], request.user)
-        scene = context["object"]
+        self.object = self.get_object()
+        scene = self.object
 
         if "close_scene" in request.POST.keys():
             # Only storytellers can close scenes
             if not request.user.profile.is_st():
                 messages.error(request, "Only storytellers can close scenes.")
                 raise PermissionDenied("Only storytellers can close scenes")
-            context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.close()
             messages.success(request, f"Scene '{scene.name}' closed successfully!")
         elif "character_to_add" in request.POST.keys():
@@ -154,16 +155,14 @@ class SceneDetailView(LoginRequiredMixin, View):
             if c.owner != request.user:
                 messages.error(request, "You can only add your own characters.")
                 raise PermissionDenied("You can only add your own characters")
-            context["post_form"] = context["post_form"](user=request.user, scene=scene)
             scene.add_character(c)
             messages.success(request, f"Character '{c.name}' added to scene!")
         elif "message" in request.POST.keys():
-            context["post_form"] = context["post_form"](
-                request.POST, user=request.user, scene=scene
-            )
-            if context["post_form"].is_valid():
-                if context["num_logged_in_chars"] == 1:
-                    character = context["first_char"]
+            post_form = PostForm(request.POST, user=request.user, scene=scene)
+            if post_form.is_valid():
+                num_logged_in_chars = scene.characters.owned_by(request.user).count()
+                if num_logged_in_chars == 1:
+                    character = scene.characters.owned_by(request.user).first()
                 else:
                     character = get_object_or_404(
                         CharacterModel, pk=request.POST["character"]
@@ -176,11 +175,7 @@ class SceneDetailView(LoginRequiredMixin, View):
                     message = self.straighten_quotes(request.POST["message"])
                     scene.add_post(character, request.POST["display_name"], message)
                     messages.success(request, "Post added successfully!")
-                    context["post_form"] = PostForm(user=request.user, scene=scene)
                 except ValueError:
-                    context["post_form"].add_error(
-                        None, "Command does not match the expected format."
-                    )
                     messages.error(
                         request, "Command does not match the expected format."
                     )
@@ -188,11 +183,7 @@ class SceneDetailView(LoginRequiredMixin, View):
                 messages.error(
                     request, "Failed to create post. Please check your input."
                 )
-        context = self.get_context(kwargs["pk"], request.user)
-        context["post_form"] = context["post_form"](
-            user=request.user, scene=context["object"]
-        )
-        return redirect(reverse("game:scene", kwargs={"pk": context["object"].pk}))
+        return redirect(reverse("game:scene", kwargs={"pk": scene.pk}))
 
     @staticmethod
     def straighten_quotes(s):
@@ -237,11 +228,17 @@ class SceneDetailView(LoginRequiredMixin, View):
         return s.translate(translation_table)
 
 
-class ChronicleScenesDetailView(LoginRequiredMixin, View):
+class ChronicleScenesDetailView(LoginRequiredMixin, DetailView):
     """View for displaying chronicle scenes. Requires authentication."""
 
-    def get(self, request, *args, **kwargs):
-        chronicle = get_object_or_404(Chronicle, pk=kwargs["pk"])
+    model = Chronicle
+    template_name = "game/scenes/detail.html"
+    context_object_name = "chronicle"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        chronicle = self.object
+
         scenes = Scene.objects.for_chronicle(chronicle).with_location()
 
         # Group scenes by year and month
@@ -252,11 +249,8 @@ class ChronicleScenesDetailView(LoginRequiredMixin, View):
             )
         ]
 
-        context = {
-            "chronicle": chronicle,
-            "scenes_grouped": scenes_grouped,
-        }
-        return render(request, "game/scenes/detail.html", context)
+        context["scenes_grouped"] = scenes_grouped
+        return context
 
 
 class CommandsView(LoginRequiredMixin, TemplateView):
