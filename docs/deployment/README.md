@@ -402,6 +402,52 @@ python manage.py migrate
 6. **Monitor for 1 week** - Collect metrics and feedback
 7. **Schedule production deployment** - After staging sign-off
 
+## Redis Cache Setup
+
+Production caching is configured in `tg/settings/production.py` using Redis.
+
+### Requirements
+
+```bash
+pip install django-redis redis
+```
+
+### Configuration
+
+Set the `REDIS_URL` environment variable:
+
+```bash
+# Local Redis
+export REDIS_URL="redis://127.0.0.1:6379/1"
+
+# Redis with authentication
+export REDIS_URL="redis://:password@hostname:6379/1"
+
+# Redis Sentinel
+export REDIS_URL="redis://sentinel-host:26379/mymaster/1"
+```
+
+### Features Enabled
+
+- **View caching**: Use `@cache_page(60 * 15)` on expensive views
+- **Session storage**: Sessions stored in Redis for horizontal scaling
+- **Connection pooling**: Up to 50 connections with retry on timeout
+- **Compression**: ZLib compression for cache values
+- **Graceful degradation**: `IGNORE_EXCEPTIONS=True` prevents crashes if Redis is down
+
+### Verification
+
+```bash
+# Test Redis connection
+python manage.py shell
+>>> from django.core.cache import cache
+>>> cache.set('test', 'value', 60)
+>>> cache.get('test')
+'value'
+```
+
+---
+
 ## Contact
 
 For questions or issues during deployment:

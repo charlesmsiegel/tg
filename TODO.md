@@ -28,23 +28,6 @@ This document tracks remaining work across the codebase with context about what 
 
 ---
 
-## 🟡 Medium Priority
-
-### Code Architecture
-
-1. ⚠️ **Add caching configuration**
-    - **Status**: Development caching configured ✅, production and view caching remain
-    - **What's done**:
-      - Local-memory cache configured in `tg/settings/development.py` (lines 69-82)
-      - Uses `LocMemCache` with 5-minute timeout and 1000 max entries
-    - **What remains**:
-      1. For production, document Redis setup in deployment guide
-      2. Add cache to expensive views using `@cache_page(60 * 15)` decorator
-    - **Files**: `tg/settings/production.py`, expensive views
-    - **Independence**: Standalone task
-
----
-
 ## 🟢 Low Priority - Feature Completeness
 
 ### Mummy Gameline Implementation (CRITICAL GAP)
@@ -162,25 +145,27 @@ These models work but could have better user-facing views:
    - Install black for formatting: `pip install black && black .`
    - Install ruff for linting: `pip install ruff && ruff check .`
    - Add pre-commit hooks
-   - Fix `accounts/models.py:116` - `str` variable shadows built-in
 
 ---
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~13 items (down from ~25 after cleanup and fixes)
+**Total Open Items**: ~12 items
 
 **By Priority**:
 - 🔴 High Priority: 1 item (ongoing security monitoring)
-- 🟡 Medium Priority: 1 item (caching - partial)
 - 🟢 Low Priority: ~6 items (feature completeness - Mummy, Hunter gamelines)
 - 🔵 Deployment: 6 items (staging + production)
+- 📚 Long-term: 2 items (process improvements)
 
 ---
 
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.2)
+- **Add caching configuration** - Development uses LocMemCache, production uses Redis with full configuration in `production.py`, documentation added to `docs/deployment/README.md`
 
 ### Removed 2025-11-25 (v7.1)
 - **Implement authorization checks in game/views.py** - Chronicle-specific ST check for scene closing, character ownership checks for adding/posting
@@ -217,4 +202,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.1 (Resolved authorization checks and filter_queryset_for_user)
+**Version**: 7.2 (Resolved caching configuration)
