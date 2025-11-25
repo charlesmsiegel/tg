@@ -20,7 +20,7 @@ from characters.models.mage.mage import Mage
 from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
-from characters.models.werewolf.garou import Werewolf
+from characters.models.werewolf.garou import Werewolf as Garou
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
