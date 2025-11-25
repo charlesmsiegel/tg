@@ -112,3 +112,48 @@ def fast_selector(cls):
 
 def display_queryset(prop):
     return "<br>".join([f'<a href="{x.get_absolute_url()}">{x}</a>' for x in prop])
+
+
+class CharacterOrganizationRegistry:
+    """
+    Registry for managing character organizational cleanup handlers.
+
+    Each model with organizational relationships to characters can register
+    a cleanup handler that will be called when a character is retired or deceased.
+    This decouples the Character model from knowing about all organizational structures.
+    """
+
+    _handlers = []
+
+    @classmethod
+    def register(cls, handler):
+        """
+        Register a cleanup handler function.
+
+        Args:
+            handler: A callable that takes a character instance and removes
+                    it from organizational structures. Should handle its own
+                    exceptions gracefully.
+        """
+        if handler not in cls._handlers:
+            cls._handlers.append(handler)
+
+    @classmethod
+    def cleanup_character(cls, character):
+        """
+        Execute all registered cleanup handlers for a character.
+
+        Args:
+            character: The Character instance being retired or deceased
+        """
+        for handler in cls._handlers:
+            try:
+                handler(character)
+            except Exception as e:
+                # Log but don't fail if one handler has an issue
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(
+                    f"Error in organization cleanup handler {handler.__name__} "
+                    f"for character {character.id}: {e}"
+                )

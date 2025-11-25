@@ -1,6 +1,7 @@
 from characters.models.core.background_block import Background, BackgroundBlock
 from characters.models.core.human import Human
 from characters.models.mage.effect import Effect
+from core.utils import CharacterOrganizationRegistry
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -317,6 +318,43 @@ class Chantry(BackgroundBlock, LocationModel):
             cabal_member_ids.update(cabal.members.values_list("id", flat=True))
         return self.members.exclude(id__in=cabal_member_ids)
 
+    @staticmethod
+    def cleanup_character_organizations(character):
+        """Remove character from all Chantry organizational structures."""
+        # Only process if character is a Human (or subclass) with Chantry relationships
+        if not hasattr(character, "member_of"):
+            return
+
+        # Remove from Chantry memberships
+        for chantry in character.member_of.all():
+            chantry.members.remove(character)
+
+        # Remove from Chantry leadership
+        for chantry in character.chantry_leader_at.all():
+            chantry.leaders.remove(character)
+
+        # Remove from ambassador positions
+        for chantry in character.ambassador_from.all():
+            chantry.ambassador = None
+            chantry.save()
+
+        # Remove from node tender positions
+        for chantry in character.tends_node_at.all():
+            chantry.node_tender = None
+            chantry.save()
+
+        # Remove from investigator roles
+        for chantry in character.investigator_at.all():
+            chantry.investigator.remove(character)
+
+        # Remove from guardian roles
+        for chantry in character.guardian_of.all():
+            chantry.guardian.remove(character)
+
+        # Remove from teacher roles
+        for chantry in character.teacher_at.all():
+            chantry.teacher.remove(character)
+
 
 class ChantryBackgroundRating(models.Model):
     bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
@@ -353,3 +391,7 @@ class ChantryBackgroundRating(models.Model):
         elif self.display_alt_name:
             return self.bg.alternate_name
         return self.bg.name
+
+
+# Register the cleanup handler with the registry
+CharacterOrganizationRegistry.register(Chantry.cleanup_character_organizations)
