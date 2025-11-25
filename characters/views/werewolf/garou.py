@@ -26,7 +26,6 @@ from characters.views.core.human import (
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -44,12 +43,12 @@ from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class WerewolfDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class WerewolfDetailView(ViewPermissionMixin, DetailView):
     model = Werewolf
     template_name = "characters/werewolf/garou/detail.html"
 
 
-class WerewolfUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class WerewolfUpdateView(EditPermissionMixin, UpdateView):
     model = Werewolf
     fields = [
         "name",
@@ -265,7 +264,7 @@ class WerewolfBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/garou/chargen.html"
 
 
-class WerewolfGiftsView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WerewolfGiftsView(SpecialUserMixin, UpdateView):
     model = Werewolf
     form_class = WerewolfGiftsForm
     template_name = "characters/werewolf/garou/chargen.html"
@@ -320,7 +319,7 @@ class WerewolfGiftsView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class WerewolfHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WerewolfHistoryView(SpecialUserMixin, UpdateView):
     model = Werewolf
     form_class = WerewolfHistoryForm
     template_name = "characters/werewolf/garou/chargen.html"
@@ -348,7 +347,7 @@ class WerewolfHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView
         return super().form_valid(form)
 
 
-class WerewolfExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WerewolfExtrasView(SpecialUserMixin, UpdateView):
     model = Werewolf
     fields = [
         "date_of_birth",

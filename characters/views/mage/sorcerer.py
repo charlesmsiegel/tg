@@ -37,7 +37,6 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -145,7 +144,7 @@ def load_affinities(request):
     )
 
 
-class SorcererUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class SorcererUpdateView(EditPermissionMixin, UpdateView):
     model = Sorcerer
     fields = "__all__"
     template_name = "characters/mage/sorcerer/form.html"
@@ -157,7 +156,7 @@ class SorcererUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateVi
         return context
 
 
-class SorcererDetailView(ApprovedUserContextMixin, HumanDetailView):
+class SorcererDetailView(HumanDetailView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/detail.html"
 
@@ -290,7 +289,7 @@ def get_abilities(request):
 
 
 class SorcererPsychicView(
-    ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView
+    SpecialUserMixin, MultipleFormsetsMixin, UpdateView
 ):
     model = Sorcerer
     fields = []
@@ -340,7 +339,7 @@ class SorcererPsychicView(
 
 
 class SorcererPathView(
-    ApprovedUserContextMixin, SpecialUserMixin, MultipleFormsetsMixin, UpdateView
+    SpecialUserMixin, MultipleFormsetsMixin, UpdateView
 ):
     model = Sorcerer
     fields = []
@@ -482,7 +481,7 @@ class SorcererRitualView(EditPermissionMixin, FormView):
         return HttpResponseRedirect(context["object"].get_absolute_url())
 
 
-class SorcererExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class SorcererExtrasView(SpecialUserMixin, UpdateView):
     model = Sorcerer
     fields = [
         "date_of_birth",
@@ -532,7 +531,7 @@ class SorcererExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView)
         return form
 
 
-class SorcererFreebiesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class SorcererFreebiesView(SpecialUserMixin, UpdateView):
     model = Sorcerer
     form_class = SorcererFreebiesForm
     template_name = "characters/mage/sorcerer/chargen.html"

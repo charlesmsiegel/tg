@@ -35,7 +35,6 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -351,7 +350,7 @@ def get_abilities(request):
     return JsonResponse(abilities_list, safe=False)
 
 
-class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
+class MageDetailView(HumanDetailView):
     model = Mage
     template_name = "characters/mage/mage/detail.html"
 
@@ -1002,7 +1001,7 @@ class MageCreateView(MessageMixin, CreateView):
         return form
 
 
-class MageUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class MageUpdateView(EditPermissionMixin, UpdateView):
     model = Mage
     fields = MageCreateView.FORM_FIELDS
     template_name = "characters/mage/mage/form.html"
@@ -1062,7 +1061,7 @@ class MageBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mage/chargen.html"
 
 
-class MageFocusView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class MageFocusView(SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "metaphysical_tenet",
@@ -1151,7 +1150,7 @@ class MageFocusView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return response
 
 
-class MageSpheresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class MageSpheresView(SpecialUserMixin, UpdateView):
     model = Mage
     form_class = MageSpheresForm
     template_name = "characters/mage/mage/chargen.html"
@@ -1205,7 +1204,7 @@ class MageSpheresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class MageExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class MageExtrasView(SpecialUserMixin, UpdateView):
     model = Mage
     fields = [
         "date_of_birth",

@@ -2,11 +2,11 @@ from typing import Any
 
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.human import HumanDetailView
-from core.mixins import ApprovedUserContextMixin, MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 
-class GhoulDetailView(ApprovedUserContextMixin, HumanDetailView):
+class GhoulDetailView(HumanDetailView):
     model = Ghoul
     template_name = "characters/vampire/ghoul/detail.html"
 

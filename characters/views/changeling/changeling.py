@@ -21,7 +21,6 @@ from characters.views.core.human import (
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -38,7 +37,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, FormView, UpdateView, View
 
 
-class ChangelingDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class ChangelingDetailView(ViewPermissionMixin, DetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 
@@ -154,7 +153,7 @@ class ChangelingCreateView(MessageMixin, CreateView):
     error_message = "Failed to create changeling. Please correct the errors below."
 
 
-class ChangelingUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class ChangelingUpdateView(EditPermissionMixin, UpdateView):
     model = Changeling
     fields = [
         "name",
@@ -304,7 +303,7 @@ class ChangelingBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/changeling/chargen.html"
 
 
-class ChangelingArtsRealmsView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class ChangelingArtsRealmsView(SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "autumn",
@@ -417,7 +416,7 @@ class ChangelingArtsRealmsView(ApprovedUserContextMixin, SpecialUserMixin, Updat
         return super().form_valid(form)
 
 
-class ChangelingExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class ChangelingExtrasView(SpecialUserMixin, UpdateView):
     model = Changeling
     fields = [
         "date_of_birth",

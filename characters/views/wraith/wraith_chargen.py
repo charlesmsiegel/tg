@@ -22,7 +22,6 @@ from characters.views.core.human import (
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -95,7 +94,7 @@ class WraithBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithArcanosView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WraithArcanosView(SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "argos",
@@ -149,7 +148,7 @@ class WraithArcanosView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithShadowView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WraithShadowView(SpecialUserMixin, UpdateView):
     model = Wraith
     fields = ["shadow_archetype"]
     template_name = "characters/wraith/wraith/chargen.html"
@@ -325,7 +324,7 @@ class WraithFettersView(EditPermissionMixin, FormView):
         return super().form_invalid(form)
 
 
-class WraithExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WraithExtrasView(SpecialUserMixin, UpdateView):
     model = Wraith
     fields = [
         "date_of_birth",

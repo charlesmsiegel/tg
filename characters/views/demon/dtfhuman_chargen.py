@@ -17,7 +17,6 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -136,7 +135,7 @@ class DtFHumanAttributeView(HumanAttributeView):
         return context
 
 
-class DtFHumanAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DtFHumanAbilityView(SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = DtFHuman.primary_abilities
     template_name = "characters/demon/dtfhuman/chargen.html"
@@ -184,7 +183,7 @@ class DtFHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/dtfhuman/chargen.html"
 
 
-class DtFHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DtFHumanExtrasView(SpecialUserMixin, UpdateView):
     model = DtFHuman
     fields = [
         "age",

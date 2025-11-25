@@ -28,7 +28,6 @@ from characters.views.core.human import (
 from characters.views.mage.background_views import MtAEnhancementView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -51,7 +50,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class MtAHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
+class MtAHumanDetailView(HumanDetailView):
     model = MtAHuman
     template_name = "characters/mage/mtahuman/detail.html"
 
@@ -292,7 +291,7 @@ class MtAHumanUpdateView(EditPermissionMixin, UpdateView):
         return context
 
 
-class MtAHumanAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
     model = MtAHuman
     fields = [
         "awareness",
@@ -572,7 +571,7 @@ class MtAHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/mtahuman/chargen.html"
 
 
-class MtAHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class MtAHumanExtrasView(SpecialUserMixin, UpdateView):
     model = MtAHuman
     fields = [
         "date_of_birth",

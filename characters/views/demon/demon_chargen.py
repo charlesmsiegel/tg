@@ -20,7 +20,6 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -75,7 +74,7 @@ class DemonAttributeView(HumanAttributeView):
         return context
 
 
-class DemonAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DemonAbilityView(SpecialUserMixin, UpdateView):
     model = Demon
     fields = Demon.primary_abilities
     template_name = "characters/demon/demon/chargen.html"
@@ -123,7 +122,7 @@ class DemonBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/demon/chargen.html"
 
 
-class DemonLoresView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DemonLoresView(SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "lore_of_the_celestials",
@@ -268,7 +267,7 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
         return HttpResponseRedirect(demon.get_absolute_url())
 
 
-class DemonVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DemonVirtuesView(SpecialUserMixin, UpdateView):
     model = Demon
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/demon/chargen.html"
@@ -304,7 +303,7 @@ class DemonVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DemonExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class DemonExtrasView(SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "celestial_name",

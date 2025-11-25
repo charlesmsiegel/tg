@@ -500,23 +500,14 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Delegate to canonical is_st() method instead of reimplementing
     - **Independence**: Standalone task - can be done independently
 
-23. **Remove Unnecessary ApprovedUserContextMixin**
-    - **Files**: `characters/views/core/character.py:112`, `core/mixins.py:197-213`
-    - **Impact**: LOW - Minor code smell
-    - **Issue**: Mixin only adds `is_approved_user=True` to context after permission check
-    - **Action**:
-      1. Find all views using ApprovedUserContextMixin (grep codebase)
-      2. Remove mixin from view inheritance
-      3. Add context variable directly in get_context_data() where needed:
-         ```python
-         def get_context_data(self, **kwargs):
-             context = super().get_context_data(**kwargs)
-             context['is_approved_user'] = True
-             return context
-         ```
-      4. Delete ApprovedUserContextMixin from `core/mixins.py` after all uses removed
-    - **Context**: Unnecessary abstraction - permission mixin already verified access
-    - **Independence**: Standalone task - can be done independently
+23. **Remove Unnecessary ApprovedUserContextMixin** ✅ COMPLETED
+    - **Status**: Completed - ApprovedUserContextMixin has been removed
+    - **Changes Made**:
+      1. Added `is_approved_user=True` flag directly to `PermissionRequiredMixin.get_context_data()` in `core/mixins.py:53-58`
+      2. Removed `ApprovedUserContextMixin` from all 27 view files in `characters/views/`
+      3. Removed `ApprovedUserContextMixin` imports from all affected files
+      4. Deleted `ApprovedUserContextMixin` class definition from `core/mixins.py`
+    - **Result**: All views using permission mixins now automatically get `is_approved_user=True` in their context without needing a separate mixin
 
 24. **Optimize at_freebie_step() QuerySet Method**
     - **Files**: `characters/models/core/character.py:68-84`

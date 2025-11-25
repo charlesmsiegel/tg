@@ -19,7 +19,6 @@ from characters.views.core.human import (
 )
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -37,7 +36,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, FormView, UpdateView
 
 
-class VtMHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
+class VtMHumanDetailView(HumanDetailView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/detail.html"
 
@@ -117,7 +116,7 @@ class VtMHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/vampire/vtmhuman/form.html"
 
 
-class VtMHumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class VtMHumanUpdateView(EditPermissionMixin, UpdateView):
     model = VtMHuman
     success_message = "VtM Human updated successfully."
     error_message = "Error updating VtM Human."
@@ -242,7 +241,7 @@ class VtMHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
 
-class VtMHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class VtMHumanExtrasView(SpecialUserMixin, UpdateView):
     model = VtMHuman
     fields = [
         "date_of_birth",

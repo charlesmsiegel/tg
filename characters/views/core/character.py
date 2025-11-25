@@ -5,7 +5,6 @@ from characters.forms.core.limited_edit import LimitedCharacterEditForm
 from characters.models.core import Character
 from core.cache import cache_function, CACHE_TIMEOUT_MEDIUM
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
@@ -120,7 +119,7 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CharacterUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class CharacterUpdateView(EditPermissionMixin, UpdateView):
     """
     Update view for characters.
     Automatically enforces edit permissions.

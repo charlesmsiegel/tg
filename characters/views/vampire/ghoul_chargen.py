@@ -22,7 +22,6 @@ from characters.views.core.human import (
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -167,7 +166,7 @@ class GhoulDisciplinesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class GhoulExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class GhoulExtrasView(SpecialUserMixin, UpdateView):
     model = Ghoul
     fields = [
         "age",

@@ -1,7 +1,6 @@
 from characters.forms.core.limited_edit import LimitedDemonEditForm
 from characters.models.demon import Demon
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -14,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DemonDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class DemonDetailView(ViewPermissionMixin, DetailView):
     model = Demon
     template_name = "characters/demon/demon/detail.html"
 
@@ -110,7 +109,7 @@ class DemonCreateView(MessageMixin, CreateView):
     error_message = "Failed to create demon. Please correct the errors below."
 
 
-class DemonUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class DemonUpdateView(EditPermissionMixin, UpdateView):
     model = Demon
     fields = [
         "name",
