@@ -142,22 +142,57 @@ SECURE_REFERRER_POLICY = "same-origin"
 
 # Logging Configuration for Production
 # =====================================
+# Uses rotating file handlers to prevent log files from growing too large
+# Keeps logs organized with separate files for errors and general logs
 
-# Update logging to use different handlers for production
-LOGGING["handlers"]["file"]["level"] = "WARNING"  # noqa: F405
-LOGGING["loggers"]["django"]["level"] = "WARNING"  # noqa: F405
-LOGGING["loggers"]["tg"]["level"] = "INFO"  # noqa: F405
+from logging.handlers import RotatingFileHandler  # noqa: F401
 
-# Add error logging to file
-LOGGING["handlers"]["error_file"] = {  # noqa: F405
-    "level": "ERROR",
-    "class": "logging.FileHandler",
-    "filename": BASE_DIR / "error.log",  # noqa: F405
+# Replace file handlers with rotating file handlers for production
+LOGGING["handlers"]["file"] = {  # noqa: F405
+    "level": "INFO",
+    "class": "logging.handlers.RotatingFileHandler",
+    "filename": BASE_DIR / "logs" / "app.log",  # noqa: F405
     "formatter": "verbose",
+    "maxBytes": 10 * 1024 * 1024,  # 10 MB
+    "backupCount": 10,  # Keep 10 backup files
 }
 
-LOGGING["loggers"]["django"]["handlers"].append("error_file")  # noqa: F405
-LOGGING["loggers"]["tg"]["handlers"].append("error_file")  # noqa: F405
+LOGGING["handlers"]["error_file"] = {  # noqa: F405
+    "level": "ERROR",
+    "class": "logging.handlers.RotatingFileHandler",
+    "filename": BASE_DIR / "logs" / "error.log",  # noqa: F405
+    "formatter": "detailed",
+    "maxBytes": 10 * 1024 * 1024,  # 10 MB
+    "backupCount": 10,
+}
+
+LOGGING["handlers"]["warning_file"] = {  # noqa: F405
+    "level": "WARNING",
+    "class": "logging.handlers.RotatingFileHandler",
+    "filename": BASE_DIR / "logs" / "warning.log",  # noqa: F405
+    "formatter": "verbose",
+    "maxBytes": 5 * 1024 * 1024,  # 5 MB
+    "backupCount": 5,
+}
+
+# Set production log levels (less verbose than development)
+LOGGING["loggers"]["django"]["level"] = "WARNING"  # noqa: F405
+LOGGING["loggers"]["django.request"]["level"] = "ERROR"  # noqa: F405
+LOGGING["loggers"]["django.security"]["level"] = "WARNING"  # noqa: F405
+LOGGING["loggers"]["tg"]["level"] = "INFO"  # noqa: F405
+
+# Set all app loggers to INFO in production
+LOGGING["loggers"]["accounts"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["characters"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["game"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["items"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["locations"]["level"] = "INFO"  # noqa: F405
+LOGGING["loggers"]["core"]["level"] = "INFO"  # noqa: F405
+
+# Add warning_file handler to all app loggers
+for logger_name in ["tg", "accounts", "characters", "game", "items", "locations", "core"]:
+    if "warning_file" not in LOGGING["loggers"][logger_name]["handlers"]:  # noqa: F405
+        LOGGING["loggers"][logger_name]["handlers"].append("warning_file")  # noqa: F405
 
 # Admin Email Notifications
 # =========================

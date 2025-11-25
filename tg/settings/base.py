@@ -241,43 +241,145 @@ GAMELINES = {
 # Helper to get gameline choices for model fields
 GAMELINE_CHOICES = [(key, val["name"]) for key, val in GAMELINES.items()]
 
-# Logging configuration
+# Logging Configuration
+# ======================
+# Comprehensive logging setup with per-app loggers and multiple handlers
+# Environment-specific overrides are in development.py and production.py
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "[{levelname}] {asctime} {name} {module}.{funcName}:{lineno} - {message}",
             "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
         "simple": {
-            "format": "{levelname} {message}",
+            "format": "[{levelname}] {name} - {message}",
             "style": "{",
+        },
+        "detailed": {
+            "format": "[{levelname}] {asctime} [{process:d}:{thread:d}] {name} {pathname}:{lineno} - {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
         },
     },
     "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "debug.log",
-            "formatter": "verbose",
-        },
+        # Console handler for all output (INFO and above)
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        # Debug console handler (only in DEBUG mode)
+        "console_debug": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+            "filters": ["require_debug_true"],
+        },
+        # General file handler for all logs
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs" / "debug.log",
+            "formatter": "verbose",
+        },
+        # Error file handler for ERROR and above
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs" / "error.log",
+            "formatter": "detailed",
+        },
+        # Warning file handler for WARNING and above
+        "warning_file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs" / "warning.log",
+            "formatter": "verbose",
+        },
+        # Null handler to suppress logs when needed
+        "null": {
+            "class": "logging.NullHandler",
+        },
     },
     "loggers": {
+        # Django core logger
         "django": {
-            "handlers": ["file", "console"],
+            "handlers": ["console", "file"],
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
+        # Django request logger (useful for debugging request/response issues)
+        "django.request": {
+            "handlers": ["error_file", "console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        # Django database logger (can be noisy, set to INFO to see queries)
+        "django.db.backends": {
+            "handlers": ["null"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # Django security logger
+        "django.security": {
+            "handlers": ["error_file", "console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        # Django template logger
+        "django.template": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # Root project logger
         "tg": {
-            "handlers": ["file", "console"],
+            "handlers": ["console", "file", "error_file"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
+        },
+        # Per-app loggers
+        "accounts": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "characters": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "game": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "items": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "locations": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "core": {
+            "handlers": ["console", "file", "error_file"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
 }
