@@ -133,19 +133,19 @@
     </div>
     <form action="" enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        {% for item in object.spent_xp %}
+        {% for request in object.get_xp_spending_history %}
             <div class="row">
                 <div class="col-sm">
-                    {{ item.trait }}
-                    {% if item.value %}{{ item.value }}{% endif %}
+                    {{ request.trait_name }}
+                    {% if request.trait_value %}({{ request.trait_value }}){% endif %}
                 </div>
-                <div class="col-sm">{{ item.cost }} XP</div>
-                <div class="col-sm">{{ item.approved }}</div>
-                {% if request.user.profile.is_st %}
-                    {% if item.approved != "Approved" %}
+                <div class="col-sm">{{ request.cost }} XP</div>
+                <div class="col-sm">{{ request.approved }}</div>
+                {% if user.profile.is_st %}
+                    {% if request.approved != "Approved" %}
                         <div class="col-sm">
-                            <input type="submit" name="{{ item.index }}_approve" value="Approve" />
-                            <input type="submit" name="{{ item.index }}_approve" value="Reject" />
+                            <input type="submit" name="xp_request_{{ request.id }}_approve" value="Approve" />
+                            <input type="submit" name="xp_request_{{ request.id }}_reject" value="Reject" />
                         </div>
                     {% else %}
                         <div class="col-sm"></div>

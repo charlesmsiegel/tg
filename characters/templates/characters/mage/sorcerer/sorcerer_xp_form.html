@@ -5,9 +5,10 @@
     <div class="col-sm">XP Remaining</div>
     <div class="col-sm">{{ object.xp }}</div>
 </div>
-{% for item in object.spent_xp %}
+{% for request in object.get_xp_spending_history %}
     <div class="row">
-        <div class="col-sm">{{ item.trait }} {{ item.value }}</div>
-        <div class="col-sm">{{ item.cost }} freebies</div>
+        <div class="col-sm">{{ request.trait_name }} {% if request.trait_value %}({{ request.trait_value }}){% endif %}</div>
+        <div class="col-sm">{{ request.cost }} XP</div>
+        <div class="col-sm">{{ request.approved }}</div>
     </div>
 {% endfor %}
