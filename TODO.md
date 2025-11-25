@@ -32,12 +32,7 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Architecture
 
-1. ✅ **Simplify filter_queryset_for_user Implementation** - COMPLETED
-   - Refactored into helper methods: `_model_has_field()`, `_get_chronicle_related_model()`, `_build_owner_filter()`, `_build_chronicle_st_filters()`, `_build_player_chronicle_filter()`, `_build_observer_filter()`
-   - Removed duplicate observer filter code
-   - Optional: Add logging for debugging if needed in future
-
-2. ⚠️ **Add caching configuration**
+1. ⚠️ **Add caching configuration**
     - **Status**: Development caching configured ✅, production and view caching remain
     - **What's done**:
       - Local-memory cache configured in `tg/settings/development.py` (lines 69-82)
