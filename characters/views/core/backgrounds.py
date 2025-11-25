@@ -2,7 +2,6 @@ from characters.forms.core.backgroundform import BackgroundRatingFormSet
 from characters.models.core.background_block import Background
 from characters.models.core.human import Human
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
@@ -12,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
 
 
-class HumanBackgroundsView(ApprovedUserContextMixin, EditPermissionMixin, FormView):
+class HumanBackgroundsView(EditPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
 

@@ -19,7 +19,6 @@ from characters.views.core.human import (
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -35,7 +34,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class FomorDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class FomorDetailView(ViewPermissionMixin, DetailView):
     model = Fomor
     template_name = "characters/werewolf/fomor/detail.html"
 
@@ -107,7 +106,7 @@ class FomorCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/fomor/form.html"
 
 
-class FomorUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class FomorUpdateView(EditPermissionMixin, UpdateView):
     model = Fomor
     success_message = "Fomor updated successfully."
     error_message = "Error updating fomor."
@@ -216,7 +215,7 @@ class FomorBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/fomor/chargen.html"
 
 
-class FomorPowersView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class FomorPowersView(SpecialUserMixin, UpdateView):
     model = Fomor
     fields = ["powers", "rage", "gnosis"]
     template_name = "characters/werewolf/fomor/chargen.html"
@@ -240,7 +239,7 @@ class FomorPowersView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FomorExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class FomorExtrasView(SpecialUserMixin, UpdateView):
     model = Fomor
     fields = [
         "date_of_birth",

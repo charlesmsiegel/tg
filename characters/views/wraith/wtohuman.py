@@ -20,7 +20,6 @@ from characters.views.core.human import (
 )
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -38,7 +37,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class WtOHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
+class WtOHumanDetailView(HumanDetailView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/detail.html"
 
@@ -106,7 +105,7 @@ class WtOHumanCreateView(MessageMixin, CreateView):
     error_message = "Failed to create wraith human. Please correct the errors below."
 
 
-class WtOHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class WtOHumanUpdateView(EditPermissionMixin, UpdateView):
     model = WtOHuman
     fields = [
         "name",
@@ -278,7 +277,7 @@ class WtOHumanAttributeView(HumanAttributeView):
     tertiary = 3
 
 
-class WtOHumanAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = WtOHuman.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -338,7 +337,7 @@ class WtOHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WtOHumanExtrasView(SpecialUserMixin, UpdateView):
     model = WtOHuman
     fields = [
         "date_of_birth",

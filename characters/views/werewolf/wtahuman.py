@@ -21,7 +21,6 @@ from characters.views.core.human import (
 )
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -39,7 +38,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class WtAHumanDetailView(ApprovedUserContextMixin, HumanDetailView):
+class WtAHumanDetailView(HumanDetailView):
     model = WtAHuman
     template_name = "characters/werewolf/wtahuman/detail.html"
 
@@ -108,7 +107,7 @@ class WtAHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/wtahuman/form.html"
 
 
-class WtAHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class WtAHumanUpdateView(EditPermissionMixin, UpdateView):
     model = WtAHuman
     success_message = "WtA Human updated successfully."
     error_message = "Error updating WtA Human."
@@ -287,7 +286,7 @@ class WtAHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/werewolf/wtahuman/chargen.html"
 
 
-class WtAHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class WtAHumanExtrasView(SpecialUserMixin, UpdateView):
     model = WtAHuman
     fields = [
         "date_of_birth",

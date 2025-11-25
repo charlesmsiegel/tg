@@ -1,6 +1,5 @@
 from characters.models.werewolf.spirit_character import SpiritCharacter
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -11,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class SpiritDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class SpiritDetailView(ViewPermissionMixin, DetailView):
     model = SpiritCharacter
     template_name = "characters/werewolf/spirit/detail.html"
 
@@ -32,7 +31,7 @@ class SpiritCreateView(MessageMixin, CreateView):
         return form
 
 
-class SpiritUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class SpiritUpdateView(EditPermissionMixin, UpdateView):
     model = SpiritCharacter
     fields = ["name", "description", "willpower", "rage", "gnosis", "essence", "owner"]
     template_name = "characters/werewolf/spirit/form.html"

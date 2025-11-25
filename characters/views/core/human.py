@@ -11,7 +11,6 @@ from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -74,7 +73,7 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
 
 class HumanUpdateView(
-    EditPermissionMixin, ApprovedUserContextMixin, MessageMixin, UpdateView
+    EditPermissionMixin, MessageMixin, UpdateView
 ):
     """
     Update view for Human characters.
@@ -133,7 +132,7 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
 
 
 class HumanAttributeView(
-    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+    SpendFreebiesPermissionMixin, UpdateView
 ):
     """
     Character creation step: allocating attribute points.
@@ -209,7 +208,7 @@ class HumanAttributeView(
 
 
 class HumanAbilityView(
-    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+    SpendFreebiesPermissionMixin, UpdateView
 ):
     model = Human
     fields = Human.primary_abilities
@@ -254,7 +253,7 @@ class HumanAbilityView(
 
 
 class HumanBiographicalInformation(
-    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+    SpendFreebiesPermissionMixin, UpdateView
 ):
     model = Human
     fields = [
@@ -424,7 +423,7 @@ class HumanFreebieFormPopulationView(View):
 
 
 class HumanFreebiesView(
-    SpendFreebiesPermissionMixin, ApprovedUserContextMixin, UpdateView
+    SpendFreebiesPermissionMixin, UpdateView
 ):
     model = Human
     form_class = HumanFreebiesForm

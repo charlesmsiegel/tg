@@ -19,7 +19,6 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanSpecialtiesView,
 )
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -31,7 +30,7 @@ from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
 
 
-class KinfolkDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class KinfolkDetailView(ViewPermissionMixin, DetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 
@@ -137,7 +136,7 @@ class KinfolkCreateView(MessageMixin, CreateView):
     template_name = "characters/werewolf/kinfolk/form.html"
 
 
-class KinfolkUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class KinfolkUpdateView(EditPermissionMixin, UpdateView):
     model = Kinfolk
     success_message = "Kinfolk updated successfully."
     error_message = "Error updating kinfolk."

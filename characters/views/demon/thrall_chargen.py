@@ -17,7 +17,6 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -63,7 +62,7 @@ class ThrallAttributeView(HumanAttributeView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallAbilityView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class ThrallAbilityView(SpecialUserMixin, UpdateView):
     model = Thrall
     fields = Thrall.primary_abilities
     template_name = "characters/demon/thrall/chargen.html"
@@ -111,7 +110,7 @@ class ThrallBackgroundsView(HumanBackgroundsView):
     template_name = "characters/demon/thrall/chargen.html"
 
 
-class ThrallVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class ThrallVirtuesView(SpecialUserMixin, UpdateView):
     model = Thrall
     fields = ["conviction", "courage", "conscience"]
     template_name = "characters/demon/thrall/chargen.html"
@@ -143,7 +142,7 @@ class ThrallVirtuesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ThrallExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class ThrallExtrasView(SpecialUserMixin, UpdateView):
     model = Thrall
     fields = [
         "age",

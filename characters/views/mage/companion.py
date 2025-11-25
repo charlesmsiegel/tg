@@ -23,7 +23,6 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -46,7 +45,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class CompanionDetailView(ApprovedUserContextMixin, HumanDetailView):
+class CompanionDetailView(HumanDetailView):
     model = Companion
     template_name = "characters/mage/companion/detail.html"
 
@@ -66,7 +65,7 @@ class CompanionCreateView(MessageMixin, CreateView):
         return form
 
 
-class CompanionUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class CompanionUpdateView(EditPermissionMixin, UpdateView):
     model = Companion
     fields = "__all__"
     template_name = "characters/mage/companion/form.html"
@@ -199,7 +198,7 @@ class CompanionBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/companion/chargen.html"
 
 
-class CompanionExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class CompanionExtrasView(SpecialUserMixin, UpdateView):
     model = Companion
     fields = [
         "date_of_birth",
@@ -279,7 +278,7 @@ class CompanionExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView
         return form
 
 
-class CompanionFreebiesView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class CompanionFreebiesView(SpecialUserMixin, UpdateView):
     model = Companion
     form_class = CompanionFreebiesForm
     template_name = "characters/mage/companion/chargen.html"

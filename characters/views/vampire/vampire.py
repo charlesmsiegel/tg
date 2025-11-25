@@ -2,11 +2,11 @@ from typing import Any
 
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.human import HumanDetailView
-from core.mixins import ApprovedUserContextMixin, MessageMixin
+from core.mixins import MessageMixin
 from django.views.generic import CreateView, ListView, UpdateView
 
 
-class VampireDetailView(ApprovedUserContextMixin, HumanDetailView):
+class VampireDetailView(HumanDetailView):
     model = Vampire
     template_name = "characters/vampire/vampire/detail.html"
 

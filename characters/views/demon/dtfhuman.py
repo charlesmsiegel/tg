@@ -1,7 +1,6 @@
 from characters.forms.core.limited_edit import LimitedDtFHumanEditForm
 from characters.models.demon import DtFHuman
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -14,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DtFHumanDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class DtFHumanDetailView(ViewPermissionMixin, DetailView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/detail.html"
 
@@ -93,7 +92,7 @@ class DtFHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/demon/dtfhuman/form.html"
 
 
-class DtFHumanUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class DtFHumanUpdateView(EditPermissionMixin, UpdateView):
     model = DtFHuman
     success_message = "DtF Human updated successfully."
     error_message = "Error updating DtF Human."

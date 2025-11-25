@@ -18,7 +18,6 @@ from characters.views.core.human import (
 )
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
@@ -36,7 +35,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class CtDHumanDetailView(ViewPermissionMixin, ApprovedUserContextMixin, DetailView):
+class CtDHumanDetailView(ViewPermissionMixin, DetailView):
     model = CtDHuman
     template_name = "characters/changeling/ctdhuman/detail.html"
 
@@ -98,7 +97,7 @@ class CtDHumanCreateView(MessageMixin, CreateView):
     template_name = "characters/changeling/ctdhuman/form.html"
 
 
-class CtDHumanUpdateView(EditPermissionMixin, ApprovedUserContextMixin, UpdateView):
+class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
     model = CtDHuman
     success_message = "CtD Human updated successfully."
     error_message = "Error updating CtD Human."
@@ -219,7 +218,7 @@ class CtDHumanBackgroundsView(HumanBackgroundsView):
     template_name = "characters/changeling/ctdhuman/chargen.html"
 
 
-class CtDHumanExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class CtDHumanExtrasView(SpecialUserMixin, UpdateView):
     model = CtDHuman
     fields = [
         "date_of_birth",

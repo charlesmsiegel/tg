@@ -1,7 +1,6 @@
 from characters.forms.core.limited_edit import LimitedThrallEditForm
 from characters.models.demon import Thrall
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
@@ -14,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class ThrallDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class ThrallDetailView(ViewPermissionMixin, DetailView):
     model = Thrall
     template_name = "characters/demon/thrall/detail.html"
 
@@ -96,7 +95,7 @@ class ThrallCreateView(MessageMixin, CreateView):
     template_name = "characters/demon/thrall/form.html"
 
 
-class ThrallUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class ThrallUpdateView(EditPermissionMixin, UpdateView):
     model = Thrall
     success_message = "Thrall updated successfully."
     error_message = "Error updating thrall."

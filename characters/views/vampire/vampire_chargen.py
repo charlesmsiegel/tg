@@ -22,7 +22,6 @@ from characters.views.core.human import (
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -269,7 +268,7 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class VampireExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class VampireExtrasView(SpecialUserMixin, UpdateView):
     model = Vampire
     fields = [
         "age",

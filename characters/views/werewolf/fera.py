@@ -30,7 +30,6 @@ from characters.views.core.human import (
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -43,12 +42,12 @@ from django.views.generic import DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class FeraDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class FeraDetailView(ViewPermissionMixin, DetailView):
     model = Fera
     template_name = "characters/werewolf/fera/detail.html"
 
 
-class FeraUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class FeraUpdateView(EditPermissionMixin, UpdateView):
     model = Fera
     success_message = "Fera updated successfully."
     error_message = "Error updating fera."
@@ -532,7 +531,7 @@ class FeraGiftsView(SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class FeraHistoryView(SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "first_change",
@@ -582,7 +581,7 @@ class FeraHistoryView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
         return super().form_valid(form)
 
 
-class FeraExtrasView(ApprovedUserContextMixin, SpecialUserMixin, UpdateView):
+class FeraExtrasView(SpecialUserMixin, UpdateView):
     model = Fera
     fields = [
         "date_of_birth",
