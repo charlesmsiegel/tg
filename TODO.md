@@ -9,25 +9,6 @@ This document tracks remaining work across the codebase with context about what 
 
 ---
 
-## 🔴 High Priority
-
-### Security
-
-1. ⚠️ **Address dependency vulnerabilities**
-   - **Status**: Security pins applied, periodic review needed
-   - **What's done**:
-     - setuptools>=78.1.1 pinned (fixes CVE-2024-6345, CVE-2025-47273)
-     - cryptography>=46.0.0 pinned (latest security version)
-     - bleach updated to 6.3.0 (latest)
-     - Django 5.2.8 (latest 5.x)
-   - **What remains**:
-     1. Check https://github.com/charlesmsiegel/tg/security/dependabot periodically
-     2. Run `pip-audit` or GitHub's security scanning for new vulnerabilities
-     3. Run `pip install -r requirements.txt && python manage.py test` after updates
-   - **Independence**: Standalone task, periodic maintenance
-
----
-
 ## 🟢 Low Priority - Feature Completeness
 
 ### Mummy Gameline Implementation (CRITICAL GAP)
@@ -150,11 +131,10 @@ These models work but could have better user-facing views:
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~12 items
+**Total Open Items**: ~11 items
 
 **By Priority**:
-- 🔴 High Priority: 1 item (ongoing security monitoring)
-- 🟢 Low Priority: ~6 items (feature completeness - Mummy, Hunter gamelines)
+- 🟢 Low Priority: ~5 items (feature completeness - Mummy, Hunter, Dross, Game enhancements)
 - 🔵 Deployment: 6 items (staging + production)
 - 📚 Long-term: 2 items (process improvements)
 
@@ -163,6 +143,9 @@ These models work but could have better user-facing views:
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.3)
+- **Address dependency vulnerabilities** - Security pins applied: setuptools>=78.1.1 (CVE-2024-6345, CVE-2025-47273), cryptography>=46.0.0, bleach 6.3.0, Django 5.2.8. Periodic monitoring via Dependabot.
 
 ### Removed 2025-11-25 (v7.2)
 - **Add caching configuration** - Development uses LocMemCache, production uses Redis with full configuration in `production.py`, documentation added to `docs/deployment/README.md`
@@ -202,4 +185,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.2 (Resolved caching configuration)
+**Version**: 7.3 (Resolved dependency vulnerabilities - security pins applied)
