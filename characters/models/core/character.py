@@ -85,8 +85,8 @@ class CharacterQuerySet(ModelQuerySet):
         return self.filter(id__in=matching_ids)
 
 
-# Create CharacterManager from the QuerySet to expose all QuerySet methods on the manager
-CharacterManager = PolymorphicManager.from_queryset(CharacterQuerySet)
+# Create CharacterManager from ModelManager to inherit polymorphic_ctype optimization
+CharacterManager = ModelManager.from_queryset(CharacterQuerySet)
 
 
 class CharacterModel(Model):

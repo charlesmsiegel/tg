@@ -186,16 +186,17 @@ This document tracks remaining work across the codebase with context about what 
    - **Context**: Signals decouple character from organization-specific logic
    - **Independence**: Standalone task - can be done independently
 
-8. **Simplify Custom QuerySet Initialization**
-   - **Files**: `core/models.py:25-34`
+8. **✅ Simplify Custom QuerySet Initialization** - COMPLETED
+   - **Files**: `core/models.py`, `characters/models/core/character.py`, `items/models/core/item.py`, `locations/models/core/location.py`
    - **Impact**: MEDIUM - Fragile internal query manipulation
-   - **Issue**: `ModelQuerySet.__init__()` manually manipulates internal `query.select_related` dictionary
-   - **Action**:
-     1. Test if removing custom __init__() breaks anything (run full test suite)
-     2. If tests pass, remove __init__() override and rely on polymorphic library
-     3. If tests fail, refactor to use standard queryset methods instead of internal manipulation
-   - **Context**: Manipulating `query._` internals is fragile and may break with Django updates
-   - **Independence**: Standalone task - can be done independently with thorough testing
+   - **Status**: ✅ **COMPLETED** - Refactored to use Django's standard manager pattern
+   - **Changes Made**:
+     1. Removed fragile `ModelQuerySet.__init__()` that manipulated `query.select_related` directly
+     2. Converted `ModelManager` from simple assignment to proper class with `get_queryset()` override
+     3. Updated CharacterManager, ItemModelManager, and LocationModelManager to inherit from ModelManager
+     4. Uses Django's standard `select_related('polymorphic_ctype')` in manager's `get_queryset()`
+   - **Context**: Now uses Django best practices instead of internal query manipulation
+   - **Independence**: Standalone task - completed independently
 
 9. **Simplify filter_queryset_for_user Implementation**
    - **Files**: `core/permissions.py:310-381`

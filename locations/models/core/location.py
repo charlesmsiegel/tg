@@ -15,8 +15,8 @@ class LocationQuerySet(ModelQuerySet):
         return self.filter(parent=None)
 
 
-# Create LocationModelManager from the QuerySet to expose all QuerySet methods on the manager
-LocationModelManager = PolymorphicManager.from_queryset(LocationQuerySet)
+# Create LocationModelManager from ModelManager to inherit polymorphic_ctype optimization
+LocationModelManager = ModelManager.from_queryset(LocationQuerySet)
 
 
 class LocationModel(Model):

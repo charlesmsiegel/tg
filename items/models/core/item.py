@@ -13,8 +13,8 @@ class ItemQuerySet(ModelQuerySet):
     pass
 
 
-# Create ItemModelManager from the QuerySet to expose all QuerySet methods on the manager
-ItemModelManager = PolymorphicManager.from_queryset(ItemQuerySet)
+# Create ItemModelManager from ModelManager to inherit polymorphic_ctype optimization
+ItemModelManager = ModelManager.from_queryset(ItemQuerySet)
 
 
 class ItemModel(Model):
