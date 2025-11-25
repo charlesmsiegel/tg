@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from items.models.changeling import Treasure
+from items.models.changeling import Dross, Treasure
 
 
 # Treasure Views
@@ -46,3 +46,61 @@ class TreasureListView(ListView):
     model = Treasure
     ordering = ["name"]
     template_name = "items/changeling/treasure/list.html"
+
+
+# Dross Views
+class DrossDetailView(DetailView):
+    model = Dross
+    template_name = "items/changeling/dross/detail.html"
+
+
+class DrossCreateView(CreateView):
+    model = Dross
+    fields = [
+        "name",
+        "description",
+        "quality",
+        "glamour_value",
+        "physical_form",
+        "color",
+        "source",
+        "is_stable",
+        "decay_rate",
+        "resonance",
+        "special_effects",
+        "restricted_to",
+        "is_consumable",
+        "recharge_method",
+        "container_description",
+        "estimated_value",
+    ]
+    template_name = "items/changeling/dross/form.html"
+
+
+class DrossUpdateView(UpdateView):
+    model = Dross
+    fields = [
+        "name",
+        "description",
+        "quality",
+        "glamour_value",
+        "physical_form",
+        "color",
+        "source",
+        "is_stable",
+        "decay_rate",
+        "resonance",
+        "special_effects",
+        "restricted_to",
+        "is_consumable",
+        "recharge_method",
+        "container_description",
+        "estimated_value",
+    ]
+    template_name = "items/changeling/dross/form.html"
+
+
+class DrossListView(ListView):
+    model = Dross
+    ordering = ["name"]
+    template_name = "items/changeling/dross/list.html"
