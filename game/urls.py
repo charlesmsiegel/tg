@@ -27,6 +27,11 @@ weekly_xp_request_urls = [
         name="create",
     ),
     path("<pk>/approve/", views.WeeklyXPRequestApproveView.as_view(), name="approve"),
+    path(
+        "batch-approve/",
+        views.WeeklyXPRequestBatchApproveView.as_view(),
+        name="batch_approve",
+    ),
 ]
 
 story_xp_request_urls = [

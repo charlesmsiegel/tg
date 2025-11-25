@@ -90,39 +90,87 @@
                 {% if is_st %}
                     <!-- Pending Requests -->
                     {% if pending_requests %}
-                        <h6 style="font-weight: 600; color: var(--theme-text-secondary); margin-bottom: 16px;">Pending Requests ({{ pending_requests.count }})</h6>
-                        <div class="tg-table-responsive mb-4">
-                            <table class="tg-table">
-                                <thead>
-                                    <tr>
-                                        <th>Character</th>
-                                        <th>Player</th>
-                                        <th>Finishing</th>
-                                        <th>Learning</th>
-                                        <th>RP</th>
-                                        <th>Focus</th>
-                                        <th>Standing Out</th>
-                                        <th>Total XP</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for request in pending_requests %}
-                                        <tr>
-                                            <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
-                                            <td>{{ request.character.owner.username }}</td>
-                                            <td>{% if request.finishing %}✓{% endif %}</td>
-                                            <td>{% if request.learning %}✓{% endif %}</td>
-                                            <td>{% if request.rp %}✓{% endif %}</td>
-                                            <td>{% if request.focus %}✓{% endif %}</td>
-                                            <td>{% if request.standingout %}✓{% endif %}</td>
-                                            <td>{{ request.total_xp }}</td>
-                                            <td><a href="{% url 'game:weekly_xp_request:detail' request.pk %}" class="btn btn-sm btn-primary">Review</a></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary); margin-bottom: 0;">Pending Requests ({{ pending_requests.count }})</h6>
                         </div>
+                        <form method="post" action="{% url 'game:weekly_xp_request:batch_approve' %}" id="batch-approve-form">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="select-all-btn">Select All</button>
+                                <button type="submit" class="btn btn-sm btn-success" id="batch-approve-btn" disabled>
+                                    Approve Selected (<span id="selected-count">0</span>)
+                                </button>
+                            </div>
+                            <div class="tg-table-responsive mb-4">
+                                <table class="tg-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;">
+                                                <input type="checkbox" id="select-all-checkbox" title="Select all">
+                                            </th>
+                                            <th>Character</th>
+                                            <th>Player</th>
+                                            <th>Finishing</th>
+                                            <th>Learning</th>
+                                            <th>RP</th>
+                                            <th>Focus</th>
+                                            <th>Standing Out</th>
+                                            <th>Total XP</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request in pending_requests %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="request_ids" value="{{ request.pk }}" class="request-checkbox">
+                                                </td>
+                                                <td><a href="{{ request.character.get_absolute_url }}">{{ request.character.name }}</a></td>
+                                                <td>{{ request.character.owner.username }}</td>
+                                                <td>{% if request.finishing %}✓{% endif %}</td>
+                                                <td>{% if request.learning %}✓{% endif %}</td>
+                                                <td>{% if request.rp %}✓{% endif %}</td>
+                                                <td>{% if request.focus %}✓{% endif %}</td>
+                                                <td>{% if request.standingout %}✓{% endif %}</td>
+                                                <td>{{ request.total_xp }}</td>
+                                                <td><a href="{% url 'game:weekly_xp_request:detail' request.pk %}" class="btn btn-sm btn-primary">Review</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const selectAllCheckbox = document.getElementById('select-all-checkbox');
+                                const selectAllBtn = document.getElementById('select-all-btn');
+                                const batchApproveBtn = document.getElementById('batch-approve-btn');
+                                const selectedCountSpan = document.getElementById('selected-count');
+                                const checkboxes = document.querySelectorAll('.request-checkbox');
+
+                                function updateSelectedCount() {
+                                    const checked = document.querySelectorAll('.request-checkbox:checked').length;
+                                    selectedCountSpan.textContent = checked;
+                                    batchApproveBtn.disabled = checked === 0;
+                                    selectAllCheckbox.checked = checked === checkboxes.length && checkboxes.length > 0;
+                                    selectAllCheckbox.indeterminate = checked > 0 && checked < checkboxes.length;
+                                }
+
+                                selectAllCheckbox.addEventListener('change', function() {
+                                    checkboxes.forEach(cb => cb.checked = this.checked);
+                                    updateSelectedCount();
+                                });
+
+                                selectAllBtn.addEventListener('click', function() {
+                                    const allChecked = document.querySelectorAll('.request-checkbox:checked').length === checkboxes.length;
+                                    checkboxes.forEach(cb => cb.checked = !allChecked);
+                                    updateSelectedCount();
+                                    this.textContent = allChecked ? 'Select All' : 'Deselect All';
+                                });
+
+                                checkboxes.forEach(cb => cb.addEventListener('change', updateSelectedCount));
+                            });
+                        </script>
                     {% endif %}
 
                     <!-- Approved Requests -->

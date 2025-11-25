@@ -597,6 +597,58 @@ class WeeklyXPRequestApproveView(StorytellerRequiredMixin, View):
             return redirect("game:weekly_xp_request:detail", pk=xp_request.pk)
 
 
+class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
+    """View for STs to batch approve multiple weekly XP requests at once."""
+
+    def post(self, request, *args, **kwargs):
+        # Get list of request IDs from POST data
+        request_ids = request.POST.getlist("request_ids")
+
+        if not request_ids:
+            messages.warning(request, "No requests selected for approval.")
+            return redirect(request.META.get("HTTP_REFERER", "game:week:list"))
+
+        # Fetch all pending requests
+        pending_requests = WeeklyXPRequest.objects.filter(
+            pk__in=request_ids, approved=False
+        ).select_related("character", "week")
+
+        if not pending_requests.exists():
+            messages.warning(request, "No pending requests found to approve.")
+            return redirect(request.META.get("HTTP_REFERER", "game:week:list"))
+
+        # Track results
+        approved_count = 0
+        total_xp = 0
+        week_pk = None
+
+        for xp_request in pending_requests:
+            # Approve the request as-is (using submitted XP categories)
+            xp_request.approved = True
+
+            # Calculate and award XP
+            xp_increase = xp_request.total_xp()
+            xp_request.character.xp += xp_increase
+            xp_request.character.save()
+            xp_request.save()
+
+            approved_count += 1
+            total_xp += xp_increase
+            week_pk = xp_request.week.pk
+
+        if approved_count > 0:
+            messages.success(
+                request,
+                f"Successfully approved {approved_count} XP request{'s' if approved_count != 1 else ''}. "
+                f"Total {total_xp} XP awarded.",
+            )
+
+        # Redirect back to week detail if we have the week pk
+        if week_pk:
+            return redirect("game:week:detail", pk=week_pk)
+        return redirect("game:week:list")
+
+
 # StoryXPRequest Views
 class StoryXPRequestListView(LoginRequiredMixin, ListView):
     model = StoryXPRequest

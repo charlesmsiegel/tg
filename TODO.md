@@ -53,14 +53,6 @@ This document tracks remaining work across the codebase with context about what 
 3. ❌ **Hunter items** - HunterGear, HunterRelic need views
 4. ❌ **Hunter locations** - Safehouse, HuntingGround need views
 
-### Game App - Enhancement Opportunities
-
-These models work but could have better user-facing views:
-
-1. ⚠️ **WeeklyXPRequest / StoryXPRequest**
-   - **Done**: Basic CRUD exists
-   - **Remains**: Enhanced approval workflow UI, batch approval for STs
-
 ---
 
 ## 🔵 Deployment & Environment
@@ -108,10 +100,10 @@ These models work but could have better user-facing views:
 
 ## 📊 Summary Statistics
 
-**Total Open Items**: ~7 items
+**Total Open Items**: ~8 items
 
 **By Priority**:
-- 🟢 Low Priority: ~3 items (feature completeness - Mummy, Hunter, XP approval enhancements)
+- 🟢 Low Priority: ~2 items (feature completeness - Mummy, Hunter gamelines)
 - 🔵 Deployment: 6 items (staging + production)
 
 ---
@@ -119,6 +111,9 @@ These models work but could have better user-facing views:
 ## ✅ Recently Completed (removed from list)
 
 The following items were verified as complete and removed:
+
+### Removed 2025-11-25 (v7.7)
+- **WeeklyXPRequest batch approval** - Added `WeeklyXPRequestBatchApproveView` for STs to approve multiple XP requests at once. Updated week detail template with checkbox selection, "Select All" functionality, and batch approve button with live count display.
 
 ### Removed 2025-11-25 (v7.6)
 - **Journal/JournalEntry enhancements** - Enhanced JournalListView with pagination, filtering (all/mine/ST chronicles), entry counts, and latest entry dates. Improved detail template with better form layout, help text, placeholders, entry timestamps, and navigation links. Added `get_item` and `add_attr` template filters.
@@ -170,4 +165,4 @@ The following items were verified as complete and removed:
 ---
 
 **Last Updated**: 2025-11-25
-**Version**: 7.6 (Enhanced Journal list and entry creation UI)
+**Version**: 7.7 (Added XP batch approval for STs)
