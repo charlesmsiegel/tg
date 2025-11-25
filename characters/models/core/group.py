@@ -7,6 +7,7 @@ from characters.models.core.background_block import (
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from core.models import Model
+from core.utils import CharacterOrganizationRegistry
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
@@ -53,3 +54,19 @@ class Group(Model):
                 )[0]
                 p.rating = d[bg][note]
                 p.save()
+
+    @staticmethod
+    def cleanup_character_organizations(character):
+        """Remove character from all Group organizational structures."""
+        # Remove from Group memberships
+        for group in Group.objects.filter(members=character):
+            group.members.remove(character)
+
+        # Remove from Group leadership positions
+        for group in Group.objects.filter(leader=character):
+            group.leader = None
+            group.save()
+
+
+# Register the cleanup handler with the registry
+CharacterOrganizationRegistry.register(Group.cleanup_character_organizations)
