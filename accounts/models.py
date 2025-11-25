@@ -1,6 +1,7 @@
 from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
+from core.constants import HeadingChoices, ThemeChoices
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -33,37 +34,15 @@ class Profile(models.Model):
 
     preferred_heading = models.CharField(
         max_length=30,
-        choices=zip(
-            [
-                "wod_heading",
-                "vtm_heading",
-                "wta_heading",
-                "mta_heading",
-                "ctd_heading",
-                "wto_heading",
-            ],
-            [
-                "World of Darkness",
-                "Vampire: the Masquerade",
-                "Werewolf: the Apocalypse",
-                "Mage: the Ascension",
-                "Changeling: the Dreaming",
-                "Wraith: the Oblivion",
-            ],
-        ),
-        default="wod_heading",
+        choices=HeadingChoices.CHOICES,
+        default=HeadingChoices.WOD,
         help_text="Choose the game system font style for headings",
     )
 
-    theme_list = ["light", "dark"]
-
     theme = models.CharField(
         max_length=100,
-        choices=zip(
-            theme_list,
-            [x.replace("_", " ").title() for x in theme_list],
-        ),
-        default="light",
+        choices=ThemeChoices.CHOICES,
+        default=ThemeChoices.LIGHT,
         help_text="Choose a color scheme",
     )
 

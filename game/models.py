@@ -1,6 +1,12 @@
 import re
 from datetime import datetime, timedelta
 
+from core.constants import (
+    GameLine,
+    HeadingChoices,
+    ObjectTypeChoices,
+    XPApprovalStatus,
+)
 from core.utils import dice
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -17,24 +23,12 @@ class ObjectType(models.Model):
     type = models.CharField(
         default="",
         max_length=100,
-        choices=[
-            ("char", "Character"),
-            ("loc", "Location"),
-            ("obj", "Item"),
-        ],
+        choices=ObjectTypeChoices.CHOICES,
     )
     gameline = models.CharField(
         default="",
         max_length=100,
-        choices=[
-            ("wod", "World of Darkness"),
-            ("vtm", "Vampire: the Masquerade"),
-            ("wta", "Werewolf: the Apocalypse"),
-            ("mta", "Mage: the Ascension"),
-            ("wto", "Wraith: the Oblivion"),
-            ("ctd", "Changeling: the Dreaming"),
-            ("dtf", "Demon: the Fallen"),
-        ],
+        choices=GameLine.CHOICES,
     )
 
     class Meta:
@@ -161,15 +155,7 @@ class Chronicle(models.Model):
     headings = models.CharField(
         default="",
         max_length=100,
-        choices=[
-            ("vtm_heading", "Vampire: the Masquerade"),
-            ("wta_heading", "Werewolf: the Apocalypse"),
-            ("mta_heading", "Mage: the Ascension"),
-            ("ctd_heading", "Changeling: the Dreaming"),
-            ("wto_heading", "Wraith: the Oblivion"),
-            ("dtf_heading", "Demon: the Fallen"),
-            ("wod_heading", "World of Darkness"),
-        ],
+        choices=HeadingChoices.CHOICES,
     )
 
     allowed_objects = models.ManyToManyField(ObjectType, blank=True)
@@ -1140,12 +1126,8 @@ class XPSpendingRequest(models.Model):
     cost = models.IntegerField(help_text="XP cost")
     approved = models.CharField(
         max_length=20,
-        choices=[
-            ("Pending", "Pending"),
-            ("Approved", "Approved"),
-            ("Denied", "Denied"),
-        ],
-        default="Pending",
+        choices=XPApprovalStatus.CHOICES,
+        default=XPApprovalStatus.PENDING,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     approved_at = models.DateTimeField(null=True, blank=True)

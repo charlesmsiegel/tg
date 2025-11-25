@@ -1,3 +1,4 @@
+from core.constants import CharacterStatus, GameLine, ImageStatus
 from core.utils import filepath
 from django.apps import apps
 from django.conf import settings
@@ -315,16 +316,11 @@ class Model(PermissionMixin, PolymorphicModel):
 
     objects = ModelManager()
 
-    status_keys = ["Un", "Sub", "App", "Ret", "Dec"]
-    statuses = [
-        "Unfinished",
-        "Submitted",
-        "Approved",
-        "Retired",
-        "Deceased",
-    ]
     status = models.CharField(
-        max_length=3, choices=zip(status_keys, statuses), default="Un", db_index=True
+        max_length=3,
+        choices=CharacterStatus.CHOICES,
+        default=CharacterStatus.UNAPPROVED,
+        db_index=True,
     )
     display = models.BooleanField(default=True)
     sources = models.ManyToManyField(BookReference, blank=True)
@@ -333,8 +329,8 @@ class Model(PermissionMixin, PolymorphicModel):
     image = models.ImageField(upload_to=filepath, blank=True, null=True)
     image_status = models.CharField(
         max_length=3,
-        choices=zip(["sub", "app"], ["Submitted", "Approved"]),
-        default="sub",
+        choices=ImageStatus.CHOICES,
+        default=ImageStatus.SUBMITTED,
     )
     freebies_approved = models.BooleanField(default=False)
 
@@ -619,16 +615,8 @@ class CharacterTemplate(Model):
     # Template-specific fields
     gameline = models.CharField(
         max_length=3,
-        choices=[
-            ("wod", "World of Darkness"),
-            ("vtm", "Vampire: the Masquerade"),
-            ("wta", "Werewolf: the Apocalypse"),
-            ("mta", "Mage: the Ascension"),
-            ("wto", "Wraith: the Oblivion"),
-            ("ctd", "Changeling: the Dreaming"),
-            ("dtf", "Demon: the Fallen"),
-        ],
-        default="wod",
+        choices=GameLine.CHOICES,
+        default=GameLine.WOD,
     )
     character_type = models.CharField(
         max_length=50,
