@@ -14,7 +14,7 @@ coverage==7.6.0
 djlint==1.36.4
 selenium==4.27.1
 numpy==2.2.2
-bleach==6.2.0
+bleach==6.3.0
 python-dotenv==1.0.1
 # Security: Pin setuptools to fix CVE-2024-6345 and CVE-2025-47273
 setuptools>=78.1.1
