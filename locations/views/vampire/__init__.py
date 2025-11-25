@@ -1,3 +1,7 @@
+from typing import Any
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.vampire import (
     Barrens,
@@ -7,15 +11,23 @@ from locations.models.vampire import (
     Rack,
     TremereChantry,
 )
+from locations.models.vampire.haven import HavenMeritFlawRating
 
 
 # Haven Views
-class HavenDetailView(DetailView):
+class HavenDetailView(ViewPermissionMixin, DetailView):
     model = Haven
     template_name = "locations/vampire/haven/detail.html"
 
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["merits_and_flaws"] = HavenMeritFlawRating.objects.filter(
+            haven=self.object
+        ).order_by("mf__name")
+        return context
 
-class HavenCreateView(CreateView):
+
+class HavenCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Haven
     fields = [
         "name",
@@ -31,9 +43,11 @@ class HavenCreateView(CreateView):
         "has_workshop",
     ]
     template_name = "locations/vampire/haven/form.html"
+    success_message = "Haven '{name}' created successfully!"
+    error_message = "Failed to create haven. Please correct the errors below."
 
 
-class HavenUpdateView(UpdateView):
+class HavenUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Haven
     fields = [
         "name",
@@ -49,6 +63,8 @@ class HavenUpdateView(UpdateView):
         "has_workshop",
     ]
     template_name = "locations/vampire/haven/form.html"
+    success_message = "Haven '{name}' updated successfully!"
+    error_message = "Failed to update haven. Please correct the errors below."
 
 
 class HavenListView(ListView):
@@ -58,12 +74,12 @@ class HavenListView(ListView):
 
 
 # Domain Views
-class DomainDetailView(DetailView):
+class DomainDetailView(ViewPermissionMixin, DetailView):
     model = Domain
     template_name = "locations/vampire/domain/detail.html"
 
 
-class DomainCreateView(CreateView):
+class DomainCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Domain
     fields = [
         "name",
@@ -78,9 +94,11 @@ class DomainCreateView(CreateView):
         "domain_type",
     ]
     template_name = "locations/vampire/domain/form.html"
+    success_message = "Domain '{name}' created successfully!"
+    error_message = "Failed to create domain. Please correct the errors below."
 
 
-class DomainUpdateView(UpdateView):
+class DomainUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Domain
     fields = [
         "name",
@@ -95,6 +113,8 @@ class DomainUpdateView(UpdateView):
         "domain_type",
     ]
     template_name = "locations/vampire/domain/form.html"
+    success_message = "Domain '{name}' updated successfully!"
+    error_message = "Failed to update domain. Please correct the errors below."
 
 
 class DomainListView(ListView):
@@ -104,12 +124,12 @@ class DomainListView(ListView):
 
 
 # Elysium Views
-class ElysiumDetailView(DetailView):
+class ElysiumDetailView(ViewPermissionMixin, DetailView):
     model = Elysium
     template_name = "locations/vampire/elysium/detail.html"
 
 
-class ElysiumCreateView(CreateView):
+class ElysiumCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Elysium
     fields = [
         "name",
@@ -126,9 +146,11 @@ class ElysiumCreateView(CreateView):
         "is_court",
     ]
     template_name = "locations/vampire/elysium/form.html"
+    success_message = "Elysium '{name}' created successfully!"
+    error_message = "Failed to create elysium. Please correct the errors below."
 
 
-class ElysiumUpdateView(UpdateView):
+class ElysiumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Elysium
     fields = [
         "name",
@@ -145,6 +167,8 @@ class ElysiumUpdateView(UpdateView):
         "is_court",
     ]
     template_name = "locations/vampire/elysium/form.html"
+    success_message = "Elysium '{name}' updated successfully!"
+    error_message = "Failed to update elysium. Please correct the errors below."
 
 
 class ElysiumListView(ListView):
@@ -154,12 +178,12 @@ class ElysiumListView(ListView):
 
 
 # Rack Views
-class RackDetailView(DetailView):
+class RackDetailView(ViewPermissionMixin, DetailView):
     model = Rack
     template_name = "locations/vampire/rack/detail.html"
 
 
-class RackCreateView(CreateView):
+class RackCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Rack
     fields = [
         "name",
@@ -176,9 +200,11 @@ class RackCreateView(CreateView):
         "masquerade_risk",
     ]
     template_name = "locations/vampire/rack/form.html"
+    success_message = "Rack '{name}' created successfully!"
+    error_message = "Failed to create rack. Please correct the errors below."
 
 
-class RackUpdateView(UpdateView):
+class RackUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Rack
     fields = [
         "name",
@@ -195,6 +221,8 @@ class RackUpdateView(UpdateView):
         "masquerade_risk",
     ]
     template_name = "locations/vampire/rack/form.html"
+    success_message = "Rack '{name}' updated successfully!"
+    error_message = "Failed to update rack. Please correct the errors below."
 
 
 class RackListView(ListView):
