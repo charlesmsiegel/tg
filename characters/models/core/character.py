@@ -162,8 +162,13 @@ class Character(CharacterModel):
                 name="characters_character_xp_non_negative",
                 violation_error_message="XP cannot be negative",
             ),
-            # Note: status validation is handled in clean() method since status
-            # is inherited from Model and constraints can't reference parent fields
+            # Status constraint added via migration (0001_initial.py)
+            # Valid status values: Un, Sub, App, Ret, Dec
+            CheckConstraint(
+                check=Q(status__in=['Un', 'Sub', 'App', 'Ret', 'Dec']),
+                name='characters_character_valid_status',
+                violation_error_message="Status must be one of: Un, Sub, App, Ret, Dec",
+            ),
         ]
 
     # Valid status transitions
@@ -176,17 +181,18 @@ class Character(CharacterModel):
     }
 
     def clean(self):
-        """Validate character data before saving."""
-        super().clean()
+        """
+        Validate character data before saving.
 
-        # Validate status is in valid choices
-        valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]
-        if self.status not in valid_statuses:
-            raise ValidationError(
-                {
-                    "status": f"Invalid status '{self.status}'. Must be one of: {', '.join(valid_statuses)}"
-                }
-            )
+        Status value validation is handled by:
+        - Django field choices (soft validation)
+        - Database constraint (hard validation via migration)
+
+        This method focuses on:
+        - Status transition validation (state machine logic)
+        - XP balance validation
+        """
+        super().clean()
 
         # Validate status transition if character already exists
         if self.pk:
@@ -197,7 +203,7 @@ class Character(CharacterModel):
             except Character.DoesNotExist:
                 pass
 
-        # Validate XP balance
+        # Validate XP balance (redundant with DB constraint, but provides clearer error)
         if self.xp < 0:
             raise ValidationError({"xp": "XP cannot be negative"})
 
@@ -214,14 +220,20 @@ class Character(CharacterModel):
             )
 
     def save(self, *args, **kwargs):
+        """
+        Save the character.
+
+        Args:
+            skip_validation: If True, skip model validation (full_clean). Use with caution.
+                            This is useful for data migrations or bulk operations where you
+                            need to bypass validation temporarily.
+
+        Raises:
+            ValidationError: If validation fails (unless skip_validation=True)
+        """
         # Run validation unless explicitly skipped
         if not kwargs.pop("skip_validation", False):
-            try:
-                self.full_clean()
-            except ValidationError:
-                # Allow save to proceed if validation fails (maintain backward compatibility)
-                # In production, you may want to raise the error instead
-                pass
+            self.full_clean()
 
         # Check if this is an existing character whose status is changing to Ret or Dec
         if self.pk:
