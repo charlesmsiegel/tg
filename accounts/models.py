@@ -306,11 +306,12 @@ class Profile(models.Model):
     def xp_spend_requests(self):
         """Get all characters waiting for XP spend approval.
 
-        Returns a list of characters that have pending XP spending requests
+        Returns a queryset of characters that have pending XP spending requests
         awaiting storyteller approval.
+
+        UPDATED: Optimized to use a single database query instead of N+1 queries.
         """
-        chars = Character.objects.all()
-        return [x for x in chars if x.waiting_for_xp_spend()]
+        return Character.objects.filter(xp_spendings__approved="Pending").distinct()
 
     def unread_scenes(self):
         return Scene.objects.filter(

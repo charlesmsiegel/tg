@@ -113,8 +113,7 @@ class Character(CharacterModel):
 
     notes = models.TextField(default="", blank=True, null=True)
     xp = models.IntegerField(default=0, db_index=True)
-    # DEPRECATED: Use XPSpendingRequest model instead (see JSONFIELD_MIGRATION_GUIDE.md)
-    spent_xp = models.JSONField(default=list)
+    # spent_xp field removed - now using XPSpendingRequest model (game.models.XPSpendingRequest)
 
     class Meta:
         verbose_name = "Character"
@@ -291,22 +290,12 @@ class Character(CharacterModel):
     def get_creation_url(cls):
         return reverse("characters:create:character")
 
-    def xp_spend_record(self, trait, trait_type, value, cost=None):
-        if cost is None:
-            cost = self.xp_cost(trait_type, value)
-        return {
-            "index": f"{self.id}_{trait_type}_{trait}_{value}".replace(" ", "-"),
-            "trait": trait,
-            "value": value,
-            "cost": cost,
-            "approved": "Pending",
-        }
-
     def waiting_for_xp_spend(self):
-        for d in self.spent_xp:
-            if d["approved"] == "Pending":
-                return True
-        return False
+        """Check if character has pending XP requests.
+
+        UPDATED: Now uses XPSpendingRequest model instead of JSONField.
+        """
+        return self.xp_spendings.filter(approved="Pending").exists()
 
     def add_xp(self, amount):
         """Add XP to the character.
@@ -317,36 +306,29 @@ class Character(CharacterModel):
         self.xp += amount
         self.save()
 
-    def add_to_spend(self, trait, value, cost):
-        """Add an XP expenditure record to the spent_xp list.
-
-        Args:
-            trait: Name of the trait being increased (string)
-            value: New value of the trait after spending
-            cost: XP cost of the expenditure
-        """
-        record = self.xp_spend_record(trait, trait, value, cost)
-        self.spent_xp.append(record)
-        self.save()
-
     @transaction.atomic
-    def spend_xp(self, trait_name, trait_display, cost, category):
+    def spend_xp(self, trait_name, trait_display, cost, category, trait_value=0):
         """
-        Atomically spend XP and record the transaction.
+        Atomically spend XP and create a spending request.
         Rolls back entirely if any step fails.
+
+        UPDATED: Now creates XPSpendingRequest instead of using JSONField.
 
         Args:
             trait_name: The property name of the trait (e.g., 'alertness')
             trait_display: The display name of the trait (e.g., 'Alertness')
             cost: The XP cost
             category: The category of spending (e.g., 'abilities', 'attributes')
+            trait_value: The new value after spending (optional)
 
         Returns:
-            dict: The spending record that was created
+            XPSpendingRequest: The spending request that was created
 
         Raises:
             ValidationError: If insufficient XP or invalid parameters
         """
+        from game.models import XPSpendingRequest
+
         # Use select_for_update to lock the row and prevent race conditions
         char = Character.objects.select_for_update().get(pk=self.pk)
 
@@ -357,55 +339,63 @@ class Character(CharacterModel):
 
         # Deduct XP
         char.xp -= cost
+        char.save(update_fields=["xp"])
 
-        # Record spending
-        record = {
-            "index": len(char.spent_xp),
-            "trait": trait_display,
-            "value": trait_name,
-            "cost": cost,
-            "category": category,
-            "approved": "Pending",
-            "timestamp": timezone.now().isoformat(),
-        }
-        char.spent_xp.append(record)
+        # Create spending request
+        request = XPSpendingRequest.objects.create(
+            character=char,
+            trait_name=trait_display,
+            trait_type=category,
+            trait_value=trait_value,
+            cost=cost,
+            approved="Pending",
+        )
 
-        char.save(update_fields=["xp", "spent_xp"])
-        return record
+        return request
 
     @transaction.atomic
-    def approve_xp_spend(self, spend_index, trait_property_name, new_value):
+    def approve_xp_spend(self, request_id, trait_property_name, new_value, approver):
         """
         Atomically approve XP spend and apply trait increase.
 
+        UPDATED: Now uses XPSpendingRequest model instead of JSONField.
+
         Args:
-            spend_index: Index in the spent_xp array
+            request_id: ID of the XPSpendingRequest
             trait_property_name: The property name to update (e.g., 'alertness')
             new_value: The new value for the trait
+            approver: User who is approving the request
 
         Raises:
-            ValidationError: If spend_index invalid or already processed
+            ValidationError: If request invalid or already processed
         """
+        from django.utils import timezone
+        from game.models import XPSpendingRequest
+
         char = Character.objects.select_for_update().get(pk=self.pk)
 
-        if spend_index >= len(char.spent_xp):
-            raise ValidationError("Invalid spend index", code="invalid_index")
+        try:
+            request = char.xp_spendings.select_for_update().get(id=request_id)
+        except XPSpendingRequest.DoesNotExist:
+            raise ValidationError("Invalid XP spending request", code="invalid_request")
 
-        if char.spent_xp[spend_index]["approved"] != "Pending":
+        if request.approved != "Pending":
             raise ValidationError(
-                f"XP spend already processed: {char.spent_xp[spend_index]['approved']}",
+                f"XP spend already processed: {request.approved}",
                 code="already_processed",
             )
 
         # Update approval status
-        char.spent_xp[spend_index]["approved"] = "Approved"
-        char.spent_xp[spend_index]["approved_at"] = timezone.now().isoformat()
+        request.approved = "Approved"
+        request.approved_by = approver
+        request.approved_at = timezone.now()
+        request.save()
 
         # Apply trait increase
         setattr(char, trait_property_name, new_value)
-
         char.save()
-        return char.spent_xp[spend_index]
+
+        return request
 
     # New model-based XP spending methods (replaces JSONField usage)
 
@@ -488,43 +478,21 @@ class Character(CharacterModel):
         request.save()
         return request
 
-    def has_pending_xp_or_model_requests(self):
-        """Check if character has ANY pending XP requests (JSONField or model-based).
+    def total_spent_xp(self):
+        """Calculate total XP spent using XPSpendingRequest model.
 
-        Helper method for gradual migration - checks both systems.
-
-        Returns:
-            bool: True if any pending requests exist
-        """
-        # Check old JSONField system
-        jsonfield_pending = any(d.get("approved") == "Pending" for d in self.spent_xp)
-
-        # Check new model system
-        model_pending = self.xp_spendings.filter(approved="Pending").exists()
-
-        return jsonfield_pending or model_pending
-
-    def total_spent_xp_combined(self):
-        """Calculate total XP spent across both JSONField and model systems.
-
-        Helper method for gradual migration.
+        UPDATED: Simplified to only check XPSpendingRequest (removed JSONField compatibility).
 
         Returns:
             int: Total XP spent
         """
-        # JSONField system
-        jsonfield_total = sum(
-            d.get("cost", 0) for d in self.spent_xp if d.get("approved") == "Approved"
-        )
-
-        # Model system
         from django.db.models import Sum
 
-        model_total = (
+        total = (
             self.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))[
                 "total"
             ]
             or 0
         )
 
-        return jsonfield_total + model_total
+        return total

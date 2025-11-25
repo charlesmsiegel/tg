@@ -390,144 +390,193 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
                     self.object.image = image_field
                     self.object.save()
                 if category not in ["Image", "Rote"]:
-                    if category == "Attribute":
-                        trait = example.name
-                        trait_type = "attribute"
-                        value = getattr(self.object, example.property_name)
-                        cost = self.object.xp_cost("attribute", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    elif category == "Ability":
-                        trait = example.name
-                        trait_type = "ability"
-                        value = getattr(self.object, example.property_name)
-                        cost = self.object.xp_cost("ability", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    elif category == "New Background":
-                        if note:
-                            trait = example.name + f" ({note})"
-                        else:
+                    # UPDATED: Removed xp_spend_record() calls, now using spend_xp() directly
+                    try:
+                        if category == "Attribute":
                             trait = example.name
-                        trait_type = "new background"
-                        value = 1
-                        cost = self.object.xp_cost("new background", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value, cost=cost
-                        )
-                    elif category == "Existing Background":
-                        trait = example.bg.name + f" ({example.note})"
-                        trait_type = "background"
-                        value = example.rating
-                        cost = self.object.xp_cost("background", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    elif category == "Willpower":
-                        trait = "Willpower"
-                        trait_type = "willpower"
-                        value = self.object.willpower
-                        cost = self.object.xp_cost("willpower", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    elif category == "MeritFlaw":
-                        current_rating = self.object.mf_rating(example)
-                        trait = example.name
-                        trait_type = "meritflaw"
-                        cost = self.object.xp_cost("meritflaw", value - current_rating)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value, cost=cost
-                        )
-                    elif category == "Sphere":
-                        trait = example.name
-                        trait_type = "sphere"
-                        value = getattr(self.object, example.property_name) + 1
-                        cost = self.object.xp_cost(
-                            self.object.sphere_to_trait_type(example.property_name),
-                            getattr(self.object, example.property_name),
-                        )
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value, cost=cost
-                        )
-                    elif category == "Rote Points":
-                        trait = "Rote Points"
-                        trait_type = "rotes"
-                        cost = self.object.xp_cost("rotes", 1)
-                        value = (
-                            self.object.total_effects() + self.object.rote_points + 3
-                        )
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value, cost=cost
-                        )
-                    elif category == "Resonance":
-                        trait = f"Resonance ({resonance})"
-                        r = Resonance.objects.get_or_create(name=resonance)[0]
-                        trait_type = "resonance"
-                        value = self.object.resonance_rating(r)
-                        cost = self.object.xp_cost("resonance", value)
-                        # Use atomic transaction method to prevent race conditions
-                        try:
-                            d = self.object.spend_xp(
-                                trait_name=trait,
+                            trait_type = "attribute"
+                            current_value = getattr(self.object, example.property_name)
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("attribute", current_value)
+                            self.object.spend_xp(
+                                trait_name=example.property_name,
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
+                                trait_value=new_value
                             )
-                        except ValidationError as e:
-                            messages.error(request, str(e))
-                            context["form"] = form
-                            form_errors = True
-                    elif category == "Tenet":
-                        trait = example.name
-                        trait_type = "tenet"
-                        cost = self.object.xp_cost("tenet", 1)
-                        d = self.object.xp_spend_record(trait, trait_type, 0, cost=cost)
-                    elif category == "Remove Tenet":
-                        trait = "Remove " + example.name
-                        trait_type = "remove tenet"
-                        cost = self.object.xp_cost(
-                            "remove tenet", self.object.other_tenets.count() + 3
-                        )
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, None, cost=cost
-                        )
-                    elif category == "Practice":
-                        trait = example.name
-                        trait_type = "practice"
-                        value = self.object.practice_rating(example)
-                        cost = self.object.xp_cost("practice", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    elif category == "Arete":
-                        trait = "Arete"
-                        trait_type = "arete"
-                        value = self.object.arete
-                        cost = self.object.xp_cost("arete", value)
-                        d = self.object.xp_spend_record(
-                            trait, trait_type, value + 1, cost=cost
-                        )
-                    if d not in self.object.spent_xp:
-                        # Use atomic transaction method to prevent race conditions
-                        try:
-                            # Recreate the record using spend_xp for atomicity
-                            d = self.object.spend_xp(
-                                trait_name=d["value"],
-                                trait_display=d["trait"],
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Ability":
+                            trait = example.name
+                            trait_type = "ability"
+                            current_value = getattr(self.object, example.property_name)
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("ability", current_value)
+                            self.object.spend_xp(
+                                trait_name=example.property_name,
+                                trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
+                                trait_value=new_value
                             )
-                        except ValidationError as e:
-                            messages.error(request, str(e))
-                            context["form"] = form
-                            form_errors = True
-                    else:
-                        form.add_error(
-                            None, "Wait for trait to be approved before buying again!"
-                        )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "New Background":
+                            if note:
+                                trait = example.name + f" ({note})"
+                            else:
+                                trait = example.name
+                            trait_type = "new-background"
+                            new_value = 1
+                            cost = self.object.xp_cost("new background", new_value)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on new background {trait}")
+                        elif category == "Existing Background":
+                            trait = example.bg.name + f" ({example.note})"
+                            trait_type = "background"
+                            current_value = example.rating
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("background", current_value)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Willpower":
+                            trait = "Willpower"
+                            trait_type = "willpower"
+                            current_value = self.object.willpower
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("willpower", current_value)
+                            self.object.spend_xp(
+                                trait_name="willpower",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on Willpower")
+                        elif category == "MeritFlaw":
+                            current_rating = self.object.mf_rating(example)
+                            trait = example.name
+                            trait_type = "meritflaw"
+                            cost = self.object.xp_cost("meritflaw", value - current_rating)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=value
+                            )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Sphere":
+                            trait = example.name
+                            trait_type = "sphere"
+                            current_value = getattr(self.object, example.property_name)
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost(
+                                self.object.sphere_to_trait_type(example.property_name),
+                                current_value,
+                            )
+                            self.object.spend_xp(
+                                trait_name=example.property_name,
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Rote Points":
+                            trait = "Rote Points"
+                            trait_type = "rotes"
+                            cost = self.object.xp_cost("rotes", 1)
+                            new_value = self.object.total_effects() + self.object.rote_points + 3
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on Rote Points")
+                        elif category == "Resonance":
+                            trait = f"Resonance ({resonance})"
+                            r = Resonance.objects.get_or_create(name=resonance)[0]
+                            trait_type = "resonance"
+                            current_value = self.object.resonance_rating(r)
+                            cost = self.object.xp_cost("resonance", current_value)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=current_value + 1
+                            )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Tenet":
+                            trait = example.name
+                            trait_type = "tenet"
+                            cost = self.object.xp_cost("tenet", 1)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=0
+                            )
+                            messages.success(request, f"Spent {cost} XP on tenet {trait}")
+                        elif category == "Remove Tenet":
+                            trait = "Remove " + example.name
+                            trait_type = "remove tenet"
+                            cost = self.object.xp_cost(
+                                "remove tenet", self.object.other_tenets.count() + 3
+                            )
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=0
+                            )
+                            messages.success(request, f"Spent {cost} XP on removing tenet")
+                        elif category == "Practice":
+                            trait = example.name
+                            trait_type = "practice"
+                            current_value = self.object.practice_rating(example)
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("practice", current_value)
+                            self.object.spend_xp(
+                                trait_name="",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on {trait}")
+                        elif category == "Arete":
+                            trait = "Arete"
+                            trait_type = "arete"
+                            current_value = self.object.arete
+                            new_value = current_value + 1
+                            cost = self.object.xp_cost("arete", current_value)
+                            self.object.spend_xp(
+                                trait_name="arete",
+                                trait_display=trait,
+                                cost=cost,
+                                category=trait_type,
+                                trait_value=new_value
+                            )
+                            messages.success(request, f"Spent {cost} XP on Arete")
+                    except ValidationError as e:
+                        messages.error(request, str(e))
                         context["form"] = form
                         form_errors = True
                 elif category == "Rote":
@@ -603,162 +652,186 @@ class MageDetailView(ApprovedUserContextMixin, HumanDetailView):
             else:
                 print("errors", form.errors)
         if "Approve" in form.data.values():
-            xp_index = [x for x in form.data.keys() if form.data[x] == "Approve"][0]
-            index = "_".join(xp_index.split("_")[:-1])
-            d = [x for x in self.object.spent_xp if x["index"] == index][0]
-            i = self.object.spent_xp.index(d)
-            char_id, trait_type, trait, value = index.split("_")
-            value = int(value)
+            # UPDATED: Parse new format xp_request_<id>_approve instead of old index format
+            request_key = [x for x in form.data.keys() if form.data[x] == "Approve"][0]
+            # Extract request ID from "xp_request_<id>_approve"
+            request_id = int(request_key.split("_")[2])
 
-            # Use atomic approval for attributes and abilities
-            if trait_type == "attribute":
-                att = Attribute.objects.get(name=trait)
-                try:
-                    self.object.approve_xp_spend(i, att.property_name, value)
-                    messages.success(
-                        request, f"Approved {att.name} increase to {value}"
-                    )
-                except ValidationError as e:
-                    messages.error(request, str(e))
-            elif trait_type == "ability":
-                abb = Ability.objects.get(name=trait)
-                try:
-                    self.object.approve_xp_spend(i, abb.property_name, value)
-                    messages.success(
-                        request, f"Approved {abb.name} increase to {value}"
-                    )
-                except ValidationError as e:
-                    messages.error(request, str(e))
-            elif trait_type == "background":
-                # Wrap in transaction for atomicity
+            from game.models import XPSpendingRequest
+            try:
+                xp_request = self.object.xp_spendings.get(id=request_id, approved="Pending")
+            except XPSpendingRequest.DoesNotExist:
+                messages.error(request, "XP spending request not found or already processed")
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+            trait_type = xp_request.trait_type
+            trait_name = xp_request.trait_name
+            value = xp_request.trait_value
+
+            # Handle approval based on trait type
+            try:
                 with transaction.atomic():
-                    trait, note = trait.replace("-", " ").split(" (")
-                    note = note[:-1]
-                    bgr = self.object.backgrounds.filter(
-                        bg__name=trait, note=note
-                    ).first()
-                    bgr.rating += 1
-                    bgr.save()
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "new-background":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    trait = trait.replace("-", " ")
-                    if "(" not in trait:
-                        note = ""
-                        trait = trait
+                    if trait_type == "attribute":
+                        att = Attribute.objects.get(name=trait_name)
+                        self.object.approve_xp_spend(request_id, att.property_name, value, request.user)
+                        messages.success(request, f"Approved {att.name} increase to {value}")
+                    elif trait_type == "ability":
+                        abb = Ability.objects.get(name=trait_name)
+                        self.object.approve_xp_spend(request_id, abb.property_name, value, request.user)
+                        messages.success(request, f"Approved {abb.name} increase to {value}")
+                    elif trait_type == "background":
+                        # Parse background name and note
+                        if " (" in trait_name:
+                            bg_name, note = trait_name.split(" (")
+                            note = note.rstrip(")")
+                        else:
+                            bg_name = trait_name
+                            note = ""
+                        bgr = self.object.backgrounds.filter(bg__name=bg_name, note=note).first()
+                        if bgr:
+                            bgr.rating += 1
+                            bgr.save()
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved {trait_name} increase")
+                    elif trait_type == "new-background":
+                        # Parse background name and note
+                        if "(" in trait_name:
+                            bg_name, note = trait_name.split("(")
+                            note = note.rstrip(")").strip()
+                            bg_name = bg_name.strip()
+                        else:
+                            bg_name = trait_name.strip()
+                            note = ""
+                        BackgroundRating.objects.create(
+                            bg=Background.objects.get(name=bg_name),
+                            rating=1,
+                            char=self.object,
+                            note=note,
+                        )
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved new background {trait_name}")
+                    elif trait_type == "willpower":
+                        self.object.approve_xp_spend(request_id, "willpower", value, request.user)
+                        messages.success(request, f"Approved Willpower increase to {value}")
+                    elif trait_type == "meritflaw":
+                        mf = MeritFlaw.objects.get(name=trait_name)
+                        self.object.add_mf(mf, value)
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved merit/flaw {trait_name}")
+                    elif trait_type == "sphere":
+                        s = Sphere.objects.get(name=trait_name)
+                        setattr(self.object, s.property_name, value)
+                        self.object.save()
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved {trait_name} increase to {value}")
+                    elif trait_type == "arete":
+                        self.object.approve_xp_spend(request_id, "arete", value, request.user)
+                        messages.success(request, f"Approved Arete increase to {value}")
+                    elif trait_type == "tenet":
+                        t = Tenet.objects.get(name=trait_name)
+                        self.object.other_tenets.add(t)
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved tenet {trait_name}")
+                    elif trait_type == "remove tenet" or trait_type == "remove-tenet":
+                        # Remove "Remove " prefix if present
+                        tenet_name = trait_name.replace("Remove ", "")
+                        tenet = Tenet.objects.get(name=tenet_name)
+                        if tenet in self.object.other_tenets.all():
+                            self.object.other_tenets.remove(tenet)
+                        else:
+                            replacement = self.object.other_tenets.filter(tenet_type=tenet.tenet_type).first()
+                            if replacement:
+                                if tenet.tenet_type == "met":
+                                    self.object.metaphysical_tenet = replacement
+                                elif tenet.tenet_type == "per":
+                                    self.object.personal_tenet = replacement
+                                elif tenet.tenet_type == "asc":
+                                    self.object.ascension_tenet = replacement
+                                self.object.other_tenets.remove(replacement)
+                        self.object.save()
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved removal of tenet {tenet_name}")
+                    elif trait_type == "practice":
+                        practice = Practice.objects.get(name=trait_name)
+                        self.object.add_practice(practice)
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved practice {trait_name}")
+                    elif trait_type == "rotes":
+                        self.object.rote_points += 3
+                        self.object.save()
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, "Approved 3 rote points")
+                    elif trait_type == "resonance":
+                        # Parse resonance detail from trait_name like "Resonance (Dynamic)"
+                        if "(" in trait_name:
+                            resonance_detail = trait_name.split("(")[1].rstrip(")")
+                        else:
+                            resonance_detail = trait_name
+                        self.object.add_resonance(resonance_detail)
+                        xp_request.approved = "Approved"
+                        xp_request.approved_by = request.user
+                        xp_request.approved_at = timezone.now()
+                        xp_request.save()
+                        messages.success(request, f"Approved resonance {resonance_detail}")
                     else:
-                        trait, note = trait.split("(")
-                        note = note[:-1]
-                    trait = trait.strip()
-                    note = note.strip()
-                    BackgroundRating.objects.create(
-                        bg=Background.objects.get(name=trait),
-                        rating=1,
-                        char=self.object,
-                        note=note,
-                    )
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "willpower":
-                # Use atomic approval method
-                try:
-                    self.object.approve_xp_spend(i, "willpower", value)
-                    messages.success(request, f"Approved Willpower increase to {value}")
-                except ValidationError as e:
-                    messages.error(request, str(e))
-            elif trait_type == "meritflaw":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    trait = trait.replace("-", " ")
-                    value = int(value)
-                    mf = MeritFlaw.objects.get(name=trait)
-                    self.object.add_mf(mf, value)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "sphere":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    s = Sphere.objects.get(name=trait)
-                    setattr(self.object, s.property_name, value)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "arete":
-                # Use atomic approval method
-                try:
-                    self.object.approve_xp_spend(i, "arete", value)
-                    messages.success(request, f"Approved Arete increase to {value}")
-                except ValidationError as e:
-                    messages.error(request, str(e))
-            elif trait_type == "tenet":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    t = Tenet.objects.get(name=trait.replace("-", " "))
-                    self.object.other_tenets.add(t)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "remove-tenet":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    trait = " ".join(trait.split("-")[1:])
-                    tenet = Tenet.objects.get(name=trait)
-                    if tenet in self.object.other_tenets.all():
-                        self.object.other_tenets.remove(tenet)
-                    else:
-                        replacement = self.object.other_tenets.filter(
-                            tenet_type=tenet.tenet_type
-                        ).first()
-                        if tenet.tenet_type == "met":
-                            self.object.metaphysical_tenet = replacement
-                        elif tenet.tenet_type == "per":
-                            self.object.personal_tenet = replacement
-                        elif tenet.tenet_type == "asc":
-                            self.object.ascension_tenet = replacement
-                        self.object.other_tenets.remove(replacement)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "practice":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    trait = trait.replace("-", " ")
-                    practice = Practice.objects.get(name=trait)
-                    self.object.add_practice(practice)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "rotes":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    self.object.rote_points += 3
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
-            elif trait_type == "resonance":
-                # Wrap in transaction for atomicity
-                with transaction.atomic():
-                    t = trait.split("-")
-                    detail = " ".join(t[1:])[1:-1]
-                    trait = t[0]
-                    self.object.add_resonance(detail)
-                    self.object.spent_xp[i]["approved"] = "Approved"
-                    self.object.save()
+                        messages.error(request, f"Unknown trait type: {trait_type}")
+            except ValidationError as e:
+                messages.error(request, str(e))
+            except Exception as e:
+                messages.error(request, f"Error approving XP spend: {str(e)}")
         if "Reject" in form.data.values():
-            # Wrap rejection in transaction to prevent partial refunds
+            # UPDATED: Parse new format xp_request_<id>_reject instead of old index format
             with transaction.atomic():
-                xp_index = [x for x in form.data.keys() if form.data[x] == "Reject"][0]
-                index = "_".join(xp_index.split("_")[:-1])
-                spends = [x for x in self.object.spent_xp if x["index"] == index]
-                for spend in spends:
-                    self.object.xp += spend["cost"]
-                self.object.spent_xp = [
-                    x
-                    for x in self.object.spent_xp
-                    if x["index"] != index
-                    or not (x["index"] == index and x["approved"] == "Pending")
-                ]
+                request_key = [x for x in form.data.keys() if form.data[x] == "Reject"][0]
+                # Extract request ID from "xp_request_<id>_reject"
+                request_id = int(request_key.split("_")[2])
+
+                from game.models import XPSpendingRequest
+                try:
+                    xp_request = self.object.xp_spendings.select_for_update().get(
+                        id=request_id, approved="Pending"
+                    )
+                except XPSpendingRequest.DoesNotExist:
+                    messages.error(request, "XP spending request not found or already processed")
+                    return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+                # Refund XP
+                self.object.xp += xp_request.cost
                 self.object.save()
+
+                # Mark as denied
+                xp_request.approved = "Denied"
+                xp_request.approved_by = request.user
+                xp_request.approved_at = timezone.now()
+                xp_request.save()
+
                 messages.success(
                     request,
-                    f"Rejected XP spend and refunded {sum(s['cost'] for s in spends)} XP",
+                    f"Rejected XP spend and refunded {xp_request.cost} XP",
                 )
         if "specialties" in form.data.keys():
             specs = {
