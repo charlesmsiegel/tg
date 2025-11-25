@@ -1,4 +1,5 @@
 from characters.models.core.statistic import Statistic
+from core.constants import AbilityFields
 from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -10,39 +11,12 @@ class Ability(Statistic):
 
 
 class AbilityBlock(models.Model):
-    talents = [
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-    ]
-    skills = ["crafts", "drive", "etiquette", "firearms", "melee", "stealth"]
-    knowledges = ["academics", "computer", "investigation", "medicine", "science"]
-    primary_abilities = [
-        "alertness",
-        "athletics",
-        "brawl",
-        "empathy",
-        "expression",
-        "intimidation",
-        "streetwise",
-        "subterfuge",
-        "crafts",
-        "drive",
-        "etiquette",
-        "firearms",
-        "melee",
-        "stealth",
-        "academics",
-        "computer",
-        "investigation",
-        "medicine",
-        "science",
-    ]
+    # Use constants from core.constants.AbilityFields as single source of truth
+    # This eliminates duplication and makes ability lists easier to maintain
+    talents = AbilityFields.TALENTS
+    skills = AbilityFields.SKILLS
+    knowledges = AbilityFields.KNOWLEDGES
+    primary_abilities = AbilityFields.PRIMARY_ABILITIES
 
     alertness = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]

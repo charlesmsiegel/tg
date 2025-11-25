@@ -116,3 +116,42 @@ class ImageStatus:
         (SUBMITTED, "Submitted"),
         (APPROVED, "Approved"),
     ]
+
+
+class AbilityFields:
+    """Ability field definitions for World of Darkness characters.
+
+    This serves as the single source of truth for ability categorization,
+    eliminating duplication in model field definitions.
+    """
+
+    TALENTS = [
+        "alertness",
+        "athletics",
+        "brawl",
+        "empathy",
+        "expression",
+        "intimidation",
+        "streetwise",
+        "subterfuge",
+    ]
+
+    SKILLS = [
+        "crafts",
+        "drive",
+        "etiquette",
+        "firearms",
+        "melee",
+        "stealth",
+    ]
+
+    KNOWLEDGES = [
+        "academics",
+        "computer",
+        "investigation",
+        "medicine",
+        "science",
+    ]
+
+    # Combined list of all primary abilities (talents + skills + knowledges)
+    PRIMARY_ABILITIES = TALENTS + SKILLS + KNOWLEDGES
