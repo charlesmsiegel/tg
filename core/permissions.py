@@ -162,12 +162,7 @@ class PermissionManager:
 
         # Observer check (uses generic relation)
         if hasattr(obj, "observers"):
-            ct = ContentType.objects.get_for_model(obj)
-            from core.models import Observer
-
-            if Observer.objects.filter(
-                content_type=ct, object_id=obj.id, user=user
-            ).exists():
+            if obj.observers.filter(user=user).exists():
                 roles.add(Role.OBSERVER)
 
         return roles
@@ -480,5 +475,8 @@ class PermissionManager:
 
         # 4. Objects user is explicitly observing
         filters |= PermissionManager._build_observer_filter(user, queryset.model)
+        # Objects user is explicitly observing
+        if hasattr(queryset.model, "observers"):
+            filters |= Q(observers__user=user)
 
         return queryset.filter(filters).distinct()
