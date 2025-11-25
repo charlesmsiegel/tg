@@ -475,8 +475,5 @@ class PermissionManager:
 
         # 4. Objects user is explicitly observing
         filters |= PermissionManager._build_observer_filter(user, queryset.model)
-        # Objects user is explicitly observing
-        if hasattr(queryset.model, "observers"):
-            filters |= Q(observers__user=user)
 
         return queryset.filter(filters).distinct()
