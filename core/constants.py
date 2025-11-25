@@ -62,15 +62,17 @@ class HeadingChoices:
     MTA = "mta_heading"
     CTD = "ctd_heading"
     WTO = "wto_heading"
+    DTF = "dtf_heading"
     WOD = "wod_heading"
 
     CHOICES = [
-        (WOD, "World of Darkness"),
         (VTM, "Vampire: the Masquerade"),
         (WTA, "Werewolf: the Apocalypse"),
         (MTA, "Mage: the Ascension"),
         (CTD, "Changeling: the Dreaming"),
         (WTO, "Wraith: the Oblivion"),
+        (DTF, "Demon: the Fallen"),
+        (WOD, "World of Darkness"),
     ]
 
 
@@ -155,3 +157,16 @@ class AbilityFields:
 
     # Combined list of all primary abilities (talents + skills + knowledges)
     PRIMARY_ABILITIES = TALENTS + SKILLS + KNOWLEDGES
+
+class XPApprovalStatus:
+    """XP spending approval status choices."""
+
+    PENDING = "Pending"
+    APPROVED = "Approved"
+    DENIED = "Denied"
+
+    CHOICES = [
+        (PENDING, "Pending"),
+        (APPROVED, "Approved"),
+        (DENIED, "Denied"),
+    ]
