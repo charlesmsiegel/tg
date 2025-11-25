@@ -3,6 +3,7 @@ from typing import Any
 from characters.forms.core import LimitedCharacterForm
 from characters.forms.core.limited_edit import LimitedCharacterEditForm
 from characters.models.core import Character
+from core.cache import cache_function, CACHE_TIMEOUT_MEDIUM
 from core.mixins import (
     ApprovedUserContextMixin,
     EditPermissionMixin,
@@ -26,14 +27,24 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
     model = Character
     template_name = "characters/core/character/detail.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["scenes"] = (
-            Scene.objects.filter(characters=context["object"])
+    @staticmethod
+    @cache_function(timeout=CACHE_TIMEOUT_MEDIUM, key_prefix="character_scenes")
+    def get_character_scenes(character_id):
+        """
+        Get scenes for a character with proper prefetching.
+        This is cached to avoid N+1 queries on repeated views.
+        """
+        return list(
+            Scene.objects.filter(characters__id=character_id)
             .select_related("chronicle", "location", "st")
             .prefetch_related("characters", "participants")
             .order_by("-date_of_scene")
         )
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        # Use cached queryset for scenes
+        context["scenes"] = self.get_character_scenes(context["object"].id)
         # Backward compatibility: is_approved_user now means "can edit"
         context["is_approved_user"] = PermissionManager.user_can_edit(
             self.request.user, self.object
