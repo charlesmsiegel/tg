@@ -204,6 +204,8 @@ def main():
         ("item_ownership.py", "Item ownership and locations"),
         ("observers.py", "Observer access permissions"),
         ("xp_requests.py", "XP spending requests"),
+        ("freebie_spending.py", "Character freebie spending records"),
+        ("pack_totems.py", "Pack totem bindings"),
     ]
 
     # Run all scripts
