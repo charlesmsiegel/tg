@@ -502,6 +502,247 @@ Player key: Shadow=xXShadowWolfXx, Cryptic=CrypticMoon, Night=NightOwl_42, Pixel
 
 ---
 
+## Background-Related Objects Needed
+
+Objects that need to be created to support character Backgrounds.
+
+### Vampire Backgrounds
+
+**Contacts (NPCs needed)**
+- Marcus "Shadow" Webb (3 dots): Tech industry informants, underground hackers, criminal contacts
+- Roland Cross (2 dots): Conspiracy theorist network contacts
+- Viktor Krueger (2 dots): Labor union contacts, working-class informants
+- Ricardo "Rico" Mendez (2 dots): Street-level contacts from mortal life
+- Silence (2 dots): Underground contacts, former Sabbat connections
+- Danny Chen/Ghoul (2 dots): Delivery clients across Seattle
+- Trevor Nash/Ghoul (1 dot): Streaming community contact
+- Jennifer Walsh/Ghoul (2 dots): Legal professional contacts
+- Simon Grey/Ghoul (2 dots): Art world contacts
+- Dmitri Zantosa/Revenant (2 dots): Seattle elite social contacts
+- Natasha Grimaldi/Revenant (3 dots): Financial industry network
+- Alexei Danislav/Revenant (1 dot): Underground contacts
+
+**Allies (NPCs needed)**
+- Roland Cross (1 dot): True believer ally
+- Viktor Krueger (3 dots): Union activist allies
+- Diana Cross (2 dots): Wilderness survival allies
+- Bethany Moore/Ghoul (2 dots): Hospital staff allies
+- Jennifer Walsh/Ghoul (1 dot): Legal network ally
+- Simon Grey/Ghoul (1 dot): Art patron ally
+
+**Mentor (NPC needed)**
+- Isabella Santos (2 dots): Tremere elder mentor
+
+**Herd (NPCs needed)**
+- Marcus Antonio (2 dots): Reliable feeding sources among staff/associates
+
+**Domain (Location needed)**
+- (Future: Define domains for established vampires)
+
+**Influence (Description needed)**
+- Marcus Antonio (3 dots): Financial and political influence in Seattle
+
+**Alternate Identity (Documentation needed)**
+- Silence (2 dots): False identity to hide from Sabbat
+- Natasha Grimaldi/Revenant (1 dot): Secondary identity for sensitive business
+- Alexei Danislav/Revenant (2 dots): New identity after escaping Sabbat
+
+### Werewolf Backgrounds
+
+**Contacts (NPCs needed)**
+- Runs-Through-Fire (2 dots): Fire department contacts
+- Silicon Dreams (2 dots): Tech industry and media contacts
+- Breaks-the-Chain (3 dots): Street-level contacts
+- Sarah Morningkill/Kinfolk (3 dots): Tech industry contacts
+- Old Pete/Kinfolk (4 dots): Street contacts citywide
+- Rosa Martinez/Kinfolk (2 dots): Legal and environmental contacts
+
+**Allies (NPCs needed)**
+- Breaks-the-Chain (1 dot): Street ally
+- Sarah Morningkill/Kinfolk (2 dots): Coworker allies
+- Old Pete/Kinfolk (2 dots): Homeless community allies
+- Mike Donovan/Kinfolk (2 dots): Workshop employee allies
+- Rosa Martinez/Kinfolk (3 dots): Activist network
+
+**Kinfolk (NPCs needed)**
+- Runs-Through-Fire (2 dots): Glass Walker kinfolk family
+- Cuts-Through-Steel (2 dots): Includes Mike Donovan
+- Chases-the-Wind (1 dot): Wendigo kinfolk
+
+**Mentor (NPC needed)**
+- Whispers-to-Stars (1 dot): Elder Uktena theurge
+- Dreamwalker (2 dots): Elder Stargazer teacher
+
+**Ancestors (Spirit connection needed)**
+- Whispers-to-Stars (2 dots): Strong ancestral spirit memories
+- Chases-the-Wind (3 dots): Powerful connection to tribal history
+- Watches-the-Void (2 dots): Shadow Lord ancestors
+
+**Fetish (Item needed)**
+- Cuts-Through-Steel (2 dots): Grand klaive or other significant fetish
+
+### Mage Backgrounds
+
+**Contacts (NPCs needed)**
+- Victor Reyes (3 dots): Hacker community, tech industry informants
+- Priya Sharma (2 dots): Tech industry whistleblowers, journalists
+- Dr. Eleanor Vance (2 dots): Medical community, funeral homes
+- Aurora Sinclair (2 dots): Financial industry analysts
+- Tyler Wright (1 dot): Student contacts
+- Min-Ji Park/Sorcerer (2 dots): International District community
+- Nathan Graves/Sorcerer (2 dots): Paranormal investigation community
+- James Liu/Companion (3 dots): Tech billionaire network
+
+**Allies (NPCs needed)**
+- Dr. Hassan Al-Rashid (2 dots): Mosque community allies
+- Iris Quantum (2 dots): Rave community allies
+- Father Miguel Torres/Companion (2 dots): Church network allies
+- Theodore Barnes/Companion (1 dot): Academic allies
+
+**Mentor (NPC needed)**
+- Samantha Torres (1 dot): Elder Dreamspeaker mentor
+- Zero (2 dots): Euthanatos who guides others away from corruption
+- Aurora Sinclair (2 dots): House Fortunae elder mentor
+
+**Node (Location needed)**
+- (Future: Define nodes and sanctums for established mages)
+
+**Chantry (Location needed)**
+- Seattle Tradition Chantry - shared by Invisible College and allies
+
+**Library (Item/Location needed)**
+- Theodore Barnes/Companion (2 dots): Occult library access
+
+### Wraith Backgrounds
+
+**Contacts (NPCs needed)**
+- Sergeant Major William Price (2 dots): Veterans community spirits
+- Jane Doe #47 (2 dots): Seattle PD cold case connections
+- Captain Henrik Johansson (1 dot): Maritime museum contacts
+
+**Allies (NPCs needed)**
+- The Watch circle members (mutual support)
+
+**Memoriam (Location/Item needed)**
+- Thomas Blackwood (2 dots): Speakeasy building
+- Lily Tanaka (3 dots): Family heirlooms across Seattle
+- Corporal James Murphy (1 dot): War memorial (name misspelled)
+- Captain Henrik Johansson (2 dots): Ship's bell in maritime museum
+- Arcade (2 dots): Restored arcade cabinet
+- FREQUENCY (1 dot): Demo tape circulating through thrift stores
+
+**Haunt (Location needed)**
+- Thomas Blackwood: Underground speakeasy
+- Jane Doe #47: Seattle PD evidence room (cold case file)
+
+### Changeling Backgrounds
+
+**Contacts (NPCs needed)**
+- Neon (3 dots): Club scene contacts, party promoters
+- Hollow (3 dots): Urban exploration community
+- Lord Ashford (2 dots): Antique dealer network
+
+**Allies (NPCs needed)**
+- Widget (2 dots): Coffee shop regulars, local artists
+
+**Holdings (Location needed)**
+- Widget: Indie game cafe
+- Forge: Junkyard workshop
+- Granite/Inanimae: Sculptor's studio
+- Zephyr/Inanimae: Historic hotel weathervane
+- Circuit/Inanimae: Jazz club neon sign
+
+**Dreamers (NPCs needed)**
+- Pixel (1 dot): Arcade regulars who dream of perfect games
+- Widget (2 dots): Cafe patrons seeking inspiration
+- Tempest (1 dot): Seattle artists and idealists
+- Neon (2 dots): Club-goers seeking wonder
+
+**Title (Position needed)**
+- Lord Ashford (3 dots): Seelie nobility position
+- Tempest (2 dots): House Liam position
+
+**Mentor (NPC needed)**
+- Sprocket (3 dots): Forge as mentor
+
+**Chimera (Items needed)**
+- Multiple changelings have Chimera backgrounds - chimerical companions and tools
+
+### Demon Backgrounds
+
+**Contacts (NPCs needed)**
+- Murmur (3 dots): Conspiracy theorist network, true crime community
+- Penemue (3 dots): Journalist network, whistleblowers
+- Magistrix (1 dot): City planning department contacts
+- Rahab (2 dots): Game developer community
+- Ashmedai (2 dots): Tech industry contacts
+
+**Allies (NPCs needed)**
+- Abaddon (1 dot): Underground vigilante allies
+
+**Mentor (NPC needed)**
+- Arakiel (2 dots): Academic mentor figure
+
+**Cult (NPC group needed)**
+- Earthbound characters have cult worshippers
+- The Resonance: Tech workers experiencing "revelatory dreams"
+- The Foundation: Church congregation (unknowing worship)
+- The Frequency: Radio station employees and late-night listeners
+
+**Influence (Description needed)**
+- Magistrix (2 dots): City development influence
+
+**Followers (NPCs needed)**
+- Verath the Whisper (1 dot): Inspired artists
+- Rahab (1 dot): Game development followers
+
+### Hunter Backgrounds
+
+**Contacts (NPCs needed)**
+- Jake Mercer (3 dots): Law enforcement contacts, PI network
+- Derek Stone (3 dots): Hunter network across cells
+- Chris Walker (2 dots): Paranormal investigation community
+- Marcus Johnson (2 dots): Weather service colleagues
+- Alex Chen (2 dots): Online investigator network
+- Rachel Kim (2 dots): Funeral industry contacts
+
+**Allies (NPCs needed)**
+- Maria Vasquez (2 dots): Healthcare worker allies
+- Yuki Tanaka (2 dots): Martial arts community allies
+- Kyle Morrison (2 dots): Fellow survivors
+- Jasmine Torres (2 dots): Mental health professional network
+
+**Resources (Description needed)**
+- Chris Walker (3 dots): Settlement money from TV show cancellation
+- Marcus Johnson (3 dots): Stable meteorologist salary
+
+### Mummy Backgrounds
+
+**Contacts (NPCs needed)**
+- Ankh-ef-en-Khonsu (2 dots): Museum curator network
+- Kherpheres (2 dots): Academic librarian network
+- Nefertari (2 dots): Financial investigation contacts
+- Djehutymes (2 dots): Sleep research community
+
+**Allies (NPCs needed)**
+- Ramesses-ankh (1 dot): MMA community allies
+- Sekhmet-hotep (2 dots): Hospice care allies
+
+**Remembrance (Spirit/Memory needed)**
+- Characters with Remembrance have stronger connections to past life memories
+- Meritaten (2 dots): Princess memories emerging
+- Kherpheres (1 dot): Library of Alexandria fragments
+- Djehutymes (1 dot): Dream interpretation traditions
+
+**Cult (NPC group needed)**
+- (Note: Using generic Group model - these are the organized cults in Seattle)
+- House of Scrolls, Keepers of Ma'at, Lions of Sekhmet, The Awakening
+
+**Influence (Description needed)**
+- Imhotep-ka (2 dots): City planning influence
+
+---
+
 ## TODO
 
 ### Locations
