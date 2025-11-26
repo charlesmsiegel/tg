@@ -5,11 +5,17 @@ Creates the various character groups (coteries, packs, cabals, etc.) for the tes
 Does NOT create or assign characters - just the group structures.
 
 Run with: python manage.py shell < populate_db/chronicle/test/groups.py
+
+Known Issues:
+- Demon groups are called "Conclave" in code, but "Court" in WoD terminology
+- Hunter groups use "HunterOrganization" model, not a Group subclass called "Cell"
+- Mummy has no group model; using generic Group as workaround
 """
 
 from django.contrib.auth.models import User
 
 from characters.models.changeling import Motley
+from characters.models.core import Group
 from characters.models.demon import Conclave
 from characters.models.hunter import HunterOrganization
 from characters.models.mage import Cabal
@@ -195,6 +201,35 @@ HUNTER_ORGANIZATIONS = [
     ),
 ]
 
+# Mummy Cults - using generic Group model as workaround (no Cult model exists)
+MUMMY_CULTS = [
+    (
+        "The House of Scrolls",
+        "Scholars devoted to Thoth, god of wisdom and writing. These mummies seek to recover "
+        "and preserve knowledge lost to the ages, from the Library of Alexandria to forgotten "
+        "tombs. In Seattle, they work through universities and private collections, piecing "
+        "together fragments of eternal truth.",
+    ),
+    (
+        "The Keepers of Ma'at",
+        "Guardians of cosmic balance and divine order. Servants of various gods united by their "
+        "commitment to maintaining harmony between the mortal world and the divine. They shape "
+        "cities, protect artifacts, and ensure sacred geometry flows through modern architecture.",
+    ),
+    (
+        "The Lions of Sekhmet",
+        "Warriors blessed by the lioness goddess of war and healing. These mummies have known "
+        "violence across countless lives, fighting in every era's conflicts. Some seek worthy "
+        "opponents; others try to break the cycle of bloodshed that follows them through eternity.",
+    ),
+    (
+        "The Awakening",
+        "Newly risen mummies still piecing together memories of past lives. The resurrection "
+        "has barely begun for these Amenti, who struggle to reconcile ancient Egyptian souls "
+        "with modern American bodies. They support each other through the confusion of rebirth.",
+    ),
+]
+
 
 def get_chronicle_and_st():
     """Get the Seattle Test Chronicle and its ST user."""
@@ -319,6 +354,22 @@ def create_hunter_organizations():
             print(f"Hunter organization already exists: {name}")
 
 
+def create_mummy_cults(chronicle, owner):
+    """Create Mummy cults using generic Group model (no Cult model exists)."""
+    print("\n--- Creating Mummy Cults (as generic Groups) ---")
+    for name, description in MUMMY_CULTS:
+        # Using base Group model since no Cult model exists
+        cult, created = Group.objects.get_or_create(
+            name=name,
+            chronicle=chronicle,
+            defaults={"description": description, "owner": owner},
+        )
+        if created:
+            print(f"Created mummy cult (Group): {name}")
+        else:
+            print(f"Mummy cult already exists: {name}")
+
+
 def main():
     """Run the full group setup."""
     print("=" * 60)
@@ -337,11 +388,7 @@ def main():
     create_motleys(chronicle, st_user)
     create_conclaves(chronicle, st_user)
     create_hunter_organizations()
-
-    # Note about Mummy
-    print("\n--- Mummy Groups ---")
-    print("NOTE: Mummy does not have a group model in the codebase.")
-    print("Mummy 'cults' are organizational concepts only, not database objects.")
+    create_mummy_cults(chronicle, st_user)
 
     # Summary
     print("\n" + "=" * 60)
@@ -353,6 +400,7 @@ def main():
     print(f"Motleys: {Motley.objects.filter(chronicle=chronicle).count()}")
     print(f"Conclaves: {Conclave.objects.filter(chronicle=chronicle).count()}")
     print(f"Hunter Organizations: {HunterOrganization.objects.count()}")
+    print(f"Mummy Cults (Groups): {Group.objects.filter(chronicle=chronicle, name__in=[c[0] for c in MUMMY_CULTS]).count()}")
     print("=" * 60)
 
 
