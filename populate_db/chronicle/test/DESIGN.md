@@ -743,12 +743,202 @@ Objects that need to be created to support character Backgrounds.
 
 ---
 
+## Supernaturally Significant Locations
+
+Key locations in Seattle that have supernatural significance. These should be created as Location objects with appropriate gameline-specific properties.
+
+### Vampire Locations
+
+**Elysium** (Safe ground for Kindred politics)
+- **Seattle Art Museum**: Primary Elysium, maintained by Seneschal Victoria Ashworth. The Prince holds court here on the first Friday of each month.
+- **Pioneer Square Underground**: Secondary Elysium in the original city below. Neutral ground between Camarilla and Anarchs.
+
+**Domains** (Territory controlled by specific vampires)
+- **Downtown Financial District**: Prince Mercer's domain. The high-rises are his hunting ground and meeting place.
+- **Capitol Hill**: Multiple Kindred share this territory; Father Matthias's church provides neutral ground.
+- **University District**: The Baroness's Anarch domain. Her shadow reaches every club and coffee shop.
+- **Industrial Waterfront**: Red Jack's Anarch territory. Dockworkers and night-shift laborers.
+
+**Racks** (Reliable feeding grounds)
+- **Pike Place Market at Night**: Tourists and late-night workers provide easy feeding.
+- **Capitol Hill Club Scene**: Toreador-maintained rack; blood dolls frequent the bars.
+- **Pioneer Square Shelters**: Nosferatu feeding ground among the forgotten.
+- **University Ave Bars**: Student population provides feeding for younger Kindred.
+
+**Havens** (Notable NPC residences)
+- **Mercer Tower Penthouse**: Prince's haven in a downtown high-rise.
+- **The Keeper's Warren**: Deep beneath Pioneer Square, guarded and secret.
+- **Cross Chantry**: Tremere stronghold in a converted Capitol Hill mansion.
+
+---
+
+### Werewolf Locations
+
+**Caern** (Sacred Garou holy site)
+- **Cougar Mountain Caern**: Level 4 Caern of Falcon, heart of the Sept of the Emerald Shadow. The Warder Storm's-Fury guards it with legendary fury. The bawn extends across the mountain wilderness.
+
+**Pack Territories**
+- **SODO Tech Corridor**: Silicon Fangs territory. Glass Walker dens hidden among server farms.
+- **Industrial District**: Wardens patrol this area, watching for Wyrm corruption.
+- **Capitol Hill Homeless Camps**: The Forgotten's territory. Breaks-the-Chain protects the dispossessed.
+
+**Umbral Pathways**
+- **Space Needle Penumbra**: Thin Gauntlet allows easy stepping. Monitored by Sept scouts.
+- **Puget Sound Depths**: Something dark lurks in the Umbral reflection of the Sound.
+- **Mount Rainier Reflection**: Connection to powerful mountain spirits; seasonal moon bridge.
+
+**Fetish Locations**
+- **Mike Donovan's Forge**: Kinfolk metalsmith who crafts klaives and fetishes.
+- **Old Pete's Food Truck**: Mobile neutral ground, blessed by Bone Gnawer spirits.
+
+---
+
+### Mage Locations
+
+**Chantry** (Tradition stronghold)
+- **The Cross House**: Victorian mansion on Capitol Hill serving as Seattle's Tradition Chantry. Led by Archmagus Solomon Cross. Interior is spatially expanded; contains library, ritual spaces, and living quarters. Warded against scrying and intrusion.
+
+**Nodes** (Places of magical power)
+- **Pike Place Market Node**: Quintessence flows from the creative energy of artists and dreamers. Rating 3.
+- **Space Needle Ley Nexus**: Convergence of three ley lines. Rating 4 but contested by Technocracy.
+- **Underground Seattle Node**: Dark quintessence from Seattle's buried history. Rating 2.
+- **Maestro's Rave Temple**: Node created by ecstatic dance energy. Rating 3, Cult of Ecstasy maintained.
+- **Puget Sound Deep Node**: Water-aspected node beneath the Sound. Rating unknown, possibly dangerous.
+
+**Technocracy Locations**
+- **Prometheus Labs**: Progenitor biotech front company. Research facility for Awakened biology.
+- **Hayes Tower**: NWO surveillance hub hidden in corporate high-rise.
+- **Iteration X Field Office**: Location unknown; rumored to be mobile or underground.
+
+**Horizon Realm Access**
+- **Cross House**: Chantry has a gateway to the Horizon.
+- **Digital Web Access Point**: Nexus maintains servers with stable DW connections.
+
+---
+
+### Wraith Locations
+
+**Haunts** (Wraith strongholds in the Shadowlands)
+- **The Necropolis**: Seattle's Hierarchy headquarters, built in the Shadowlands reflection of Pioneer Square's underground city. Anacreon Victoria rules from here.
+- **Thomas Blackwood's Speakeasy**: 1920s bootlegger haunt, preserved exactly as it was.
+- **Pike Place Ghost Market**: Shadow reflection of the market where wraiths trade.
+
+**Nihils** (Tears into the Tempest)
+- **Puget Sound Nihil**: Something vast lurks in the depths. The Whisper in the Depths emerges here.
+- **Great Fire Memorial Site**: Small Nihil where the 1889 fire's victims entered the Shadowlands.
+
+**Fetters and Memoriam** (Connections to the living world)
+- **Seattle War Memorial**: Multiple wraith Fetters; Corporal Murphy's name is misspelled here.
+- **Maritime Museum**: Captain Johansson's ship bell. Strong Fetter site.
+- **Seattle PD Evidence Room**: Jane Doe #47's case file. Active investigation Fetter.
+
+**Byways** (Paths through the Shadowlands)
+- **Underground Seattle Paths**: Safe routes through the Necropolis.
+- **Waterfront Shadows**: Dangerous paths along the Sound's edge.
+
+---
+
+### Changeling Locations
+
+**Freehold** (Changeling sanctuary)
+- **The Emerald Court**: Duke Rowan's freehold, centered on Pike Place Market. The balefire burns in a hidden chamber beneath the market, fed by tourist dreams and artist inspiration. The freehold extends through connected trods to several holdings.
+
+**Holdings** (Changeling-owned properties)
+- **Widget's Cafe**: Boggan-maintained coffee shop. Minor glamour source.
+- **Baron Ironwright's Junkyard**: Nocker workshop. Chimerical construction happens here.
+- **The Underground Gallery**: Zoe Kim's art space, feeding on creative dreams.
+- **Lord Ashford's Antiquarian Books**: Sluagh intelligence hub disguised as bookshop.
+
+**Trods** (Paths between holdings and the Dreaming)
+- **Pike Place Trod**: Connects market holdings; glamour-rich passage.
+- **Underground Seattle Trod**: Connects to Countess Lysandra's Unseelie domain.
+- **Capitol Hill Art Walk Trod**: Seasonal trod activated during gallery openings.
+
+**Glens** (Natural glamour sources)
+- **Washington Park Arboretum**: Wild glamour from old trees and running water.
+- **Discovery Park**: Connection to nature spirits; Nunnehi often visit.
+
+**Freeholds of Note**
+- **Granite's Studio**: Inanimae sculptor's workshop, between worlds.
+- **The Neon Sign**: Circuit's binding site at the jazz club.
+
+---
+
+### Demon Locations
+
+**Loci** (Places of demonic significance)
+- **The Foundation Church**: Church built over an Earthbound binding site. Congregation unknowingly worships The Foundation.
+- **Tech Campus Parking Garage**: Built over The Resonance's binding site. Dreams leak through the concrete.
+- **KEXP Radio Tower**: The Frequency broadcasts from here, influencing dreams.
+
+**Faction Meeting Places**
+- **Stern Hospice**: Reconciler gathering place. Michael Stern maintains it.
+- **Victoria Tower**: Faustian headquarters. Victoria Chen's corporate stronghold.
+- **The Underground Bunker**: Luciferan armory somewhere in the city.
+- **Blackwood Investigations**: Cryptic meeting place. Sarah Blackwood's office.
+
+**Reliquaries and Artifacts**
+- **Museum of History Storage**: Contains objects with demonic connections.
+- **Private Collections**: Several Earthbound-touched artifacts in Seattle homes.
+
+**Earthbound Sites**
+- **The Voice Beneath's Domain**: Something in Puget Sound. Boats avoid certain areas.
+- **Buried Sacred Site**: Under tech campus. The Resonance's influence spreads.
+- **Old Church Basement**: The Foundation's altar, hidden from congregation.
+
+---
+
+### Hunter Locations
+
+**Safe Houses** (Hunter refuges)
+- **Aegis House 1**: Lisa Chen's primary safe house in Ballard. Medical supplies, weapons.
+- **Aegis House 2**: Capitol Hill location. Intelligence hub.
+- **Aegis House 3**: South Seattle. Emergency extraction point.
+
+**Hunting Grounds**
+- **Pioneer Square**: High supernatural traffic. Multiple hunter patrols.
+- **University District**: Frequent monster activity. Derek Stone's territory.
+- **Waterfront**: Dangerous zone. Something in the water.
+
+**Resources**
+- **O'Brien's Garage**: Weapon storage and vehicle maintenance.
+- **Dr. Cole's Office**: Psychological evaluation and debriefing.
+- **Prophet's Church**: Planning and coordination meetings.
+
+**Surveillance Points**
+- **KEXP Studios**: Monitored for supernatural broadcasts.
+- **Pike Place Market Overlook**: Observation of high-traffic supernatural area.
+
+---
+
+### Mummy Locations
+
+**Cult Temples** (Places of worship and power)
+- **House of Scrolls Library**: Hidden archive beneath university. Thoth worship site.
+- **Keepers of Ma'at Lodge**: Private club for justice-oriented mortals. Secret rituals.
+- **Lions of Sekhmet Dojo**: Martial arts training with spiritual components.
+
+**Resurrection Sites**
+- **Museum Egyptian Wing**: Where several Seattle Amenti first awakened.
+- **Private Collection Vault**: Emergency resurrection backup site.
+
+**Web of Faith Nodes**
+- **University of Washington**: Academic influence spreads from here.
+- **Seattle Justice Center**: Keepers of Ma'at maintain connections here.
+- **Harborview Medical Center**: Lions of Sekhmet healing work centered here.
+
+**Threatened Sites**
+- **Apophis Cult Hidden Temple**: Location unknown; somewhere in the city.
+- **Corrupted Historical Artifacts**: Several museum pieces carry dark influence.
+
+---
+
 ## TODO
 
 ### Locations
-- Key Seattle locations adapted for WoD
-- Faction-specific havens and meeting places
-- Contested territories
+- Create location objects for above sites
+- Define mechanical properties (Node ratings, Caern level, etc.)
+- Map territorial boundaries and contested zones
 
 ### Items
 - Gameline-specific artifacts
