@@ -217,6 +217,55 @@ This document tracks remaining work across the codebase with context about what 
    - **Context**: Broad exception handling masks bugs and makes debugging difficult
    - **Independence**: Standalone task - can be done independently
 
+### Location Model Improvements
+
+30. **Replace Location `parent` ForeignKey with `contained_within` ManyToMany**
+    - **File**: `locations/models/core/location.py`
+    - **Impact**: MEDIUM - Current single-parent model can't represent overlapping regions
+    - **Issue**: Locations can only have one parent, but physical spaces often exist within multiple conceptual containers:
+      - Pike Place Market Node is geographically in Pike Place Market, but organizationally managed by Traditions
+      - Underground Seattle contains Vampire Elysium, Wraith Necropolis, and Changeling Trod simultaneously
+      - Puget Sound hosts Mage Node, Wraith Nihil, Demon Earthbound, and Werewolf Umbral location
+    - **Current State**: `parent = models.ForeignKey("LocationModel", ...)` - single parent only
+    - **Action**:
+      1. Add new field: `contained_within = models.ManyToManyField("LocationModel", blank=True, related_name="contains")`
+      2. Create data migration to copy existing `parent` relationships to `contained_within`
+      3. Update views and templates to use `contained_within` instead of `parent`
+      4. Update `top_level()` queryset method to filter on `contained_within__isnull=True` or empty
+      5. Consider keeping `parent` temporarily for backwards compatibility, then deprecate
+      6. Update all location population scripts to use new field
+    - **Benefits**:
+      - Geographic containment: Pike Place Node → Pike Place Market region
+      - Overlapping territories: Ghost Market → Pike Place + Underground Seattle
+      - Cross-gameline shared spaces: Puget Sound → multiple supernatural sites
+    - **Context**: Enables proper representation of how supernatural locations relate to physical geography
+    - **Independence**: Medium complexity - requires migration and view updates
+
+31. **Support Multiple Identities for Single Physical Spaces**
+    - **Files**: `locations/models/core/location.py`, possibly new model
+    - **Impact**: MEDIUM - Same physical location can have different supernatural identities
+    - **Issue**: A single physical location may be multiple things simultaneously:
+      - Seattle is a City (mundane), a Duchy/Holding (Changeling), contains Domains (Vampire), etc.
+      - Pike Place Market is a mundane location, a Node (Mage), part of a Freehold (Changeling), a Rack (Vampire)
+      - A church might be an Elysium (Vampire), a Haunt (Wraith), and a Web of Faith node (Mummy)
+    - **Current State**: Each gameline creates separate location objects with no explicit link
+    - **Options**:
+      - **Option A**: Add `physical_location` ForeignKey to a new `PhysicalPlace` model that all gameline locations reference
+      - **Option B**: Add `same_location_as` ManyToMany self-referential field to link equivalent locations
+      - **Option C**: Add `mundane_counterpart` ForeignKey to base LocationModel pointing to a "mundane" location
+    - **Action** (Option A - Recommended):
+      1. Create new `PhysicalPlace` model with mundane attributes (address, coordinates, description)
+      2. Add `physical_place = models.ForeignKey(PhysicalPlace, null=True, blank=True, ...)` to LocationModel
+      3. Multiple supernatural locations can reference same PhysicalPlace
+      4. Create views to show "all supernatural aspects of this place"
+      5. Update templates to display linked locations
+    - **Benefits**:
+      - Query all supernatural activity at a physical location
+      - Show players "what's really happening at Pike Place Market" across gamelines
+      - Enable cross-gameline plot hooks and shared spaces
+    - **Context**: Reflects WoD setting where multiple supernatural groups often share or contest the same physical spaces
+    - **Independence**: Can be implemented after or alongside TODO #30
+
 ### Character Group Model Consistency
 
 24. **Rename Demon Group Model from Conclave to Court**
@@ -871,10 +920,11 @@ The following items were verified as complete and removed:
 **Last Updated**: 2025-11-25
 **Version**: 7.8 (Added full Hunter gameline CRUD implementation)
 **Total Open Items**: ~57 items across all priorities
+**Total Open Items**: ~59 items across all priorities
 
 **By Priority**:
 - 🔴 High Priority: 6 items (security + critical code quality)
-- 🟡 Medium Priority: 28 items (performance + architecture + testing + tools + group models)
+- 🟡 Medium Priority: 30 items (performance + architecture + testing + tools + group models + location improvements)
 - 🟢 Low Priority: ~50 items (feature completeness + polish)
 - 🔵 Deployment: 7 items (staging + production deployments)
 
