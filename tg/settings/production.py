@@ -240,6 +240,20 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
+# Channel Layers Configuration for Production
+# ============================================
+# Use Redis for WebSocket channel layers
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")],
+            "capacity": 1500,
+            "expiry": 10,
+        },
+    },
+}
+
 # Performance Optimizations
 # =========================
 

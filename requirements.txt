@@ -25,6 +25,11 @@ cryptography>=46.0.0
 django-redis==5.4.0
 redis==5.2.1
 
+# WebSocket/Real-time dependencies
+channels==4.1.0
+channels-redis==4.2.1
+daphne==4.1.2
+
 # Code quality tools
 black==24.3.0
 ruff==0.3.4
