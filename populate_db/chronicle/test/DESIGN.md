@@ -493,6 +493,15 @@ Player key: Shadow=xXShadowWolfXx, Cryptic=CrypticMoon, Night=NightOwl_42, Pixel
 
 ---
 
+## Issues / Technical Debt
+
+### Group Model Naming
+- **Demon**: Model is called `Conclave` but WoD terminology uses "Court" for demon groups
+- **Hunter**: Uses `HunterOrganization` model instead of a `Cell` Group subclass; has different fields (philosophy, goals, organization_type)
+- **Mummy**: No group model exists; using generic `Group` as workaround for "Cults"
+
+---
+
 ## TODO
 
 ### Locations
