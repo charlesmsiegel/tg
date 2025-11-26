@@ -477,9 +477,9 @@ THRALLS = [
     {
         "username": "xXShadowWolfXx",
         "name": "Kevin Rhodes",
-        "master": "Magistrix",
+        "master": "Arakiel",  # NightOwl_42's demon
         "faith_potential": 2,
-        "concept": "Construction foreman with supernatural ability to get permits",
+        "concept": "Construction foreman who traded his soul for success in permits",
         # Attributes: 7/5/3
         "strength": 3,
         "dexterity": 2,
@@ -509,9 +509,9 @@ THRALLS = [
     {
         "username": "NightOwl_42",
         "name": "Dr. Patricia Huang",
-        "master": "Arakiel",
+        "master": "Magistrix",  # xXShadowWolfXx's demon
         "faith_potential": 3,
-        "concept": "Graduate student with breakthrough insights",
+        "concept": "Graduate student who knowingly serves a demon for forbidden knowledge",
         # Attributes: 7/5/3
         "strength": 2,
         "dexterity": 2,
@@ -540,9 +540,9 @@ THRALLS = [
     {
         "username": "pixel_witch",
         "name": "Marcus Webb",
-        "master": "Rahab",
+        "master": "Murmur",  # gh0st_in_shell's demon
         "faith_potential": 2,
-        "concept": "QA tester with supernatural bug-finding instincts",
+        "concept": "QA tester who made a pact to become invaluable in his field",
         # Attributes: 7/5/3
         "strength": 2,
         "dexterity": 3,
@@ -571,9 +571,9 @@ THRALLS = [
     {
         "username": "gh0st_in_shell",
         "name": "Janet Price",
-        "master": "Murmur",
+        "master": "Rahab",  # pixel_witch's demon
         "faith_potential": 3,
-        "concept": "True-crime podcaster with supernatural source access",
+        "concept": "True-crime podcaster who sold her soul for exclusive supernatural scoops",
         # Attributes: 7/5/3
         "strength": 2,
         "dexterity": 2,
@@ -602,9 +602,9 @@ THRALLS = [
     {
         "username": "Zephyr_Storm",
         "name": "Sarah Mitchell",
-        "master": "Penemue",
+        "master": "Abaddon",  # void_whisper's demon
         "faith_potential": 2,
-        "concept": "Young reporter with impossible scoops",
+        "concept": "Young reporter bound to a demon in exchange for justice on her stories",
         # Attributes: 7/5/3
         "strength": 2,
         "dexterity": 2,
@@ -634,9 +634,9 @@ THRALLS = [
     {
         "username": "n00b_hunter",
         "name": "Jason Park",
-        "master": "Allocer",
+        "master": "Verath the Whisper",  # CrypticMoon's demon
         "faith_potential": 1,
-        "concept": "Recently bound thrall still processing reality",
+        "concept": "Recent college grad who made a desperate pact and now serves willingly",
         # Attributes: 7/5/3
         "strength": 2,
         "dexterity": 3,
@@ -666,9 +666,9 @@ THRALLS = [
     {
         "username": "void_whisper",
         "name": "Detective Morris",
-        "master": "Abaddon",
+        "master": "Penemue",  # Zephyr_Storm's demon
         "faith_potential": 3,
-        "concept": "Homicide detective with infernal insight",
+        "concept": "Homicide detective who bargained for answers to impossible cases",
         # Attributes: 7/5/3
         "strength": 3,
         "dexterity": 3,
