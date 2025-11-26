@@ -96,14 +96,14 @@ def main():
         ("mummy_pc_aux.py", "Mummy auxiliary PCs"),
 
         # Phase 3: Core Content - Locations
-        ("vampire_locations.py", "Vampire locations"),
-        ("werewolf_locations.py", "Werewolf locations"),
-        ("mage_locations.py", "Mage locations"),
-        ("wraith_locations.py", "Wraith locations"),
-        ("changeling_locations.py", "Changeling locations"),
-        ("demon_locations.py", "Demon locations"),
-        ("hunter_locations.py", "Hunter locations"),
-        ("mummy_locations.py", "Mummy locations"),
+        ("vampire_location.py", "Vampire locations"),
+        ("werewolf_location.py", "Werewolf locations"),
+        ("mage_location.py", "Mage locations"),
+        ("wraith_location.py", "Wraith locations"),
+        ("changeling_location.py", "Changeling locations"),
+        ("demon_location.py", "Demon locations"),
+        ("hunter_location.py", "Hunter locations"),
+        ("mummy_location.py", "Mummy locations"),
 
         # Phase 4: Core Content - Items
         ("vampire_items.py", "Vampire items"),
@@ -192,6 +192,18 @@ def main():
         ("xp_weeks.py", "XP and Week tracking"),
         ("journal_entries.py", "Character journal entries"),
         ("leadership.py", "Political hierarchy and leadership"),
+
+        # Phase 7: Advanced Features
+        ("traits.py", "Gameline-specific traits (gifts, etc.)"),
+        ("merits_flaws.py", "Merit and flaw assignments"),
+        ("derangements.py", "Derangement assignments"),
+        ("rotes.py", "Mage rote assignments"),
+        ("spirits.py", "Spirit character NPCs"),
+        ("city.py", "City of Seattle"),
+        ("location_nesting.py", "Location hierarchy"),
+        ("item_ownership.py", "Item ownership and locations"),
+        ("observers.py", "Observer access permissions"),
+        ("xp_requests.py", "XP spending requests"),
     ]
 
     # Run all scripts
