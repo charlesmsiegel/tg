@@ -131,6 +131,8 @@ def create_st_relationships(chronicle, st_user):
         "Mage: the Ascension",
         "Changeling: the Dreaming",
         "Wraith: the Oblivion",
+        "Hunter: the Reckoning",
+        "Mummy: the Resurrection",
         "Demon: the Fallen",
     ]
 
