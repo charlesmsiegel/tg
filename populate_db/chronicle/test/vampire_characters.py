@@ -355,7 +355,7 @@ GHOULS = [
         "username": "pixel_witch",
         "name": "Trevor Nash",
         "concept": "Twitch streamer with supernatural gaming instincts",
-        "domitor_name": "Zoe Kim",
+        "domitor_name": "Roland Cross",  # Malkavian domitor from NightOwl_42
         # Attributes (6/4/3)
         "strength": 2, "dexterity": 3, "stamina": 2,  # Physical: 4
         "charisma": 3, "manipulation": 3, "appearance": 2,  # Social: 6
@@ -377,7 +377,7 @@ GHOULS = [
         "username": "gh0st_in_shell",
         "name": "Murphy",
         "concept": "Impossibly old and intelligent ghouled cat",
-        "domitor_name": "Diana Cross",
+        "domitor_name": "Viktor Krueger",  # Brujah domitor from ByteSlayer
         # Note: Murphy is a cat, so attributes are unusual
         # Attributes (6/4/3) - adjusted for animal
         "strength": 1, "dexterity": 4, "stamina": 2,  # Physical: 4
@@ -389,18 +389,18 @@ GHOULS = [
         "investigation": 2,  # 2
         # Disciplines
         "potence": 1,
-        "fortitude": 1,
+        "celerity": 1,  # From Brujah domitor
         # No backgrounds - is a cat
         "willpower": 4,
         "years_as_ghoul": 40,  # Very old for a cat
-        "description": "A grizzled cat ghouled by Diana decades ago, impossibly old and intelligent, "
-                       "serving as her eyes and ears in places wolves can't go.",
+        "description": "A grizzled cat ghouled decades ago, impossibly old and intelligent, "
+                       "serving as eyes and ears in places wolves can't go.",
     },
     {
         "username": "Zephyr_Storm",
         "name": "Jennifer Walsh",
         "concept": "Corporate lawyer handling supernatural contracts",
-        "domitor_name": "Marcus Antonio",
+        "domitor_name": "Isabella Santos",  # Tremere domitor from CrypticMoon
         # Attributes (6/4/3)
         "strength": 1, "dexterity": 2, "stamina": 2,  # Physical: 3
         "charisma": 3, "manipulation": 4, "appearance": 2,  # Social: 6
@@ -444,7 +444,7 @@ GHOULS = [
         "username": "ElectricDreamer",
         "name": "Simon Grey",
         "concept": "Art gallery owner curating vampire propaganda",
-        "domitor_name": "Cassandra Vex",
+        "domitor_name": "Zoe Kim",  # Toreador domitor from pixel_witch
         # Attributes (6/4/3)
         "strength": 2, "dexterity": 2, "stamina": 2,  # Physical: 3
         "charisma": 3, "manipulation": 3, "appearance": 3,  # Social: 6
