@@ -18,12 +18,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",  # Must be before django.contrib.staticfiles for ASGI
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
     "accounts",
     "characters",
     "game",
@@ -71,6 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "tg.wsgi.application"
+ASGI_APPLICATION = "tg.asgi.application"
 
 
 # Database
@@ -385,3 +388,13 @@ LOGGING = {
 }
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Channel Layers Configuration
+# ============================
+# Default to InMemoryChannelLayer for development
+# Production should override this to use Redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}

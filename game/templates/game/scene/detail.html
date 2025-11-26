@@ -27,7 +27,12 @@
                 </div>
             {% endif %}
         </div>
-        
+
+        <!-- Connection Status Indicator -->
+        <div id="connection-status" class="mb-2" style="display: none;">
+            <span id="status-indicator" class="tg-badge badge-pill" style="font-size: 0.75rem;"></span>
+        </div>
+
         <!-- Errors Section -->
         {% block errors %}
             {% if post_form.non_field_errors %}
@@ -36,12 +41,12 @@
                 </div>
             {% endif %}
         {% endblock errors %}
-        
+
         <!-- Posts Section -->
         <div class="tg-card mb-4">
-            <div class="tg-card-body" style="padding: 20px;">
+            <div class="tg-card-body" id="posts-container" style="padding: 20px;">
                 {% for post in object.post_set.all %}
-                    <div class="mb-3" style="padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                    <div class="mb-3 post-item" data-post-id="{{ post.pk }}" style="padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1);">
                         <p class="post mb-0" style="line-height: 1.6;">
                             <strong {% if post.character.owner.profile.is_st %}class="st"{% elif post.character.owner == request.user %}class="highlight"{% endif %}>
                                 <a href="{{ post.character.get_absolute_url }}" style="font-weight: 600;">{{ post.display_name }}</a>
@@ -49,7 +54,7 @@
                         </p>
                     </div>
                 {% empty %}
-                    <div class="text-center py-4">
+                    <div class="text-center py-4" id="no-posts-message">
                         <p class="text-muted mb-0">No posts yet</p>
                     </div>
                 {% endfor %}
@@ -60,26 +65,43 @@
             {% if request.user.is_authenticated %}
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
-                        <form method="post" action="">
+                        <form method="post" action="" id="post-form">
                             {% csrf_token %}
                             <div class="mb-3">
                                 {% if num_logged_in_chars == 1 %}
-                                    {{ first_char }}
+                                    <input type="hidden" id="character-select" name="character" value="{{ first_char.pk }}">
+                                    <span class="form-control-plaintext"><strong>{{ first_char.name }}</strong></span>
                                 {% else %}
-                                    {{ post_form.character }}
+                                    <select id="character-select" name="character" class="form-control">
+                                        <option value="">Character Select</option>
+                                        {% for char in post_form.fields.character.queryset %}
+                                            <option value="{{ char.pk }}">{{ char.name }}</option>
+                                        {% endfor %}
+                                    </select>
                                 {% endif %}
-                                {{ post_form.display_name }}
+                                <textarea id="display-name-input" name="display_name" placeholder="Display Name (Optional)" rows="1" cols="25" class="form-control mt-2"></textarea>
                             </div>
-                            <div class="mb-3">{{ post_form.message }}</div>
-                            <input type="submit" value="Post" class="btn btn-primary" />
+                            <div class="mb-3">
+                                <textarea id="message-input" name="message" placeholder="Message" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <input type="submit" value="Post" class="btn btn-primary" id="post-submit-btn" />
+                            <span id="sending-indicator" style="display: none; margin-left: 10px;">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Sending...
+                            </span>
                         </form>
                     </div>
                 </div>
                 <!-- Add Character Form -->
                 {% if num_chars != 0 %}
-                    <form method="post" action="" class="mb-3">
+                    <form method="post" action="" class="mb-3" id="add-char-form">
                         {% csrf_token %}
-                        {{ add_char_form.character_to_add }}
+                        <select id="character-to-add" name="character_to_add" class="form-control d-inline-block" style="width: auto;">
+                            <option value="">Add Character</option>
+                            {% for char in add_char_form.fields.character_to_add.queryset %}
+                                <option value="{{ char.pk }}">{{ char.name }}</option>
+                            {% endfor %}
+                        </select>
                         <input type="submit" value="Add" class="btn btn-secondary" />
                     </form>
                 {% endif %}
@@ -99,4 +121,320 @@
             {% endif %}
         {% endif %}
     </div>
+
+    <!-- WebSocket JavaScript for Real-time Chat -->
+    <script>
+    (function() {
+        'use strict';
+
+        // Configuration
+        const SCENE_ID = {{ object.pk }};
+        const CURRENT_USER_ID = {{ request.user.pk|default:"null" }};
+        const SCENE_FINISHED = {{ object.finished|yesno:"true,false" }};
+        const RECONNECT_DELAY = 3000;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+
+        // State
+        let socket = null;
+        let reconnectAttempts = 0;
+        let isConnected = false;
+        let useFallback = false;
+
+        // DOM Elements
+        const postsContainer = document.getElementById('posts-container');
+        const postForm = document.getElementById('post-form');
+        const characterSelect = document.getElementById('character-select');
+        const displayNameInput = document.getElementById('display-name-input');
+        const messageInput = document.getElementById('message-input');
+        const submitBtn = document.getElementById('post-submit-btn');
+        const sendingIndicator = document.getElementById('sending-indicator');
+        const connectionStatus = document.getElementById('connection-status');
+        const statusIndicator = document.getElementById('status-indicator');
+        const noPostsMessage = document.getElementById('no-posts-message');
+
+        // Only initialize WebSocket for active scenes with authenticated users
+        if (!SCENE_FINISHED && CURRENT_USER_ID && postForm) {
+            initWebSocket();
+        }
+
+        function initWebSocket() {
+            try {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/ws/scene/${SCENE_ID}/`;
+
+                socket = new WebSocket(wsUrl);
+
+                socket.onopen = onSocketOpen;
+                socket.onclose = onSocketClose;
+                socket.onerror = onSocketError;
+                socket.onmessage = onSocketMessage;
+            } catch (error) {
+                console.error('WebSocket initialization failed:', error);
+                enableFallback();
+            }
+        }
+
+        function onSocketOpen(event) {
+            console.log('WebSocket connected');
+            isConnected = true;
+            reconnectAttempts = 0;
+            useFallback = false;
+            updateConnectionStatus('connected', 'Connected');
+
+            // Attach WebSocket form handler
+            if (postForm) {
+                postForm.removeEventListener('submit', handleFormSubmit);
+                postForm.addEventListener('submit', handleFormSubmit);
+            }
+        }
+
+        function onSocketClose(event) {
+            console.log('WebSocket disconnected:', event.code, event.reason);
+            isConnected = false;
+
+            if (!useFallback && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                updateConnectionStatus('reconnecting', 'Reconnecting...');
+                reconnectAttempts++;
+                setTimeout(initWebSocket, RECONNECT_DELAY);
+            } else if (!useFallback) {
+                enableFallback();
+            }
+        }
+
+        function onSocketError(event) {
+            console.error('WebSocket error:', event);
+            updateConnectionStatus('error', 'Connection error');
+        }
+
+        function onSocketMessage(event) {
+            try {
+                const data = JSON.parse(event.data);
+
+                switch (data.type) {
+                    case 'new_post':
+                        appendPost(data.post);
+                        break;
+                    case 'character_added':
+                        handleCharacterAdded(data.character);
+                        break;
+                    case 'system_message':
+                        showSystemMessage(data.message);
+                        break;
+                    case 'error':
+                        showError(data.message);
+                        break;
+                    default:
+                        console.log('Unknown message type:', data.type);
+                }
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', error);
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            if (useFallback) {
+                // Regular form submission
+                postForm.submit();
+                return;
+            }
+
+            const characterId = characterSelect ? characterSelect.value : null;
+            const displayName = displayNameInput ? displayNameInput.value.trim() : '';
+            const message = messageInput ? messageInput.value.trim() : '';
+
+            if (!message) {
+                showError('Message cannot be empty');
+                return;
+            }
+
+            if (!characterId) {
+                showError('Please select a character');
+                return;
+            }
+
+            // Send via WebSocket
+            sendMessage(characterId, displayName, message);
+        }
+
+        function sendMessage(characterId, displayName, message) {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                showError('Connection lost. Falling back to standard form.');
+                enableFallback();
+                postForm.submit();
+                return;
+            }
+
+            // Show sending indicator
+            if (submitBtn) submitBtn.disabled = true;
+            if (sendingIndicator) sendingIndicator.style.display = 'inline';
+
+            socket.send(JSON.stringify({
+                type: 'chat_message',
+                character_id: characterId,
+                display_name: displayName,
+                message: message
+            }));
+
+            // Clear input and re-enable button after a short delay
+            // The actual post will be appended when we receive the broadcast
+            setTimeout(function() {
+                if (messageInput) messageInput.value = '';
+                if (displayNameInput) displayNameInput.value = '';
+                if (submitBtn) submitBtn.disabled = false;
+                if (sendingIndicator) sendingIndicator.style.display = 'none';
+            }, 100);
+        }
+
+        function appendPost(post) {
+            // Remove "No posts yet" message if present
+            if (noPostsMessage) {
+                noPostsMessage.remove();
+            }
+
+            // Check if post already exists (prevent duplicates)
+            if (document.querySelector(`[data-post-id="${post.id}"]`)) {
+                return;
+            }
+
+            // Create post element
+            const postDiv = document.createElement('div');
+            postDiv.className = 'mb-3 post-item';
+            postDiv.dataset.postId = post.id;
+            postDiv.style.cssText = 'padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1);';
+
+            // Determine highlight class
+            let highlightClass = '';
+            if (post.is_st) {
+                highlightClass = 'class="st"';
+            } else if (post.owner_id === CURRENT_USER_ID) {
+                highlightClass = 'class="highlight"';
+            }
+
+            // Create HTML (using the sanitized message from server)
+            postDiv.innerHTML = `
+                <p class="post mb-0" style="line-height: 1.6;">
+                    <strong ${highlightClass}>
+                        <a href="${escapeHtml(post.character_url)}" style="font-weight: 600;">${escapeHtml(post.display_name)}</a>
+                    </strong>: ${post.message}
+                </p>
+            `;
+
+            postsContainer.appendChild(postDiv);
+
+            // Scroll to the new post
+            postDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function handleCharacterAdded(character) {
+            // If this is our character, we might need to update the form
+            if (character.owner_id === CURRENT_USER_ID) {
+                // Add to character select if it exists and is a dropdown
+                if (characterSelect && characterSelect.tagName === 'SELECT') {
+                    const option = document.createElement('option');
+                    option.value = character.id;
+                    option.textContent = character.name;
+                    characterSelect.appendChild(option);
+                }
+
+                // Remove from add character dropdown
+                const addCharSelect = document.getElementById('character-to-add');
+                if (addCharSelect) {
+                    const optionToRemove = addCharSelect.querySelector(`option[value="${character.id}"]`);
+                    if (optionToRemove) {
+                        optionToRemove.remove();
+                    }
+                }
+            }
+
+            showSystemMessage(`${character.name} joined the scene`);
+        }
+
+        function enableFallback() {
+            useFallback = true;
+            updateConnectionStatus('fallback', 'Using standard mode');
+            console.log('WebSocket unavailable, using standard form submission');
+
+            // Remove WebSocket handler and let form submit normally
+            if (postForm) {
+                postForm.removeEventListener('submit', handleFormSubmit);
+            }
+        }
+
+        function updateConnectionStatus(status, text) {
+            if (!connectionStatus || !statusIndicator) return;
+
+            connectionStatus.style.display = 'block';
+            statusIndicator.textContent = text;
+
+            // Reset classes
+            statusIndicator.style.backgroundColor = '';
+            statusIndicator.style.color = '';
+
+            switch (status) {
+                case 'connected':
+                    statusIndicator.style.backgroundColor = 'rgba(40, 167, 69, 0.15)';
+                    statusIndicator.style.color = '#28a745';
+                    // Hide after 3 seconds when connected
+                    setTimeout(function() {
+                        connectionStatus.style.display = 'none';
+                    }, 3000);
+                    break;
+                case 'reconnecting':
+                    statusIndicator.style.backgroundColor = 'rgba(255, 193, 7, 0.15)';
+                    statusIndicator.style.color = '#ffc107';
+                    break;
+                case 'error':
+                case 'fallback':
+                    statusIndicator.style.backgroundColor = 'rgba(220, 53, 69, 0.15)';
+                    statusIndicator.style.color = '#dc3545';
+                    break;
+            }
+        }
+
+        function showSystemMessage(message) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-info alert-dismissible fade show';
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+            notification.innerHTML = `
+                ${escapeHtml(message)}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(function() {
+                notification.remove();
+            }, 5000);
+        }
+
+        function showError(message) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-danger alert-dismissible fade show';
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+            notification.innerHTML = `
+                ${escapeHtml(message)}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-remove after 5 seconds
+            setTimeout(function() {
+                notification.remove();
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    })();
+    </script>
 {% endblock content %}
