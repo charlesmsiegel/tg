@@ -354,6 +354,50 @@ This document tracks remaining work across the codebase with context about what 
     - **Context**: Completes mummy gameline's group functionality, matching other gamelines
     - **Independence**: Standalone - can be done independently
 
+### Demon & Servant Character Relationships
+
+27. **Demon Characters Should Identify by Host Name**
+    - **Files**: `characters/models/demon/demon.py`, templates, views
+    - **Impact**: MEDIUM - Confusing display for users
+    - **Issue**: Demon characters have separate `name` (celestial name) and `host_name` fields, but should primarily identify by their host name since that's the mortal identity they use
+    - **Current State**: Name field is treated as primary identifier in lists, detail views, etc.
+    - **Action**:
+      1. Update display logic to show host_name as primary identifier
+      2. Consider making host_name the `name` field and celestial_name a separate field
+      3. Update `__str__` method to return host_name
+      4. Update templates and admin to display appropriately
+    - **Context**: In Demon: The Fallen, the host is the primary identity; celestial name is secret/formal
+    - **Independence**: Standalone - can be done independently
+
+28. **Thrall.master Should Be ForeignKey to Demon**
+    - **File**: `characters/models/demon/thrall.py`
+    - **Impact**: MEDIUM - Currently stores string name, not proper relationship
+    - **Issue**: Thrall's `master` field should be a ForeignKey to Demon model for proper relational integrity
+    - **Current State**: Thralls reference masters by name string (in test data) or unclear relationship
+    - **Action**:
+      1. Add/verify ForeignKey field: `master = models.ForeignKey('Demon', ...)`
+      2. Create migration if field type needs to change
+      3. Update forms to use ModelChoiceField for master selection
+      4. **Important**: During character creation, allow creating a NEW Demon NPC as master (not just selecting existing characters) - integrate with standard NPC creation workflow
+      5. Update admin to show proper relationship
+    - **Context**: Proper ForeignKey enables cascade delete, reverse lookups, and data integrity
+    - **Independence**: Standalone - can be done independently
+
+29. **Ghoul.domitor Should Be ForeignKey to Vampire**
+    - **File**: `characters/models/vampire/ghoul.py`
+    - **Impact**: MEDIUM - Currently stores string name, not proper relationship
+    - **Issue**: Ghoul's domitor should be a ForeignKey to Vampire model for proper relational integrity
+    - **Current State**: Ghouls reference domitors by name string (in test data) or unclear relationship
+    - **Action**:
+      1. Add/verify ForeignKey field: `domitor = models.ForeignKey('Vampire', ...)`
+      2. Create migration if field type needs to change
+      3. Update forms to use ModelChoiceField for domitor selection
+      4. **Important**: During character creation, allow creating a NEW Vampire NPC as domitor (not just selecting existing characters) - integrate with standard NPC creation workflow
+      5. Update admin to show proper relationship
+      6. Consider allowing null domitor for independent/abandoned ghouls
+    - **Context**: Proper ForeignKey enables cascade delete, reverse lookups, and data integrity
+    - **Independence**: Standalone - can be done independently
+
 ### Model & Data Validation
 
 10. **Add model validation for Character status field**
