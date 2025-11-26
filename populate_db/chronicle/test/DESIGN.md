@@ -795,8 +795,10 @@ Key locations in Seattle that have supernatural significance. These should be cr
 
 ### Mage Locations
 
-**Chantry** (Tradition stronghold)
-- **The Cross House**: Victorian mansion on Capitol Hill serving as Seattle's Tradition Chantry. Led by Archmagus Solomon Cross. Interior is spatially expanded; contains library, ritual spaces, and living quarters. Warded against scrying and intrusion.
+**Tradition Chantries** (Council of Nine strongholds)
+- **The Cross House**: Victorian mansion on Capitol Hill serving as Seattle's primary Tradition Chantry. Led by Archmagus Solomon Cross of the Order of Hermes. Interior is spatially expanded; contains library, ritual spaces, and living quarters. Warded against scrying and intrusion. Houses representatives from most Traditions.
+- **The Temple of Inner Light**: Akashic/Celestial Chorus shared chantry in the International District. Dr. Yuki Tanaka and Dr. Hassan Al-Rashid maintain this smaller, meditation-focused sanctum. The building appears to be a wellness center; the interior contains a dojo, prayer rooms, and a small library of Eastern mystical texts.
+- **The Digital Sanctum**: Virtual Adept chantry existing primarily in the Digital Web, with physical access points scattered across Seattle's tech sector. Nexus maintains the primary server farm in a nondescript SODO warehouse. The chantry is more concept than location—members access it from any networked device.
 
 **Nodes** (Places of magical power)
 - **Pike Place Market Node**: Quintessence flows from the creative energy of artists and dreamers. Rating 3.
@@ -804,15 +806,20 @@ Key locations in Seattle that have supernatural significance. These should be cr
 - **Underground Seattle Node**: Dark quintessence from Seattle's buried history. Rating 2.
 - **Maestro's Rave Temple**: Node created by ecstatic dance energy. Rating 3, Cult of Ecstasy maintained.
 - **Puget Sound Deep Node**: Water-aspected node beneath the Sound. Rating unknown, possibly dangerous.
+- **Cross House Garden**: Small node (Rating 2) in the Chantry's warded gardens. Carefully tended quintessence source.
+- **Temple of Inner Light Meditation Chamber**: Rating 2 node aspected toward Mind and Prime. Requires stillness to tap.
 
-**Technocracy Locations**
-- **Prometheus Labs**: Progenitor biotech front company. Research facility for Awakened biology.
-- **Hayes Tower**: NWO surveillance hub hidden in corporate high-rise.
-- **Iteration X Field Office**: Location unknown; rumored to be mobile or underground.
+**Technocratic Constructs** (Union Chantries)
+The Technocracy calls their chantries "Constructs"—fortified bases of operations that serve the same function as Tradition chantries but with Union methodology and aesthetics.
+- **Prometheus Labs**: Progenitor Construct disguised as a biotech research campus in South Lake Union. Multiple buildings connected by underground tunnels. Contains genetics labs, bio-enhancement facilities, and a small Dimensional Science division. Director: Dr. Elena Vasquez.
+- **Hayes Tower**: NWO Construct occupying floors 40-45 of a downtown corporate high-rise. Surveillance hub monitoring Seattle's Reality Deviants. Contains interrogation facilities, data centers, and a small cadre of Men in Black. Director: Marcus Hayes.
+- **Site 7**: Iteration X field installation, location classified. Rumored to be mobile—possibly a converted cargo ship or underground bunker. Houses HIT Mark production and maintenance facilities. Cyborg operatives deploy from here.
+- **Federal Building Annex**: Syndicate Construct hidden within legitimate government offices. Handles economic warfare, funding allocation, and Reality Deviant financial tracking. Small but well-resourced.
 
 **Horizon Realm Access**
-- **Cross House**: Chantry has a gateway to the Horizon.
+- **Cross House**: Chantry has a gateway to a small Horizon realm maintained by the Order of Hermes.
 - **Digital Web Access Point**: Nexus maintains servers with stable DW connections.
+- **Temple of Inner Light**: Minor gateway to a peaceful meditation realm in the Horizon.
 
 ---
 
