@@ -306,188 +306,190 @@ This document is a temporary planning space for test data to be created.
 
 ## Character Groups
 
+Player key: Shadow=xXShadowWolfXx, Cryptic=CrypticMoon, Night=NightOwl_42, Pixel=pixel_witch, Byte=ByteSlayer, Ghost=gh0st_in_shell, Zephyr=Zephyr_Storm, N00b=n00b_hunter, Electric=ElectricDreamer, Void=void_whisper
+
 ### Vampire Coteries
 
 **The Inner Circle** (Camarilla Elite)
-- Marcus Antonio (Ventrue) - Leader, controls finances
-- Isabella Santos (Tremere) - Magical expertise
-- Silence (Lasombra antitribu) - Enforcer, distrusted but effective
+- Marcus Antonio [Zephyr] - Ventrue, leader, controls finances
+- Isabella Santos [Cryptic] - Tremere, magical expertise
+- Silence [Void] - Lasombra antitribu, enforcer
 
 **The Night Gallery** (Artists & Visionaries)
-- Zoe Kim (Toreador) - Digital art curator
-- Cassandra Vex (Malkavian) - Prophetic artist
-- Roland Cross (Malkavian) - Conspiracy theorist/seer
+- Zoe Kim [Pixel] - Toreador, digital art curator
+- Cassandra Vex [Electric] - Malkavian, prophetic artist
+- Roland Cross [Night] - Malkavian, conspiracy theorist/seer
 
 **The Underground** (Street-Level Operations)
-- Marcus "Shadow" Webb (Nosferatu) - Information broker, unofficial leader
-- Viktor Krueger (Brujah) - Labor advocate, muscle
-- Diana Cross (Gangrel) - Wilderness scout, reluctant member
+- Marcus "Shadow" Webb [Shadow] - Nosferatu, information broker, leader
+- Viktor Krueger [Byte] - Brujah, labor advocate, muscle
+- Diana Cross [Ghost] - Gangrel, wilderness scout
 
 **Unaffiliated Vampires**
-- Ricardo "Rico" Mendez (Brujah) - Too new, being courted by multiple coteries
+- Ricardo "Rico" Mendez [N00b] - Brujah neonate, too new
 
-**Ghouls** - Serve their domitors, not independent
-**Revenants** - Dmitri Zantosa (independent), Natasha Grimaldi (Camarilla asset), Alexei Danislav (refugee)
+**Ghouls** - Serve their domitors
+**Revenants** - Dmitri Zantosa [Cryptic], Natasha Grimaldi [Byte], Alexei Danislav [Void] - independent
 
 ---
 
 ### Werewolf Packs
 
 **Silicon Fangs** (Urban/Tech-Focused)
-- Runs-Through-Fire (Glass Walker Ahroun) - Alpha, protector
-- Silicon Dreams (Glass Walker Galliard) - Chronicler, communications
-- Stalks-the-Pattern (Silent Strider Ragabash) - Scout, investigator
-- Dreamwalker (Stargazer Theurge) - Spiritual guide
+- Runs-Through-Fire [Shadow] - Glass Walker Ahroun, Alpha
+- Silicon Dreams [Pixel] - Glass Walker Galliard, chronicler
+- Stalks-the-Pattern [Ghost] - Silent Strider Ragabash, scout
+- Dreamwalker [Electric] - Stargazer Theurge, spiritual guide
 
 **The Wardens** (Traditional Warriors)
-- Cuts-Through-Steel (Get of Fenris Ahroun) - Alpha, war leader
-- Watches-the-Void (Shadow Lord Theurge) - Spiritual advisor, schemer
-- Chases-the-Wind (Wendigo Galliard) - Keeper of ways, activist
-- Whispers-to-Stars (Uktena Theurge) - Spirit-speaker, healer
+- Cuts-Through-Steel [Byte] - Get of Fenris Ahroun, Alpha
+- Watches-the-Void [Void] - Shadow Lord Theurge, advisor
+- Chases-the-Wind [Zephyr] - Wendigo Galliard, keeper of ways
+- Whispers-to-Stars [Cryptic] - Uktena Theurge, spirit-speaker
 
 **The Forgotten** (Outcasts)
-- Breaks-the-Chain (Bone Gnawer Ragabash) - Survivor, trickster
-- First-Kill (Red Talon cub) - Struggling with rage, being mentored
+- Breaks-the-Chain [Night] - Bone Gnawer Ragabash, trickster
+- First-Kill [N00b] - Red Talon cub, being mentored
 
-**Fera** - Mostly solitary; Dr. Maya Singh (Ananasi), Clickbait (Ratkin), Nevermore (Corax), Tabitha Quinn (Bastet), Solomon Drake (Mokole), Dr. Sanjay Patel (Nagah) operate independently
+**Fera** - Independent: Dr. Maya Singh/Ananasi [Cryptic], Clickbait/Ratkin [Pixel], Nevermore/Corax [Ghost], Tabitha Quinn/Bastet [N00b], Solomon Drake/Mokole [Electric], Dr. Sanjay Patel/Nagah [Void]
 
-**Kinfolk** - Support their respective tribes
+**Kinfolk** - Sarah Morningkill [Shadow], Old Pete [Night], Mike Donovan [Byte], Rosa Martinez [Zephyr]
 
 ---
 
 ### Mage Cabals
 
 **The Invisible College** (Cross-Tradition Alliance)
-- Dr. Eleanor Vance (Euthanatos) - Leader, guides transitions
-- Samantha "Sam" Torres (Dreamspeaker) - Dream specialist
-- Dr. Hassan Al-Rashid (Celestial Chorus) - Provides sanctuary
-- Iris Quantum (Cult of Ecstasy) - Altered states expert
+- Dr. Eleanor Vance [Cryptic] - Euthanatos, leader
+- Samantha "Sam" Torres [Night] - Dreamspeaker, dream specialist
+- Dr. Hassan Al-Rashid [Byte] - Celestial Chorus, sanctuary
+- Iris Quantum [Electric] - Cult of Ecstasy, altered states
 
 **The Digital Underground** (Tech-Focused Resistance)
-- Victor Reyes (Virtual Adept) - Reality hacker
-- Priya Sharma (Virtual Adept) - Information freedom fighter
-- Ghost (Virtual Adept) - Exists between worlds
+- Victor Reyes [Shadow] - Virtual Adept, reality hacker
+- Priya Sharma [Pixel] - Virtual Adept, information freedom
+- Ghost [Ghost] - Virtual Adept, exists between worlds
 
 **The Fortunate Few** (Resources & Planning)
-- Aurora Sinclair (Order of Hermes, House Fortunae) - Fate reader, finances
+- Aurora Sinclair [Zephyr] - Order of Hermes, fate reader
 
 **The Threshold** (Death & Transformation)
-- Zero (Euthanatos) - Redemption seeker, mentor to those near the edge
+- Zero [Void] - Euthanatos, redemption seeker
 
 **Unaffiliated Mages**
-- Tyler Wright (Orphan) - Too new, being watched by multiple factions
+- Tyler Wright [N00b] - Orphan, too new
 
-**Sorcerers** - Independent practitioners, occasional allies
-**Companions** - Support the Chantry without practicing magic
+**Sorcerers** - Min-Ji Park [Shadow], Howard Chen [Night], Grandmother Liu [Byte], Nathan Graves [Ghost], Emma Chen [N00b], Helena Marsh [Void]
+**Companions** - Father Miguel Torres [Cryptic], James Liu [Pixel], Theodore Barnes [Zephyr], Dr. Marcus Webb [Electric]
 
 ---
 
 ### Wraith Circles
 
 **The Unquiet** (Seeking Resolution)
-- Thomas Blackwood - 1920s bootlegger, knows the underground
-- Lily Tanaka - Internment camp victim, fierce protector
-- Jane Doe #47 - Cold case victim, solves murders
-- Corporal James Murphy - WWI veteran, lost in time
+- Thomas Blackwood [Shadow] - 1920s bootlegger
+- Lily Tanaka [Cryptic] - Internment camp victim
+- Jane Doe #47 [Ghost] - Cold case victim
+- Corporal James Murphy [Night] - WWI veteran
 
 **The Watch** (Hierarchy Loyalists)
-- Sergeant Major William Price - Protects homeless wraiths
-- Captain Henrik Johansson - Maritime specialist
-- The Silence - Efficient Reaper, enforcer
+- Sergeant Major William Price [Byte] - Protects homeless wraiths
+- Captain Henrik Johansson [Zephyr] - Maritime specialist
+- The Silence [Void] - Efficient Reaper
 
 **The Lost Generation** (New Dead)
-- Arcade - 1989 teenager, sees death as a game
-- Brandon Cole - Recent OD, confused and grieving
-- FREQUENCY - 1990s musician, still creating
+- Arcade [Pixel] - 1989 teenager
+- Brandon Cole [N00b] - Recent OD
+- FREQUENCY [Electric] - 1990s musician
 
 ---
 
 ### Changeling Motleys
 
 **The Toybox Rebellion** (Makers & Dreamers)
-- Pixel (Nocker wilder) - Video game creator
-- Widget (Boggan wilder) - Cafe owner, heart of the group
-- Forge (Nocker grump) - Master craftsman, mentor
-- Sprocket (Nocker childling) - Apprentice
+- Pixel [Shadow] - Nocker wilder, video game creator
+- Widget [Pixel] - Boggan wilder, cafe owner
+- Forge [Byte] - Nocker grump, master craftsman
+- Sprocket [N00b] - Nocker childling, apprentice
 
 **The Court of Whispers** (Secrets & Intrigue)
-- Lord Ashford (Sidhe grump) - Ancient noble, leader
-- Brambleheart (Sluagh grump) - Death secrets specialist
-- Hollow (Sluagh wilder) - Urban explorer
-- Umbra (Sluagh grump) - Elder, remembers the Shattering
+- Lord Ashford [Cryptic] - Sidhe grump, ancient noble
+- Brambleheart [Night] - Sluagh grump, death secrets
+- Hollow [Ghost] - Sluagh wilder, urban explorer
+- Umbra [Void] - Sluagh grump, elder
 
 **The Storm's Eye** (Idealists)
-- Tempest (Sidhe wilder) - Passionate leader
-- Neon (Pooka wilder) - Party promoter, loyal friend
+- Tempest [Zephyr] - Sidhe wilder, passionate leader
+- Neon [Electric] - Pooka wilder, party promoter
 
-**Inanimae** - Granite, Codex, Zephyr, Circuit - newly awakened, finding their place
-**Nunnehi** - Rain Walker, Thunder Bear, Raven's Shadow - separate from Kithain
-**Autumn People** - Margaret Wells, David Kowalski, Jenny Walsh - unaware hosts
+**Inanimae** - Granite [Shadow], Codex [Pixel], Zephyr [Zephyr], Circuit [Electric] - newly awakened
+**Nunnehi** - Rain Walker [Cryptic], Thunder Bear [Byte], Raven's Shadow [Void] - separate from Kithain
+**Autumn People** - Margaret Wells [Night], David Kowalski [Ghost], Jenny Walsh [N00b] - unaware hosts
 
 ---
 
 ### Demon Courts
 
 **The Architects** (Faustian/Cryptic Alliance)
-- Magistrix (Malefactor) - City shaper, ambitious
-- Ashmedai (Malefactor) - System builder
-- Penemue (Fiend) - Knowledge seeker
-- Arakiel (Fiend) - Scientific truth-seeker
+- Magistrix [Shadow] - Malefactor, city shaper
+- Ashmedai [Byte] - Malefactor, system builder
+- Penemue [Zephyr] - Fiend, knowledge seeker
+- Arakiel [Night] - Fiend, scientific truth-seeker
 
 **The Muses** (Reconciler Tendency)
-- Verath the Whisper (Defiler) - Inspires artists
-- Rahab (Defiler) - Rediscovers creation's joy
-- Sariel (Neberu) - Dream explorer
-- Allocer (Defiler) - New, seeking validation
+- Verath the Whisper [Cryptic] - Defiler, inspires artists
+- Rahab [Pixel] - Defiler, rediscovers creation
+- Sariel [Electric] - Neberu, dream explorer
+- Allocer [N00b] - Defiler, seeking validation
 
 **The Reckoning** (Luciferan/Ravener Edge)
-- Abaddon (Slayer) - Dispenses harsh justice
-- Murmur (Neberu) - Uncovers hidden truths
+- Abaddon [Void] - Slayer, dispenses harsh justice
+- Murmur [Ghost] - Neberu, uncovers hidden truths
 
-**Earthbound** - The Resonance, The Foundation, The Frequency - territorial, dangerous
-**Thralls** - Serve their demon masters
+**Earthbound** - The Resonance [Cryptic], The Foundation [Byte], The Frequency [Electric] - territorial
+**Thralls** - Kevin Rhodes [Shadow], Dr. Patricia Huang [Night], Marcus Webb [Pixel], Janet Price [Ghost], Sarah Mitchell [Zephyr], Jason Park [N00b], Detective Morris [Void]
 
 ---
 
 ### Hunter Cells
 
 **The Vigil** (Direct Action)
-- Jake Mercer - Former cop, investigator, leader
-- Maria Vasquez - Hospice nurse, protector of the dying
-- Yuki Tanaka - Martial artist, combat specialist
-- Rachel Kim - Mortician, disposal expert
+- Jake Mercer [Shadow] - Former cop, leader
+- Maria Vasquez [Cryptic] - Hospice nurse
+- Yuki Tanaka [Byte] - Martial artist
+- Rachel Kim [Void] - Mortician, disposal
 
 **The Network** (Information & Tracking)
-- Derek Stone - Teacher, recruiter, cell coordinator
-- Alex Chen - Content moderator, digital surveillance
-- Chris Walker - Paranormal investigator, researcher
-- Marcus Johnson - Meteorologist, pattern analyst
+- Derek Stone [Night] - Teacher, recruiter
+- Alex Chen [Pixel] - Content moderator
+- Chris Walker [Ghost] - Paranormal investigator
+- Marcus Johnson [Zephyr] - Meteorologist
 
 **The Support Group** (Healing & Mentorship)
-- Jasmine Torres - Therapist, psychological support for hunters
-- Kyle Morrison - Rookie, being mentored by the group
+- Jasmine Torres [Electric] - Therapist
+- Kyle Morrison [N00b] - Rookie
 
 ---
 
 ### Mummy Cults
 
 **The House of Scrolls** (Scholars of Thoth)
-- Kherpheres (Thoth) - Librarian, text recovery
-- Nefertari (Osiris) - Forensic accountant, record keeper
-- Djehutymes (Thoth) - Dream interpreter, emerging
+- Kherpheres [Cryptic] - Thoth, librarian
+- Nefertari [Ghost] - Osiris, forensic accountant
+- Djehutymes [Electric] - Thoth, dream interpreter
 
 **The Keepers of Ma'at** (Balance & Protection)
-- Ankh-ef-en-Khonsu (Khonsu) - Museum curator, artifact guardian
-- Senenmut (architect) - Structural engineer, sacred geometry
-- Imhotep-ka (architect/healer) - City planner, spiritual channels
+- Ankh-ef-en-Khonsu [Shadow] - Khonsu, museum curator
+- Senenmut [Night] - Architect, structural engineer
+- Imhotep-ka [Zephyr] - Architect/healer, city planner
 
 **The Lions of Sekhmet** (Warriors)
-- Ramesses-ankh (warrior) - MMA fighter, seeks worthy foes
-- Sekhmet-hotep (Sekhmet) - Breaking the cycle of violence
+- Ramesses-ankh [Byte] - Warrior, MMA fighter
+- Sekhmet-hotep [Void] - Sekhmet, hospice nurse
 
 **The Awakening** (Newly Risen)
-- Meritaten - Museum guard, memories emerging
-- Ahkenaten-ba - Barista, barely begun
+- Meritaten [Pixel] - Princess, museum guard
+- Ahkenaten-ba [N00b] - Scribe, barista
 
 ---
 
