@@ -239,6 +239,11 @@ GAMELINES = {
         "short": "HtR",
         "app_name": "hunter",
     },
+    "orp": {
+        "name": "Orpheus",
+        "short": "Orp",
+        "app_name": "orpheus",
+    },
 }
 
 # Helper to get gameline choices for model fields
@@ -285,7 +290,7 @@ LOGGING = {
         },
         # Debug console handler (only in DEBUG mode)
         "console_debug": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
             "filters": ["require_debug_true"],

@@ -88,11 +88,11 @@ class Hunter(HtRHuman):
     )
 
     # Cell members (many-to-many relationship)
+    # symmetrical=True means if A is in B's cell, B is automatically in A's cell
     cell_members = models.ManyToManyField(
         "self",
         blank=True,
         symmetrical=True,
-        related_name="cell_allies",
     )
 
     class Meta:

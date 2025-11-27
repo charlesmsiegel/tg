@@ -76,5 +76,3 @@ neophyte = MummyTitle.objects.get_or_create(
     rank_level=1,
     description="Newly awakened Amenti, still learning their purpose.",
 )[0]
-
-print("Created 12 Mummy Titles")

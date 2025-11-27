@@ -187,6 +187,11 @@ class Profile(models.Model):
     def item_images_to_approve(self):
         return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
 
+    @property
+    def theme_list(self):
+        """Return valid theme keys from ThemeChoices."""
+        return [key for key, _ in ThemeChoices.CHOICES]
+
     def clean(self):
         """Validate profile data before saving."""
         super().clean()

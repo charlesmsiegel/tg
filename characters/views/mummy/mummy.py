@@ -2,10 +2,9 @@ from typing import Any
 
 from characters.models.mummy.mummy import Mummy
 from characters.views.core.human import HumanDetailView
-from core.mixins import ApprovedUserContextMixin
 
 
-class MummyDetailView(ApprovedUserContextMixin, HumanDetailView):
+class MummyDetailView(HumanDetailView):
     model = Mummy
     template_name = "characters/mummy/mummy/detail.html"
 

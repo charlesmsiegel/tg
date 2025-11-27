@@ -93,20 +93,22 @@ class Changeling(CtDHuman):
         default="",
         max_length=20,
         choices=MUSING_THRESHOLDS,
+        blank=True,
     )
     ravaging_threshold = models.CharField(
         default="",
         max_length=20,
         choices=RAVAGING_THRESHOLDS,
+        blank=True,
     )
 
-    antithesis = models.TextField(default="")
+    antithesis = models.TextField(default="", blank=True)
 
-    true_name = models.TextField(default="")
+    true_name = models.TextField(default="", blank=True)
     date_ennobled = models.DateField(blank=True, null=True)
-    crysalis = models.TextField(default="")
+    crysalis = models.TextField(default="", blank=True)
     date_of_crysalis = models.DateField(blank=True, null=True)
-    fae_mien = models.TextField(default="")
+    fae_mien = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Changeling"

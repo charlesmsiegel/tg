@@ -87,7 +87,7 @@ class Mage(MtAHuman):
     )
 
     essence = models.CharField(
-        default="",
+        default="Dynamic",
         max_length=100,
         choices=[
             ("Dynamic", "Dynamic"),
@@ -166,7 +166,7 @@ class Mage(MtAHuman):
     )
 
     age_of_awakening = models.IntegerField(default=0)
-    avatar_description = models.TextField(default="")
+    avatar_description = models.TextField(default="", blank=True)
 
     resonance = models.ManyToManyField("Resonance", through="ResRating")
 

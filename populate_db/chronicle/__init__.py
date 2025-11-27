@@ -1,1 +1,0 @@
-# Chronicle population scripts

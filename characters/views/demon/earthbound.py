@@ -1,7 +1,6 @@
 from characters.forms.core.limited_edit import LimitedEarthboundEditForm
 from characters.models.demon import Earthbound
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     MessageMixin,
     ViewPermissionMixin,
@@ -11,7 +10,7 @@ from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class EarthboundDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class EarthboundDetailView(ViewPermissionMixin, DetailView):
     model = Earthbound
     template_name = "characters/demon/earthbound/detail.html"
 
@@ -117,7 +116,6 @@ class EarthboundCreateView(MessageMixin, CreateView):
         "tactics",
         "torture",
         "celestial_name",
-        "true_name",
         "date_summoned",
         "time_in_stasis",
     ]
@@ -126,7 +124,7 @@ class EarthboundCreateView(MessageMixin, CreateView):
     error_message = "Failed to create earthbound. Please correct the errors below."
 
 
-class EarthboundUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class EarthboundUpdateView(EditPermissionMixin, UpdateView):
     model = Earthbound
     fields = [
         "name",
@@ -223,7 +221,6 @@ class EarthboundUpdateView(ApprovedUserContextMixin, EditPermissionMixin, Update
         "tactics",
         "torture",
         "celestial_name",
-        "true_name",
         "date_summoned",
         "time_in_stasis",
     ]

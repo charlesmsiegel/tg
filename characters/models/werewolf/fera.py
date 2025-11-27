@@ -19,10 +19,10 @@ class Fera(WtAHuman):
     freebie_step = 8
 
     # Fera breed - varies by type
-    breed = models.CharField(default="", max_length=100)
+    breed = models.CharField(default="", max_length=100, blank=True)
 
     # Most Fera have some form of tribal/aspect system
-    faction = models.CharField(default="", max_length=100)
+    faction = models.CharField(default="", max_length=100, blank=True)
 
     # Fera use Rage, Gnosis, and Willpower like Garou
     gnosis = models.IntegerField(default=0)
@@ -38,7 +38,7 @@ class Fera(WtAHuman):
     fetishes_owned = models.ManyToManyField(Fetish, blank=True)
 
     # Story information
-    first_change = models.TextField(default="")
+    first_change = models.TextField(default="", blank=True)
     age_of_first_change = models.IntegerField(default=0)
 
     gift_permissions = models.ManyToManyField(GiftPermission, blank=True)

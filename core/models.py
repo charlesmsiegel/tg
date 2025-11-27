@@ -294,8 +294,14 @@ class PermissionMixin(models.Model):
 
     def add_observer(self, user, granted_by):
         """Grant observer access to a user."""
+        from django.contrib.contenttypes.models import ContentType
+
+        content_type = ContentType.objects.get_for_model(self)
         Observer.objects.get_or_create(
-            content_object=self, user=user, defaults={"granted_by": granted_by}
+            content_type=content_type,
+            object_id=self.pk,
+            user=user,
+            defaults={"granted_by": granted_by}
         )
 
     def remove_observer(self, user):
@@ -307,7 +313,7 @@ class Model(PermissionMixin, PolymorphicModel):
     type = "model"
     gameline = "wod"  # Default gameline; override in subclasses
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     chronicle = models.ForeignKey(
@@ -324,8 +330,8 @@ class Model(PermissionMixin, PolymorphicModel):
     )
     display = models.BooleanField(default=True)
     sources = models.ManyToManyField(BookReference, blank=True)
-    description = models.TextField(default="")
-    public_info = models.TextField(default="")
+    description = models.TextField(default="", blank=True)
+    public_info = models.TextField(default="", blank=True)
     image = models.ImageField(upload_to=filepath, blank=True, null=True)
     image_status = models.CharField(
         max_length=3,
@@ -334,7 +340,7 @@ class Model(PermissionMixin, PolymorphicModel):
     )
     freebies_approved = models.BooleanField(default=False)
 
-    st_notes = models.TextField(default="")
+    st_notes = models.TextField(default="", blank=True)
 
     class Meta:
         abstract = True
@@ -405,6 +411,11 @@ class Model(PermissionMixin, PolymorphicModel):
 
         return get_gameline_name(self.get_gameline())
 
+    @property
+    def status_keys(self):
+        """Return valid status keys from CharacterStatus."""
+        return [key for key, _ in CharacterStatus.CHOICES]
+
     def clean(self):
         """Validate model data before saving."""
         super().clean()
@@ -427,8 +438,9 @@ class Model(PermissionMixin, PolymorphicModel):
             raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
+        """Ensure validation runs on save unless skip_validation=True."""
+        if not kwargs.pop("skip_validation", False):
+            self.full_clean()
         super().save(*args, **kwargs)
 
 
@@ -556,7 +568,7 @@ class Noun(models.Model):
 class HouseRule(models.Model):
     name = models.CharField(default="", max_length=100)
     sources = models.ManyToManyField(BookReference, blank=True)
-    description = models.TextField(default="")
+    description = models.TextField(default="", blank=True)
     chronicle = models.ForeignKey(
         Chronicle, blank=True, null=True, on_delete=models.SET_NULL
     )

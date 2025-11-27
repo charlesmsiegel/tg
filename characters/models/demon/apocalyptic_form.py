@@ -10,7 +10,7 @@ class ApocalypticFormTrait(Model):
     gameline = "dtf"
 
     # Description of what this trait does
-    description = models.TextField(default="")
+    description = models.TextField(default="", blank=True)
 
     # Point cost for this trait (1-5, typically 1-3)
     cost = models.IntegerField(default=1)

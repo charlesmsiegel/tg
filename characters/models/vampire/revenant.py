@@ -95,9 +95,7 @@ class Revenant(VtMHuman):
     actual_age = models.IntegerField(
         default=0, help_text="Actual chronological age in years"
     )
-    apparent_age = models.IntegerField(
-        default=0, help_text="How old the revenant appears to be"
-    )
+    # apparent_age is inherited from Human
 
     class Meta:
         verbose_name = "Revenant"

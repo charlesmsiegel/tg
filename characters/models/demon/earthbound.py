@@ -199,9 +199,6 @@ class Earthbound(LoreBlock, DtFHuman):
     celestial_name = models.CharField(
         max_length=200, default="", help_text="The demon's Celestial Name"
     )
-    true_name = models.CharField(
-        max_length=200, default="", help_text="The demon's True Name (powerful secret)"
-    )
 
     # HISTORY
     date_summoned = models.CharField(

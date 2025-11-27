@@ -59,7 +59,7 @@ class Chantry(BackgroundBlock, LocationModel):
     ]
 
     leadership_type = models.CharField(
-        max_length=20, null=True, choices=LEADERSHIP_CHOICES
+        max_length=20, null=True, blank=True, choices=LEADERSHIP_CHOICES
     )
     leaders = models.ManyToManyField(
         Human, blank=True, related_name="chantry_leader_at"
@@ -75,6 +75,7 @@ class Chantry(BackgroundBlock, LocationModel):
     season = models.CharField(
         max_length=100,
         null=True,
+        blank=True,
         choices=SEASONS,
     )
 
@@ -95,6 +96,7 @@ class Chantry(BackgroundBlock, LocationModel):
     chantry_type = models.CharField(
         max_length=100,
         null=True,
+        blank=True,
         choices=CHANTRY_TYPES,
     )
 

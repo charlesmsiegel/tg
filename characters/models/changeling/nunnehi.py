@@ -46,7 +46,8 @@ class Nunnehi(CtDHuman):
     )
 
     # Nunnehi use Medicine instead of Glamour
-    medicine = models.IntegerField(
+    # Named spirit_medicine to avoid clash with Human.medicine ability
+    spirit_medicine = models.IntegerField(
         default=4, help_text="Spiritual power (equivalent to Glamour)"
     )
 
@@ -126,16 +127,16 @@ class Nunnehi(CtDHuman):
         self.nunnehi_seeming = seeming
         # Adjust starting Medicine by seeming
         if seeming == "katchina":
-            self.medicine = 5  # Young and energetic
+            self.spirit_medicine = 5  # Young and energetic
         elif seeming == "kurganegh":
-            self.medicine = 3  # Elder, less raw power but more wisdom
+            self.spirit_medicine = 3  # Elder, less raw power but more wisdom
         else:
-            self.medicine = 4  # Kohedan
+            self.spirit_medicine = 4  # Kohedan
         return True
 
-    def add_medicine(self):
-        """Add a dot of Medicine (like Glamour for Changelings)"""
-        return add_dot(self, "medicine", 10)
+    def add_spirit_medicine(self):
+        """Add a dot of Spirit Medicine (like Glamour for Changelings)"""
+        return add_dot(self, "spirit_medicine", 10)
 
     def set_sacred_place(self, place):
         """Set the sacred place connection"""

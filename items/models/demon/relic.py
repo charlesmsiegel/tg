@@ -17,6 +17,8 @@ class Relic(ItemModel):
             ("enhanced", "Enhanced Relic"),
             ("enchanted", "Enchanted Relic"),
             ("house_specific", "House-Specific Relic"),
+            ("demonic", "Demonic Relic"),
+            ("ancient", "Ancient Relic"),
         ],
     )
 
@@ -24,13 +26,13 @@ class Relic(ItemModel):
     complexity = models.IntegerField(default=1)
 
     # Lore used to create the relic
-    lore_used = models.CharField(max_length=200, default="")
+    lore_used = models.CharField(max_length=200, default="", blank=True)
 
     # Power/effect description
-    power = models.TextField(default="")
+    power = models.TextField(default="", blank=True)
 
     # Material suitability
-    material = models.TextField(default="")
+    material = models.TextField(default="", blank=True)
 
     # House association (for house-specific relics)
     house = models.ForeignKey(

@@ -14,7 +14,7 @@ class RenownIncident(Model):
 
     posthumous = models.BooleanField(default=False)
     only_once = models.BooleanField(default=False)
-    breed = models.CharField(default="", max_length=10)
+    breed = models.CharField(default="", max_length=10, blank=True)
     rite = models.ForeignKey(Rite, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:

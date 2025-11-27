@@ -307,7 +307,6 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
     model = Demon
     fields = [
         "celestial_name",
-        "true_name",
         "host_name",
         "age_of_fall",
         "abyss_duration",
@@ -324,9 +323,6 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["celestial_name"].widget.attrs.update(
             {"placeholder": "Your name before the Fall"}
-        )
-        form.fields["true_name"].widget.attrs.update(
-            {"placeholder": "Your true angelic name"}
         )
         form.fields["host_name"].widget.attrs.update(
             {"placeholder": "Name of the mortal body you inhabit"}

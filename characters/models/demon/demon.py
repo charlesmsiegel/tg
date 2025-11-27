@@ -93,16 +93,15 @@ class Demon(LoreBlock, DtFHuman):
     )
 
     # Host information
-    host_name = models.CharField(max_length=200, default="")
+    host_name = models.CharField(max_length=200, default="", blank=True)
     days_until_consumption = models.IntegerField(default=30)
 
     # Celestial names
-    celestial_name = models.CharField(max_length=200, default="")
-    true_name = models.CharField(max_length=200, default="")
+    celestial_name = models.CharField(max_length=200, default="", blank=True)
 
     # History
     age_of_fall = models.IntegerField(default=0)
-    abyss_duration = models.TextField(default="")  # Time in the Abyss
+    abyss_duration = models.TextField(default="", blank=True)  # Time in the Abyss
 
     background_points = 5
     apocalyptic_form_points = 16  # Point budget for apocalyptic form traits
@@ -319,7 +318,7 @@ class Demon(LoreBlock, DtFHuman):
     def has_demon_history(self):
         """Check if demon has celestial name and history."""
         return (
-            self.celestial_name != "" and self.true_name != "" and self.age_of_fall != 0
+            self.celestial_name != "" and self.age_of_fall != 0
         )
 
     def get_pacts(self):

@@ -478,13 +478,3 @@ akashic_monk = CharacterTemplate.objects.get_or_create(
         "is_public": True,
     },
 )[0].add_source("Mage: The Ascension Revised", 60)
-
-print("Faction-specific templates created successfully!")
-print(f"- {brujah_brawler.name} (Brujah)")
-print(f"- {tremere_scholar.name} (Tremere)")
-print(f"- {toreador_artist.name} (Toreador)")
-print(f"- {glass_walker_hacker.name} (Glass Walkers)")
-print(f"- {red_talon_predator.name} (Red Talons)")
-print(f"- {verbena_herbalist.name} (Verbena)")
-print(f"- {order_hermes_magus.name} (Order of Hermes)")
-print(f"- {akashic_monk.name} (Akashic Brotherhood)")

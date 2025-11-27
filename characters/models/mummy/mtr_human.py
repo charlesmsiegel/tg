@@ -121,7 +121,6 @@ class MtRHuman(Human):
     allies = models.IntegerField(default=0)
     resources = models.IntegerField(default=0)
     retainers = models.IntegerField(default=0)
-    cult = models.IntegerField(default=0)
     tomb = models.IntegerField(default=0)
     rank = models.IntegerField(default=0)
     remembrance = models.IntegerField(default=0)

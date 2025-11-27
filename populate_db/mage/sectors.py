@@ -367,7 +367,7 @@ dark_web_hub = Sector.objects.get_or_create(
         "hazards": "CAUTION: Illegal activity, Reality Deviants (Virtual Adepts, Glass Walkers), Nephandi lairs, botnets, surveillance risk",
     },
 )[0]
-dark_web_hub.add_source("The Operative's Dossier", 70 - 71)
+dark_web_hub.add_source("The Operative's Dossier", 70)
 
 # Ultima Thule Research Sector
 ultima_thule_sector = Sector.objects.get_or_create(
@@ -395,7 +395,7 @@ ultima_thule_sector = Sector.objects.get_or_create(
         "hazards": "Severe communication delay, messages garbled, temporal distortion, isolation, may lose contact entirely",
     },
 )[0]
-ultima_thule_sector.add_source("The Operative's Dossier", 22 - 24)
+ultima_thule_sector.add_source("The Operative's Dossier", 22)
 
 # Arcology X Sector
 arcology_x_sector = Sector.objects.get_or_create(
@@ -424,7 +424,7 @@ arcology_x_sector = Sector.objects.get_or_create(
         "hazards": "Total surveillance, potential TE attacks (Noah Campeau), Virtual Adept intrusions, system havoc risk",
     },
 )[0]
-arcology_x_sector.add_source("The Operative's Dossier", 13 - 15)
+arcology_x_sector.add_source("The Operative's Dossier", 13)
 
 # ====================
 # FAMOUS SECTORS FROM THE OPERATIVE'S DOSSIER
@@ -463,7 +463,7 @@ the_seer = Sector.objects.get_or_create(
         "hazards": "The Seer's judgment (harsh for unworthy), information overload, guardian constructs, knowledge seekers may never leave",
     },
 )[0]
-the_seer.add_source("The Operative's Dossier", 122 - 123)
+the_seer.add_source("The Operative's Dossier", 122)
 
 # Paradise Island - Tropical Resort Sector
 paradise_island = Sector.objects.get_or_create(
@@ -561,7 +561,7 @@ ghastenburg_castle = Sector.objects.get_or_create(
         "hazards": "Dragon attacks, dungeon traps, orc raids, magic backfire, permanent character death possible",
     },
 )[0]
-ghastenburg_castle.add_source("The Operative's Dossier", 123 - 124)
+ghastenburg_castle.add_source("The Operative's Dossier", 123)
 
 # The Playground - Defunct Gaming Sector
 the_playground = Sector.objects.get_or_create(
@@ -853,6 +853,3 @@ net_sphinx_library = Sector.objects.get_or_create(
     },
 )[0]
 net_sphinx_library.add_source("The Operative's Dossier", 127)
-
-print("Digital Web Sectors populated successfully!")
-print(f"Total sectors created: {Sector.objects.count()}")

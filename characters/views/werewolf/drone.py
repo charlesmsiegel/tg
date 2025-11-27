@@ -15,7 +15,6 @@ from characters.views.core.human import (
     HumanCharacterCreationView,
 )
 from core.mixins import (
-    ApprovedUserContextMixin,
     EditPermissionMixin,
     ViewPermissionMixin,
 )
@@ -23,12 +22,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
 
-class DroneDetailView(ApprovedUserContextMixin, ViewPermissionMixin, DetailView):
+class DroneDetailView(ViewPermissionMixin, DetailView):
     model = Drone
     template_name = "characters/werewolf/drone/detail.html"
 
 
-class DroneUpdateView(ApprovedUserContextMixin, EditPermissionMixin, UpdateView):
+class DroneUpdateView(EditPermissionMixin, UpdateView):
     model = Drone
     success_message = "Drone updated successfully."
     error_message = "Error updating drone."

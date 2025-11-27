@@ -147,8 +147,8 @@ class Chronicle(models.Model):
         help_text="Game STs can view all chronicle data but cannot edit most objects",
     )
 
-    theme = models.CharField(max_length=200, default="")
-    mood = models.CharField(max_length=200, default="")
+    theme = models.CharField(max_length=200, default="", blank=True)
+    mood = models.CharField(max_length=200, default="", blank=True)
     common_knowledge_elements = models.ManyToManyField(SettingElement, blank=True)
     year = models.IntegerField(default=2022)
 
@@ -156,6 +156,7 @@ class Chronicle(models.Model):
         default="",
         max_length=100,
         choices=HeadingChoices.CHOICES,
+        blank=True,
     )
 
     allowed_objects = models.ManyToManyField(ObjectType, blank=True)
@@ -560,16 +561,18 @@ class Scene(models.Model):
         return Post.objects.filter(scene=self).count()
 
     def add_post(self, character, display, message):
-        if character not in self.characters.all():
-            self.add_character(character)
-        if display == "":
-            display = character.name
+        # Handle None character (ST posts)
+        if character is not None:
+            if character not in self.characters.all():
+                self.add_character(character)
+            if display == "":
+                display = character.name
         if message.lower().startswith("@storyteller"):
             self.waiting_for_st = True
             self.st_message = message[len("@storyteller ") :]
             self.save()
             return None
-        if self.waiting_for_st and character.owner.profile.is_st():
+        if character is not None and self.waiting_for_st and character.owner and character.owner.profile.is_st():
             self.waiting_for_st = False
             self.save()
         try:
@@ -579,8 +582,9 @@ class Scene(models.Model):
         post = Post.objects.create(
             character=character, message=message, display_name=display, scene=self
         )
+        character_owner = character.owner if character else None
         for user in User.objects.filter(charactermodel__scenes=self).distinct():
-            if user != character.owner:
+            if user != character_owner:
                 status = UserSceneReadStatus.objects.get_or_create(
                     user=user, scene=self
                 )[0]
@@ -734,11 +738,11 @@ def message_processing(character, message):
         full_match = match.group(0)
         if match.group(1):
             wp_amount = int(match.group(1))
-            character.temporary_willpower -= wp_amount
+            character.temporary_willpower = max(0, character.temporary_willpower - wp_amount)
             expenditures.append(f"{wp_amount}WP")
             needs_save = True
         elif full_match == "#WP":
-            character.temporary_willpower -= 1
+            character.temporary_willpower = max(0, character.temporary_willpower - 1)
             wp_spend = True
             expenditures.append("WP")
             needs_save = True

@@ -70,5 +70,3 @@ modern = Dynasty.objects.get_or_create(
     "contemporary society across many incarnations.",
     favored_hekau="Necromancy",
 )[0]
-
-print("Created 8 Dynasties for Mummy: the Resurrection")

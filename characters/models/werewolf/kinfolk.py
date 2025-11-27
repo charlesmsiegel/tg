@@ -22,11 +22,12 @@ class Kinfolk(WtAHuman):
         default="",
         max_length=100,
         choices=BREEDS,
+        blank=True,
     )
 
     tribe = models.ForeignKey(Tribe, blank=True, null=True, on_delete=models.SET_NULL)
 
-    relation = models.CharField(max_length=100, default="")
+    relation = models.CharField(max_length=100, default="", blank=True)
     gifts = models.ManyToManyField(Gift, blank=True)
 
     gift_permissions = models.ManyToManyField(GiftPermission, blank=True)

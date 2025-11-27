@@ -35,6 +35,7 @@ class Werewolf(WtAHuman):
         default="",
         max_length=100,
         choices=AUSPICES,
+        blank=True,
     )
 
     BREEDS = [
@@ -47,6 +48,7 @@ class Werewolf(WtAHuman):
         default="",
         max_length=100,
         choices=BREEDS,
+        blank=True,
     )
     tribe = models.ForeignKey(Tribe, blank=True, null=True, on_delete=models.SET_NULL)
     camps = models.ManyToManyField(Camp, blank=True)
@@ -61,13 +63,13 @@ class Werewolf(WtAHuman):
     honor = models.IntegerField(default=0)
     temporary_honor = models.IntegerField(default=0)
 
-    renown_incidents = models.JSONField(default=list)
+    renown_incidents = models.JSONField(default=list, blank=True)
 
     gifts = models.ManyToManyField(Gift, blank=True)
     rites_known = models.ManyToManyField(Rite, blank=True)
     fetishes_owned = models.ManyToManyField(Fetish, blank=True)
 
-    first_change = models.TextField(default="")
+    first_change = models.TextField(default="", blank=True)
     battle_scars = models.ManyToManyField("BattleScar", blank=True)
     age_of_first_change = models.IntegerField(default=0)
 

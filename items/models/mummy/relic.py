@@ -130,7 +130,7 @@ class MummyRelic(ItemModel):
 
     # Resonance (similar to Mage Wonders)
     resonance = models.ManyToManyField(
-        "mage.Resonance",  # Reuse Mage's Resonance model
+        "characters.Resonance",  # Reuse Mage's Resonance model from characters app
         through="RelicResonanceRating",
         blank=True,
         help_text="Mystical resonance of the artifact",
@@ -205,7 +205,7 @@ class MummyRelic(ItemModel):
 # Through model for Resonance
 class RelicResonanceRating(models.Model):
     relic = models.ForeignKey(MummyRelic, on_delete=models.CASCADE)
-    resonance = models.ForeignKey("mage.Resonance", on_delete=models.CASCADE)
+    resonance = models.ForeignKey("characters.Resonance", on_delete=models.CASCADE)
     rating = models.IntegerField(
         default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )

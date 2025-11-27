@@ -145,7 +145,7 @@ class Character(CharacterModel):
 
     gameline = "wod"
 
-    concept = models.CharField(max_length=100, db_index=True)
+    concept = models.CharField(max_length=100, db_index=True, default="", blank=True)
     creation_status = models.IntegerField(default=1)
 
     notes = models.TextField(default="", blank=True, null=True)
@@ -162,13 +162,9 @@ class Character(CharacterModel):
                 name="characters_character_xp_non_negative",
                 violation_error_message="XP cannot be negative",
             ),
-            # Status constraint added via migration (0001_initial.py)
-            # Valid status values: Un, Sub, App, Ret, Dec
-            CheckConstraint(
-                check=Q(status__in=['Un', 'Sub', 'App', 'Ret', 'Dec']),
-                name='characters_character_valid_status',
-                violation_error_message="Status must be one of: Un, Sub, App, Ret, Dec",
-            ),
+            # Note: Status constraint removed - 'status' is inherited from core.Model
+            # and constraints can't reference non-local fields in multi-table inheritance.
+            # Status validation is handled by Django field choices and clean() method.
         ]
 
     # Valid status transitions
@@ -226,15 +222,11 @@ class Character(CharacterModel):
         Args:
             skip_validation: If True, skip model validation (full_clean). Use with caution.
                             This is useful for data migrations or bulk operations where you
-                            need to bypass validation temporarily.
+                            need to bypass validation temporarily. Handled by core.Model.save().
 
         Raises:
             ValidationError: If validation fails (unless skip_validation=True)
         """
-        # Run validation unless explicitly skipped
-        if not kwargs.pop("skip_validation", False):
-            self.full_clean()
-
         # Check if this is an existing character whose status is changing to Ret or Dec
         if self.pk:
             try:

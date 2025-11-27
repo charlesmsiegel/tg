@@ -60,7 +60,7 @@ class Chimera(Model):
 
     # Special abilities
     special_abilities = models.JSONField(
-        default=list, help_text="List of special abilities"
+        default=list, blank=True, help_text="List of special abilities"
     )
     can_interact_with_physical = models.BooleanField(
         default=False, help_text="Can physically interact with Autumn World"

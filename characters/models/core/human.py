@@ -12,7 +12,7 @@ from characters.models.core.specialty import Specialty
 from core.models import Language
 from core.utils import add_dot, get_short_gameline_name
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models import CheckConstraint, F, Q
 from django.urls import reverse
 
@@ -114,7 +114,7 @@ class Human(
 
     freebies = models.IntegerField(default=15)
     # DEPRECATED: Use FreebieSpendingRecord model instead (see JSONFIELD_MIGRATION_GUIDE.md)
-    spent_freebies = models.JSONField(default=list)
+    spent_freebies = models.JSONField(default=list, blank=True)
     background_points = 5
 
     class Meta:
@@ -360,6 +360,13 @@ class Human(
     def add_willpower(self):
         add_dot(self, "willpower", 10)
         return add_dot(self, "temporary_willpower", 10)
+    
+    def set_willpower(self, value):
+        if self.temporary_willpower >= value:
+            self.temporary_willpower = value
+        self.willpower = value
+        self.save()
+
 
     def has_finishing_touches(self):
         return (

@@ -100,7 +100,7 @@ class DemonCreateView(MessageMixin, CreateView):
         "host_name",
         "days_until_consumption",
         "celestial_name",
-        "true_name",
+        "",
         "age_of_fall",
         "abyss_duration",
     ]
@@ -187,7 +187,6 @@ class DemonUpdateView(EditPermissionMixin, UpdateView):
         "host_name",
         "days_until_consumption",
         "celestial_name",
-        "true_name",
         "age_of_fall",
         "abyss_duration",
     ]

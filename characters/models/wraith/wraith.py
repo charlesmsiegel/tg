@@ -133,7 +133,7 @@ class Wraith(WtOHuman):
     redemption_attempts = models.IntegerField(default=0)
 
     # History
-    death_description = models.TextField(default="")
+    death_description = models.TextField(default="", blank=True)
     age_at_death = models.IntegerField(default=0)
 
     background_points = 7

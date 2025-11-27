@@ -46,6 +46,7 @@ class Ritual(Model):
     # Restrictions on performing the ritual
     restrictions = models.TextField(
         default="",
+        blank=True,
         help_text="Requirements for performing the ritual (time, location, materials, etc.)",
     )
 
@@ -57,12 +58,14 @@ class Ritual(Model):
     # System mechanics
     system = models.TextField(
         default="",
+        blank=True,
         help_text="Roll and effect description for the ritual",
     )
 
     # High-Torment effect
     torment_effect = models.TextField(
         default="",
+        blank=True,
         help_text="Description of the ritual's high-Torment variant",
     )
 

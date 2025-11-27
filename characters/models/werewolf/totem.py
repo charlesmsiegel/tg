@@ -15,10 +15,10 @@ class Totem(Model):
     ]
 
     cost = models.IntegerField(default=0)
-    totem_type = models.CharField(max_length=20, choices=TYPES)
-    individual_traits = models.TextField(default="")
-    pack_traits = models.TextField(default="")
-    ban = models.TextField(default="")
+    totem_type = models.CharField(max_length=20, choices=TYPES, blank=True, default="")
+    individual_traits = models.TextField(default="", blank=True)
+    pack_traits = models.TextField(default="", blank=True)
+    ban = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Totem"

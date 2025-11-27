@@ -34,8 +34,8 @@ class Practice(Model):
     abilities = models.ManyToManyField(Ability, blank=True)
     instruments = models.ManyToManyField(Instrument, blank=True)
     common_resonance_traits = models.ManyToManyField(Resonance, blank=True)
-    benefit = models.TextField(default="")
-    penalty = models.TextField(default="")
+    benefit = models.TextField(default="", blank=True)
+    penalty = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Practice"
@@ -83,7 +83,7 @@ class SpecializedPractice(Practice):
     faction = models.ForeignKey(
         "characters.MageFaction", blank=True, null=True, on_delete=models.SET_NULL
     )
-    extra_benefit = models.TextField(default="")
+    extra_benefit = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Specialized Practice"
@@ -112,8 +112,8 @@ class CorruptedPractice(Practice):
         on_delete=models.SET_NULL,
         related_name="corruption",
     )
-    extra_benefit = models.TextField(default="")
-    price = models.TextField(default="")
+    extra_benefit = models.TextField(default="", blank=True)
+    price = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Corrupted Practice"

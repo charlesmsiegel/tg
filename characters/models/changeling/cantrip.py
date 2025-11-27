@@ -47,6 +47,8 @@ class Cantrip(Model):
             ("fae", "Fae"),
             ("nature", "Nature"),
             ("prop", "Prop"),
+            ("time", "Time"),
+            ("scene", "Scene"),
         ],
         blank=True,
         default="",
@@ -54,13 +56,14 @@ class Cantrip(Model):
 
     modifier_realms = models.JSONField(
         default=list,
+        blank=True,
         help_text="List of modifier realms: 'scene', 'time'",
     )
 
     # Cantrip details
     level = models.IntegerField(default=1, choices=[(i, str(i)) for i in range(1, 6)])
     glamour_cost = models.CharField(
-        max_length=20, blank=True, default="", help_text="Glamour cost (e.g., '1 Wyrd')"
+        max_length=100, blank=True, default="", help_text="Glamour cost (e.g., '1 Wyrd')"
     )
     difficulty = models.IntegerField(
         default=8, help_text="Base difficulty (usually 8, modified by circumstances)"

@@ -11,81 +11,81 @@ class Attribute(Statistic):
 
 class AttributeBlock(models.Model):
     strength = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     dexterity = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     stamina = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     perception = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     intelligence = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     wits = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     charisma = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     manipulation = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     appearance = models.IntegerField(
-        default=1, validators=[MinValueValidator(1), MaxValueValidator(10)]
+        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
 
     class Meta:
         abstract = True
         constraints = [
-            # All attributes must be between 1 and 10
+            # All attributes must be between 0 and 10
             CheckConstraint(
-                check=Q(strength__gte=1, strength__lte=10),
+                check=Q(strength__gte=0, strength__lte=10),
                 name="%(app_label)s_%(class)s_strength_range",
-                violation_error_message="Strength must be between 1 and 10",
+                violation_error_message="Strength must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(dexterity__gte=1, dexterity__lte=10),
+                check=Q(dexterity__gte=0, dexterity__lte=10),
                 name="%(app_label)s_%(class)s_dexterity_range",
-                violation_error_message="Dexterity must be between 1 and 10",
+                violation_error_message="Dexterity must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(stamina__gte=1, stamina__lte=10),
+                check=Q(stamina__gte=0, stamina__lte=10),
                 name="%(app_label)s_%(class)s_stamina_range",
-                violation_error_message="Stamina must be between 1 and 10",
+                violation_error_message="Stamina must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(perception__gte=1, perception__lte=10),
+                check=Q(perception__gte=0, perception__lte=10),
                 name="%(app_label)s_%(class)s_perception_range",
-                violation_error_message="Perception must be between 1 and 10",
+                violation_error_message="Perception must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(intelligence__gte=1, intelligence__lte=10),
+                check=Q(intelligence__gte=0, intelligence__lte=10),
                 name="%(app_label)s_%(class)s_intelligence_range",
-                violation_error_message="Intelligence must be between 1 and 10",
+                violation_error_message="Intelligence must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(wits__gte=1, wits__lte=10),
+                check=Q(wits__gte=0, wits__lte=10),
                 name="%(app_label)s_%(class)s_wits_range",
-                violation_error_message="Wits must be between 1 and 10",
+                violation_error_message="Wits must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(charisma__gte=1, charisma__lte=10),
+                check=Q(charisma__gte=0, charisma__lte=10),
                 name="%(app_label)s_%(class)s_charisma_range",
-                violation_error_message="Charisma must be between 1 and 10",
+                violation_error_message="Charisma must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(manipulation__gte=1, manipulation__lte=10),
+                check=Q(manipulation__gte=0, manipulation__lte=10),
                 name="%(app_label)s_%(class)s_manipulation_range",
-                violation_error_message="Manipulation must be between 1 and 10",
+                violation_error_message="Manipulation must be between 0 and 10",
             ),
             CheckConstraint(
-                check=Q(appearance__gte=1, appearance__lte=10),
+                check=Q(appearance__gte=0, appearance__lte=10),
                 name="%(app_label)s_%(class)s_appearance_range",
-                violation_error_message="Appearance must be between 1 and 10",
+                violation_error_message="Appearance must be between 0 and 10",
             ),
         ]
 

@@ -87,6 +87,11 @@ class Wonder(ItemModel):
         return self.rank != 0
 
     def add_resonance(self, resonance):
+        from characters.models.mage.resonance import Resonance
+
+        # Accept string name or Resonance object
+        if isinstance(resonance, str):
+            resonance, _ = Resonance.objects.get_or_create(name=resonance)
         r, _ = WonderResonanceRating.objects.get_or_create(
             resonance=resonance, wonder=self
         )
