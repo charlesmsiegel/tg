@@ -1,5 +1,5 @@
 from .advantage import AdvantageDetailView
-from .cabal import CabalCreateView, CabalDetailView, CabalUpdateView
+from .cabal import CabalCreateView, CabalDetailView, CabalListView, CabalUpdateView
 from .companion import (
     CompanionBasicsView,
     CompanionCreateView,

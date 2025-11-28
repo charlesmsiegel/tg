@@ -4,6 +4,7 @@ from characters.models.werewolf.totem import Totem
 from characters.tests.utils import werewolf_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 
 class TestPack(TestCase):
@@ -112,3 +113,28 @@ class TestPackUpdateView(TestCase):
         self.pack.refresh_from_db()
         self.assertEqual(self.pack.name, "Pack Updated")
         self.assertEqual(self.pack.description, "Test")
+
+
+class TestPackListView(TestCase):
+    def setUp(self):
+        self.pack1 = Pack.objects.create(name="Pack Alpha")
+        self.pack2 = Pack.objects.create(name="Pack Beta")
+        self.url = reverse("characters:werewolf:list:pack")
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/werewolf/pack/list.html")
+
+    def test_list_view_contains_packs(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Pack Alpha")
+        self.assertContains(response, "Pack Beta")
+
+    def test_list_view_ordering(self):
+        response = self.client.get(self.url)
+        packs = response.context["object_list"]
+        self.assertEqual(list(packs), [self.pack1, self.pack2])

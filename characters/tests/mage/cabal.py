@@ -3,6 +3,7 @@ from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 
 class TestCabal(TestCase):
@@ -89,3 +90,28 @@ class TestCabalUpdateView(TestCase):
         self.cabal.refresh_from_db()
         self.assertEqual(self.cabal.name, "Test Cabal Updated")
         self.assertEqual(self.cabal.description, "Test")
+
+
+class TestCabalListView(TestCase):
+    def setUp(self):
+        self.cabal1 = Cabal.objects.create(name="Cabal Alpha")
+        self.cabal2 = Cabal.objects.create(name="Cabal Beta")
+        self.url = reverse("characters:mage:list:cabal")
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/cabal/list.html")
+
+    def test_list_view_contains_cabals(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Cabal Alpha")
+        self.assertContains(response, "Cabal Beta")
+
+    def test_list_view_ordering(self):
+        response = self.client.get(self.url)
+        cabals = response.context["object_list"]
+        self.assertEqual(list(cabals), [self.cabal1, self.cabal2])

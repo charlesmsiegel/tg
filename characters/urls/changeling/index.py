@@ -2,6 +2,7 @@ from characters.views.changeling.house import HouseListView
 from characters.views.changeling.house_faction import HouseFactionListView
 from characters.views.changeling.kith import KithListView
 from characters.views.changeling.legacy import LegacyListView
+from characters.views.changeling.motley import MotleyListView
 from django.urls import path
 
 urls = [
@@ -24,5 +25,10 @@ urls = [
         "legacy/",
         LegacyListView.as_view(),
         name="legacy",
+    ),
+    path(
+        "motley/",
+        MotleyListView.as_view(),
+        name="motley",
     ),
 ]

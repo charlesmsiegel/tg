@@ -35,4 +35,5 @@ urls = [
         views.werewolf.FomoriPowerListView.as_view(),
         name="fomoripower",
     ),
+    path("pack/", views.werewolf.PackListView.as_view(), name="pack"),
 ]

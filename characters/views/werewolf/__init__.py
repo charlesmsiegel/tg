@@ -60,7 +60,7 @@ from .kinfolk import (
     KinfolkDetailView,
     KinfolkUpdateView,
 )
-from .pack import PackCreateView, PackDetailView, PackUpdateView
+from .pack import PackCreateView, PackDetailView, PackListView, PackUpdateView
 from .renownincident import (
     RenownIncidentCreateView,
     RenownIncidentDetailView,
