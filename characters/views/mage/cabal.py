@@ -3,7 +3,7 @@ from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
 from core.mixins import MessageMixin
 from django import forms
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class CabalDetailView(DetailView):
@@ -65,3 +65,9 @@ class CabalUpdateView(MessageMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
+
+
+class CabalListView(ListView):
+    model = Cabal
+    ordering = ["name"]
+    template_name = "characters/mage/cabal/list.html"

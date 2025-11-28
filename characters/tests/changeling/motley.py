@@ -3,6 +3,7 @@ from characters.models.changeling.motley import Motley
 from characters.tests.utils import changeling_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 
 class TestMotley(TestCase):
@@ -86,3 +87,28 @@ class TestMotleyUpdateView(TestCase):
         self.motley.refresh_from_db()
         self.assertEqual(self.motley.name, "Motley Updated")
         self.assertEqual(self.motley.description, "Test")
+
+
+class TestMotleyListView(TestCase):
+    def setUp(self):
+        self.motley1 = Motley.objects.create(name="Motley Alpha")
+        self.motley2 = Motley.objects.create(name="Motley Beta")
+        self.url = reverse("characters:changeling:list:motley")
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/changeling/motley/list.html")
+
+    def test_list_view_contains_motleys(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Motley Alpha")
+        self.assertContains(response, "Motley Beta")
+
+    def test_list_view_ordering(self):
+        response = self.client.get(self.url)
+        motleys = response.context["object_list"]
+        self.assertEqual(list(motleys), [self.motley1, self.motley2])

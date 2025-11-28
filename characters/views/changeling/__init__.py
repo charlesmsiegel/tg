@@ -24,4 +24,4 @@ from .house_faction import HouseFactionListView as ChangelingFactionListView
 from .house_faction import HouseFactionUpdateView as ChangelingFactionUpdateView
 from .kith import KithCreateView, KithDetailView, KithListView, KithUpdateView
 from .legacy import LegacyCreateView, LegacyDetailView, LegacyListView, LegacyUpdateView
-from .motley import MotleyCreateView, MotleyDetailView, MotleyUpdateView
+from .motley import MotleyCreateView, MotleyDetailView, MotleyListView, MotleyUpdateView

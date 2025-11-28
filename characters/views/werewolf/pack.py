@@ -1,6 +1,6 @@
 from characters.models.werewolf.pack import Pack
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class PackDetailView(DetailView):
@@ -22,3 +22,9 @@ class PackUpdateView(MessageMixin, UpdateView):
     template_name = "characters/werewolf/pack/form.html"
     success_message = "Pack updated successfully."
     error_message = "There was an error updating the Pack."
+
+
+class PackListView(ListView):
+    model = Pack
+    ordering = ["name"]
+    template_name = "characters/werewolf/pack/list.html"
