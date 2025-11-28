@@ -11,6 +11,7 @@ class Barrens(LocationModel):
     """
 
     type = "barrens"
+    gameline = "vtm"
 
     # Territory characteristics
     size = models.IntegerField(

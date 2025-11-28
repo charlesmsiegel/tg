@@ -4,6 +4,7 @@ from items.models.core.item import ItemModel
 
 class SorcererArtifact(ItemModel):
     type = "sorcerer_artifact"
+    gameline = "mta"
 
     rank = models.IntegerField(default=0)
 

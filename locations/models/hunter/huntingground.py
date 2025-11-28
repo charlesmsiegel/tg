@@ -11,6 +11,7 @@ class HuntingGround(LocationModel):
     """
 
     type = "hunting_ground"
+    gameline = "htr"
 
     # Territory stats
     size = models.IntegerField(

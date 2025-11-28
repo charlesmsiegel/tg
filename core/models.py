@@ -411,6 +411,50 @@ class Model(PermissionMixin, PolymorphicModel):
 
         return get_gameline_name(self.get_gameline())
 
+    def get_type(self):
+        """
+        Get a human-readable display version of the type.
+        Replaces underscores with spaces and title-cases each word.
+
+        Returns:
+            str: Formatted type (e.g., 'autumn_person' -> 'Autumn Person')
+        """
+        return self.type.replace("_", " ").title()
+
+    # Secondary/mortal types that get lighter badges
+    # Everything else is considered "primary" and gets full-color badges
+    SECONDARY_TYPES = {
+        "vtm_human", "wta_human", "mta_human", "ctd_human", "wto_human",
+        "dtf_human", "mtr_human", "htr_human", "spirit_character",
+    }
+
+    def is_primary_type(self):
+        """
+        Check if this object's type is a primary supernatural type.
+        Primary types get full-color badges, secondary/mortal types get lighter badges.
+
+        Returns:
+            bool: True if primary type, False otherwise
+        """
+        return self.type not in self.SECONDARY_TYPES
+
+    def get_badge_class(self):
+        """
+        Get the CSS badge class for this object based on gameline and type.
+        Returns classes like 'badge-mta', 'badge-vtm-light', 'badge-secondary'.
+
+        Returns:
+            str: CSS class name for the badge
+        """
+        gameline = self.get_gameline()
+        if gameline == "wod":
+            return "badge-secondary"
+
+        if self.is_primary_type():
+            return f"badge-{gameline}"
+        else:
+            return f"badge-{gameline}-light"
+
     @property
     def status_keys(self):
         """Return valid status keys from CharacterStatus."""

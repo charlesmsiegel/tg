@@ -7,6 +7,7 @@ class Citadel(LocationModel):
     """Fortified stronghold within a Necropolis or independent territory."""
 
     type = "citadel"
+    gameline = "wto"
 
     CITADEL_PURPOSE_CHOICES = [
         ("guild_hall", "Guild Hall"),

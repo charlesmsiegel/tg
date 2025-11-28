@@ -257,7 +257,7 @@ class Hunter(HtRHuman):
         return result
 
     def get_absolute_url(self):
-        return reverse("characters:hunter:detail", kwargs={"pk": self.pk})
+        return reverse("characters:hunter:hunter", kwargs={"pk": self.pk})
 
     def get_heading(self):
         return "htr_heading"

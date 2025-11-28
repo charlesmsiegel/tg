@@ -13,6 +13,7 @@ class DreamRealm(LocationModel):
     """
 
     type = "dream_realm"
+    gameline = "ctd"
 
     # Depth in the Dreaming
     DEPTHS = [

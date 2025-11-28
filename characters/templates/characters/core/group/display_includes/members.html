@@ -1,4 +1,4 @@
-{% load sanitize_text dots humanize %}
+{% load dots humanize %}
 <div class="tg-card mb-4">
     <div class="tg-card-header {{ object.get_heading }}">
         <h5 class="mb-0">Group Members</h5>
@@ -23,7 +23,7 @@
                                     <a href="{{ object.leader.get_absolute_url }}">{{ object.leader.name }}</a>
                                 </td>
                                 <td style="padding: 14px 16px;">
-                                    <span class="tg-badge badge-pill {% if object.leader.type == 'mage' %}badge-mta{% elif object.leader.type == 'sorcerer' or object.leader.type == 'companion' %}badge-mta-faded{% elif object.leader.type == 'garou' %}badge-wta{% elif object.leader.type == 'kinfolk' or object.leader.type == 'fomor' %}badge-wta-faded{% elif object.leader.type == 'changeling' %}badge-ctd{% elif object.leader.type == 'vampire' %}badge-vtm{% elif object.leader.type == 'ghoul' %}badge-vtm-faded{% elif object.leader.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ object.leader.type|title }}</span>
+                                    <span class="tg-badge badge-pill {{ object.leader.get_badge_class }}">{{ object.leader.get_type }}</span>
                                 </td>
                                 <td style="padding: 14px 16px;">
                                     {% if object.leader.type == "mage" and object.leader.faction %}
@@ -56,7 +56,7 @@
                                         <a href="{{ member.get_absolute_url }}">{{ member.name }}</a>
                                     </td>
                                     <td style="padding: 14px 16px;">
-                                        <span class="tg-badge badge-pill {% if member.type == 'mage' %}badge-mta{% elif member.type == 'sorcerer' or member.type == 'companion' %}badge-mta-faded{% elif member.type == 'garou' %}badge-wta{% elif member.type == 'kinfolk' or member.type == 'fomor' %}badge-wta-faded{% elif member.type == 'changeling' %}badge-ctd{% elif member.type == 'vampire' %}badge-vtm{% elif member.type == 'ghoul' %}badge-vtm-faded{% elif member.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ member.type|title }}</span>
+                                        <span class="tg-badge badge-pill {{ member.get_badge_class }}">{{ member.get_type }}</span>
                                     </td>
                                     <td style="padding: 14px 16px;">
                                         {% if member.type == "mage" and member.faction %}

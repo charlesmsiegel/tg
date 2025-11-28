@@ -2,6 +2,12 @@ from characters import views
 from django.urls import path
 
 urls = [
+    # Wraith detail view
+    path(
+        "wraith/<pk>/",
+        views.wraith.WraithDetailView.as_view(),
+        name="wraith",
+    ),
     # Thorn detail view
     path(
         "thorn/<pk>/",

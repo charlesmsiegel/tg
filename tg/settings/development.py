@@ -40,6 +40,19 @@ try:
         "debug_toolbar.middleware.DebugToolbarMiddleware"
     ] + MIDDLEWARE  # noqa: F405
     INTERNAL_IPS = ["127.0.0.1", "::1"]
+
+    def show_toolbar_callback(request):
+        """Only show debug toolbar to authenticated staff/superusers."""
+        if not hasattr(request, "user"):
+            return False
+        return (
+            request.user.is_authenticated
+            and (request.user.is_staff or request.user.is_superuser)
+        )
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": "tg.settings.development.show_toolbar_callback",
+    }
 except ImportError:
     pass
 

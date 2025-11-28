@@ -1,4 +1,4 @@
-{% load sanitize_text dots humanize %}
+{% load dots humanize %}
 <div class="row mb-4">
     <div class="col-12">
         <div class="tg-card">
@@ -65,7 +65,7 @@
                                         </h6>
                                     </div>
                                     <div class="tg-card-body py-2">
-                                        {% if character.type %}<span class="tg-badge badge-secondary">{{ character.type|title }}</span>{% endif %}
+                                        {% if character.type %}<span class="tg-badge badge-secondary">{{ character.get_type }}</span>{% endif %}
                                         {% if character.get_status_display %}
                                             <span class="tg-badge badge-{{ character.status|lower }}">
                                                 {{ character.get_status_display }}

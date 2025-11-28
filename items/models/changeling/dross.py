@@ -13,6 +13,7 @@ class Dross(ItemModel):
     """
 
     type = "dross"
+    gameline = "ctd"
 
     # Dross quality (affects how much Glamour it provides)
     QUALITY_LEVELS = [

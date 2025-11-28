@@ -33,6 +33,7 @@ class WonderResonanceRating(models.Model):
 
 class Wonder(ItemModel):
     type = "wonder"
+    gameline = "mta"
 
     rank = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]

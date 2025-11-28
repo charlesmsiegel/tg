@@ -10,6 +10,7 @@ class VampireArtifact(ItemModel):
     """
 
     type = "vampire_artifact"
+    gameline = "vtm"
 
     # Power level
     power_level = models.IntegerField(

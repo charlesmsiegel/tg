@@ -1,0 +1,97 @@
+{% extends "characters/changeling/ctdhuman/detail.html" %}
+{% load dots %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Name:</strong></div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3"><strong>Nature:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Player:</strong></div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3"><strong>Demeanor:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Concept:</strong></div>
+                        <div class="col-sm-3">{{ object.concept|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Kingdom:</strong></div>
+                        <div class="col-sm-3">{{ object.get_kingdom_display|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Seeming:</strong></div>
+                        <div class="col-sm-3">{{ object.get_inanimae_seeming_display|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Season:</strong></div>
+                        <div class="col-sm-3">{{ object.get_season_display|default:"-" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
+                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
+                    </div>
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Mana:</div>
+                        <div class="col-3 dots">{{ object.mana|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
+                        <div class="col-3 dots">{{ object.banality|dots:10 }}</div>
+                    </div>
+
+                    {% if object.anchor_description %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Anchor</h6>
+                            <p>{{ object.anchor_description }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if object.elemental_strength %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Elemental Strength</h6>
+                            <p>{{ object.elemental_strength }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if object.elemental_weakness %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Elemental Weakness</h6>
+                            <p>{{ object.elemental_weakness }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}

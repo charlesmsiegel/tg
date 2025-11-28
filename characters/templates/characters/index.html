@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load field %}
+{% load field sanitize_text %}
 {% block title %}
     {{ title }}
 {% endblock title %}
@@ -93,58 +93,58 @@
         }
         
         /* Gameline-specific badge colors for character types */
-        .tg-badge.badge-type-vtm {
+        .tg-badge.badge-vtm {
             background-color: var(--gameline-vtm);
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-wta {
+        .tg-badge.badge-wta {
             background-color: var(--gameline-wta);
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-mta {
+        .tg-badge.badge-mta {
             background-color: var(--gameline-mta);
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-ctd {
+        .tg-badge.badge-ctd {
             background-color: #20b2aa; /* Light sea green - fae/dreamlike quality */
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-wto {
+        .tg-badge.badge-wto {
             background-color: var(--gameline-wto);
             color: var(--color-white);
         }
         
         /* Lighter variants for secondary character types (humans, companions, etc.) */
         /* Using opacity to create lighter versions of the main colors */
-        .tg-badge.badge-type-vtm-light {
+        .tg-badge.badge-vtm-light {
             background-color: #8b0000;
             opacity: 0.7;
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-wta-light {
+        .tg-badge.badge-wta-light {
             background-color: #228b22;
             opacity: 0.7;
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-mta-light {
+        .tg-badge.badge-mta-light {
             background-color: #4b0082;
             opacity: 0.7;
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-ctd-light {
+        .tg-badge.badge-ctd-light {
             background-color: #20b2aa;
             opacity: 0.7;
             color: var(--color-white);
         }
         
-        .tg-badge.badge-type-wto-light {
+        .tg-badge.badge-wto-light {
             background-color: #2f4f4f;
             opacity: 0.7;
             color: var(--color-white);
@@ -152,93 +152,93 @@
         
         /* Dark theme adjustments */
         @media (prefers-color-scheme: dark) {
-            :root:not(.theme-light) .tg-badge.badge-type-vtm {
+            :root:not(.theme-light) .tg-badge.badge-vtm {
                 background-color: #dc143c;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-vtm-light {
+            :root:not(.theme-light) .tg-badge.badge-vtm-light {
                 background-color: #dc143c;
                 opacity: 0.7;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-wta {
+            :root:not(.theme-light) .tg-badge.badge-wta {
                 background-color: #32cd32;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-wta-light {
+            :root:not(.theme-light) .tg-badge.badge-wta-light {
                 background-color: #32cd32;
                 opacity: 0.7;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-mta {
+            :root:not(.theme-light) .tg-badge.badge-mta {
                 background-color: #9370db;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-mta-light {
+            :root:not(.theme-light) .tg-badge.badge-mta-light {
                 background-color: #9370db;
                 opacity: 0.7;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-ctd {
+            :root:not(.theme-light) .tg-badge.badge-ctd {
                 background-color: #48d1cc;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-ctd-light {
+            :root:not(.theme-light) .tg-badge.badge-ctd-light {
                 background-color: #48d1cc;
                 opacity: 0.7;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-wto {
+            :root:not(.theme-light) .tg-badge.badge-wto {
                 background-color: #708090;
             }
             
-            :root:not(.theme-light) .tg-badge.badge-type-wto-light {
+            :root:not(.theme-light) .tg-badge.badge-wto-light {
                 background-color: #708090;
                 opacity: 0.7;
             }
         }
         
-        .theme-dark .tg-badge.badge-type-vtm {
+        .theme-dark .tg-badge.badge-vtm {
             background-color: #dc143c;
         }
         
-        .theme-dark .tg-badge.badge-type-vtm-light {
+        .theme-dark .tg-badge.badge-vtm-light {
             background-color: #dc143c;
             opacity: 0.7;
         }
         
-        .theme-dark .tg-badge.badge-type-wta {
+        .theme-dark .tg-badge.badge-wta {
             background-color: #32cd32;
         }
         
-        .theme-dark .tg-badge.badge-type-wta-light {
+        .theme-dark .tg-badge.badge-wta-light {
             background-color: #32cd32;
             opacity: 0.7;
         }
         
-        .theme-dark .tg-badge.badge-type-mta {
+        .theme-dark .tg-badge.badge-mta {
             background-color: #9370db;
         }
         
-        .theme-dark .tg-badge.badge-type-mta-light {
+        .theme-dark .tg-badge.badge-mta-light {
             background-color: #9370db;
             opacity: 0.7;
         }
         
-        .theme-dark .tg-badge.badge-type-ctd {
+        .theme-dark .tg-badge.badge-ctd {
             background-color: #48d1cc;
         }
         
-        .theme-dark .tg-badge.badge-type-ctd-light {
+        .theme-dark .tg-badge.badge-ctd-light {
             background-color: #48d1cc;
             opacity: 0.7;
         }
         
-        .theme-dark .tg-badge.badge-type-wto {
+        .theme-dark .tg-badge.badge-wto {
             background-color: #708090;
         }
         
-        .theme-dark .tg-badge.badge-type-wto-light {
+        .theme-dark .tg-badge.badge-wto-light {
             background-color: #708090;
             opacity: 0.7;
         }
@@ -442,31 +442,7 @@
                                                                                 {% endif %}
                                                                             </td>
                                                                             <td data-label="Type">
-                                                                                {% if char.type == 'mage' or char.type == 'sorcerer' or char.type == 'companion' %}
-                                                                                    <span class="tg-badge badge-type-mta badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'mta_human' %}
-                                                                                    <span class="tg-badge badge-type-mta-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'werewolf' or char.type == 'kinfolk' or char.type == 'fomor' %}
-                                                                                    <span class="tg-badge badge-type-wta badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'wta_human' %}
-                                                                                    <span class="tg-badge badge-type-wta-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'vampire' %}
-                                                                                    <span class="tg-badge badge-type-vtm badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'vtm_human' %}
-                                                                                    <span class="tg-badge badge-type-vtm-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'changeling' %}
-                                                                                    <span class="tg-badge badge-type-ctd badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'ctd_human' %}
-                                                                                    <span class="tg-badge badge-type-ctd-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'wraith' %}
-                                                                                    <span class="tg-badge badge-type-wto badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'wto_human' %}
-                                                                                    <span class="tg-badge badge-type-wto-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% elif char.type == 'spirit_character' %}
-                                                                                    <span class="tg-badge badge-type-wta-light badge-pill">{{ char.get_type }}</span>
-                                                                                {% else %}
-                                                                                    <span class="tg-badge badge-secondary badge-pill">{{ char.get_type }}</span>
-                                                                                {% endif %}
+                                                                                <span class="tg-badge {{ char.get_badge_class }} badge-pill">{{ char.get_type }}</span>
                                                                             </td>
                                                                             <td data-label="Status">
                                                                                 <span class="tg-badge badge-{{ char.status|lower }}">{{ char.get_status_display }}</span>

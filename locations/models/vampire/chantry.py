@@ -10,6 +10,7 @@ class TremereChantry(LocationModel):
     """
 
     type = "tremere_chantry"
+    gameline = "vtm"
 
     # Size and importance
     size = models.IntegerField(

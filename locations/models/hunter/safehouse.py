@@ -11,6 +11,7 @@ class Safehouse(LocationModel):
     """
 
     type = "safehouse"
+    gameline = "htr"
 
     # Size and capacity
     size = models.IntegerField(

@@ -692,7 +692,7 @@ class Mage(MtAHuman):
         return super().freebie_cost(trait_type)
 
     def sphere_to_trait_type(self, trait_name):
-        if trait_name == self.affinity_sphere.property_name:
+        if self.affinity_sphere and trait_name == self.affinity_sphere.property_name:
             return "affinity_sphere"
         return "sphere"
 

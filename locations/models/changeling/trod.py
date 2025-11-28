@@ -13,6 +13,7 @@ class Trod(LocationModel):
     """
 
     type = "trod"
+    gameline = "ctd"
 
     # Trod type
     TROD_TYPES = [

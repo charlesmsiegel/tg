@@ -1,0 +1,103 @@
+{% extends "characters/changeling/ctdhuman/detail.html" %}
+{% load dots %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Name:</strong></div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3"><strong>Nature:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Player:</strong></div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3"><strong>Demeanor:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Concept:</strong></div>
+                        <div class="col-sm-3">{{ object.concept|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Archetype:</strong></div>
+                        <div class="col-sm-3">{{ object.get_archetype_display|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Awareness:</strong></div>
+                        <div class="col-sm-3">{{ object.get_awareness_display|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Organization:</strong></div>
+                        <div class="col-sm-3">{{ object.organization|default:"-" }}</div>
+                    </div>
+                    {% if object.is_dauntain %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Dauntain:</strong></div>
+                            <div class="col-sm-3">Yes</div>
+                            <div class="col-sm-3"><strong>Former Kith:</strong></div>
+                            <div class="col-sm-3">{{ object.former_kith|default:"-" }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block advantages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
+                        <div class="col-3 dots">{{ object.banality_rating|dots:10 }}</div>
+                    </div>
+
+                    {% if object.motivation %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Motivation</h6>
+                            <p>{{ object.motivation }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if object.sphere_of_influence %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Sphere of Influence</h6>
+                            <p>{{ object.sphere_of_influence }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if object.anti_fae_abilities %}
+                        <div class="mt-3">
+                            <h6 style="font-weight: 600; color: var(--theme-text-secondary);">Anti-Fae Abilities</h6>
+                            <ul>
+                                {% for ability in object.anti_fae_abilities %}
+                                    <li>{{ ability }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}

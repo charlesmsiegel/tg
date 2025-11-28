@@ -1,4 +1,11 @@
+from .autumn_person import (
+    AutumnPersonCreateView,
+    AutumnPersonDetailView,
+    AutumnPersonUpdateView,
+)
 from .changeling import ChangelingCharacterCreationView
+from .inanimae import InanimaeCreateView, InanimaeDetailView, InanimaeUpdateView
+from .nunnehi import NunnehiCreateView, NunnehiDetailView, NunnehiUpdateView
 from .changeling import ChangelingCreateView as ChangelingCharacterListView
 from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
 from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView

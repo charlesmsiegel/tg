@@ -16,7 +16,7 @@
                                 </h6>
                             </div>
                             <div class="tg-card-body py-2">
-                                <span class="tg-badge badge-secondary">{{ leader.type|title }}</span>
+                                <span class="tg-badge badge-secondary">{{ leader.get_type }}</span>
                                 {% if leader.get_status_display %}
                                     <span class="tg-badge badge-{{ leader.status|lower }}">
                                         {{ leader.get_status_display }}
@@ -40,7 +40,7 @@
                             </h6>
                         </div>
                         <div class="tg-card-body py-2">
-                            <span class="tg-badge badge-secondary">{{ object.ambassador.type|title }}</span>
+                            <span class="tg-badge badge-secondary">{{ object.ambassador.get_type }}</span>
                             {% if object.ambassador.get_status_display %}
                                 <span class="tg-badge badge-{{ object.ambassador.status|lower }}">
                                     {{ object.ambassador.get_status_display }}
@@ -61,7 +61,7 @@
                             </h6>
                         </div>
                         <div class="tg-card-body py-2">
-                            <span class="tg-badge badge-secondary">{{ object.node_tender.type|title }}</span>
+                            <span class="tg-badge badge-secondary">{{ object.node_tender.get_type }}</span>
                             {% if object.node_tender.get_status_display %}
                                 <span class="tg-badge badge-{{ object.node_tender.status|lower }}">
                                     {{ object.node_tender.get_status_display }}
@@ -85,7 +85,7 @@
                                 </h6>
                             </div>
                             <div class="tg-card-body py-2">
-                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
+                                <span class="tg-badge badge-secondary">{{ character.get_type }}</span>
                                 {% if character.get_status_display %}
                                     <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
@@ -110,7 +110,7 @@
                                 </h6>
                             </div>
                             <div class="tg-card-body py-2">
-                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
+                                <span class="tg-badge badge-secondary">{{ character.get_type }}</span>
                                 {% if character.get_status_display %}
                                     <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
@@ -135,7 +135,7 @@
                                 </h6>
                             </div>
                             <div class="tg-card-body py-2">
-                                <span class="tg-badge badge-secondary">{{ character.type|title }}</span>
+                                <span class="tg-badge badge-secondary">{{ character.get_type }}</span>
                                 {% if character.get_status_display %}
                                     <span class="tg-badge badge-{{ character.status|lower }}">
                                         {{ character.get_status_display }}
@@ -180,7 +180,7 @@
                                                     </h6>
                                                 </div>
                                                 <div class="tg-card-body py-2">
-                                                    <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
+                                                    <span class="tg-badge badge-secondary">{{ member.get_type }}</span>
                                                     {% if member.get_status_display %}
                                                         <span class="tg-badge badge-{{ member.status|lower }}">
                                                             {{ member.get_status_display }}
@@ -215,7 +215,7 @@
                                     </h6>
                                 </div>
                                 <div class="tg-card-body py-2">
-                                    <span class="tg-badge badge-secondary">{{ member.type|title }}</span>
+                                    <span class="tg-badge badge-secondary">{{ member.get_type }}</span>
                                     {% if member.get_status_display %}
                                         <span class="tg-badge badge-{{ member.status|lower }}">
                                             {{ member.get_status_display }}

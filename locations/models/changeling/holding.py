@@ -13,6 +13,7 @@ class Holding(LocationModel):
     """
 
     type = "holding"
+    gameline = "ctd"
 
     # Holding rank (political level)
     RANKS = [

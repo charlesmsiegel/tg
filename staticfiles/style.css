@@ -80,6 +80,10 @@
     font-family: "Futura PT", sans-serif;
 }
 
+.mtr_heading {
+    font-family: "Papyrus", fantasy;
+}
+
 .inlineforms {
     display: inline;
 }
@@ -454,6 +458,39 @@ p.post {
 
 .badge-wto-faded {
     background-color: #95a5a6;
+    color: white;
+}
+
+/* Demon (DTF) - Dark Orange/Bronze */
+.badge-dtf {
+    background-color: #d35400;
+    color: white;
+}
+
+.badge-dtf-light {
+    background-color: #e67e22;
+    color: white;
+}
+
+/* Hunter (HTR) - Steel Blue */
+.badge-htr {
+    background-color: #34495e;
+    color: white;
+}
+
+.badge-htr-light {
+    background-color: #5d6d7e;
+    color: white;
+}
+
+/* Mummy (MTR) - Gold/Sand */
+.badge-mtr {
+    background-color: #b8860b;
+    color: white;
+}
+
+.badge-mtr-light {
+    background-color: #daa520;
     color: white;
 }
 

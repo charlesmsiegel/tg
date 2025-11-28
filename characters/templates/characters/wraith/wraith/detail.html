@@ -1,0 +1,160 @@
+{% extends "characters/wraith/wtohuman/detail.html" %}
+{% load dots %}
+{% block basics %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Name:</strong></div>
+                        <div class="col-sm-3">{{ object.name }}</div>
+                        <div class="col-sm-3"><strong>Nature:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.nature %}
+                                <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Player:</strong></div>
+                        <div class="col-sm-3">{{ object.owner }}</div>
+                        <div class="col-sm-3"><strong>Demeanor:</strong></div>
+                        <div class="col-sm-3">
+                            {% if object.demeanor %}
+                                <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Concept:</strong></div>
+                        <div class="col-sm-3">{{ object.concept|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Shadow Archetype:</strong></div>
+                        <div class="col-sm-3">{{ object.shadow_archetype|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-3"><strong>Guild:</strong></div>
+                        <div class="col-sm-3">{{ object.guild|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Legion:</strong></div>
+                        <div class="col-sm-3">{{ object.legion|default:"-" }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-3"><strong>Faction:</strong></div>
+                        <div class="col-sm-3">{{ object.faction|default:"-" }}</div>
+                        <div class="col-sm-3"><strong>Character Type:</strong></div>
+                        <div class="col-sm-3">{{ object.get_character_type_display }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock basics %}
+{% block powers %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Arcanoi</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row">
+                        {% for arcanos, value in arcanoi.items %}
+                            {% if value > 0 %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6">{{ arcanos|title }}</div>
+                                        <div class="col-6 dots">{{ value|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.character_type == "spectre" %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Dark Arcanoi</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% for arcanos, value in dark_arcanoi.items %}
+                                {% if value > 0 %}
+                                    <div class="col-sm-4 mb-2">
+                                        <div class="row">
+                                            <div class="col-6">{{ arcanos|title }}</div>
+                                            <div class="col-6 dots">{{ value|dots }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock powers %}
+{% block advantages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title {{ object.get_heading }}">Advantages</h5>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.corpus }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Corpus</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.pathos }} / {{ object.pathos_permanent }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Pathos</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.willpower }} / {{ object.temporary_willpower }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Willpower</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.angst }} / {{ object.angst_permanent }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Angst</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.harrowing_count }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Harrowings</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.catharsis_count }}</div>
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Catharses</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock advantages %}

@@ -7,6 +7,7 @@ class Byway(LocationModel):
     """Tempest path connecting Necropolises and other underworld locations."""
 
     type = "byway"
+    gameline = "wto"
 
     DANGER_LEVEL_CHOICES = [
         ("safe", "Safe - Well-patrolled and maintained"),

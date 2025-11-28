@@ -7,6 +7,7 @@ class WraithFreehold(LocationModel):
     """Independent wraith territory outside Hierarchy control."""
 
     type = "wraith_freehold"
+    gameline = "wto"
 
     GOVERNMENT_TYPE_CHOICES = [
         ("council", "Council Rule"),

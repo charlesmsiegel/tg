@@ -7,6 +7,7 @@ class Nihil(LocationModel):
     """Void in the Tempest where nothing exists - dangerous empty zones."""
 
     type = "nihil"
+    gameline = "wto"
 
     VOID_TYPE_CHOICES = [
         ("emptiness", "Pure Emptiness - Complete void"),

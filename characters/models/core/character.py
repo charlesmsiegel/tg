@@ -252,7 +252,7 @@ class Character(CharacterModel):
             return "Human"
         if "spirit_character" == self.type:
             return "Spirit"
-        return self.type.title()
+        return self.type.replace("_", " ").title()
 
     def get_heading(self):
         return "wod_heading"

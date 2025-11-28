@@ -6,6 +6,7 @@ from core.mixins import (
     CharacterOwnerOrSTMixin,
     EditPermissionMixin,
     MessageMixin,
+    SpecialUserMixin,
     StorytellerRequiredMixin,
     ViewPermissionMixin,
 )
@@ -68,12 +69,32 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
             .filter(chronicle=chronicle)
             .order_by("name")
         )
-        characters = (
+        # Active player characters (not NPCs, not retired/deceased)
+        active_characters = (
             Character.objects.active().player_characters().with_group_ordering()
+            .filter(chronicle=chronicle)
+        )
+        # Retired characters (not NPCs)
+        retired_characters = (
+            Character.objects.retired().player_characters().with_group_ordering()
+            .filter(chronicle=chronicle)
+        )
+        # Deceased characters (not NPCs)
+        deceased_characters = (
+            Character.objects.deceased().player_characters().with_group_ordering()
+            .filter(chronicle=chronicle)
+        )
+        # NPC characters (active only)
+        npc_characters = (
+            Character.objects.active().npcs().with_group_ordering()
+            .filter(chronicle=chronicle)
         )
 
         context.update({
-            "character_list": characters.filter(chronicle=chronicle),
+            "character_list": active_characters,
+            "retired_characters": retired_characters,
+            "deceased_characters": deceased_characters,
+            "npc_characters": npc_characters,
             "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
             "form": SceneCreationForm(chronicle=chronicle),
             "top_locations": top_locations,
@@ -265,7 +286,7 @@ class CommandsView(LoginRequiredMixin, TemplateView):
     template_name = "game/scene/commands.html"
 
 
-class JournalDetailView(ViewPermissionMixin, DetailView):
+class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
     model = Journal
     template_name = "game/journal/detail.html"
 

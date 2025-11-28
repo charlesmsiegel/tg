@@ -11,6 +11,7 @@ class HunterGear(ItemModel):
     """
 
     type = "hunter_gear"
+    gameline = "htr"
 
     GEAR_TYPE_CHOICES = [
         ("weapon", "Weapon"),

@@ -65,7 +65,7 @@
         
         /* Table styling for better alignment */
         .tg-table tbody td {
-            padding: var(--spacing-3) var(--spacing-4);
+            padding: 16px;
             white-space: nowrap;
             vertical-align: middle;
         }
@@ -163,7 +163,7 @@
                             {% for se in object.common_knowledge_elements.all %}
                                 <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
                                     <h6 style="font-weight: 600; margin-bottom: 8px;">{{ se.name }}</h6>
-                                    <p class="mb-0" style="line-height: 1.6;">{{ se.description }}</p>
+                                    <div class="mb-0" style="line-height: 1.6;">{{ se.description|simple_markdown }}</div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -255,7 +255,7 @@
                                                                 <a href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
                                                             </td>
                                                             <td data-label="Type" style="padding: 16px;">
-                                                                <span class="tg-badge badge-pill {% if char.type == 'mage' %}badge-mta{% elif char.type == 'sorcerer' or char.type == 'companion' %}badge-mta-faded{% elif char.type == 'garou' %}badge-wta{% elif char.type == 'kinfolk' or char.type == 'fomor' %}badge-wta-faded{% elif char.type == 'changeling' %}badge-ctd{% elif char.type == 'vampire' %}badge-vtm{% elif char.type == 'ghoul' %}badge-vtm-faded{% elif char.type == 'wraith' %}badge-wto{% else %}badge-secondary{% endif %}">{{ char.get_type }}</span>
+                                                                <span class="tg-badge badge-pill {{ char.get_badge_class }}">{{ char.get_type }}</span>
                                                             </td>
                                                             <td data-label="Status" style="padding: 16px;">
                                                                 <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
@@ -278,29 +278,249 @@
                     
                     <!-- Retired Characters -->
                     <div class="tab-pane fade" id="retired" role="tabpanel">
-                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
-                            <i class="fas fa-user-clock fa-3x mb-3" style="opacity: 0.3;"></i>
-                            <p class="mb-2" style="font-size: var(--font-size-base);">No retired characters to display here.</p>
-                            <a href="{{ object.get_retired_character_url }}" class="tg-btn btn-outline-secondary btn-sm">View All Retired Characters</a>
-                        </div>
+                        {% regroup retired_characters by group_set.first as retired_grouplist %}
+                        {% if retired_grouplist %}
+                            <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                                <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 3%;"></th>
+                                            <th style="width: 35%;">
+                                                <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Player
+                                            </th>
+                                            <th style="width: 22%;">
+                                                <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for g in retired_grouplist %}
+                                            {% if g.list %}
+                                                <!-- Group Header Row -->
+                                                <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
+                                                    <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="#group-{{ g.grouper.id|default:'solo' }}-retired" class="mr-2" data-toggle="collapse" role="button" aria-expanded="true" style="padding: 0.25rem 0.5rem; background: transparent; border: none; color: var(--theme-text-primary); cursor: pointer; transition: var(--transition-fast);">
+                                                                <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                            </a>
+                                                            <div class="flex-grow-1">
+                                                                {% if g.grouper %}
+                                                                    <a href="{{ g.grouper.get_absolute_url }}" style="color: var(--theme-text-primary); text-decoration: none; font-weight: 600; font-size: var(--font-size-base); transition: var(--transition-fast);">
+                                                                        <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                    </a>
+                                                                {% else %}
+                                                                    <span style="color: var(--theme-text-primary); font-weight: 600; font-size: var(--font-size-base);">
+                                                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Solo Characters
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <span class="tg-badge badge-secondary badge-pill ml-2">{{ g.list|length }}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <!-- Character Rows -->
+                                                {% for char in g.list %}
+                                                    {% if char.display %}
+                                                        <tr class="collapse show character-row" id="group-{{ g.grouper.id|default:'solo' }}-retired" style="transition: var(--transition-fast);">
+                                                            <td data-label=""></td>
+                                                            <td data-label="Character" style="padding: 16px;">
+                                                                <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                                            </td>
+                                                            <td data-label="Player" style="padding: 16px;">
+                                                                <a href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
+                                                            </td>
+                                                            <td data-label="Type" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {{ char.get_badge_class }}">{{ char.get_type }}</span>
+                                                            </td>
+                                                            <td data-label="Status" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                                <i class="fas fa-user-clock fa-3x mb-3" style="opacity: 0.3;"></i>
+                                <p class="mb-0" style="font-size: var(--font-size-base);">No retired characters found.</p>
+                            </div>
+                        {% endif %}
                     </div>
-                    
+
                     <!-- Deceased Characters -->
                     <div class="tab-pane fade" id="deceased" role="tabpanel">
-                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
-                            <i class="fas fa-skull fa-3x mb-3" style="opacity: 0.3;"></i>
-                            <p class="mb-2" style="font-size: var(--font-size-base);">No deceased characters to display here.</p>
-                            <a href="{{ object.get_deceased_character_url }}" class="tg-btn btn-outline-danger btn-sm">View All Deceased Characters</a>
-                        </div>
+                        {% regroup deceased_characters by group_set.first as deceased_grouplist %}
+                        {% if deceased_grouplist %}
+                            <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                                <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 3%;"></th>
+                                            <th style="width: 35%;">
+                                                <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Player
+                                            </th>
+                                            <th style="width: 22%;">
+                                                <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for g in deceased_grouplist %}
+                                            {% if g.list %}
+                                                <!-- Group Header Row -->
+                                                <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
+                                                    <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="#group-{{ g.grouper.id|default:'solo' }}-deceased" class="mr-2" data-toggle="collapse" role="button" aria-expanded="true" style="padding: 0.25rem 0.5rem; background: transparent; border: none; color: var(--theme-text-primary); cursor: pointer; transition: var(--transition-fast);">
+                                                                <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                            </a>
+                                                            <div class="flex-grow-1">
+                                                                {% if g.grouper %}
+                                                                    <a href="{{ g.grouper.get_absolute_url }}" style="color: var(--theme-text-primary); text-decoration: none; font-weight: 600; font-size: var(--font-size-base); transition: var(--transition-fast);">
+                                                                        <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                    </a>
+                                                                {% else %}
+                                                                    <span style="color: var(--theme-text-primary); font-weight: 600; font-size: var(--font-size-base);">
+                                                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Solo Characters
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <span class="tg-badge badge-secondary badge-pill ml-2">{{ g.list|length }}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <!-- Character Rows -->
+                                                {% for char in g.list %}
+                                                    {% if char.display %}
+                                                        <tr class="collapse show character-row" id="group-{{ g.grouper.id|default:'solo' }}-deceased" style="transition: var(--transition-fast);">
+                                                            <td data-label=""></td>
+                                                            <td data-label="Character" style="padding: 16px;">
+                                                                <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                                            </td>
+                                                            <td data-label="Player" style="padding: 16px;">
+                                                                <a href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
+                                                            </td>
+                                                            <td data-label="Type" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {{ char.get_badge_class }}">{{ char.get_type }}</span>
+                                                            </td>
+                                                            <td data-label="Status" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                                <i class="fas fa-skull fa-3x mb-3" style="opacity: 0.3;"></i>
+                                <p class="mb-0" style="font-size: var(--font-size-base);">No deceased characters found.</p>
+                            </div>
+                        {% endif %}
                     </div>
-                    
+
                     <!-- NPC Characters -->
                     <div class="tab-pane fade" id="npc" role="tabpanel">
-                        <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
-                            <i class="fas fa-users fa-3x mb-3" style="opacity: 0.3;"></i>
-                            <p class="mb-2" style="font-size: var(--font-size-base);">No NPCs to display here.</p>
-                            <a href="{{ object.get_npc_url }}" class="tg-btn btn-outline-info btn-sm">View All NPCs</a>
-                        </div>
+                        {% regroup npc_characters by group_set.first as npc_grouplist %}
+                        {% if npc_grouplist %}
+                            <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                                <table class="tg-table table-striped" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 3%;"></th>
+                                            <th style="width: 35%;">
+                                                <i class="fas fa-user-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Character Name
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-gamepad mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
+                                            </th>
+                                            <th style="width: 22%;">
+                                                <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                            </th>
+                                            <th style="width: 20%;">
+                                                <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for g in npc_grouplist %}
+                                            {% if g.list %}
+                                                <!-- Group Header Row -->
+                                                <tr class="group-header-row" style="background: linear-gradient(135deg, var(--theme-bg-secondary) 0%, var(--theme-bg-tertiary) 100%); border-left: 3px solid var(--color-primary);">
+                                                    <td colspan="5" style="padding: var(--spacing-3) var(--spacing-4);">
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="#group-{{ g.grouper.id|default:'solo' }}-npc" class="mr-2" data-toggle="collapse" role="button" aria-expanded="true" style="padding: 0.25rem 0.5rem; background: transparent; border: none; color: var(--theme-text-primary); cursor: pointer; transition: var(--transition-fast);">
+                                                                <i class="fas fa-chevron-down" style="transition: transform 0.2s;"></i>
+                                                            </a>
+                                                            <div class="flex-grow-1">
+                                                                {% if g.grouper %}
+                                                                    <a href="{{ g.grouper.get_absolute_url }}" style="color: var(--theme-text-primary); text-decoration: none; font-weight: 600; font-size: var(--font-size-base); transition: var(--transition-fast);">
+                                                                        <i class="fas fa-users mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>{{ g.grouper.name }}
+                                                                    </a>
+                                                                {% else %}
+                                                                    <span style="color: var(--theme-text-primary); font-weight: 600; font-size: var(--font-size-base);">
+                                                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Unaffiliated NPCs
+                                                                    </span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <span class="tg-badge badge-secondary badge-pill ml-2">{{ g.list|length }}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <!-- Character Rows -->
+                                                {% for char in g.list %}
+                                                    {% if char.display %}
+                                                        <tr class="collapse show character-row" id="group-{{ g.grouper.id|default:'solo' }}-npc" style="transition: var(--transition-fast);">
+                                                            <td data-label=""></td>
+                                                            <td data-label="Character" style="padding: 16px;">
+                                                                <a href="{{ char.get_absolute_url }}">{{ char.name }}</a>
+                                                            </td>
+                                                            <td data-label="Owner" style="padding: 16px;">
+                                                                {% if char.owner %}
+                                                                    <a href="{{ char.owner.profile.get_absolute_url }}">{{ char.owner.username }}</a>
+                                                                {% else %}
+                                                                    <span class="text-muted">-</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td data-label="Type" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {{ char.get_badge_class }}">{{ char.get_type }}</span>
+                                                            </td>
+                                                            <td data-label="Status" style="padding: 16px;">
+                                                                <span class="tg-badge badge-pill {% if char.status == 'App' %}badge-success{% elif char.status == 'Sub' %}badge-warning{% elif char.status == 'Dec' %}badge-danger{% elif char.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ char.get_status_display }}</span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                                <i class="fas fa-users fa-3x mb-3" style="opacity: 0.3;"></i>
+                                <p class="mb-0" style="font-size: var(--font-size-base);">No NPCs found.</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -311,45 +531,120 @@
             <div class="tg-card-header text-center">
                 <h3 class="tg-card-title {{ object.headings }}">Locations</h3>
             </div>
-            <div class="tg-card-body" style="padding: 20px;">
-                <div class="list-group">
-                    {% for loc in top_locations %}
-                        {% show_location loc indent_level=0 %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Items Section -->
-        {% if items %}
-            <div class="tg-card mb-4">
-                <div class="tg-card-header text-center">
-                    <h3 class="tg-card-title {{ object.headings }}">Items</h3>
-                </div>
-                <div class="tg-card-body" style="padding: 20px;">
-                    <div class="tg-table-responsive">
-                        <table class="tg-table">
+            <div class="tg-card-body">
+                {% if top_locations %}
+                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                        <table class="tg-table table-striped" style="margin-bottom: 0;">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Type</th>
+                                    <th style="width: 3%;"></th>
+                                    <th style="width: 35%;">
+                                        <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Location Name
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
+                                    </th>
+                                    <th style="width: 22%;">
+                                        <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in items %}
-                                    <tr>
-                                        <td data-label="Name">
-                                            <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                                {% for loc in top_locations %}
+                                    <tr style="transition: var(--transition-fast);">
+                                        <td data-label=""></td>
+                                        <td data-label="Location" style="padding: 16px;">
+                                            <a href="{{ loc.get_absolute_url }}">{{ loc.name }}</a>
                                         </td>
-                                        <td data-label="Type">{{ item.type.title }}</td>
+                                        <td data-label="Owner" style="padding: 16px;">
+                                            {% if loc.owner %}
+                                                <a href="{{ loc.owner.profile.get_absolute_url }}">{{ loc.owner.username }}</a>
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Type" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {{ loc.get_badge_class }}">{{ loc.get_type }}</span>
+                                        </td>
+                                        <td data-label="Status" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {% if loc.status == 'App' %}badge-success{% elif loc.status == 'Sub' %}badge-warning{% elif loc.status == 'Dec' %}badge-danger{% elif loc.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ loc.get_status_display }}</span>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                        <i class="fas fa-map fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0" style="font-size: var(--font-size-base);">No locations found.</p>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
+
+        <!-- Items Section -->
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title {{ object.headings }}">Items</h3>
+            </div>
+            <div class="tg-card-body">
+                {% if items %}
+                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                        <table class="tg-table table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3%;"></th>
+                                    <th style="width: 35%;">
+                                        <i class="fas fa-box mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Item Name
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
+                                    </th>
+                                    <th style="width: 22%;">
+                                        <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                    <tr style="transition: var(--transition-fast);">
+                                        <td data-label=""></td>
+                                        <td data-label="Item" style="padding: 16px;">
+                                            <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                                        </td>
+                                        <td data-label="Owner" style="padding: 16px;">
+                                            {% if item.owned_by.first %}
+                                                <a href="{{ item.owned_by.first.get_absolute_url }}">{{ item.owned_by.first.name }}</a>
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Type" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {{ item.get_badge_class }}">{{ item.get_type }}</span>
+                                        </td>
+                                        <td data-label="Status" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {% if item.status == 'App' %}badge-success{% elif item.status == 'Sub' %}badge-warning{% elif item.status == 'Dec' %}badge-danger{% elif item.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ item.get_status_display }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                        <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0" style="font-size: var(--font-size-base);">No items found.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
         <!-- Scenes Section -->
         <div class="tg-card mb-4">
             <div class="tg-card-header text-center">

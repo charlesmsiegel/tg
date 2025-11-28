@@ -1,0 +1,46 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text %}
+
+{% block objectname %}
+    <div class="tg-card header-card mb-4" data-gameline="ctd">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title ctd_heading">{{ object.name }}</h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+            {% if object.realm_type %}
+                <p class="tg-card-subtitle mb-0">
+                    <strong>{{ object.get_realm_type_display }}</strong>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
+
+{% block model_specific %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title ctd_heading">Dream Realm Details</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    {% if object.stability %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Stability:</strong></div>
+                            <div class="col-sm-9">{{ object.stability }}</div>
+                        </div>
+                    {% endif %}
+                    {% if object.accessibility %}
+                        <div class="row mb-2">
+                            <div class="col-sm-3"><strong>Accessibility:</strong></div>
+                            <div class="col-sm-9">{{ object.accessibility }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}

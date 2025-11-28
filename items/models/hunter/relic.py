@@ -12,6 +12,7 @@ class HunterRelic(ItemModel):
     """
 
     type = "hunter_relic"
+    gameline = "htr"
 
     # Power level
     power_level = models.IntegerField(
