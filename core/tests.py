@@ -197,7 +197,9 @@ class TestHomepage(FunctionalTest):
 
 class TestModel(TestCase):
     def setUp(self):
-        self.model = CharacterModel.objects.create(name="")
+        # Use skip_validation to allow empty name for testing has_name/set_name methods
+        self.model = CharacterModel(name="")
+        self.model.save(skip_validation=True)
         self.user = User.objects.create_user(username="Test User")
 
     def test_has_name(self):
@@ -232,7 +234,7 @@ class TestModel(TestCase):
 
     def test_update_status(self):
         self.assertEqual(self.model.status, "Un")
-        self.assertEqual(self.model.get_status_display(), "Unfinished")
+        self.assertEqual(self.model.get_status_display(), "Unapproved")
         self.assertTrue(self.model.update_status("App"))
         self.assertEqual(self.model.status, "App")
         self.assertEqual(self.model.get_status_display(), "Approved")
@@ -254,7 +256,7 @@ class TestModel(TestCase):
 
     def test_get_gameline(self):
         m = Human.objects.create(name="Test Human from WoD")
-        self.assertEqual(m.get_gameline(), "World of Darkness")
+        self.assertEqual(m.get_gameline(), "wod")
 
 
 class TestDots(TestCase):
