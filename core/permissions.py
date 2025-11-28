@@ -149,7 +149,12 @@ class PermissionManager:
                 if obj.chronicle.head_storytellers.filter(id=user.id).exists():
                     roles.add(Role.CHRONICLE_HEAD_ST)
 
-            # Check if user is a game ST in the chronicle
+            # Check if user is a storyteller via STRelationship (has edit permissions)
+            if hasattr(obj.chronicle, "storytellers"):
+                if obj.chronicle.storytellers.filter(id=user.id).exists():
+                    roles.add(Role.CHRONICLE_HEAD_ST)
+
+            # Check if user is a game ST in the chronicle (view-only)
             if hasattr(obj.chronicle, "game_storytellers"):
                 if obj.chronicle.game_storytellers.filter(id=user.id).exists():
                     roles.add(Role.GAME_ST)
@@ -307,6 +312,33 @@ class PermissionManager:
         return PermissionManager.user_has_permission(
             user, obj, Permission.SPEND_FREEBIES
         )
+
+    def check_permission(self, user: User, obj, permission: str) -> bool:
+        """
+        Check if user has a specific permission for an object.
+
+        This is a convenience method that accepts string permission names
+        and converts them to Permission enums.
+
+        Args:
+            user: Django User instance
+            obj: Object to check permissions for
+            permission: Permission name as string (e.g., "view_full", "edit_full")
+
+        Returns:
+            Boolean permission result
+        """
+        # Convert string to Permission enum
+        try:
+            perm_enum = Permission(permission)
+        except ValueError:
+            # Try uppercase version
+            try:
+                perm_enum = Permission[permission.upper()]
+            except KeyError:
+                return False
+
+        return PermissionManager.user_has_permission(user, obj, perm_enum)
 
     @staticmethod
     def _model_has_field(model, field_name: str) -> bool:

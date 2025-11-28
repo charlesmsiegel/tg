@@ -22,35 +22,14 @@ This document classifies test failures into work units for systematic fixing.
 - Updated `core/tests.py` TestModel.setUp() to use `skip_validation=True` for empty name testing
 - Fixed test assertions for status display ("Unapproved" not "Unfinished") and gameline ("wod" not "World of Darkness")
 
+### Unit 4: PermissionManager API Change (FIXED)
+- Added `check_permission()` instance method to PermissionManager that accepts string permissions
+- Added check for `storytellers` M2M in `get_user_roles()` to recognize STs via STRelationship
+- All 11 permission tests now pass (7 character + 2 item + 2 location)
+
 ---
 
 ## REMAINING WORK
-
-## Unit 4: PermissionManager API Change
-
-**Severity:** HIGH
-**Files:**
-- `core/permissions.py`
-- `characters/tests/test_views.py` (TestCharacterPermissions)
-- `items/tests/test_models.py`
-- `locations/tests/test_models.py`
-
-**Tests Affected:** 8+
-
-### Problem
-```python
-pm.check_permission(user, obj, "view_full")
-# AttributeError: 'PermissionManager' object has no attribute 'check_permission'
-```
-
-Tests expect a `check_permission()` method that doesn't exist on PermissionManager.
-
-### Fix
-Either:
-1. Add the `check_permission()` method to PermissionManager, OR
-2. Update tests to use the current PermissionManager API
-
----
 
 ## Unit 5: URL Route Names Changed
 
@@ -237,18 +216,16 @@ Review each test class to determine if:
 
 ## Priority Order
 
-1. **Unit 4** - Core permission system tests
-2. **Unit 6** - Model schema updates
-3. **Unit 7** - Character API updates
-4. **Unit 5** - URL fixes
-5. **Unit 9-12** - Minor test updates
-6. **Unit 13** - Evaluate for deprecation
+1. **Unit 6** - Model schema updates
+2. **Unit 7** - Character API updates
+3. **Unit 5** - URL fixes
+4. **Unit 9-12** - Minor test updates
+5. **Unit 13** - Evaluate for deprecation
 
 ---
 
 ## Medium Effort (1-2 hours each)
 
-- Unit 4: Document PermissionManager API, update tests
 - Unit 6: Update model instantiations across test files
 - Unit 7: Update Character XP method calls
 
