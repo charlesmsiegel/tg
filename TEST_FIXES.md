@@ -18,6 +18,10 @@ This document classifies test failures into work units for systematic fixing.
 ### Unit 3: Import Path Changes - LimitedCharacterEditForm (FIXED)
 - Added `from .limited_edit import LimitedCharacterEditForm, LimitedHumanEditForm` to `characters/forms/core/__init__.py`
 
+### Unit 8: Validation Changes - Empty Names (FIXED)
+- Updated `core/tests.py` TestModel.setUp() to use `skip_validation=True` for empty name testing
+- Fixed test assertions for status display ("Unapproved" not "Unfinished") and gameline ("wod" not "World of Darkness")
+
 ---
 
 ## REMAINING WORK
@@ -137,29 +141,6 @@ Update tests to use current Character API for XP tracking.
 
 ---
 
-## Unit 8: Validation Changes - Empty Names Now Rejected
-
-**Severity:** LOW
-**Files:** `core/tests.py` (TestModel)
-
-**Tests Affected:** 11
-
-### Problem
-```python
-CharacterModel.objects.create(name="")
-# ValidationError: {'name': ['This field cannot be blank.', 'Name is required']}
-```
-
-Tests create models with empty names, but validation now requires non-empty names.
-
-### Fix
-Update `setUp()` to use valid model data:
-```python
-self.model = CharacterModel.objects.create(name="Test Model")
-```
-
----
-
 ## Unit 9: Status Transition Validation
 
 **Severity:** LOW
@@ -257,18 +238,13 @@ Review each test class to determine if:
 ## Priority Order
 
 1. **Unit 4** - Core permission system tests
-2. **Unit 8** - Quick fix, unblocks 11 tests
-3. **Unit 6** - Model schema updates
-4. **Unit 7** - Character API updates
-5. **Unit 5** - URL fixes
-6. **Unit 9-12** - Minor test updates
-7. **Unit 13** - Evaluate for deprecation
+2. **Unit 6** - Model schema updates
+3. **Unit 7** - Character API updates
+4. **Unit 5** - URL fixes
+5. **Unit 9-12** - Minor test updates
+6. **Unit 13** - Evaluate for deprecation
 
 ---
-
-## Quick Wins (Estimated < 30 min each)
-
-- Unit 8: Change `name=""` to `name="Test"` in setUp
 
 ## Medium Effort (1-2 hours each)
 
