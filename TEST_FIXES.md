@@ -27,6 +27,16 @@ This document classifies test failures into work units for systematic fixing.
 - Added check for `storytellers` M2M in `get_user_roles()` to recognize STs via STRelationship
 - All 11 permission tests now pass (7 character + 2 item + 2 location)
 
+### Unit 6: Model Field Changes - Tests Out of Sync (FIXED)
+- Updated `game/tests/test_models.py` to match current model schemas:
+  - **Story**: Removed `chronicle` and `description` fields (Story only has `name` and `xp_given`)
+  - **Journal**: Changed from `title`/`content` to OneToOneField with character, using `get_or_create` due to auto-creation signal
+  - **Scene**: Changed `xp` to `xp_given` (boolean), `participants` to `characters` (M2M)
+  - **Week**: Changed from `chronicle`/`week_number` to `end_date` (with computed `start_date` property)
+  - **WeeklyXPRequest**: Changed from `xp_spent`/`description` to boolean flags (`finishing`, `learning`, etc.) with scene FKs
+- Fixed polymorphic model comparison by comparing by `pk` instead of instance
+- All 23 game model tests now pass
+
 ---
 
 ## REMAINING WORK
@@ -51,51 +61,6 @@ URL patterns have changed but tests still use old route names.
 
 ### Fix
 Update tests to use current URL names, or verify and add missing URL patterns.
-
----
-
-## Unit 6: Model Field Changes - Tests Out of Sync
-
-**Severity:** MEDIUM
-**Tests Affected:** 15+
-
-### 6a: Journal Model
-**File:** `game/tests/test_models.py` (TestJournal)
-```python
-Journal(title="...", content="...")
-# TypeError: Journal() got unexpected keyword arguments: 'title', 'content'
-```
-Journal model schema changed; tests use old field names.
-
-### 6b: Story Model
-**File:** `game/tests/test_models.py` (TestStory)
-```python
-Story(chronicle=..., description=...)
-# TypeError: Story() got unexpected keyword arguments: 'chronicle', 'description'
-```
-
-### 6c: Scene Model
-**File:** `game/tests/test_models.py` (TestSceneAdvanced)
-```python
-Scene(xp=3)
-# TypeError: Scene() got unexpected keyword arguments: 'xp'
-```
-
-### 6d: Week Model
-**File:** `game/tests/test_models.py` (TestWeekAndXPRequests)
-```python
-Week(chronicle=..., week_number=1)
-# TypeError: Week() got unexpected keyword arguments
-```
-
-### 6e: WeeklyXPRequest Model
-```python
-WeeklyXPRequest(xp_spent=5, description=...)
-# TypeError: got unexpected keyword arguments
-```
-
-### Fix
-Update all model instantiations in tests to match current model schemas.
 
 ---
 
@@ -216,18 +181,12 @@ Review each test class to determine if:
 
 ## Priority Order
 
-1. **Unit 6** - Model schema updates
-2. **Unit 7** - Character API updates
-3. **Unit 5** - URL fixes
-4. **Unit 9-12** - Minor test updates
-5. **Unit 13** - Evaluate for deprecation
+1. **Unit 7** - Character API updates
+2. **Unit 5** - URL fixes
+3. **Unit 9-12** - Minor test updates
+4. **Unit 13** - Evaluate for deprecation
 
 ---
-
-## Medium Effort (1-2 hours each)
-
-- Unit 6: Update model instantiations across test files
-- Unit 7: Update Character XP method calls
 
 ## Needs Investigation
 
