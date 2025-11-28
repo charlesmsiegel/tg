@@ -1,0 +1,47 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Coterie
+{% endblock creation_title %}
+{% block creation_title_2 %}
+    Create Coterie
+{% endblock creation_title_2 %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+        </div>
+        <div class="col-sm-9">{{ form.name }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.chronicle.id_for_label }}" class="form-label">Chronicle</label>
+        </div>
+        <div class="col-sm-9">{{ form.chronicle }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.leader.id_for_label }}" class="form-label">Leader</label>
+        </div>
+        <div class="col-sm-9">{{ form.leader }}</div>
+    </div>
+    {% if object %}
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <label for="{{ form.members.id_for_label }}" class="form-label">Members</label>
+            </div>
+            <div class="col-sm-9">{{ form.members }}</div>
+        </div>
+    {% endif %}
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+        </div>
+        <div class="col-sm-9">{{ form.description }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.public_info.id_for_label }}" class="form-label">Public Info</label>
+        </div>
+        <div class="col-sm-9">{{ form.public_info }}</div>
+    </div>
+{% endblock contents %}

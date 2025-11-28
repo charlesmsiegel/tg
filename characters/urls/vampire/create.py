@@ -48,4 +48,9 @@ urls = [
         views.vampire.DisciplineCreateView.as_view(),
         name="discipline",
     ),
+    path(
+        "coterie/",
+        views.vampire.CoterieCreateView.as_view(),
+        name="coterie",
+    ),
 ]
