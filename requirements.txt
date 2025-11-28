@@ -20,6 +20,10 @@ python-dotenv==1.0.1
 setuptools>=78.1.1
 # Security: Update cryptography to latest version
 cryptography>=46.0.0
+# Security: Pin urllib3 to fix GHSA-48p4-8xcf-vxj5, GHSA-pq67-6m6q-mj2v (redirect handling)
+urllib3>=2.5.0
+# Security: Pin h11 to fix GHSA-vqfr-h8mv-ghfj (HTTP request smuggling in chunked encoding)
+h11>=0.16.0
 
 # Caching dependencies
 django-redis==5.4.0
@@ -29,8 +33,11 @@ redis==5.2.1
 channels==4.1.0
 channels-redis==4.2.1
 daphne==4.1.2
+# Security: Pin tornado to fix GHSA-7cx3-6m66-7c5m, GHSA-8w49-h785-mj3c (DoS vulnerabilities)
+tornado>=6.5
 
 # Code quality tools
-black==24.3.0
+# Security: Updated black to fix CVE-2025-21503 (GHSA-vg2r-2xqq-6x2w)
+black>=25.1.0
 ruff==0.3.4
 pre-commit==3.7.0
