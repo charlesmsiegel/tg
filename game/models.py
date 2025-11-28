@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from core.constants import (
     GameLine,
@@ -535,7 +535,7 @@ class Scene(models.Model):
             Post.objects.filter(scene=self).order_by("-datetime_created").first()
         )
         if latest_post is None:
-            from_date = datetime.date.today()
+            from_date = date.today()
         else:
             from_date = latest_post.datetime_created.date()
 
