@@ -83,21 +83,21 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| VtMHuman | `vampire/vtmhuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| VtMHuman | `vampire/vtmhuman.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
 | Vampire | `vampire/vampire.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
 | Ghoul | `vampire/ghoul.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
 | Revenant | `vampire/revenant.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ⚠️ |
-| Coterie | `vampire/coterie.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | N/A |
+| Coterie | `vampire/coterie.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| VampireClan | `vampire/clan.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Discipline | `vampire/discipline.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| VampireSect | `vampire/sect.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Path | `vampire/path.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| VampireTitle | `vampire/title.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| VampireClan | `vampire/clan.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
+| Discipline | `vampire/discipline.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
+| VampireSect | `vampire/sect.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
+| Path | `vampire/path.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
+| VampireTitle | `vampire/title.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ⚠️ |
 | RevenantFamily | `vampire/revenant.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ❌ |
 
 ### Werewolf (WtA)
@@ -106,42 +106,42 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| WtAHuman | `werewolf/wtahuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Werewolf | `werewolf/garou.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Kinfolk | `werewolf/kinfolk.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Fera | `werewolf/fera.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Bastet | `werewolf/bastet.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Corax | `werewolf/corax.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Gurahl | `werewolf/gurahl.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Mokole | `werewolf/mokole.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Nuwisha | `werewolf/nuwisha.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Ratkin | `werewolf/ratkin.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Rokea | `werewolf/rokea.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Ananasi | `werewolf/ananasi.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Ajaba | `werewolf/ajaba.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Nagah | `werewolf/nagah.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Kitsune | `werewolf/kitsune.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Grondr | `werewolf/grondr.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Fomor | `werewolf/fomor.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Drone | `werewolf/drone.py` | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
-| SpiritCharacter | `werewolf/spirit_character.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ | N/A |
-| Pack | `werewolf/pack.py` | ⚠️ | ❌ | ✅ | ✅ | ❌ | ✅ | ⚠️ | ✅ | N/A |
+| WtAHuman | `werewolf/wtahuman.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Werewolf | `werewolf/garou.py` | ❌ | ✅ | ⚠️ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Kinfolk | `werewolf/kinfolk.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Fera | `werewolf/fera.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Bastet | `werewolf/bastet.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Corax | `werewolf/corax.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Gurahl | `werewolf/gurahl.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Mokole | `werewolf/mokole.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Nuwisha | `werewolf/nuwisha.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Ratkin | `werewolf/ratkin.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Rokea | `werewolf/rokea.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Ananasi | `werewolf/ananasi.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Ajaba | `werewolf/ajaba.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Nagah | `werewolf/nagah.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Kitsune | `werewolf/kitsune.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Grondr | `werewolf/grondr.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Fomor | `werewolf/fomor.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Drone | `werewolf/drone.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ |
+| SpiritCharacter | `werewolf/spirit_character.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ | N/A |
+| Pack | `werewolf/pack.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Tribe | `werewolf/tribe.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Gift | `werewolf/gift.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Tribe | `werewolf/tribe.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Gift | `werewolf/gift.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | GiftPermission | `werewolf/gift.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| Rite | `werewolf/rite.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Camp | `werewolf/camp.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Charm | `werewolf/charm.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Totem | `werewolf/totem.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Battlescar | `werewolf/battlescar.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| SeptPosition | `werewolf/septposition.py` | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ⚠️ |
-| RenownIncident | `werewolf/renownincident.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| FomoriPower | `werewolf/fomoripower.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Rite | `werewolf/rite.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Camp | `werewolf/camp.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Charm | `werewolf/charm.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Totem | `werewolf/totem.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Battlescar | `werewolf/battlescar.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| SeptPosition | `werewolf/septposition.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| RenownIncident | `werewolf/renownincident.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| FomoriPower | `werewolf/fomoripower.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 
 ### Mage (MtA)
 
@@ -149,32 +149,32 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| MtAHuman | `mage/mtahuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Mage | `mage/mage.py` | ✅ | ⚠️ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Companion | `mage/companion.py` | ✅ | ⚠️ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Sorcerer | `mage/sorcerer.py` | ✅ | ⚠️ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Cabal | `mage/cabal.py` | ⚠️ | ❌ | ✅ | ✅ | ❌ | ✅ | ⚠️ | ✅ | N/A |
+| MtAHuman | `mage/mtahuman.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Mage | `mage/mage.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Companion | `mage/companion.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Sorcerer | `mage/sorcerer.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Cabal | `mage/cabal.py` | ❌ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Sphere | `mage/sphere.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Resonance | `mage/resonance.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Sphere | `mage/sphere.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Resonance | `mage/resonance.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | Rote | `mage/rote.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
 | Effect | `mage/effect.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Instrument | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Practice | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| SpecializedPractice | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| CorruptedPractice | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Tenet | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Paradigm | `mage/focus.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| MageFaction | `mage/faction.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Fellowship | `mage/fellowship.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| SorcererFellowship | `mage/fellowship.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Advantage | `mage/companion.py` | ✅ | ✅ | ❌ | ❌ | ❌ | N/A | ✅ | ⚠️ |
-| LinearMagicPath | `mage/sorcerer.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| LinearMagicRitual | `mage/sorcerer.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
+| Instrument | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| Practice | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| SpecializedPractice | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| CorruptedPractice | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| Tenet | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| Paradigm | `mage/focus.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| MageFaction | `mage/faction.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Fellowship | `mage/fellowship.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| SorcererFellowship | `mage/fellowship.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Advantage | `mage/companion.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ⚠️ |
+| LinearMagicPath | `mage/sorcerer.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
+| LinearMagicRitual | `mage/sorcerer.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ | ❌ |
 | ResRating | `mage/mage.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
 | PracticeRating | `mage/mage.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
 | PathRating | `mage/sorcerer.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
@@ -186,21 +186,21 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| WtOHuman | `wraith/wtohuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Wraith | `wraith/wraith.py` | ✅ | ⚠️ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Circle | `wraith/circle.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | N/A |
+| WtOHuman | `wraith/wtohuman.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Wraith | `wraith/wraith.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Circle | `wraith/circle.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| WraithFaction | `wraith/faction.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Guild | `wraith/guild.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Arcanos | `wraith/arcanos.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| ShadowArchetype | `wraith/shadow_archetype.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
+| WraithFaction | `wraith/faction.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Guild | `wraith/guild.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Arcanos | `wraith/arcanos.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| ShadowArchetype | `wraith/shadow_archetype.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Passion | `wraith/passion.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
 | Fetter | `wraith/fetter.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
-| Thorn | `wraith/thorn.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Thorn | `wraith/thorn.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | ThornRating | `wraith/wraith.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 
 ### Changeling (CtD)
@@ -209,23 +209,23 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| CtDHuman | `changeling/ctdhuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Changeling | `changeling/changeling.py` | ✅ | ⚠️ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Inanimae | `changeling/inanimae.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Nunnehi | `changeling/nunnehi.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| AutumnPerson | `changeling/autumn_person.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Motley | `changeling/motley.py` | ⚠️ | ❌ | ✅ | ✅ | ❌ | ✅ | ⚠️ | ✅ | N/A |
+| CtDHuman | `changeling/ctdhuman.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Changeling | `changeling/changeling.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Inanimae | `changeling/inanimae.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| Nunnehi | `changeling/nunnehi.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| AutumnPerson | `changeling/autumn_person.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| Motley | `changeling/motley.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ⚠️ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Kith | `changeling/kith.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| House | `changeling/house.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Kith | `changeling/kith.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| House | `changeling/house.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | HouseFaction | `changeling/house_faction.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Legacy | `changeling/legacy.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Cantrip | `changeling/cantrip.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Chimera | `changeling/chimera.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| Legacy | `changeling/legacy.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Cantrip | `changeling/cantrip.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Chimera | `changeling/chimera.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ### Demon (DtF)
 
@@ -233,24 +233,24 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| DtFHuman | `demon/dtf_human.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Demon | `demon/demon.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Thrall | `demon/thrall.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Earthbound | `demon/earthbound.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ⚠️ |
-| Conclave | `demon/conclave.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | N/A |
+| DtFHuman | `demon/dtf_human.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Demon | `demon/demon.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Thrall | `demon/thrall.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Earthbound | `demon/earthbound.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ⚠️ |
+| Conclave | `demon/conclave.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | N/A |
 
 #### Reference Models
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Lore | `demon/lore.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Lore | `demon/lore.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | LoreBlock | `demon/lore_block.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| DemonHouse | `demon/house.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| DemonFaction | `demon/faction.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Visage | `demon/visage.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| ApocalypticFormTrait | `demon/apocalyptic_form.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| Ritual | `demon/ritual.py` | ⚠️ | ✅ | ❌ | ✅ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Pact | `demon/pact.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| DemonHouse | `demon/house.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| DemonFaction | `demon/faction.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Visage | `demon/visage.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| ApocalypticFormTrait | `demon/apocalyptic_form.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Ritual | `demon/ritual.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Pact | `demon/pact.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 | LoreRating | `demon/demon.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 
 ### Mummy (MtR)
@@ -266,11 +266,11 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index | Chargen |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|:-------:|
-| HtRHuman | `hunter/htrhuman.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Hunter | `hunter/hunter.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Creed | `hunter/creed.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | N/A |
-| Edge | `hunter/edge.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | N/A |
-| HunterOrganization | `hunter/organization.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | N/A |
+| HtRHuman | `hunter/htrhuman.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Hunter | `hunter/hunter.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Creed | `hunter/creed.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ | N/A |
+| Edge | `hunter/edge.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ⚠️ | N/A |
+| HunterOrganization | `hunter/organization.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | N/A |
 
 ---
 
@@ -326,8 +326,8 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Treasure | `changeling/treasure.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Dross | `changeling/dross.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| Treasure | `changeling/treasure.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Dross | `changeling/dross.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
 
 ### Items Demon
 
@@ -348,8 +348,8 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| HunterGear | `hunter/gear.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| HunterRelic | `hunter/relic.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| HunterGear | `hunter/gear.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| HunterRelic | `hunter/relic.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
 
 ---
 
@@ -366,13 +366,13 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Haven | `vampire/haven.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Haven | `vampire/haven.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
 | HavenMeritFlawRating | `vampire/haven.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
-| Domain | `vampire/domain.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Elysium | `vampire/elysium.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| TremereChantry | `vampire/chantry.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
-| Rack | `vampire/rack.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Barrens | `vampire/barrens.py` | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ⚠️ |
+| Domain | `vampire/domain.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
+| Elysium | `vampire/elysium.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
+| TremereChantry | `vampire/chantry.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
+| Rack | `vampire/rack.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
+| Barrens | `vampire/barrens.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
 
 ### Locations Werewolf
 
@@ -416,9 +416,9 @@ This document provides a comprehensive inventory of all models across all apps i
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
 | Freehold | `changeling/freehold.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Holding | `changeling/holding.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| Trod | `changeling/trod.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| DreamRealm | `changeling/dream_realm.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| Holding | `changeling/holding.py` | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| Trod | `changeling/trod.py` | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
+| DreamRealm | `changeling/dream_realm.py` | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ |
 
 ### Locations Demon
 
@@ -431,17 +431,17 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Tomb | `mummy/tomb.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Tomb | `mummy/tomb.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | TombMeritFlawRating | `mummy/tomb.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| UndergroundSanctuary | `mummy/sanctuary.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| CultTemple | `mummy/cult_temple.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| UndergroundSanctuary | `mummy/sanctuary.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| CultTemple | `mummy/cult_temple.py` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ### Locations Hunter
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Safehouse | `hunter/safehouse.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| HuntingGround | `hunter/huntingground.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| Safehouse | `hunter/safehouse.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
+| HuntingGround | `hunter/huntingground.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ⚠️ | ✅ | ✅ |
 
 ---
 
@@ -449,22 +449,22 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
-| Chronicle | `game/models.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ✅ |
+| Chronicle | `game/models.py` | ✅ | ✅ | ⚠️ | ❌ | ❌ | ❌ | ✅ | ✅ |
 | STRelationship | `game/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| Story | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Week | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Scene | `game/models.py` | ✅ | ✅ | ✅ | ⚠️ | ❌ | ✅ | ✅ | ✅ |
+| Story | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Week | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Scene | `game/models.py` | ✅ | ✅ | ⚠️ | ❌ | ❌ | ✅ | ✅ | ✅ |
 | UserSceneReadStatus | `game/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | Post | `game/models.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
 | JournalEntry | `game/models.py` | N/A | N/A | N/A | N/A | N/A | ✅ | N/A | N/A |
-| Journal | `game/models.py` | ✅ | ✅ | N/A | N/A | ❌ | N/A | ✅ | ✅ |
+| Journal | `game/models.py` | ✅ | ✅ | ❌ | ⚠️ | ❌ | ✅ | ✅ | ✅ |
 | WeeklyXPRequest | `game/models.py` | ✅ | ✅ | ✅ | ⚠️ | ❌ | ✅ | ✅ | ✅ |
-| StoryXPRequest | `game/models.py` | ✅ | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ✅ |
-| XPSpendingRequest | `game/models.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| FreebieSpendingRecord | `game/models.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| ObjectType | `game/models.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| SettingElement | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Gameline | `game/models.py` | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| StoryXPRequest | `game/models.py` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| XPSpendingRequest | `game/models.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| FreebieSpendingRecord | `game/models.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| ObjectType | `game/models.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| SettingElement | `game/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Gameline | `game/models.py` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ---
 
@@ -473,15 +473,15 @@ This document provides a comprehensive inventory of all models across all apps i
 | Model | File | List | Detail | Create | Update | Delete | Form | Template | Index |
 |-------|------|:----:|:------:|:------:|:------:|:------:|:----:|:--------:|:-----:|
 | Model | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| Book | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Book | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
 | BookReference | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | Observer | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| NewsItem | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Language | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| NewsItem | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Language | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
 | Number | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | Noun | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
-| HouseRule | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| CharacterTemplate | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| HouseRule | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| CharacterTemplate | `core/models.py` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | TemplateApplication | `core/models.py` | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 
 ---
@@ -500,25 +500,36 @@ This document provides a comprehensive inventory of all models across all apps i
 
 | App | Total Models | Fully Implemented | Partially Implemented | Not Implemented |
 |-----|--------------|-------------------|----------------------|-----------------|
-| Characters | 148 | 89 | 42 | 17 |
-| Items | 29 | 21 | 4 | 4 |
-| Locations | 47 | 31 | 10 | 6 |
-| Game | 17 | 8 | 8 | 1 |
+| Characters | 78+ | 45 | 18 | 15 |
+| Items | 20 | 16 | 0 | 4 |
+| Locations | 33 | 25 | 5 | 3 |
+| Game | 17 | 6 | 4 | 7 |
 | Core | 11 | 5 | 0 | 6 |
 | Accounts | 1 | 0 | 1 | 0 |
-| **Total** | **253** | **154** | **65** | **34** |
+
+*Note: Counts exclude N/A models (through/rating models, abstract models)*
 
 ### Implementation Gaps by Category
 
-**Missing Delete Views**: All models (project does not implement deletion through the UI)
+**Missing Delete Views**: All models except CharacterTemplate (project does not implement deletion through the UI)
 
-**Mummy Gameline**: Largely unimplemented (detail views only)
+**Missing List Views**: Most character types lack dedicated list views (use generic index only)
 
-**Hunter Gameline**: Partially implemented (needs completion)
+**Mummy Gameline**: Largely unimplemented (detail views only, no templates)
 
-**Group Models** (Pack, Cabal, Motley, Circle, Conclave): Missing detail views
+**Group Models** (Coterie, Circle, Conclave): Not implemented
+- Pack, Cabal, Motley: Have detail views but no list/create/update
 
-**Reference Models**: Many missing dedicated list views/index integration
+**Missing Reference Model Views**:
+- **Vampire**: VampireClan, Discipline, VampireSect, Path, VampireTitle (views exist, templates missing)
+- **Mage**: Sphere, MageFaction, Fellowship, SorcererFellowship, Instrument, Practice, Paradigm, Tenet
+- **Wraith**: WraithFaction, Guild, Arcanos, ShadowArchetype
+- **Changeling**: Cantrip, Chimera
+- **Demon**: DemonHouse, DemonFaction, ApocalypticFormTrait
+
+**Game App Gaps**:
+- XPSpendingRequest, FreebieSpendingRecord: No views/templates
+- ObjectType, Gameline: Admin-only (no public views)
 
 ---
 
