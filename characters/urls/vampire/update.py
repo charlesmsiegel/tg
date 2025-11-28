@@ -53,4 +53,9 @@ urls = [
         views.vampire.DisciplineUpdateView.as_view(),
         name="discipline",
     ),
+    path(
+        "coterie/<pk>/",
+        views.vampire.CoterieUpdateView.as_view(),
+        name="coterie",
+    ),
 ]

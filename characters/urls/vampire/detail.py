@@ -64,4 +64,9 @@ urls = [
         views.vampire.VtMHumanCharacterCreationView.as_view(),
         name="vtmhuman_creation",
     ),
+    path(
+        "coterie/<pk>/",
+        views.vampire.CoterieDetailView.as_view(),
+        name="coterie",
+    ),
 ]

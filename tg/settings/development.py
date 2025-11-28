@@ -52,6 +52,7 @@ try:
 
     DEBUG_TOOLBAR_CONFIG = {
         "SHOW_TOOLBAR_CALLBACK": "tg.settings.development.show_toolbar_callback",
+        "IS_RUNNING_TESTS": False,
     }
 except ImportError:
     pass

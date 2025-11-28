@@ -4,6 +4,12 @@ from .clan import (
     VampireClanListView,
     VampireClanUpdateView,
 )
+from .coterie import (
+    CoterieCreateView,
+    CoterieDetailView,
+    CoterieListView,
+    CoterieUpdateView,
+)
 from .discipline import (
     DisciplineCreateView,
     DisciplineDetailView,

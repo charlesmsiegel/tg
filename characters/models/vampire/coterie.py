@@ -19,3 +19,6 @@ class Coterie(Group):
 
     def get_update_url(self):
         return reverse("characters:vampire:update:coterie", kwargs={"pk": self.pk})
+
+    def get_absolute_url(self):
+        return reverse("characters:vampire:coterie", kwargs={"pk": self.pk})
