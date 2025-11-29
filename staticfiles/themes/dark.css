@@ -68,10 +68,67 @@ footer {
 }
 
 .card-header {
-    background-color: #2d3338;
+    background-color: #2d3338 !important;
     border-color: #495057;
+}
+
+.card-header.bg-light,
+.card .card-header.bg-light,
+div.card-header.bg-light,
+.bg-light.card-header {
+    background-color: #2d3338 !important;
+    color: #f8f9fa !important;
+}
+
+.bg-light,
+div.bg-light,
+.card .bg-light {
+    background-color: #2d3338 !important;
+    color: #f8f9fa !important;
 }
 
 .theme-card td, th {
     color: #f8f9fa;
+}
+
+/* Badge overrides for dark theme */
+.badge-mta {
+    background-color: #9b59b6 !important;
+    color: white !important;
+}
+
+.badge-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.badge-mta-faded {
+    background-color: #b89dd4 !important;
+    color: white !important;
+}
+
+/* Ensure all gameline badges remain visible */
+.badge-vtm {
+    background-color: #c0392b !important;
+    color: white !important;
+}
+
+.badge-wta {
+    background-color: #27ae60 !important;
+    color: white !important;
+}
+
+.badge-wto {
+    background-color: #34495e !important;
+    color: white !important;
+}
+
+.badge-ctd {
+    background-color: #3498db !important;
+    color: white !important;
+}
+
+.badge-dtf {
+    background-color: #e74c3c !important;
+    color: white !important;
 }
