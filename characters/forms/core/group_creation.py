@@ -10,7 +10,7 @@ class GroupCreationForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         # Group types that should be available
-        group_types = ["cabal", "pack", "motley", "group"]
+        group_types = ["cabal", "pack", "motley", "group", "coterie", "circle", "conclave"]
 
         if user and user.is_authenticated:
             if user.profile.is_st():

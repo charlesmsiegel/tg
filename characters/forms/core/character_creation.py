@@ -27,6 +27,8 @@ class CharacterCreationForm(forms.Form):
             "wta": "Werewolf",
             "vtm": "Vampire",
             "dtf": "Demon",
+            "htr": "Hunter",
+            "mtr": "Mummy",
         }
 
         # Check if this is a human type
@@ -57,8 +59,9 @@ class CharacterCreationForm(forms.Form):
             "conclave",
         ]
 
-        # Non-character types to exclude (metadata/game objects)
+        # Non-character types to exclude (metadata/game objects/mechanics)
         non_character_types = [
+            # Core mechanics
             "statistic",
             "specialty",
             "attribute",
@@ -71,21 +74,26 @@ class CharacterCreationForm(forms.Form):
             "background",
             "gameline",
             "house_rule",
-            "discipline",
-            "path",
-            "vampire_clan",
-            "vampire_sect",
-            "battle_scar",
-            "camp",
-            "totem",
-            "spirit",
-            "spirit_charm",
-            "tribe",
-            "renown_incident",
-            "rite",
-            "gift",
-            "gift_permission",
-            "fomori_power",
+            # Changeling mechanics
+            "kith",
+            "house",
+            "house_faction",
+            "legacy",
+            "cantrip",
+            "chimera",
+            # Demon mechanics
+            "demon_faction",
+            "demon_house",
+            "lore",
+            "visage",
+            "pact",
+            "demon_ritual",
+            "apocalyptic_form_trait",
+            # Hunter mechanics
+            "creed",
+            "edge",
+            "hunter_organization",
+            # Mage mechanics
             "sphere",
             "rote",
             "resonance",
@@ -98,6 +106,38 @@ class CharacterCreationForm(forms.Form):
             "mage_faction",
             "effect",
             "advantage",
+            "sorcerer_fellowship",
+            "linear_magic_path",
+            "linear_magic_ritual",
+            # Mummy mechanics
+            "dynasty",
+            "mummy_title",
+            # Vampire mechanics
+            "discipline",
+            "path",
+            "vampire_clan",
+            "vampire_sect",
+            "vampire_title",
+            "revenant_family",
+            # Werewolf mechanics
+            "battle_scar",
+            "camp",
+            "totem",
+            "spirit",
+            "spirit_charm",
+            "tribe",
+            "renown_incident",
+            "rite",
+            "gift",
+            "gift_permission",
+            "fomori_power",
+            "sept_position",
+            # Wraith mechanics
+            "wraith_faction",
+            "guild",
+            "arcanos",
+            "thorn",
+            "shadow_archetype",
         ]
 
         excluded_types = group_types + non_character_types

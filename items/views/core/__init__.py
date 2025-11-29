@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
+# Core models
 from items.models.core.item import ItemModel
 from items.models.core.material import Material
 from items.models.core.medium import Medium
@@ -14,13 +15,36 @@ from items.models.core.meleeweapon import MeleeWeapon
 from items.models.core.rangedweapon import RangedWeapon
 from items.models.core.thrownweapon import ThrownWeapon
 from items.models.core.weapon import Weapon
+# Changeling models
+from items.models.changeling.dross import Dross
+from items.models.changeling.treasure import Treasure
+# Demon models
+from items.models.demon.relic import Relic as DemonRelic
+# Hunter models
+from items.models.hunter.gear import HunterGear
+from items.models.hunter.relic import HunterRelic
+# Mage models
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm
 from items.models.mage.grimoire import Grimoire
+from items.models.mage.periapt import Periapt
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
+# Mummy models
+from items.models.mummy.relic import MummyRelic
+from items.models.mummy.ushabti import Ushabti
+from items.models.mummy.vessel import Vessel
+# Vampire models
+from items.models.vampire.artifact import VampireArtifact
+from items.models.vampire.bloodstone import Bloodstone
+# Werewolf models
 from items.models.werewolf.fetish import Fetish
+from items.models.werewolf.talen import Talen
+# Wraith models
+from items.models.wraith.artifact import WraithArtifact
+from items.models.wraith.relic import WraithRelic
+
 from items.views import mage, werewolf
 
 from .item import ItemCreateView, ItemDetailView, ItemUpdateView
@@ -53,41 +77,92 @@ from .weapon import WeaponCreateView, WeaponDetailView, WeaponListView, WeaponUp
 
 
 class GenericItemDetailView(DictView):
-    view_mapping = {
-        "item": ItemDetailView,
-        "weapon": WeaponDetailView,
-        "melee_weapon": MeleeWeaponDetailView,
-        "thrown_weapon": ThrownWeaponDetailView,
-        "ranged_weapon": RangedWeaponDetailView,
-        "wonder": mage.WonderDetailView,
-        "charm": mage.CharmDetailView,
-        "artifact": mage.ArtifactDetailView,
-        "talisman": mage.TalismanDetailView,
-        "grimoire": mage.GrimoireDetailView,
-        "fetish": werewolf.FetishDetailView,
-        "sorcerer_artifact": mage.SorcererArtifactDetailView,
-    }
     model_class = ItemModel
     key_property = "type"
     default_redirect = "items:index"
 
+    @property
+    def view_mapping(self):
+        from items.views import changeling, demon, hunter, mummy, vampire, wraith
+
+        return {
+            # Core
+            "item": ItemDetailView,
+            "weapon": WeaponDetailView,
+            "melee_weapon": MeleeWeaponDetailView,
+            "thrown_weapon": ThrownWeaponDetailView,
+            "ranged_weapon": RangedWeaponDetailView,
+            # Mage
+            "wonder": mage.WonderDetailView,
+            "charm": mage.CharmDetailView,
+            "artifact": mage.ArtifactDetailView,
+            "talisman": mage.TalismanDetailView,
+            "grimoire": mage.GrimoireDetailView,
+            "sorcerer_artifact": mage.SorcererArtifactDetailView,
+            "periapt": mage.PeriaptDetailView,
+            # Werewolf
+            "fetish": werewolf.FetishDetailView,
+            "talen": werewolf.TalenDetailView,
+            # Vampire
+            "vampire_artifact": vampire.VampireArtifactDetailView,
+            "bloodstone": vampire.BloodstoneDetailView,
+            # Wraith
+            "relic": wraith.WraithRelicDetailView,
+            "wraith_artifact": wraith.WraithArtifactDetailView,
+            # Changeling
+            "treasure": changeling.TreasureDetailView,
+            "dross": changeling.DrossDetailView,
+            # Demon
+            "demon_relic": demon.RelicDetailView,
+            # Hunter
+            "hunter_relic": hunter.HunterRelicDetailView,
+            "hunter_gear": hunter.HunterGearDetailView,
+            # Mummy
+            "mummy_relic": mummy.MummyRelicDetailView,
+            "vessel": mummy.VesselDetailView,
+            "ushabti": mummy.UshabtiDetailView,
+        }
+
 
 class ItemIndexView(View):
     items = {
+        # Core
         "item": ItemModel,
         "weapon": Weapon,
         "melee_weapon": MeleeWeapon,
         "thrown_weapon": ThrownWeapon,
         "ranged_weapon": RangedWeapon,
+        "material": Material,
+        "medium": Medium,
+        # Changeling
+        "treasure": Treasure,
+        "dross": Dross,
+        # Demon
+        "demon_relic": DemonRelic,
+        # Hunter
+        "hunter_relic": HunterRelic,
+        "hunter_gear": HunterGear,
+        # Mage
         "wonder": Wonder,
         "charm": Charm,
         "artifact": Artifact,
         "talisman": Talisman,
         "grimoire": Grimoire,
-        "fetish": Fetish,
-        "material": Material,
-        "medium": Medium,
         "sorcerer_artifact": SorcererArtifact,
+        "periapt": Periapt,
+        # Mummy
+        "mummy_relic": MummyRelic,
+        "vessel": Vessel,
+        "ushabti": Ushabti,
+        # Vampire
+        "vampire_artifact": VampireArtifact,
+        "bloodstone": Bloodstone,
+        # Werewolf
+        "fetish": Fetish,
+        "talen": Talen,
+        # Wraith
+        "wraith_relic": WraithRelic,
+        "wraith_artifact": WraithArtifact,
     }
 
     def get(self, request, *args, **kwargs):

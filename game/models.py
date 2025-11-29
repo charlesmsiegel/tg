@@ -59,8 +59,8 @@ class ObjectType(models.Model):
         if self.type not in valid_types:
             errors["type"] = f"Invalid type '{self.type}'. Must be one of: {', '.join(valid_types)}"
 
-        # Validate gameline is in valid choices
-        valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
+        # Validate gameline is in valid choices (use GameLine constants)
+        valid_gamelines = [code for code, _ in GameLine.CHOICES]
         if self.gameline not in valid_gamelines:
             errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
 

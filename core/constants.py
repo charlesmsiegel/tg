@@ -11,6 +11,7 @@ class GameLine:
     WTO = "wto"
     CTD = "ctd"
     DTF = "dtf"
+    HTR = "htr"
     MTR = "mtr"
 
     CHOICES = [
@@ -21,6 +22,7 @@ class GameLine:
         (WTO, "Wraith: the Oblivion"),
         (CTD, "Changeling: the Dreaming"),
         (DTF, "Demon: the Fallen"),
+        (HTR, "Hunter: the Reckoning"),
         (MTR, "Mummy: the Resurrection"),
     ]
 
