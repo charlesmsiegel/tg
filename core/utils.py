@@ -89,16 +89,20 @@ def get_gameline_name(s):
 
 def get_short_gameline_name(s):
     """
-    Get the short app name of a gameline from its code.
+    Get the short app name of a gameline from its code for URL generation.
 
     Args:
-        s: Gameline code (e.g., 'vtm', 'wta')
+        s: Gameline code (e.g., 'vtm', 'wta', 'wod')
 
     Returns:
-        App name (e.g., 'vampire', 'werewolf')
+        App name (e.g., 'vampire', 'werewolf') or empty string for 'wod'.
+        The 'wod' gameline uses base URL patterns without a gameline namespace.
     """
     from django.conf import settings
 
+    # 'wod' characters use base URL patterns without gameline prefix
+    if s == "wod":
+        return ""
     return settings.GAMELINES.get(s, {}).get("app_name", "")
 
 

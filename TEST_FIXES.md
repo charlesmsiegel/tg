@@ -8,59 +8,23 @@ This document classifies test failures into work units for systematic fixing.
 
 ## COMPLETED
 
-### Unit 1: Production Bug - datetime.date.today() Error (FIXED)
-- Added `date` to imports in `game/models.py`
-- Changed `datetime.date.today()` to `date.today()`
+### Unit 5: URL Route Names Changed ✓
 
-### Unit 2: Import Path Changes - Character Model (FIXED)
-- Added `from .core.character import Character, CharacterModel` to `characters/models/__init__.py`
+**Status:** FIXED
 
-### Unit 3: Import Path Changes - LimitedCharacterEditForm (FIXED)
-- Added `from .limited_edit import LimitedCharacterEditForm, LimitedHumanEditForm` to `characters/forms/core/__init__.py`
+**Changes Made:**
+1. Fixed `get_short_gameline_name()` in `core/utils.py` to return empty string for 'wod' gameline (wod characters use base URL patterns without gameline namespace)
+2. Updated `characters/tests/test_views.py`:
+   - `TestCharacterListView`: Changed `reverse("characters:list")` to `reverse("characters:index")`
+   - `TestCharacterCreateView`: Changed `reverse("characters:create")` to `reverse("characters:create:character")`
+   - `TestCharacterDetailView`: Updated tests to handle redirect behavior for base Human characters
+   - `TestCharacterUpdateView`: Updated to use `character.get_update_url()` and correct status code assertions
 
-### Unit 8: Validation Changes - Empty Names (FIXED)
-- Updated `core/tests.py` TestModel.setUp() to use `skip_validation=True` for empty name testing
-- Fixed test assertions for status display ("Unapproved" not "Unfinished") and gameline ("wod" not "World of Darkness")
-
-### Unit 4: PermissionManager API Change (FIXED)
-- Added `check_permission()` instance method to PermissionManager that accepts string permissions
-- Added check for `storytellers` M2M in `get_user_roles()` to recognize STs via STRelationship
-- All 11 permission tests now pass (7 character + 2 item + 2 location)
-
-### Unit 6: Model Field Changes - Tests Out of Sync (FIXED)
-- Updated `game/tests/test_models.py` to match current model schemas:
-  - **Story**: Removed `chronicle` and `description` fields (Story only has `name` and `xp_given`)
-  - **Journal**: Changed from `title`/`content` to OneToOneField with character, using `get_or_create` due to auto-creation signal
-  - **Scene**: Changed `xp` to `xp_given` (boolean), `participants` to `characters` (M2M)
-  - **Week**: Changed from `chronicle`/`week_number` to `end_date` (with computed `start_date` property)
-  - **WeeklyXPRequest**: Changed from `xp_spent`/`description` to boolean flags (`finishing`, `learning`, etc.) with scene FKs
-- Fixed polymorphic model comparison by comparing by `pk` instead of instance
-- All 23 game model tests now pass
+All 22 tests in `characters/tests/test_views.py` now pass.
 
 ---
 
 ## REMAINING WORK
-
-## Unit 5: URL Route Names Changed
-
-**Severity:** MEDIUM
-**Files:**
-- `characters/urls.py`
-- `characters/tests/test_views.py` (TestCharacterListView, TestCharacterCreateView)
-
-**Tests Affected:** 6+
-
-### Problem
-```python
-reverse("characters:list")
-reverse("characters:create")
-# NoReverseMatch: Reverse for 'list' not found
-```
-
-URL patterns have changed but tests still use old route names.
-
-### Fix
-Update tests to use current URL names, or verify and add missing URL patterns.
 
 ---
 
