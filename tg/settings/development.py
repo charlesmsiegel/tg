@@ -19,8 +19,9 @@ SECRET_KEY = os.environ.get(
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]"
+    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1"
 ).split(",")
+# Note: IPv6 localhost [::1] removed - it breaks Django Channels origin validation
 
 # Development-specific email backend (prints to console)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
