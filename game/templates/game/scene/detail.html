@@ -157,6 +157,18 @@
             initWebSocket();
         }
 
+        // Handle Enter to submit, Shift+Enter for newline
+        if (messageInput) {
+            messageInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    if (postForm) {
+                        postForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                }
+            });
+        }
+
         function initWebSocket() {
             try {
                 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
