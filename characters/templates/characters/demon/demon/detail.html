@@ -173,20 +173,44 @@
             </div>
         </div>
     </div>
-    {% if object.apocalyptic_form.all %}
+    {% if object.visage or object.apocalyptic_form.all %}
         <div class="row mb-4">
             <div class="col-12">
                 <div class="tg-card">
                     <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Apocalyptic Form</h5>
+                        <h5 class="tg-card-title {{ object.get_heading }}">
+                            Apocalyptic Form{% if object.visage %}: {{ object.visage.name }}{% endif %}
+                        </h5>
                     </div>
                     <div class="tg-card-body">
-                        {% for trait in object.apocalyptic_form.all %}
-                            <div class="row mb-1">
-                                <div class="col-sm">{{ trait.name }}</div>
-                                <div class="col-sm">{{ trait.description }}</div>
+                        {% if object.visage and object.visage.description %}
+                            <div class="mb-4">
+                                <p style="line-height: 1.6; font-style: italic;">{{ object.visage.description }}</p>
                             </div>
-                        {% endfor %}
+                        {% endif %}
+                        {% if object.apocalyptic_form.all %}
+                            <h6 class="{{ object.get_heading }} mb-3">Apocalyptic Form Traits ({{ object.apocalyptic_form.count }}/8)</h6>
+                            <div class="row">
+                                {% for trait in object.apocalyptic_form.all %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <strong>{{ trait.name }}</strong>
+                                                <span class="badge {% if trait.high_torment_only %}bg-danger{% else %}bg-secondary{% endif %}" style="font-size: 0.7rem;">
+                                                    {% if trait.high_torment_only %}High Torment{% else %}{{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-2 text-muted" style="font-size: 0.875rem;">
+                                <strong>Points Spent:</strong> {{ object.apocalyptic_form_points_spent }}/{{ object.apocalyptic_form_points }}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No apocalyptic form traits selected.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
