@@ -4,7 +4,12 @@ from .dynasty import (
     DynastyListView,
     DynastyUpdateView,
 )
-from .mtr_human import MtRHumanCreateView, MtRHumanDetailView, MtRHumanUpdateView
+from .mtr_human import (
+    MtRHumanCreateView,
+    MtRHumanDetailView,
+    MtRHumanListView,
+    MtRHumanUpdateView,
+)
 from .mummy import MummyCreateView, MummyDetailView, MummyListView, MummyUpdateView
 from .mummy_title import (
     MummyTitleCreateView,
@@ -16,6 +21,7 @@ from .mummy_title import (
 __all__ = [
     "MtRHumanDetailView",
     "MtRHumanCreateView",
+    "MtRHumanListView",
     "MtRHumanUpdateView",
     "MummyDetailView",
     "MummyCreateView",

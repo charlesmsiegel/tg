@@ -1,4 +1,5 @@
-from core.mixins import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from items.models.mummy.relic import MummyRelic
@@ -6,12 +7,12 @@ from items.models.mummy.ushabti import Ushabti
 from items.models.mummy.vessel import Vessel
 
 
-class MummyRelicDetailView(DetailView):
+class MummyRelicDetailView(ViewPermissionMixin, DetailView):
     model = MummyRelic
     template_name = "items/mummy/relic/detail.html"
 
 
-class MummyRelicCreateView(MessageMixin, CreateView):
+class MummyRelicCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = MummyRelic
     fields = [
         "name",
@@ -38,7 +39,7 @@ class MummyRelicCreateView(MessageMixin, CreateView):
     error_message = "Failed to create relic. Please correct the errors below."
 
 
-class MummyRelicUpdateView(MessageMixin, UpdateView):
+class MummyRelicUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = MummyRelic
     fields = [
         "name",
@@ -71,12 +72,12 @@ class MummyRelicListView(ListView):
     template_name = "items/mummy/relic/list.html"
 
 
-class VesselDetailView(DetailView):
+class VesselDetailView(ViewPermissionMixin, DetailView):
     model = Vessel
     template_name = "items/mummy/vessel/detail.html"
 
 
-class VesselCreateView(MessageMixin, CreateView):
+class VesselCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Vessel
     fields = [
         "name",
@@ -97,7 +98,7 @@ class VesselCreateView(MessageMixin, CreateView):
     error_message = "Failed to create vessel. Please correct the errors below."
 
 
-class VesselUpdateView(MessageMixin, UpdateView):
+class VesselUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Vessel
     fields = [
         "name",
@@ -125,12 +126,12 @@ class VesselListView(ListView):
     template_name = "items/mummy/vessel/list.html"
 
 
-class UshabtiDetailView(DetailView):
+class UshabtiDetailView(ViewPermissionMixin, DetailView):
     model = Ushabti
     template_name = "items/mummy/ushabti/detail.html"
 
 
-class UshabtiCreateView(MessageMixin, CreateView):
+class UshabtiCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Ushabti
     fields = [
         "name",
@@ -152,7 +153,7 @@ class UshabtiCreateView(MessageMixin, CreateView):
     error_message = "Failed to create ushabti. Please correct the errors below."
 
 
-class UshabtiUpdateView(MessageMixin, UpdateView):
+class UshabtiUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Ushabti
     fields = [
         "name",
