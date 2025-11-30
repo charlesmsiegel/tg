@@ -1,9 +1,15 @@
 from typing import Any
 
+from characters.forms.core.limited_edit import LimitedMummyEditForm
 from characters.forms.mummy.mummy import MummyCreationForm
 from characters.models.mummy.mummy import Mummy
 from characters.views.core.human import HumanDetailView
-from core.mixins import MessageMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    VisibilityFilterMixin,
+)
+from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, ListView, UpdateView
 
 
@@ -32,7 +38,7 @@ class MummyCreateView(MessageMixin, CreateView):
         return kwargs
 
 
-class MummyUpdateView(MessageMixin, UpdateView):
+class MummyUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Mummy
     fields = [
         "name",
@@ -75,8 +81,22 @@ class MummyUpdateView(MessageMixin, UpdateView):
     success_message = "Mummy '{name}' updated successfully!"
     error_message = "Failed to update mummy. Please correct the errors below."
 
+    def get_form_class(self):
+        """Return different form based on user permissions."""
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        return LimitedMummyEditForm
 
-class MummyListView(ListView):
+
+class MummyListView(VisibilityFilterMixin, ListView):
     model = Mummy
-    ordering = ["name"]
     template_name = "characters/mummy/mummy/list.html"
+    context_object_name = "mummies"
+    paginate_by = 25
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.select_related("owner", "dynasty", "chronicle").order_by("name")

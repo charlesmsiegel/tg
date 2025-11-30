@@ -102,7 +102,7 @@ class Human(
     derangements = models.ManyToManyField("Derangement", blank=True)
 
     age = models.IntegerField(
-        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(500)]
+        blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(5000)]
     )
     apparent_age = models.IntegerField(
         blank=True, null=True, validators=[MinValueValidator(0), MaxValueValidator(200)]
@@ -142,9 +142,9 @@ class Human(
             ),
             # Age must be reasonable if provided
             CheckConstraint(
-                check=Q(age__isnull=True) | Q(age__gte=0, age__lte=500),
+                check=Q(age__isnull=True) | Q(age__gte=0, age__lte=5000),
                 name="characters_human_reasonable_age",
-                violation_error_message="Age must be between 0 and 500",
+                violation_error_message="Age must be between 0 and 5000",
             ),
             # Apparent age must be reasonable if provided
             CheckConstraint(

@@ -5,6 +5,7 @@ from characters.models.mummy.mummy_title import MummyTitle
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from game.models import Chronicle
 
 
 class TestMummy(TestCase):
@@ -220,3 +221,73 @@ class TestMummyTitleDetailView(TestCase):
     def test_detail_view_template(self):
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mummy/title/detail.html")
+
+
+class TestMummyUpdateView(TestCase):
+    """Test the Mummy update view with permission checks."""
+
+    def setUp(self):
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.other_user = User.objects.create_user(
+            username="other", password="password"
+        )
+        self.st = User.objects.create_user(username="st", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.mummy = Mummy.objects.create(
+            name="Test Mummy", owner=self.owner, chronicle=self.chronicle
+        )
+        self.url = reverse("characters:mummy:update:mummy", args=[self.mummy.id])
+
+    def test_st_can_access_update_view(self):
+        """ST should be able to access update view with full form."""
+        self.client.login(username="st", password="password")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        # Full form has 'name' field
+        self.assertIn("name", response.context["form"].fields)
+
+    def test_other_user_cannot_access(self):
+        """Non-owner/non-ST should not be able to access update view."""
+        self.client.login(username="other", password="password")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+
+class TestMtRHumanUpdateView(TestCase):
+    """Test the MtRHuman update view with permission checks."""
+
+    def setUp(self):
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.st = User.objects.create_user(username="st", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.human = MtRHuman.objects.create(
+            name="Test Human", owner=self.owner, chronicle=self.chronicle
+        )
+        self.url = reverse("characters:mummy:update:mtrhuman", args=[self.human.id])
+
+    def test_st_can_access_update_view(self):
+        """ST should be able to access update view with full form."""
+        self.client.login(username="st", password="password")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("name", response.context["form"].fields)
+
+
+class TestMummyListView(TestCase):
+    """Test the Mummy list view URL routing."""
+
+    def test_list_url_resolves(self):
+        """List view URL should resolve correctly."""
+        url = reverse("characters:mummy:list:mummy")
+        self.assertEqual(url, "/characters/mummy/list/mummy/")
+
+
+class TestMtRHumanListView(TestCase):
+    """Test the MtRHuman list view URL routing."""
+
+    def test_list_url_resolves(self):
+        """List view URL should resolve correctly."""
+        url = reverse("characters:mummy:list:mtrhuman")
+        self.assertEqual(url, "/characters/mummy/list/mtrhuman/")

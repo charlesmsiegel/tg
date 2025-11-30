@@ -1,4 +1,5 @@
-from core.mixins import MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from locations.models.mummy.cult_temple import CultTemple
@@ -6,12 +7,12 @@ from locations.models.mummy.sanctuary import UndergroundSanctuary
 from locations.models.mummy.tomb import Tomb
 
 
-class TombDetailView(DetailView):
+class TombDetailView(ViewPermissionMixin, DetailView):
     model = Tomb
     template_name = "locations/mummy/tomb/detail.html"
 
 
-class TombCreateView(MessageMixin, CreateView):
+class TombCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Tomb
     fields = [
         "name",
@@ -38,7 +39,7 @@ class TombCreateView(MessageMixin, CreateView):
     error_message = "Failed to create tomb. Please correct the errors below."
 
 
-class TombUpdateView(MessageMixin, UpdateView):
+class TombUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Tomb
     fields = [
         "name",
@@ -72,12 +73,12 @@ class TombListView(ListView):
     template_name = "locations/mummy/tomb/list.html"
 
 
-class CultTempleDetailView(DetailView):
+class CultTempleDetailView(ViewPermissionMixin, DetailView):
     model = CultTemple
     template_name = "locations/mummy/cult_temple/detail.html"
 
 
-class CultTempleCreateView(MessageMixin, CreateView):
+class CultTempleCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = CultTemple
     fields = [
         "name",
@@ -95,7 +96,7 @@ class CultTempleCreateView(MessageMixin, CreateView):
     error_message = "Failed to create cult temple. Please correct the errors below."
 
 
-class CultTempleUpdateView(MessageMixin, UpdateView):
+class CultTempleUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = CultTemple
     fields = [
         "name",
@@ -119,12 +120,12 @@ class CultTempleListView(ListView):
     template_name = "locations/mummy/cult_temple/list.html"
 
 
-class UndergroundSanctuaryDetailView(DetailView):
+class UndergroundSanctuaryDetailView(ViewPermissionMixin, DetailView):
     model = UndergroundSanctuary
     template_name = "locations/mummy/sanctuary/detail.html"
 
 
-class UndergroundSanctuaryCreateView(MessageMixin, CreateView):
+class UndergroundSanctuaryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = UndergroundSanctuary
     fields = [
         "name",
@@ -138,7 +139,7 @@ class UndergroundSanctuaryCreateView(MessageMixin, CreateView):
     error_message = "Failed to create sanctuary. Please correct the errors below."
 
 
-class UndergroundSanctuaryUpdateView(MessageMixin, UpdateView):
+class UndergroundSanctuaryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = UndergroundSanctuary
     fields = [
         "name",
