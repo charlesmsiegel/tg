@@ -421,7 +421,8 @@ p.post {
     color: white;
 }
 
-.badge-mta-faded {
+.badge-mta-faded,
+.badge-mta-light {
     background-color: #b89dd4;
     color: white;
 }
@@ -432,7 +433,8 @@ p.post {
     color: white;
 }
 
-.badge-wta-faded {
+.badge-wta-faded,
+.badge-wta-light {
     background-color: #5cb85c;
     color: white;
 }
@@ -443,7 +445,8 @@ p.post {
     color: white;
 }
 
-.badge-ctd-faded {
+.badge-ctd-faded,
+.badge-ctd-light {
     background-color: #5dade2;
     color: white;
 }
@@ -454,7 +457,8 @@ p.post {
     color: white;
 }
 
-.badge-vtm-faded {
+.badge-vtm-faded,
+.badge-vtm-light {
     background-color: #e57373;
     color: white;
 }
@@ -465,7 +469,8 @@ p.post {
     color: white;
 }
 
-.badge-wto-faded {
+.badge-wto-faded,
+.badge-wto-light {
     background-color: #95a5a6;
     color: white;
 }
@@ -500,6 +505,17 @@ p.post {
 
 .badge-mtr-light {
     background-color: #daa520;
+    color: white;
+}
+
+/* World of Darkness (generic) - Secondary Gray */
+.badge-wod {
+    background-color: #6c757d;
+    color: white;
+}
+
+.badge-wod-light {
+    background-color: #95a5a6;
     color: white;
 }
 

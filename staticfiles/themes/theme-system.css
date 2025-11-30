@@ -30,6 +30,8 @@
   --gameline-ctd: #ff69b4;
   --gameline-wto: #2f4f4f;
   --gameline-htr: #d4a017;
+  --gameline-dtf: #e74c3c;
+  --gameline-mtr: #8e44ad;
 
   /* Gameline Light Variants (for backgrounds) */
   --gameline-vtm-light: rgba(139, 0, 0, 0.1);
@@ -38,6 +40,8 @@
   --gameline-ctd-light: rgba(255, 105, 180, 0.1);
   --gameline-wto-light: rgba(47, 79, 79, 0.1);
   --gameline-htr-light: rgba(212, 160, 23, 0.1);
+  --gameline-dtf-light: rgba(231, 76, 60, 0.1);
+  --gameline-mtr-light: rgba(142, 68, 173, 0.1);
   
   /* Interactive States */
   --color-hover-overlay: rgba(0, 0, 0, 0.05);
@@ -137,6 +141,8 @@
     --gameline-ctd: #ff69b4;
     --gameline-wto: #708090;
     --gameline-htr: #ffa500;
+    --gameline-dtf: #e74c3c;
+    --gameline-mtr: #bb8fce;
   }
 }
 
@@ -168,6 +174,8 @@
   --gameline-ctd: #ff69b4;
   --gameline-wto: #2f4f4f;
   --gameline-htr: #d4a017;
+  --gameline-dtf: #e74c3c;
+  --gameline-mtr: #8e44ad;
 }
 
 .theme-dark {
@@ -197,4 +205,6 @@
   --gameline-ctd: #ff69b4;
   --gameline-wto: #708090;
   --gameline-htr: #ffa500;
+  --gameline-dtf: #e74c3c;
+  --gameline-mtr: #bb8fce;
 }
