@@ -1,0 +1,79 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header {{ object.get_heading }}">
+                <h5 class="tg-card-title mb-0">Mummy Traits</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
+                                <h6 class="tg-card-title mb-0">Power</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Sekhem</div>
+                                    <div class="col-6 dots">{{ object.sekhem|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Ba</div>
+                                    <div class="col-6">{{ object.ba }} / {{ object.ka_rating }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Balance</div>
+                                    <div class="col-6 dots">{{ object.balance|dots }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
+                                <h6 class="tg-card-title mb-0">Virtues</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Conviction</div>
+                                    <div class="col-6 dots">{{ object.conviction|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Restraint</div>
+                                    <div class="col-6 dots">{{ object.restraint|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Willpower</div>
+                                    <div class="col-6 dots">{{ object.willpower|dots }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
+                                <h6 class="tg-card-title mb-0">Incarnation</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Incarnation</div>
+                                    <div class="col-6">{{ object.incarnation }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Years Since Rebirth</div>
+                                    <div class="col-6">{{ object.years_since_rebirth }}</div>
+                                </div>
+                                {% if object.mummified_appearance %}
+                                    <div class="row mb-2">
+                                        <div class="col-6">Appearance</div>
+                                        <div class="col-6">{{ object.get_mummified_appearance_display }}</div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

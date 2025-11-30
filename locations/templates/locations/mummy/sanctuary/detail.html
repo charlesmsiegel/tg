@@ -1,0 +1,37 @@
+{% extends "locations/core/location/detail.html" %}
+{% load sanitize_text dots %}
+{% block objectname %}
+    <div class="tg-card header-card mb-4" data-gameline="mtr">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title mtr_heading">
+                {{ object.name }}
+                {% if object.concealment_rating %}<small><span class="dots colored-dots">{{ object.concealment_rating|dots }}</span></small>{% endif %}
+            </h1>
+            {% if object.parent %}
+                <p class="tg-card-subtitle mb-0">
+                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock objectname %}
+{% block model_specific %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                            {{ object.get_sanctuary_type_display }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Concealment:</span>
+                            <span class="dots">{{ object.concealment_rating|dots }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock model_specific %}

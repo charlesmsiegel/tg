@@ -1,0 +1,68 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Ushabti
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="ushabtiForm"
+    action=""
+    novalidate
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Purpose</div>
+            <div class="col-sm">{{ form.purpose }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Rank</div>
+            <div class="col-sm">{{ form.rank }}</div>
+            <div class="col-sm">Material</div>
+            <div class="col-sm">{{ form.material }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Physical Rating</div>
+            <div class="col-sm">{{ form.physical_rating }}</div>
+            <div class="col-sm">Mental Rating</div>
+            <div class="col-sm">{{ form.mental_rating }}</div>
+        </div>
+        {% if form.is_currently_animated %}
+            <div class="row">
+                <div class="col-sm">Currently Animated</div>
+                <div class="col-sm">{{ form.is_currently_animated }}</div>
+                <div class="col-sm">Animation Duration (hours)</div>
+                <div class="col-sm">{{ form.animation_duration_hours }}</div>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-sm">Size Description</div>
+            <div class="col-sm">{{ form.size_description }}</div>
+            <div class="col-sm">Command Word</div>
+            <div class="col-sm">{{ form.command_word }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Obeys Only Creator</div>
+            <div class="col-sm">{{ form.obeys_only_creator }}</div>
+            <div class="col-sm">Creator</div>
+            <div class="col-sm">{{ form.creator }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Description</div>
+            <div class="col-sm">{{ form.description }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Appearance</div>
+            <div class="col-sm">{{ form.appearance }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Special Abilities</div>
+            <div class="col-sm">{{ form.special_abilities }}</div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

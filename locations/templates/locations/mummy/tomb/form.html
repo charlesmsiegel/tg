@@ -1,0 +1,83 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Tomb
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="tombForm"
+    action=""
+    novalidate
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Parent Location</div>
+            <div class="col-sm">{{ form.parent }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Size</div>
+            <div class="col-sm">{{ form.size }}</div>
+            <div class="col-sm">Era</div>
+            <div class="col-sm">{{ form.era }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Security</div>
+            <div class="col-sm">{{ form.security }}</div>
+            <div class="col-sm">Sanctity</div>
+            <div class="col-sm">{{ form.sanctity }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Ba per Week</div>
+            <div class="col-sm">{{ form.ba_per_week }}</div>
+            {% if form.duat_barrier %}
+                <div class="col-sm">Duat Barrier</div>
+                <div class="col-sm">{{ form.duat_barrier }}</div>
+            {% else %}
+                <div class="col-sm"></div>
+                <div class="col-sm"></div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-sm">Has Sarcophagus</div>
+            <div class="col-sm">{{ form.has_sarcophagus }}</div>
+            <div class="col-sm">Has False Chambers</div>
+            <div class="col-sm">{{ form.has_false_chambers }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Has Hieroglyphic Wards</div>
+            <div class="col-sm">{{ form.has_hieroglyphic_wards }}</div>
+            <div class="col-sm">Has Treasure Cache</div>
+            <div class="col-sm">{{ form.has_treasure_cache }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Has Cult Shrine</div>
+            <div class="col-sm">{{ form.has_cult_shrine }}</div>
+            <div class="col-sm">Has Underworld Portal</div>
+            <div class="col-sm">{{ form.has_underworld_portal }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Original Occupant</div>
+            <div class="col-sm">{{ form.original_occupant }}</div>
+            <div class="col-sm">Discovered Date</div>
+            <div class="col-sm">{{ form.discovered_date }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Archaeological Status</div>
+            <div class="col-sm">{{ form.archaeological_status }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Description</div>
+            <div class="col-sm">{{ form.description }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Guardian Description</div>
+            <div class="col-sm">{{ form.guardian_description }}</div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

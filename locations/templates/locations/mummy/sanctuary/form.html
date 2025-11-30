@@ -1,0 +1,34 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Underground Sanctuary
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="sanctuaryForm"
+    action=""
+    novalidate
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Parent Location</div>
+            <div class="col-sm">{{ form.parent }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Type</div>
+            <div class="col-sm">{{ form.sanctuary_type }}</div>
+            <div class="col-sm">Concealment Rating</div>
+            <div class="col-sm">{{ form.concealment_rating }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Description</div>
+            <div class="col-sm">{{ form.description }}</div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

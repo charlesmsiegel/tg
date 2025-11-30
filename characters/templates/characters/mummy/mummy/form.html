@@ -1,0 +1,51 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Mummy
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="mummyForm"
+    action=""
+    novalidate
+    enctype="multipart/form-data"
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Nature</div>
+            <div class="col-sm">{{ form.nature }}</div>
+            <div class="col-sm">Web</div>
+            <div class="col-sm">{{ form.web }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Chronicle</div>
+            <div class="col-sm">{{ form.chronicle }}</div>
+            <div class="col-sm">Demeanor</div>
+            <div class="col-sm">{{ form.demeanor }}</div>
+            <div class="col-sm">Dynasty</div>
+            <div class="col-sm">{{ form.dynasty }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Concept</div>
+            <div class="col-sm">{{ form.concept }}</div>
+            <div class="col-sm">Ancient Name</div>
+            <div class="col-sm">{{ form.ancient_name }}</div>
+            <div class="col-sm">Image</div>
+            <div class="col-sm">{{ form.image }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">NPC</div>
+            <div class="col-sm">{{ form.npc }}</div>
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

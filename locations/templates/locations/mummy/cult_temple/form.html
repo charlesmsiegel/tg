@@ -1,0 +1,46 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Cult Temple
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="cultTempleForm"
+    action=""
+    novalidate
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Parent Location</div>
+            <div class="col-sm">{{ form.parent }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Cult Size</div>
+            <div class="col-sm">{{ form.cult_size }}</div>
+            <div class="col-sm">Public Cover</div>
+            <div class="col-sm">{{ form.public_cover }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Cult Leader Name</div>
+            <div class="col-sm">{{ form.cult_leader_name }}</div>
+            <div class="col-sm">Cult Wealth</div>
+            <div class="col-sm">{{ form.cult_wealth }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Has Library</div>
+            <div class="col-sm">{{ form.has_library }}</div>
+            <div class="col-sm">Has Ritual Chamber</div>
+            <div class="col-sm">{{ form.has_ritual_chamber }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Description</div>
+            <div class="col-sm">{{ form.description }}</div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

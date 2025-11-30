@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class MummyTitle(models.Model):
@@ -19,3 +20,13 @@ class MummyTitle(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("characters:mummy:title", args=[str(self.id)])
+
+    def get_update_url(self):
+        return reverse("characters:mummy:update:title", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:mummy:create:title")
