@@ -63,6 +63,16 @@
   color: var(--gameline-htr);
 }
 
+.header-card[data-gameline="dtf"] .tg-card-title {
+  font-family: var(--font-family-dtf);
+  color: var(--gameline-dtf);
+}
+
+.header-card[data-gameline="mtr"] .tg-card-title {
+  font-family: var(--font-family-mtr);
+  color: var(--gameline-mtr);
+}
+
 @media (max-width: 768px) {
   .header-card .tg-card-header {
     flex-direction: column;
@@ -321,6 +331,76 @@
 .tg-badge.badge-htr {
   background-color: var(--gameline-htr);
   color: var(--color-white);
+}
+
+.tg-badge.badge-dtf {
+  background-color: var(--gameline-dtf);
+  color: var(--color-white);
+}
+
+.tg-badge.badge-mtr {
+  background-color: var(--gameline-mtr);
+  color: var(--color-white);
+}
+
+/* Light/secondary variants for mortal and spirit types */
+.tg-badge.badge-vtm-light {
+  background-color: var(--gameline-vtm);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-wta-light {
+  background-color: var(--gameline-wta);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-mta-light {
+  background-color: var(--gameline-mta);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-ctd-light {
+  background-color: var(--gameline-ctd);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-wto-light {
+  background-color: var(--gameline-wto);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-htr-light {
+  background-color: var(--gameline-htr);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-dtf-light {
+  background-color: var(--gameline-dtf);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-mtr-light {
+  background-color: var(--gameline-mtr);
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.tg-badge.badge-wod {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.tg-badge.badge-wod-light {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  opacity: 0.7;
 }
 
 /* Pill variant */
