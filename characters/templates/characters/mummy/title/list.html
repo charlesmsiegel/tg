@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Mummy Titles
+{% endblock title %}
+{% block content %}
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header text-center">
+                        <h3 class="tg-card-title mtr_heading">Mummy Titles</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for obj in object_list %}
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-body" style="padding: 16px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{ obj.get_absolute_url }}" style="font-weight: 600; font-size: 1.1rem;">{{ obj.name }}</a>
+                                <span class="tg-badge badge-pill badge-secondary">Rank {{ obj.rank_level }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-center" style="color: var(--theme-text-secondary);">No titles found.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,82 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block status_row %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                            {{ object.get_vessel_type_display }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Rank:</span>
+                            <span class="dots">{{ object.rank|dots }}</span>
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Ba:</span>
+                            {{ object.current_ba }} / {{ object.max_ba }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock status_row %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title mtr_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Transfer Rate:</span>
+                            {{ object.transfer_rate }} Ba/turn
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Efficiency:</span>
+                            {{ object.efficiency }}%
+                        </div>
+                        {% if object.material %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Material:</span>
+                                {{ object.material }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-2">
+                        {% if object.is_portable %}
+                            <span class="tg-badge badge-pill badge-success mx-1">Portable</span>
+                        {% else %}
+                            <span class="tg-badge badge-pill badge-secondary mx-1">Not Portable</span>
+                        {% endif %}
+                        {% if object.requires_ritual %}
+                            <span class="tg-badge badge-pill badge-warning mx-1">Requires Ritual</span>
+                        {% endif %}
+                        {% if object.is_attuned %}
+                            <span class="tg-badge badge-pill badge-primary mx-1">Attuned{% if object.attuned_to %} to {{ object.attuned_to.name }}{% endif %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.inscriptions %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title mtr_heading">Inscriptions</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <p class="mb-0" style="line-height: 1.6; font-style: italic;">{{ object.inscriptions }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock additional_stats %}

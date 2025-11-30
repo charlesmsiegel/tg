@@ -1,0 +1,80 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Mummy Relic
+{% endblock creation_title %}
+{% block formdetails %}
+    method="post"
+    id="relicForm"
+    action=""
+    novalidate
+{% endblock formdetails %}
+{% block contents %}
+    {% csrf_token %}
+    <div class="centertext container">
+        <div class="row">
+            <div class="col-sm">Name</div>
+            <div class="col-sm">{{ form.name }}</div>
+            <div class="col-sm">Type</div>
+            <div class="col-sm">{{ form.relic_type }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Rank</div>
+            <div class="col-sm">{{ form.rank }}</div>
+            <div class="col-sm">Era</div>
+            <div class="col-sm">{{ form.era }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Material</div>
+            <div class="col-sm">{{ form.material }}</div>
+            <div class="col-sm">Original Owner</div>
+            <div class="col-sm">{{ form.original_owner }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Ba Cost</div>
+            <div class="col-sm">{{ form.ba_cost }}</div>
+            <div class="col-sm">Requires Sekhem</div>
+            <div class="col-sm">{{ form.requires_sekhem }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Associated Hekau</div>
+            <div class="col-sm">{{ form.associated_hekau }}</div>
+            <div class="col-sm">Requires Ritual</div>
+            <div class="col-sm">{{ form.requires_ritual }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Cursed</div>
+            <div class="col-sm">{{ form.is_cursed }}</div>
+            <div class="col-sm">Unique</div>
+            <div class="col-sm">{{ form.is_unique }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Sentient</div>
+            <div class="col-sm">{{ form.is_sentient }}</div>
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Description</div>
+            <div class="col-sm">{{ form.description }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Powers</div>
+            <div class="col-sm">{{ form.powers }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Hieroglyphic Inscription</div>
+            <div class="col-sm">{{ form.hieroglyphic_inscription }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">History</div>
+            <div class="col-sm">{{ form.history }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm">Current Location Notes</div>
+            <div class="col-sm">{{ form.current_location_notes }}</div>
+        </div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <input name="Save" type="submit" value="Save" />
+{% endblock buttons %}

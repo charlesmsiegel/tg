@@ -1,0 +1,119 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block status_row %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Purpose:</span>
+                            {{ object.get_purpose_display }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Rank:</span>
+                            <span class="dots">{{ object.rank|dots }}</span>
+                        </div>
+                        <div class="px-3 py-2">
+                            {% if object.is_currently_animated %}
+                                <span class="tg-badge badge-pill badge-success">Animated</span>
+                            {% else %}
+                                <span class="tg-badge badge-pill badge-secondary">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock status_row %}
+{% block additional_stats %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title mtr_heading">Capabilities</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2">
+                        <div class="col-6">Physical Rating</div>
+                        <div class="col-6 dots">{{ object.physical_rating|dots }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">Mental Rating</div>
+                        <div class="col-6 dots">{{ object.mental_rating|dots }}</div>
+                    </div>
+                    {% if object.special_abilities %}
+                        <div class="mt-3">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Special Abilities:</span>
+                            <p class="mb-0 mt-1" style="line-height: 1.6;">{{ object.special_abilities }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tg-card h-100">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title mtr_heading">Animation</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2">
+                        <div class="col-6">Ba to Animate</div>
+                        <div class="col-6">{{ object.ba_to_animate }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">Ba per Day</div>
+                        <div class="col-6">{{ object.ba_per_day }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">Duration</div>
+                        <div class="col-6">{{ object.animation_duration_hours }} hours</div>
+                    </div>
+                    {% if object.command_word %}
+                        <div class="mt-3">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Command Word:</span>
+                            <span style="font-style: italic;">{{ object.command_word }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title mtr_heading">Physical Form</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Material:</span>
+                            {{ object.get_material_display }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Size:</span>
+                            {{ object.size_description }}
+                        </div>
+                        {% if object.obeys_only_creator %}
+                            <span class="tg-badge badge-pill badge-warning mx-1">Obeys Only Creator</span>
+                        {% endif %}
+                    </div>
+                    {% if object.creator %}
+                        <div class="mt-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Creator:</span>
+                            <a href="{{ object.creator.get_absolute_url }}">{{ object.creator.name }}</a>
+                        </div>
+                    {% endif %}
+                    {% if object.appearance %}
+                        <div class="mt-3 text-start">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Appearance:</span>
+                            <p class="mb-0 mt-1" style="line-height: 1.6;">{{ object.appearance }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock additional_stats %}

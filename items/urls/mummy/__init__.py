@@ -1,9 +1,12 @@
-from django.urls import path
+from django.urls import include, path
+
 from items import views
 
-app_name = "mummy"
+from . import create, detail, index, update
+
 urls = [
-    path("relic/<int:pk>/", views.mummy.MummyRelicDetailView.as_view(), name="relic"),
-    path("vessel/<int:pk>/", views.mummy.VesselDetailView.as_view(), name="vessel"),
-    path("ushabti/<int:pk>/", views.mummy.UshabtiDetailView.as_view(), name="ushabti"),
+    path("create/", include((create.urls, "mummy_create"), namespace="create")),
+    path("update/", include((update.urls, "mummy_update"), namespace="update")),
+    path("list/", include((index.urls, "mummy_list"), namespace="list")),
+    path("", include(detail.urls)),
 ]

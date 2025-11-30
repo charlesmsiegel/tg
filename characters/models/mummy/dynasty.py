@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Dynasty(models.Model):
@@ -25,3 +26,13 @@ class Dynasty(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("characters:mummy:dynasty", args=[str(self.id)])
+
+    def get_update_url(self):
+        return reverse("characters:mummy:update:dynasty", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:mummy:create:dynasty")

@@ -1,0 +1,38 @@
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
+                        <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
+                    </div>
+                    <div class="px-3 py-2">
+                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
+                        <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
+                    </div>
+                    {% if object.web %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Web:</span>
+                            {{ object.get_web_display }}
+                        </div>
+                    {% endif %}
+                    {% if object.dynasty %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Dynasty:</span>
+                            {{ object.dynasty.name }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% if object.ancient_name %}
+                    <div class="d-flex justify-content-center align-items-center flex-wrap mt-2">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Ancient Name:</span>
+                            {{ object.ancient_name }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

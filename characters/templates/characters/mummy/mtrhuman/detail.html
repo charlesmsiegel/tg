@@ -1,0 +1,12 @@
+{% extends "characters/core/human/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block basics %}
+    {% include "characters/mummy/mtrhuman/basics_display_include.html" %}
+{% endblock basics %}
+{% block abilities %}
+    {% include "characters/mummy/mtrhuman/ability_block_display.html" %}
+{% endblock abilities %}
+{% block backgrounds %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+{% endblock backgrounds %}

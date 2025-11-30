@@ -1,0 +1,55 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header text-center">
+                <h5 class="tg-card-title {{ object.get_heading }}">History & Past Lives</h5>
+            </div>
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                {% if object.death_in_first_life %}
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Death in First Life:</span>
+                        </div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.death_in_first_life }}</p>
+                    </div>
+                {% endif %}
+                {% if object.past_lives_memory %}
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Past Lives Memory:</span>
+                        </div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.past_lives_memory }}</p>
+                    </div>
+                {% endif %}
+                {% if object.history %}
+                    <div class="mb-3 text-center">
+                        <div class="mb-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">History:</span>
+                        </div>
+                        <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.history }}</p>
+                    </div>
+                {% endif %}
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    {% if object.mentor_mummy %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Mentor:</span>
+                            <a href="{{ object.mentor_mummy.get_absolute_url }}">{{ object.mentor_mummy.name }}</a>
+                        </div>
+                    {% endif %}
+                    {% if object.goals %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Goals:</span>
+                            {{ object.goals }}
+                        </div>
+                    {% endif %}
+                    {% if object.notes %}
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Notes:</span>
+                            {{ object.notes }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

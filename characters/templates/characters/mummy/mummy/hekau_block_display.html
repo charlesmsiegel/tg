@@ -1,0 +1,79 @@
+{% load dots %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="tg-card">
+            <div class="tg-card-header {{ object.get_heading }}">
+                <h5 class="tg-card-title mb-0">Hekau</h5>
+            </div>
+            <div class="tg-card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
+                                <h6 class="tg-card-title mb-0">Universal Hekau</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Alchemy</div>
+                                    <div class="col-6 dots">{{ object.alchemy|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Celestial</div>
+                                    <div class="col-6 dots">{{ object.celestial|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Effigy</div>
+                                    <div class="col-6 dots">{{ object.effigy|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Necromancy</div>
+                                    <div class="col-6 dots">{{ object.necromancy|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Nomenclature</div>
+                                    <div class="col-6 dots">{{ object.nomenclature|dots }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-header {{ object.get_heading }}">
+                                <h6 class="tg-card-title mb-0">Web-Specific Hekau</h6>
+                            </div>
+                            <div class="tg-card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">Ushabti (Isis){% if object.web == 'isis' %} <span style="color: var(--theme-success);">*</span>{% endif %}</div>
+                                    <div class="col-6 dots">{{ object.ushabti|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Judge (Osiris){% if object.web == 'osiris' %} <span style="color: var(--theme-success);">*</span>{% endif %}</div>
+                                    <div class="col-6 dots">{{ object.judge|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Phoenix (Horus){% if object.web == 'horus' %} <span style="color: var(--theme-success);">*</span>{% endif %}</div>
+                                    <div class="col-6 dots">{{ object.phoenix|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Vision (Ma'at){% if object.web == 'maat' %} <span style="color: var(--theme-success);">*</span>{% endif %}</div>
+                                    <div class="col-6 dots">{{ object.vision|dots }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">Divination (Thoth){% if object.web == 'thoth' %} <span style="color: var(--theme-success);">*</span>{% endif %}</div>
+                                    <div class="col-6 dots">{{ object.divination|dots }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if object.web %}
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <small style="color: var(--theme-text-secondary);"><span style="color: var(--theme-success);">*</span> Favored Hekau for this Web</small>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

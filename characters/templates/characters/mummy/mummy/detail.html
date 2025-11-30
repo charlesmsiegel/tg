@@ -1,0 +1,21 @@
+{% extends "characters/mummy/mtrhuman/detail.html" %}
+{% load dots %}
+{% load get_specialty %}
+{% block creation_title %}
+    Mummy Character Sheet
+{% endblock creation_title %}
+{% block basics %}
+    {% include "characters/mummy/mummy/basics_display_include.html" %}
+{% endblock basics %}
+{% block advantages %}
+    {% include "characters/mummy/mummy/advantages_display.html" %}
+{% endblock advantages %}
+{% block powers %}
+    {% include "characters/mummy/mummy/hekau_block_display.html" %}
+{% endblock powers %}
+{% block equipment %}
+    {% include "characters/core/human/equipment_block.html" %}
+{% endblock equipment %}
+{% block history %}
+    {% include "characters/mummy/mummy/history_block_display.html" %}
+{% endblock history %}

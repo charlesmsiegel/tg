@@ -1,0 +1,135 @@
+{% extends "items/core/item/detail.html" %}
+{% load dots %}
+{% block status_row %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Type:</span>
+                            {{ object.get_relic_type_display }}
+                        </div>
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Rank:</span>
+                            <span class="dots">{{ object.rank|dots }}</span>
+                        </div>
+                        {% if object.era %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Era:</span>
+                                {{ object.get_era_display }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock status_row %}
+{% block additional_stats %}
+    {% if object.powers %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title mtr_heading">Powers</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.powers }}</p>
+                        <div class="d-flex justify-content-center align-items-center flex-wrap mt-3">
+                            {% if object.ba_cost > 0 %}
+                                <div class="px-3 py-2">
+                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Ba Cost:</span>
+                                    {{ object.ba_cost }}
+                                </div>
+                            {% endif %}
+                            {% if object.requires_sekhem > 0 %}
+                                <div class="px-3 py-2">
+                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Requires Sekhem:</span>
+                                    {{ object.requires_sekhem }}
+                                </div>
+                            {% endif %}
+                            {% if object.requires_ritual %}
+                                <div class="px-3 py-2">
+                                    <span class="tg-badge badge-pill badge-secondary">Requires Ritual</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header">
+                    <h5 class="tg-card-title mtr_heading">Properties</h5>
+                </div>
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        {% if object.is_cursed %}
+                            <span class="tg-badge badge-pill badge-danger mx-1">Cursed</span>
+                        {% endif %}
+                        {% if object.is_unique %}
+                            <span class="tg-badge badge-pill badge-primary mx-1">Unique</span>
+                        {% endif %}
+                        {% if object.is_sentient %}
+                            <span class="tg-badge badge-pill badge-warning mx-1">Sentient</span>
+                        {% endif %}
+                        {% if object.associated_hekau %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Associated Hekau:</span>
+                                {{ object.associated_hekau }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if object.material or object.original_owner %}
+                        <div class="d-flex justify-content-center align-items-center flex-wrap mt-2">
+                            {% if object.material %}
+                                <div class="px-3 py-2">
+                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Material:</span>
+                                    {{ object.material }}
+                                </div>
+                            {% endif %}
+                            {% if object.original_owner %}
+                                <div class="px-3 py-2">
+                                    <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Original Owner:</span>
+                                    {{ object.original_owner }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if object.hieroglyphic_inscription %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title mtr_heading">Hieroglyphic Inscription</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <p class="mb-0" style="line-height: 1.6; font-style: italic;">{{ object.hieroglyphic_inscription }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if object.history %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title mtr_heading">History</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <p class="mb-0" style="line-height: 1.6;">{{ object.history }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock additional_stats %}

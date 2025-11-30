@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
+{% block content %}
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card header-card" data-gameline="mtr">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title mtr_heading">{{ object.name }}</h1>
+                        <p class="tg-card-subtitle mb-0">Rank Level: {{ object.rank_level }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if object.description %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title mtr_heading">Description</h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
+                            <p class="mb-0" style="line-height: 1.6;">{{ object.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}
