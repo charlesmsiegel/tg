@@ -61,6 +61,4 @@ class TestArchetypeUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.archetype.refresh_from_db()
         self.assertEqual(self.archetype.name, "Test Archetype Updated")
-        self.assertEqual(
-            self.archetype.description, "A test description for the Archetype."
-        )
+        self.assertEqual(self.archetype.description, "A test description for the Archetype.")

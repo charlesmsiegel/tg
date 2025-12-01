@@ -18,14 +18,10 @@ def sanitize_html(value):
         value = str(value)
 
     allowed_tags = ["b", "i", "em", "strong", "p", "br", "strike", "ul", "li", "span"]
-    allowed_attributes = {
-        "span": lambda tag, name, value: name == "class" and value == "quote"
-    }
+    allowed_attributes = {"span": lambda tag, name, value: name == "class" and value == "quote"}
 
     # Clean the HTML
-    cleaned_text = bleach.clean(
-        value, tags=allowed_tags, attributes=allowed_attributes, strip=True
-    )
+    cleaned_text = bleach.clean(value, tags=allowed_tags, attributes=allowed_attributes, strip=True)
 
     return format_html(cleaned_text)
 
@@ -54,20 +50,20 @@ def simple_markdown(value):
         value = str(value)
 
     # Convert **bold** to <strong>
-    value = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', value)
+    value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
 
     # Convert *italic* to <em> (but not if already part of **)
-    value = re.sub(r'(?<!\*)\*([^*]+?)\*(?!\*)', r'<em>\1</em>', value)
+    value = re.sub(r"(?<!\*)\*([^*]+?)\*(?!\*)", r"<em>\1</em>", value)
 
     # Convert line breaks to <br> tags, but preserve paragraph breaks
     # First, normalize line endings
-    value = value.replace('\r\n', '\n')
+    value = value.replace("\r\n", "\n")
 
     # Convert double newlines to paragraph breaks
-    paragraphs = value.split('\n\n')
-    paragraphs = [p.replace('\n', '<br>\n') for p in paragraphs]
-    value = '</p>\n<p>'.join(paragraphs)
-    value = f'<p>{value}</p>'
+    paragraphs = value.split("\n\n")
+    paragraphs = [p.replace("\n", "<br>\n") for p in paragraphs]
+    value = "</p>\n<p>".join(paragraphs)
+    value = f"<p>{value}</p>"
 
     # Clean with bleach to ensure safety
     allowed_tags = ["strong", "em", "p", "br"]

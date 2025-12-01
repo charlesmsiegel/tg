@@ -7,9 +7,7 @@ from django.test import TestCase
 class TestWtAHuman(TestCase):
     def setUp(self):
         self.player = User.objects.create_user(username="Player")
-        self.character = WtAHuman.objects.create(
-            name="Test WtAHuman", owner=self.player
-        )
+        self.character = WtAHuman.objects.create(name="Test WtAHuman", owner=self.player)
         werewolf_setup()
 
     def set_abilities(self):
@@ -339,9 +337,7 @@ class TestWtAHumanCreateView(TestCase):
 
 class TestWtAHumanUpdateView(TestCase):
     def setUp(self):
-        self.wtahuman = WtAHuman.objects.create(
-            name="Test WtAHuman", description="Test"
-        )
+        self.wtahuman = WtAHuman.objects.create(name="Test WtAHuman", description="Test")
         self.valid_data = {
             "name": "Test WtAHuman 2",
             "description": "Tst",

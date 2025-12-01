@@ -34,18 +34,10 @@ class ChronicleAdmin(admin.ModelAdmin):
     filter_horizontal = ("common_knowledge_elements", "allowed_objects", "game_storytellers")
 
     fieldsets = (
-        ("Basic Information", {
-            "fields": ("name", "headings", "year")
-        }),
-        ("Narrative", {
-            "fields": ("theme", "mood", "common_knowledge_elements")
-        }),
-        ("Storytellers", {
-            "fields": ("head_st", "game_storytellers")
-        }),
-        ("Game Configuration", {
-            "fields": ("allowed_objects",)
-        }),
+        ("Basic Information", {"fields": ("name", "headings", "year")}),
+        ("Narrative", {"fields": ("theme", "mood", "common_knowledge_elements")}),
+        ("Storytellers", {"fields": ("head_st", "game_storytellers")}),
+        ("Game Configuration", {"fields": ("allowed_objects",)}),
     )
 
 
@@ -118,10 +110,12 @@ class WeekAdmin(admin.ModelAdmin):
 
     def num_characters(self, obj):
         return obj.characters.count()
+
     num_characters.short_description = "Characters"
 
     def num_scenes(self, obj):
         return obj.finished_scenes().count()
+
     num_scenes.short_description = "Finished Scenes"
 
 
@@ -143,21 +137,20 @@ class WeeklyXPRequestAdmin(admin.ModelAdmin):
     readonly_fields = ("total_xp",)
 
     fieldsets = (
-        ("Basic Information", {
-            "fields": ("character", "week", "approved")
-        }),
-        ("XP Categories", {
-            "fields": (
-                "finishing",
-                ("learning", "learning_scene"),
-                ("rp", "rp_scene"),
-                ("focus", "focus_scene"),
-                ("standingout", "standingout_scene"),
-            )
-        }),
-        ("Summary", {
-            "fields": ("total_xp",)
-        }),
+        ("Basic Information", {"fields": ("character", "week", "approved")}),
+        (
+            "XP Categories",
+            {
+                "fields": (
+                    "finishing",
+                    ("learning", "learning_scene"),
+                    ("rp", "rp_scene"),
+                    ("focus", "focus_scene"),
+                    ("standingout", "standingout_scene"),
+                )
+            },
+        ),
+        ("Summary", {"fields": ("total_xp",)}),
     )
 
 
@@ -178,6 +171,7 @@ class StoryXPRequestAdmin(admin.ModelAdmin):
 
     def total_xp(self, obj):
         return sum([obj.success, obj.danger, obj.growth, obj.drama]) + obj.duration
+
     total_xp.short_description = "Total XP"
 
 
@@ -195,6 +189,7 @@ class JournalAdmin(admin.ModelAdmin):
 
     def num_entries(self, obj):
         return obj.all_entries().count()
+
     num_entries.short_description = "Entries"
 
 
@@ -207,11 +202,13 @@ class JournalEntryAdmin(admin.ModelAdmin):
 
     def has_message(self, obj):
         return bool(obj.message)
+
     has_message.boolean = True
     has_message.short_description = "Has Message"
 
     def has_st_message(self, obj):
         return bool(obj.st_message)
+
     has_st_message.boolean = True
     has_st_message.short_description = "Has ST Message"
 
@@ -233,15 +230,12 @@ class XPSpendingRequestAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "approved_at")
 
     fieldsets = (
-        ("Request Information", {
-            "fields": ("character", "trait_name", "trait_type", "trait_value", "cost")
-        }),
-        ("Approval", {
-            "fields": ("approved", "approved_by", "approved_at")
-        }),
-        ("Timestamps", {
-            "fields": ("created_at",)
-        }),
+        (
+            "Request Information",
+            {"fields": ("character", "trait_name", "trait_type", "trait_value", "cost")},
+        ),
+        ("Approval", {"fields": ("approved", "approved_by", "approved_at")}),
+        ("Timestamps", {"fields": ("created_at",)}),
     )
 
 

@@ -64,9 +64,7 @@ class TestNode(TestCase):
     def test_resonance_rating(self):
         resonance = Resonance.objects.create(name="Test Resonance")
         rating = 3
-        NodeResonanceRating.objects.create(
-            node=self.node, resonance=resonance, rating=rating
-        )
+        NodeResonanceRating.objects.create(node=self.node, resonance=resonance, rating=rating)
         self.assertEqual(self.node.resonance_rating(resonance), rating)
 
     def test_set_rank(self):
@@ -99,15 +97,11 @@ class TestNode(TestCase):
         self.node.resonance_postprocessing()
         self.assertEqual(self.node.total_resonance(), 3)
         self.assertIn("Corrupted", [x.name for x in self.node.resonance.all()])
-        self.assertGreaterEqual(
-            len([x for x in self.node.resonance.all() if x.forces]), 1
-        )
+        self.assertGreaterEqual(len([x for x in self.node.resonance.all() if x.forces]), 1)
 
     def test_add_mf(self):
         num = self.node.total_mf()
-        self.assertFalse(
-            self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 3"), 4)
-        )
+        self.assertFalse(self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 3"), 4))
         self.assertTrue(self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 3"), 3))
         self.assertEqual(self.node.total_mf(), num + 3)
 

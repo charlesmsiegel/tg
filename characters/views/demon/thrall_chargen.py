@@ -84,13 +84,9 @@ class ThrallAbilityView(SpecialUserMixin, UpdateView):
                 form.add_error(None, "Abilities must range from 0-3")
                 return self.form_invalid(form)
 
-        talents = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.talents]
-        )
+        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
         skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.knowledges]
-        )
+        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
 
         triple = [talents, skills, knowledges]
         triple.sort()

@@ -32,9 +32,7 @@ class BaseNuminaPathRatingFormSet(forms.BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
         for form in self.forms:
-            form.fields["path"].queryset = LinearMagicPath.objects.filter(
-                numina_type="hedge_magic"
-            )
+            form.fields["path"].queryset = LinearMagicPath.objects.filter(numina_type="hedge_magic")
 
 
 NuminaPathRatingFormSet = forms.inlineformset_factory(
@@ -70,9 +68,7 @@ class BasePsychicPathRatingFormSet(forms.BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
         for form in self.forms:
-            form.fields["path"].queryset = LinearMagicPath.objects.filter(
-                numina_type="psychic"
-            )
+            form.fields["path"].queryset = LinearMagicPath.objects.filter(numina_type="psychic")
 
 
 PsychicPathRatingFormSet = forms.inlineformset_factory(
@@ -103,9 +99,7 @@ class NuminaRitualForm(forms.ModelForm):
         self.fields["name"].required = False
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
 
         self.fields["path"].queryset = self.sorcerer.paths.all()
 
@@ -113,9 +107,7 @@ class NuminaRitualForm(forms.ModelForm):
 
         for path in self.sorcerer.pathrating_set.all():
             ritual_levels = list(
-                self.sorcerer.rituals.filter(path=path.path).values_list(
-                    "level", flat=True
-                )
+                self.sorcerer.rituals.filter(path=path.path).values_list("level", flat=True)
             )
             if ritual_levels:
                 maximum_level_ritual = max(ritual_levels)

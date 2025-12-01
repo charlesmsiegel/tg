@@ -8,6 +8,7 @@ Allows STs to bulk approve:
 - XP spend requests
 - Weekly/Story XP requests
 """
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
@@ -110,9 +111,7 @@ class Command(BaseCommand):
                 user = User.objects.get(username=options["owner"])
                 queryset = queryset.filter(owner=user)
             except User.DoesNotExist:
-                self.stdout.write(
-                    self.style.WARNING(f"User {options['owner']} not found")
-                )
+                self.stdout.write(self.style.WARNING(f"User {options['owner']} not found"))
                 return
 
         count = queryset.count()
@@ -122,9 +121,7 @@ class Command(BaseCommand):
 
             for char in queryset[:10]:
                 owner_name = char.owner.username if char.owner else "No owner"
-                chronicle_name = (
-                    char.chronicle.name if char.chronicle else "No chronicle"
-                )
+                chronicle_name = char.chronicle.name if char.chronicle else "No chronicle"
                 self.stdout.write(
                     f"  - {char.name} (ID: {char.id}, Owner: {owner_name}, Chronicle: {chronicle_name})"
                 )
@@ -136,14 +133,10 @@ class Command(BaseCommand):
                 if not self.dry_run:
                     queryset.update(status="App")
                     self.approved["characters"] = count
-                    self.stdout.write(
-                        self.style.SUCCESS(f"  ✓ Approved {count} character(s)")
-                    )
+                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} character(s)"))
                 else:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  [DRY RUN] Would approve {count} character(s)"
-                        )
+                        self.style.WARNING(f"  [DRY RUN] Would approve {count} character(s)")
                     )
 
     def approve_images(self, options):
@@ -190,14 +183,10 @@ class Command(BaseCommand):
                         obj.image_status = "app"
                         obj.save()
                     self.approved["images"] = count
-                    self.stdout.write(
-                        self.style.SUCCESS(f"  ✓ Approved {count} image(s)")
-                    )
+                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} image(s)"))
                 else:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  [DRY RUN] Would approve {count} image(s)"
-                        )
+                        self.style.WARNING(f"  [DRY RUN] Would approve {count} image(s)")
                     )
 
     def approve_freebies(self, options):
@@ -219,15 +208,11 @@ class Command(BaseCommand):
         count = queryset.count()
 
         if count > 0:
-            self.stdout.write(
-                self.style.WARNING(f"\nPending Freebie Approvals: {count}")
-            )
+            self.stdout.write(self.style.WARNING(f"\nPending Freebie Approvals: {count}"))
 
             for char in queryset[:10]:
                 owner_name = char.owner.username if char.owner else "No owner"
-                self.stdout.write(
-                    f"  - {char.name} (ID: {char.id}, Owner: {owner_name})"
-                )
+                self.stdout.write(f"  - {char.name} (ID: {char.id}, Owner: {owner_name})")
 
             if count > 10:
                 self.stdout.write(f"  ... and {count - 10} more")
@@ -236,14 +221,10 @@ class Command(BaseCommand):
                 if not self.dry_run:
                     queryset.update(freebies_approved=True)
                     self.approved["freebies"] = count
-                    self.stdout.write(
-                        self.style.SUCCESS(f"  ✓ Approved {count} freebie spend(s)")
-                    )
+                    self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} freebie spend(s)"))
                 else:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  [DRY RUN] Would approve {count} freebie spend(s)"
-                        )
+                        self.style.WARNING(f"  [DRY RUN] Would approve {count} freebie spend(s)")
                     )
 
     def approve_xp_spends(self, options):
@@ -269,9 +250,7 @@ class Command(BaseCommand):
         for char in queryset:
             if hasattr(char, "spent_xp"):
                 pending_spends = [
-                    spend
-                    for spend in char.spent_xp
-                    if spend.get("approved") == "Pending"
+                    spend for spend in char.spent_xp if spend.get("approved") == "Pending"
                 ]
                 if pending_spends:
                     total_pending += len(pending_spends)
@@ -292,9 +271,7 @@ class Command(BaseCommand):
                 )
 
             if len(characters_with_pending) > 5:
-                self.stdout.write(
-                    f"  ... and {len(characters_with_pending) - 5} more characters"
-                )
+                self.stdout.write(f"  ... and {len(characters_with_pending) - 5} more characters")
 
             if not self.list_only:
                 if not self.dry_run:
@@ -309,9 +286,7 @@ class Command(BaseCommand):
                     )
                 else:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  [DRY RUN] Would approve {total_pending} XP spend(s)"
-                        )
+                        self.style.WARNING(f"  [DRY RUN] Would approve {total_pending} XP spend(s)")
                     )
 
     def approve_xp_requests(self, options):
@@ -339,9 +314,7 @@ class Command(BaseCommand):
             weekly_requests = WeeklyXPRequest.objects.filter(
                 approved=False, character_id__in=character_ids
             )
-            story_requests = StoryXPRequest.objects.filter(
-                character_id__in=character_ids
-            )
+            story_requests = StoryXPRequest.objects.filter(character_id__in=character_ids)
         else:
             weekly_requests = WeeklyXPRequest.objects.filter(approved=False)
             story_requests = StoryXPRequest.objects.all()[
@@ -351,9 +324,7 @@ class Command(BaseCommand):
         weekly_count = weekly_requests.count()
 
         if weekly_count > 0:
-            self.stdout.write(
-                self.style.WARNING(f"\nPending Weekly XP Requests: {weekly_count}")
-            )
+            self.stdout.write(self.style.WARNING(f"\nPending Weekly XP Requests: {weekly_count}"))
 
             for req in weekly_requests[:10]:
                 char_name = req.character.name if req.character else "Unknown"
@@ -374,9 +345,7 @@ class Command(BaseCommand):
 
                     self.approved["weekly_xp"] = weekly_count
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"  ✓ Approved {weekly_count} weekly XP request(s)"
-                        )
+                        self.style.SUCCESS(f"  ✓ Approved {weekly_count} weekly XP request(s)")
                     )
                 else:
                     self.stdout.write(
@@ -409,6 +378,4 @@ class Command(BaseCommand):
         self.stdout.write("=" * 70 + "\n")
 
         if self.dry_run and not self.list_only:
-            self.stdout.write(
-                self.style.WARNING("[DRY RUN] No items were actually approved")
-            )
+            self.stdout.write(self.style.WARNING("[DRY RUN] No items were actually approved"))

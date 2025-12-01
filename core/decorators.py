@@ -51,9 +51,7 @@ def require_permission(permission: Permission, lookup="pk", raise_404=True):
                 if raise_404:
                     raise Http404("Object not found")
                 else:
-                    raise PermissionDenied(
-                        "You don't have permission to access this resource"
-                    )
+                    raise PermissionDenied("You don't have permission to access this resource")
 
             # Attach object to request for convenience
             request.permission_object = obj
@@ -97,9 +95,7 @@ def require_spend_freebies_permission(view_func):
     return require_permission(Permission.SPEND_FREEBIES, raise_404=False)(view_func)
 
 
-def require_model_permission(
-    model_class, permission: Permission, lookup="pk", raise_404=True
-):
+def require_model_permission(model_class, permission: Permission, lookup="pk", raise_404=True):
     """
     Decorator that explicitly specifies the model class.
 
@@ -127,9 +123,7 @@ def require_model_permission(
                 if raise_404:
                     raise Http404("Object not found")
                 else:
-                    raise PermissionDenied(
-                        "You don't have permission to access this resource"
-                    )
+                    raise PermissionDenied("You don't have permission to access this resource")
 
             # Attach object to request for convenience
             request.permission_object = obj

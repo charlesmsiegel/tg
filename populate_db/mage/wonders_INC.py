@@ -19,9 +19,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Abh-t Dagger", background_cost=4, arete=2, quintessence_max=10
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Abundanti's Oil", background_cost=2
-)[0]
+Artifact.objects.get_or_create(display=False, name="Abundanti's Oil", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Accelerated Force Cannon (AFC)",
@@ -29,15 +27,13 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Advanced Bugs", background_cost=1)[
+Artifact.objects.get_or_create(display=False, name="Advanced Bugs", background_cost=1)[0]
+Artifact.objects.get_or_create(display=False, name="Advanced Power Cell (APC)", background_cost=3)[
     0
 ]
-Artifact.objects.get_or_create(
-    display=False, name="Advanced Power Cell (APC)", background_cost=3
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Akaa' Et Nuon Ta", background_cost=4
-)[0].add_source("Book of the Fallen", 165)
+Artifact.objects.get_or_create(display=False, name="Akaa' Et Nuon Ta", background_cost=4)[
+    0
+].add_source("Book of the Fallen", 165)
 Talisman.objects.get_or_create(
     display=False,
     name="Alanson Light Hardsuit",
@@ -92,9 +88,7 @@ Artifact.objects.get_or_create(display=False, name="Alley Shades", background_co
 Talisman.objects.get_or_create(
     display=False, name="Anti-Gerasone", background_cost=8, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Aole Koheoheo Tatu", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Aole Koheoheo Tatu", background_cost=4)
 Talisman.objects.get_or_create(
     display=False, name="Arachne's Web", background_cost=9, arete=5, quintessence_max=25
 )[0]
@@ -115,9 +109,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Assassin's Blade", background_cost=8
-)
+Artifact.objects.get_or_create(display=False, name="Assassin's Blade", background_cost=8)
 Artifact.objects.get_or_create(display=False, name="Astral Tiki", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False, name="AUAV", background_cost=10, arete=7, quintessence_max=35
@@ -146,9 +138,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Barrel Improvements", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Barrel Improvements", background_cost=2)
 Talisman.objects.get_or_create(
     display=False,
     name="Barrier Field Generator (BFG)",
@@ -184,9 +174,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Biomesh Armor", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Biomesh Armor", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False, name="BioSpy", background_cost=6, arete=3, quintessence_max=15
 )[0]
@@ -200,9 +188,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Bird Staff of Osanyin", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Bird Staff of Osanyin", background_cost=6)
 Talisman.objects.get_or_create(
     display=False,
     name="Black Helicopters",
@@ -254,12 +240,8 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Bone Spurs", background_cost=6, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(display=False, name="Bottle of Fire", background_cost=8)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Branch of the World Tree", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Bottle of Fire", background_cost=8)[0]
+Artifact.objects.get_or_create(display=False, name="Branch of the World Tree", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Brittany's Music Box",
@@ -267,9 +249,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Bulletproof Hoodie", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Bulletproof Hoodie", background_cost=6)
 Artifact.objects.get_or_create(display=False, name="Bullroarer", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -288,9 +268,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Cauldron of Spies", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Cauldron of Spies", background_cost=6)
 Talisman.objects.get_or_create(
     display=False, name="Cephalic VCR", background_cost=9, arete=5, quintessence_max=25
 )[0]
@@ -314,9 +292,7 @@ Talisman.objects.get_or_create(
     display=False, name="Chitin", background_cost=6, arete=3, quintessence_max=15
 )[0]
 Artifact.objects.get_or_create(display=False, name="Claws", background_cost=4)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Clay Man Amulet", background_cost=5
-)[0]
+Artifact.objects.get_or_create(display=False, name="Clay Man Amulet", background_cost=5)[0]
 Talisman.objects.get_or_create(
     display=False, name="Clockers", background_cost=7, arete=4, quintessence_max=20
 )[0]
@@ -334,24 +310,18 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Clout Perfume", background_cost=2)[
+Artifact.objects.get_or_create(display=False, name="Clout Perfume", background_cost=2)[0]
+Artifact.objects.get_or_create(display=False, name="Cloë the Growl-Growl Bear", background_cost=3)[
     0
 ]
-Artifact.objects.get_or_create(
-    display=False, name="Cloë the Growl-Growl Bear", background_cost=3
-)[0]
 Talisman.objects.get_or_create(
     display=False, name="CMAP", background_cost=5, arete=3, quintessence_max=15
 )[0]
 Talisman.objects.get_or_create(
     display=False, name="Coco Macaque", background_cost=8, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(display=False, name="Codex Mendoza", background_cost=0)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Coding Tunes, Vol I", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Codex Mendoza", background_cost=0)[0]
+Artifact.objects.get_or_create(display=False, name="Coding Tunes, Vol I", background_cost=2)
 Talisman.objects.get_or_create(
     display=False,
     name="Communications Jammer",
@@ -428,9 +398,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Demon Mask", background_cost=6, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(display=False, name="Detox Implant", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Detox Implant", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Deviant's Heart",
@@ -468,9 +436,9 @@ Talisman.objects.get_or_create(
 Artifact.objects.get_or_create(
     display=False, name="Digital Enhancement Implants", background_cost=8
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Digital Interface Armband", background_cost=6
-)[0]
+Artifact.objects.get_or_create(display=False, name="Digital Interface Armband", background_cost=6)[
+    0
+]
 Talisman.objects.get_or_create(
     display=False,
     name="Digital Online Package",
@@ -501,12 +469,8 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Divining Staff", background_cost=4)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Doc Eon's Action Jackets", background_cost=0
-)[0]
+Artifact.objects.get_or_create(display=False, name="Divining Staff", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="Doc Eon's Action Jackets", background_cost=0)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Doc Eon's Gas Bullets",
@@ -528,12 +492,8 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Dogon Divination Bowl", background_cost=2
-)
-Artifact.objects.get_or_create(display=False, name="Dormancy Tiki", background_cost=8)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Dogon Divination Bowl", background_cost=2)
+Artifact.objects.get_or_create(display=False, name="Dormancy Tiki", background_cost=8)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Dr. Day's Hypodermic",
@@ -559,9 +519,7 @@ Talisman.objects.get_or_create(
     quintessence_max=20,
 )[0]
 Artifact.objects.get_or_create(display=False, name="Dream Gate", background_cost=10)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Dream Spirit Bag", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Dream Spirit Bag", background_cost=6)
 Talisman.objects.get_or_create(
     display=False,
     name="Ear of Dionysus",
@@ -617,9 +575,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Energy Drinks", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Energy Drinks", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Energy Enhancement Module",
@@ -627,9 +583,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Enhanced Pheromones", background_cost=1
-)
+Artifact.objects.get_or_create(display=False, name="Enhanced Pheromones", background_cost=1)
 Talisman.objects.get_or_create(
     display=False,
     name="Enlightened Smartphone",
@@ -656,9 +610,7 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Extrasensory Access", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Extrasensory Access", background_cost=2)
 Talisman.objects.get_or_create(
     display=False,
     name="E/E, Personal Cloaking Device",
@@ -666,9 +618,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Facial Reconstruction", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Facial Reconstruction", background_cost=2)
 Talisman.objects.get_or_create(
     display=False, name="Faerie Cap", background_cost=5, arete=3, quintessence_max=15
 )[0]
@@ -684,12 +634,8 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Fencing Square", background_cost=4)[
-    0
-]
-Artifact.objects.get_or_create(display=False, name="Fertility Tiki", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Fencing Square", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="Fertility Tiki", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Fireball Pearl",
@@ -697,9 +643,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Fishbowl of Prosperity", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Fishbowl of Prosperity", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="Five-Fire Stone",
@@ -714,9 +658,7 @@ Talisman.objects.get_or_create(
     display=False, name="Flesh Canvas", background_cost=6, arete=4, quintessence_max=20
 )[0]
 Artifact.objects.get_or_create(display=False, name="Floating Oil", background_cost=4)[0]
-Artifact.objects.get_or_create(display=False, name="Flying Unguent", background_cost=3)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Flying Unguent", background_cost=3)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Folding Gate of Armaghast",
@@ -751,9 +693,7 @@ Artifact.objects.get_or_create(
     display=False, name="Ghost-Devouring Jack-o'-Lantern", background_cost=2
 )[0]
 Artifact.objects.get_or_create(display=False, name="Gills", background_cost=4)[0]
-Artifact.objects.get_or_create(display=False, name="Ginger Dragons", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Ginger Dragons", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Girdle of Hippolyta",
@@ -768,18 +708,14 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="GODSPIN Blotter Acid", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="GODSPIN Blotter Acid", background_cost=4)
 Talisman.objects.get_or_create(
     display=False, name="Golden Bands", background_cost=6, arete=3, quintessence_max=15
 )[0]
 Talisman.objects.get_or_create(
     display=False, name="Golden Walnut", background_cost=5, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Great Sigil Pendant", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Great Sigil Pendant", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="Green Dome Manar",
@@ -787,9 +723,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Guardian Tiki", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Guardian Tiki", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Gun for the Job",
@@ -814,9 +748,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Hand of Glory", background_cost=9, arete=5, quintessence_max=25
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Hardsuit Modules", background_cost=1
-)
+Artifact.objects.get_or_create(display=False, name="Hardsuit Modules", background_cost=1)
 Talisman.objects.get_or_create(
     display=False,
     name="Hare's-foot Ward",
@@ -827,13 +759,9 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Havoc Gun", background_cost=10, arete=7, quintessence_max=35
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Hazelnuts of Wisdom", background_cost=1
-)
+Artifact.objects.get_or_create(display=False, name="Hazelnuts of Wisdom", background_cost=1)
 Artifact.objects.get_or_create(display=False, name="He'e Tatu", background_cost=4)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Healing Figurine", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Healing Figurine", background_cost=4)
 Talisman.objects.get_or_create(
     display=False, name="HEAT Chip", background_cost=6, arete=3, quintessence_max=15
 )[0]
@@ -845,9 +773,7 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Heimdall V Leadstopper", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Heimdall V Leadstopper", background_cost=6)
 Artifact.objects.get_or_create(display=False, name="Helix Ring", background_cost=6)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -942,9 +868,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Hydrogen Battery", background_cost=5
-)
+Artifact.objects.get_or_create(display=False, name="Hydrogen Battery", background_cost=5)
 Talisman.objects.get_or_create(
     display=False,
     name="Hypermed Injection System",
@@ -974,9 +898,7 @@ Artifact.objects.get_or_create(display=False, name="Impact Armor", background_co
 Talisman.objects.get_or_create(
     display=False, name="iMPALA", background_cost=4, arete=2, quintessence_max=10
 )[0]
-Artifact.objects.get_or_create(display=False, name="Imperial Tiger", background_cost=0)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Imperial Tiger", background_cost=0)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Implant Chain Gun",
@@ -984,9 +906,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Implant Radio", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Implant Radio", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Implanted Plasma Cannon",
@@ -994,13 +914,9 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Infinite Change Purse", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Infinite Change Purse", background_cost=4)
 Artifact.objects.get_or_create(display=False, name="Info Spider", background_cost=6)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Inform-a-Vision", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Inform-a-Vision", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Infravision Receptors",
@@ -1008,9 +924,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Inhabited Car", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Inhabited Car", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Innovation, Inc.'s Personal Lift Generator 5000",
@@ -1070,9 +984,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Jump Box", background_cost=8, arete=5, quintessence_max=25
 )[0]
-Artifact.objects.get_or_create(display=False, name="Justice Blades", background_cost=3)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Justice Blades", background_cost=3)[0]
 Artifact.objects.get_or_create(
     display=False, name="Kahu Huruhuru (Feather Cloak)", background_cost=4
 )[0]
@@ -1142,9 +1054,7 @@ Talisman.objects.get_or_create(
     arete=10,
     quintessence_max=50,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Leadstopper Vest", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Leadstopper Vest", background_cost=6)
 Talisman.objects.get_or_create(
     display=False,
     name="Leng Chao's Chamber of Yin-Yang",
@@ -1159,9 +1069,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Liber Tenebris Distalis", background_cost=6
-)[0]
+Artifact.objects.get_or_create(display=False, name="Liber Tenebris Distalis", background_cost=6)[0]
 Talisman.objects.get_or_create(
     display=False, name="Light Meter", background_cost=5, arete=3, quintessence_max=15
 )[0]
@@ -1183,15 +1091,11 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Looking Glass", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Looking Glass", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False, name="Lucky Coin", background_cost=5, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(display=False, name="Lustral Water", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Lustral Water", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Lycanthroscope",
@@ -1254,15 +1158,9 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Manar Scanner", background_cost=3, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Mapping Implant", background_cost=2
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Mark IV Hand Computer", background_cost=1
-)
-Artifact.objects.get_or_create(
-    display=False, name="Mark VII Cassini AUC", background_cost=0
-)
+Artifact.objects.get_or_create(display=False, name="Mapping Implant", background_cost=2)[0]
+Artifact.objects.get_or_create(display=False, name="Mark IV Hand Computer", background_cost=1)
+Artifact.objects.get_or_create(display=False, name="Mark VII Cassini AUC", background_cost=0)
 Talisman.objects.get_or_create(
     display=False,
     name="Martian Purifier",
@@ -1284,12 +1182,8 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Mask of the Warrior", background_cost=4
-)
-Artifact.objects.get_or_create(
-    display=False, name="Master Joro's Sash", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Mask of the Warrior", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="Master Joro's Sash", background_cost=6)
 Talisman.objects.get_or_create(
     display=False, name="Master Remote", background_cost=6, arete=4, quintessence_max=20
 )[0]
@@ -1339,9 +1233,7 @@ Artifact.objects.get_or_create(display=False, name="MIDAS Card", background_cost
 Talisman.objects.get_or_create(
     display=False, name="Mirrorshades", background_cost=3, arete=2, quintessence_max=10
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Mjollnir Handguns", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Mjollnir Handguns", background_cost=6)
 Talisman.objects.get_or_create(
     display=False, name="Mobile Home", background_cost=8, arete=4, quintessence_max=20
 )[0]
@@ -1367,9 +1259,7 @@ Talisman.objects.get_or_create(
     quintessence_max=30,
 )[0]
 Artifact.objects.get_or_create(display=False, name="Nanopatch", background_cost=2)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Nanotech Medichines", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Nanotech Medichines", background_cost=6)
 Talisman.objects.get_or_create(
     display=False, name="Nanovaccine", background_cost=4, arete=2, quintessence_max=10
 )[0]
@@ -1384,9 +1274,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Nine Jade Dragons", background_cost=5
-)
+Artifact.objects.get_or_create(display=False, name="Nine Jade Dragons", background_cost=5)
 Talisman.objects.get_or_create(
     display=False,
     name="Nine-Dragon Tattoos",
@@ -1425,12 +1313,8 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Nuclear Bomb", background_cost=10)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Oho-Kui (Battle Wig)", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Nuclear Bomb", background_cost=10)[0]
+Artifact.objects.get_or_create(display=False, name="Oho-Kui (Battle Wig)", background_cost=6)
 Talisman.objects.get_or_create(
     display=False,
     name="Omnichronal Watch",
@@ -1438,9 +1322,7 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Online Access", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Online Access", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Orbital Manar Station",
@@ -1448,9 +1330,7 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Organic Knife", background_cost=6)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Organic Knife", background_cost=6)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Oriole of Tranquility",
@@ -1468,9 +1348,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Pahu Ino-Nui", background_cost=10)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Pahu Ino-Nui", background_cost=10)[0]
 Talisman.objects.get_or_create(
     display=False, name="Paladin Sedan", background_cost=8, arete=4, quintessence_max=20
 )[0]
@@ -1481,9 +1359,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Paradox Stone", background_cost=5)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Paradox Stone", background_cost=5)[0]
 Talisman.objects.get_or_create(
     display=False, name="Parking Karma", background_cost=4, arete=2, quintessence_max=10
 )[0]
@@ -1502,12 +1378,8 @@ Artifact.objects.get_or_create(display=False, name="Peacemaker", background_cost
 Talisman.objects.get_or_create(
     display=False, name="Pele's Lamaku", background_cost=6, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(display=False, name="Penance Bonds", background_cost=0)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Perfected Focus", background_cost=1
-)[0]
+Artifact.objects.get_or_create(display=False, name="Penance Bonds", background_cost=0)[0]
+Artifact.objects.get_or_create(display=False, name="Perfected Focus", background_cost=1)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Performance Blade",
@@ -1529,9 +1401,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Personality Software", background_cost=8
-)
+Artifact.objects.get_or_create(display=False, name="Personality Software", background_cost=8)
 Artifact.objects.get_or_create(
     display=False, name="Physical Structure Enhancement", background_cost=2
 )[0]
@@ -1622,9 +1492,7 @@ Talisman.objects.get_or_create(
     arete=5,
     quintessence_max=25,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Primium Countermeasures", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Primium Countermeasures", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False, name="Primium Cuffs", background_cost=3, arete=2, quintessence_max=10
 )[0]
@@ -1646,9 +1514,7 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Prophetic Skull", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Prophetic Skull", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Protocol Beeper",
@@ -1687,24 +1553,18 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="QUEST Transport", background_cost=0
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Qui La Machinae X156", background_cost=0
-)
-Artifact.objects.get_or_create(
-    display=False, name="Qui La Machinae X160", background_cost=10
-)
+Artifact.objects.get_or_create(display=False, name="QUEST Transport", background_cost=0)[0]
+Artifact.objects.get_or_create(display=False, name="Qui La Machinae X156", background_cost=0)
+Artifact.objects.get_or_create(display=False, name="Qui La Machinae X160", background_cost=10)
 Artifact.objects.get_or_create(
     display=False, name="Qui La Machinae X200 “Vader”", background_cost=0
 )[0]
 Artifact.objects.get_or_create(
     display=False, name="Quintessence Absorbing Device (QAD)", background_cost=8
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Radical Pigment Alteration", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Radical Pigment Alteration", background_cost=4)[
+    0
+]
 Talisman.objects.get_or_create(
     display=False,
     name="Rapid Text Stream Data Reader",
@@ -1712,12 +1572,8 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Raptor Silencer", background_cost=2
-)[0]
-Artifact.objects.get_or_create(display=False, name="Ravana's Skin", background_cost=7)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Raptor Silencer", background_cost=2)[0]
+Artifact.objects.get_or_create(display=False, name="Ravana's Skin", background_cost=7)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Reality Modulation Units (RMU)",
@@ -1726,9 +1582,7 @@ Talisman.objects.get_or_create(
     quintessence_max=25,
 )[0]
 Artifact.objects.get_or_create(display=False, name="Rebreather", background_cost=4)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Remote Piloted Vehicle", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Remote Piloted Vehicle", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="Remote Sensors",
@@ -1767,15 +1621,9 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Sacred Bullhide", background_cost=4
-)[0]
-Artifact.objects.get_or_create(display=False, name="Salvation Bell", background_cost=6)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Sampo Fragments", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Sacred Bullhide", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="Salvation Bell", background_cost=6)[0]
+Artifact.objects.get_or_create(display=False, name="Sampo Fragments", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Samson's Gauntlets",
@@ -1793,12 +1641,8 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Scout Drone", background_cost=6, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Sea Spirit Shell", background_cost=3
-)
-Artifact.objects.get_or_create(
-    display=False, name="Seeds of Decay", background_cost=10
-)[0]
+Artifact.objects.get_or_create(display=False, name="Sea Spirit Shell", background_cost=3)
+Artifact.objects.get_or_create(display=False, name="Seeds of Decay", background_cost=10)[0]
 Talisman.objects.get_or_create(
     display=False, name="Seekers", background_cost=8, arete=6, quintessence_max=30
 )[0]
@@ -1830,18 +1674,12 @@ Talisman.objects.get_or_create(
     arete=1,
     quintessence_max=5,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Sensor Glasses", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Sensor Glasses", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False, name="Sensor Organ", background_cost=3, arete=2, quintessence_max=10
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Sensory Enhancers", background_cost=3
-)
-Artifact.objects.get_or_create(
-    display=False, name="Sentinel Satellite", background_cost=0
-)
+Artifact.objects.get_or_create(display=False, name="Sensory Enhancers", background_cost=3)
+Artifact.objects.get_or_create(display=False, name="Sentinel Satellite", background_cost=0)
 Talisman.objects.get_or_create(
     display=False, name="Serpent Blade", background_cost=4, arete=2, quintessence_max=10
 )[0]
@@ -1893,15 +1731,11 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Silver Fan", background_cost=8, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(display=False, name="Silver Strand", background_cost=6)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Silver Strand", background_cost=6)[0]
 Talisman.objects.get_or_create(
     display=False, name="Sin-TV", background_cost=5, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(display=False, name="Siren's Scent", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Siren's Scent", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Siren's Tears and the Breather Collar",
@@ -1909,9 +1743,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Skeletal Enhancement", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Skeletal Enhancement", background_cost=2)
 Artifact.objects.get_or_create(display=False, name="SkinSuits", background_cost=10)[0]
 Talisman.objects.get_or_create(
     display=False, name="Skyrigger", background_cost=10, arete=5, quintessence_max=25
@@ -1929,14 +1761,10 @@ Talisman.objects.get_or_create(
 Artifact.objects.get_or_create(
     display=False, name="Slip-Rex, The King of Lubricants", background_cost=4
 )[0]
-Artifact.objects.get_or_create(display=False, name="Sorcerous Tiki", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Sorcerous Tiki", background_cost=4)[0]
 Artifact.objects.get_or_create(display=False, name="Soul Mates", background_cost=0)[0]
 Artifact.objects.get_or_create(display=False, name="Space Jam", background_cost=4)[0]
-Artifact.objects.get_or_create(
-    display=False, name="Spear of Gobhniu", background_cost=8
-)
+Artifact.objects.get_or_create(display=False, name="Spear of Gobhniu", background_cost=8)
 Artifact.objects.get_or_create(display=False, name="SPECM", background_cost=5)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -1955,12 +1783,8 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Spiritual Armor", background_cost=10
-)
-Artifact.objects.get_or_create(
-    display=False, name="Spiritus Pastille", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Spiritual Armor", background_cost=10)
+Artifact.objects.get_or_create(display=False, name="Spiritus Pastille", background_cost=4)
 Artifact.objects.get_or_create(display=False, name="Spy-Glass", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -1988,18 +1812,10 @@ Talisman.objects.get_or_create(
     arete=1,
     quintessence_max=0,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Subliminal Broadcaster", background_cost=4
-)
-Artifact.objects.get_or_create(
-    display=False, name="Submersible Car", background_cost=10
-)
-Artifact.objects.get_or_create(display=False, name="Super-Steroids", background_cost=3)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="Sword of Discharge", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Subliminal Broadcaster", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="Submersible Car", background_cost=10)
+Artifact.objects.get_or_create(display=False, name="Super-Steroids", background_cost=3)[0]
+Artifact.objects.get_or_create(display=False, name="Sword of Discharge", background_cost=4)
 Talisman.objects.get_or_create(
     display=False, name="Sword-Breaker", background_cost=4, arete=2, quintessence_max=10
 )[0]
@@ -2010,9 +1826,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Syringe Pharmacopeia", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="Syringe Pharmacopeia", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="Talisman of the Mask",
@@ -2069,9 +1883,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Aether Codex", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="The Aether Codex", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="The Alchemy of Unity",
@@ -2079,18 +1891,10 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=0,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Asklepian Tractate", background_cost=6
-)
-Artifact.objects.get_or_create(
-    display=False, name="The Bioroid Eva", background_cost=0
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Black Bible", background_cost=4
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Black Book of Manu", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="The Asklepian Tractate", background_cost=6)
+Artifact.objects.get_or_create(display=False, name="The Bioroid Eva", background_cost=0)[0]
+Artifact.objects.get_or_create(display=False, name="The Black Bible", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="The Black Book of Manu", background_cost=4)
 Talisman.objects.get_or_create(
     display=False,
     name="The Black Cauldron",
@@ -2105,9 +1909,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Bond of ibn Daud", background_cost=3
-)
+Artifact.objects.get_or_create(display=False, name="The Bond of ibn Daud", background_cost=3)
 Talisman.objects.get_or_create(
     display=False,
     name="The Bond Watch",
@@ -2118,18 +1920,14 @@ Talisman.objects.get_or_create(
 Artifact.objects.get_or_create(
     display=False, name="The Book of Shadows of Maeve McKinnon", background_cost=6
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Chains of Leviathan", background_cost=7
-)[0]
+Artifact.objects.get_or_create(display=False, name="The Chains of Leviathan", background_cost=7)[0]
 Talisman.objects.get_or_create(
     display=False, name="The Chopper", background_cost=10, arete=5, quintessence_max=25
 )[0]
 Artifact.objects.get_or_create(
     display=False, name="The Cloud Dance of Eternal Vision and Joy", background_cost=6
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Codex Licentia", background_cost=4
-)
+Artifact.objects.get_or_create(display=False, name="The Codex Licentia", background_cost=4)
 Talisman.objects.get_or_create(
     display=False, name="The DDGR Card", background_cost=7, arete=5, quintessence_max=25
 )[0]
@@ -2168,24 +1966,16 @@ Talisman.objects.get_or_create(
     arete=8,
     quintessence_max=40,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Filth Altar", background_cost=5
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Greater Key of Solomon", background_cost=4
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Grimoire of Honorius", background_cost=4
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Grimorium Verum", background_cost=4
-)
-Artifact.objects.get_or_create(
-    display=False, name="The Guitar of the Spirits", background_cost=8
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Hammer of Charun", background_cost=10
-)
+Artifact.objects.get_or_create(display=False, name="The Filth Altar", background_cost=5)[0]
+Artifact.objects.get_or_create(display=False, name="The Greater Key of Solomon", background_cost=4)[
+    0
+]
+Artifact.objects.get_or_create(display=False, name="The Grimoire of Honorius", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="The Grimorium Verum", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="The Guitar of the Spirits", background_cost=8)[
+    0
+]
+Artifact.objects.get_or_create(display=False, name="The Hammer of Charun", background_cost=10)
 Talisman.objects.get_or_create(
     display=False,
     name="The Hyperphoto Zoom Lens with Spirit Film",
@@ -2200,21 +1990,11 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(display=False, name="The Lemegeton", background_cost=4)[
-    0
-]
-Artifact.objects.get_or_create(
-    display=False, name="The Lens of Zadkiel", background_cost=4
-)
-Artifact.objects.get_or_create(
-    display=False, name="The Liber Labyrinthus", background_cost=4
-)
-Artifact.objects.get_or_create(
-    display=False, name="The Liber Spiritum", background_cost=4
-)
-Artifact.objects.get_or_create(display=False, name="The Mask Maker", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="The Lemegeton", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="The Lens of Zadkiel", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="The Liber Labyrinthus", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="The Liber Spiritum", background_cost=4)
+Artifact.objects.get_or_create(display=False, name="The Mask Maker", background_cost=2)[0]
 Artifact.objects.get_or_create(
     display=False, name="The Masquer's Grand Disguise", background_cost=6
 )[0]
@@ -2232,9 +2012,7 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Piacenza Liver", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="The Piacenza Liver", background_cost=2)
 Talisman.objects.get_or_create(
     display=False,
     name="The Purifier's Needles",
@@ -2269,30 +2047,24 @@ Artifact.objects.get_or_create(
 Artifact.objects.get_or_create(
     display=False, name="The Robes of the Golden Mandarin", background_cost=0
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Sebel-el-Mafouh Whash", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="The Sebel-el-Mafouh Whash", background_cost=4)[
+    0
+]
 Artifact.objects.get_or_create(
     display=False, name="The Second Key of Ablamerch", background_cost=4
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Six Seals of Ganzir", background_cost=4
-)[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Sorcerer's Apprentice", background_cost=8
-)[0]
+Artifact.objects.get_or_create(display=False, name="The Six Seals of Ganzir", background_cost=4)[0]
+Artifact.objects.get_or_create(display=False, name="The Sorcerer's Apprentice", background_cost=8)[
+    0
+]
 Artifact.objects.get_or_create(
     display=False, name="The Spirit Chant of Upopotak", background_cost=2
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="The Staff of Heralds", background_cost=0
-)
+Artifact.objects.get_or_create(display=False, name="The Staff of Heralds", background_cost=0)
 Artifact.objects.get_or_create(
     display=False, name="The Temple of the Theoi Cthon", background_cost=8
 )[0]
-Artifact.objects.get_or_create(display=False, name="The Tenth Seat", background_cost=0)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="The Tenth Seat", background_cost=0)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="The Testing Flask",
@@ -2371,16 +2143,12 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Tonics and Potions", background_cost=3
-)
+Artifact.objects.get_or_create(display=False, name="Tonics and Potions", background_cost=3)
 Artifact.objects.get_or_create(display=False, name="Torc of Donn", background_cost=8)[0]
 Talisman.objects.get_or_create(
     display=False, name="Totem Tattoo", background_cost=8, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Tradition Blades", background_cost=10
-)
+Artifact.objects.get_or_create(display=False, name="Tradition Blades", background_cost=10)
 Artifact.objects.get_or_create(display=False, name="Trance Drum", background_cost=4)[0]
 Artifact.objects.get_or_create(
     display=False, name="Tranquility Raptor Class Corvette", background_cost=10
@@ -2392,12 +2160,8 @@ Talisman.objects.get_or_create(
     arete=4,
     quintessence_max=20,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Traveler's Charm", background_cost=2
-)
-Artifact.objects.get_or_create(display=False, name="Traveling Coat", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Traveler's Charm", background_cost=2)
+Artifact.objects.get_or_create(display=False, name="Traveling Coat", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False, name="Trollhide", background_cost=9, arete=5, quintessence_max=25
 )[0]
@@ -2426,9 +2190,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Twilight Balm", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Twilight Balm", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False, name="TWURP", background_cost=9, arete=5, quintessence_max=25
 )[0]
@@ -2479,9 +2241,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="USAC", background_cost=6, arete=4, quintessence_max=20
 )[0]
-Artifact.objects.get_or_create(display=False, name="Usurer's Purse", background_cost=4)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Usurer's Purse", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Vap'rous Candles of Lethe",
@@ -2503,15 +2263,13 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Vehicular Satellite Uplink", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Vehicular Satellite Uplink", background_cost=4)[
+    0
+]
 Artifact.objects.get_or_create(
     display=False, name="Vending Machines (Chi Restoration)", background_cost=0
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Vengeance Blade", background_cost=4
-)[0]
+Artifact.objects.get_or_create(display=False, name="Vengeance Blade", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Verrecchia's Marvelous Lions",
@@ -2539,9 +2297,7 @@ Talisman.objects.get_or_create(
     arete=2,
     quintessence_max=10,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Void Engine Shuttlecraft", background_cost=3
-)[0]
+Artifact.objects.get_or_create(display=False, name="Void Engine Shuttlecraft", background_cost=3)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Void Engineer Light Environment Suit",
@@ -2600,15 +2356,11 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Wound-Bearing Torc", background_cost=6
-)
+Artifact.objects.get_or_create(display=False, name="Wound-Bearing Torc", background_cost=6)
 Artifact.objects.get_or_create(
     display=False, name="Wurnan Stick (Message Stick)", background_cost=4
 )[0]
-Artifact.objects.get_or_create(display=False, name="X-Ray Glasses", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="X-Ray Glasses", background_cost=2)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="X117 Death Ray",
@@ -2626,9 +2378,7 @@ Talisman.objects.get_or_create(
 Talisman.objects.get_or_create(
     display=False, name="Xenon Bulb", background_cost=6, arete=3, quintessence_max=15
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Yidaki (Didjeridu)", background_cost=2
-)
+Artifact.objects.get_or_create(display=False, name="Yidaki (Didjeridu)", background_cost=2)
 Artifact.objects.get_or_create(display=False, name="Youth Drugs", background_cost=4)[0]
 Talisman.objects.get_or_create(
     display=False,
@@ -2637,9 +2387,7 @@ Talisman.objects.get_or_create(
     arete=3,
     quintessence_max=15,
 )[0]
-Artifact.objects.get_or_create(
-    display=False, name="Zelly's Eternal Theatre", background_cost=0
-)[0]
+Artifact.objects.get_or_create(display=False, name="Zelly's Eternal Theatre", background_cost=0)[0]
 Talisman.objects.get_or_create(
     display=False,
     name="Zephraim Pincke's Automata Arcade",
@@ -2647,9 +2395,7 @@ Talisman.objects.get_or_create(
     arete=6,
     quintessence_max=30,
 )[0]
-Artifact.objects.get_or_create(display=False, name="Zulu Warshield", background_cost=2)[
-    0
-]
+Artifact.objects.get_or_create(display=False, name="Zulu Warshield", background_cost=2)[0]
 
 
 Artifact.objects.get_or_create(
@@ -2750,13 +2496,13 @@ The Dümerang Blade has an Arete rating of 4 which automatically regenerates eac
 The weapon deals Strength + 2 lethal damage in melee and Strength + 1 lethal damage when thrown (range 20 yards). Some versions of the blade were crafted as automotive ignition keys, with the pommel serving as a hood ornament when not in use.""",
 )[0].add_source("Lore of the Traditions", 130)
 
-Grimoire.objects.get_or_create(
-    display=False, name="Kitab al-Alacir", rank=5, is_primer=True
-)[0].add_source("Lore of the Traditions", 131)
+Grimoire.objects.get_or_create(display=False, name="Kitab al-Alacir", rank=5, is_primer=True)[
+    0
+].add_source("Lore of the Traditions", 131)
 
-Talisman.objects.get_or_create(
-    display=False, name="The Last Caer", arete=5, quintessence_max=25
-)[0].add_source("Lore of the Traditions", 131)
+Talisman.objects.get_or_create(display=False, name="The Last Caer", arete=5, quintessence_max=25)[
+    0
+].add_source("Lore of the Traditions", 131)
 
 Talisman.objects.get_or_create(
     display=False,
@@ -3011,9 +2757,7 @@ candle_effect = Effect.objects.get_or_create(
     description="When lit, this candle opens a channel of communication with spirits, ancestors, and entities in the Umbra. The flickering flame creates a beacon visible in both the physical and spirit worlds, attracting helpful spirits and allowing for clearer communion.",
 )[0]
 for arete_level in [1, 2, 3]:
-    candle = Talisman.objects.get_or_create(
-        name=f"Candle of Communion ({arete_level})"
-    )[0]
+    candle = Talisman.objects.get_or_create(name=f"Candle of Communion ({arete_level})")[0]
     candle.powers.add(candle_effect)
 
 # Mama Cybele's Tea Collection - Healing and enhancement
@@ -3030,9 +2774,7 @@ tea_enhance_effect = Effect.objects.get_or_create(
     description="Herbal tea that temporarily enhances physical or mental capabilities, or provides prophetic dreams and insights.",
 )[0]
 for arete_level in [2, 3, 4, 5]:
-    tea = Talisman.objects.get_or_create(
-        name=f"Mama Cybele's Tea Collection ({arete_level})"
-    )[0]
+    tea = Talisman.objects.get_or_create(name=f"Mama Cybele's Tea Collection ({arete_level})")[0]
     tea.powers.add(tea_heal_effect)
     tea.powers.add(tea_enhance_effect)
 
@@ -3046,9 +2788,7 @@ book_power_effect = Effect.objects.get_or_create(
 )[0]
 for arete_level in [4, 5, 6, 7, 8]:
     if Talisman.objects.filter(name=f"Grand Book of Shadows ({arete_level})").exists():
-        book = Talisman.objects.get_or_create(
-            name=f"Grand Book of Shadows ({arete_level})"
-        )[0]
+        book = Talisman.objects.get_or_create(name=f"Grand Book of Shadows ({arete_level})")[0]
         book.powers.add(book_power_effect)
 
 # Angel Tear Daggers - Holy weapons
@@ -3237,8 +2977,7 @@ potion = Talisman.objects.get_or_create(
     quintessence_max=3,
 )[0]
 potion.description = (
-    "An alchemical potion that heals 2 health levels of lethal damage when consumed. "
-    "Single use."
+    "An alchemical potion that heals 2 health levels of lethal damage when consumed. " "Single use."
 )
 potion.add_source("M20 Core", 656)
 potion.set_rank(2)

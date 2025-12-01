@@ -12,9 +12,7 @@ class WonderResonanceRatingForm(forms.ModelForm):
         fields = ["resonance", "rating"]
 
     rating = forms.IntegerField(min_value=0, max_value=5, initial=0)
-    resonance = forms.ModelChoiceField(
-        queryset=Resonance.objects.all(), required=False
-    )
+    resonance = forms.ModelChoiceField(queryset=Resonance.objects.all(), required=False)
 
 
 class BaseWonderResonanceRatingFormSet(forms.BaseInlineFormSet):
@@ -47,9 +45,7 @@ class PeriaptForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
 
         self.resonance_formset = PeriaptResonanceRatingFormSet(
             instance=self.instance if self.instance.pk else None,
@@ -99,14 +95,10 @@ class PeriaptForm(forms.ModelForm):
             raise forms.ValidationError("Periapts must have an Arete rating")
 
         if arete < rank:
-            raise forms.ValidationError(
-                "Periapt Arete rating must be at least equal to rank"
-            )
+            raise forms.ValidationError("Periapt Arete rating must be at least equal to rank")
 
         if current_charges > max_charges:
-            raise forms.ValidationError(
-                "Current charges cannot exceed maximum charges"
-            )
+            raise forms.ValidationError("Current charges cannot exceed maximum charges")
 
         if not self.resonance_formset.is_valid():
             return cleaned_data
@@ -123,9 +115,7 @@ class PeriaptForm(forms.ModelForm):
         if not self.effect_formset.is_valid():
             raise forms.ValidationError("Effects invalid!")
 
-        num_powers = len(
-            [form.cleaned_data for form in self.effect_formset if form.cleaned_data]
-        )
+        num_powers = len([form.cleaned_data for form in self.effect_formset if form.cleaned_data])
 
         if num_powers > 1:
             raise forms.ValidationError("Periapts can only have one power")
@@ -133,9 +123,7 @@ class PeriaptForm(forms.ModelForm):
         max_cost = rank
         for form in self.effect_formset:
             if form.cost() > max_cost:
-                raise forms.ValidationError(
-                    f"Effect too expensive, maximum cost is {max_cost}"
-                )
+                raise forms.ValidationError(f"Effect too expensive, maximum cost is {max_cost}")
 
         points = rank * 3
         total_cost = total_resonance_rating - rank

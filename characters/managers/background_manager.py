@@ -63,10 +63,7 @@ class BackgroundManager:
         Returns:
             dict: {bg_name: total_rating} for all allowed backgrounds
         """
-        return {
-            bg: self.total_background_rating(bg)
-            for bg in self.character.allowed_backgrounds
-        }
+        return {bg: self.total_background_rating(bg) for bg in self.character.allowed_backgrounds}
 
     def add_background(self, background, maximum=5):
         """
@@ -83,10 +80,7 @@ class BackgroundManager:
         Returns:
             bool: True if successfully added, False if at maximum
         """
-        from characters.models.core.background_block import (
-            Background,
-            BackgroundRating,
-        )
+        from characters.models.core.background_block import Background, BackgroundRating
 
         if isinstance(background, str):
             bg = Background.objects.get(property_name=background)
@@ -94,19 +88,13 @@ class BackgroundManager:
             if ratings.filter(rating__lt=5).count() > 0:
                 background = ratings.filter(rating__lt=5).first()
             else:
-                background = BackgroundRating.objects.create(
-                    char=self.character, bg=bg
-                )
+                background = BackgroundRating.objects.create(char=self.character, bg=bg)
         elif isinstance(background, Background):
-            ratings = BackgroundRating.objects.filter(
-                char=self.character, bg=background
-            )
+            ratings = BackgroundRating.objects.filter(char=self.character, bg=background)
             if ratings.filter(rating__lt=5).count() > 0:
                 background = ratings.filter(rating__lt=5).first()
             else:
-                background = BackgroundRating.objects.create(
-                    char=self.character, bg=background
-                )
+                background = BackgroundRating.objects.create(char=self.character, bg=background)
         else:
             raise ValueError(
                 "Must be a background name, Background object, or BackgroundRating object"
@@ -138,11 +126,7 @@ class BackgroundManager:
         Returns:
             dict: Filtered {bg_name: rating} dictionary
         """
-        return {
-            k: v
-            for k, v in self.get_backgrounds().items()
-            if minimum <= v <= maximum
-        }
+        return {k: v for k, v in self.get_backgrounds().items() if minimum <= v <= maximum}
 
     def has_backgrounds(self):
         """
@@ -155,9 +139,7 @@ class BackgroundManager:
             bool: True if character has at least background_points worth
         """
         if self.total_backgrounds() > self.character.background_points:
-            self.character.freebies -= (
-                self.total_backgrounds() - self.character.background_points
-            )
+            self.character.freebies -= self.total_backgrounds() - self.character.background_points
         return self.total_backgrounds() >= self.character.background_points
 
     def new_background_freebies(self, form):
@@ -264,10 +246,7 @@ class BackgroundManager:
             bg_name: Property name of the background
             value: New rating value
         """
-        from characters.models.core.background_block import (
-            Background,
-            BackgroundRating,
-        )
+        from characters.models.core.background_block import Background, BackgroundRating
 
         if value != 0:
             BackgroundRating.objects.create(
@@ -276,6 +255,4 @@ class BackgroundManager:
                 rating=value,
             )
         else:
-            BackgroundRating.objects.filter(
-                char=self.character, bg__property_name=bg_name
-            ).delete()
+            BackgroundRating.objects.filter(char=self.character, bg__property_name=bg_name).delete()

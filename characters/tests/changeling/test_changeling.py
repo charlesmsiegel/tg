@@ -401,9 +401,7 @@ class TestChangeling(TestCase):
         date_ennobled = "01/01/2000"
         crysalis = "A cocoon"
         date_of_crysalis = "01/02/2000"
-        self.character.set_changeling_history(
-            true_name, date_ennobled, crysalis, date_of_crysalis
-        )
+        self.character.set_changeling_history(true_name, date_ennobled, crysalis, date_of_crysalis)
         self.assertEqual(self.character.true_name, true_name)
         self.assertEqual(self.character.date_ennobled, date_ennobled)
         self.assertEqual(self.character.crysalis, crysalis)
@@ -426,9 +424,7 @@ class TestChangelingDetailView(TestCase):
 
     def test_changeling_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/changeling/changeling/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/changeling/detail.html")
 
 
 class TestChangelingCreateView(TestCase):

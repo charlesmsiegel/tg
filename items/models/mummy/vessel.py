@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-
 from items.models.core.item import ItemModel
 
 
@@ -88,9 +87,7 @@ class Vessel(ItemModel):
     # SPECIAL PROPERTIES
     # ========================================
 
-    is_portable = models.BooleanField(
-        default=True, help_text="Can this vessel be easily carried?"
-    )
+    is_portable = models.BooleanField(default=True, help_text="Can this vessel be easily carried?")
 
     requires_ritual = models.BooleanField(
         default=False, help_text="Does transferring Ba require a ritual?"
@@ -121,9 +118,7 @@ class Vessel(ItemModel):
         help_text="Gold, alabaster, lapis lazuli, etc.",
     )
 
-    inscriptions = models.TextField(
-        blank=True, help_text="Hieroglyphic or magical inscriptions"
-    )
+    inscriptions = models.TextField(blank=True, help_text="Hieroglyphic or magical inscriptions")
 
     # ========================================
     # HELPER METHODS

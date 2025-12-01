@@ -24,13 +24,9 @@ class Byway(LocationModel):
         ("ephemeral", "Ephemeral - Temporary route"),
     ]
 
-    danger_level = models.CharField(
-        max_length=20, choices=DANGER_LEVEL_CHOICES, default="moderate"
-    )
+    danger_level = models.CharField(max_length=20, choices=DANGER_LEVEL_CHOICES, default="moderate")
 
-    stability = models.CharField(
-        max_length=20, choices=STABILITY_CHOICES, default="stable"
-    )
+    stability = models.CharField(max_length=20, choices=STABILITY_CHOICES, default="stable")
 
     # Travel details
     origin = models.CharField(
@@ -51,9 +47,7 @@ class Byway(LocationModel):
     maelstrom_proximity = models.IntegerField(
         default=5, help_text="Proximity to maelstroms (1-10, higher = closer/more dangerous)"
     )
-    spectral_activity = models.IntegerField(
-        default=5, help_text="Level of Spectre activity (1-10)"
-    )
+    spectral_activity = models.IntegerField(default=5, help_text="Level of Spectre activity (1-10)")
 
     # Special features
     has_waystation = models.BooleanField(

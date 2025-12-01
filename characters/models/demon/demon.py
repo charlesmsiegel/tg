@@ -76,16 +76,12 @@ class Demon(LoreBlock, DtFHuman):
     conscience = models.IntegerField(default=1)  # 1-5
 
     # Thralls (many-to-many through Pact)
-    thralls = models.ManyToManyField(
-        "Thrall", blank=True, through="Pact", related_name="masters"
-    )
+    thralls = models.ManyToManyField("Thrall", blank=True, through="Pact", related_name="masters")
 
     # Lores inherited from LoreBlock
 
     # Learned rituals
-    rituals = models.ManyToManyField(
-        "Ritual", blank=True, related_name="demons_who_know"
-    )
+    rituals = models.ManyToManyField("Ritual", blank=True, related_name="demons_who_know")
 
     # Apocalyptic form (select 8 traits)
     apocalyptic_form = models.ManyToManyField(
@@ -214,10 +210,7 @@ class Demon(LoreBlock, DtFHuman):
             return False
 
         # Check point budget
-        if (
-            self.apocalyptic_form_points_spent() + trait.cost
-            > self.apocalyptic_form_points
-        ):
+        if self.apocalyptic_form_points_spent() + trait.cost > self.apocalyptic_form_points:
             return False
 
         self.apocalyptic_form.add(trait)
@@ -284,9 +277,7 @@ class Demon(LoreBlock, DtFHuman):
             return Ritual.objects.none()
 
         # Get rituals demon doesn't know yet
-        unknown_rituals = Ritual.objects.exclude(
-            id__in=self.rituals.values_list("id", flat=True)
-        )
+        unknown_rituals = Ritual.objects.exclude(id__in=self.rituals.values_list("id", flat=True))
 
         # Filter to house rituals
         house_rituals = unknown_rituals.filter(house=self.house)
@@ -317,9 +308,7 @@ class Demon(LoreBlock, DtFHuman):
 
     def has_demon_history(self):
         """Check if demon has celestial name and history."""
-        return (
-            self.celestial_name != "" and self.age_of_fall != 0
-        )
+        return self.celestial_name != "" and self.age_of_fall != 0
 
     def get_pacts(self):
         """Get all pacts this demon has with thralls."""

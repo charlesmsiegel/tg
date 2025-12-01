@@ -31,9 +31,7 @@ class ModelQuerySet(PolymorphicQuerySet):
         Override in subclasses if different status logic is needed.
         """
         return (
-            self.filter(
-                status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all()
-            )
+            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
             .select_related("chronicle", "owner")
             .order_by("name")
         )
@@ -71,7 +69,7 @@ class ModelManager(PolymorphicManager.from_queryset(ModelQuerySet)):
 
     def get_queryset(self):
         """Return queryset with polymorphic_ctype optimization applied."""
-        return super().get_queryset().select_related('polymorphic_ctype')
+        return super().get_queryset().select_related("polymorphic_ctype")
 
 
 class Book(models.Model):
@@ -121,7 +119,9 @@ class Book(models.Model):
         # Validate gameline is in valid choices
         valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
         if self.gameline not in valid_gamelines:
-            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -219,7 +219,9 @@ class Observer(models.Model):
             try:
                 model_class = self.content_type.model_class()
                 if not model_class.objects.filter(pk=self.object_id).exists():
-                    errors["object_id"] = f"No {model_class.__name__} with ID {self.object_id} exists"
+                    errors["object_id"] = (
+                        f"No {model_class.__name__} with ID {self.object_id} exists"
+                    )
             except Exception:
                 pass  # If content_type isn't loaded yet, skip this check
 
@@ -301,7 +303,7 @@ class PermissionMixin(models.Model):
             content_type=content_type,
             object_id=self.pk,
             user=user,
-            defaults={"granted_by": granted_by}
+            defaults={"granted_by": granted_by},
         )
 
     def remove_observer(self, user):
@@ -316,9 +318,7 @@ class Model(PermissionMixin, PolymorphicModel):
     name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
-    chronicle = models.ForeignKey(
-        Chronicle, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    chronicle = models.ForeignKey(Chronicle, blank=True, null=True, on_delete=models.SET_NULL)
 
     objects = ModelManager()
 
@@ -424,8 +424,15 @@ class Model(PermissionMixin, PolymorphicModel):
     # Secondary/mortal types that get lighter badges
     # Everything else is considered "primary" and gets full-color badges
     SECONDARY_TYPES = {
-        "vtm_human", "wta_human", "mta_human", "ctd_human", "wto_human",
-        "dtf_human", "mtr_human", "htr_human", "spirit_character",
+        "vtm_human",
+        "wta_human",
+        "mta_human",
+        "ctd_human",
+        "wto_human",
+        "dtf_human",
+        "mtr_human",
+        "htr_human",
+        "spirit_character",
     }
 
     def is_primary_type(self):
@@ -471,12 +478,16 @@ class Model(PermissionMixin, PolymorphicModel):
 
         # Validate status is in valid choices
         if self.status not in self.status_keys:
-            errors["status"] = f"Invalid status '{self.status}'. Must be one of: {', '.join(self.status_keys)}"
+            errors["status"] = (
+                f"Invalid status '{self.status}'. Must be one of: {', '.join(self.status_keys)}"
+            )
 
         # Validate image_status is in valid choices
         valid_image_statuses = ["sub", "app"]
         if self.image_status not in valid_image_statuses:
-            errors["image_status"] = f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(valid_image_statuses)}"
+            errors["image_status"] = (
+                f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(valid_image_statuses)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -613,9 +624,7 @@ class HouseRule(models.Model):
     name = models.CharField(default="", max_length=100)
     sources = models.ManyToManyField(BookReference, blank=True)
     description = models.TextField(default="", blank=True)
-    chronicle = models.ForeignKey(
-        Chronicle, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    chronicle = models.ForeignKey(Chronicle, blank=True, null=True, on_delete=models.SET_NULL)
     gameline = models.CharField(
         max_length=3,
         choices=settings.GAMELINE_CHOICES,
@@ -646,7 +655,9 @@ class HouseRule(models.Model):
         # Validate gameline is in valid choices
         valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
         if self.gameline not in valid_gamelines:
-            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -689,9 +700,7 @@ class CharacterTemplate(Model):
     basic_info = models.JSONField(
         default=dict, blank=True, help_text="Nature, demeanor, concept, etc."
     )
-    attributes = models.JSONField(
-        default=dict, blank=True, help_text="Strength, dexterity, etc."
-    )
+    attributes = models.JSONField(default=dict, blank=True, help_text="Strength, dexterity, etc.")
     abilities = models.JSONField(
         default=dict, blank=True, help_text="Alertness, investigation, etc."
     )
@@ -707,9 +716,7 @@ class CharacterTemplate(Model):
     specialties = models.JSONField(
         default=list, blank=True, help_text="List of 'Ability (Specialty)' strings"
     )
-    languages = models.JSONField(
-        default=list, blank=True, help_text="List of language names"
-    )
+    languages = models.JSONField(default=list, blank=True, help_text="List of language names")
     equipment = models.TextField(blank=True, help_text="Starting gear description")
     suggested_freebie_spending = models.JSONField(
         default=dict, blank=True, help_text="Suggested allocation"
@@ -848,7 +855,9 @@ class CharacterTemplate(Model):
         # Validate gameline is in valid choices (already done in Model, but verify)
         valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
         if self.gameline not in valid_gamelines:
-            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -880,9 +889,7 @@ class TemplateApplication(models.Model):
         verbose_name_plural = "Template Applications"
 
     def __str__(self):
-        return (
-            f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
-        )
+        return f"{self.template.name} → {self.character.name} ({self.applied_at.date()})"
 
     def clean(self):
         """Validate template application data before saving."""

@@ -16,23 +16,15 @@ class TestProfileView(TestCase):
     """Class that Tests the ProfileView"""
 
     def setUp(self) -> None:
-        self.user1 = User.objects.create_user(
-            "Test User 1", "test@user1.com", "testpass"
-        )
-        self.user2 = User.objects.create_user(
-            "Test User 2", "test@user2.com", "testpass"
-        )
-        self.storyteller = User.objects.create_user(
-            "Test Storyteller", "test@st.com", "testpass"
-        )
+        self.user1 = User.objects.create_user("Test User 1", "test@user1.com", "testpass")
+        self.user2 = User.objects.create_user("Test User 2", "test@user2.com", "testpass")
+        self.storyteller = User.objects.create_user("Test Storyteller", "test@st.com", "testpass")
 
         mta = Gameline.objects.create(name="Mage: the Ascension")
 
         chronicle = Chronicle.objects.create(name="Test Chronicle")
 
-        STRelationship.objects.create(
-            user=self.storyteller, gameline=mta, chronicle=chronicle
-        )
+        STRelationship.objects.create(user=self.storyteller, gameline=mta, chronicle=chronicle)
 
         self.char1 = Human.objects.create(name="Test Character 1", owner=self.user1)
         self.char2 = Human.objects.create(

@@ -19,9 +19,9 @@ from characters.models.demon.thrall import Thrall
 from characters.models.hunter.htrhuman import HtRHuman
 from characters.models.hunter.hunter import Hunter
 from characters.models.mage.mage import Mage
+from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.models.mummy.mummy import Mummy
-from characters.models.mage.mtahuman import MtAHuman
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.models.werewolf.garou import Werewolf as Garou

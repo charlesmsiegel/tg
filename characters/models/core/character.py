@@ -78,45 +78,42 @@ class CharacterQuerySet(ModelQuerySet):
         # This must match the freebie_step class attributes defined in each character type
         freebie_step_map = {
             # Humans (step 5)
-            'vtmhuman': 5,
-            'wtahuman': 5,
-            'mtahuman': 5,
-            'wtohuman': 5,
-            'ctdhuman': 5,
-            'dtfhuman': 5,
-            'companion': 5,
-            'kinfolk': 5,
-            'werewolf': 5,  # inherits from WtAHuman
-            'fomor': 5,  # inherits from WtAHuman
+            "vtmhuman": 5,
+            "wtahuman": 5,
+            "mtahuman": 5,
+            "wtohuman": 5,
+            "ctdhuman": 5,
+            "dtfhuman": 5,
+            "companion": 5,
+            "kinfolk": 5,
+            "werewolf": 5,  # inherits from WtAHuman
+            "fomor": 5,  # inherits from WtAHuman
             # Step 6
-            'ghoul': 6,
-            'changeling': 6,
-            'thrall': 6,
+            "ghoul": 6,
+            "changeling": 6,
+            "thrall": 6,
             # Step 7
-            'vampire': 7,
-            'wraith': 7,
-            'mage': 7,
-            'demon': 7,
-            'earthbound': 7,
+            "vampire": 7,
+            "wraith": 7,
+            "mage": 7,
+            "demon": 7,
+            "earthbound": 7,
             # Step 8 - Fera and Sorcerers
-            'fera': 8,
-            'bastet': 8,  # inherits from Fera
-            'corax': 8,  # inherits from Fera
-            'gurahl': 8,  # inherits from Fera
-            'mokole': 8,  # inherits from Fera
-            'nuwisha': 8,  # inherits from Fera
-            'ratkin': 8,  # inherits from Fera
-            'sorcerer': 8,
-            'linearsorcerer': 8,
+            "fera": 8,
+            "bastet": 8,  # inherits from Fera
+            "corax": 8,  # inherits from Fera
+            "gurahl": 8,  # inherits from Fera
+            "mokole": 8,  # inherits from Fera
+            "nuwisha": 8,  # inherits from Fera
+            "ratkin": 8,  # inherits from Fera
+            "sorcerer": 8,
+            "linearsorcerer": 8,
         }
 
         # Build Q objects for each character type
         q_objects = Q()
         for model_name, freebie_step in freebie_step_map.items():
-            q_objects |= Q(
-                polymorphic_ctype__model=model_name,
-                creation_status=freebie_step
-            )
+            q_objects |= Q(polymorphic_ctype__model=model_name, creation_status=freebie_step)
 
         return self.filter(q_objects)
 
@@ -481,10 +478,7 @@ class Character(CharacterModel):
         from django.db.models import Sum
 
         total = (
-            self.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))[
-                "total"
-            ]
-            or 0
+            self.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))["total"] or 0
         )
 
         return total

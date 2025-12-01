@@ -33,9 +33,7 @@ class LimitedCharacterForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Add placeholders for better UX
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter character concept"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter character concept"})
         self.fields["description"].widget.attrs.update(
             {
                 "placeholder": "Describe your character's appearance, personality, history, etc.",
@@ -59,14 +57,10 @@ class LimitedCharacterForm(forms.ModelForm):
         self.fields["image"].required = False
 
         # Add help text
-        self.fields[
-            "public_info"
-        ].help_text = (
+        self.fields["public_info"].help_text = (
             "This information is visible to other players based on visibility settings."
         )
-        self.fields[
-            "notes"
-        ].help_text = "Private notes visible only to you and storytellers."
+        self.fields["notes"].help_text = "Private notes visible only to you and storytellers."
 
     def save(self, commit=True):
         """

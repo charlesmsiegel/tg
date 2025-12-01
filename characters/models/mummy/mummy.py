@@ -169,9 +169,7 @@ class Mummy(MtRHuman):
     )
 
     # Titles within Amenti society
-    titles = models.ManyToManyField(
-        "MummyTitle", blank=True, help_text="Titles and ranks held"
-    )
+    titles = models.ManyToManyField("MummyTitle", blank=True, help_text="Titles and ranks held")
 
     # ========================================
     # MEMORY & PAST LIVES

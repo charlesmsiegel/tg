@@ -105,7 +105,14 @@ class RackAdmin(admin.ModelAdmin):
 
 @admin.register(TremereChantry)
 class TremereChantryAdmin(admin.ModelAdmin):
-    list_display = ("name", "size", "security_level", "library_rating", "pyramid_level", "regent_name")
+    list_display = (
+        "name",
+        "size",
+        "security_level",
+        "library_rating",
+        "pyramid_level",
+        "regent_name",
+    )
 
 
 @admin.register(Barrens)

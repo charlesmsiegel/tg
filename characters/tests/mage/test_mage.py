@@ -104,9 +104,7 @@ class TestMage(TestCase):
         self.assertEqual(len(self.character.filter_spheres().keys()), 9)
         self.set_spheres()
         self.assertEqual(len(self.character.filter_spheres(maximum=2).keys()), 4)
-        self.assertEqual(
-            len(self.character.filter_spheres(minimum=2, maximum=2).keys()), 2
-        )
+        self.assertEqual(len(self.character.filter_spheres(minimum=2, maximum=2).keys()), 2)
         self.assertEqual(len(self.character.filter_spheres(maximum=1).keys()), 2)
 
     def test_has_spheres(self):
@@ -160,9 +158,7 @@ class TestMage(TestCase):
         self.character.set_prime_name("primal_utility")
         self.character.set_spirit_name("dimensional_science")
         self.assertEqual(self.character.get_corr_name_display(), "Data")
-        self.assertEqual(
-            self.character.get_spirit_name_display(), "Dimensional Science"
-        )
+        self.assertEqual(self.character.get_spirit_name_display(), "Dimensional Science")
         self.assertEqual(self.character.get_prime_name_display(), "Primal Utility")
         with self.assertRaises(ValueError):
             self.character.set_corr_name("blah")
@@ -309,12 +305,8 @@ class TestMage(TestCase):
         faction2 = MageFaction.objects.create(name="Faction2", parent=affiliation2)
         subfaction2 = MageFaction.objects.create(name="Subfaction2", parent=faction2)
 
-        self.assertFalse(
-            self.character.set_faction(affiliation, faction, subfaction=subfaction2)
-        )
-        self.assertTrue(
-            self.character.set_faction(affiliation, faction, subfaction=subfaction)
-        )
+        self.assertFalse(self.character.set_faction(affiliation, faction, subfaction=subfaction2))
+        self.assertTrue(self.character.set_faction(affiliation, faction, subfaction=subfaction))
         self.assertTrue(self.character.has_faction())
         self.assertTrue(
             self.character.set_faction(
@@ -328,9 +320,7 @@ class TestMage(TestCase):
         affiliation = MageFaction.objects.create(name="Affiliation")
         faction = MageFaction.objects.create(name="Faction", parent=affiliation)
         subfaction = MageFaction.objects.create(name="Subfaction", parent=faction)
-        self.character.set_faction(
-            affiliation=affiliation, faction=faction, subfaction=subfaction
-        )
+        self.character.set_faction(affiliation=affiliation, faction=faction, subfaction=subfaction)
         self.assertTrue(self.character.has_faction())
 
     def test_set_focus(self):
@@ -406,9 +396,7 @@ class TestMage(TestCase):
         self.assertIn(r, self.character.rotes.all())
         self.assertFalse(self.character.add_effect(e2))
         self.character.correspondence = 3
-        self.assertNotIn(
-            e2, self.character.rotes.all().values_list("effect", flat=True)
-        )
+        self.assertNotIn(e2, self.character.rotes.all().values_list("effect", flat=True))
         self.assertTrue(self.character.add_effect(e2))
         r2 = Rote.objects.get(effect=e2)
         self.assertIn(r2, self.character.rotes.all())
@@ -498,9 +486,7 @@ class TestMage(TestCase):
 
     def test_resonance_rating(self):
         resonance = Resonance.objects.create(name="test_resonance")
-        res_rating = ResRating.objects.create(
-            mage=self.character, resonance=resonance, rating=3
-        )
+        res_rating = ResRating.objects.create(mage=self.character, resonance=resonance, rating=3)
         self.assertEqual(self.character.resonance_rating(resonance), res_rating.rating)
 
     def test_has_specialties(self):
@@ -526,9 +512,7 @@ class TestMage(TestCase):
 class TestMageDetailView(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="User1", password="12345")
-        self.mage = Mage.objects.create(
-            name="Test Mage", owner=self.player, status="App"
-        )
+        self.mage = Mage.objects.create(name="Test Mage", owner=self.player, status="App")
         self.url = self.mage.get_absolute_url()
 
     def test_mage_detail_view_status_code(self):
@@ -840,12 +824,8 @@ class TestMageBasicsView(TestCase):
         self.n = Archetype.objects.create(name="Nature")
         self.d = Archetype.objects.create(name="Demeanor")
         self.affiliation = MageFaction.objects.create(name="Affiliation")
-        self.faction = MageFaction.objects.create(
-            name="factio", parent=self.affiliation
-        )
-        self.subfaction = MageFaction.objects.create(
-            name="subfaction", parent=self.faction
-        )
+        self.faction = MageFaction.objects.create(name="factio", parent=self.affiliation)
+        self.subfaction = MageFaction.objects.create(name="subfaction", parent=self.faction)
         self.valid_data = {
             "name": "Test",
             "nature": self.n.id,

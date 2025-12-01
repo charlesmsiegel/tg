@@ -126,9 +126,7 @@ class CtDHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "characters:changeling:ctdhuman_template", kwargs={"pk": self.object.pk}
-        )
+        return reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -160,9 +158,7 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
         self.object = get_object_or_404(CtDHuman, pk=kwargs["pk"], owner=request.user)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
-            return redirect(
-                "characters:changeling:ctdhuman_creation", pk=self.object.pk
-            )
+            return redirect("characters:changeling:ctdhuman_creation", pk=self.object.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -188,9 +184,7 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
                 f"Applied template '{template.name}'. You can now customize the character further.",
             )
         else:
-            messages.info(
-                self.request, "Starting with blank character. Fill in all attributes."
-            )
+            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
 
         # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1

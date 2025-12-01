@@ -201,9 +201,7 @@ class PermissionManager:
 
         # Apply status-based restrictions for characters
         if status_aware and hasattr(obj, "status"):
-            return PermissionManager._check_status_restrictions(
-                user, obj, permission, roles
-            )
+            return PermissionManager._check_status_restrictions(user, obj, permission, roles)
 
         return True
 
@@ -309,9 +307,7 @@ class PermissionManager:
     @staticmethod
     def user_can_spend_freebies(user: User, obj) -> bool:
         """Check if user can spend freebie points on this object."""
-        return PermissionManager.user_has_permission(
-            user, obj, Permission.SPEND_FREEBIES
-        )
+        return PermissionManager.user_has_permission(user, obj, Permission.SPEND_FREEBIES)
 
     def check_permission(self, user: User, obj, permission: str) -> bool:
         """
@@ -496,14 +492,10 @@ class PermissionManager:
         # 2. Chronicle storyteller access
         chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
         if chronicle_model:
-            filters |= PermissionManager._build_chronicle_st_filters(
-                user, chronicle_model
-            )
+            filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
         # 3. Objects in chronicles where user is a player
-        filters |= PermissionManager._build_player_chronicle_filter(
-            user, queryset.model
-        )
+        filters |= PermissionManager._build_player_chronicle_filter(user, queryset.model)
 
         # 4. Objects user is explicitly observing
         filters |= PermissionManager._build_observer_filter(user, queryset.model)

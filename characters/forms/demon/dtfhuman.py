@@ -21,9 +21,7 @@ class DtFHumanCreationForm(forms.ModelForm):
 
         # Placeholders
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
 
     def save(self, commit=True):

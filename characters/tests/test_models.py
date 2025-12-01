@@ -8,6 +8,7 @@ Tests cover:
 - Status changes and validation
 - Freebie points calculation
 """
+
 from characters.models.core import Character, Human
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -38,9 +39,7 @@ class TestCharacter(TestCase):
 
     def test_character_default_status(self):
         """Test that new characters default to 'Un' status."""
-        character = Character.objects.create(
-            name="Test", owner=self.user
-        )
+        character = Character.objects.create(name="Test", owner=self.user)
         self.assertEqual(character.status, "Un")
 
     def test_character_str_representation(self):

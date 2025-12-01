@@ -10,9 +10,7 @@ class LibraryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         self.fields["parent"].empty_label = "Choose a Parent Location"
         self.fields["faction"].empty_label = "Choose a Faction"
 

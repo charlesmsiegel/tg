@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-
 from items.models.core.item import ItemModel
 
 
@@ -116,9 +115,7 @@ class Ushabti(ItemModel):
         help_text="Physical size: statuette, man-sized, etc.",
     )
 
-    appearance = models.TextField(
-        blank=True, help_text="Detailed appearance when animated"
-    )
+    appearance = models.TextField(blank=True, help_text="Detailed appearance when animated")
 
     # ========================================
     # COMMANDS & CONTROL

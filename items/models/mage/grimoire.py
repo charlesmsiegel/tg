@@ -30,9 +30,7 @@ class Grimoire(Wonder):
     practices = models.ManyToManyField(Practice, blank=True)
     instruments = models.ManyToManyField(Instrument, blank=True)
     is_primer = models.BooleanField(default=False)
-    language = models.ForeignKey(
-        Language, null=True, blank=True, on_delete=models.SET_NULL
-    )
+    language = models.ForeignKey(Language, null=True, blank=True, on_delete=models.SET_NULL)
     length = models.IntegerField(default=0)
     cover_material = models.ForeignKey(
         Material,
@@ -181,11 +179,7 @@ class Grimoire(Wonder):
                 if len(ability_dict) > len(abilities):
                     abilities.append(
                         weighted_choice(
-                            {
-                                k: v
-                                for k, v in ability_dict.items()
-                                if k not in abilities
-                            }
+                            {k: v for k, v in ability_dict.items() if k not in abilities}
                         )
                     )
         self.set_abilities(abilities)
@@ -227,9 +221,7 @@ class Grimoire(Wonder):
             if practices.count() == 0:
                 practices = Practice.objects.all()
             num_practices = 1
-            while (
-                random.random() < 0.25 and num_practices < practices.distinct().count()
-            ):
+            while random.random() < 0.25 and num_practices < practices.distinct().count():
                 num_practices += 1
             practices = practices.order_by("?").distinct()[:num_practices]
         return practices
@@ -245,10 +237,7 @@ class Grimoire(Wonder):
             if instruments.count() == 0:
                 instruments = Instrument.objects.all()
             num_instruments = 1
-            while (
-                random.random() < 0.3
-                and num_instruments < instruments.distinct().count()
-            ):
+            while random.random() < 0.3 and num_instruments < instruments.distinct().count():
                 num_instruments += 1
             instruments = instruments.order_by("?").distinct()[:num_instruments]
         return instruments
@@ -303,18 +292,12 @@ class Grimoire(Wonder):
             if self.faction is None:
                 if self.faction.materials.filter(is_hard=is_hard).count() > 0:
                     inner_material = (
-                        self.faction.materials.filter(is_hard=is_hard)
-                        .order_by("?")
-                        .first()
+                        self.faction.materials.filter(is_hard=is_hard).order_by("?").first()
                     )
                 else:
-                    inner_material = (
-                        Material.objects.filter(is_hard=is_hard).order_by("?").first()
-                    )
+                    inner_material = Material.objects.filter(is_hard=is_hard).order_by("?").first()
             else:
-                inner_material = (
-                    Material.objects.filter(is_hard=is_hard).order_by("?").first()
-                )
+                inner_material = Material.objects.filter(is_hard=is_hard).order_by("?").first()
         self.set_materials(cover_material, inner_material)
 
     def random_medium(self, medium=None):
@@ -347,10 +330,7 @@ class Grimoire(Wonder):
                 q_objects |= Q(**{key: value})
             effects = Effect.objects.filter(q_objects)
 
-            kwargs = {
-                f"{sphere.property_name}__lte": self.rank
-                for sphere in Sphere.objects.all()
-            }
+            kwargs = {f"{sphere.property_name}__lte": self.rank for sphere in Sphere.objects.all()}
             for key, value in kwargs.items():
                 effects = effects.filter(Q(**{key: value}))
             num_rotes = self.rank
@@ -403,9 +383,7 @@ class Grimoire(Wonder):
             spheres.append(weighted_choice(sphere_dict))
             while random.random() < 0.1:
                 spheres.append(
-                    weighted_choice(
-                        {k: v for k, v in sphere_dict.items() if k not in spheres}
-                    )
+                    weighted_choice({k: v for k, v in sphere_dict.items() if k not in spheres})
                 )
         self.set_spheres(spheres)
 

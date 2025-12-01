@@ -186,9 +186,7 @@ class TestFreebieSpendingRecord(TestCase):
 
     def test_freebie_spending_record_string_representation(self):
         """Test FreebieSpendingRecord __str__ method."""
-        record = self.human.create_freebie_spending_record(
-            "Strength", "attribute", 4, 5
-        )
+        record = self.human.create_freebie_spending_record("Strength", "attribute", 4, 5)
         expected = f"{self.human.name} - Strength (5 freebies)"
         self.assertEqual(str(record), expected)
 
@@ -359,9 +357,7 @@ class TestXPSpendingIndexes(TestCase):
         """Test filtering by character and approved status (indexed)."""
         # Create multiple requests
         for i in range(5):
-            self.char.create_xp_spending_request(
-                f"Trait {i}", "ability", i + 1, (i + 1) * 2
-            )
+            self.char.create_xp_spending_request(f"Trait {i}", "ability", i + 1, (i + 1) * 2)
 
         # Approve some
         for request in self.char.xp_spendings.all()[:3]:
@@ -405,9 +401,7 @@ class TestFreebieSpendingIndexes(TestCase):
         """Test filtering by character (indexed)."""
         # Create multiple records
         for i in range(5):
-            self.human.create_freebie_spending_record(
-                f"Trait {i}", "ability", i + 1, (i + 1) * 2
-            )
+            self.human.create_freebie_spending_record(f"Trait {i}", "ability", i + 1, (i + 1) * 2)
 
         # This query should use the index
         records = self.human.freebie_spendings.all()
@@ -454,9 +448,7 @@ class TestMigrationEdgeCases(TestCase):
     def test_malformed_jsonfield_data(self):
         """Test handling of malformed JSONField data."""
         # Missing 'approved' key
-        self.char.spent_xp = [
-            {"trait": "Alertness", "value": 3, "cost": 6, "index": "0"}
-        ]
+        self.char.spent_xp = [{"trait": "Alertness", "value": 3, "cost": 6, "index": "0"}]
         self.char.save()
 
         # Should not crash
@@ -476,9 +468,7 @@ class TestMigrationEdgeCases(TestCase):
 
     def test_freebie_record_with_zero_cost(self):
         """Test freebie record with zero cost (edge case)."""
-        record = self.human.create_freebie_spending_record(
-            "Free Trait", "special", 1, 0
-        )
+        record = self.human.create_freebie_spending_record("Free Trait", "special", 1, 0)
         self.assertEqual(record.cost, 0)
         total = self.human.total_freebies_from_model()
         self.assertEqual(total, self.human.freebies)  # Zero cost shouldn't affect total

@@ -15,9 +15,7 @@ class WraithFaction(Model):
         ("other", "Other"),
     ]
 
-    faction_type = models.CharField(
-        max_length=20, choices=FACTION_TYPE_CHOICES, default="legion"
-    )
+    faction_type = models.CharField(max_length=20, choices=FACTION_TYPE_CHOICES, default="legion")
     parent = models.ForeignKey(
         "self",
         blank=True,

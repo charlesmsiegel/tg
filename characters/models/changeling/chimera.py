@@ -85,9 +85,7 @@ class Chimera(Model):
         default="",
     )
 
-    is_permanent = models.BooleanField(
-        default=False, help_text="Is this a permanent Chimera"
-    )
+    is_permanent = models.BooleanField(default=False, help_text="Is this a permanent Chimera")
 
     # Dream connection
     dream_source = models.TextField(

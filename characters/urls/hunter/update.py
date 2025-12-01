@@ -2,8 +2,8 @@ from characters.views.hunter import (
     CreedUpdateView,
     EdgeUpdateView,
     HtRHumanUpdateView,
-    HunterUpdateView,
     HunterOrganizationUpdateView,
+    HunterUpdateView,
 )
 from django.urls import path
 

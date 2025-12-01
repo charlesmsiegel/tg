@@ -42,9 +42,7 @@ class Reliquary(LocationModel):
         help_text="Maximum health levels (Faith + Willpower x 2 for locations)",
     )
 
-    current_health_levels = models.IntegerField(
-        default=20, help_text="Current health levels"
-    )
+    current_health_levels = models.IntegerField(default=20, help_text="Current health levels")
 
     # Soak rating
     soak_rating = models.IntegerField(
@@ -90,8 +88,4 @@ class Reliquary(LocationModel):
         """Return percentage of damage taken"""
         if self.max_health_levels == 0:
             return 0
-        return (
-            (self.max_health_levels - self.current_health_levels)
-            / self.max_health_levels
-            * 100
-        )
+        return (self.max_health_levels - self.current_health_levels) / self.max_health_levels * 100

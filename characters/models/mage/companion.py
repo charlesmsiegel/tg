@@ -101,9 +101,7 @@ class Companion(MtAHuman):
         default="companion",
     )
 
-    companion_of = models.ForeignKey(
-        Human, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    companion_of = models.ForeignKey(Human, blank=True, null=True, on_delete=models.SET_NULL)
 
     advantages = models.ManyToManyField(
         Advantage, blank=True, through="AdvantageRating", related_name="advantaged"
@@ -130,9 +128,7 @@ class Companion(MtAHuman):
 
     def add_advantage(self, advantage, rating):
         if rating in advantage.get_ratings():
-            ar, _ = AdvantageRating.objects.get_or_create(
-                character=self, advantage=advantage
-            )
+            ar, _ = AdvantageRating.objects.get_or_create(character=self, advantage=advantage)
             ar.rating = rating
             ar.save()
             return True

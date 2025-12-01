@@ -224,9 +224,7 @@ class FomorPowersView(SpecialUserMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["powers"].queryset = FomoriPower.objects.all()
         form.fields["powers"].required = False
-        form.fields[
-            "powers"
-        ].help_text = (
+        form.fields["powers"].help_text = (
             "Select the powers your Fomor possesses. Fomori typically have 1-3 powers."
         )
         form.fields["rage"].help_text = "Fomori typically have 1-5 Rage"
@@ -276,9 +274,7 @@ class FomorExtrasView(SpecialUserMixin, UpdateView):
         )
         form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
         form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character."
-            }
+            {"placeholder": "This will be displayed to all players who look at your character."}
         )
         return form
 

@@ -161,6 +161,7 @@ class AbilityFields:
     # Combined list of all primary abilities (talents + skills + knowledges)
     PRIMARY_ABILITIES = TALENTS + SKILLS + KNOWLEDGES
 
+
 class XPApprovalStatus:
     """XP spending approval status choices."""
 

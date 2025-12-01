@@ -20,9 +20,7 @@ class WonderResonanceRating(models.Model):
         ]
 
     wonder = models.ForeignKey("Wonder", on_delete=models.SET_NULL, null=True)
-    resonance = models.ForeignKey(
-        "characters.Resonance", on_delete=models.SET_NULL, null=True
-    )
+    resonance = models.ForeignKey("characters.Resonance", on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
@@ -35,9 +33,7 @@ class Wonder(ItemModel):
     type = "wonder"
     gameline = "mta"
 
-    rank = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    rank = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     background_cost = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
@@ -93,9 +89,7 @@ class Wonder(ItemModel):
         # Accept string name or Resonance object
         if isinstance(resonance, str):
             resonance, _ = Resonance.objects.get_or_create(name=resonance)
-        r, _ = WonderResonanceRating.objects.get_or_create(
-            resonance=resonance, wonder=self
-        )
+        r, _ = WonderResonanceRating.objects.get_or_create(resonance=resonance, wonder=self)
         if r.rating == 5:
             return False
         r.rating += 1
@@ -104,9 +98,7 @@ class Wonder(ItemModel):
 
     def resonance_rating(self, resonance):
         if resonance in self.resonance.all():
-            return WonderResonanceRating.objects.get(
-                wonder=self, resonance=resonance
-            ).rating
+            return WonderResonanceRating.objects.get(wonder=self, resonance=resonance).rating
         return 0
 
     def filter_resonance(self, minimum=0, maximum=5):
@@ -114,15 +106,11 @@ class Wonder(ItemModel):
 
         maxed_resonance = [
             x.resonance.id
-            for x in WonderResonanceRating.objects.filter(
-                wonder=self, rating__gt=maximum
-            )
+            for x in WonderResonanceRating.objects.filter(wonder=self, rating__gt=maximum)
         ]
         mined_resonance = [
             x.resonance.id
-            for x in WonderResonanceRating.objects.filter(
-                wonder=self, rating__lt=minimum
-            )
+            for x in WonderResonanceRating.objects.filter(wonder=self, rating__lt=minimum)
         ]
         all_res = all_res.exclude(pk__in=maxed_resonance)
         all_res = all_res.exclude(pk__in=mined_resonance)
@@ -130,9 +118,7 @@ class Wonder(ItemModel):
             all_res = all_res.filter(
                 pk__in=[
                     x.resonance.id
-                    for x in WonderResonanceRating.objects.filter(
-                        wonder=self, rating__gt=0
-                    )
+                    for x in WonderResonanceRating.objects.filter(wonder=self, rating__gt=0)
                 ]
             )
         return all_res

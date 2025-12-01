@@ -6,6 +6,7 @@ Tests cover:
 - File path utilities
 - Random selection utilities
 """
+
 import os
 import tempfile
 
@@ -92,6 +93,7 @@ class TestFilepathUtils(TestCase):
 
     def test_character_image_upload_path(self):
         """Test that character image paths are generated correctly."""
+
         # Create a mock character object
         class MockCharacter:
             id = 123
@@ -109,6 +111,7 @@ class TestFilepathUtils(TestCase):
 
     def test_item_image_upload_path(self):
         """Test that item image paths are generated correctly."""
+
         class MockItem:
             id = 456
             name = "Magic Sword"
@@ -125,6 +128,7 @@ class TestFilepathUtils(TestCase):
 
     def test_location_image_upload_path(self):
         """Test that location image paths are generated correctly."""
+
         class MockLocation:
             id = 789
             name = "Castle"
@@ -141,6 +145,7 @@ class TestFilepathUtils(TestCase):
 
     def test_file_extension_preserved(self):
         """Test that file extensions are preserved in upload paths."""
+
         class MockObject:
             id = 1
 

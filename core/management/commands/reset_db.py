@@ -4,6 +4,7 @@ Management command to delete the database and all migration files.
 This is useful for completely resetting the database during development.
 CAUTION: This will delete all data!
 """
+
 import os
 from pathlib import Path
 
@@ -24,23 +25,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Safety check - only allow in development
         if not settings.DEBUG:
-            raise CommandError(
-                "This command can only be run with DEBUG=True (development mode)"
-            )
+            raise CommandError("This command can only be run with DEBUG=True (development mode)")
 
         # Confirmation prompt
         if not options["yes"]:
             self.stdout.write(
-                self.style.WARNING(
-                    "\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n"
-                )
+                self.style.WARNING("\n⚠️  WARNING: This will DELETE ALL DATA and migration files!\n")
             )
             self.stdout.write("This action will:")
             self.stdout.write("  1. Delete db.sqlite3")
             self.stdout.write("  2. Delete all migration files from all apps")
-            self.stdout.write(
-                "     (keeping only __init__.py and __pycache__/ in migrations/)\n"
-            )
+            self.stdout.write("     (keeping only __init__.py and __pycache__/ in migrations/)\n")
 
             response = input("Are you sure you want to continue? [y/N]: ")
             if response.lower() not in ["y", "yes"]:
@@ -67,13 +62,9 @@ class Command(BaseCommand):
                     apps_with_migrations.append((app_path.name, migrations_dir))
 
         if not apps_with_migrations:
-            self.stdout.write(
-                self.style.WARNING("  No migration directories found (skipped)")
-            )
+            self.stdout.write(self.style.WARNING("  No migration directories found (skipped)"))
         else:
-            self.stdout.write(
-                f"\n✓ Found {len(apps_with_migrations)} app(s) with migrations:"
-            )
+            self.stdout.write(f"\n✓ Found {len(apps_with_migrations)} app(s) with migrations:")
 
             # Delete migration files
             migration_files_deleted = 0
@@ -89,9 +80,7 @@ class Command(BaseCommand):
                     migration_files_deleted += 1
 
                 if app_deleted > 0:
-                    self.stdout.write(
-                        f"  ✓ {app_name}: Deleted {app_deleted} migration file(s)"
-                    )
+                    self.stdout.write(f"  ✓ {app_name}: Deleted {app_deleted} migration file(s)")
                 else:
                     self.stdout.write(f"  - {app_name}: No migration files to delete")
 
@@ -100,9 +89,7 @@ class Command(BaseCommand):
         # Summary
         self.stdout.write("\n" + "=" * 60)
         if deleted_count > 0:
-            self.stdout.write(
-                self.style.SUCCESS(f"✓ Successfully deleted {deleted_count} item(s)")
-            )
+            self.stdout.write(self.style.SUCCESS(f"✓ Successfully deleted {deleted_count} item(s)"))
             self.stdout.write("\nNext steps:")
             self.stdout.write("  1. Run: python manage.py makemigrations")
             self.stdout.write("  2. Run: python manage.py migrate")

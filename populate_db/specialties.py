@@ -135,9 +135,7 @@ Specialty.objects.get_or_create(name="Sex Trade", stat="streetwise")[0]
 Specialty.objects.get_or_create(name="Drug Trade", stat="streetwise")[0]
 Specialty.objects.get_or_create(name="Music Culture", stat="streetwise")[0]
 Specialty.objects.get_or_create(name="Gangs", stat="streetwise")[0]
-Specialty.objects.get_or_create(
-    name="Seeing Nothing Yet Everything", stat="streetwise"
-)[0]
+Specialty.objects.get_or_create(name="Seeing Nothing Yet Everything", stat="streetwise")[0]
 Specialty.objects.get_or_create(name="Con Games", stat="subterfuge")[0]
 Specialty.objects.get_or_create(name="Sexual Manipulation", stat="subterfuge")[0]
 Specialty.objects.get_or_create(name="False Innocence", stat="subterfuge")[0]
@@ -318,9 +316,7 @@ Specialty.objects.get_or_create(name="Data Sorting", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Criminal Psychology", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Spotting Clues", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Personal Details", stat="investigation")[0]
-Specialty.objects.get_or_create(name="Paranormal Investigation", stat="investigation")[
-    0
-]
+Specialty.objects.get_or_create(name="Paranormal Investigation", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Local Beat", stat="law")[0]
 Specialty.objects.get_or_create(name="Crimes", stat="law")[0]
 Specialty.objects.get_or_create(name="Customs", stat="law")[0]
@@ -357,9 +353,7 @@ Specialty.objects.get_or_create(name="Urban Legends", stat="occult")[0]
 Specialty.objects.get_or_create(name="Satanic Folklore", stat="occult")[0]
 Specialty.objects.get_or_create(name="Pop-Culture Satanism", stat="occult")[0]
 Specialty.objects.get_or_create(name="Actual Satanism", stat="occult")[0]
-Specialty.objects.get_or_create(
-    name="Specific Occult Discipline or Field", stat="occult"
-)[0]
+Specialty.objects.get_or_create(name="Specific Occult Discipline or Field", stat="occult")[0]
 Specialty.objects.get_or_create(name="Legal Codes", stat="politics")[0]
 Specialty.objects.get_or_create(name="Law Enforcement", stat="politics")[0]
 Specialty.objects.get_or_create(name="Gang Culture", stat="politics")[0]
@@ -409,9 +403,7 @@ Specialty.objects.get_or_create(name="Calming", stat="animal_kinship")[0]
 Specialty.objects.get_or_create(name="Bonding", stat="animal_kinship")[0]
 Specialty.objects.get_or_create(name="Reading Signs", stat="animal_kinship")[0]
 Specialty.objects.get_or_create(name='"Talk to the Animals"', stat="animal_kinship")[0]
-Specialty.objects.get_or_create(
-    name="Training Specific Animals", stat="animal_kinship"
-)[0]
+Specialty.objects.get_or_create(name="Training Specific Animals", stat="animal_kinship")[0]
 Specialty.objects.get_or_create(name="Religious Appeal", stat="blatancy")[0]
 Specialty.objects.get_or_create(name="Political Paranoia", stat="blatancy")[0]
 Specialty.objects.get_or_create(name="Stage Magic", stat="blatancy")[0]
@@ -508,9 +500,7 @@ Specialty.objects.get_or_create(name="Repair", stat="energy_weapons")[0]
 Specialty.objects.get_or_create(name="Small Arms", stat="energy_weapons")[0]
 Specialty.objects.get_or_create(name="Field Modifications", stat="energy_weapons")[0]
 Specialty.objects.get_or_create(name="Cybernetic Weaponry", stat="energy_weapons")[0]
-Specialty.objects.get_or_create(
-    name="Micro-Gravitational Operations", stat="energy_weapons"
-)[0]
+Specialty.objects.get_or_create(name="Micro-Gravitational Operations", stat="energy_weapons")[0]
 Specialty.objects.get_or_create(name="Sniper", stat="energy_weapons")[0]
 Specialty.objects.get_or_create(name="Pulp-Tech", stat="energy_weapons")[0]
 # Specialty.objects.get_or_create(name="Hacking-n-Cracking", stat="hypertech")[0]
@@ -567,9 +557,7 @@ Specialty.objects.get_or_create(name="Regional Beliefs", stat="belief_systems")[
 Specialty.objects.get_or_create(name="Esoterica", stat="belief_systems")[0]
 Specialty.objects.get_or_create(name="Cults", stat="belief_systems")[0]
 Specialty.objects.get_or_create(name="Current Events", stat="belief_systems")[0]
-Specialty.objects.get_or_create(
-    name="Religious/Political History", stat="belief_systems"
-)[0]
+Specialty.objects.get_or_create(name="Religious/Political History", stat="belief_systems")[0]
 Specialty.objects.get_or_create(name="Geopolitics", stat="belief_systems")[0]
 Specialty.objects.get_or_create(name="Comparative Religion", stat="belief_systems")[0]
 Specialty.objects.get_or_create(name="Media Manipulation", stat="belief_systems")[0]
@@ -632,9 +620,7 @@ Specialty.objects.get_or_create(name="Media Consolidation", stat="media")[0]
 Specialty.objects.get_or_create(name="Top-Down Influence", stat="media")[0]
 Specialty.objects.get_or_create(name="Entertainment", stat="media")[0]
 Specialty.objects.get_or_create(name="Advertising", stat="media")[0]
-Specialty.objects.get_or_create(
-    name="Walking the Line Between Truth and Fiction", stat="media"
-)[0]
+Specialty.objects.get_or_create(name="Walking the Line Between Truth and Fiction", stat="media")[0]
 Specialty.objects.get_or_create(name="Mundane Meds", stat="pharmacopeia")[0]
 Specialty.objects.get_or_create(name="Hypermeds", stat="pharmacopeia")[0]
 Specialty.objects.get_or_create(name="Street Drugs", stat="pharmacopeia")[0]
@@ -824,9 +810,7 @@ Specialty.objects.get_or_create(name="Crowds", stat="elusion")[0]
 Specialty.objects.get_or_create(name="Strange Terrain", stat="elusion")[0]
 Specialty.objects.get_or_create(name="Misdirection", stat="elusion")[0]
 Specialty.objects.get_or_create(name="Manhunts", stat="elusion")[0]
-Specialty.objects.get_or_create(name="Nowhere to Hide...Except There!", stat="elusion")[
-    0
-]
+Specialty.objects.get_or_create(name="Nowhere to Hide...Except There!", stat="elusion")[0]
 Specialty.objects.get_or_create(name="Handcuffs", stat="escapology")[0]
 Specialty.objects.get_or_create(name="Ropes", stat="escapology")[0]
 Specialty.objects.get_or_create(name="Magic Tricks", stat="escapology")[0]
@@ -856,9 +840,7 @@ Specialty.objects.get_or_create(name="Stage Combat", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Movie Combat", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Magickal Focus", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Dirty Tricks", stat="fencing")[0]
-Specialty.objects.get_or_create(
-    name="Florentine (two-bladed)[0] Style", stat="fencing"
-)[0]
+Specialty.objects.get_or_create(name="Florentine (two-bladed)[0] Style", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Sabers", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Practical Dueling", stat="fencing")[0]
 Specialty.objects.get_or_create(name="Fancy Stunts", stat="fencing")[0]
@@ -866,13 +848,9 @@ Specialty.objects.get_or_create(name="Tarot", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Palm-Reading", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Bibliomancy", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Astrology", stat="fortune_telling")[0]
-Specialty.objects.get_or_create(name="Threat/Risk Assessment", stat="fortune_telling")[
-    0
-]
+Specialty.objects.get_or_create(name="Threat/Risk Assessment", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Deductive Reasoning", stat="fortune_telling")[0]
-Specialty.objects.get_or_create(name="Probability Calculation", stat="fortune_telling")[
-    0
-]
+Specialty.objects.get_or_create(name="Probability Calculation", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Uncanny Hunch", stat="fortune_telling")[0]
 Specialty.objects.get_or_create(name="Poker", stat="gambling")[0]
 Specialty.objects.get_or_create(name="Roulette", stat="gambling")[0]
@@ -893,9 +871,7 @@ Specialty.objects.get_or_create(name="Improvised Gear", stat="gunsmith")[0]
 Specialty.objects.get_or_create(name="Original Designs", stat="gunsmith")[0]
 Specialty.objects.get_or_create(name="Specialty Ammo", stat="gunsmith")[0]
 Specialty.objects.get_or_create(name="Technomagickal Improvements", stat="gunsmith")[0]
-Specialty.objects.get_or_create(name="Shoulder-Mounted Missiles", stat="heavy_weapons")[
-    0
-]
+Specialty.objects.get_or_create(name="Shoulder-Mounted Missiles", stat="heavy_weapons")[0]
 Specialty.objects.get_or_create(name="Machine-Guns", stat="heavy_weapons")[0]
 Specialty.objects.get_or_create(name="Mortars", stat="heavy_weapons")[0]
 Specialty.objects.get_or_create(name="Desert Operations", stat="heavy_weapons")[0]
@@ -929,9 +905,7 @@ Specialty.objects.get_or_create(name="Low-G", stat="microgravity_operations")[0]
 Specialty.objects.get_or_create(name="Micro-G", stat="microgravity_operations")[0]
 Specialty.objects.get_or_create(name="Vacuum Suit", stat="microgravity_operations")[0]
 Specialty.objects.get_or_create(name="Combat", stat="microgravity_operations")[0]
-Specialty.objects.get_or_create(
-    name="Extra-Vehicular Maneuver", stat="microgravity_operations"
-)[0]
+Specialty.objects.get_or_create(name="Extra-Vehicular Maneuver", stat="microgravity_operations")[0]
 Specialty.objects.get_or_create(name="Confusion", stat="misdirection")[0]
 Specialty.objects.get_or_create(name="Feints", stat="misdirection")[0]
 Specialty.objects.get_or_create(name="Passing the Buck", stat="misdirection")[0]
@@ -983,12 +957,8 @@ Specialty.objects.get_or_create(name="Competition", stat="swimming")[0]
 Specialty.objects.get_or_create(name="Open Seas", stat="swimming")[0]
 Specialty.objects.get_or_create(name="Lifesaving", stat="swimming")[0]
 Specialty.objects.get_or_create(name="Survival", stat="swimming")[0]
-Specialty.objects.get_or_create(
-    name="Right-Wing Political Lore", stat="conspiracy_theory"
-)[0]
-Specialty.objects.get_or_create(
-    name="Left-Wing Political Lore", stat="conspiracy_theory"
-)[0]
+Specialty.objects.get_or_create(name="Right-Wing Political Lore", stat="conspiracy_theory")[0]
+Specialty.objects.get_or_create(name="Left-Wing Political Lore", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Hoaxes", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="9/11", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Birth Certificates", stat="conspiracy_theory")[0]
@@ -997,9 +967,7 @@ Specialty.objects.get_or_create(name="Blogs", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Newspapers", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Aliens", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Megacorps", stat="conspiracy_theory")[0]
-Specialty.objects.get_or_create(name="Manufacturing Consent", stat="conspiracy_theory")[
-    0
-]
+Specialty.objects.get_or_create(name="Manufacturing Consent", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Hidden History", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Cults", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Satanic Underground", stat="conspiracy_theory")[0]
@@ -1007,9 +975,7 @@ Specialty.objects.get_or_create(name="The Catholic Church", stat="conspiracy_the
 Specialty.objects.get_or_create(name="Zionist Cabals", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Reality Deviants", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Technocratic Plots", stat="conspiracy_theory")[0]
-Specialty.objects.get_or_create(name="Government Cover-Ups", stat="conspiracy_theory")[
-    0
-]
+Specialty.objects.get_or_create(name="Government Cover-Ups", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Big Money", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Big Media", stat="conspiracy_theory")[0]
 Specialty.objects.get_or_create(name="Follow the Money", stat="conspiracy_theory")[0]
@@ -1064,12 +1030,8 @@ Specialty.objects.get_or_create(name="Shadow History", stat="history_knowledge")
 Specialty.objects.get_or_create(name="Suppressed History", stat="history_knowledge")[0]
 Specialty.objects.get_or_create(name="Alternate Sources", stat="history_knowledge")[0]
 Specialty.objects.get_or_create(name="Marginalized Groups", stat="history_knowledge")[0]
-Specialty.objects.get_or_create(name="Ascension War Events", stat="history_knowledge")[
-    0
-]
-Specialty.objects.get_or_create(
-    name="Supernatural Influence", stat="history_knowledge"
-)[0]
+Specialty.objects.get_or_create(name="Ascension War Events", stat="history_knowledge")[0]
+Specialty.objects.get_or_create(name="Supernatural Influence", stat="history_knowledge")[0]
 Specialty.objects.get_or_create(name="Media", stat="power_brokering")[0]
 Specialty.objects.get_or_create(name="Politics", stat="power_brokering")[0]
 Specialty.objects.get_or_create(name="High Finance", stat="power_brokering")[0]
@@ -1112,41 +1074,25 @@ Specialty.objects.get_or_create(name="Counter-Theology", stat="theology")[0]
 Specialty.objects.get_or_create(name="Religion/Science Communion", stat="theology")[0]
 Specialty.objects.get_or_create(name="Religious Activism", stat="theology")[0]
 Specialty.objects.get_or_create(name="Religious History", stat="theology")[0]
-Specialty.objects.get_or_create(
-    name="Alternative/Marginalized Theology", stat="theology"
-)[0]
+Specialty.objects.get_or_create(name="Alternative/Marginalized Theology", stat="theology")[0]
 Specialty.objects.get_or_create(name="Loopholes", stat="theology")[0]
 Specialty.objects.get_or_create(name="Hidden Scriptures", stat="theology")[0]
 Specialty.objects.get_or_create(name="Dirty Little Secrets", stat="theology")[0]
-Specialty.objects.get_or_create(
-    name="Religious-Government Collaboration", stat="theology"
-)[0]
+Specialty.objects.get_or_create(name="Religious-Government Collaboration", stat="theology")[0]
 Specialty.objects.get_or_create(name="End-Times Theology", stat="theology")[0]
 Specialty.objects.get_or_create(name="Specific Religious Creeds", stat="theology")[0]
-Specialty.objects.get_or_create(name="Domestic Terror", stat="unconventional_warface")[
-    0
-]
-Specialty.objects.get_or_create(name="Ethnic Conflicts", stat="unconventional_warface")[
-    0
-]
-Specialty.objects.get_or_create(
-    name="History of Terror", stat="unconventional_warface"
-)[0]
+Specialty.objects.get_or_create(name="Domestic Terror", stat="unconventional_warface")[0]
+Specialty.objects.get_or_create(name="Ethnic Conflicts", stat="unconventional_warface")[0]
+Specialty.objects.get_or_create(name="History of Terror", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Media Effects", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Watchdogs", stat="unconventional_warface")[0]
-Specialty.objects.get_or_create(
-    name="Counterterrorism Agencies", stat="unconventional_warface"
-)[0]
-Specialty.objects.get_or_create(
-    name="Intelligence Collection", stat="unconventional_warface"
-)[0]
+Specialty.objects.get_or_create(name="Counterterrorism Agencies", stat="unconventional_warface")[0]
+Specialty.objects.get_or_create(name="Intelligence Collection", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Kidnapping", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Ideology", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Secrets", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Networks", stat="unconventional_warface")[0]
-Specialty.objects.get_or_create(
-    name="Celebrity Figures", stat="unconventional_warface"
-)[0]
+Specialty.objects.get_or_create(name="Celebrity Figures", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Alliances", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Sponsors", stat="unconventional_warface")[0]
 Specialty.objects.get_or_create(name="Weaponry", stat="unconventional_warface")[0]
@@ -1176,18 +1122,18 @@ Specialty.objects.get_or_create(name="Vice Grip", stat="strength")[0].add_source
 Specialty.objects.get_or_create(name="Broad Shoulders", stat="strength")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 160
 )
-Specialty.objects.get_or_create(name="Reserves of Strength", stat="strength")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 160)
+Specialty.objects.get_or_create(name="Reserves of Strength", stat="strength")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 160
+)
 Specialty.objects.get_or_create(name="Mighty Blows", stat="strength")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 160
 )
-Specialty.objects.get_or_create(name="Catlike Reflexes", stat="dexterity")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 160)
-Specialty.objects.get_or_create(name="Preternatural Grace", stat="dexterity")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 160)
+Specialty.objects.get_or_create(name="Catlike Reflexes", stat="dexterity")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 160
+)
+Specialty.objects.get_or_create(name="Preternatural Grace", stat="dexterity")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 160
+)
 Specialty.objects.get_or_create(name="Swift", stat="dexterity")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 160
 )
@@ -1233,9 +1179,9 @@ Specialty.objects.get_or_create(name="Cunning", stat="manipulation")[0].add_sour
 Specialty.objects.get_or_create(name="Seductive", stat="manipulation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 161
 )
-Specialty.objects.get_or_create(name="Well-Reasoned", stat="manipulation")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 161)
+Specialty.objects.get_or_create(name="Well-Reasoned", stat="manipulation")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 161
+)
 Specialty.objects.get_or_create(name="Glib", stat="manipulation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 161
 )
@@ -1248,9 +1194,9 @@ Specialty.objects.get_or_create(name="Exotic", stat="appearance")[0].add_source(
 Specialty.objects.get_or_create(name="Commanding", stat="appearance")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 161
 )
-Specialty.objects.get_or_create(name="Unconventional Looks", stat="appearance")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 161)
+Specialty.objects.get_or_create(name="Unconventional Looks", stat="appearance")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 161
+)
 Specialty.objects.get_or_create(name="Captivating", stat="appearance")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 161
 )
@@ -1269,18 +1215,18 @@ Specialty.objects.get_or_create(name="Discerning", stat="perception")[0].add_sou
 Specialty.objects.get_or_create(name="Insightful", stat="perception")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 161
 )
-Specialty.objects.get_or_create(name="Detail-Oriented", stat="perception")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 161)
+Specialty.objects.get_or_create(name="Detail-Oriented", stat="perception")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 161
+)
 Specialty.objects.get_or_create(name="Scholarly", stat="intelligence")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
 Specialty.objects.get_or_create(name="Creative", stat="intelligence")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
-Specialty.objects.get_or_create(name="Subject Expertise", stat="intelligence")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 162)
+Specialty.objects.get_or_create(name="Subject Expertise", stat="intelligence")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 162
+)
 Specialty.objects.get_or_create(name="Trivia", stat="intelligence")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
@@ -1323,18 +1269,18 @@ Specialty.objects.get_or_create(name="Acrobatics", stat="athletics")[0].add_sour
 Specialty.objects.get_or_create(name="Parkour", stat="athletics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
-Specialty.objects.get_or_create(name="Mountain Climbing", stat="athletics")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 162)
+Specialty.objects.get_or_create(name="Mountain Climbing", stat="athletics")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 162
+)
 Specialty.objects.get_or_create(name="Track and Field", stat="athletics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
 Specialty.objects.get_or_create(name="Swimming", stat="athletics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
-Specialty.objects.get_or_create(name="Any Martial Arts Style", stat="brawl")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 162)
+Specialty.objects.get_or_create(name="Any Martial Arts Style", stat="brawl")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 162
+)
 Specialty.objects.get_or_create(name="Dirty Fighting", stat="brawl")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 162
 )
@@ -1359,12 +1305,12 @@ Specialty.objects.get_or_create(name="Emotions", stat="empathy")[0].add_source(
 Specialty.objects.get_or_create(name="Motives", stat="empathy")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 163
 )
-Specialty.objects.get_or_create(name="Matters of the Heart", stat="empathy")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 163)
-Specialty.objects.get_or_create(name="Inspiring Speeches", stat="expression")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 163)
+Specialty.objects.get_or_create(name="Matters of the Heart", stat="empathy")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 163
+)
+Specialty.objects.get_or_create(name="Inspiring Speeches", stat="expression")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 163
+)
 Specialty.objects.get_or_create(name="Fiction", stat="expression")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 163
 )
@@ -1377,9 +1323,9 @@ Specialty.objects.get_or_create(name="Rhetoric", stat="expression")[0].add_sourc
 Specialty.objects.get_or_create(name="Social Media", stat="expression")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 163
 )
-Specialty.objects.get_or_create(name="Veiled Threats", stat="intimidation")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 163)
+Specialty.objects.get_or_create(name="Veiled Threats", stat="intimidation")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 163
+)
 Specialty.objects.get_or_create(name="Pulling Rank", stat="intimidation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 163
 )
@@ -1446,9 +1392,9 @@ Specialty.objects.get_or_create(name="Seduction", stat="subterfuge")[0].add_sour
 Specialty.objects.get_or_create(name="The Long Con", stat="subterfuge")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 164
 )
-Specialty.objects.get_or_create(name="Little White Lies", stat="subterfuge")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 164)
+Specialty.objects.get_or_create(name="Little White Lies", stat="subterfuge")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 164
+)
 Specialty.objects.get_or_create(name="It Wasn't Me", stat="subterfuge")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 164
 )
@@ -1458,9 +1404,9 @@ Specialty.objects.get_or_create(name="Falconry", stat="animal_ken")[0].add_sourc
 Specialty.objects.get_or_create(name="Big Cats", stat="animal_ken")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 165
 )
-Specialty.objects.get_or_create(name="Attack Training", stat="animal_ken")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 165)
+Specialty.objects.get_or_create(name="Attack Training", stat="animal_ken")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 165
+)
 Specialty.objects.get_or_create(name="Sea Creatures", stat="animal_ken")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 165
 )
@@ -1503,9 +1449,9 @@ Specialty.objects.get_or_create(name="High Society", stat="etiquette")[0].add_so
 Specialty.objects.get_or_create(name="Boardrooms", stat="etiquette")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 165
 )
-Specialty.objects.get_or_create(name="Particular Kiths", stat="etiquette")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 165)
+Specialty.objects.get_or_create(name="Particular Kiths", stat="etiquette")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 165
+)
 Specialty.objects.get_or_create(name="Seelie Court", stat="etiquette")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 165
 )
@@ -1563,9 +1509,9 @@ Specialty.objects.get_or_create(name="Dancing", stat="performance")[0].add_sourc
 Specialty.objects.get_or_create(name="Acting", stat="performance")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 166
 )
-Specialty.objects.get_or_create(name="Specific Instrument", stat="performance")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 166)
+Specialty.objects.get_or_create(name="Specific Instrument", stat="performance")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 166
+)
 Specialty.objects.get_or_create(name="Evoke Emotion", stat="performance")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 166
 )
@@ -1590,18 +1536,18 @@ Specialty.objects.get_or_create(name="Silent Movement", stat="stealth")[0].add_s
 Specialty.objects.get_or_create(name="Foraging", stat="survival")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 166
 )
-Specialty.objects.get_or_create(name="Specific Environments", stat="survival")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 166)
+Specialty.objects.get_or_create(name="Specific Environments", stat="survival")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 166
+)
 Specialty.objects.get_or_create(name="Tracking", stat="survival")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 166
 )
 Specialty.objects.get_or_create(name="Hunting", stat="survival")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 166
 )
-Specialty.objects.get_or_create(name="Urban Exploration", stat="survival")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 166)
+Specialty.objects.get_or_create(name="Urban Exploration", stat="survival")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 166
+)
 Specialty.objects.get_or_create(name="Linguistics", stat="academics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
@@ -1617,18 +1563,18 @@ Specialty.objects.get_or_create(name="Clovis Culture", stat="academics")[0].add_
 Specialty.objects.get_or_create(name="Music Theory", stat="academics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
-Specialty.objects.get_or_create(name="Zero Day Exploits", stat="computer")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
+Specialty.objects.get_or_create(name="Zero Day Exploits", stat="computer")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 167
+)
 Specialty.objects.get_or_create(name="Specific Programming Language", stat="computer")[
     0
 ].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
-Specialty.objects.get_or_create(name="Internet Research", stat="computer")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
-Specialty.objects.get_or_create(name="Database Administration", stat="computer")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
+Specialty.objects.get_or_create(name="Internet Research", stat="computer")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 167
+)
+Specialty.objects.get_or_create(name="Database Administration", stat="computer")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 167
+)
 Specialty.objects.get_or_create(name="Hacking", stat="computer")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
@@ -1665,18 +1611,18 @@ Specialty.objects.get_or_create(name="Glamour", stat="gremayre")[0].add_source(
 Specialty.objects.get_or_create(name="Forensics", stat="investigation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
-Specialty.objects.get_or_create(name="Internet Research", stat="investigation")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
+Specialty.objects.get_or_create(name="Internet Research", stat="investigation")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 167
+)
 Specialty.objects.get_or_create(name="Search", stat="investigation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
 Specialty.objects.get_or_create(name="Shadowing", stat="investigation")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
-Specialty.objects.get_or_create(name="Criminal Psychology", stat="investigation")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 167)
+Specialty.objects.get_or_create(name="Criminal Psychology", stat="investigation")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 167
+)
 Specialty.objects.get_or_create(name="Courtroom Protocol", stat="law")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 167
 )
@@ -1698,9 +1644,9 @@ Specialty.objects.get_or_create(name="Emergency Care", stat="medicine")[0].add_s
 Specialty.objects.get_or_create(name="Pathology", stat="medicine")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 168
 )
-Specialty.objects.get_or_create(name="Recreational Pharmaceuticals", stat="medicine")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 168)
+Specialty.objects.get_or_create(name="Recreational Pharmaceuticals", stat="medicine")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 168
+)
 Specialty.objects.get_or_create(name="Neurology", stat="medicine")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 168
 )
@@ -1716,9 +1662,9 @@ Specialty.objects.get_or_create(name="State", stat="politics")[0].add_source(
 Specialty.objects.get_or_create(name="Neighborhood", stat="politics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 168
 )
-Specialty.objects.get_or_create(name="Parliament of Dreams", stat="politics")[
-    0
-].add_source("Changeling: the Dreaming 20th Anniversary Edition", 168)
+Specialty.objects.get_or_create(name="Parliament of Dreams", stat="politics")[0].add_source(
+    "Changeling: the Dreaming 20th Anniversary Edition", 168
+)
 Specialty.objects.get_or_create(name="Unseelie Court", stat="politics")[0].add_source(
     "Changeling: the Dreaming 20th Anniversary Edition", 168
 )
@@ -1773,9 +1719,7 @@ Specialty.objects.get_or_create(name="Genial", stat="appearance")[0]
 Specialty.objects.get_or_create(name="Exotic", stat="appearance")[0]
 Specialty.objects.get_or_create(name="Alluring", stat="appearance")[0]
 Specialty.objects.get_or_create(name="Noble Bearing", stat="appearance")[0]
-Specialty.objects.get_or_create(
-    name="Eyes in the Back of Your Head", stat="perception"
-)[0]
+Specialty.objects.get_or_create(name="Eyes in the Back of Your Head", stat="perception")[0]
 Specialty.objects.get_or_create(name="Farsighted", stat="perception")[0]
 Specialty.objects.get_or_create(name="Uncanny Instincts", stat="perception")[0]
 Specialty.objects.get_or_create(name="Detail-Oriented", stat="perception")[0]
@@ -1905,9 +1849,7 @@ Specialty.objects.get_or_create(name="Computer Languages", stat="computer")[0]
 Specialty.objects.get_or_create(name="Logic Problems", stat="enigmas")[0]
 Specialty.objects.get_or_create(name="Lateral Thinking", stat="enigmas")[0]
 Specialty.objects.get_or_create(name="Ancient Mysteries", stat="enigmas")[0]
-Specialty.objects.get_or_create(
-    name="Things Werewolves Were Not Meant to Know", stat="enigmas"
-)[0]
+Specialty.objects.get_or_create(name="Things Werewolves Were Not Meant to Know", stat="enigmas")[0]
 Specialty.objects.get_or_create(name="Evidence", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Ballistics", stat="investigation")[0]
 Specialty.objects.get_or_create(name="Forensics", stat="investigation")[0]

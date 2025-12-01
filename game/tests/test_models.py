@@ -8,13 +8,23 @@ Tests cover:
 - Additional Scene functionality
 - Week and XP request edge cases
 """
+
 from datetime import date, timedelta
 
 from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.timezone import now
-from game.models import Chronicle, Gameline, Journal, JournalEntry, Scene, Story, Week, WeeklyXPRequest
+from game.models import (
+    Chronicle,
+    Gameline,
+    Journal,
+    JournalEntry,
+    Scene,
+    Story,
+    Week,
+    WeeklyXPRequest,
+)
 from locations.models.core import LocationModel
 
 
@@ -266,9 +276,7 @@ class TestWeekAndXPRequests(TestCase):
         self.user = User.objects.create_user(
             username="player", email="player@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.location = LocationModel.objects.create(
             name="Test Location",

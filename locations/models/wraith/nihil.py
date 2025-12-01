@@ -27,13 +27,9 @@ class Nihil(LocationModel):
         ("ephemeral", "Ephemeral - Temporary phenomenon"),
     ]
 
-    void_type = models.CharField(
-        max_length=20, choices=VOID_TYPE_CHOICES, default="emptiness"
-    )
+    void_type = models.CharField(max_length=20, choices=VOID_TYPE_CHOICES, default="emptiness")
 
-    stability = models.CharField(
-        max_length=20, choices=STABILITY_CHOICES, default="permanent"
-    )
+    stability = models.CharField(max_length=20, choices=STABILITY_CHOICES, default="permanent")
 
     # Hazard ratings
     hazard_level = models.IntegerField(
@@ -73,14 +69,10 @@ class Nihil(LocationModel):
     avoidable = models.BooleanField(
         default=True, help_text="Can be navigated around with knowledge"
     )
-    marked = models.BooleanField(
-        default=False, help_text="Marked or charted by travelers"
-    )
+    marked = models.BooleanField(default=False, help_text="Marked or charted by travelers")
 
     # Phenomena
-    spectral_activity = models.IntegerField(
-        default=0, help_text="Level of Spectre presence (0-10)"
-    )
+    spectral_activity = models.IntegerField(default=0, help_text="Level of Spectre presence (0-10)")
     contains_relics = models.BooleanField(
         default=False, help_text="May contain lost relics or artifacts"
     )

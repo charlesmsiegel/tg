@@ -3,6 +3,7 @@ Management command to reset database to demo/test state.
 
 WARNING: This command will delete existing data. Use with caution!
 """
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -98,9 +99,7 @@ class Command(BaseCommand):
             demo_st = User.objects.create_user(
                 username="demo_st", email="demo_st@example.com", password="demo123"
             )
-            self.stdout.write(
-                "  ✓ Created demo ST user (username: demo_st, password: demo123)"
-            )
+            self.stdout.write("  ✓ Created demo ST user (username: demo_st, password: demo123)")
 
         if not User.objects.filter(username="demo_player").exists():
             demo_player = User.objects.create_user(
@@ -123,9 +122,7 @@ class Command(BaseCommand):
         chronicle.storytellers.add(User.objects.get(username="demo_st"))
         chronicle.save()
 
-        self.stdout.write(
-            f"  ✓ Created demo chronicle: {chronicle.name} (ID: {chronicle.id})"
-        )
+        self.stdout.write(f"  ✓ Created demo chronicle: {chronicle.name} (ID: {chronicle.id})")
 
         self.stdout.write(self.style.SUCCESS("\n✓ Demo data loaded!"))
         self.stdout.write("\nDemo accounts created:")

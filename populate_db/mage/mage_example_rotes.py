@@ -99,9 +99,7 @@ rote = Rote.objects.get_or_create(
     attribute=stamina,
     ability=medicine,
 )[0]
-rote.description = (
-    "The mage uses chi manipulation to heal wounds by redirecting life energy."
-)
+rote.description = "The mage uses chi manipulation to heal wounds by redirecting life energy."
 rote.add_source("Lore of the Traditions", 28)
 
 rote = Rote.objects.get_or_create(
@@ -111,9 +109,7 @@ rote = Rote.objects.get_or_create(
     attribute=dexterity,
     ability=athletics,
 )[0]
-rote.description = (
-    "Akashic technique to move at superhuman speeds through time manipulation."
-)
+rote.description = "Akashic technique to move at superhuman speeds through time manipulation."
 rote.add_source("Lore of the Traditions", 29)
 
 # ===== CELESTIAL CHORUS ROTES =====
@@ -126,8 +122,7 @@ rote = Rote.objects.get_or_create(
     ability=expression,
 )[0]
 rote.description = (
-    "The mage calls down holy fire to smite the unworthy. "
-    "A dramatic display of divine wrath."
+    "The mage calls down holy fire to smite the unworthy. " "A dramatic display of divine wrath."
 )
 rote.add_source("Lore of the Traditions", 48)
 
@@ -195,9 +190,7 @@ rote = Rote.objects.get_or_create(
     attribute=stamina,
     ability=cosmology,
 )[0]
-rote.description = (
-    "The shaman steps sideways into the spirit world to commune with spirits."
-)
+rote.description = "The shaman steps sideways into the spirit world to commune with spirits."
 rote.add_source("Lore of the Traditions", 88)
 
 rote = Rote.objects.get_or_create(
@@ -252,9 +245,7 @@ rote = Rote.objects.get_or_create(
     attribute=perception,
     ability=awareness,
 )[0]
-rote.description = (
-    "The Euthanatos reads the patterns of karma and destiny surrounding a person."
-)
+rote.description = "The Euthanatos reads the patterns of karma and destiny surrounding a person."
 rote.add_source("Lore of the Traditions", 109)
 
 # ===== ORDER OF HERMES ROTES =====
@@ -310,9 +301,7 @@ rote = Rote.objects.get_or_create(
     attribute=dexterity,
     ability=science,
 )[0]
-rote.description = (
-    "The Etherite fires a beam of etheric energy from a mad science device."
-)
+rote.description = "The Etherite fires a beam of etheric energy from a mad science device."
 rote.add_source("Lore of the Traditions", 148)
 
 rote = Rote.objects.get_or_create(
@@ -364,9 +353,7 @@ rote = Rote.objects.get_or_create(
     attribute=manipulation,
     ability=occult,
 )[0]
-rote.description = (
-    "Powerful ritual calling forth the Wild Hunt and its spectral hunters."
-)
+rote.description = "Powerful ritual calling forth the Wild Hunt and its spectral hunters."
 rote.add_source("Lore of the Traditions", 169)
 
 rote = Rote.objects.get_or_create(
@@ -388,9 +375,7 @@ rote = Rote.objects.get_or_create(
     attribute=intelligence,
     ability=technology,
 )[0]
-rote.description = (
-    "The Adept hacks reality's source code to manipulate fundamental parameters."
-)
+rote.description = "The Adept hacks reality's source code to manipulate fundamental parameters."
 rote.add_source("Lore of the Traditions", 188)
 
 rote = Rote.objects.get_or_create(

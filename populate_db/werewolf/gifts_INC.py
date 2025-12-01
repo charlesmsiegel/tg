@@ -6,80 +6,52 @@ lupus = GiftPermission.objects.get_or_create(shifter="werewolf", condition="lupu
 metis = GiftPermission.objects.get_or_create(shifter="werewolf", condition="metis")[0]
 
 # Auspice
-ragabash = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="ragabash"
-)[0]
-theurge = GiftPermission.objects.get_or_create(shifter="werewolf", condition="theurge")[
-    0
-]
-philodox = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="philodox"
-)[0]
-galliard = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="galliard"
-)[0]
+ragabash = GiftPermission.objects.get_or_create(shifter="werewolf", condition="ragabash")[0]
+theurge = GiftPermission.objects.get_or_create(shifter="werewolf", condition="theurge")[0]
+philodox = GiftPermission.objects.get_or_create(shifter="werewolf", condition="philodox")[0]
+galliard = GiftPermission.objects.get_or_create(shifter="werewolf", condition="galliard")[0]
 ahroun = GiftPermission.objects.get_or_create(shifter="werewolf", condition="ahroun")[0]
 
 # Tribe
-get_of_fenris = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Get of Fenris"
-)[0]
-croatan = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Croatan")[
+get_of_fenris = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Get of Fenris")[
     0
 ]
+croatan = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Croatan")[0]
 
-black_furies = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Black Furies"
-)[0]
-bone_gnawers = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Bone Gnawers"
-)[0]
+black_furies = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Black Furies")[0]
+bone_gnawers = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Bone Gnawers")[0]
 children_of_gaia = GiftPermission.objects.get_or_create(
     shifter="werewolf", condition="Children of Gaia"
 )[0]
 fianna = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Fianna")[0]
-glass_walker = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Glass Walkers"
-)[0]
-red_talons = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Red Talons"
-)[0]
-shadow_lords = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Shadow Lords"
-)[0]
+glass_walker = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Glass Walkers")[
+    0
+]
+red_talons = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Red Talons")[0]
+shadow_lords = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Shadow Lords")[0]
 silent_striders = GiftPermission.objects.get_or_create(
     shifter="werewolf", condition="Silent Striders"
 )[0]
-silver_fangs = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Silver Fangs"
-)[0]
-stargazers = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Stargazers"
-)[0]
+silver_fangs = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Silver Fangs")[0]
+stargazers = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Stargazers")[0]
 uktena = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Uktena")[0]
-wendigo = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Wendigo")[
-    0
-]
+wendigo = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Wendigo")[0]
 
 black_spiral_dancers = GiftPermission.objects.get_or_create(
     shifter="werewolf", condition="Black Spiral Dancers"
 )[0]
 
 bunyip = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Bunyip")[0]
-white_howlers = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="White Howlers"
-)[0]
-
-
-kucha_ekundu = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Kucha Ekundu"
-)[0]
-boli_zousizhe = GiftPermission.objects.get_or_create(
-    shifter="werewolf", condition="Boli Zousizhe"
-)[0]
-kinfolk = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Kinfolk")[
+white_howlers = GiftPermission.objects.get_or_create(shifter="werewolf", condition="White Howlers")[
     0
 ]
+
+
+kucha_ekundu = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Kucha Ekundu")[0]
+boli_zousizhe = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Boli Zousizhe")[
+    0
+]
+kinfolk = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Kinfolk")[0]
 hakken = GiftPermission.objects.get_or_create(shifter="werewolf", condition="Hakken")[0]
 
 

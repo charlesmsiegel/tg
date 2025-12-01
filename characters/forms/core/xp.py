@@ -47,9 +47,7 @@ class XPForm(forms.Form):
             ]
         if not self.existing_bg_valid():
             self.fields["category"].choices = [
-                x
-                for x in self.fields["category"].choices
-                if x[0] != "Existing Background"
+                x for x in self.fields["category"].choices if x[0] != "Existing Background"
             ]
         if not self.willpower_valid():
             self.fields["category"].choices = [
@@ -70,13 +68,10 @@ class XPForm(forms.Form):
                 (ability.id, ability.name) for ability in Ability.objects.all()
             ]
         elif category == "New Background":
-            self.fields["example"].choices = [
-                (bg.id, bg.name) for bg in Background.objects.all()
-            ]
+            self.fields["example"].choices = [(bg.id, bg.name) for bg in Background.objects.all()]
         elif category == "Existing Background":
             self.fields["example"].choices = [
-                (bg.id, bg.bg.name + f" ({bg.note})")
-                for bg in self.character.backgrounds.all()
+                (bg.id, bg.bg.name + f" ({bg.note})") for bg in self.character.backgrounds.all()
             ]
         elif category == "MeritFlaw":
             # Filter merit/flaws by character type and affordability
@@ -110,9 +105,7 @@ class XPForm(forms.Form):
             self.fields["example"].choices = [(mf.id, mf.name) for mf in filtered_mfs]
 
     def image_valid(self):
-        if self.character.image and self.character.image.storage.exists(
-            self.character.image.name
-        ):
+        if self.character.image and self.character.image.storage.exists(self.character.image.name):
             return False
         else:
             return True
@@ -172,10 +165,7 @@ class XPForm(forms.Form):
         return len(filtered_for_xp_cost) > 0
 
     def willpower_valid(self):
-        return (
-            self.character.xp_cost("willpower", self.character.willpower)
-            <= self.character.xp
-        )
+        return self.character.xp_cost("willpower", self.character.willpower) <= self.character.xp
 
     def mf_valid(self):
         # Check if character has any affordable merit/flaws

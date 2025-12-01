@@ -4,7 +4,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic import ListView
 
 
-@method_decorator(cache_page(60 * 5), name='dispatch')  # Cache for 5 minutes
+@method_decorator(cache_page(60 * 5), name="dispatch")  # Cache for 5 minutes
 class HomeListView(ListView):
     model = NewsItem
     template_name = "core/index.html"

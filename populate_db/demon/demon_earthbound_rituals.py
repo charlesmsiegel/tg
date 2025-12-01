@@ -38,7 +38,9 @@ undying_fire.secondary_lore_requirements = [
 ]
 undying_fire.base_cost = 12
 undying_fire.minimum_casting_time = 36
-undying_fire.restrictions = "The ritual must be cast in sunlight, and the target must be within sight of the Ankida."
+undying_fire.restrictions = (
+    "The ritual must be cast in sunlight, and the target must be within sight of the Ankida."
+)
 undying_fire.system = """Roll Stamina + Survival. The target suffers dice pool penalties as if he had taken a number of health levels of damage equal to the successes rolled. A Willpower point may be spent per health level of penalty to ignore its effects for the duration of a single turn. The target does not take any physical damage from the flames.
 
 The flames are not just illusory, however - the target really is on fire. Any inflammable articles on the target's body will catch fire as well. This may cause damage to the target if he is carrying ammunition, aerosol cans or the like.
@@ -141,9 +143,7 @@ plague_tide.secondary_lore_requirements = [
 ]
 plague_tide.base_cost = 21
 plague_tide.minimum_casting_time = 49
-plague_tide.restrictions = (
-    "The creatures to be affected must all be gathered within the sigil."
-)
+plague_tide.restrictions = "The creatures to be affected must all be gathered within the sigil."
 plague_tide.system = """Roll Manipulation + Animal Ken. This ritual allows the Earthbound to possess and control a number of animals, equal to 10 times the number of successes rolled, although it works only on animals the size of a cat or smaller. The Earthbound often use rats, mice, bats, snakes, crows, eels and insects as their instruments of contagion. The possession lasts for a number of hours equal to the Ankida's Faith score.
 
 For more information on animal swarms and their capabilities, please see page 72 of the Demon Storytellers Companion.

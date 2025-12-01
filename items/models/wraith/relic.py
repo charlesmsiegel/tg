@@ -18,9 +18,7 @@ class WraithRelic(ItemModel):
         ("legendary", "Legendary"),
     ]
 
-    rarity = models.CharField(
-        max_length=20, choices=RELIC_TYPE_CHOICES, default="common"
-    )
+    rarity = models.CharField(max_length=20, choices=RELIC_TYPE_CHOICES, default="common")
 
     # Properties
     pathos_cost = models.IntegerField(default=0, blank=True)

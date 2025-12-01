@@ -22,9 +22,7 @@ class TestGrimoire(TestCase):
         self.date_written = 1325
         self.language = Language.objects.create(name="Test Language")
         self.length = 100
-        self.practices = [
-            Practice.objects.create(name=f"Test Practice {i}") for i in range(3)
-        ]
+        self.practices = [Practice.objects.create(name=f"Test Practice {i}") for i in range(3)]
         self.instruments = [
             Instrument.objects.create(name=f"Test Instrument {i}") for i in range(3)
         ]
@@ -92,9 +90,7 @@ class TestGrimoire(TestCase):
     def test_set_materials(self):
         self.assertIsNone(self.grimoire.cover_material)
         self.assertIsNone(self.grimoire.inner_material)
-        self.assertTrue(
-            self.grimoire.set_materials(self.cover_material, self.inner_material)
-        )
+        self.assertTrue(self.grimoire.set_materials(self.cover_material, self.inner_material))
         self.assertEqual(self.grimoire.cover_material, self.cover_material)
         self.assertEqual(self.grimoire.inner_material, self.inner_material)
 
@@ -240,6 +236,4 @@ class TestGrimoireUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.grimoire.refresh_from_db()
         self.assertEqual(self.grimoire.name, "Test Grimoire Updated")
-        self.assertEqual(
-            self.grimoire.description, "A test description for the grimoire."
-        )
+        self.assertEqual(self.grimoire.description, "A test description for the grimoire.")

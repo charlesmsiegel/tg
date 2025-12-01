@@ -43,9 +43,7 @@ class Domain(LocationModel):
         default=False, help_text="Domain contains quality hunting grounds"
     )
 
-    is_disputed = models.BooleanField(
-        default=False, help_text="Domain is contested by others"
-    )
+    is_disputed = models.BooleanField(default=False, help_text="Domain is contested by others")
 
     # Domain type
     domain_type = models.CharField(

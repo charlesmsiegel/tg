@@ -15,12 +15,8 @@ from django.test import TestCase
 class TestPractice(TestCase):
     def test_abilities(self):
         practice = Practice.objects.create(name="Practice 1")
-        practice.abilities.add(
-            Ability.objects.create(name="Brawl", property_name="brawl")
-        )
-        practice.abilities.add(
-            Ability.objects.create(name="Awareness", property_name="awareness")
-        )
+        practice.abilities.add(Ability.objects.create(name="Brawl", property_name="brawl"))
+        practice.abilities.add(Ability.objects.create(name="Awareness", property_name="awareness"))
         self.assertEqual(practice.abilities.count(), 2)
 
     def test_str(self):
@@ -87,9 +83,7 @@ class TestParadigm(TestCase):
 
         self.assertQuerySetEqual(
             intersection_practices.order_by("id"),
-            Practice.objects.filter(
-                id__in=[self.practice_2.id, self.practice_3.id]
-            ).order_by("id"),
+            Practice.objects.filter(id__in=[self.practice_2.id, self.practice_3.id]).order_by("id"),
             transform=lambda x: x,
         )
 
@@ -102,14 +96,10 @@ class TestParadigm(TestCase):
             ).exists()
         )
 
-        result_invalid = self.paradigm.set_tenets(
-            self.tenet_1, self.tenet_4, self.tenet_5
-        )
+        result_invalid = self.paradigm.set_tenets(self.tenet_1, self.tenet_4, self.tenet_5)
         self.assertFalse(result_invalid)
         self.assertFalse(
-            self.paradigm.tenets.filter(
-                id__in=[self.tenet_4.id, self.tenet_5.id]
-            ).exists()
+            self.paradigm.tenets.filter(id__in=[self.tenet_4.id, self.tenet_5.id]).exists()
         )
 
     def test_add_tenet(self):
@@ -164,9 +154,7 @@ class TestInstrumentCreateView(TestCase):
 
 class TestInstrumentUpdateView(TestCase):
     def setUp(self):
-        self.instrument = Instrument.objects.create(
-            name="Test Instrument", description="Test"
-        )
+        self.instrument = Instrument.objects.create(name="Test Instrument", description="Test")
         self.valid_data = {
             "name": "Test Instrument 2",
             "description": "Test",
@@ -229,9 +217,7 @@ class TestPracticeCreateView(TestCase):
 
 class TestPracticeUpdateView(TestCase):
     def setUp(self):
-        self.practice = Practice.objects.create(
-            name="Test Practice", description="Test"
-        )
+        self.practice = Practice.objects.create(name="Test Practice", description="Test")
         self.valid_data = {
             "name": "Test Practice 2",
             "description": "Test",
@@ -269,9 +255,7 @@ class TestSpecializedPracticeDetailView(TestCase):
 
     def test_effect_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/specialized_practice/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/specialized_practice/detail.html")
 
 
 class TestSpecializedPracticeCreateView(TestCase):
@@ -291,17 +275,13 @@ class TestSpecializedPracticeCreateView(TestCase):
 
     def test_create_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/specialized_practice/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/specialized_practice/form.html")
 
     def test_create_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(SpecializedPractice.objects.count(), 1)
-        self.assertEqual(
-            SpecializedPractice.objects.first().name, "Test Specialized Practice"
-        )
+        self.assertEqual(SpecializedPractice.objects.first().name, "Test Specialized Practice")
 
 
 class TestSpecializedPracticeUpdateView(TestCase):
@@ -324,9 +304,7 @@ class TestSpecializedPracticeUpdateView(TestCase):
 
     def test_update_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/specialized_practice/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/specialized_practice/form.html")
 
     def test_update_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
@@ -337,9 +315,7 @@ class TestSpecializedPracticeUpdateView(TestCase):
 
 class TestCorruptedPracticeDetailView(TestCase):
     def setUp(self) -> None:
-        self.corrupted_practice = CorruptedPractice.objects.create(
-            name="Test CorruptedPractice"
-        )
+        self.corrupted_practice = CorruptedPractice.objects.create(name="Test CorruptedPractice")
         self.url = self.corrupted_practice.get_absolute_url()
 
     def test_effect_detail_view_status_code(self):
@@ -348,9 +324,7 @@ class TestCorruptedPracticeDetailView(TestCase):
 
     def test_effect_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/corrupted_practice/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/corrupted_practice/detail.html")
 
 
 class TestCorruptedPracticeCreateView(TestCase):
@@ -371,17 +345,13 @@ class TestCorruptedPracticeCreateView(TestCase):
 
     def test_create_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/corrupted_practice/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/corrupted_practice/form.html")
 
     def test_create_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(CorruptedPractice.objects.count(), 1)
-        self.assertEqual(
-            CorruptedPractice.objects.first().name, "Test Corrupted Practice"
-        )
+        self.assertEqual(CorruptedPractice.objects.first().name, "Test Corrupted Practice")
 
 
 class TestCorruptedPracticeUpdateView(TestCase):
@@ -405,9 +375,7 @@ class TestCorruptedPracticeUpdateView(TestCase):
 
     def test_update_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/mage/corrupted_practice/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/corrupted_practice/form.html")
 
     def test_update_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
@@ -518,9 +486,7 @@ class TestParadigmCreateView(TestCase):
 
 class TestParadigmUpdateView(TestCase):
     def setUp(self):
-        self.paradigm = Paradigm.objects.create(
-            name="Test Paradigm", description="Test"
-        )
+        self.paradigm = Paradigm.objects.create(name="Test Paradigm", description="Test")
         self.valid_data = {
             "name": "Test Paradigm 2",
             "description": "Test description",
@@ -559,13 +525,9 @@ class TestGenericCharacterDetailViews(TestCase):
         response = self.client.get(self.purl)
         self.assertTemplateUsed(response, "characters/mage/practice/detail.html")
         response = self.client.get(self.curl)
-        self.assertTemplateUsed(
-            response, "characters/mage/corrupted_practice/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/corrupted_practice/detail.html")
         response = self.client.get(self.surl)
-        self.assertTemplateUsed(
-            response, "characters/mage/specialized_practice/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/mage/specialized_practice/detail.html")
 
 
 class TestPracticeRatingTenetBonus(TestCase):
@@ -575,24 +537,14 @@ class TestPracticeRatingTenetBonus(TestCase):
         self.mage = Mage.objects.create(name="Test Mage", owner=self.user)
 
         # Create tenets
-        self.metaphysical_tenet = Tenet.objects.create(
-            name="Metaphysical Tenet", tenet_type="met"
-        )
-        self.personal_tenet = Tenet.objects.create(
-            name="Personal Tenet", tenet_type="per"
-        )
-        self.ascension_tenet = Tenet.objects.create(
-            name="Ascension Tenet", tenet_type="asc"
-        )
+        self.metaphysical_tenet = Tenet.objects.create(name="Metaphysical Tenet", tenet_type="met")
+        self.personal_tenet = Tenet.objects.create(name="Personal Tenet", tenet_type="per")
+        self.ascension_tenet = Tenet.objects.create(name="Ascension Tenet", tenet_type="asc")
         self.other_tenet = Tenet.objects.create(name="Other Tenet", tenet_type="oth")
 
         # Create practices
-        self.practice_only_associated = Practice.objects.create(
-            name="Practice Only Associated"
-        )
-        self.practice_only_limited = Practice.objects.create(
-            name="Practice Only Limited"
-        )
+        self.practice_only_associated = Practice.objects.create(name="Practice Only Associated")
+        self.practice_only_limited = Practice.objects.create(name="Practice Only Limited")
         self.practice_both = Practice.objects.create(name="Practice Both")
         self.practice_neither = Practice.objects.create(name="Practice Neither")
 
@@ -621,15 +573,11 @@ class TestPracticeRatingTenetBonus(TestCase):
         self.assertEqual(pr.get_tenet_bonus(), -1)
 
     def test_both_associated_and_limited_practice(self):
-        pr = PracticeRating.objects.create(
-            mage=self.mage, practice=self.practice_both, rating=1
-        )
+        pr = PracticeRating.objects.create(mage=self.mage, practice=self.practice_both, rating=1)
         self.assertEqual(pr.get_tenet_bonus(), 0)
 
     def test_neither_associated_nor_limited_practice(self):
-        pr = PracticeRating.objects.create(
-            mage=self.mage, practice=self.practice_neither, rating=1
-        )
+        pr = PracticeRating.objects.create(mage=self.mage, practice=self.practice_neither, rating=1)
         self.assertEqual(pr.get_tenet_bonus(), 0)
 
     def test_multiple_tenets_same_practice_associated(self):

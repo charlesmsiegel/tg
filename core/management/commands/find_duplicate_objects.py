@@ -14,6 +14,7 @@ Works with all objects that inherit from core.models.Model including:
 - Effects
 - And any other custom objects
 """
+
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
@@ -91,9 +92,7 @@ class Command(BaseCommand):
                 all_duplicates.extend(duplicates)
 
             except (ImportError, AttributeError) as e:
-                self.stdout.write(
-                    self.style.WARNING(f"Could not check {type_name}: {e}")
-                )
+                self.stdout.write(self.style.WARNING(f"Could not check {type_name}: {e}"))
 
         # Display overall summary
         self.display_summary(all_duplicates)
@@ -146,9 +145,7 @@ class Command(BaseCommand):
                 user = User.objects.get(username=options["owner"])
                 queryset = queryset.filter(owner=user)
             except User.DoesNotExist:
-                self.stdout.write(
-                    self.style.WARNING(f"User {options['owner']} not found")
-                )
+                self.stdout.write(self.style.WARNING(f"User {options['owner']} not found"))
                 return []
 
         # Group by name, owner, and chronicle
@@ -251,15 +248,11 @@ class Command(BaseCommand):
 
         for obj in objects:
             # Only delete if Unfinished, no description, and no other significant data
-            if obj.status == "Un" and (
-                not obj.description or obj.description.strip() == ""
-            ):
+            if obj.status == "Un" and (not obj.description or obj.description.strip() == ""):
 
                 obj.delete()
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        f"  ✓ Deleted empty duplicate: {obj.name} (ID: {obj.id})"
-                    )
+                    self.style.SUCCESS(f"  ✓ Deleted empty duplicate: {obj.name} (ID: {obj.id})")
                 )
 
     def display_summary(self, all_duplicates):
@@ -282,9 +275,7 @@ class Command(BaseCommand):
 
         for obj_type, duplicates in sorted(by_type.items()):
             self.stdout.write(
-                self.style.WARNING(
-                    f"\n{obj_type.upper()} ({len(duplicates)} duplicate groups):"
-                )
+                self.style.WARNING(f"\n{obj_type.upper()} ({len(duplicates)} duplicate groups):")
             )
 
             for dup in duplicates[:10]:  # Show first 10 per type
@@ -297,9 +288,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"  Instances: {len(objects)}")
 
                 for obj in objects:
-                    self.stdout.write(
-                        f"    - ID: {obj.id}, Status: {obj.get_status_display()}"
-                    )
+                    self.stdout.write(f"    - ID: {obj.id}, Status: {obj.get_status_display()}")
 
             if len(duplicates) > 10:
                 self.stdout.write(f"\n  ... and {len(duplicates) - 10} more groups")
@@ -336,9 +325,7 @@ class Command(BaseCommand):
                         "chronicle": dup["chronicle"],
                         "instance_count": len(objects),
                         "object_ids": ", ".join(str(obj.id) for obj in objects),
-                        "statuses": ", ".join(
-                            obj.get_status_display() for obj in objects
-                        ),
+                        "statuses": ", ".join(obj.get_status_display() for obj in objects),
                     }
                 )
 

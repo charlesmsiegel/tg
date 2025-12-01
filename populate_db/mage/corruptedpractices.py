@@ -10,44 +10,32 @@ from populate_db.mage.practices_INC import (
 )
 
 abyssalism = (
-    CorruptedPractice.objects.get_or_create(
-        name="Abyssalism", parent_practice=crazywisdom
-    )[0]
+    CorruptedPractice.objects.get_or_create(name="Abyssalism", parent_practice=crazywisdom)[0]
     .add_source("Book of the Fallen", 139)
     .add_source("Prism of Focus", 59)
 )
 feralism = (
-    CorruptedPractice.objects.get_or_create(name="Feralism", parent_practice=animalism)[
-        0
-    ]
+    CorruptedPractice.objects.get_or_create(name="Feralism", parent_practice=animalism)[0]
     .add_source("Prism of Focus", 39)
     .add_source("Book of the Fallen", 142)
 )
 theblackmass = (
-    CorruptedPractice.objects.get_or_create(
-        name="The Black Mass", parent_practice=faith
-    )[0]
+    CorruptedPractice.objects.get_or_create(name="The Black Mass", parent_practice=faith)[0]
     .add_source("Prism of Focus", 71)
     .add_source("Book of the Fallen", 140)
 )
 goetia = (
-    CorruptedPractice.objects.get_or_create(
-        name="Goetia", parent_practice=highritualmagick
-    )[0]
+    CorruptedPractice.objects.get_or_create(name="Goetia", parent_practice=highritualmagick)[0]
     .add_source("Prism of Focus", 80)
     .add_source("Book of the Fallen", 143)
 )
 infernalsciences = (
-    CorruptedPractice.objects.get_or_create(
-        name="Infernal Sciences", parent_practice=hypertech
-    )[0]
+    CorruptedPractice.objects.get_or_create(name="Infernal Sciences", parent_practice=hypertech)[0]
     .add_source("Prism of Focus", 84)
     .add_source("Book of the Fallen", 144)
 )
 demonism = (
-    CorruptedPractice.objects.get_or_create(name="Demonism", parent_practice=shamanism)[
-        0
-    ]
+    CorruptedPractice.objects.get_or_create(name="Demonism", parent_practice=shamanism)[0]
     .add_source("Prism of Focus", 112)
     .add_source("Book of the Fallen", 141)
 )

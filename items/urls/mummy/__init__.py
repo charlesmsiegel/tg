@@ -1,5 +1,4 @@
 from django.urls import include, path
-
 from items import views
 
 from . import create, detail, index, update

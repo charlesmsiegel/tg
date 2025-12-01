@@ -12,8 +12,7 @@ class HumanLanguageForm(forms.Form):
 
         # Query once before loop to avoid repeated database queries
         language_suggestions = [
-            x.name
-            for x in Language.objects.order_by("frequency").exclude(name="English")
+            x.name for x in Language.objects.order_by("frequency").exclude(name="English")
         ]
 
         # Dynamically create fields

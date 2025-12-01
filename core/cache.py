@@ -112,7 +112,7 @@ class CacheInvalidator:
         CacheInvalidator.invalidate_model_cache(model_instance.__class__)
 
         # Also invalidate any parent model caches if using polymorphic models
-        if hasattr(model_instance, 'get_real_instance_class'):
+        if hasattr(model_instance, "get_real_instance_class"):
             # This is a polymorphic model, invalidate the base class cache too
             base_class = model_instance.__class__.__bases__[0]
             if base_class != Model:
@@ -138,6 +138,7 @@ def cache_queryset(timeout: int = 300, key_prefix: str = "") -> Callable:
         def get_approved_characters():
             return Character.objects.filter(status='App')
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> QuerySet:
@@ -186,6 +187,7 @@ def cache_function(timeout: int = 300, key_prefix: str = "") -> Callable:
             # Expensive calculation
             return stats
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
@@ -230,9 +232,11 @@ def invalidate_cache_on_save(*models: type[Model]) -> Callable:
         class CharacterListView(ListView):
             ...
     """
+
     def decorator(cls: type) -> type:
         # Register signal handlers for each model
         for model in models:
+
             @receiver(post_save, sender=model)
             def invalidate_on_save(sender, instance, **kwargs):
                 CacheInvalidator.invalidate_related_caches(instance)
@@ -256,9 +260,7 @@ CACHE_TIMEOUT_DAY = 86400  # 24 hours
 
 # Example usage functions
 def get_cached_queryset(
-    model_class: type[Model],
-    filters: Optional[dict] = None,
-    timeout: int = CACHE_TIMEOUT_MEDIUM
+    model_class: type[Model], filters: Optional[dict] = None, timeout: int = CACHE_TIMEOUT_MEDIUM
 ) -> QuerySet:
     """
     Helper function to get a cached queryset for a model.

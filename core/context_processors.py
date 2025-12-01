@@ -32,10 +32,10 @@ def permissions(request):
         "VisibilityTier": VisibilityTier,
         "Permission": Permission,
         "Role": Role,
-        "user_can_view": lambda obj: obj.user_can_view(request.user)
-        if hasattr(obj, "user_can_view")
-        else False,
-        "user_can_edit": lambda obj: obj.user_can_edit(request.user)
-        if hasattr(obj, "user_can_edit")
-        else False,
+        "user_can_view": lambda obj: (
+            obj.user_can_view(request.user) if hasattr(obj, "user_can_view") else False
+        ),
+        "user_can_edit": lambda obj: (
+            obj.user_can_edit(request.user) if hasattr(obj, "user_can_edit") else False
+        ),
     }

@@ -8,6 +8,7 @@ Generates:
 - Story arcs
 - Player engagement metrics
 """
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count, Q, Sum
 from game.models import Chronicle, Scene
@@ -61,9 +62,7 @@ class Command(BaseCommand):
         if options["output"]:
             with open(options["output"], "w") as f:
                 f.write(output)
-            self.stdout.write(
-                self.style.SUCCESS(f"\nReport saved to {options['output']}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"\nReport saved to {options['output']}"))
         else:
             self.stdout.write(output)
 
@@ -198,9 +197,7 @@ class Command(BaseCommand):
         output.append("XP STATISTICS")
         output.append("-" * 70)
         output.append(f"Total XP Awarded: {stats['xp']['total_awarded']}")
-        output.append(
-            f"Average XP per Character: {stats['xp']['average_per_character']:.1f}"
-        )
+        output.append(f"Average XP per Character: {stats['xp']['average_per_character']:.1f}")
         output.append(f"Pending XP Requests: {stats['xp']['pending_requests']}")
         output.append("")
 
@@ -208,17 +205,13 @@ class Command(BaseCommand):
         output.append("PLAYER ENGAGEMENT")
         output.append("-" * 70)
         output.append(f"Unique Players: {stats['engagement']['unique_players']}")
-        output.append(
-            f"Characters with Scenes: {stats['engagement']['characters_with_scenes']}"
-        )
+        output.append(f"Characters with Scenes: {stats['engagement']['characters_with_scenes']}")
         output.append("")
 
         if stats["engagement"]["top_characters"]:
             output.append("Top 5 Most Active Characters:")
             for char in stats["engagement"]["top_characters"]:
-                output.append(
-                    f"  - {char['name']} ({char['owner']}): {char['scene_count']} scenes"
-                )
+                output.append(f"  - {char['name']} ({char['owner']}): {char['scene_count']} scenes")
         else:
             output.append("No character activity recorded")
 
@@ -270,9 +263,7 @@ class Command(BaseCommand):
         output.append("## XP Statistics")
         output.append("")
         output.append(f"- **Total XP Awarded:** {stats['xp']['total_awarded']}")
-        output.append(
-            f"- **Average XP per Character:** {stats['xp']['average_per_character']:.1f}"
-        )
+        output.append(f"- **Average XP per Character:** {stats['xp']['average_per_character']:.1f}")
         output.append(f"- **Pending XP Requests:** {stats['xp']['pending_requests']}")
         output.append("")
 

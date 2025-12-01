@@ -75,14 +75,10 @@ class Kinfolk(WtAHuman):
     def set_tribe(self, tribe):
         for t in Tribe.objects.all():
             self.gift_permissions.remove(
-                GiftPermission.objects.get_or_create(
-                    shifter="werewolf", condition=t.name
-                )[0]
+                GiftPermission.objects.get_or_create(shifter="werewolf", condition=t.name)[0]
             )
         self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(
-                shifter="werewolf", condition=tribe.name
-            )[0]
+            GiftPermission.objects.get_or_create(shifter="werewolf", condition=tribe.name)[0]
         )
 
         if tribe.name == "Red Talons" and self.breed == "homid":
@@ -120,9 +116,9 @@ class Kinfolk(WtAHuman):
         return super().add_background(background, maximum=maximum)
 
     def filter_gifts(self):
-        return Gift.objects.filter(
-            rank__lte=1, allowed__in=self.gift_permissions.all()
-        ).exclude(pk__in=self.gifts.all())
+        return Gift.objects.filter(rank__lte=1, allowed__in=self.gift_permissions.all()).exclude(
+            pk__in=self.gifts.all()
+        )
 
     def add_gift(self, gift):
         if gift in self.gifts.all():
@@ -152,6 +148,6 @@ class Kinfolk(WtAHuman):
         return True
 
     def filter_fetishes(self, min_rating=0, max_rating=5):
-        return Fetish.objects.filter(
-            rank__lte=max_rating, rank__gte=min_rating
-        ).exclude(pk__in=self.fetishes_owned.all())
+        return Fetish.objects.filter(rank__lte=max_rating, rank__gte=min_rating).exclude(
+            pk__in=self.fetishes_owned.all()
+        )

@@ -20,9 +20,7 @@ class SorcererFellowship(Model):
         return reverse("characters:mage:sorcerer_fellowship", args=[str(self.id)])
 
     def get_update_url(self):
-        return reverse(
-            "characters:mage:update:sorcerer_fellowship", kwargs={"pk": self.pk}
-        )
+        return reverse("characters:mage:update:sorcerer_fellowship", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):

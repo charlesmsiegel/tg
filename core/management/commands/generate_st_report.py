@@ -7,6 +7,7 @@ Shows:
 - Recent XP requests
 - Character status breakdown
 """
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from game.models import Chronicle, Scene, WeeklyXPRequest
@@ -58,9 +59,7 @@ class Command(BaseCommand):
         if options["output"]:
             with open(options["output"], "w") as f:
                 f.write(report)
-            self.stdout.write(
-                self.style.SUCCESS(f"\nReport saved to {options['output']}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"\nReport saved to {options['output']}"))
         else:
             self.stdout.write(report)
 
@@ -88,9 +87,7 @@ class Command(BaseCommand):
             output.append("PENDING APPROVALS:")
 
             # Characters
-            pending_chars = CharacterModel.objects.filter(
-                chronicle=chronicle, status="Sub"
-            ).count()
+            pending_chars = CharacterModel.objects.filter(chronicle=chronicle, status="Sub").count()
             output.append(f"  Submitted Characters: {pending_chars}")
 
             # Images
@@ -126,9 +123,7 @@ class Command(BaseCommand):
             if active_count > 0:
                 for scene in active_scenes[:5]:
                     char_count = scene.characters.count()
-                    output.append(
-                        f"    - {scene.name or '(unnamed)'}: {char_count} character(s)"
-                    )
+                    output.append(f"    - {scene.name or '(unnamed)'}: {char_count} character(s)")
                 if active_count > 5:
                     output.append(f"    ... and {active_count - 5} more")
             output.append("")

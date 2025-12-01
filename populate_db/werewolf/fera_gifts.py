@@ -5,36 +5,20 @@ from characters.models.werewolf.gift import Gift, GiftPermission
 # ===============================
 
 # Bastet Breeds
-bastet_homid = GiftPermission.objects.get_or_create(
-    shifter="bastet", condition="homid"
-)[0]
-bastet_feline = GiftPermission.objects.get_or_create(
-    shifter="bastet", condition="feline"
-)[0]
-bastet_metis = GiftPermission.objects.get_or_create(
-    shifter="bastet", condition="metis"
-)[0]
+bastet_homid = GiftPermission.objects.get_or_create(shifter="bastet", condition="homid")[0]
+bastet_feline = GiftPermission.objects.get_or_create(shifter="bastet", condition="feline")[0]
+bastet_metis = GiftPermission.objects.get_or_create(shifter="bastet", condition="metis")[0]
 
 # Bastet Pryio (auspice-like)
-daylight = GiftPermission.objects.get_or_create(shifter="bastet", condition="daylight")[
-    0
-]
-twilight = GiftPermission.objects.get_or_create(shifter="bastet", condition="twilight")[
-    0
-]
-midnight = GiftPermission.objects.get_or_create(shifter="bastet", condition="midnight")[
-    0
-]
+daylight = GiftPermission.objects.get_or_create(shifter="bastet", condition="daylight")[0]
+twilight = GiftPermission.objects.get_or_create(shifter="bastet", condition="twilight")[0]
+midnight = GiftPermission.objects.get_or_create(shifter="bastet", condition="midnight")[0]
 
 # Bastet Tribes
-bagheera = GiftPermission.objects.get_or_create(shifter="bastet", condition="bagheera")[
-    0
-]
+bagheera = GiftPermission.objects.get_or_create(shifter="bastet", condition="bagheera")[0]
 balam = GiftPermission.objects.get_or_create(shifter="bastet", condition="balam")[0]
 bubasti = GiftPermission.objects.get_or_create(shifter="bastet", condition="bubasti")[0]
-ceilican = GiftPermission.objects.get_or_create(shifter="bastet", condition="ceilican")[
-    0
-]
+ceilican = GiftPermission.objects.get_or_create(shifter="bastet", condition="ceilican")[0]
 khan = GiftPermission.objects.get_or_create(shifter="bastet", condition="khan")[0]
 pumonca = GiftPermission.objects.get_or_create(shifter="bastet", condition="pumonca")[0]
 qualmi = GiftPermission.objects.get_or_create(shifter="bastet", condition="qualmi")[0]
@@ -136,12 +120,8 @@ g.save()
 # ===============================
 
 corax = GiftPermission.objects.get_or_create(shifter="corax", condition="corax")[0]
-corax_homid = GiftPermission.objects.get_or_create(shifter="corax", condition="homid")[
-    0
-]
-corax_corvid = GiftPermission.objects.get_or_create(
-    shifter="corax", condition="corvid"
-)[0]
+corax_homid = GiftPermission.objects.get_or_create(shifter="corax", condition="homid")[0]
+corax_corvid = GiftPermission.objects.get_or_create(shifter="corax", condition="corvid")[0]
 
 # Universal Corax Gifts
 g = Gift.objects.get_or_create(name="Eye of the Sun", rank=1)[0]
@@ -174,15 +154,9 @@ g.save()
 # GURAHL (Werebear) GIFTS
 # ===============================
 
-gurahl_homid = GiftPermission.objects.get_or_create(
-    shifter="gurahl", condition="homid"
-)[0]
-gurahl_ursine = GiftPermission.objects.get_or_create(
-    shifter="gurahl", condition="ursine"
-)[0]
-gurahl_arthren = GiftPermission.objects.get_or_create(
-    shifter="gurahl", condition="arthren"
-)[0]
+gurahl_homid = GiftPermission.objects.get_or_create(shifter="gurahl", condition="homid")[0]
+gurahl_ursine = GiftPermission.objects.get_or_create(shifter="gurahl", condition="ursine")[0]
+gurahl_arthren = GiftPermission.objects.get_or_create(shifter="gurahl", condition="arthren")[0]
 
 # Gurahl Auspices
 arcas = GiftPermission.objects.get_or_create(shifter="gurahl", condition="arcas")[0]
@@ -226,30 +200,16 @@ g.save()
 # RATKIN (Wererat) GIFTS
 # ===============================
 
-ratkin_homid = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="homid"
-)[0]
-ratkin_rodent = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="rodent"
-)[0]
-ratkin_metis = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="metis"
-)[0]
+ratkin_homid = GiftPermission.objects.get_or_create(shifter="ratkin", condition="homid")[0]
+ratkin_rodent = GiftPermission.objects.get_or_create(shifter="ratkin", condition="rodent")[0]
+ratkin_metis = GiftPermission.objects.get_or_create(shifter="ratkin", condition="metis")[0]
 
 # Ratkin Aspects
-tunnel_runner = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="tunnel_runner"
-)[0]
+tunnel_runner = GiftPermission.objects.get_or_create(shifter="ratkin", condition="tunnel_runner")[0]
 warrior = GiftPermission.objects.get_or_create(shifter="ratkin", condition="warrior")[0]
-plague_lord = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="plague_lord"
-)[0]
-tinkerer = GiftPermission.objects.get_or_create(shifter="ratkin", condition="tinkerer")[
-    0
-]
-shadow_seer = GiftPermission.objects.get_or_create(
-    shifter="ratkin", condition="shadow_seer"
-)[0]
+plague_lord = GiftPermission.objects.get_or_create(shifter="ratkin", condition="plague_lord")[0]
+tinkerer = GiftPermission.objects.get_or_create(shifter="ratkin", condition="tinkerer")[0]
+shadow_seer = GiftPermission.objects.get_or_create(shifter="ratkin", condition="shadow_seer")[0]
 
 # Ratkin Breed Gifts
 g = Gift.objects.get_or_create(name="Survivor's Luck", rank=1)[0]
@@ -297,33 +257,19 @@ g.save()
 # MOKOLE (Weresaurian) GIFTS
 # ===============================
 
-mokole_homid = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="homid"
-)[0]
-mokole_suchid = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="suchid"
-)[0]
-mokole_metis = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="metis"
-)[0]
+mokole_homid = GiftPermission.objects.get_or_create(shifter="mokole", condition="homid")[0]
+mokole_suchid = GiftPermission.objects.get_or_create(shifter="mokole", condition="suchid")[0]
+mokole_metis = GiftPermission.objects.get_or_create(shifter="mokole", condition="metis")[0]
 
 # Mokole Streams
 makara = GiftPermission.objects.get_or_create(shifter="mokole", condition="makara")[0]
-zhong_lung = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="zhong_lung"
-)[0]
+zhong_lung = GiftPermission.objects.get_or_create(shifter="mokole", condition="zhong_lung")[0]
 gumagan = GiftPermission.objects.get_or_create(shifter="mokole", condition="gumagan")[0]
 
 # Mokole Auspices
-rising_sun = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="rising_sun"
-)[0]
-noonday_sun = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="noonday_sun"
-)[0]
-setting_sun = GiftPermission.objects.get_or_create(
-    shifter="mokole", condition="setting_sun"
-)[0]
+rising_sun = GiftPermission.objects.get_or_create(shifter="mokole", condition="rising_sun")[0]
+noonday_sun = GiftPermission.objects.get_or_create(shifter="mokole", condition="noonday_sun")[0]
+setting_sun = GiftPermission.objects.get_or_create(shifter="mokole", condition="setting_sun")[0]
 
 # Mokole Gifts
 g = Gift.objects.get_or_create(name="Crocodile's Jaws", rank=1)[0]
@@ -345,15 +291,9 @@ g.save()
 # NUWISHA (Werecoyote) GIFTS
 # ===============================
 
-nuwisha = GiftPermission.objects.get_or_create(shifter="nuwisha", condition="nuwisha")[
-    0
-]
-nuwisha_homid = GiftPermission.objects.get_or_create(
-    shifter="nuwisha", condition="homid"
-)[0]
-nuwisha_latrani = GiftPermission.objects.get_or_create(
-    shifter="nuwisha", condition="latrani"
-)[0]
+nuwisha = GiftPermission.objects.get_or_create(shifter="nuwisha", condition="nuwisha")[0]
+nuwisha_homid = GiftPermission.objects.get_or_create(shifter="nuwisha", condition="homid")[0]
+nuwisha_latrani = GiftPermission.objects.get_or_create(shifter="nuwisha", condition="latrani")[0]
 
 # Nuwisha Gifts
 g = Gift.objects.get_or_create(name="Coyote's Laugh", rank=1)[0]

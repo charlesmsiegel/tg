@@ -35,9 +35,7 @@ class Haunt(LocationModel):
         ("estate", "Estate/Compound"),
     ]
 
-    haunt_size = models.CharField(
-        max_length=20, choices=HAUNT_SIZE_CHOICES, default="single_room"
-    )
+    haunt_size = models.CharField(max_length=20, choices=HAUNT_SIZE_CHOICES, default="single_room")
 
     # Faith resonance
     faith_resonance = models.TextField(default="")

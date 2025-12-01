@@ -587,9 +587,7 @@ class Wraith(WtOHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value)
-            if trait_value is not None
-            else 10000,
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
             {
                 "arcanos": 10,
                 "pathos": 2,
@@ -612,9 +610,7 @@ class Wraith(WtOHuman):
             return output
 
         # Check if trait is an arcanos
-        arcanoi_list = list(self.get_arcanoi().keys()) + list(
-            self.get_dark_arcanoi().keys()
-        )
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
 
         if trait in arcanoi_list:
             current_value = getattr(self, trait)
@@ -685,9 +681,7 @@ class Wraith(WtOHuman):
             return output
 
         # Check if trait is an arcanos
-        arcanoi_list = list(self.get_arcanoi().keys()) + list(
-            self.get_dark_arcanoi().keys()
-        )
+        arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
 
         if trait in arcanoi_list:
             cost = self.freebie_cost("arcanos")
@@ -763,9 +757,7 @@ class Wraith(WtOHuman):
         self.pathos = self.pathos_permanent
 
         # Record the spend
-        self.spent_freebies.append(
-            self.freebie_spend_record(trait, "pathos", value, cost)
-        )
+        self.spent_freebies.append(self.freebie_spend_record(trait, "pathos", value, cost))
         return True
 
     def passion_freebies(self, form):
@@ -793,9 +785,7 @@ class Wraith(WtOHuman):
         self.freebies -= cost
 
         # Record the spend
-        self.spent_freebies.append(
-            self.freebie_spend_record("New Fetter", "fetter", rating, cost)
-        )
+        self.spent_freebies.append(self.freebie_spend_record("New Fetter", "fetter", rating, cost))
         return True
 
     def corpus_freebies(self, form):
@@ -809,9 +799,7 @@ class Wraith(WtOHuman):
         self.freebies -= cost
 
         # Record the spend
-        self.spent_freebies.append(
-            self.freebie_spend_record(trait, "corpus", value, cost)
-        )
+        self.spent_freebies.append(self.freebie_spend_record(trait, "corpus", value, cost))
         return True
 
 

@@ -49,9 +49,7 @@ class TestResonanceCreateView(TestCase):
 
 class TestResonanceUpdateView(TestCase):
     def setUp(self):
-        self.resonance = Resonance.objects.create(
-            name="Test Resonance", description="Test"
-        )
+        self.resonance = Resonance.objects.create(name="Test Resonance", description="Test")
         self.valid_data = {
             "name": "Test Resonance 2",
             "correspondence": False,

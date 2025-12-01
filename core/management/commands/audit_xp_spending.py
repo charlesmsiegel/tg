@@ -8,6 +8,7 @@ Checks for:
 - Impossible trait progressions
 - Weekly/Story XP request issues
 """
+
 from datetime import timedelta
 
 from characters.models.core.character import CharacterModel
@@ -53,9 +54,7 @@ class Command(BaseCommand):
             queryset = queryset.filter(chronicle_id=options["chronicle"])
 
         total = queryset.count()
-        self.stdout.write(
-            self.style.SUCCESS(f"\nAuditing XP for {total} character(s)...\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nAuditing XP for {total} character(s)...\n"))
 
         # Collect audit results
         self.results = []
@@ -85,12 +84,8 @@ class Command(BaseCommand):
 
         # Calculate XP totals
         total_earned = char.xp
-        approved_spends = [
-            spend for spend in char.spent_xp if spend.get("approved") == "Approved"
-        ]
-        pending_spends = [
-            spend for spend in char.spent_xp if spend.get("approved") == "Pending"
-        ]
+        approved_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Approved"]
+        pending_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Pending"]
 
         total_approved = sum(spend.get("cost", 0) for spend in approved_spends)
         total_pending = sum(spend.get("cost", 0) for spend in pending_spends)
@@ -107,9 +102,7 @@ class Command(BaseCommand):
 
         # Check if approving pending would cause negative
         if after_pending < 0:
-            warnings.append(
-                f"Pending spends ({total_pending}) exceed remaining XP ({remaining})"
-            )
+            warnings.append(f"Pending spends ({total_pending}) exceed remaining XP ({remaining})")
 
         # Check for excessive pending spends
         if len(pending_spends) > 15:
@@ -151,9 +144,7 @@ class Command(BaseCommand):
 
         # Display critical issues
         if with_issues:
-            self.stdout.write(
-                self.style.ERROR(f"\nCRITICAL ISSUES ({len(with_issues)}):")
-            )
+            self.stdout.write(self.style.ERROR(f"\nCRITICAL ISSUES ({len(with_issues)}):"))
             for result in with_issues:
                 self.display_character_result(result, show_issues=True)
 
@@ -181,9 +172,7 @@ class Command(BaseCommand):
     def display_character_result(self, result, show_issues=False, show_warnings=False):
         """Display audit result for a single character."""
         char = result["character"]
-        self.stdout.write(
-            f"\n  {char.name} (ID: {char.id}, {char.get_status_display()})"
-        )
+        self.stdout.write(f"\n  {char.name} (ID: {char.id}, {char.get_status_display()})")
         self.stdout.write(
             f"    Earned: {result['earned']} | "
             f"Approved: {result['approved']} ({result['approved_count']} spends) | "
@@ -209,9 +198,7 @@ class Command(BaseCommand):
         unapproved_weekly = WeeklyXPRequest.objects.filter(approved=False)
         if unapproved_weekly.exists():
             self.stdout.write(
-                self.style.WARNING(
-                    f"\nUnapproved Weekly XP Requests: {unapproved_weekly.count()}"
-                )
+                self.style.WARNING(f"\nUnapproved Weekly XP Requests: {unapproved_weekly.count()}")
             )
 
             # Show oldest 10

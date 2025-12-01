@@ -58,10 +58,6 @@ urls = [
         views.mage.sorcerer.get_abilities,
         name="get_practice_abilities",
     ),
-    path(
-        "load_attributes/", views.mage.sorcerer.load_attributes, name="load_attributes"
-    ),
-    path(
-        "load_affinities/", views.mage.sorcerer.load_affinities, name="load_affinities"
-    ),
+    path("load_attributes/", views.mage.sorcerer.load_attributes, name="load_attributes"),
+    path("load_affinities/", views.mage.sorcerer.load_affinities, name="load_affinities"),
 ]

@@ -41,9 +41,7 @@ class SpecialtyListView(ListView):
         if stat_type:
             # Get all property_names for the selected stat type
             if stat_type == "ability":
-                stat_property_names = list(
-                    Ability.objects.values_list("property_name", flat=True)
-                )
+                stat_property_names = list(Ability.objects.values_list("property_name", flat=True))
             elif stat_type == "attribute":
                 stat_property_names = list(
                     Attribute.objects.values_list("property_name", flat=True)
@@ -76,9 +74,7 @@ class SpecialtyListView(ListView):
         ]
 
         # Get all unique stats from specialties for the specific stat filter
-        all_stats = (
-            Specialty.objects.values_list("stat", flat=True).distinct().order_by("stat")
-        )
+        all_stats = Specialty.objects.values_list("stat", flat=True).distinct().order_by("stat")
 
         # Map stat property_names to their display names
         stat_choices = []

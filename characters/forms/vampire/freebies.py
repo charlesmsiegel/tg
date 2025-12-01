@@ -43,9 +43,7 @@ class VampireFreebiesForm(HumanFreebiesForm):
 
 
 class GhoulFreebiesForm(HumanFreebiesForm):
-    category = forms.ChoiceField(
-        choices=CATEGORY_CHOICES + [("Discipline", "Discipline")]
-    )
+    category = forms.ChoiceField(choices=CATEGORY_CHOICES + [("Discipline", "Discipline")])
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)

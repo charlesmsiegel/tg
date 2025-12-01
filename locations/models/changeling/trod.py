@@ -102,13 +102,9 @@ class Trod(LocationModel):
     )
 
     # Special properties
-    is_two_way = models.BooleanField(
-        default=True, help_text="Can you travel both directions?"
-    )
+    is_two_way = models.BooleanField(default=True, help_text="Can you travel both directions?")
 
-    is_stable = models.BooleanField(
-        default=True, help_text="Is this trod permanently accessible?"
-    )
+    is_stable = models.BooleanField(default=True, help_text="Is this trod permanently accessible?")
 
     glamour_cost = models.IntegerField(
         default=0,

@@ -148,8 +148,7 @@ class Human(
             ),
             # Apparent age must be reasonable if provided
             CheckConstraint(
-                check=Q(apparent_age__isnull=True)
-                | Q(apparent_age__gte=0, apparent_age__lte=200),
+                check=Q(apparent_age__isnull=True) | Q(apparent_age__gte=0, apparent_age__lte=200),
                 name="characters_human_reasonable_apparent_age",
                 violation_error_message="Apparent age must be between 0 and 200",
             ),
@@ -239,9 +238,7 @@ class Human(
         Returns:
             str: URL path for full creation view
         """
-        return reverse(
-            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full"
-        )
+        return reverse(f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full")
 
     @classmethod
     def get_creation_url(cls):
@@ -251,9 +248,7 @@ class Human(
         Returns:
             str: URL path for creation view
         """
-        return reverse(
-            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}"
-        )
+        return reverse(f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}")
 
     # ========================================================================
     # Freebie and XP Methods
@@ -360,13 +355,12 @@ class Human(
     def add_willpower(self):
         add_dot(self, "willpower", 10)
         return add_dot(self, "temporary_willpower", 10)
-    
+
     def set_willpower(self, value):
         if self.temporary_willpower >= value:
             self.temporary_willpower = value
         self.willpower = value
         self.save()
-
 
     def has_finishing_touches(self):
         return (
@@ -402,9 +396,7 @@ class Human(
     def filter_specialties(self, stat=None):
         if stat is None:
             return Specialty.objects.all().exclude(pk__in=self.specialties.all())
-        return Specialty.objects.filter(stat=stat).exclude(
-            pk__in=self.specialties.all()
-        )
+        return Specialty.objects.filter(stat=stat).exclude(pk__in=self.specialties.all())
 
     def add_specialty(self, specialty):
         if getattr(self, specialty.stat) < 4 and specialty.stat not in [
@@ -459,9 +451,7 @@ class Human(
 
         # Single query to get all specialty stat IDs
         specialty_stat_ids = set(
-            self.specialties.filter(stat__id__in=stat_ids).values_list(
-                "stat_id", flat=True
-            )
+            self.specialties.filter(stat__id__in=stat_ids).values_list("stat_id", flat=True)
         )
 
         # Check if all required stats have specialties
@@ -517,9 +507,7 @@ class Human(
 
     def needed_specialties(self):
         stats = list(Attribute.objects.all()) + list(
-            Ability.objects.filter(
-                property_name__in=self.talents + self.skills + self.knowledges
-            )
+            Ability.objects.filter(property_name__in=self.talents + self.skills + self.knowledges)
         )
 
         stats4 = [x for x in stats if getattr(self, x.property_name, 0) >= 4]

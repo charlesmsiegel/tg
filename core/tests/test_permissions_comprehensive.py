@@ -19,6 +19,7 @@ except ImportError:
     # Create mock pytest module for Django's test runner
     class MockPytest:
         """Mock pytest for when running under Django's test runner."""
+
         class mark:
             @staticmethod
             def django_db(cls):
@@ -47,21 +48,11 @@ class TestPermissionRoles(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "head_st": User.objects.create_user(
-                "head_st", "head_st@test.com", "password123"
-            ),
-            "game_st": User.objects.create_user(
-                "game_st", "game_st@test.com", "password123"
-            ),
-            "player": User.objects.create_user(
-                "player", "player@test.com", "password123"
-            ),
-            "observer": User.objects.create_user(
-                "observer", "observer@test.com", "password123"
-            ),
-            "stranger": User.objects.create_user(
-                "stranger", "stranger@test.com", "password123"
-            ),
+            "head_st": User.objects.create_user("head_st", "head_st@test.com", "password123"),
+            "game_st": User.objects.create_user("game_st", "game_st@test.com", "password123"),
+            "player": User.objects.create_user("player", "player@test.com", "password123"),
+            "observer": User.objects.create_user("observer", "observer@test.com", "password123"),
+            "stranger": User.objects.create_user("stranger", "stranger@test.com", "password123"),
             "admin": User.objects.create_user(
                 "admin",
                 "admin@test.com",
@@ -168,9 +159,7 @@ class TestOwnerPermissions(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "head_st": User.objects.create_user(
-                "head_st", "head_st@test.com", "password123"
-            ),
+            "head_st": User.objects.create_user("head_st", "head_st@test.com", "password123"),
         }
 
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -309,12 +298,8 @@ class TestStorytellerPermissions(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "head_st": User.objects.create_user(
-                "head_st", "head_st@test.com", "password123"
-            ),
-            "game_st": User.objects.create_user(
-                "game_st", "game_st@test.com", "password123"
-            ),
+            "head_st": User.objects.create_user("head_st", "head_st@test.com", "password123"),
+            "game_st": User.objects.create_user("game_st", "game_st@test.com", "password123"),
         }
 
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -376,15 +361,9 @@ class TestVisibilityTiers(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "player": User.objects.create_user(
-                "player", "player@test.com", "password123"
-            ),
-            "stranger": User.objects.create_user(
-                "stranger", "stranger@test.com", "password123"
-            ),
-            "observer": User.objects.create_user(
-                "observer", "observer@test.com", "password123"
-            ),
+            "player": User.objects.create_user("player", "player@test.com", "password123"),
+            "stranger": User.objects.create_user("stranger", "stranger@test.com", "password123"),
+            "observer": User.objects.create_user("observer", "observer@test.com", "password123"),
         }
 
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -441,9 +420,7 @@ class TestViewPermissions404(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "stranger": User.objects.create_user(
-                "stranger", "stranger@test.com", "password123"
-            ),
+            "stranger": User.objects.create_user("stranger", "stranger@test.com", "password123"),
         }
 
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -498,9 +475,7 @@ class TestLimitedFormPermissions(TestCase):
         """Create test users and data."""
         self.users = {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "head_st": User.objects.create_user(
-                "head_st", "head_st@test.com", "password123"
-            ),
+            "head_st": User.objects.create_user("head_st", "head_st@test.com", "password123"),
         }
 
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
@@ -589,21 +564,11 @@ class TestFilterQuerysetForUser:
         """Create test users."""
         return {
             "owner": User.objects.create_user("owner", "owner@test.com", "password123"),
-            "head_st": User.objects.create_user(
-                "head_st", "head_st@test.com", "password123"
-            ),
-            "game_st": User.objects.create_user(
-                "game_st", "game_st@test.com", "password123"
-            ),
-            "player": User.objects.create_user(
-                "player", "player@test.com", "password123"
-            ),
-            "observer": User.objects.create_user(
-                "observer", "observer@test.com", "password123"
-            ),
-            "stranger": User.objects.create_user(
-                "stranger", "stranger@test.com", "password123"
-            ),
+            "head_st": User.objects.create_user("head_st", "head_st@test.com", "password123"),
+            "game_st": User.objects.create_user("game_st", "game_st@test.com", "password123"),
+            "player": User.objects.create_user("player", "player@test.com", "password123"),
+            "observer": User.objects.create_user("observer", "observer@test.com", "password123"),
+            "stranger": User.objects.create_user("stranger", "stranger@test.com", "password123"),
             "admin": User.objects.create_user(
                 "admin",
                 "admin@test.com",
@@ -723,9 +688,7 @@ class TestFilterQuerysetForUser:
 
     def test_stranger_without_chronicle_sees_nothing(self):
         """Stranger with no chronicle connection should see nothing."""
-        stranger = User.objects.create_user(
-            "total_stranger", "stranger@test.com", "password123"
-        )
+        stranger = User.objects.create_user("total_stranger", "stranger@test.com", "password123")
         owner = User.objects.create_user("owner2", "owner2@test.com", "password123")
         chronicle = Chronicle.objects.create(name="Other Chronicle")
 
@@ -808,9 +771,7 @@ class TestFilterQuerysetHelperMethods:
         # Q object should filter by owner=user
         assert isinstance(q, Q)
         # Create a character owned by user and verify filter works
-        char = Human.objects.create(
-            name="Test", owner=user, status="App", concept="Test"
-        )
+        char = Human.objects.create(name="Test", owner=user, status="App", concept="Test")
         results = Human.objects.filter(q)
         assert char in results
 
@@ -864,18 +825,12 @@ class TestFilterQuerysetHelperMethods:
 
     def test_build_observer_filter(self):
         """_build_observer_filter should build Q filter for observers."""
-        observer = User.objects.create_user(
-            "observer", "observer@test.com", "password123"
-        )
+        observer = User.objects.create_user("observer", "observer@test.com", "password123")
         owner = User.objects.create_user("owner", "owner@test.com", "password123")
 
-        char = Human.objects.create(
-            name="Observed", owner=owner, status="App", concept="Test"
-        )
+        char = Human.objects.create(name="Observed", owner=owner, status="App", concept="Test")
 
-        Observer.objects.create(
-            content_object=char, user=observer, granted_by=owner
-        )
+        Observer.objects.create(content_object=char, user=observer, granted_by=owner)
 
         q = PermissionManager._build_observer_filter(observer, Human)
         assert isinstance(q, Q)

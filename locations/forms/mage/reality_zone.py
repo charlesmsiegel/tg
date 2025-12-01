@@ -11,9 +11,9 @@ class RealityZonePracticeRatingForm(forms.ModelForm):
         fields = ["practice", "rating"]
 
     practice = forms.ModelChoiceField(
-        queryset=Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+        queryset=Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+            polymorphic_ctype__model="corruptedpractice"
+        )
     )
     rating = forms.IntegerField(min_value=-5, max_value=5, initial=0)
 

@@ -1,5 +1,6 @@
-from . import generic
 from core.mixins import SpecialUserMixin
+
+from . import generic
 from .book import BookCreateView, BookDetailView, BookListView, BookUpdateView
 from .character_template import (
     CharacterTemplateCreateView,

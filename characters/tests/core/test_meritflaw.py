@@ -5,12 +5,8 @@ from game.models import ObjectType
 
 class TestMeritFlaw(TestCase):
     def setUp(self):
-        human = ObjectType.objects.get_or_create(
-            name="Human", type="char", gameline="wod"
-        )[0]
-        garou = ObjectType.objects.get_or_create(
-            name="Werewolf", type="char", gameline="wta"
-        )[0]
+        human = ObjectType.objects.get_or_create(name="Human", type="char", gameline="wod")[0]
+        garou = ObjectType.objects.get_or_create(name="Werewolf", type="char", gameline="wta")[0]
         changeling = ObjectType.objects.get_or_create(
             name="Changeling", type="char", gameline="ctd"
         )[0]

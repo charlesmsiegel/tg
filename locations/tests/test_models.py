@@ -8,6 +8,7 @@ Tests cover:
 - Gameline-specific locations
 - Permission checks on locations
 """
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from game.models import Chronicle
@@ -63,9 +64,7 @@ class TestLocationModel(TestCase):
             description="A detailed description of the location",
         )
 
-        self.assertEqual(
-            location.description, "A detailed description of the location"
-        )
+        self.assertEqual(location.description, "A detailed description of the location")
 
     def test_location_belongs_to_chronicle(self):
         """Test that locations can belong to chronicles."""
@@ -167,9 +166,7 @@ class TestLocationPermissions(TestCase):
     def test_location_visibility(self):
         """Test location visibility settings."""
         # Locations should support visibility/display settings
-        self.assertTrue(
-            hasattr(self.location, "display") or hasattr(self.location, "visibility")
-        )
+        self.assertTrue(hasattr(self.location, "display") or hasattr(self.location, "visibility"))
 
 
 class TestLocationImageUpload(TestCase):

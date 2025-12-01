@@ -58,50 +58,55 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
     template_name = "game/chronicle/detail.html"
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('storytellers', 'allowed_objects')
+        return super().get_queryset().prefetch_related("storytellers", "allowed_objects")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chronicle = self.object
 
         top_locations = (
-            LocationModel.objects.top_level()
-            .filter(chronicle=chronicle)
-            .order_by("name")
+            LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
         )
         # Active player characters (not NPCs, not retired/deceased)
         active_characters = (
-            Character.objects.active().player_characters().with_group_ordering()
+            Character.objects.active()
+            .player_characters()
+            .with_group_ordering()
             .filter(chronicle=chronicle)
         )
         # Retired characters (not NPCs)
         retired_characters = (
-            Character.objects.retired().player_characters().with_group_ordering()
+            Character.objects.retired()
+            .player_characters()
+            .with_group_ordering()
             .filter(chronicle=chronicle)
         )
         # Deceased characters (not NPCs)
         deceased_characters = (
-            Character.objects.deceased().player_characters().with_group_ordering()
+            Character.objects.deceased()
+            .player_characters()
+            .with_group_ordering()
             .filter(chronicle=chronicle)
         )
         # NPC characters (active only)
         npc_characters = (
-            Character.objects.active().npcs().with_group_ordering()
-            .filter(chronicle=chronicle)
+            Character.objects.active().npcs().with_group_ordering().filter(chronicle=chronicle)
         )
 
-        context.update({
-            "character_list": active_characters,
-            "retired_characters": retired_characters,
-            "deceased_characters": deceased_characters,
-            "npc_characters": npc_characters,
-            "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
-            "form": SceneCreationForm(chronicle=chronicle),
-            "top_locations": top_locations,
-            "active_scenes": Scene.objects.active_for_chronicle(chronicle),
-            "story_form": StoryForm(),
-            "header": chronicle.headings,
-        })
+        context.update(
+            {
+                "character_list": active_characters,
+                "retired_characters": retired_characters,
+                "deceased_characters": deceased_characters,
+                "npc_characters": npc_characters,
+                "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
+                "form": SceneCreationForm(chronicle=chronicle),
+                "top_locations": top_locations,
+                "active_scenes": Scene.objects.active_for_chronicle(chronicle),
+                "story_form": StoryForm(),
+                "header": chronicle.headings,
+            }
+        )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -125,9 +130,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 location,
                 date_of_scene=request.POST["date_of_scene"],
             )
-            messages.success(
-                request, f"Scene '{request.POST['name']}' created successfully!"
-            )
+            messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
             return redirect(scene)
         return self.render_to_response(self.get_context_data())
 
@@ -139,7 +142,7 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
     template_name = "game/scene/detail.html"
 
     def get_queryset(self):
-        return super().get_queryset().select_related('location', 'chronicle')
+        return super().get_queryset().select_related("location", "chronicle")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -150,13 +153,15 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
 
         if user.is_authenticated:
             add_char_form = AddCharForm(user=user, scene=scene)
-            context.update({
-                "add_char_form": add_char_form,
-                "num_chars": add_char_form.fields["character_to_add"].queryset.count(),
-                "num_logged_in_chars": scene.characters.owned_by(user).count(),
-                "first_char": scene.characters.owned_by(user).first(),
-                "post_form": PostForm(user=user, scene=scene),
-            })
+            context.update(
+                {
+                    "add_char_form": add_char_form,
+                    "num_chars": add_char_form.fields["character_to_add"].queryset.count(),
+                    "num_logged_in_chars": scene.characters.owned_by(user).count(),
+                    "first_char": scene.characters.owned_by(user).first(),
+                    "post_form": PostForm(user=user, scene=scene),
+                }
+            )
 
         return context
 
@@ -193,9 +198,7 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
                 if num_logged_in_chars == 1:
                     character = scene.characters.owned_by(request.user).first()
                 else:
-                    character = get_object_or_404(
-                        CharacterModel, pk=request.POST["character"]
-                    )
+                    character = get_object_or_404(CharacterModel, pk=request.POST["character"])
                 # Check that user owns the character
                 if character.owner != request.user:
                     messages.error(request, "You can only post as your own characters.")
@@ -205,13 +208,9 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
                     scene.add_post(character, request.POST["display_name"], message)
                     messages.success(request, "Post added successfully!")
                 except ValueError:
-                    messages.error(
-                        request, "Command does not match the expected format."
-                    )
+                    messages.error(request, "Command does not match the expected format.")
             else:
-                messages.error(
-                    request, "Failed to create post. Please check your input."
-                )
+                messages.error(request, "Failed to create post. Please check your input.")
         return redirect(reverse("game:scene", kwargs={"pk": scene.pk}))
 
     @staticmethod
@@ -294,8 +293,7 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["new_entry_form"] = JournalEntryForm(instance=self.object)
         context["st_response_forms"] = [
-            STResponseForm(entry=e, prefix=f"entry-{e.pk}")
-            for e in self.object.all_entries()
+            STResponseForm(entry=e, prefix=f"entry-{e.pk}") for e in self.object.all_entries()
         ]
         context["is_approved_user"] = self.check_if_special_user(
             self.object.character, self.request.user
@@ -316,9 +314,7 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
                 f.save()
                 messages.success(request, "Journal entry added successfully!")
             else:
-                messages.error(
-                    request, "Failed to add journal entry. Please check your input."
-                )
+                messages.error(request, "Failed to add journal entry. Please check your input.")
         if submit_response is not None:
             # Check that user is a storyteller
             if not request.user.profile.is_st():
@@ -335,12 +331,8 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
                 f.save()
                 messages.success(request, "ST response added successfully!")
             else:
-                messages.error(
-                    request, "Failed to add ST response. Please check your input."
-                )
-        return render(
-            request, "game/journal/detail.html", self.get_context_data(**kwargs)
-        )
+                messages.error(request, "Failed to add ST response. Please check your input.")
+        return render(request, "game/journal/detail.html", self.get_context_data(**kwargs))
 
 
 class ChronicleListView(LoginRequiredMixin, ListView):
@@ -370,8 +362,7 @@ class JournalListView(LoginRequiredMixin, ListView):
         elif filter_by == "st":
             # Show journals for characters in chronicles where user is ST
             st_chronicles = Chronicle.objects.filter(
-                models.Q(head_st=self.request.user)
-                | models.Q(storytellers=self.request.user)
+                models.Q(head_st=self.request.user) | models.Q(storytellers=self.request.user)
             )
             queryset = queryset.filter(character__chronicle__in=st_chronicles)
         return queryset
@@ -449,9 +440,9 @@ class WeekDetailView(LoginRequiredMixin, DetailView):
         context["weekly_characters"] = self.object.weekly_characters()
 
         # Get XP requests for this week
-        context["xp_requests"] = WeeklyXPRequest.objects.filter(
-            week=self.object
-        ).select_related("character")
+        context["xp_requests"] = WeeklyXPRequest.objects.filter(week=self.object).select_related(
+            "character"
+        )
 
         # Separate pending and approved requests
         context["pending_requests"] = context["xp_requests"].filter(approved=False)
@@ -500,9 +491,7 @@ class WeeklyXPRequestListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["is_st"] = self.request.user.profile.is_st()
         if context["is_st"]:
-            context["pending_count"] = WeeklyXPRequest.objects.filter(
-                approved=False
-            ).count()
+            context["pending_count"] = WeeklyXPRequest.objects.filter(approved=False).count()
         return context
 
 
@@ -543,28 +532,20 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
         # Check that user owns the character
         if character.owner != request.user:
-            messages.error(
-                request, "You can only submit requests for your own characters."
-            )
-            raise PermissionDenied(
-                "You can only submit requests for your own characters"
-            )
+            messages.error(request, "You can only submit requests for your own characters.")
+            raise PermissionDenied("You can only submit requests for your own characters")
 
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = get_object_or_404(
-            CharacterModel, pk=self.kwargs["character_pk"]
-        )
+        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
         kwargs["week"] = get_object_or_404(Week, pk=self.kwargs["week_pk"])
         return kwargs
 
     def form_valid(self, form):
         # Check if request already exists
-        if WeeklyXPRequest.objects.filter(
-            character=form.character, week=form.week
-        ).exists():
+        if WeeklyXPRequest.objects.filter(character=form.character, week=form.week).exists():
             messages.error(
                 self.request,
                 f"XP request already exists for {form.character.name} for this week.",
@@ -579,9 +560,7 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character"] = get_object_or_404(
-            CharacterModel, pk=self.kwargs["character_pk"]
-        )
+        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
         context["week"] = get_object_or_404(Week, pk=self.kwargs["week_pk"])
         return context
 
@@ -612,9 +591,7 @@ class WeeklyXPRequestApproveView(StorytellerRequiredMixin, View):
             )
             return redirect("game:week:detail", pk=xp_request.week.pk)
         else:
-            messages.error(
-                request, "Failed to approve XP request. Please check the form."
-            )
+            messages.error(request, "Failed to approve XP request. Please check the form.")
             return redirect("game:weekly_xp_request:detail", pk=xp_request.pk)
 
 
@@ -717,9 +694,7 @@ class SettingElementDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["is_st"] = self.request.user.profile.is_st()
         # Find chronicles that use this setting element
-        context["chronicles"] = Chronicle.objects.filter(
-            common_knowledge_elements=self.object
-        )
+        context["chronicles"] = Chronicle.objects.filter(common_knowledge_elements=self.object)
         return context
 
 

@@ -36,7 +36,7 @@ class PerUserCacheMiddleware(MiddlewareMixin):
 
         This ensures each user gets their own cached version of pages.
         """
-        if not hasattr(request, '_cache_update_cache'):
+        if not hasattr(request, "_cache_update_cache"):
             request._cache_update_cache = True
 
         # Add user ID to cache key for authenticated users
@@ -54,12 +54,12 @@ class PerUserCacheMiddleware(MiddlewareMixin):
         Only caches GET and HEAD requests with successful status codes.
         """
         # Only cache successful GET and HEAD requests
-        if request.method not in ('GET', 'HEAD') or response.status_code != 200:
+        if request.method not in ("GET", "HEAD") or response.status_code != 200:
             return response
 
         # Don't cache responses for authenticated users by default
         # Views can override this with cache decorators
-        if not hasattr(request, '_cache_update_cache') or not request._cache_update_cache:
+        if not hasattr(request, "_cache_update_cache") or not request._cache_update_cache:
             return response
 
         # Set cache headers

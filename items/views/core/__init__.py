@@ -7,6 +7,11 @@ from django.shortcuts import redirect, render
 from django.views import View
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
+
+# Changeling models
+from items.models.changeling.dross import Dross
+from items.models.changeling.treasure import Treasure
+
 # Core models
 from items.models.core.item import ItemModel
 from items.models.core.material import Material
@@ -15,14 +20,14 @@ from items.models.core.meleeweapon import MeleeWeapon
 from items.models.core.rangedweapon import RangedWeapon
 from items.models.core.thrownweapon import ThrownWeapon
 from items.models.core.weapon import Weapon
-# Changeling models
-from items.models.changeling.dross import Dross
-from items.models.changeling.treasure import Treasure
+
 # Demon models
 from items.models.demon.relic import Relic as DemonRelic
+
 # Hunter models
 from items.models.hunter.gear import HunterGear
 from items.models.hunter.relic import HunterRelic
+
 # Mage models
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm
@@ -31,20 +36,23 @@ from items.models.mage.periapt import Periapt
 from items.models.mage.sorcerer_artifact import SorcererArtifact
 from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
+
 # Mummy models
 from items.models.mummy.relic import MummyRelic
 from items.models.mummy.ushabti import Ushabti
 from items.models.mummy.vessel import Vessel
+
 # Vampire models
 from items.models.vampire.artifact import VampireArtifact
 from items.models.vampire.bloodstone import Bloodstone
+
 # Werewolf models
 from items.models.werewolf.fetish import Fetish
 from items.models.werewolf.talen import Talen
+
 # Wraith models
 from items.models.wraith.artifact import WraithArtifact
 from items.models.wraith.relic import WraithRelic
-
 from items.views import mage, werewolf
 
 from .item import ItemCreateView, ItemDetailView, ItemUpdateView
@@ -208,9 +216,9 @@ class ItemIndexView(View):
                 c = ItemModel.objects.filter(chronicle=chron).order_by("name")
             items = [x for x in c if x.type in game_items_types]
 
-            c = ItemModel.objects.filter(
-                id__in=[x.id for x in items], chronicle=chron
-            ).order_by("name")
+            c = ItemModel.objects.filter(id__in=[x.id for x in items], chronicle=chron).order_by(
+                "name"
+            )
             chron_dict[chron] = c
 
         context["chron_dict"] = chron_dict

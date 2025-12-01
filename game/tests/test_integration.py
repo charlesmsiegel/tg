@@ -9,6 +9,7 @@ Tests cover:
 - Journal entry workflows
 - Message processing with rolls and expenditures
 """
+
 from datetime import date, timedelta
 
 from characters.models.core.human import Human
@@ -116,9 +117,7 @@ class TestWeeklyXPRequestFormValidation(TestCase):
             concept="Test",
         )
         self.week = Week.objects.create(end_date=date.today())
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
@@ -290,12 +289,8 @@ class TestSceneCreationForm(TestCase):
 
     def setUp(self):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location1 = LocationModel.objects.create(
-            name="Location 1", chronicle=self.chronicle
-        )
-        self.location2 = LocationModel.objects.create(
-            name="Location 2", chronicle=self.chronicle
-        )
+        self.location1 = LocationModel.objects.create(name="Location 1", chronicle=self.chronicle)
+        self.location2 = LocationModel.objects.create(name="Location 2", chronicle=self.chronicle)
         self.other_chronicle = Chronicle.objects.create(name="Other Chronicle")
         self.other_location = LocationModel.objects.create(
             name="Other Location", chronicle=self.other_chronicle
@@ -342,9 +337,7 @@ class TestAddCharForm(TestCase):
         self.user1 = User.objects.create_user("user1", "user1@test.com", "password")
         self.user2 = User.objects.create_user("user2", "user2@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -390,9 +383,7 @@ class TestPostForm(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -461,9 +452,7 @@ class TestJournalEntryForm(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.char = Human.objects.create(
-            name="Test Character", owner=self.user, concept="Test"
-        )
+        self.char = Human.objects.create(name="Test Character", owner=self.user, concept="Test")
         self.journal = Journal.objects.get(character=self.char)
 
     def test_valid_form(self):
@@ -492,9 +481,7 @@ class TestSTResponseForm(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.char = Human.objects.create(
-            name="Test Character", owner=self.user, concept="Test"
-        )
+        self.char = Human.objects.create(name="Test Character", owner=self.user, concept="Test")
         self.journal = Journal.objects.get(character=self.char)
         self.entry = JournalEntry.objects.create(
             journal=self.journal, message="Test entry", date=date.today()
@@ -543,9 +530,7 @@ class TestStoryViews(TestCase):
 
     def test_story_detail_view(self):
         """Test story detail view."""
-        response = self.client.get(
-            reverse("game:story:detail", kwargs={"pk": self.story.pk})
-        )
+        response = self.client.get(reverse("game:story:detail", kwargs={"pk": self.story.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Story")
 
@@ -573,9 +558,7 @@ class TestWeekModel(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         # Create a week that ends on a Sunday
         sunday = get_next_sunday(date.today())
         self.week = Week.objects.create(end_date=sunday)
@@ -621,9 +604,7 @@ class TestSceneModel(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -682,9 +663,7 @@ class TestMessageProcessing(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.char = Human.objects.create(
-            name="Test Character", owner=self.user, concept="Test"
-        )
+        self.char = Human.objects.create(name="Test Character", owner=self.user, concept="Test")
         self.char.temporary_willpower = 5
         self.char.save()
 
@@ -760,9 +739,7 @@ class TestChronicleModel(TestCase):
 
     def setUp(self):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_add_scene_creates_new_scene(self):
         """Test that add_scene creates a new scene."""
@@ -774,9 +751,7 @@ class TestChronicleModel(TestCase):
     def test_add_scene_with_date(self):
         """Test add_scene with date_of_scene."""
         test_date = date(2024, 1, 15)
-        scene = self.chronicle.add_scene(
-            "Dated Scene", self.location, date_of_scene=test_date
-        )
+        scene = self.chronicle.add_scene("Dated Scene", self.location, date_of_scene=test_date)
         self.assertEqual(scene.date_of_scene, test_date)
 
     def test_add_scene_returns_existing_if_duplicate(self):
@@ -808,12 +783,8 @@ class TestChronicleModel(TestCase):
         user1 = User.objects.create_user("st1", "st1@test.com", "password")
         user2 = User.objects.create_user("st2", "st2@test.com", "password")
         gameline = Gameline.objects.create(name="Test")
-        STRelationship.objects.create(
-            user=user1, chronicle=self.chronicle, gameline=gameline
-        )
-        STRelationship.objects.create(
-            user=user2, chronicle=self.chronicle, gameline=gameline
-        )
+        STRelationship.objects.create(user=user1, chronicle=self.chronicle, gameline=gameline)
+        STRelationship.objects.create(user=user2, chronicle=self.chronicle, gameline=gameline)
         st_list = self.chronicle.storyteller_list()
         self.assertIn("st1", st_list)
         self.assertIn("st2", st_list)
@@ -875,9 +846,7 @@ class TestSceneListView(TestCase):
 
     def setUp(self):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )

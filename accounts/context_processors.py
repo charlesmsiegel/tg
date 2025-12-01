@@ -107,9 +107,7 @@ def notification_count(request):
                     count += journals
 
                 # Count weekly XP approvals (for STs)
-                weekly_xp_approve = len(
-                    profile.get_unfulfilled_weekly_xp_requests_to_approve()
-                )
+                weekly_xp_approve = len(profile.get_unfulfilled_weekly_xp_requests_to_approve())
                 if weekly_xp_approve > 0:
                     breakdown["Weekly XP to Approve"] = weekly_xp_approve
                     count += weekly_xp_approve

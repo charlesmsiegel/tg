@@ -8,9 +8,8 @@ import logging
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.utils import timezone
-
 from characters.models.core import CharacterModel
+from django.utils import timezone
 from game.models import Post, Scene
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,9 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
         # Reject unauthenticated users
         if not self.user.is_authenticated:
-            logger.warning(f"Unauthenticated WebSocket connection attempt for scene {self.scene_id}")
+            logger.warning(
+                f"Unauthenticated WebSocket connection attempt for scene {self.scene_id}"
+            )
             await self.close()
             return
 
@@ -120,10 +121,11 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
         if result is None:
             # add_post returns None for @storyteller messages or errors
-            await self.send(text_data=json.dumps({
-                "type": "system_message",
-                "message": "Message sent to storyteller"
-            }))
+            await self.send(
+                text_data=json.dumps(
+                    {"type": "system_message", "message": "Message sent to storyteller"}
+                )
+            )
             return
 
         if result == "error":
@@ -141,7 +143,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             {
                 "type": "chat_message_broadcast",
                 "post": post_data,
-            }
+            },
         )
 
     async def handle_add_character(self, data):
@@ -177,42 +179,72 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
                     "id": character.pk,
                     "name": character.name,
                     "owner_id": self.user.pk,
-                }
-            }
+                },
+            },
         )
 
     async def chat_message_broadcast(self, event):
         """Send chat message to WebSocket."""
-        await self.send(text_data=json.dumps({
-            "type": "new_post",
-            "post": event["post"],
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "new_post",
+                    "post": event["post"],
+                }
+            )
+        )
 
     async def character_added_broadcast(self, event):
         """Send character added notification to WebSocket."""
-        await self.send(text_data=json.dumps({
-            "type": "character_added",
-            "character": event["character"],
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "character_added",
+                    "character": event["character"],
+                }
+            )
+        )
 
     async def send_error(self, message):
         """Send error message to client."""
-        await self.send(text_data=json.dumps({
-            "type": "error",
-            "message": message,
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "error",
+                    "message": message,
+                }
+            )
+        )
 
     @staticmethod
     def straighten_quotes(s):
         """Normalize various quotation marks to standard ASCII."""
         single_quote_chars = [
-            0x2018, 0x2019, 0x201A, 0x201B, 0x2032, 0x02B9,
-            0x02BB, 0x02BC, 0x02BD, 0x275B, 0x275C, 0xFF07,
-            0x00B4, 0x0060,
+            0x2018,
+            0x2019,
+            0x201A,
+            0x201B,
+            0x2032,
+            0x02B9,
+            0x02BB,
+            0x02BC,
+            0x02BD,
+            0x275B,
+            0x275C,
+            0xFF07,
+            0x00B4,
+            0x0060,
         ]
         double_quote_chars = [
-            0x201C, 0x201D, 0x201E, 0x201F, 0x2033, 0x02BA,
-            0x275D, 0x275E, 0xFF02,
+            0x201C,
+            0x201D,
+            0x201E,
+            0x201F,
+            0x2033,
+            0x02BA,
+            0x275D,
+            0x275E,
+            0xFF02,
         ]
         translation_table = {}
         for code_point in single_quote_chars:
@@ -227,7 +259,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     def get_scene(self):
         """Get scene by ID."""
         try:
-            return Scene.objects.select_related('chronicle', 'location').get(pk=self.scene_id)
+            return Scene.objects.select_related("chronicle", "location").get(pk=self.scene_id)
         except Scene.DoesNotExist:
             return None
 
@@ -235,7 +267,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     def get_character(self, character_id):
         """Get character by ID."""
         try:
-            return CharacterModel.objects.select_related('owner').get(pk=character_id)
+            return CharacterModel.objects.select_related("owner").get(pk=character_id)
         except CharacterModel.DoesNotExist:
             return None
 
@@ -266,7 +298,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def serialize_post(self, post, character):
         """Serialize post data for WebSocket transmission."""
-        is_st = character.owner.profile.is_st() if hasattr(character.owner, 'profile') else False
+        is_st = character.owner.profile.is_st() if hasattr(character.owner, "profile") else False
         return {
             "id": post.pk,
             "character_id": character.pk,

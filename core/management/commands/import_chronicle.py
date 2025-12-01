@@ -3,6 +3,7 @@ Management command to import a chronicle from JSON export.
 
 Imports all data exported by export_chronicle command.
 """
+
 import json
 
 from django.contrib.auth.models import User
@@ -63,9 +64,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("IMPORT SUMMARY"))
         self.stdout.write("=" * 70)
         self.stdout.write(f"Export Date: {import_data.get('export_date', 'Unknown')}")
-        self.stdout.write(
-            f"Export Version: {import_data.get('export_version', 'Unknown')}"
-        )
+        self.stdout.write(f"Export Version: {import_data.get('export_version', 'Unknown')}")
         self.stdout.write(f"Characters: {len(import_data.get('characters', []))}")
         self.stdout.write(f"Items: {len(import_data.get('items', []))}")
         self.stdout.write(f"Locations: {len(import_data.get('locations', []))}")
@@ -74,9 +73,7 @@ class Command(BaseCommand):
         self.stdout.write("=" * 70 + "\n")
 
         if options["dry_run"]:
-            self.stdout.write(
-                self.style.WARNING("[DRY RUN] No data was actually imported")
-            )
+            self.stdout.write(self.style.WARNING("[DRY RUN] No data was actually imported"))
             return
 
         # Perform import in a transaction
@@ -137,9 +134,7 @@ class Command(BaseCommand):
             # Check if user already exists
             if User.objects.filter(username=new_username).exists():
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"  User {new_username} already exists, skipping"
-                    )
+                    self.style.WARNING(f"  User {new_username} already exists, skipping")
                 )
                 continue
 
@@ -177,9 +172,7 @@ class Command(BaseCommand):
                     chronicle.storytellers.add(user)
                 except User.DoesNotExist:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"  Storyteller {mapped_username} not found, skipping"
-                        )
+                        self.style.WARNING(f"  Storyteller {mapped_username} not found, skipping")
                     )
 
         chronicle.save()
@@ -213,27 +206,21 @@ class Command(BaseCommand):
             # Actual deserialization would happen here
 
         self.stdout.write(
-            self.style.WARNING(
-                "  Character import is complex and requires manual review"
-            )
+            self.style.WARNING("  Character import is complex and requires manual review")
         )
 
     def import_items(self, items_data, chronicle):
         """Import items."""
         self.stdout.write(f"Importing {len(items_data)} items...")
         # Similar to characters, simplified
-        self.stdout.write(
-            self.style.WARNING("  Item import is complex and requires manual review")
-        )
+        self.stdout.write(self.style.WARNING("  Item import is complex and requires manual review"))
 
     def import_locations(self, locations_data, chronicle):
         """Import locations."""
         self.stdout.write(f"Importing {len(locations_data)} locations...")
         # Similar to characters, simplified
         self.stdout.write(
-            self.style.WARNING(
-                "  Location import is complex and requires manual review"
-            )
+            self.style.WARNING("  Location import is complex and requires manual review")
         )
 
     def import_scenes(self, scenes_data, chronicle):
@@ -253,6 +240,4 @@ class Command(BaseCommand):
         weekly = xp_data.get("weekly", [])
         story = xp_data.get("story", [])
 
-        self.stdout.write(
-            f"Importing {len(weekly)} weekly + {len(story)} story XP requests..."
-        )
+        self.stdout.write(f"Importing {len(weekly)} weekly + {len(story)} story XP requests...")

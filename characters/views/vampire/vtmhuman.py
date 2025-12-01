@@ -147,9 +147,7 @@ class VtMHumanBasicsView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         self.object.creation_status = 1
         self.object.save()
-        return reverse(
-            "characters:vampire:vtmhuman_creation", kwargs={"pk": self.object.pk}
-        )
+        return reverse("characters:vampire:vtmhuman_creation", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -207,9 +205,7 @@ class VtMHumanTemplateSelectView(LoginRequiredMixin, FormView):
                 f"Applied template '{template.name}'. You can now customize the character further.",
             )
         else:
-            messages.info(
-                self.request, "Starting with blank character. Fill in all attributes."
-            )
+            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
 
         # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1

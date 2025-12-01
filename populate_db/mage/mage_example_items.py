@@ -121,8 +121,7 @@ potion = Talisman.objects.get_or_create(
     quintessence_max=3,
 )[0]
 potion.description = (
-    "An alchemical potion that heals 2 health levels of lethal damage when consumed. "
-    "Single use."
+    "An alchemical potion that heals 2 health levels of lethal damage when consumed. " "Single use."
 )
 potion.add_source("M20 Core", 656)
 potion.set_rank(2)

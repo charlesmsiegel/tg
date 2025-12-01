@@ -93,13 +93,11 @@ class LoadExamplesView(View):
                 if getattr(m, x.property_name, 0) < 4 and hasattr(m, x.property_name)
             ]
         elif category_choice == "New Background":
-            examples = Background.objects.filter(
-                property_name__in=m.allowed_backgrounds
-            ).order_by("name")
+            examples = Background.objects.filter(property_name__in=m.allowed_backgrounds).order_by(
+                "name"
+            )
         elif category_choice == "Existing Background":
-            examples = [
-                x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)
-            ]
+            examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
         elif category_choice == "MeritFlaw":
             companion = ObjectType.objects.get(name="companion")
             examples = MeritFlaw.objects.filter(allowed_types=companion)
@@ -107,9 +105,7 @@ class LoadExamplesView(View):
             if m.total_flaws() <= 0:
                 if m.companion_type == "familiar":
                     max_flaws += 5
-                examples = examples.exclude(
-                    max_rating__lt=min(0, -max_flaws - m.total_flaws())
-                )
+                examples = examples.exclude(max_rating__lt=min(0, -max_flaws - m.total_flaws()))
             examples = examples.exclude(min_rating__gt=m.freebies)
         elif category_choice == "Advantage":
             examples = Advantage.objects.filter(min_rating__lte=m.freebies)
@@ -165,9 +161,7 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
         form.fields["nature"].queryset = Archetype.objects.all().order_by("name")
         form.fields["demeanor"].queryset = Archetype.objects.all().order_by("name")
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        form.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         form.fields["image"].required = False
         return form
 
@@ -226,22 +220,16 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
             paradox_nullification = Advantage.objects.get(name="Paradox Nullification")
             self.object.add_mf(thaumivore, -5)
             self.object.spent_freebies.append(
-                self.object.freebie_spend_record(
-                    thaumivore.name, "meritflaw", -5, cost=-5
-                )
+                self.object.freebie_spend_record(thaumivore.name, "meritflaw", -5, cost=-5)
             )
 
             self.object.add_advantage(bond_sharing, 4)
             self.object.spent_freebies.append(
-                self.object.freebie_spend_record(
-                    bond_sharing.name, "advantage", 4, cost=4
-                )
+                self.object.freebie_spend_record(bond_sharing.name, "advantage", 4, cost=4)
             )
             self.object.add_advantage(paradox_nullification, 2)
             self.object.spent_freebies.append(
-                self.object.freebie_spend_record(
-                    paradox_nullification.name, "advantage", 2, cost=2
-                )
+                self.object.freebie_spend_record(paradox_nullification.name, "advantage", 2, cost=2)
             )
 
             self.object.add_charm(SpiritCharm.objects.get(name="Airt Sense"))
@@ -384,9 +372,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
             self.object.essence = self.object.willpower * 5
         if self.object.freebies == 0:
             self.object.creation_status += 1
-            if "Language" not in self.object.merits_and_flaws.values_list(
-                "name", flat=True
-            ):
+            if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
                 self.object.creation_status += 1
                 self.object.languages.add(Language.objects.get(name="English"))
             for step in [
@@ -543,9 +529,7 @@ class CompanionLibraryView(GenericBackgroundView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        form.fields["name"].initial = (
-            self.current_background.note or f"{obj.name}'s Library"
-        )
+        form.fields["name"].initial = self.current_background.note or f"{obj.name}'s Library"
         tmp = [obj.affiliation, obj.faction, obj.subfaction]
         tmp = [x.pk for x in tmp if hasattr(x, "pk")]
         form.fields["faction"].queryset = MageFaction.objects.filter(pk__in=tmp)
@@ -582,16 +566,12 @@ class CompanionChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(
-            pk=self.kwargs["pk"]
-        )
+        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.chantry_creation_form.fields[
-            "total_points"
-        ].initial = self.current_background.rating
+        form.chantry_creation_form.fields["total_points"].initial = self.current_background.rating
         form.chantry_creation_form.fields["total_points"].widget.attrs.update(
             {
                 "min": self.current_background.rating,

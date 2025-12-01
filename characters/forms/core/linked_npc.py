@@ -2,6 +2,7 @@
 Unified NPC/linked character creation form for all background types.
 This single form handles Allies, Mentors, Contacts, Retainers, and Followers.
 """
+
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.archetype import Archetype
@@ -323,9 +324,7 @@ class LinkedNPCForm(forms.Form):
             specific_info.append(f"Tribe: {self.cleaned_data['tribe_name']}")
 
         if npc_type == "mage" and self.cleaned_data.get("affiliation_name"):
-            specific_info.append(
-                f"Affiliation: {self.cleaned_data['affiliation_name']}"
-            )
+            specific_info.append(f"Affiliation: {self.cleaned_data['affiliation_name']}")
 
         if npc_type == "wraith" and self.cleaned_data.get("guild_name"):
             specific_info.append(f"Guild: {self.cleaned_data['guild_name']}")
@@ -343,9 +342,7 @@ class LinkedNPCForm(forms.Form):
             specific_info.append(f"Fera Type: {self.cleaned_data['fera_type_name']}")
 
         if specific_info:
-            char_data[
-                "notes"
-            ] += "<br><br><strong>Basics to set:</strong><br>" + "<br>".join(
+            char_data["notes"] += "<br><br><strong>Basics to set:</strong><br>" + "<br>".join(
                 specific_info
             )
 

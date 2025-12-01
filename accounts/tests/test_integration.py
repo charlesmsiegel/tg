@@ -7,6 +7,7 @@ Tests cover:
 - Profile view approval workflows
 - ST permission boundaries
 """
+
 from accounts.forms import (
     CustomUserCreationForm,
     FreebieAwardForm,
@@ -125,12 +126,8 @@ class TestCustomUserCreationForm(TestCase):
     def test_form_has_tg_form_control_class(self):
         """Test that form fields have tg-form-control class."""
         form = CustomUserCreationForm()
-        self.assertIn(
-            "tg-form-control", form.fields["username"].widget.attrs.get("class", "")
-        )
-        self.assertIn(
-            "tg-form-control", form.fields["email"].widget.attrs.get("class", "")
-        )
+        self.assertIn("tg-form-control", form.fields["username"].widget.attrs.get("class", ""))
+        self.assertIn("tg-form-control", form.fields["email"].widget.attrs.get("class", ""))
 
 
 class TestProfileUpdateForm(TestCase):
@@ -229,9 +226,7 @@ class TestSceneXPForm(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -265,9 +260,7 @@ class TestSceneXPForm(TestCase):
 
     def test_form_awards_xp_to_selected_characters(self):
         """Test that form awards XP correctly."""
-        form = SceneXP(
-            data={"Character One": True, "Character Two": False}, scene=self.scene
-        )
+        form = SceneXP(data={"Character One": True, "Character Two": False}, scene=self.scene)
         self.assertTrue(form.is_valid())
         form.save()
         self.char1.refresh_from_db()
@@ -289,9 +282,7 @@ class TestFreebieAwardForm(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.char = Human.objects.create(
-            name="Test Character", owner=self.user, concept="Test"
-        )
+        self.char = Human.objects.create(name="Test Character", owner=self.user, concept="Test")
 
     def test_valid_freebie_award(self):
         """Test valid freebie award."""
@@ -455,15 +446,9 @@ class TestProfileObjectQueries(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.char1 = Human.objects.create(
-            name="Character 1", owner=self.user, concept="Test"
-        )
-        self.char2 = Human.objects.create(
-            name="Character 2", owner=self.user, concept="Test"
-        )
-        self.location = LocationModel.objects.create(
-            name="My Location", owner=self.user
-        )
+        self.char1 = Human.objects.create(name="Character 1", owner=self.user, concept="Test")
+        self.char2 = Human.objects.create(name="Character 2", owner=self.user, concept="Test")
+        self.location = LocationModel.objects.create(name="My Location", owner=self.user)
         self.item = ItemModel.objects.create(name="My Item", owner=self.user)
 
     def test_my_characters_returns_owned_characters(self):
@@ -526,9 +511,7 @@ class TestProfileUpdateView(TestCase):
 
     def test_requires_login(self):
         """Test that profile update requires authentication."""
-        response = self.client.get(
-            reverse("profile_update", kwargs={"pk": self.user.profile.pk})
-        )
+        response = self.client.get(reverse("profile_update", kwargs={"pk": self.user.profile.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertIn("/accounts/login", response.url)
 

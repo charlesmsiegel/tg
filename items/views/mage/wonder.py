@@ -12,9 +12,9 @@ class WonderDetailView(DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["resonance"] = WonderResonanceRating.objects.filter(
-            wonder=self.object
-        ).order_by("resonance__name")
+        context["resonance"] = WonderResonanceRating.objects.filter(wonder=self.object).order_by(
+            "resonance__name"
+        )
         return context
 
 

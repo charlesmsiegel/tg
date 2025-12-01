@@ -8,10 +8,8 @@ Tests cover:
 - XP spending forms
 - Freebie spending forms
 """
-from characters.forms.core import (
-    LimitedCharacterEditForm,
-    LimitedHumanEditForm,
-)
+
+from characters.forms.core import LimitedCharacterEditForm, LimitedHumanEditForm
 from characters.models.core import Character, Human
 from django.contrib.auth.models import User
 from django.test import TestCase

@@ -12,9 +12,7 @@ class SanctumForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         self.fields["parent"].required = False
         if self.instance.pk and self.instance.reality_zone:
             self.reality_zone = self.instance.reality_zone
@@ -37,9 +35,7 @@ class SanctumForm(forms.ModelForm):
         sanctum.rank = self.cleaned_data.get("rank")
         if commit:
             sanctum.save()
-            self.reality_zone.name = (
-                sanctum.name
-            )  # Or get from form if you have a RealityZoneForm
+            self.reality_zone.name = sanctum.name  # Or get from form if you have a RealityZoneForm
             self.reality_zone.save()
             sanctum.reality_zone = self.reality_zone
             sanctum.save()
@@ -78,8 +74,6 @@ class SanctumForm(forms.ModelForm):
             raise forms.ValidationError("Reality Zone Ratings must total 0")
 
         if total_positive_rz_rating != rank:
-            raise forms.ValidationError(
-                "Positive Reality Zone Ratings must sum to Node rating"
-            )
+            raise forms.ValidationError("Positive Reality Zone Ratings must sum to Node rating")
 
         return cleaned_data

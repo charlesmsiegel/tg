@@ -14,9 +14,7 @@ class ParadoxRealmDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["obstacles"] = ParadoxObstacle.objects.filter(
-            realm=self.object
-        ).order_by("order")
+        context["obstacles"] = ParadoxObstacle.objects.filter(realm=self.object).order_by("order")
         context["atmospheres"] = ParadoxAtmosphere.objects.filter(realm=self.object)
         return context
 

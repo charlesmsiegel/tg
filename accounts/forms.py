@@ -111,9 +111,7 @@ class SceneXP(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        cleaned_data = {
-            self.scene.characters.get(name=k): v for k, v in cleaned_data.items()
-        }
+        cleaned_data = {self.scene.characters.get(name=k): v for k, v in cleaned_data.items()}
         for key1 in cleaned_data.keys():
             for key2 in self.data.keys():
                 if key1.name in key2:
@@ -153,8 +151,7 @@ class StoryXP(forms.Form):
                 keyname = item.split("-")[-1]
                 if keyname != "duration":
                     char_dict[keyname] = (
-                        relevant_data[f"story_{self.story.pk}-{char.name}-{keyname}"]
-                        == "on"
+                        relevant_data[f"story_{self.story.pk}-{char.name}-{keyname}"] == "on"
                     )
                 else:
                     char_dict[keyname] = int(
@@ -174,6 +171,4 @@ class FreebieAwardForm(forms.Form):
 
     def save(self, commit=True):
         """Save freebie awards using the Character model's business logic."""
-        return self.character.award_backstory_freebies(
-            self.cleaned_data["backstory_freebies"]
-        )
+        return self.character.award_backstory_freebies(self.cleaned_data["backstory_freebies"])

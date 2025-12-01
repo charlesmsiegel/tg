@@ -24,9 +24,7 @@ class AbilityBlock(models.Model):
     athletics = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    brawl = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    brawl = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     empathy = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
@@ -46,18 +44,14 @@ class AbilityBlock(models.Model):
     crafts = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    drive = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    drive = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     etiquette = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     firearms = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    melee = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    melee = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
     stealth = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
@@ -190,9 +184,7 @@ class AbilityBlock(models.Model):
         return tmp
 
     def filter_abilities(self, minimum=0, maximum=5):
-        return {
-            k: v for k, v in self.get_abilities().items() if minimum <= v <= maximum
-        }
+        return {k: v for k, v in self.get_abilities().items() if minimum <= v <= maximum}
 
     def get_talents(self):
         return {k: getattr(self, k) for k in self.talents}
@@ -227,9 +219,7 @@ class AbilityBlock(models.Model):
             if k not in self.primary_abilities and v != 0
         }
         secondary_skills = {
-            k: v
-            for k, v in self.get_skills().items()
-            if k not in self.primary_abilities and v != 0
+            k: v for k, v in self.get_skills().items() if k not in self.primary_abilities and v != 0
         }
         secondary_knowledges = {
             k: v
@@ -238,20 +228,14 @@ class AbilityBlock(models.Model):
         }
 
         if "History Knowledge" in secondary_knowledges:
-            secondary_knowledges["History"] = secondary_knowledges.pop(
-                "History Knowledge"
-            )
+            secondary_knowledges["History"] = secondary_knowledges.pop("History Knowledge")
 
         secondary_talents = list(secondary_talents.items())
         secondary_skills = list(secondary_skills.items())
         secondary_knowledges = list(secondary_knowledges.items())
 
-        secondary_talents = [
-            (k.replace("_", " ").title(), v, k) for k, v in secondary_talents
-        ]
-        secondary_skills = [
-            (k.replace("_", " ").title(), v, k) for k, v in secondary_skills
-        ]
+        secondary_talents = [(k.replace("_", " ").title(), v, k) for k, v in secondary_talents]
+        secondary_skills = [(k.replace("_", " ").title(), v, k) for k, v in secondary_skills]
         secondary_knowledges = [
             (k.replace("_", " ").title(), v, k) for k, v in secondary_knowledges
         ]

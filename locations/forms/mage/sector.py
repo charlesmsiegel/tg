@@ -65,9 +65,7 @@ class SectorForm(forms.ModelForm):
             {"placeholder": "Sector name (e.g., 'Spy's Demise')"}
         )
         self.fields["description"].widget.attrs.update(
-            {
-                "placeholder": "Describe the sector's appearance, purpose, and general atmosphere..."
-            }
+            {"placeholder": "Describe the sector's appearance, purpose, and general atmosphere..."}
         )
         self.fields["genre_theme"].widget.attrs.update(
             {"placeholder": "e.g., Film Noir, Cyberpunk, Medieval Fantasy"}
@@ -87,9 +85,7 @@ class SectorForm(forms.ModelForm):
             {"placeholder": "e.g., Iteration X, The Bartender, Virtual Adepts"}
         )
         self.fields["hazards"].widget.attrs.update(
-            {
-                "placeholder": "Environmental hazards, hostile entities, security measures, etc."
-            }
+            {"placeholder": "Environmental hazards, hostile entities, security measures, etc."}
         )
         self.fields["notable_features"].widget.attrs.update(
             {"placeholder": "Landmarks, AROs, unique properties, special locations..."}

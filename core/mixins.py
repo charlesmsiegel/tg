@@ -129,9 +129,7 @@ class VisibilityFilterMixin:
             context["user_can_spend_xp"] = PermissionManager.user_can_spend_xp(
                 self.request.user, self.object
             )
-            context[
-                "user_can_spend_freebies"
-            ] = PermissionManager.user_can_spend_freebies(
+            context["user_can_spend_freebies"] = PermissionManager.user_can_spend_freebies(
                 self.request.user, self.object
             )
             # Add the VisibilityTier enum to context for template comparisons
@@ -188,10 +186,7 @@ class STRequiredMixin:
 
         # Check if user is head ST of the chronicle
         if hasattr(obj, "chronicle") and obj.chronicle:
-            if (
-                hasattr(obj.chronicle, "head_st")
-                and obj.chronicle.head_st == request.user
-            ):
+            if hasattr(obj.chronicle, "head_st") and obj.chronicle.head_st == request.user:
                 return super().dispatch(request, *args, **kwargs)
             elif hasattr(obj.chronicle, "head_storytellers"):
                 if obj.chronicle.head_storytellers.filter(id=request.user.id).exists():
@@ -421,6 +416,4 @@ class CharacterOwnerOrSTMixin:
             if obj.character.owner == request.user:
                 return super().dispatch(request, *args, **kwargs)
 
-        raise PermissionDenied(
-            "Only the character owner or storytellers can access this"
-        )
+        raise PermissionDenied("Only the character owner or storytellers can access this")

@@ -15,10 +15,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
+from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase, override_settings
-
-from characters.models.core.human import Human
 from game.consumers import SceneChatConsumer
 from game.models import Chronicle, Gameline, Post, Scene, STRelationship
 from locations.models.core import LocationModel
@@ -40,9 +39,7 @@ class SceneChatConsumerUnitTests(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -60,8 +57,8 @@ class SceneChatConsumerUnitTests(TestCase):
         # Test various single quote characters
         test_strings = [
             ("\u2018test\u2019", "'test'"),  # LEFT/RIGHT SINGLE QUOTATION MARK
-            ("\u201Atest\u201B", "'test'"),  # SINGLE LOW-9/HIGH-REVERSED-9
-            ("\u2032test\u02B9", "'test'"),  # PRIME/MODIFIER LETTER PRIME
+            ("\u201atest\u201b", "'test'"),  # SINGLE LOW-9/HIGH-REVERSED-9
+            ("\u2032test\u02b9", "'test'"),  # PRIME/MODIFIER LETTER PRIME
         ]
         for input_str, expected in test_strings:
             result = consumer.straighten_quotes(input_str)
@@ -72,9 +69,9 @@ class SceneChatConsumerUnitTests(TestCase):
         consumer = SceneChatConsumer()
         # Test various double quote characters
         test_strings = [
-            ("\u201Ctest\u201D", '"test"'),  # LEFT/RIGHT DOUBLE QUOTATION MARK
-            ("\u201Etest\u201F", '"test"'),  # DOUBLE LOW-9/HIGH-REVERSED-9
-            ("\u2033test\u02BA", '"test"'),  # DOUBLE PRIME/MODIFIER
+            ("\u201ctest\u201d", '"test"'),  # LEFT/RIGHT DOUBLE QUOTATION MARK
+            ("\u201etest\u201f", '"test"'),  # DOUBLE LOW-9/HIGH-REVERSED-9
+            ("\u2033test\u02ba", '"test"'),  # DOUBLE PRIME/MODIFIER
         ]
         for input_str, expected in test_strings:
             result = consumer.straighten_quotes(input_str)
@@ -83,8 +80,8 @@ class SceneChatConsumerUnitTests(TestCase):
     def test_straighten_quotes_mixed(self):
         """Test normalizing mixed quote types."""
         consumer = SceneChatConsumer()
-        input_str = "\u201CHe said \u2018hello\u2019\u201D"
-        expected = '"He said \'hello\'"'
+        input_str = "\u201cHe said \u2018hello\u2019\u201d"
+        expected = "\"He said 'hello'\""
         result = consumer.straighten_quotes(input_str)
         self.assertEqual(result, expected)
 
@@ -106,9 +103,7 @@ class SceneChatConsumerConnectionTests(TransactionTestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -124,9 +119,7 @@ class SceneChatConsumerConnectionTests(TransactionTestCase):
         """Test that unauthenticated users cannot connect."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         # Don't set user (anonymous)
         connected, _ = await communicator.connect()
         self.assertFalse(connected)
@@ -136,9 +129,7 @@ class SceneChatConsumerConnectionTests(TransactionTestCase):
         """Test that authenticated users can connect."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         connected, _ = await communicator.connect()
         self.assertTrue(connected)
@@ -168,9 +159,7 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
             username="testuser2", email="test2@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -192,19 +181,19 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
         """Test sending a chat message via WebSocket."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
         # Send a chat message
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "Hello, world!",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "Hello, world!",
+            }
+        )
 
         # Receive the broadcast
         response = await communicator.receive_json_from()
@@ -222,18 +211,18 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
             lambda: Post.objects.filter(scene=self.scene).count()
         )()
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "Test message for database",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "Test message for database",
+            }
+        )
 
         # Wait for response
         await communicator.receive_json_from()
@@ -255,19 +244,19 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
         """Test that users cannot post as characters they don't own."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
         # Try to post as user2's character
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character2.pk,
-            "display_name": "",
-            "message": "Trying to impersonate",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character2.pk,
+                "display_name": "",
+                "message": "Trying to impersonate",
+            }
+        )
 
         # Should receive an error
         response = await communicator.receive_json_from()
@@ -283,18 +272,18 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
         # Close the scene
         await database_sync_to_async(self.scene.close)()
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "Post to finished scene",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "Post to finished scene",
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "error")
@@ -306,18 +295,18 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
         """Test that empty messages are rejected."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "   ",  # Whitespace only
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "   ",  # Whitespace only
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "error")
@@ -332,19 +321,19 @@ class SceneChatConsumerMessageTests(TransactionTestCase):
         # Add character to scene for user2 but not for user
         await database_sync_to_async(self.scene.add_character)(self.character2)
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user2
         await communicator.connect()
 
         # Character2 is in scene, so this should work
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character2.pk,
-            "display_name": "",
-            "message": "Valid message",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character2.pk,
+                "display_name": "",
+                "message": "Valid message",
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "new_post")
@@ -365,9 +354,7 @@ class SceneChatConsumerBroadcastTests(TransactionTestCase):
             username="user2", email="user2@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -400,12 +387,14 @@ class SceneChatConsumerBroadcastTests(TransactionTestCase):
         await comm2.connect()
 
         # User1 sends a message
-        await comm1.send_json_to({
-            "type": "chat_message",
-            "character_id": self.char1.pk,
-            "display_name": "",
-            "message": "Hello from user1",
-        })
+        await comm1.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.char1.pk,
+                "display_name": "",
+                "message": "Hello from user1",
+            }
+        )
 
         # Both clients should receive the broadcast
         response1 = await comm1.receive_json_from()
@@ -430,9 +419,7 @@ class SceneChatConsumerDiceRollTests(TransactionTestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -450,18 +437,18 @@ class SceneChatConsumerDiceRollTests(TransactionTestCase):
         """Test that dice roll commands are processed."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "Rolling dice /roll 5 difficulty 6",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "Rolling dice /roll 5 difficulty 6",
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "new_post")
@@ -475,18 +462,18 @@ class SceneChatConsumerDiceRollTests(TransactionTestCase):
         """Test that stat-based roll commands are processed."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "chat_message",
-            "character_id": self.character.pk,
-            "display_name": "",
-            "message": "Shooting /stat Dexterity + Firearms",
-        })
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": "Shooting /stat Dexterity + Firearms",
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "new_post")
@@ -511,9 +498,7 @@ class SceneChatConsumerAddCharacterTests(TransactionTestCase):
             username="testuser2", email="test2@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -534,16 +519,16 @@ class SceneChatConsumerAddCharacterTests(TransactionTestCase):
         """Test adding own character to scene via WebSocket."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "add_character",
-            "character_id": self.character.pk,
-        })
+        await communicator.send_json_to(
+            {
+                "type": "add_character",
+                "character_id": self.character.pk,
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "character_added")
@@ -561,16 +546,16 @@ class SceneChatConsumerAddCharacterTests(TransactionTestCase):
         """Test that users cannot add characters they don't own."""
         from tg.asgi import application
 
-        communicator = WebsocketCommunicator(
-            application, f"/ws/scene/{self.scene.pk}/"
-        )
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
         communicator.scope["user"] = self.user
         await communicator.connect()
 
-        await communicator.send_json_to({
-            "type": "add_character",
-            "character_id": self.character2.pk,
-        })
+        await communicator.send_json_to(
+            {
+                "type": "add_character",
+                "character_id": self.character2.pk,
+            }
+        )
 
         response = await communicator.receive_json_from()
         self.assertEqual(response["type"], "error")
@@ -588,9 +573,7 @@ class SceneDetailViewIntegrationTests(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -656,9 +639,7 @@ class SceneDetailViewIntegrationTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)  # Redirect after post
-        self.assertEqual(
-            Post.objects.filter(scene=self.scene).count(), initial_count + 1
-        )
+        self.assertEqual(Post.objects.filter(scene=self.scene).count(), initial_count + 1)
 
         post = Post.objects.filter(scene=self.scene).latest("datetime_created")
         self.assertEqual(post.message, "Standard form post")
@@ -693,9 +674,7 @@ class PostModelIntegrationTests(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -740,9 +719,7 @@ class PostModelIntegrationTests(TestCase):
 
     def test_add_post_storyteller_message(self):
         """Test that @storyteller messages work correctly."""
-        result = self.scene.add_post(
-            self.character, "", "@storyteller Please help!"
-        )
+        result = self.scene.add_post(self.character, "", "@storyteller Please help!")
 
         # @storyteller messages return None
         self.assertIsNone(result)

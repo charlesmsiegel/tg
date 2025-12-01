@@ -8,6 +8,7 @@ Tests cover:
 - Theme preferences
 - Permission cascading for STs
 """
+
 from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import TestCase

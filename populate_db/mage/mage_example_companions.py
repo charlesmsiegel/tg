@@ -330,9 +330,7 @@ ancestor.add_source("Lore of the Traditions", 109)
 ancestor.save()
 ancestor.add_advantage(empathic_bond, 2)
 ancestor.charms.set(
-    SpiritCharm.objects.filter(
-        name__in=["Mind Speech", "Materialize", "Airt Sense", "Realm Sense"]
-    )
+    SpiritCharm.objects.filter(name__in=["Mind Speech", "Materialize", "Airt Sense", "Realm Sense"])
 )
 
 # Plant Familiar (Verbena)

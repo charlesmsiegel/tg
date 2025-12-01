@@ -75,9 +75,7 @@ sirens_song.secondary_lore_of_requirements = [
 ]
 sirens_song.base_cost = 18
 sirens_song.minimum_casting_time = 36
-sirens_song.restrictions = (
-    "This ritual must be performed at the edge of a large body of water."
-)
+sirens_song.restrictions = "This ritual must be performed at the edge of a large body of water."
 sirens_song.system = """Roll Manipulation + Performance. The number of successes determines the radius of the ritual's effect in 100-yard increments, measured from the center of the sigil. If the Ankida's player rolls five successes, the ritual affects every living being within a 500-yard radius. Any mortals caught within this radius will stop what they are doing and make their way toward the ritual sigil unless a successful Willpower roll (difficulty 8) is made. Affected individuals will walk in the most direct path toward the sigil regardless of potential danger. Victims have been known to walk over cliffs, drown themselves in lakes and stagger onto the blades of their enemies. While affected by the ritual, victims can take no other action, even to defend themselves. Once successfully cast, the ritual continues as long as the ritual members continue to sing. Make Stamina + Performance rolls (difficulty 6) for every ritual participant each turn to see if they can continue to maintain the song."""
 sirens_song.torment_effect = """The high-Torment version of this song fills the mind of a listener with visions of madness and anguish. Make a Willpower roll (difficulty 8) for any mortal or demon caught within the area of effect. If the roll fails, the victim is overcome with visions of the Abyss and falls to the ground, writhing in pain and fear. Affected individuals can take no actions of any kind as long as the song continues. If the Willpower roll botches, a mortal victim gains a temporary derangement as well. A demon gains one point of temporary Torment."""
 sirens_song.variations = "Legend speaks of a version of this ritual that could be centered on distant locations far removed from the casting sigil. Add Firmament •• to the ritual's secondary lore."
@@ -250,9 +248,7 @@ defeat_scry.restrictions = "The protected area is defined by the size of the sig
 defeat_scry.system = """Roll Perception + Alertness. The number of successes rolled is subtracted from any attempt to cast the Scry evocation (Firmament ••) on any object or person within the specified area. If the Scry attempt still succeeds, the target of the evocation glows a pale blue. If an object or a person that is already the focus of a Scry attempt enters the protected area, the subject glows blue as well. The protection lasts 12 hours per point of Faith."""
 defeat_scry.torment_effect = """The high-Torment effect of this ritual inflicts one health level of bashing damage each turn against individuals attempting to scry into the affected area (this damage can not be soaked). They can still view what is going on, but it's like getting an eyeful of tear gas when they do."""
 defeat_scry.variations = "Rumors abound that a ritual could be cast that interferes with scrying attempts, making it appear that the area was empty or that a specifically programmed action was happening within it. Add Light ••••."
-defeat_scry.flavor_text = (
-    "This ritual creates an area that is protected from scrying attempts."
-)
+defeat_scry.flavor_text = "This ritual creates an area that is protected from scrying attempts."
 defeat_scry.source_page = "DPG 191"
 defeat_scry.save()
 
@@ -476,7 +472,9 @@ wind_of_years.secondary_lore_of_requirements = [
 ]
 wind_of_years.base_cost = 44
 wind_of_years.minimum_casting_time = 121
-wind_of_years.restrictions = "This ritual must be performed during fall or winter, during the waning phases of the moon."
+wind_of_years.restrictions = (
+    "This ritual must be performed during fall or winter, during the waning phases of the moon."
+)
 wind_of_years.system = """Roll Stamina + Medicine. The ritual affects an area with a radius in 10-yard increments equal to the Ankida's Faith score at the time the ritual is successfully cast. Every individual except the Ankida's friends or allies within the affected area lose a number of Physical and/or Mental Attribute dots equal to the successes rolled as their bodies become decades older. If a player controls an affected character, she chooses which traits are affected; otherwise the trait loss is at the Storyteller's discretion. If any trait drops to 0, the character falls unconscious. The effects of this ritual last for the duration of a single scene, after which the victims return to their normal age and their trait levels are restored."""
 wind_of_years.torment_effect = """The high-Torment version of this ritual directly affects a victim's life force instead of her physical body. Instead of reducing traits, each success rolled removes one health level from a victim, beginning with Bruised and working down through the available levels. Note that this isn't inflicting damage per se — it is reducing the amount of health levels the character has available to withstand damage. If the victim already has suffered damage prior to being affected by the ritual, shift the damage downward to the health levels still available."""
 wind_of_years.variations = "Legend has it that a variation of this ritual was designed to affect specific individuals, no matter how far away they are from the ritual sigil. Add Firmament ••• and Humanity •• to the ritual's secondary lore. In addition the Ankida must know the name of the individual to be affected."
@@ -499,9 +497,7 @@ disarm.secondary_lore_of_requirements = [
 ]
 disarm.base_cost = 10
 disarm.minimum_casting_time = 25
-disarm.restrictions = (
-    "A piece of magnetized iron must be placed in the center of the sigil."
-)
+disarm.restrictions = "A piece of magnetized iron must be placed in the center of the sigil."
 disarm.system = """Roll Strength + Technology. The number of successes determines the complexity of the weapons affected by the ritual. One success renders high-tech weapons that use electronic components inoperable. Two successes render complex mechanical weapons such as automatic rifles and machine guns inoperable. Three successes render basic mechanical weapons such as revolvers or crossbows inoperable. Four or more successes render the most basic weapons such as knives and axes unable to function. If used, they will automatically miss their target. This ritual affects an area in a radius of 100-yard increments equal to the Ankida's Faith score at the time the ritual is successfully cast, and its effects last for the duration of the scene."""
 disarm.torment_effect = """The high-Torment effect of this ritual allows weapons to function within the affected area but increases the chance for catastrophic accidents. Each success rolled increases the range of numbers that cause a botch on a weapon's to-hit roll. Therefore, if the effect roll netted four successes, any weapons used within the area of effect would botch on a roll of 1, 2, 3, 4 or 5. If a to-hit roll botches, the weapon hits its wielder or the wielder's nearest friend or ally instead."""
 disarm.variations = ""
@@ -562,9 +558,7 @@ local_interference.secondary_lore_of_requirements = [
 ]
 local_interference.base_cost = 27
 local_interference.minimum_casting_time = 81
-local_interference.restrictions = (
-    "The ritual must be performed outdoors in direct sunlight."
-)
+local_interference.restrictions = "The ritual must be performed outdoors in direct sunlight."
 local_interference.system = """Roll Wits + Occult. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled and centered on the sigil. The effect lasts for two hours per point of the Ankida's Faith score. Within the affected area, all electrical equipment will cease to function. Motors will run erratically or not at all, power lines will fail, and electromagnetic communications cannot pass through the area in either direction (radio, TV, cellular signals and wireless internet will not work). Mechanical equipment such as cars, guns and other complex devices will continue to work. Note that on a botch, electrical equipment in the affected area is destroyed. The donation of five temporary Willpower from the ritual members makes the effect permanent."""
 local_interference.torment_effect = """The high-Torment version of this ritual goes a step further, affecting mechanical equipment as well as electrical. Engines fail to run, guns cannot fire, locks cannot open and so on. The effect is so powerful that even simple tools refuse to work while in the affected area, though the level of failure is up to the Storyteller. At best, a hammer will refuse to hit a nail; at worst, a belt buckle will not close."""
 local_interference.variations = ""
@@ -584,9 +578,7 @@ rain_of_brimstone.secondary_lore_of_requirements = [
 ]
 rain_of_brimstone.base_cost = 30
 rain_of_brimstone.minimum_casting_time = 100
-rain_of_brimstone.restrictions = (
-    "The sigil is drawn on bare rock under the light of the sun."
-)
+rain_of_brimstone.restrictions = "The sigil is drawn on bare rock under the light of the sun."
 rain_of_brimstone.system = """Roll Stamina + Survival. The ritual affects an area with a radius in 100-yard increments equal to the number of successes rolled. The rain of stones will last for one turn per point of the Ankida's Faith score. All individuals within the rain's area of effect who can't find shelter suffer one level of lethal damage each turn. The Storyteller makes Dexterity + Athletics rolls (difficulty 7) for individuals affected by the rain. Each success reduces the amount of damage inflicted that turn by one. Botches are particularly unfortunate. The rain of brimstone is centered on a point within the Ankida's line of sight, not necessarily on the ritual sigil."""
 rain_of_brimstone.torment_effect = """The high-Torment version of this ritual rains down sulfurous rock that seems to target specific individuals, friend or foe. The damage pool for each individual becomes two dice per point of the Ankida's Torment score, and successes rolled on Dexterity + Athletics don't reduce the damage. Instead they must be matched one-for-one with lethal damage dice. If, for example, the Ankida's Torment score is 6, 12 dice are rolled against each individual in the area. A victim makes a Dexterity + Athletics roll and gets four successes. Those four successes cancel four dice, so the remaining eight dice are rolled for damage against the victim."""
 rain_of_brimstone.variations = ""
@@ -628,9 +620,7 @@ micaraels_sight.secondary_lore_of_requirements = [
 ]
 micaraels_sight.base_cost = 8
 micaraels_sight.minimum_casting_time = 16
-micaraels_sight.restrictions = (
-    "The ritual must be performed in an area lit well enough to read by."
-)
+micaraels_sight.restrictions = "The ritual must be performed in an area lit well enough to read by."
 micaraels_sight.system = """Roll Perception + Crafts. The Ankida can see through solid, non-living matter as though it were clear glass. Each success applies the effect to a cubic foot of matter whose perceived volume can be distributed as needed (for example, a six inch x two foot x one foot pane in a brick wall that is six inches thick), anywhere within the Ankida's sight. The effect lasts for a number of turns equal to the Ankida's Faith score."""
 micaraels_sight.torment_effect = """The high-Torment effect of this ritual causes the Ankida to see hallucinations that feed the character's paranoia. The demon might see a group of Earthbound thralls laying an ambush for her, or she might see one of her thralls meeting secretly with her worst rival. The Storyteller should choose a hallucination appropriate to the character's personality and the situation, and present the vision as though the character were really seeing it."""
 micaraels_sight.variations = "With the addition of Longing ••, this ritual works as a warning, extending to an area 50 feet beyond the perimeter of the sigil. Whenever anyone who wishes the Ankida harm comes into this area, any solid matter between them becomes transparent to her sight, the window moving as required. As many as one enemy can be viewed per success rolled, and the effect lasts half an hour per Faith point."
@@ -797,9 +787,7 @@ incarnate_spirit.secondary_lore_of_requirements = [
 ]
 incarnate_spirit.base_cost = 21
 incarnate_spirit.minimum_casting_time = 49
-incarnate_spirit.restrictions = (
-    "This ritual can be performed only on the night of the new moon."
-)
+incarnate_spirit.restrictions = "This ritual can be performed only on the night of the new moon."
 incarnate_spirit.system = """Roll Intelligence + Occult. The number of successes required depends on the thickness of the barrier between the realms in the ritual area. A relatively weak area, such as a graveyard or a church, might require only one success, while a relatively strong area such as a science lab might require as many as four successes. If the roll succeeds the Ankida can incarnate as many spirits as her Faith score. These spirits can be seen and communicated with, and they can even interact with the physical world as though they were flesh and blood, though they are physically weak and frail. Each incarnate spirit has effectively one dot in each of her Physical Attributes, though her Mental and Social Attributes are the same as they were when she was alive (as determined by the Storyteller). If the incarnate spirit suffers a single health level of damage, be it bashing, lethal or aggravated, the body discorporates. In this quasi-physical form, the spirit cannot use any supernatural powers it possesses."""
 incarnate_spirit.torment_effect = """The high-Torment version of this ritual infuses the incarnate spirit with some of the Ankida's hate and malevolence, causing it to behave maliciously toward mortals in its presence. If communicated with, it is intentionally hurtful and deceitful, and will try to find ways to injure or kill living beings in its proximity."""
 incarnate_spirit.variations = ""
@@ -945,9 +933,7 @@ shooting_star.secondary_lore_of_requirements = [
 ]
 shooting_star.base_cost = 21
 shooting_star.minimum_casting_time = 49
-shooting_star.restrictions = (
-    "This ritual must be performed outdoors under a clear night sky."
-)
+shooting_star.restrictions = "This ritual must be performed outdoors under a clear night sky."
 shooting_star.system = """Roll Charisma + Occult. The ritual creates a brilliant streak of light across the sky that can be seen for hundreds of miles. The shooting star appears to originate from the ritual site and travels in a direction chosen by the Ankida. The number of successes determines how bright and long-lasting the phenomenon is. With one success, the light is visible for a few seconds; with five successes, it burns brightly for several minutes. The Ankida can encode a simple message into the pattern of the light (a specific number of pulses, a particular color, etc.) that can be recognized by allies who know what to look for. The ritual was commonly used as a signal during the war, visible across vast distances."""
 shooting_star.torment_effect = """The high-Torment version of this ritual creates a falling star that appears to crash to earth at a location chosen by the Ankida within her line of sight. When the "star" impacts, it creates an explosion with a radius of 10 yards times the number of successes rolled. Everyone within the blast radius suffers a number of dice of lethal damage equal to the Ankida's Torment score. The explosion is obviously supernatural in nature and leaves behind scorched earth and a lingering sense of dread."""
 shooting_star.variations = ""

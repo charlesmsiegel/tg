@@ -52,18 +52,14 @@ class WraithFreehold(LocationModel):
     )
 
     # Special features
-    has_soulforges = models.BooleanField(
-        default=False, help_text="Contains soulforging facilities"
-    )
+    has_soulforges = models.BooleanField(default=False, help_text="Contains soulforging facilities")
     has_library = models.BooleanField(
         default=False, help_text="Contains significant library or archives"
     )
     has_safe_passage = models.BooleanField(
         default=False, help_text="Offers safe passage through territory"
     )
-    hidden = models.BooleanField(
-        default=False, help_text="Location is hidden or secret"
-    )
+    hidden = models.BooleanField(default=False, help_text="Location is hidden or secret")
 
     # Philosophy/purpose
     founding_principle = models.TextField(

@@ -193,9 +193,7 @@ class GhoulExtrasView(SpecialUserMixin, UpdateView):
         form.fields["notes"].required = False
         form.fields["history"].required = False
         form.fields["goals"].required = False
-        form.fields[
-            "years_as_ghoul"
-        ].help_text = "How many years has your character been a ghoul?"
+        form.fields["years_as_ghoul"].help_text = "How many years has your character been a ghoul?"
         return form
 
     def form_valid(self, form):

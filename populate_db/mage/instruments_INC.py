@@ -11,9 +11,7 @@ body_modification = Instrument.objects.get_or_create(name="Body Modification")[0
 bodywork = Instrument.objects.get_or_create(name="Bodywork")[0]
 bones = Instrument.objects.get_or_create(name="Bones and remains")[0]
 books = Instrument.objects.get_or_create(name="Books and periodicals")[0]
-brain_computer_interface = Instrument.objects.get_or_create(
-    name="Brain/Computer interface"
-)[0]
+brain_computer_interface = Instrument.objects.get_or_create(name="Brain/Computer interface")[0]
 brews = Instrument.objects.get_or_create(name="Brews and concoctions")[0]
 cannibalism = Instrument.objects.get_or_create(name="Cannibalism")[0]
 cards = Instrument.objects.get_or_create(name="Cards and instruments of chance")[0]
@@ -68,15 +66,13 @@ sex = Instrument.objects.get_or_create(name="Sex and sensuality")[0]
 social_dominion = Instrument.objects.get_or_create(name="Social domination")[0]
 symbols = Instrument.objects.get_or_create(name="Symbols")[0]
 thought_forms = Instrument.objects.get_or_create(name="Thought-forms")[0]
-torment = Instrument.objects.get_or_create(name="Torment")[0].add_source(
-    "Book of the Fallen", 149
-)
+torment = Instrument.objects.get_or_create(name="Torment")[0].add_source("Book of the Fallen", 149)
 toys = Instrument.objects.get_or_create(name="Toys")[0]
 transgression = Instrument.objects.get_or_create(name="Transgression")[0]
 tricks = Instrument.objects.get_or_create(name="Tricks and illusions")[0]
-trolling = Instrument.objects.get_or_create(name="Trolling and Cyberbullying")[
-    0
-].add_source("Book of the Fallen", 150)
+trolling = Instrument.objects.get_or_create(name="Trolling and Cyberbullying")[0].add_source(
+    "Book of the Fallen", 150
+)
 true_names = Instrument.objects.get_or_create(name="True Names")[0]
 vehicles = Instrument.objects.get_or_create(name="Vehicles")[0]
 violation = Instrument.objects.get_or_create(name="Violation")[0].add_source(

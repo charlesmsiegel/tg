@@ -29,9 +29,7 @@ class LocationModel(Model):
         on_delete=models.SET_NULL,
         related_name="children",
     )
-    owned_by = models.ForeignKey(
-        CharacterModel, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    owned_by = models.ForeignKey(CharacterModel, blank=True, null=True, on_delete=models.SET_NULL)
 
     gauntlet = models.IntegerField(default=7)
     shroud = models.IntegerField(default=7)

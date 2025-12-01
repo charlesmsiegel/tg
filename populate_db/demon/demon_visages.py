@@ -27,9 +27,7 @@ trait_alter_size_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Alter Size", house=malefactors
 )[0]
 trait_armor = ApocalypticFormTrait.objects.get_or_create(name="Armor", house=None)[0]
-trait_armor_cost4 = ApocalypticFormTrait.objects.get_or_create(
-    name="Armor", cost=4, house=None
-)[0]
+trait_armor_cost4 = ApocalypticFormTrait.objects.get_or_create(name="Armor", cost=4, house=None)[0]
 trait_aura_of_dread_slayers = ApocalypticFormTrait.objects.get_or_create(
     name="Aura of Dread", house=slayers
 )[0]
@@ -63,9 +61,7 @@ trait_chimerical_attack_fiends = ApocalypticFormTrait.objects.get_or_create(
 trait_chimerical_aura_fiends = ApocalypticFormTrait.objects.get_or_create(
     name="Chimerical Aura", house=fiends
 )[0]
-trait_claws_teeth = ApocalypticFormTrait.objects.get_or_create(
-    name="Claws/Teeth", house=None
-)[0]
+trait_claws_teeth = ApocalypticFormTrait.objects.get_or_create(name="Claws/Teeth", house=None)[0]
 trait_cloak_of_shadows_fiends = ApocalypticFormTrait.objects.get_or_create(
     name="Cloak of Shadows", house=fiends
 )[0]
@@ -162,18 +158,16 @@ trait_enhanced_senses_cost3 = ApocalypticFormTrait.objects.get_or_create(
 trait_enhanced_social_traits_slayers = ApocalypticFormTrait.objects.get_or_create(
     name="Enhanced Social Traits", house=slayers
 )[0]
-trait_extra_actions = ApocalypticFormTrait.objects.get_or_create(
-    name="Extra Actions", house=None
-)[0]
+trait_extra_actions = ApocalypticFormTrait.objects.get_or_create(name="Extra Actions", house=None)[
+    0
+]
 trait_extra_actions_cost3 = ApocalypticFormTrait.objects.get_or_create(
     name="Extra Actions", cost=3, house=None
 )[0]
 trait_extra_health_levels = ApocalypticFormTrait.objects.get_or_create(
     name="Extra Health Levels", house=None
 )[0]
-trait_extra_limbs = ApocalypticFormTrait.objects.get_or_create(
-    name="Extra Limbs", house=None
-)[0]
+trait_extra_limbs = ApocalypticFormTrait.objects.get_or_create(name="Extra Limbs", house=None)[0]
 trait_eyes_of_fate_fiends_cost4 = ApocalypticFormTrait.objects.get_or_create(
     name="Eyes of Fate", cost=4, house=fiends
 )[0]
@@ -183,9 +177,7 @@ trait_fiery_blood_devils = ApocalypticFormTrait.objects.get_or_create(
 trait_flashing_fingers_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Flashing Fingers", house=malefactors
 )[0]
-trait_gaping_maw = ApocalypticFormTrait.objects.get_or_create(
-    name="Gaping Maw", house=None
-)[0]
+trait_gaping_maw = ApocalypticFormTrait.objects.get_or_create(name="Gaping Maw", house=None)[0]
 trait_ghost_sight_slayers = ApocalypticFormTrait.objects.get_or_create(
     name="Ghost Sight", house=slayers
 )[0]
@@ -256,9 +248,7 @@ trait_iron_skin_malefactors_cost3 = ApocalypticFormTrait.objects.get_or_create(
 trait_irresistible_force_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Irresistible Force", house=malefactors
 )[0]
-trait_lashing_tail = ApocalypticFormTrait.objects.get_or_create(
-    name="Lashing Tail", house=None
-)[0]
+trait_lashing_tail = ApocalypticFormTrait.objects.get_or_create(name="Lashing Tail", house=None)[0]
 trait_lordly_mien_devils = ApocalypticFormTrait.objects.get_or_create(
     name="Lordly Mien", house=devils
 )[0]
@@ -274,9 +264,7 @@ trait_magnetic_field_malefactors = ApocalypticFormTrait.objects.get_or_create(
 trait_master_artisan_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Master Artisan", house=malefactors
 )[0]
-trait_miasma_scourges = ApocalypticFormTrait.objects.get_or_create(
-    name="Miasma", house=scourges
-)[0]
+trait_miasma_scourges = ApocalypticFormTrait.objects.get_or_create(name="Miasma", house=scourges)[0]
 trait_mirage_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Mirage", house=malefactors
 )[0]
@@ -307,18 +295,14 @@ trait_pass_without_trace = ApocalypticFormTrait.objects.get_or_create(
 trait_perfect_balance_scourges = ApocalypticFormTrait.objects.get_or_create(
     name="Perfect Balance", house=scourges
 )[0]
-trait_quills_scourges = ApocalypticFormTrait.objects.get_or_create(
-    name="Quills", house=scourges
-)[0]
+trait_quills_scourges = ApocalypticFormTrait.objects.get_or_create(name="Quills", house=scourges)[0]
 trait_radiant_aura_devils = ApocalypticFormTrait.objects.get_or_create(
     name="Radiant Aura", house=devils
 )[0]
 trait_radiant_aura_devils_cost1 = ApocalypticFormTrait.objects.get_or_create(
     name="Radiant Aura", cost=1, house=devils
 )[0]
-trait_regeneration = ApocalypticFormTrait.objects.get_or_create(
-    name="Regeneration", house=None
-)[0]
+trait_regeneration = ApocalypticFormTrait.objects.get_or_create(name="Regeneration", house=None)[0]
 trait_regeneration_cost4 = ApocalypticFormTrait.objects.get_or_create(
     name="Regeneration", cost=4, house=None
 )[0]
@@ -334,9 +318,7 @@ trait_relentless_slayers = ApocalypticFormTrait.objects.get_or_create(
 trait_relentless_slayers_cost1 = ApocalypticFormTrait.objects.get_or_create(
     name="Relentless", cost=1, house=slayers
 )[0]
-trait_scales_devils = ApocalypticFormTrait.objects.get_or_create(
-    name="Scales", house=devils
-)[0]
+trait_scales_devils = ApocalypticFormTrait.objects.get_or_create(name="Scales", house=devils)[0]
 trait_seas_beauty_defilers_cost3 = ApocalypticFormTrait.objects.get_or_create(
     name="Sea's Beauty", cost=3, house=defilers
 )[0]
@@ -361,9 +343,7 @@ trait_spark_of_faith_devils_cost3 = ApocalypticFormTrait.objects.get_or_create(
 trait_spikes_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Spikes", house=malefactors
 )[0]
-trait_spines_defilers = ApocalypticFormTrait.objects.get_or_create(
-    name="Spines", house=defilers
-)[0]
+trait_spines_defilers = ApocalypticFormTrait.objects.get_or_create(name="Spines", house=defilers)[0]
 trait_spines_defilers_cost2 = ApocalypticFormTrait.objects.get_or_create(
     name="Spines", cost=2, house=defilers
 )[0]
@@ -376,24 +356,22 @@ trait_thick_hide_devourers = ApocalypticFormTrait.objects.get_or_create(
 trait_thick_hide_devourers_cost2 = ApocalypticFormTrait.objects.get_or_create(
     name="Thick Hide", cost=2, house=devourers
 )[0]
-trait_thorns_devourers = ApocalypticFormTrait.objects.get_or_create(
-    name="Thorns", house=devourers
-)[0]
+trait_thorns_devourers = ApocalypticFormTrait.objects.get_or_create(name="Thorns", house=devourers)[
+    0
+]
 trait_thorns_devourers_cost1 = ApocalypticFormTrait.objects.get_or_create(
     name="Thorns", cost=1, house=devourers
 )[0]
 trait_thunderous_voice_malefactors = ApocalypticFormTrait.objects.get_or_create(
     name="Thunderous Voice", house=malefactors
 )[0]
-trait_toxins_devourers = ApocalypticFormTrait.objects.get_or_create(
-    name="Toxins", house=devourers
-)[0]
+trait_toxins_devourers = ApocalypticFormTrait.objects.get_or_create(name="Toxins", house=devourers)[
+    0
+]
 trait_unearthly_glamour_fiends = ApocalypticFormTrait.objects.get_or_create(
     name="Unearthly Glamour", house=fiends
 )[0]
-trait_venom_defilers = ApocalypticFormTrait.objects.get_or_create(
-    name="Venom", house=defilers
-)[0]
+trait_venom_defilers = ApocalypticFormTrait.objects.get_or_create(name="Venom", house=defilers)[0]
 trait_viscous_flesh_scourges = ApocalypticFormTrait.objects.get_or_create(
     name="Viscous Flesh", house=scourges
 )[0]
@@ -407,9 +385,7 @@ trait_weather_sense_defilers = ApocalypticFormTrait.objects.get_or_create(
     name="Weather Sense", house=defilers
 )[0]
 trait_wings = ApocalypticFormTrait.objects.get_or_create(name="Wings", house=None)[0]
-trait_wings_cost3 = ApocalypticFormTrait.objects.get_or_create(
-    name="Wings", cost=3, house=None
-)[0]
+trait_wings_cost3 = ApocalypticFormTrait.objects.get_or_create(name="Wings", cost=3, house=None)[0]
 
 # Additional traits for specific visages
 trait_enhanced_social_traits_devourers = ApocalypticFormTrait.objects.get_or_create(
@@ -421,11 +397,9 @@ trait_immune_to_bashing_damage_malefactors = ApocalypticFormTrait.objects.get_or
 trait_immune_to_falling_damage_scourges = ApocalypticFormTrait.objects.get_or_create(
     name="Immune to Falling Damage", house=scourges
 )[0]
-trait_improved_physical_capabilities_scourges = (
-    ApocalypticFormTrait.objects.get_or_create(
-        name="Improved Physical Capabilities", house=scourges
-    )[0]
-)
+trait_improved_physical_capabilities_scourges = ApocalypticFormTrait.objects.get_or_create(
+    name="Improved Physical Capabilities", house=scourges
+)[0]
 
 # =============================================================================
 # VISAGE DEFINITIONS

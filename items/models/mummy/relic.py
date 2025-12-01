@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-
 from items.models.core.item import ItemModel
 
 
@@ -116,13 +115,9 @@ class MummyRelic(ItemModel):
     # SPECIAL PROPERTIES
     # ========================================
 
-    is_cursed = models.BooleanField(
-        default=False, help_text="Does this artifact carry a curse?"
-    )
+    is_cursed = models.BooleanField(default=False, help_text="Does this artifact carry a curse?")
 
-    is_unique = models.BooleanField(
-        default=False, help_text="Is this a one-of-a-kind artifact?"
-    )
+    is_unique = models.BooleanField(default=False, help_text="Is this a one-of-a-kind artifact?")
 
     is_sentient = models.BooleanField(
         default=False, help_text="Does the artifact have its own will/consciousness?"
@@ -154,9 +149,7 @@ class MummyRelic(ItemModel):
     # HISTORY & LORE
     # ========================================
 
-    history = models.TextField(
-        blank=True, help_text="Historical background and legends"
-    )
+    history = models.TextField(blank=True, help_text="Historical background and legends")
 
     current_location_notes = models.TextField(
         blank=True, help_text="How was it recovered? Where has it been?"

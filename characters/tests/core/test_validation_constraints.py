@@ -28,9 +28,7 @@ class TestCharacterConstraints(TestCase):
         character.xp = -100
 
         with self.assertRaisesMessage(IntegrityError, "xp_non_negative"):
-            character.save(
-                skip_validation=True
-            )  # Bypass model validation to test DB constraint
+            character.save(skip_validation=True)  # Bypass model validation to test DB constraint
 
     def test_xp_cannot_be_negative_model_validation(self):
         """Model validation prevents negative XP"""
@@ -317,9 +315,7 @@ class TestXPTransactions(TestCase):
         )
 
         # Approve and apply
-        human.approve_xp_spend(
-            spend_index=0, trait_property_name="strength", new_value=4
-        )
+        human.approve_xp_spend(spend_index=0, trait_property_name="strength", new_value=4)
 
         human.refresh_from_db()
         self.assertEqual(human.strength, 4)
@@ -331,9 +327,7 @@ class TestXPTransactions(TestCase):
         human = Human.objects.create(name="Test", xp=10)
 
         with self.assertRaisesMessage(ValidationError, "Invalid spend index"):
-            human.approve_xp_spend(
-                spend_index=99, trait_property_name="strength", new_value=4
-            )
+            human.approve_xp_spend(spend_index=99, trait_property_name="strength", new_value=4)
 
     def test_approve_xp_spend_already_processed(self):
         """Cannot approve already processed spend"""
@@ -452,9 +446,7 @@ class TestSTRelationshipConstraints(TestCase):
 
         # Duplicate should fail
         with self.assertRaisesMessage(IntegrityError, "unique_st_per_chronicle_gameline"):
-            STRelationship.objects.create(
-                user=user, chronicle=chronicle, gameline=gameline
-            )
+            STRelationship.objects.create(user=user, chronicle=chronicle, gameline=gameline)
 
     def test_different_gameline_allowed(self):
         """Same user can be ST for different gamelines in same chronicle"""
@@ -464,19 +456,13 @@ class TestSTRelationshipConstraints(TestCase):
         gameline2 = Gameline.objects.create(name="Gameline 2")
 
         # Two relationships with different gamelines
-        rel1 = STRelationship.objects.create(
-            user=user, chronicle=chronicle, gameline=gameline1
-        )
+        rel1 = STRelationship.objects.create(user=user, chronicle=chronicle, gameline=gameline1)
 
-        rel2 = STRelationship.objects.create(
-            user=user, chronicle=chronicle, gameline=gameline2
-        )
+        rel2 = STRelationship.objects.create(user=user, chronicle=chronicle, gameline=gameline2)
 
         # Should succeed
         self.assertNotEqual(rel1.pk, rel2.pk)
-        self.assertEqual(
-            STRelationship.objects.filter(user=user, chronicle=chronicle).count(), 2
-        )
+        self.assertEqual(STRelationship.objects.filter(user=user, chronicle=chronicle).count(), 2)
 
 
 class TestAgeConstraints(TestCase):

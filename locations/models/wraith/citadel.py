@@ -20,18 +20,12 @@ class Citadel(LocationModel):
         ("other", "Other"),
     ]
 
-    purpose = models.CharField(
-        max_length=50, choices=CITADEL_PURPOSE_CHOICES, default="guild_hall"
-    )
+    purpose = models.CharField(max_length=50, choices=CITADEL_PURPOSE_CHOICES, default="guild_hall")
 
     # Defense and military
     defense_rating = models.IntegerField(default=1, help_text="Defense strength (1-10)")
-    garrison_size = models.IntegerField(
-        default=0, help_text="Number of wraiths garrisoned"
-    )
-    commander = models.CharField(
-        max_length=100, blank=True, help_text="Name of military commander"
-    )
+    garrison_size = models.IntegerField(default=0, help_text="Number of wraiths garrisoned")
+    commander = models.CharField(max_length=100, blank=True, help_text="Name of military commander")
 
     # Affiliation
     controlling_faction = models.CharField(
@@ -39,15 +33,9 @@ class Citadel(LocationModel):
     )
 
     # Special features
-    has_soulforges = models.BooleanField(
-        default=False, help_text="Contains soulforging facilities"
-    )
-    has_prison = models.BooleanField(
-        default=False, help_text="Contains prison/oubliette"
-    )
-    has_gateway = models.BooleanField(
-        default=False, help_text="Contains gateway to other realms"
-    )
+    has_soulforges = models.BooleanField(default=False, help_text="Contains soulforging facilities")
+    has_prison = models.BooleanField(default=False, help_text="Contains prison/oubliette")
+    has_gateway = models.BooleanField(default=False, help_text="Contains gateway to other realms")
 
     class Meta:
         verbose_name = "Citadel"

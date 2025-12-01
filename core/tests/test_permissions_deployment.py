@@ -192,9 +192,9 @@ class PermissionsTestSuite:
                 "user": user_name,
                 "character": char_name,
                 "visibility_tier": tier.value if hasattr(tier, "value") else tier,
-                "expected_tier": expected_tier.value
-                if hasattr(expected_tier, "value")
-                else expected_tier,
+                "expected_tier": (
+                    expected_tier.value if hasattr(expected_tier, "value") else expected_tier
+                ),
                 "passed": passed,
             }
         )
@@ -225,19 +225,11 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["owner"]
 
-        self.test_permission(
-            "Owner - VIEW_FULL", user, char, Permission.VIEW_FULL, True
-        )
-        self.test_permission(
-            "Owner - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, True
-        )
+        self.test_permission("Owner - VIEW_FULL", user, char, Permission.VIEW_FULL, True)
+        self.test_permission("Owner - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, True)
         self.test_permission("Owner - SPEND_XP", user, char, Permission.SPEND_XP, True)
-        self.test_permission(
-            "Owner - SPEND_FREEBIES", user, char, Permission.SPEND_FREEBIES, False
-        )
-        self.test_permission(
-            "Owner - EDIT_FULL", user, char, Permission.EDIT_FULL, False
-        )
+        self.test_permission("Owner - SPEND_FREEBIES", user, char, Permission.SPEND_FREEBIES, False)
+        self.test_permission("Owner - EDIT_FULL", user, char, Permission.EDIT_FULL, False)
         self.test_permission("Owner - DELETE", user, char, Permission.DELETE, True)
         self.test_visibility_tier("Owner - Visibility", user, char, VisibilityTier.FULL)
 
@@ -257,20 +249,12 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["head_st"]
 
-        self.test_permission(
-            "Head ST - VIEW_FULL", user, char, Permission.VIEW_FULL, True
-        )
-        self.test_permission(
-            "Head ST - EDIT_FULL", user, char, Permission.EDIT_FULL, True
-        )
-        self.test_permission(
-            "Head ST - SPEND_XP", user, char, Permission.SPEND_XP, True
-        )
+        self.test_permission("Head ST - VIEW_FULL", user, char, Permission.VIEW_FULL, True)
+        self.test_permission("Head ST - EDIT_FULL", user, char, Permission.EDIT_FULL, True)
+        self.test_permission("Head ST - SPEND_XP", user, char, Permission.SPEND_XP, True)
         self.test_permission("Head ST - APPROVE", user, char, Permission.APPROVE, True)
         self.test_permission("Head ST - DELETE", user, char, Permission.DELETE, True)
-        self.test_visibility_tier(
-            "Head ST - Visibility", user, char, VisibilityTier.FULL
-        )
+        self.test_visibility_tier("Head ST - Visibility", user, char, VisibilityTier.FULL)
 
     def run_game_st_tests(self):
         """Test game ST permissions"""
@@ -288,22 +272,12 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["game_st"]
 
-        self.test_permission(
-            "Game ST - VIEW_FULL", user, char, Permission.VIEW_FULL, True
-        )
-        self.test_permission(
-            "Game ST - EDIT_FULL", user, char, Permission.EDIT_FULL, False
-        )
-        self.test_permission(
-            "Game ST - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, False
-        )
-        self.test_permission(
-            "Game ST - SPEND_XP", user, char, Permission.SPEND_XP, False
-        )
+        self.test_permission("Game ST - VIEW_FULL", user, char, Permission.VIEW_FULL, True)
+        self.test_permission("Game ST - EDIT_FULL", user, char, Permission.EDIT_FULL, False)
+        self.test_permission("Game ST - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, False)
+        self.test_permission("Game ST - SPEND_XP", user, char, Permission.SPEND_XP, False)
         self.test_permission("Game ST - APPROVE", user, char, Permission.APPROVE, False)
-        self.test_visibility_tier(
-            "Game ST - Visibility", user, char, VisibilityTier.FULL
-        )
+        self.test_visibility_tier("Game ST - Visibility", user, char, VisibilityTier.FULL)
 
     def run_player_tests(self):
         """Test player (chronicle member) permissions"""
@@ -320,21 +294,11 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]  # Player viewing owner's char
         user = self.users["player"]
 
-        self.test_permission(
-            "Player - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, True
-        )
-        self.test_permission(
-            "Player - VIEW_FULL", user, char, Permission.VIEW_FULL, False
-        )
-        self.test_permission(
-            "Player - EDIT_FULL", user, char, Permission.EDIT_FULL, False
-        )
-        self.test_permission(
-            "Player - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, False
-        )
-        self.test_visibility_tier(
-            "Player - Visibility", user, char, VisibilityTier.PARTIAL
-        )
+        self.test_permission("Player - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, True)
+        self.test_permission("Player - VIEW_FULL", user, char, Permission.VIEW_FULL, False)
+        self.test_permission("Player - EDIT_FULL", user, char, Permission.EDIT_FULL, False)
+        self.test_permission("Player - EDIT_LIMITED", user, char, Permission.EDIT_LIMITED, False)
+        self.test_visibility_tier("Player - Visibility", user, char, VisibilityTier.PARTIAL)
 
     def run_observer_tests(self):
         """Test observer permissions"""
@@ -350,18 +314,10 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["observer"]
 
-        self.test_permission(
-            "Observer - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, True
-        )
-        self.test_permission(
-            "Observer - VIEW_FULL", user, char, Permission.VIEW_FULL, False
-        )
-        self.test_permission(
-            "Observer - EDIT_FULL", user, char, Permission.EDIT_FULL, False
-        )
-        self.test_visibility_tier(
-            "Observer - Visibility", user, char, VisibilityTier.PARTIAL
-        )
+        self.test_permission("Observer - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, True)
+        self.test_permission("Observer - VIEW_FULL", user, char, Permission.VIEW_FULL, False)
+        self.test_permission("Observer - EDIT_FULL", user, char, Permission.EDIT_FULL, False)
+        self.test_visibility_tier("Observer - Visibility", user, char, VisibilityTier.PARTIAL)
 
     def run_stranger_tests(self):
         """Test stranger (no relationship) permissions"""
@@ -378,18 +334,10 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["stranger"]
 
-        self.test_permission(
-            "Stranger - VIEW_FULL", user, char, Permission.VIEW_FULL, False
-        )
-        self.test_permission(
-            "Stranger - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, False
-        )
-        self.test_permission(
-            "Stranger - EDIT_FULL", user, char, Permission.EDIT_FULL, False
-        )
-        self.test_visibility_tier(
-            "Stranger - Visibility", user, char, VisibilityTier.NONE
-        )
+        self.test_permission("Stranger - VIEW_FULL", user, char, Permission.VIEW_FULL, False)
+        self.test_permission("Stranger - VIEW_PARTIAL", user, char, Permission.VIEW_PARTIAL, False)
+        self.test_permission("Stranger - EDIT_FULL", user, char, Permission.EDIT_FULL, False)
+        self.test_visibility_tier("Stranger - Visibility", user, char, VisibilityTier.NONE)
 
     def run_admin_tests(self):
         """Test admin permissions"""
@@ -406,12 +354,8 @@ class PermissionsTestSuite:
         char = self.characters["owner_char"]
         user = self.users["admin"]
 
-        self.test_permission(
-            "Admin - VIEW_FULL", user, char, Permission.VIEW_FULL, True
-        )
-        self.test_permission(
-            "Admin - EDIT_FULL", user, char, Permission.EDIT_FULL, True
-        )
+        self.test_permission("Admin - VIEW_FULL", user, char, Permission.VIEW_FULL, True)
+        self.test_permission("Admin - EDIT_FULL", user, char, Permission.EDIT_FULL, True)
         self.test_permission("Admin - DELETE", user, char, Permission.DELETE, True)
         self.test_permission("Admin - APPROVE", user, char, Permission.APPROVE, True)
         self.test_visibility_tier("Admin - Visibility", user, char, VisibilityTier.FULL)
@@ -436,12 +380,8 @@ class PermissionsTestSuite:
             for result in self.test_results:
                 if not result["passed"]:
                     print(f"  - {result['test']}")
-                    print(
-                        f"    Expected: {result.get('expected', result.get('expected_tier'))}"
-                    )
-                    print(
-                        f"    Got: {result.get('result', result.get('visibility_tier'))}"
-                    )
+                    print(f"    Expected: {result.get('expected', result.get('expected_tier'))}")
+                    print(f"    Got: {result.get('result', result.get('visibility_tier'))}")
 
         print("\n" + "=" * 80)
         return failed_tests == 0

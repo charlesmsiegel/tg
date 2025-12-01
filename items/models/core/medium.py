@@ -6,9 +6,7 @@ class Medium(models.Model):
     type = "medium"
 
     name = models.TextField(default="")
-    length_modifier_type = models.CharField(
-        max_length=1, default="/", blank=True, null=True
-    )
+    length_modifier_type = models.CharField(max_length=1, default="/", blank=True, null=True)
     length_modifier = models.IntegerField(default=1, blank=True, null=True)
 
     class Meta:

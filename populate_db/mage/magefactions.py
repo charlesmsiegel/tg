@@ -105,16 +105,10 @@ from populate_db.materials import (
 )
 
 traditions = MageFaction.objects.get_or_create(name="Traditions")[0]
-ab = MageFaction.objects.get_or_create(
-    name="Akashayana", parent=traditions, founded=-3000
-)[0]
-ab.paradigms.add(
-    bring_back_the_golden_age, everything_is_an_illusion, have_faith, might_is_right
-)
+ab = MageFaction.objects.get_or_create(name="Akashayana", parent=traditions, founded=-3000)[0]
+ab.paradigms.add(bring_back_the_golden_age, everything_is_an_illusion, have_faith, might_is_right)
 ab.affinities.add(life, mind)
-ab.practices.add(
-    alchemy, craftwork, faith, yoga, dominion, martialarts, qi_manipulation
-)
+ab.practices.add(alchemy, craftwork, faith, yoga, dominion, martialarts, qi_manipulation)
 ab.languages.add(chinese, japanese, korean, vietnamese, thai)
 ab.materials.add(paper, vellum, parchment, leather, cloth, wood, steel)
 ab.media.add(book, scrolls)
@@ -148,9 +142,7 @@ cox = MageFaction.objects.get_or_create(
     founded=0,
 )[0]
 cox.affinities.add(life, mind, time)
-cox.paradigms.add(
-    divine_and_alive, everything_is_data, everything_is_an_illusion, have_faith
-)
+cox.paradigms.add(divine_and_alive, everything_is_data, everything_is_an_illusion, have_faith)
 cox.practices.add(crazywisdom, guttermagick, yoga, cybernetics, hypertech, bardism)
 cox.languages.add(farsi, hindi, afghan, french)
 cox.materials.add(paper, vellum, parchment, leather, cloth, wood, steel)
@@ -179,9 +171,7 @@ ds = MageFaction.objects.get_or_create(
     founded=-4000,
 )[0]
 ds.affinities.add(forces, life, matter, spirit)
-ds.paradigms.add(
-    gods_and_monsters, bring_back_the_golden_age, divine_and_alive, might_is_right
-)
+ds.paradigms.add(gods_and_monsters, bring_back_the_golden_age, divine_and_alive, might_is_right)
 ds.practices.add(medicinework, craftwork, shamanism, crazywisdom, faith)
 ds.languages.add(
     quechua,
@@ -234,9 +224,7 @@ MageFaction.objects.get_or_create(name="Madzimbabwe", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Vrati", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Aided", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Hierchthonoi", parent=eu)[0]
-ooh = MageFaction.objects.get_or_create(
-    name="Order of Hermes", parent=traditions, founded=750
-)[0]
+ooh = MageFaction.objects.get_or_create(name="Order of Hermes", parent=traditions, founded=750)[0]
 ooh.affinities.add(forces)
 ooh.paradigms.add(
     a_mechanistic_cosmos,
@@ -294,25 +282,19 @@ soe.paradigms.add(
     might_is_right,
     tech_holds_all_answers,
 )
-soe.practices.add(
-    alchemy, craftwork, cybernetics, hypertech, realityhacking, weirdscience
-)
+soe.practices.add(alchemy, craftwork, cybernetics, hypertech, realityhacking, weirdscience)
 soe.languages.add(french, latin)
 soe.materials.add(leather, cloth, wood, steel, bone)
 soe.media.add(book, flash_drive, ebook, software)
 soe.save()
 MageFaction.objects.get_or_create(name="The Royal Ethernautical Society", parent=soe)[0]
-MageFaction.objects.get_or_create(name="The Cybernetic Research Institute", parent=soe)[
-    0
-]
+MageFaction.objects.get_or_create(name="The Cybernetic Research Institute", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Progressivists", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Utopians", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Adventurers", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Aquanauts", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Dissidents", parent=soe)[0]
-verb = MageFaction.objects.get_or_create(
-    name="Verbena", parent=traditions, founded=-2000
-)[0]
+verb = MageFaction.objects.get_or_create(name="Verbena", parent=traditions, founded=-2000)[0]
 verb.affinities.add(forces, life)
 verb.paradigms.add(
     gods_and_monsters,
@@ -395,9 +377,7 @@ orphans.save()
 
 
 MageFaction.objects.get_or_create(name="Chevra Kedisha", parent=da)[0]
-MageFaction.objects.get_or_create(
-    name="Knights of St. George and the Dragon", parent=da
-)[0]
+MageFaction.objects.get_or_create(name="Knights of St. George and the Dragon", parent=da)[0]
 
 
 kopa_loei = MageFaction.objects.get_or_create(
@@ -441,9 +421,7 @@ ngoma.practices.add(
 ngoma.save()
 ahl_i_batin = MageFaction.objects.get_or_create(name="Ahl-i-Batin", parent=da)[0]
 ahl_i_batin.affinities.add(correspondence, mind)
-ahl_i_batin.paradigms.add(
-    divine_order_earthly_chaos, have_faith, everything_is_an_illusion
-)
+ahl_i_batin.paradigms.add(divine_order_earthly_chaos, have_faith, everything_is_an_illusion)
 ahl_i_batin.practices.add(
     faith,
     crazywisdom,
@@ -483,9 +461,7 @@ cok.save()
 soh = MageFaction.objects.get_or_create(name="Sisters of Hippolyta", parent=da)[0]
 soh.affinities.add(life, mind)
 soh.paradigms.add(divine_and_alive, might_is_right, have_faith)
-soh.practices.add(
-    medicinework, witchcraft, shamanism, highritualmagick, craftwork, martialarts
-)
+soh.practices.add(medicinework, witchcraft, shamanism, highritualmagick, craftwork, martialarts)
 soh.save()
 templars = MageFaction.objects.get_or_create(name="Templar Knights", parent=da)[0]
 templars.affinities.add(forces, life, mind, prime)
@@ -493,9 +469,7 @@ templars.paradigms.add(gods_and_monsters, divine_order_earthly_chaos, might_is_r
 templars.practices.add(faith, martialarts, dominion, craftwork, hypertech)
 templars.save()
 
-MageFaction.objects.get_or_create(
-    name="The Brothers of St. Christopher", parent=templars
-)[0]
+MageFaction.objects.get_or_create(name="The Brothers of St. Christopher", parent=templars)[0]
 MageFaction.objects.get_or_create(name="The Order of St. Michael", parent=templars)[0]
 MageFaction.objects.get_or_create(name="Sisters of Gabrielle", parent=templars)[0]
 
@@ -555,61 +529,59 @@ MageFaction.objects.get_or_create(name="FACADE Engineers", parent=prog)[0]
 MageFaction.objects.get_or_create(name="Genegineers", parent=prog)[0]
 MageFaction.objects.get_or_create(name="Earth Frontier Division", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Research and Execution", parent=ve)[0]
-MageFaction.objects.get_or_create(
-    name="Neutralization Specialization Corps", parent=ve
-)[0]
+MageFaction.objects.get_or_create(name="Neutralization Specialization Corps", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Border Corps Division", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Pan-Dimension Corps", parent=ve)[0]
 
 nephandi = MageFaction.objects.get_or_create(name="Nephandi")[0]
-kllashaa = MageFaction.objects.get_or_create(name="The K'llashsaa", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 71)
+kllashaa = MageFaction.objects.get_or_create(name="The K'llashsaa", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 71
+)
 
-malfeans = MageFaction.objects.get_or_create(name="Malfeans", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 74)
+malfeans = MageFaction.objects.get_or_create(name="Malfeans", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 74
+)
 malfeans.affinities.add(entropy)
 malfeans.save()
 
-infernalist = MageFaction.objects.get_or_create(name="Infernalists", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 68)
+infernalist = MageFaction.objects.get_or_create(name="Infernalists", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 68
+)
 infernalist.practices.add(highritualmagick, witchcraft)
 infernalist.save()
-MageFaction.objects.get_or_create(name="The New Rite Church", parent=infernalist)[
+MageFaction.objects.get_or_create(name="The New Rite Church", parent=infernalist)[0].add_source(
+    "Book of the Fallen", 69
+)
+MageFaction.objects.get_or_create(name="The Cauldron of Banjoko", parent=infernalist)[0].add_source(
+    "Book of the Fallen", 69
+)
+MageFaction.objects.get_or_create(name="The Lodge of the Crimson Goat", parent=infernalist)[
     0
 ].add_source("Book of the Fallen", 69)
-MageFaction.objects.get_or_create(name="The Cauldron of Banjoko", parent=infernalist)[
-    0
-].add_source("Book of the Fallen", 69)
-MageFaction.objects.get_or_create(
-    name="The Lodge of the Crimson Goat", parent=infernalist
-)[0].add_source("Book of the Fallen", 69)
 
-baphie = MageFaction.objects.get_or_create(name="Baphies", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 76)
+baphie = MageFaction.objects.get_or_create(name="Baphies", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 76
+)
 
-exie = MageFaction.objects.get_or_create(name="Obliviates", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 79)
+exie = MageFaction.objects.get_or_create(name="Obliviates", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 79
+)
 
-hob = MageFaction.objects.get_or_create(name="Heralds of Basilisk", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 82)
+hob = MageFaction.objects.get_or_create(name="Heralds of Basilisk", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 82
+)
 
-ironhands = MageFaction.objects.get_or_create(name="Ironhands", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 85)
+ironhands = MageFaction.objects.get_or_create(name="Ironhands", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 85
+)
 ironhands.practices.add(weirdscience, hypertech, craftwork)
 ironhands.save()
-MageFaction.objects.get_or_create(name="Hammer Security Response", parent=ironhands)[
+MageFaction.objects.get_or_create(name="Hammer Security Response", parent=ironhands)[0].add_source(
+    "Book of the Fallen", 86
+)
+MageFaction.objects.get_or_create(name="Secure Armaments for Autonomy", parent=ironhands)[
     0
 ].add_source("Book of the Fallen", 86)
-MageFaction.objects.get_or_create(
-    name="Secure Armaments for Autonomy", parent=ironhands
-)[0].add_source("Book of the Fallen", 86)
 MageFaction.objects.get_or_create(
     name="The Golem Research and Innovation Project", parent=ironhands
 )[0].add_source("Book of the Fallen", 86)
@@ -620,9 +592,9 @@ MageFaction.objects.get_or_create(
     name="Oil Refinement Capacity Advancement Association", parent=ironhands
 )[0].add_source("Book of the Fallen", 87)
 
-mammonites = MageFaction.objects.get_or_create(name="Mammonites", parent=nephandi)[
-    0
-].add_source("Book of the Fallen", 89)
+mammonites = MageFaction.objects.get_or_create(name="Mammonites", parent=nephandi)[0].add_source(
+    "Book of the Fallen", 89
+)
 
 marauders = MageFaction.objects.get_or_create(name="Marauders")[0]
 MageFaction.objects.get_or_create(name="Bai Dai", parent=marauders)[0]

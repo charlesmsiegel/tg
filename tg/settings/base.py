@@ -133,9 +133,7 @@ LOGOUT_REDIRECT_URL = "home"
 # Email Configuration
 # ====================
 # Production email settings (configure via environment variables)
-EMAIL_BACKEND = os.environ.get(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "25"))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "False") == "True"

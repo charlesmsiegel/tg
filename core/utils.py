@@ -19,10 +19,7 @@ def check_floor_ceiling(x, floor, ceiling):
 
 
 def weighted_choice(dictionary, floor=0, ceiling=5):
-    d = {
-        k: check_floor_ceiling(v, floor=floor, ceiling=ceiling)
-        for k, v in dictionary.items()
-    }
+    d = {k: check_floor_ceiling(v, floor=floor, ceiling=ceiling) for k, v in dictionary.items()}
     l = []
     for key, value in d.items():
         for _ in range(value + 1):
@@ -156,6 +153,7 @@ class CharacterOrganizationRegistry:
             except Exception as e:
                 # Log but don't fail if one handler has an issue
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.error(
                     f"Error in organization cleanup handler {handler.__name__} "

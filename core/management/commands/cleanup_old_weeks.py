@@ -4,6 +4,7 @@ Management command to clean up old Week objects.
 Archives or deletes Week objects older than a threshold while preserving
 XP data in character records.
 """
+
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -53,9 +54,9 @@ class Command(BaseCommand):
             # Filter out weeks with pending requests
             from game.models import WeeklyXPRequest
 
-            weeks_with_pending = WeeklyXPRequest.objects.filter(
-                approved=False
-            ).values_list("week_id", flat=True)
+            weeks_with_pending = WeeklyXPRequest.objects.filter(approved=False).values_list(
+                "week_id", flat=True
+            )
 
             old_weeks = old_weeks.exclude(id__in=weeks_with_pending)
 
@@ -79,6 +80,4 @@ class Command(BaseCommand):
             old_weeks.delete()
             self.stdout.write(self.style.SUCCESS(f"\n✓ Deleted {count} old week(s)"))
         else:
-            self.stdout.write(
-                self.style.WARNING(f"\n[DRY RUN] Would delete {count} week(s)")
-            )
+            self.stdout.write(self.style.WARNING(f"\n[DRY RUN] Would delete {count} week(s)"))

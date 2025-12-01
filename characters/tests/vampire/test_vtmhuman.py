@@ -7,9 +7,7 @@ from django.test import TestCase
 class TestVtMHuman(TestCase):
     def setUp(self):
         self.player = User.objects.create_user(username="Player")
-        self.character = VtMHuman.objects.create(
-            name="Test VtMHuman", owner=self.player
-        )
+        self.character = VtMHuman.objects.create(name="Test VtMHuman", owner=self.player)
         vampire_setup()
 
     def set_abilities(self):
@@ -273,9 +271,7 @@ class TestVtMHumanCreateView(TestCase):
 
 class TestVtMHumanUpdateView(TestCase):
     def setUp(self):
-        self.vtmhuman = VtMHuman.objects.create(
-            name="Test VtMHuman", description="Test"
-        )
+        self.vtmhuman = VtMHuman.objects.create(name="Test VtMHuman", description="Test")
         self.valid_data = {
             "name": "Test VtMHuman 2",
             "description": "Tst",

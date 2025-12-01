@@ -267,9 +267,7 @@ class Changeling(CtDHuman):
         b = b and (self.date_of_crysalis != "")
         return b
 
-    def set_changeling_history(
-        self, true_name, date_ennobled, crysalis, date_of_crysalis
-    ):
+    def set_changeling_history(self, true_name, date_ennobled, crysalis, date_of_crysalis):
         self.true_name = true_name
         self.date_ennobled = date_ennobled
         self.crysalis = crysalis
@@ -327,9 +325,7 @@ class Changeling(CtDHuman):
         cost = 3
         self.add_glamour()
         self.freebies -= cost
-        self.spent_freebies.append(
-            self.freebie_spend_record(trait, "glamour", value, cost)
-        )
+        self.spent_freebies.append(self.freebie_spend_record(trait, "glamour", value, cost))
         return True
 
     def xp_frequencies(self):
@@ -350,9 +346,7 @@ class Changeling(CtDHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value)
-            if trait_value is not None
-            else 10000,
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
             {
                 "art": 8,
                 "realm": 5,

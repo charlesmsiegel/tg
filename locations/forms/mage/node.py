@@ -16,18 +16,14 @@ class NodeResonanceRatingForm(forms.ModelForm):
         fields = ["resonance", "rating"]
 
     rating = forms.IntegerField(min_value=0, max_value=5, initial=0)
-    resonance = forms.CharField(
-        required=False, widget=AutocompleteTextInput(suggestions=[])
-    )
+    resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)
         if suggestions is None:
             suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
         self.fields["resonance"].widget.suggestions = suggestions
-        self.fields["resonance"].widget.attrs.update(
-            {"placeholder": "Enter Resonance Trait"}
-        )
+        self.fields["resonance"].widget.attrs.update({"placeholder": "Enter Resonance Trait"})
 
     def clean_resonance(self):
         resonance = self.cleaned_data.get("resonance")
@@ -122,12 +118,8 @@ class NodeForm(forms.ModelForm):
         self.fields["quintessence_form"].widget.attrs.update(
             {"placeholder": "Enter Quintessence Form here"}
         )
-        self.fields["tass_form"].widget.attrs.update(
-            {"placeholder": "Enter Tass Form here"}
-        )
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["tass_form"].widget.attrs.update({"placeholder": "Enter Tass Form here"})
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         self.fields["parent"].required = False
 
         self.resonance_formset = NodeResonanceRatingFormSet(
@@ -175,9 +167,7 @@ class NodeForm(forms.ModelForm):
             self.merit_flaw_formset.save()
 
             # Save the RealityZone
-            self.reality_zone.name = (
-                node.name
-            )  # Or get from form if you have a RealityZoneForm
+            self.reality_zone.name = node.name  # Or get from form if you have a RealityZoneForm
             self.reality_zone.save()
             node.reality_zone = self.reality_zone
             node.save()
@@ -249,9 +239,7 @@ class NodeForm(forms.ModelForm):
             raise forms.ValidationError("Reality Zone Ratings must total 0")
 
         if total_positive_rz_rating != rank:
-            raise forms.ValidationError(
-                "Positive Reality Zone Ratings must sum to Node rating"
-            )
+            raise forms.ValidationError("Positive Reality Zone Ratings must sum to Node rating")
 
         points_remaining = (
             3 * rank - (total_resonance_rating - rank) - total_mf_rating - ratio - size

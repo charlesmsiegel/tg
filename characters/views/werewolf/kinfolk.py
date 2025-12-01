@@ -48,14 +48,12 @@ class KinfolkDetailView(ViewPermissionMixin, DetailView):
         for key, value in specialties.items():
             context[f"{key}_spec"] = value
 
-        context["merits_and_flaws"] = MeritFlawRating.objects.order_by(
-            "mf__name"
-        ).filter(character=self.object)
+        context["merits_and_flaws"] = MeritFlawRating.objects.order_by("mf__name").filter(
+            character=self.object
+        )
         all_gifts = list(context["object"].gifts.all())
         row_length = 3
-        all_gifts = [
-            all_gifts[i : i + row_length] for i in range(0, len(all_gifts), row_length)
-        ]
+        all_gifts = [all_gifts[i : i + row_length] for i in range(0, len(all_gifts), row_length)]
         context["gifts"] = all_gifts
         return context
 

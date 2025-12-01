@@ -14,9 +14,7 @@ class Fetter(models.Model):
         ("person", "Person"),
     ]
 
-    fetter_type = models.CharField(
-        max_length=20, choices=FETTER_TYPE_CHOICES, default="object"
-    )
+    fetter_type = models.CharField(max_length=20, choices=FETTER_TYPE_CHOICES, default="object")
     description = models.TextField()
     rating = models.IntegerField(default=1)
 

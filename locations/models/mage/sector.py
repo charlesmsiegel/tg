@@ -69,9 +69,7 @@ class Sector(LocationModel):
     )
 
     # Reality Zone effects
-    reality_zone = models.ForeignKey(
-        RealityZone, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    reality_zone = models.ForeignKey(RealityZone, blank=True, null=True, on_delete=models.SET_NULL)
     difficulty_modifier = models.IntegerField(
         default=0,
         help_text="Modifier to Arete rolls for compatible/incompatible paradigms",
@@ -90,9 +88,7 @@ class Sector(LocationModel):
         default=True,
         help_text="Can this sector be reformatted? (False for Corrupted Web)",
     )
-    corruption_level = models.IntegerField(
-        default=0, help_text="0=none, 10=completely corrupted"
-    )
+    corruption_level = models.IntegerField(default=0, help_text="0=none, 10=completely corrupted")
 
     # Temporal effects
     time_dilation = models.DecimalField(
@@ -209,9 +205,7 @@ class Sector(LocationModel):
 
             # Check if user credentials match approved users
             if self.approved_users:
-                approved_list = [
-                    u.strip() for u in self.approved_users.split("\n") if u.strip()
-                ]
+                approved_list = [u.strip() for u in self.approved_users.split("\n") if u.strip()]
                 return any(cred in user_credentials for cred in approved_list)
 
         return False

@@ -743,9 +743,7 @@ class TestMtAHumanCreateView(TestCase):
 
 class TestMtAHumanUpdateView(TestCase):
     def setUp(self):
-        self.mtahuman = MtAHuman.objects.create(
-            name="Test MtAHuman", description="Test"
-        )
+        self.mtahuman = MtAHuman.objects.create(name="Test MtAHuman", description="Test")
         self.valid_data = {
             "name": "Test MtAHuman 2",
             "description": 0,

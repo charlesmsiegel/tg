@@ -11,9 +11,7 @@ class SceneCreationForm(forms.Form):
     location = forms.ModelChoiceField(
         queryset=LocationModel.objects.order_by("name"), empty_label="Scene Location"
     )
-    date_of_scene = forms.CharField(
-        max_length=100, widget=forms.DateInput(attrs={"type": "date"})
-    )
+    date_of_scene = forms.CharField(max_length=100, widget=forms.DateInput(attrs={"type": "date"}))
 
     def __init__(self, *args, **kwargs):
         chronicle = kwargs.pop("chronicle")
@@ -94,22 +92,16 @@ class JournalEntryForm(forms.Form):
         self.fields["message"].widget.attrs.update({"placeholder": "Journal Entry"})
 
     def save(self, commit=True):
-        return self.instance.add_post(
-            self.cleaned_data["date"], self.cleaned_data["message"]
-        )
+        return self.instance.add_post(self.cleaned_data["date"], self.cleaned_data["message"])
 
 
 class STResponseForm(forms.Form):
-    st_message = forms.CharField(
-        widget=forms.Textarea(attrs={"placeholder": "Message"})
-    )
+    st_message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Message"}))
 
     def __init__(self, *args, **kwargs):
         self.entry = kwargs.pop("entry")
         super().__init__(*args, **kwargs)
-        self.fields["st_message"].widget.attrs.update(
-            {"placeholder": "Journal Response"}
-        )
+        self.fields["st_message"].widget.attrs.update({"placeholder": "Journal Response"})
 
     def save(self, commit=True):
         self.entry.st_message = self.cleaned_data["st_message"]
@@ -136,24 +128,16 @@ class WeeklyXPRequestForm(forms.ModelForm):
         self.week = kwargs.pop("week", None)
         super().__init__(*args, **kwargs)
         self.fields["learning_scene"].queryset = (
-            self.week.finished_scenes().filter(characters=self.character)
-            if self.week
-            else None
+            self.week.finished_scenes().filter(characters=self.character) if self.week else None
         )
         self.fields["rp_scene"].queryset = (
-            self.week.finished_scenes().filter(characters=self.character)
-            if self.week
-            else None
+            self.week.finished_scenes().filter(characters=self.character) if self.week else None
         )
         self.fields["focus_scene"].queryset = (
-            self.week.finished_scenes().filter(characters=self.character)
-            if self.week
-            else None
+            self.week.finished_scenes().filter(characters=self.character) if self.week else None
         )
         self.fields["standingout_scene"].queryset = (
-            self.week.finished_scenes().filter(characters=self.character)
-            if self.week
-            else None
+            self.week.finished_scenes().filter(characters=self.character) if self.week else None
         )
         self.fields["finishing"].required = False
         self.fields["learning_scene"].required = False

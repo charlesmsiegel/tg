@@ -17,9 +17,7 @@ class MaterialCreateView(MessageMixin, CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update(
-            {"placeholder": "Enter name here", "rows": 1}
-        )
+        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here", "rows": 1})
         return form
 
 
@@ -32,9 +30,7 @@ class MaterialUpdateView(MessageMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update(
-            {"placeholder": "Enter name here", "rows": 1}
-        )
+        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here", "rows": 1})
         return form
 
 

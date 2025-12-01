@@ -8,6 +8,7 @@ Tests cover:
 - Permission boundaries across apps
 - Character status transitions
 """
+
 from datetime import date
 
 from characters.models.core.human import Human
@@ -39,9 +40,7 @@ class TestCharacterLifecycleIntegration(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Downtown", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Downtown", chronicle=self.chronicle)
 
     def test_character_creation_creates_journal(self):
         """Test that character creation triggers journal creation."""
@@ -90,9 +89,7 @@ class TestCharacterLifecycleIntegration(TestCase):
         )
 
         self.client.login(username="player", password="password")
-        response = self.client.post(
-            f"/game/scene/{scene.id}", {"character_to_add": char.id}
-        )
+        response = self.client.post(f"/game/scene/{scene.id}", {"character_to_add": char.id})
         scene.refresh_from_db()
         self.assertIn(char, scene.characters.all())
 
@@ -167,9 +164,7 @@ class TestXPApprovalWorkflowIntegration(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.char = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -286,12 +281,8 @@ class TestChronicleManagementIntegration(TestCase):
     def setUp(self):
         self.st1 = User.objects.create_user("st1", "st1@test.com", "password")
         self.st2 = User.objects.create_user("st2", "st2@test.com", "password")
-        self.player1 = User.objects.create_user(
-            "player1", "player1@test.com", "password"
-        )
-        self.player2 = User.objects.create_user(
-            "player2", "player2@test.com", "password"
-        )
+        self.player1 = User.objects.create_user("player1", "player1@test.com", "password")
+        self.player2 = User.objects.create_user("player2", "player2@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Multi-User Chronicle")
         self.gameline = Gameline.objects.create(name="Mage")
         STRelationship.objects.create(
@@ -300,9 +291,7 @@ class TestChronicleManagementIntegration(TestCase):
         STRelationship.objects.create(
             user=self.st2, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_multiple_sts_can_approve_different_characters(self):
         """Test that multiple STs can approve characters."""
@@ -323,17 +312,13 @@ class TestChronicleManagementIntegration(TestCase):
 
         # ST1 approves character 1
         self.client.login(username="st1", password="password")
-        self.client.post(
-            self.st1.profile.get_absolute_url(), {"approve_character": char1.id}
-        )
+        self.client.post(self.st1.profile.get_absolute_url(), {"approve_character": char1.id})
         char1.refresh_from_db()
         self.assertEqual(char1.status, "App")
 
         # ST2 approves character 2
         self.client.login(username="st2", password="password")
-        self.client.post(
-            self.st2.profile.get_absolute_url(), {"approve_character": char2.id}
-        )
+        self.client.post(self.st2.profile.get_absolute_url(), {"approve_character": char2.id})
         char2.refresh_from_db()
         self.assertEqual(char2.status, "App")
 
@@ -357,9 +342,7 @@ class TestChronicleManagementIntegration(TestCase):
         item = ItemModel.objects.create(name="Chronicle Item", chronicle=self.chronicle)
 
         # Create locations
-        loc = LocationModel.objects.create(
-            name="Chronicle Location", chronicle=self.chronicle
-        )
+        loc = LocationModel.objects.create(name="Chronicle Location", chronicle=self.chronicle)
 
         # Create scenes
         scene1 = self.chronicle.add_scene("Scene 1", self.location)
@@ -367,9 +350,7 @@ class TestChronicleManagementIntegration(TestCase):
 
         # Verify counts
         self.assertEqual(self.chronicle.total_scenes(), 2)
-        self.assertEqual(
-            LocationModel.objects.filter(chronicle=self.chronicle).count(), 2
-        )
+        self.assertEqual(LocationModel.objects.filter(chronicle=self.chronicle).count(), 2)
         self.assertEqual(ItemModel.objects.filter(chronicle=self.chronicle).count(), 1)
 
     def test_scene_with_multiple_player_characters(self):
@@ -414,17 +395,13 @@ class TestPermissionBoundariesIntegration(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("player", "player@test.com", "password")
         self.st_user = User.objects.create_user("st", "st@test.com", "password")
-        self.other_user = User.objects.create_user(
-            "other", "other@test.com", "password"
-        )
+        self.other_user = User.objects.create_user("other", "other@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_non_st_cannot_perform_approval_actions(self):
         """Test that regular users cannot perform ST-only actions."""
@@ -438,9 +415,7 @@ class TestPermissionBoundariesIntegration(TestCase):
         location = LocationModel.objects.create(
             name="Sub Location", chronicle=self.chronicle, status="Sub"
         )
-        item = ItemModel.objects.create(
-            name="Sub Item", chronicle=self.chronicle, status="Sub"
-        )
+        item = ItemModel.objects.create(name="Sub Item", chronicle=self.chronicle, status="Sub")
 
         self.client.login(username="player", password="password")
 
@@ -457,9 +432,7 @@ class TestPermissionBoundariesIntegration(TestCase):
         self.assertEqual(response.status_code, 403)
 
         # Try to approve item
-        response = self.client.post(
-            self.user.profile.get_absolute_url(), {"approve_item": item.id}
-        )
+        response = self.client.post(self.user.profile.get_absolute_url(), {"approve_item": item.id})
         self.assertEqual(response.status_code, 403)
 
     def test_user_cannot_add_other_users_characters_to_scene(self):
@@ -476,9 +449,7 @@ class TestPermissionBoundariesIntegration(TestCase):
         )
 
         self.client.login(username="player", password="password")
-        response = self.client.post(
-            f"/game/scene/{scene.id}", {"character_to_add": other_char.id}
-        )
+        response = self.client.post(f"/game/scene/{scene.id}", {"character_to_add": other_char.id})
         self.assertEqual(response.status_code, 403)
 
     def test_user_cannot_post_as_other_users_character(self):
@@ -540,9 +511,7 @@ class TestProfileUnreadScenesIntegration(TestCase):
         self.user1 = User.objects.create_user("user1", "user1@test.com", "password")
         self.user2 = User.objects.create_user("user2", "user2@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.char1 = Human.objects.create(
             name="Character 1",
             owner=self.user1,
@@ -651,9 +620,7 @@ class TestJournalWorkflowIntegration(TestCase):
         entry.st_message = "Interesting development. +1 XP for good roleplay."
         entry.save()
         entry.refresh_from_db()
-        self.assertEqual(
-            entry.st_message, "Interesting development. +1 XP for good roleplay."
-        )
+        self.assertEqual(entry.st_message, "Interesting development. +1 XP for good roleplay.")
 
     def test_journal_tracks_all_entries(self):
         """Test that journal tracks all entries."""

@@ -27,9 +27,7 @@ class MummyCreationForm(forms.ModelForm):
         self.fields["dynasty"].required = False
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["ancient_name"].widget.attrs.update(
             {"placeholder": "Name from First Life in ancient Egypt"}
         )

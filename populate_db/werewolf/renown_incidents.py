@@ -149,18 +149,18 @@ RenownIncident.objects.get_or_create(
     honor=0,
     wisdom=5,
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
-RenownIncident.objects.get_or_create(
-    name="Discovering a talen", glory=0, honor=0, wisdom=1
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
-RenownIncident.objects.get_or_create(
-    name="Discovering a fetish", glory=0, honor=0, wisdom=2
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
+RenownIncident.objects.get_or_create(name="Discovering a talen", glory=0, honor=0, wisdom=1)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
+RenownIncident.objects.get_or_create(name="Discovering a fetish", glory=0, honor=0, wisdom=2)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
 RenownIncident.objects.get_or_create(
     name="Discovering ancient Garou lore", glory=0, honor=0, wisdom=3
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
-RenownIncident.objects.get_or_create(
-    name="Discovering a Pathstone", glory=0, honor=0, wisdom=4
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
+RenownIncident.objects.get_or_create(name="Discovering a Pathstone", glory=0, honor=0, wisdom=4)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
 RenownIncident.objects.get_or_create(
     name="Discovering an ancient caern that was lost", glory=0, honor=0, wisdom=7
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
@@ -174,9 +174,9 @@ RenownIncident.objects.get_or_create(
     wisdom=0,
     rite=moot_rite,
 )[0]
-RenownIncident.objects.get_or_create(
-    name="Missing a Moot Rite", glory=0, honor=0, wisdom=-1
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
+RenownIncident.objects.get_or_create(name="Missing a Moot Rite", glory=0, honor=0, wisdom=-1)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 247)
 
 RenownIncident.objects.get_or_create(
     name="Performing a Rite of Passage",
@@ -245,27 +245,27 @@ RenownIncident.objects.get_or_create(
     honor=0,
     wisdom=-3,
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
-RenownIncident.objects.get_or_create(
-    name="Learning a new rite", glory=0, honor=0, wisdom=1
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
+RenownIncident.objects.get_or_create(name="Learning a new rite", glory=0, honor=0, wisdom=1)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Discovering/creating a new rite", glory=0, honor=0, wisdom=5
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Discovering/creating a new gift", glory=0, honor=0, wisdom=7
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
-RenownIncident.objects.get_or_create(
-    name="Creating a talen", glory=0, honor=0, wisdom=1
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
+RenownIncident.objects.get_or_create(name="Creating a talen", glory=0, honor=0, wisdom=1)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Using a fetish for the good of the sept or tribe", glory=0, honor=0, wisdom=2
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Using a fetish for selfish reasons only", glory=0, honor=0, wisdom=-1
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
-RenownIncident.objects.get_or_create(
-    name="Creating a fetish", glory=0, honor=0, wisdom=4
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
+RenownIncident.objects.get_or_create(name="Creating a fetish", glory=0, honor=0, wisdom=4)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Owning a klaive (awarded once, only after three moons of use)",
     glory=2,
@@ -290,9 +290,9 @@ RenownIncident.objects.get_or_create(
 RenownIncident.objects.get_or_create(
     name="Accidentally breaking or losing a klaive", glory=0, honor=-3, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
-RenownIncident.objects.get_or_create(
-    name="Helping guard a caern", glory=0, honor=1, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
+RenownIncident.objects.get_or_create(name="Helping guard a caern", glory=0, honor=1, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 248)
 RenownIncident.objects.get_or_create(
     name="Staying at your post when on caern watch, even when tempted not to",
     glory=0,
@@ -423,12 +423,12 @@ RenownIncident.objects.get_or_create(
 RenownIncident.objects.get_or_create(
     name="Maintaining loyal service to a tribe for a year", glory=1, honor=3, wisdom=1
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Upholding the Litany", glory=0, honor=3, wisdom=2
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Breaking the Litany", glory=0, honor=-6, wisdom=-3
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Upholding the Litany", glory=0, honor=3, wisdom=2)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Breaking the Litany", glory=0, honor=-6, wisdom=-3)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
 RenownIncident.objects.get_or_create(
     name="Participating in a just challenge", glory=1, honor=2, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
@@ -441,21 +441,21 @@ RenownIncident.objects.get_or_create(
     honor=-3,
     wisdom=0,
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Giving good advice", glory=0, honor=0, wisdom=2
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Giving bad advice", glory=0, honor=0, wisdom=-2
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Mediating a dispute fairly", glory=0, honor=3, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Giving good advice", glory=0, honor=0, wisdom=2)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Giving bad advice", glory=0, honor=0, wisdom=-2)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Mediating a dispute fairly", glory=0, honor=3, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
 RenownIncident.objects.get_or_create(
     name="Mediating a dispute unfairly", glory=0, honor=-4, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Keeping one's promises", glory=0, honor=2, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Keeping one's promises", glory=0, honor=2, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
 RenownIncident.objects.get_or_create(
     name="Failing to keep one's promises", glory=0, honor=-3, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
@@ -465,9 +465,9 @@ RenownIncident.objects.get_or_create(name="Being truthful", glory=0, honor=2, wi
 RenownIncident.objects.get_or_create(
     name="Being truthful in the face of extreme adversity", glory=0, honor=5, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
-RenownIncident.objects.get_or_create(
-    name="Being deceptive", glory=0, honor=-3, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
+RenownIncident.objects.get_or_create(name="Being deceptive", glory=0, honor=-3, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
 RenownIncident.objects.get_or_create(
     name="Being deceptive in the face of extreme adversity", glory=0, honor=-1, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 249)
@@ -544,9 +544,9 @@ RenownIncident.objects.get_or_create(
 RenownIncident.objects.get_or_create(
     name="Not protecting a helpless human", glory=0, honor=-1, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
-RenownIncident.objects.get_or_create(
-    name="Protecting a helpless wolf", glory=0, honor=5, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
+RenownIncident.objects.get_or_create(name="Protecting a helpless wolf", glory=0, honor=5, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
 RenownIncident.objects.get_or_create(
     name="Not protecting a helpless wolf", glory=0, honor=-6, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
@@ -618,12 +618,12 @@ RenownIncident.objects.get_or_create(
 RenownIncident.objects.get_or_create(
     name="Staying honorably mated for a year", glory=0, honor=2, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
-RenownIncident.objects.get_or_create(
-    name="Protecting the Veil", glory=0, honor=4, wisdom=0
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
+RenownIncident.objects.get_or_create(name="Protecting the Veil", glory=0, honor=4, wisdom=0)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
 RenownIncident.objects.get_or_create(
     name="Harming or rending the Veil", glory=0, honor=-5, wisdom=0
 )[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
-RenownIncident.objects.get_or_create(
-    name="Repairing the Veil", glory=0, honor=3, wisdom=1
-)[0].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)
+RenownIncident.objects.get_or_create(name="Repairing the Veil", glory=0, honor=3, wisdom=1)[
+    0
+].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 250)

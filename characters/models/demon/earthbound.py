@@ -181,9 +181,7 @@ class Earthbound(LoreBlock, DtFHuman):
 
     # EARTHBOUND-SPECIFIC ABILITIES
     indoctrination = models.IntegerField(default=0)  # Brainwashing skill
-    recall = models.IntegerField(
-        default=0
-    )  # Memory of mortal history (Earthbound only)
+    recall = models.IntegerField(default=0)  # Memory of mortal history (Earthbound only)
     tactics = models.IntegerField(default=0)  # Military strategy
     torture = models.IntegerField(default=0)  # Interrogation through pain
 
@@ -191,9 +189,7 @@ class Earthbound(LoreBlock, DtFHuman):
     # Earthbound have access to Lore of Chaos, Contamination, and Violation
 
     # Learned rituals (including Earthbound rituals)
-    rituals = models.ManyToManyField(
-        "Ritual", blank=True, related_name="earthbound_who_know"
-    )
+    rituals = models.ManyToManyField("Ritual", blank=True, related_name="earthbound_who_know")
 
     # CELESTIAL IDENTITY
     celestial_name = models.CharField(
@@ -250,8 +246,7 @@ class Earthbound(LoreBlock, DtFHuman):
     def can_regenerate_reliquary(self):
         """Check if can spend Faith to heal reliquary"""
         return (
-            self.temporary_faith > 0
-            and self.reliquary_current_health < self.reliquary_max_health
+            self.temporary_faith > 0 and self.reliquary_current_health < self.reliquary_max_health
         )
 
     def get_total_visage_feature_cost(self):

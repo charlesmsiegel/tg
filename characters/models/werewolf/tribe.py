@@ -33,9 +33,7 @@ class Tribe(Model):
         return Camp.objects.filter(tribe=self)
 
     def get_gifts_by_rank(self, rank):
-        tribe_permission = GiftPermission.objects.get(
-            shifter="werewolf", condition=self.name
-        )
+        tribe_permission = GiftPermission.objects.get(shifter="werewolf", condition=self.name)
         return Gift.objects.filter(rank=rank, allowed=tribe_permission)
 
     @property

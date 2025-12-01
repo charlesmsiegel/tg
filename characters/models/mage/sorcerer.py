@@ -44,9 +44,7 @@ class LinearMagicRitual(Model):
     type = "linear_magic_path"
     gameline = "mta"
 
-    path = models.ForeignKey(
-        LinearMagicPath, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    path = models.ForeignKey(LinearMagicPath, blank=True, null=True, on_delete=models.SET_NULL)
     level = models.IntegerField(default=0)
 
     class Meta:

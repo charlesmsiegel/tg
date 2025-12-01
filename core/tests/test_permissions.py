@@ -246,24 +246,16 @@ class TestPermissionManager(TestCase):
         """Test admin has all permissions."""
         admin = self.users["admin"]
         self.assertTrue(
-            PermissionManager.user_has_permission(
-                admin, self.character, Permission.VIEW_FULL
-            )
+            PermissionManager.user_has_permission(admin, self.character, Permission.VIEW_FULL)
         )
         self.assertTrue(
-            PermissionManager.user_has_permission(
-                admin, self.character, Permission.EDIT_FULL
-            )
+            PermissionManager.user_has_permission(admin, self.character, Permission.EDIT_FULL)
         )
         self.assertTrue(
-            PermissionManager.user_has_permission(
-                admin, self.character, Permission.DELETE
-            )
+            PermissionManager.user_has_permission(admin, self.character, Permission.DELETE)
         )
         self.assertTrue(
-            PermissionManager.user_has_permission(
-                admin, self.character, Permission.APPROVE
-            )
+            PermissionManager.user_has_permission(admin, self.character, Permission.APPROVE)
         )
 
     # Visibility Tier Tests

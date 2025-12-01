@@ -1,14 +1,6 @@
 from characters.forms.core.character_creation import CharacterCreationForm
 from characters.forms.core.group_creation import GroupCreationForm
-# Core models
-from characters.models.core import Character, Derangement, Group, Human
-from characters.models.core.ability_block import Ability
-from characters.models.core.archetype import Archetype
-from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background
-from characters.models.core.merit_flaw_block import MeritFlaw
-from characters.models.core.specialty import Specialty
-from characters.models.core.statistic import Statistic
+
 # Changeling models
 from characters.models.changeling.autumn_person import AutumnPerson
 from characters.models.changeling.cantrip import Cantrip
@@ -22,6 +14,17 @@ from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
 from characters.models.changeling.motley import Motley
 from characters.models.changeling.nunnehi import Nunnehi
+
+# Core models
+from characters.models.core import Character, Derangement, Group, Human
+from characters.models.core.ability_block import Ability
+from characters.models.core.archetype import Archetype
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.background_block import Background
+from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.models.core.specialty import Specialty
+from characters.models.core.statistic import Statistic
+
 # Demon models
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.conclave import Conclave
@@ -35,12 +38,14 @@ from characters.models.demon.pact import Pact
 from characters.models.demon.ritual import Ritual as DemonRitual
 from characters.models.demon.thrall import Thrall
 from characters.models.demon.visage import Visage
+
 # Hunter models
 from characters.models.hunter.creed import Creed
 from characters.models.hunter.edge import Edge
 from characters.models.hunter.htrhuman import HtRHuman
 from characters.models.hunter.hunter import Hunter
 from characters.models.hunter.organization import HunterOrganization
+
 # Mage models
 from characters.models.mage.cabal import Cabal
 from characters.models.mage.companion import Advantage, Companion
@@ -61,11 +66,13 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
 from characters.models.mage.sphere import Sphere
+
 # Mummy models
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.models.mummy.mummy import Mummy
 from characters.models.mummy.mummy_title import MummyTitle
+
 # Vampire models
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.coterie import Coterie
@@ -77,6 +84,7 @@ from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.title import VampireTitle
 from characters.models.vampire.vampire import Vampire
 from characters.models.vampire.vtmhuman import VtMHuman
+
 # Werewolf models
 from characters.models.werewolf.ajaba import Ajaba
 from characters.models.werewolf.ananasi import Ananasi
@@ -108,6 +116,7 @@ from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.totem import Totem
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
+
 # Wraith models
 from characters.models.wraith.arcanos import Arcanos
 from characters.models.wraith.circle import Circle
@@ -117,7 +126,6 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-
 from core.views.generic import DictView
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import redirect, render
@@ -413,9 +421,7 @@ class CharacterIndexView(ListView):
                 "deceased": list(
                     self.get_queryset().filter(chronicle=chron, status="Dec").visible()
                 ),
-                "npc": list(
-                    self.get_queryset().filter(chronicle=chron, npc=True).visible()
-                ),
+                "npc": list(self.get_queryset().filter(chronicle=chron, npc=True).visible()),
             }
 
         context["chron_dict"] = chron_dict

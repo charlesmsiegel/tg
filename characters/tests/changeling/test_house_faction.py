@@ -14,9 +14,7 @@ class TestHouseFactionDetailView(TestCase):
 
     def test_house_faction_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/changeling/house_faction/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/house_faction/detail.html")
 
 
 class TestHouseFactionCreateView(TestCase):
@@ -36,9 +34,7 @@ class TestHouseFactionCreateView(TestCase):
 
     def test_create_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/changeling/house_faction/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/house_faction/form.html")
 
     def test_create_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
@@ -78,9 +74,7 @@ class TestHouseFactionUpdateView(TestCase):
 
     def test_update_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/changeling/house_faction/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/house_faction/form.html")
 
     def test_update_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)

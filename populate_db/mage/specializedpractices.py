@@ -98,9 +98,7 @@ lakashim = SpecializedPractice.objects.get_or_create(
     name="Lakashim", parent_practice=invigoration, faction=cox
 )[0].add_source("Prism of Focus", 90)
 do = (
-    SpecializedPractice.objects.get_or_create(
-        name="Do", parent_practice=martialarts, faction=ab
-    )[0]
+    SpecializedPractice.objects.get_or_create(name="Do", parent_practice=martialarts, faction=ab)[0]
     .add_source("Mage: the Ascension 20th Anniversary Edition", 292)
     .add_source("Prism of Focus", 96)
 )

@@ -22,12 +22,8 @@ class DroneCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
-        self.fields["bane_name"].widget.attrs.update(
-            {"placeholder": "Name of possessing Bane"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
+        self.fields["bane_name"].widget.attrs.update({"placeholder": "Name of possessing Bane"})
         self.fields["bane_type"].widget.attrs.update(
             {"placeholder": "Type of Bane (e.g., Scrags, Psychomachiae)"}
         )

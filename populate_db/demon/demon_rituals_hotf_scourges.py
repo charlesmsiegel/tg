@@ -28,7 +28,9 @@ cloud_chariot.secondary_lore_requirements = [
 ]
 cloud_chariot.base_cost = 10
 cloud_chariot.minimum_casting_time = 25
-cloud_chariot.restrictions = "The ritual must be cast under open sky, in an area of at least 60 percent humidity."
+cloud_chariot.restrictions = (
+    "The ritual must be cast under open sky, in an area of at least 60 percent humidity."
+)
 cloud_chariot.system = """The ritual conjures up a clear, glassy vessel like a chariot, carriage or sleigh. Roll Stamina + Survival. Each success gives the Cloud Chariot one hour of existence. The chariot can hold the ritual's Ankida, plus one extra person for every dot of the Ankida's permanent Faith score.
 
 The vessel moves at the Ankida's will. Although she doesn't need to concentrate on it rigidly, she does need to be conscious and coherent. If for some reason she passes out, is incapable of rational mental thought (such as being drugged) or leaves the vessel, the chariot dematerializes and gravity reasserts its hold over the former passengers.

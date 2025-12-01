@@ -11,6 +11,7 @@ Exports:
 - XP requests
 - Setting elements
 """
+
 import json
 from datetime import date, datetime
 
@@ -67,9 +68,7 @@ class Command(BaseCommand):
             raise CommandError(f"Chronicle with ID {chronicle_id} does not exist")
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\nExporting chronicle: {chronicle.name} (ID: {chronicle_id})\n"
-            )
+            self.style.SUCCESS(f"\nExporting chronicle: {chronicle.name} (ID: {chronicle_id})\n")
         )
 
         # Build export data

@@ -10,12 +10,8 @@ class RealityZoneDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["positive_practices"] = ZoneRating.objects.filter(
-            zone=self.object, rating__gt=0
-        )
-        context["negative_practices"] = ZoneRating.objects.filter(
-            zone=self.object, rating__lt=0
-        )
+        context["positive_practices"] = ZoneRating.objects.filter(zone=self.object, rating__gt=0)
+        context["negative_practices"] = ZoneRating.objects.filter(zone=self.object, rating__lt=0)
         return context
 
 
@@ -29,9 +25,7 @@ class RealityZoneCreateView(LoginRequiredMixin, CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 
@@ -45,9 +39,7 @@ class RealityZoneUpdateView(EditPermissionMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 

@@ -25,13 +25,9 @@ class ChangelingCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["seelie_legacy"].queryset = Legacy.objects.filter(court="seelie")
-        self.fields["unseelie_legacy"].queryset = Legacy.objects.filter(
-            court="unseelie"
-        )
+        self.fields["unseelie_legacy"].queryset = Legacy.objects.filter(court="unseelie")
 
         self.fields["image"].required = False
 

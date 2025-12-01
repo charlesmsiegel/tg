@@ -1,5 +1,8 @@
 from characters.forms.werewolf.drone import DroneCreationForm
 from characters.models.werewolf.drone import Drone
+from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.generic_background import GenericBackgroundView
+from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
     WtAHumanExtrasView,
@@ -8,16 +11,7 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanLanguagesView,
     WtAHumanSpecialtiesView,
 )
-from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.generic_background import GenericBackgroundView
-from characters.views.core.human import (
-    HumanAttributeView,
-    HumanCharacterCreationView,
-)
-from core.mixins import (
-    EditPermissionMixin,
-    ViewPermissionMixin,
-)
+from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 

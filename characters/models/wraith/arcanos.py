@@ -12,9 +12,7 @@ class Arcanos(Model):
         ("dark", "Dark Arcanos"),
     ]
 
-    arcanos_type = models.CharField(
-        max_length=20, choices=ARCANOS_TYPE_CHOICES, default="standard"
-    )
+    arcanos_type = models.CharField(max_length=20, choices=ARCANOS_TYPE_CHOICES, default="standard")
     level = models.IntegerField(default=1)
     pathos_cost = models.IntegerField(default=0)
     angst_cost = models.IntegerField(default=0)

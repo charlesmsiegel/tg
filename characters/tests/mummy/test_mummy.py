@@ -228,9 +228,7 @@ class TestMummyUpdateView(TestCase):
 
     def setUp(self):
         self.owner = User.objects.create_user(username="owner", password="password")
-        self.other_user = User.objects.create_user(
-            username="other", password="password"
-        )
+        self.other_user = User.objects.create_user(username="other", password="password")
         self.st = User.objects.create_user(username="st", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)

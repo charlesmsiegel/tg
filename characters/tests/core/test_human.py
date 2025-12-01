@@ -116,9 +116,7 @@ class TestHuman(TestCase):
     def test_set_archetypes(self):
         self.assertFalse(self.character.has_archetypes())
         self.assertTrue(
-            self.character.set_archetypes(
-                Archetype.objects.first(), Archetype.objects.first()
-            )
+            self.character.set_archetypes(Archetype.objects.first(), Archetype.objects.first())
         )
         self.assertTrue(self.character.has_archetypes())
 
@@ -317,9 +315,7 @@ class TestHuman(TestCase):
         )
         self.character.strength = 4
         self.assertEqual(self.character.filter_attributes(minimum=3), {"strength": 4})
-        self.assertEqual(
-            self.character.filter_attributes(minimum=3, maximum=5), {"strength": 4}
-        )
+        self.assertEqual(self.character.filter_attributes(minimum=3, maximum=5), {"strength": 4})
         self.assertEqual(self.character.filter_attributes(minimum=5, maximum=6), {})
 
     def test_has_attributes(self):
@@ -683,9 +679,7 @@ class TestHuman(TestCase):
                 ]
                 and value > 0
             ):
-                self.assertGreaterEqual(
-                    self.character.specialties.filter(stat=ability).count(), 0
-                )
+                self.assertGreaterEqual(self.character.specialties.filter(stat=ability).count(), 0)
 
     def test_get_backgrounds(self):
         self.assertEqual(
@@ -695,13 +689,9 @@ class TestHuman(TestCase):
                 "mentor": 0,
             },
         )
-        contacts = Background.objects.get_or_create(
-            name="Contacts", property_name="contacts"
-        )[0]
+        contacts = Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]
         BackgroundRating.objects.create(char=self.character, bg=contacts, rating=3)
-        mentor = Background.objects.get_or_create(
-            name="Mentor", property_name="mentor"
-        )[0]
+        mentor = Background.objects.get_or_create(name="Mentor", property_name="mentor")[0]
         BackgroundRating.objects.create(char=self.character, bg=mentor, rating=2)
         self.assertEqual(
             self.character.get_backgrounds(),
@@ -718,26 +708,18 @@ class TestHuman(TestCase):
 
     def test_filter_backgrounds(self):
         self.assertEqual(len(self.character.filter_backgrounds()), 2)
-        contacts = Background.objects.get_or_create(
-            name="Contacts", property_name="contacts"
-        )[0]
+        contacts = Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]
         BackgroundRating.objects.create(char=self.character, bg=contacts, rating=4)
-        mentor = Background.objects.get_or_create(
-            name="Mentor", property_name="mentor"
-        )[0]
+        mentor = Background.objects.get_or_create(name="Mentor", property_name="mentor")[0]
         BackgroundRating.objects.create(char=self.character, bg=mentor, rating=2)
         self.assertEqual(len(self.character.filter_backgrounds(minimum=3)), 1)
         self.assertEqual(len(self.character.filter_backgrounds(maximum=3)), 1)
 
     def test_has_backgrounds(self):
         self.assertFalse(self.character.has_backgrounds())
-        contacts = Background.objects.get_or_create(
-            name="Contacts", property_name="contacts"
-        )[0]
+        contacts = Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]
         BackgroundRating.objects.create(char=self.character, bg=contacts, rating=2)
-        mentor = Background.objects.get_or_create(
-            name="Mentor", property_name="mentor"
-        )[0]
+        mentor = Background.objects.get_or_create(name="Mentor", property_name="mentor")[0]
         BackgroundRating.objects.create(char=self.character, bg=mentor, rating=3)
         self.assertTrue(self.character.has_backgrounds())
 
@@ -781,20 +763,14 @@ class TestHuman(TestCase):
     def test_attribute_specialties(self):
         self.character.specialties.create(name="strength focus", stat="strength")
         self.character.specialties.create(name="charisma focus", stat="charisma")
-        self.assertEqual(
-            self.character.specialties.get(stat="strength").name, "strength focus"
-        )
-        self.assertEqual(
-            self.character.specialties.get(stat="charisma").name, "charisma focus"
-        )
+        self.assertEqual(self.character.specialties.get(stat="strength").name, "strength focus")
+        self.assertEqual(self.character.specialties.get(stat="charisma").name, "charisma focus")
 
 
 class TestHumanDetailView(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="Test")
-        self.human = Human.objects.create(
-            name="Test Human", owner=self.player, status="App"
-        )
+        self.human = Human.objects.create(name="Test Human", owner=self.player, status="App")
         self.url = self.human.get_absolute_url()
 
     def test_human_detail_view_status_code(self):

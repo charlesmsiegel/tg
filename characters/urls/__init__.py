@@ -26,12 +26,8 @@ for url_path, module_name, namespace in GameLine.URL_PATTERNS:
 urlpatterns.extend(
     [
         path("ajax/", include((ajax.urls, "characters_ajax"), namespace="ajax")),
-        path(
-            "create/", include((create.urls, "characters_create"), namespace="create")
-        ),
-        path(
-            "update/", include((update.urls, "characters_update"), namespace="update")
-        ),
+        path("create/", include((create.urls, "characters_create"), namespace="create")),
+        path("update/", include((update.urls, "characters_update"), namespace="update")),
         path("list/", include((index.urls, "characters_list"), namespace="list")),
         path("index/", views.core.CharacterIndexView.as_view(), name="index"),
         path("retired/", views.core.RetiredCharacterIndex.as_view(), name="retired"),

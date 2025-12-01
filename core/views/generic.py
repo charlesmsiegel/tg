@@ -116,9 +116,7 @@ class MultipleFormsetsMixin:
 
         for prefix, formset_class in self.formsets.items():
             bound_formset = bound_formsets.get(prefix) if bound_formsets else None
-            context, js_code = self.get_formset_context(
-                formset_class, prefix, bound_formset
-            )
+            context, js_code = self.get_formset_context(formset_class, prefix, bound_formset)
             formsets_context[f"{prefix}_context"] = context
             formsets_js[f"{prefix}_js"] = js_code
 
@@ -178,8 +176,6 @@ class MultipleFormsetsMixin:
             if sample:
                 forms_data.append(sample)
         forms_data = [
-            x
-            for x in forms_data
-            if "" not in set([v for k, v in x.items() if k not in blankable])
+            x for x in forms_data if "" not in set([v for k, v in x.items() if k not in blankable])
         ]
         return forms_data

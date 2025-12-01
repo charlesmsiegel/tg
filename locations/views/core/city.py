@@ -41,12 +41,8 @@ class CityCreateView(MessageMixin, CreateView):
         form.fields["mood"].widget.attrs.update({"placeholder": "Enter mood here"})
         form.fields["theme"].widget.attrs.update({"placeholder": "Enter theme here"})
         form.fields["media"].widget.attrs.update({"placeholder": "Enter media here"})
-        form.fields["politicians"].widget.attrs.update(
-            {"placeholder": "Enter politicians here"}
-        )
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["politicians"].widget.attrs.update({"placeholder": "Enter politicians here"})
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         form.fields["parent"].empty_label = "Parent Location"
         return form
 
@@ -78,11 +74,7 @@ class CityUpdateView(MessageMixin, UpdateView):
         form.fields["mood"].widget.attrs.update({"placeholder": "Enter mood here"})
         form.fields["theme"].widget.attrs.update({"placeholder": "Enter theme here"})
         form.fields["media"].widget.attrs.update({"placeholder": "Enter media here"})
-        form.fields["politicians"].widget.attrs.update(
-            {"placeholder": "Enter politicians here"}
-        )
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["politicians"].widget.attrs.update({"placeholder": "Enter politicians here"})
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         form.fields["parent"].empty_label = "Parent Location"
         return form

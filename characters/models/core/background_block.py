@@ -107,9 +107,7 @@ class BackgroundBlock(models.Model):
         return sum(
             [
                 x.rating
-                for x in BackgroundRating.objects.filter(
-                    bg__property_name=bg_name, char=self
-                )
+                for x in BackgroundRating.objects.filter(bg__property_name=bg_name, char=self)
             ]
         )
 
@@ -144,9 +142,7 @@ class BackgroundBlock(models.Model):
         return sum(self.get_backgrounds().values())
 
     def filter_backgrounds(self, minimum=0, maximum=5):
-        return {
-            k: v for k, v in self.get_backgrounds().items() if minimum <= v <= maximum
-        }
+        return {k: v for k, v in self.get_backgrounds().items() if minimum <= v <= maximum}
 
     def has_backgrounds(self):
         if self.total_backgrounds() > self.background_points:

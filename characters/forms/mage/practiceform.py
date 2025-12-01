@@ -18,9 +18,9 @@ class PracticeRatingForm(forms.ModelForm):
         mage = kwargs.pop("mage", None)
         super().__init__(*args, **kwargs)
         if mage:
-            q = Practice.objects.exclude(
-                polymorphic_ctype__model="specializedpractice"
-            ).exclude(polymorphic_ctype__model="corruptedpractice")
+            q = Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+                polymorphic_ctype__model="corruptedpractice"
+            )
             spec = SpecializedPractice.objects.filter(faction=mage.faction)
             if spec.count() > 0:
                 q = q.exclude(
@@ -43,18 +43,18 @@ class BasePracticeRatingFormSet(BaseInlineFormSet):
 
     def get_practice_queryset(self):
         if self.mage:
-            q = Practice.objects.exclude(
-                polymorphic_ctype__model="specializedpractice"
-            ).exclude(polymorphic_ctype__model="corruptedpractice")
+            q = Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+                polymorphic_ctype__model="corruptedpractice"
+            )
             spec = SpecializedPractice.objects.filter(faction=self.mage.faction)
             if spec.count() > 0:
                 q = q.exclude(
                     id__in=[x.parent_practice.id for x in spec]
                 ) | Practice.objects.filter(id__in=spec)
             return q.order_by("name")
-        return Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+        return Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+            polymorphic_ctype__model="corruptedpractice"
+        )
 
 
 PracticeRatingFormSet = inlineformset_factory(

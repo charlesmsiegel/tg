@@ -2,6 +2,7 @@
 Multi-step views for Freehold creation.
 Follows the pattern from character creation (DictView).
 """
+
 from typing import Any
 
 from core.mixins import SpendFreebiesPermissionMixin
@@ -31,10 +32,7 @@ class FreeholdBasicsView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # Set owner if not set
-        if (
-            not form.instance.owned_by
-            and self.request.user.profile.my_characters().exists()
-        ):
+        if not form.instance.owned_by and self.request.user.profile.my_characters().exists():
             form.instance.owned_by = self.request.user.profile.my_characters().first()
 
         # Set initial creation status

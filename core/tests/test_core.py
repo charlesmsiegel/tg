@@ -118,9 +118,7 @@ class NewUserTest(FunctionalTest):
     def test_homepage_has_login(self):
         self.browser.get(self.live_server_url)
         links = self.browser.find_elements("tag name", "a")
-        links = [
-            (self.clean_url(link.get_attribute("href")), link.text) for link in links
-        ]
+        links = [(self.clean_url(link.get_attribute("href")), link.text) for link in links]
 
         self.assertIn(("accounts/login/", ""), links)
         self.assertIn(("accounts/signup/", ""), links)
@@ -152,9 +150,7 @@ class NewUserTest(FunctionalTest):
         self.browser.get(self.live_server_url)
 
         self.client.get("/accounts/signup/")
-        self.assertTemplateUsed(
-            self.client.get("/accounts/signup/"), "accounts/signup.html"
-        )
+        self.assertTemplateUsed(self.client.get("/accounts/signup/"), "accounts/signup.html")
 
         self.credential_creation_fail()
 
@@ -173,9 +169,7 @@ class NewUserTest(FunctionalTest):
         submit_button.click()
 
         links = self.browser.find_elements("tag name", "a")
-        links = [
-            (self.clean_url(link.get_attribute("href")), link.text) for link in links
-        ]
+        links = [(self.clean_url(link.get_attribute("href")), link.text) for link in links]
 
 
 class TestHomepage(FunctionalTest):
@@ -187,9 +181,7 @@ class TestHomepage(FunctionalTest):
         self.assertIn("Tellurium Games", self.browser.title)
 
         links = self.browser.find_elements("tag name", "a")
-        links = [
-            (self.clean_url(link.get_attribute("href")), link.text) for link in links
-        ]
+        links = [(self.clean_url(link.get_attribute("href")), link.text) for link in links]
 
         self.assertIn(("accounts/login/", ""), links)
         self.assertIn(("accounts/signup/", ""), links)

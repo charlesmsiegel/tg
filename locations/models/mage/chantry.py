@@ -61,9 +61,7 @@ class Chantry(BackgroundBlock, LocationModel):
     leadership_type = models.CharField(
         max_length=20, null=True, blank=True, choices=LEADERSHIP_CHOICES
     )
-    leaders = models.ManyToManyField(
-        Human, blank=True, related_name="chantry_leader_at"
-    )
+    leaders = models.ManyToManyField(Human, blank=True, related_name="chantry_leader_at")
 
     SEASONS = [
         ("spring", "Spring"),
@@ -122,9 +120,7 @@ class Chantry(BackgroundBlock, LocationModel):
         on_delete=models.SET_NULL,
         related_name="tends_node_at",
     )
-    investigator = models.ManyToManyField(
-        Human, blank=True, related_name="investigator_at"
-    )
+    investigator = models.ManyToManyField(Human, blank=True, related_name="investigator_at")
     guardian = models.ManyToManyField(Human, blank=True, related_name="guardian_of")
     teacher = models.ManyToManyField(Human, blank=True, related_name="teacher_at")
 
@@ -172,10 +168,7 @@ class Chantry(BackgroundBlock, LocationModel):
         return self.total_points - self.total_cost()
 
     def bg_cost(self, background_rating):
-        return (
-            self.trait_cost(background_rating.bg.property_name)
-            * background_rating.rating
-        )
+        return self.trait_cost(background_rating.bg.property_name) * background_rating.rating
 
     def total_cost(self):
         tot = 0

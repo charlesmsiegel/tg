@@ -158,9 +158,9 @@ class Command(BaseCommand):
     def check_xp_activity(self, since):
         """Check XP spending activity and patterns."""
         # Characters that spent XP recently (based on spent_xp JSONField)
-        chars_with_recent_spending = Character.objects.filter(
-            spent_xp__isnull=False
-        ).exclude(spent_xp=[])
+        chars_with_recent_spending = Character.objects.filter(spent_xp__isnull=False).exclude(
+            spent_xp=[]
+        )
 
         # Count spending records
         total_spends = 0
@@ -185,21 +185,15 @@ class Command(BaseCommand):
             "approved": approved_spends,
             "denied": denied_spends,
             "approval_rate": (
-                round((approved_spends / total_spends * 100), 2)
-                if total_spends > 0
-                else 0
+                round((approved_spends / total_spends * 100), 2) if total_spends > 0 else 0
             ),
         }
 
     def check_scene_xp_awards(self, since):
         """Check scene XP award patterns."""
         total_scenes = Scene.objects.filter(date_played__gte=since).count()
-        finished_scenes = Scene.objects.filter(
-            finished=True, date_played__gte=since
-        ).count()
-        scenes_with_xp = Scene.objects.filter(
-            xp_given=True, date_played__gte=since
-        ).count()
+        finished_scenes = Scene.objects.filter(finished=True, date_played__gte=since).count()
+        scenes_with_xp = Scene.objects.filter(xp_given=True, date_played__gte=since).count()
         scenes_awaiting_xp = Scene.objects.filter(
             finished=True, xp_given=False, date_played__gte=since
         ).count()
@@ -210,9 +204,7 @@ class Command(BaseCommand):
             "scenes_with_xp_awarded": scenes_with_xp,
             "scenes_awaiting_xp": scenes_awaiting_xp,
             "xp_award_rate": (
-                round((scenes_with_xp / finished_scenes * 100), 2)
-                if finished_scenes > 0
-                else 0
+                round((scenes_with_xp / finished_scenes * 100), 2) if finished_scenes > 0 else 0
             ),
         }
 
@@ -266,9 +258,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("=" * 70))
         self.stdout.write(self.style.SUCCESS("Validation System Health Report"))
         self.stdout.write(self.style.SUCCESS(f"Generated: {metrics['timestamp']}"))
-        self.stdout.write(
-            self.style.SUCCESS(f"Period: Last {metrics['period_hours']} hours")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Period: Last {metrics['period_hours']} hours"))
         self.stdout.write(self.style.SUCCESS("=" * 70))
         self.stdout.write("")
 
@@ -293,13 +283,9 @@ class Command(BaseCommand):
         if integrity["healthy"]:
             self.stdout.write(self.style.SUCCESS("   ✓ No integrity issues detected"))
         else:
-            self.stdout.write(
-                self.style.WARNING(f"   ⚠ {integrity['total']} issues detected:")
-            )
+            self.stdout.write(self.style.WARNING(f"   ⚠ {integrity['total']} issues detected:"))
             if integrity["negative_xp"] > 0:
-                self.stdout.write(
-                    f"     - {integrity['negative_xp']} characters with negative XP"
-                )
+                self.stdout.write(f"     - {integrity['negative_xp']} characters with negative XP")
             if integrity["invalid_status"] > 0:
                 self.stdout.write(
                     f"     - {integrity['invalid_status']} characters with invalid status"
@@ -353,9 +339,7 @@ class Command(BaseCommand):
         # Recommendations
         if not integrity["healthy"]:
             self.stdout.write(self.style.WARNING("\nRecommendations:"))
-            self.stdout.write(
-                "   - Run: python manage.py validate_data_integrity --fix"
-            )
+            self.stdout.write("   - Run: python manage.py validate_data_integrity --fix")
             self.stdout.write("   - Review recent data changes for source of issues")
 
     def send_alerts(self, metrics):

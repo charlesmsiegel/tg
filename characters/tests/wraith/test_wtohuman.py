@@ -7,9 +7,7 @@ from django.test import TestCase
 class TestWtOHuman(TestCase):
     def setUp(self):
         self.player = User.objects.create_user(username="Player")
-        self.character = WtOHuman.objects.create(
-            name="Test WtOHuman", owner=self.player
-        )
+        self.character = WtOHuman.objects.create(name="Test WtOHuman", owner=self.player)
         wraith_setup()
 
     def set_abilities(self):
@@ -255,9 +253,7 @@ class TestWtOHumanCreateView(TestCase):
 
 class TestWtOHumanUpdateView(TestCase):
     def setUp(self):
-        self.wtohuman = WtOHuman.objects.create(
-            name="Test WtOHuman", description="Test"
-        )
+        self.wtohuman = WtOHuman.objects.create(name="Test WtOHuman", description="Test")
         self.valid_data = {
             "name": "Test WtOHuman 2",
             "description": "Tst",

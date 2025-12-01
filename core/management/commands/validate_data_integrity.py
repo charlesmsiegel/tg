@@ -72,24 +72,16 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("=" * 70))
         if total_issues == 0:
             self.stdout.write(self.style.SUCCESS("✓ No data integrity issues found!"))
-            self.stdout.write(
-                self.style.SUCCESS("Database is ready for validation constraints.")
-            )
+            self.stdout.write(self.style.SUCCESS("Database is ready for validation constraints."))
         else:
-            self.stdout.write(
-                self.style.WARNING(f"⚠ Found {total_issues} data integrity issues")
-            )
+            self.stdout.write(self.style.WARNING(f"⚠ Found {total_issues} data integrity issues"))
             if fix:
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        "Issues have been automatically fixed where possible."
-                    )
+                    self.style.SUCCESS("Issues have been automatically fixed where possible.")
                 )
             else:
                 self.stdout.write(
-                    self.style.WARNING(
-                        "Run with --fix flag to automatically fix issues."
-                    )
+                    self.style.WARNING("Run with --fix flag to automatically fix issues.")
                 )
         self.stdout.write(self.style.SUCCESS("=" * 70))
 
@@ -104,9 +96,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("   ✓ No characters with negative XP"))
             return 0
 
-        self.stdout.write(
-            self.style.WARNING(f"   ✗ Found {count} characters with negative XP")
-        )
+        self.stdout.write(self.style.WARNING(f"   ✗ Found {count} characters with negative XP"))
 
         if verbose:
             for char in negative_xp_chars:
@@ -114,54 +104,40 @@ class Command(BaseCommand):
 
         if fix:
             updated = negative_xp_chars.update(xp=0)
-            self.stdout.write(
-                self.style.SUCCESS(f"   → Fixed {updated} characters (set XP to 0)")
-            )
+            self.stdout.write(self.style.SUCCESS(f"   → Fixed {updated} characters (set XP to 0)"))
 
         return count
 
     def check_invalid_status(self, fix, verbose):
         """Check for characters with invalid status values."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n2. Checking for invalid status values...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n2. Checking for invalid status values..."))
 
         valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]
         invalid_status_chars = Character.objects.exclude(status__in=valid_statuses)
         count = invalid_status_chars.count()
 
         if count == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All characters have valid status")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All characters have valid status"))
             return 0
 
-        self.stdout.write(
-            self.style.WARNING(f"   ✗ Found {count} characters with invalid status")
-        )
+        self.stdout.write(self.style.WARNING(f"   ✗ Found {count} characters with invalid status"))
 
         if verbose:
             for char in invalid_status_chars:
-                self.stdout.write(
-                    f"     - {char.name} (ID: {char.pk}): status = '{char.status}'"
-                )
+                self.stdout.write(f"     - {char.name} (ID: {char.pk}): status = '{char.status}'")
 
         if fix:
             # Set invalid statuses to 'Un' (Unfinished) as safe default
             updated = invalid_status_chars.update(status="Un")
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"   → Fixed {updated} characters (set status to 'Un')"
-                )
+                self.style.SUCCESS(f"   → Fixed {updated} characters (set status to 'Un')")
             )
 
         return count
 
     def check_attribute_ranges(self, fix, verbose):
         """Check for attributes outside valid range (1-10)."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n3. Checking attribute ranges (1-10)...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n3. Checking attribute ranges (1-10)..."))
 
         attributes = [
             "strength",
@@ -197,9 +173,7 @@ class Command(BaseCommand):
                     update_kwargs = {attr: 1}
                     low_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"     → Fixed {low_count} characters (set to 1)"
-                        )
+                        self.style.SUCCESS(f"     → Fixed {low_count} characters (set to 1)")
                     )
 
             if high_count > 0:
@@ -211,23 +185,17 @@ class Command(BaseCommand):
                     update_kwargs = {attr: 10}
                     high_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"     → Fixed {high_count} characters (set to 10)"
-                        )
+                        self.style.SUCCESS(f"     → Fixed {high_count} characters (set to 10)")
                     )
 
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All attributes in valid range (1-10)")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All attributes in valid range (1-10)"))
 
         return total_issues
 
     def check_ability_ranges(self, fix, verbose):
         """Check for abilities outside valid range (0-10)."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n4. Checking ability ranges (0-10)...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n4. Checking ability ranges (0-10)..."))
 
         # Get all ability field names from Human model
         abilities = [
@@ -268,47 +236,35 @@ class Command(BaseCommand):
             if low_count > 0:
                 total_issues += low_count
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"   ✗ {low_count} characters with {ability} < 0"
-                    )
+                    self.style.WARNING(f"   ✗ {low_count} characters with {ability} < 0")
                 )
                 if fix:
                     update_kwargs = {ability: 0}
                     low_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"     → Fixed {low_count} characters (set to 0)"
-                        )
+                        self.style.SUCCESS(f"     → Fixed {low_count} characters (set to 0)")
                     )
 
             if high_count > 0:
                 total_issues += high_count
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"   ✗ {high_count} characters with {ability} > 10"
-                    )
+                    self.style.WARNING(f"   ✗ {high_count} characters with {ability} > 10")
                 )
                 if fix:
                     update_kwargs = {ability: 10}
                     high_chars.update(**update_kwargs)
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"     → Fixed {high_count} characters (set to 10)"
-                        )
+                        self.style.SUCCESS(f"     → Fixed {high_count} characters (set to 10)")
                     )
 
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS("   ✓ All abilities in valid range (0-10)")
-            )
+            self.stdout.write(self.style.SUCCESS("   ✓ All abilities in valid range (0-10)"))
 
         return total_issues
 
     def check_willpower_constraints(self, fix, verbose):
         """Check willpower constraints."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n5. Checking willpower constraints...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n5. Checking willpower constraints..."))
 
         total_issues = 0
 
@@ -319,9 +275,7 @@ class Command(BaseCommand):
         if low_wp.exists():
             count = low_wp.count()
             total_issues += count
-            self.stdout.write(
-                self.style.WARNING(f"   ✗ {count} characters with willpower < 1")
-            )
+            self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with willpower < 1"))
             if fix:
                 low_wp.update(willpower=1)
                 self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 1)"))
@@ -329,9 +283,7 @@ class Command(BaseCommand):
         if high_wp.exists():
             count = high_wp.count()
             total_issues += count
-            self.stdout.write(
-                self.style.WARNING(f"   ✗ {count} characters with willpower > 10")
-            )
+            self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with willpower > 10"))
             if fix:
                 high_wp.update(willpower=10)
                 self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 10)"))
@@ -366,18 +318,14 @@ class Command(BaseCommand):
             count = temp_exceeds.count()
             total_issues += count
             self.stdout.write(
-                self.style.WARNING(
-                    f"   ✗ {count} characters with temp willpower > permanent"
-                )
+                self.style.WARNING(f"   ✗ {count} characters with temp willpower > permanent")
             )
             if fix:
                 # Set temp to equal permanent
                 for human in temp_exceeds:
                     human.temporary_willpower = human.willpower
                     human.save()
-                self.stdout.write(
-                    self.style.SUCCESS(f"     → Fixed (set temp = permanent)")
-                )
+                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set temp = permanent)"))
 
         if total_issues == 0:
             self.stdout.write(self.style.SUCCESS("   ✓ All willpower values valid"))
@@ -397,9 +345,7 @@ class Command(BaseCommand):
         if negative_age.exists():
             count = negative_age.count()
             total_issues += count
-            self.stdout.write(
-                self.style.WARNING(f"   ✗ {count} characters with negative age")
-            )
+            self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with negative age"))
             if fix:
                 negative_age.update(age=None)
                 self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to NULL)"))
@@ -407,9 +353,7 @@ class Command(BaseCommand):
         if excessive_age.exists():
             count = excessive_age.count()
             total_issues += count
-            self.stdout.write(
-                self.style.WARNING(f"   ✗ {count} characters with age > 500")
-            )
+            self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with age > 500"))
             if fix:
                 excessive_age.update(age=500)
                 self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 500)"))
@@ -422,9 +366,7 @@ class Command(BaseCommand):
             count = negative_apparent.count()
             total_issues += count
             self.stdout.write(
-                self.style.WARNING(
-                    f"   ✗ {count} characters with negative apparent age"
-                )
+                self.style.WARNING(f"   ✗ {count} characters with negative apparent age")
             )
             if fix:
                 negative_apparent.update(apparent_age=None)
@@ -447,9 +389,7 @@ class Command(BaseCommand):
 
     def check_duplicate_st_relationships(self, fix, verbose):
         """Check for duplicate STRelationships."""
-        self.stdout.write(
-            self.style.HTTP_INFO("\n7. Checking for duplicate ST relationships...")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n7. Checking for duplicate ST relationships..."))
 
         # Find duplicates by grouping
         from django.db.models import Count
@@ -466,9 +406,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("   ✓ No duplicate ST relationships"))
             return 0
 
-        self.stdout.write(
-            self.style.WARNING(f"   ✗ Found {count} duplicate ST relationships")
-        )
+        self.stdout.write(self.style.WARNING(f"   ✗ Found {count} duplicate ST relationships"))
 
         if verbose or fix:
             for dup in duplicates:
@@ -490,9 +428,7 @@ class Command(BaseCommand):
                     first = instances.first()
                     deleted = instances.exclude(pk=first.pk).delete()[0]
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"     → Kept 1, deleted {deleted} duplicates"
-                        )
+                        self.style.SUCCESS(f"     → Kept 1, deleted {deleted} duplicates")
                     )
 
         return count
@@ -505,9 +441,7 @@ class Command(BaseCommand):
         scenes_with_xp_given = Scene.objects.filter(xp_given=True).count()
         scenes_without_xp = Scene.objects.filter(finished=True, xp_given=False).count()
 
-        self.stdout.write(
-            self.style.SUCCESS(f"   ℹ {scenes_with_xp_given} scenes have XP awarded")
-        )
+        self.stdout.write(self.style.SUCCESS(f"   ℹ {scenes_with_xp_given} scenes have XP awarded"))
         self.stdout.write(
             self.style.SUCCESS(f"   ℹ {scenes_without_xp} finished scenes awaiting XP")
         )

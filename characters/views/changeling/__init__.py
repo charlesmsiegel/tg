@@ -4,8 +4,6 @@ from .autumn_person import (
     AutumnPersonUpdateView,
 )
 from .changeling import ChangelingCharacterCreationView
-from .inanimae import InanimaeCreateView, InanimaeDetailView, InanimaeUpdateView
-from .nunnehi import NunnehiCreateView, NunnehiDetailView, NunnehiUpdateView
 from .changeling import ChangelingCreateView as ChangelingCharacterListView
 from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
 from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView
@@ -22,6 +20,8 @@ from .house_faction import HouseFactionCreateView as ChangelingFactionCreateView
 from .house_faction import HouseFactionDetailView as ChangelingFactionDetailView
 from .house_faction import HouseFactionListView as ChangelingFactionListView
 from .house_faction import HouseFactionUpdateView as ChangelingFactionUpdateView
+from .inanimae import InanimaeCreateView, InanimaeDetailView, InanimaeUpdateView
 from .kith import KithCreateView, KithDetailView, KithListView, KithUpdateView
 from .legacy import LegacyCreateView, LegacyDetailView, LegacyListView, LegacyUpdateView
 from .motley import MotleyCreateView, MotleyDetailView, MotleyListView, MotleyUpdateView
+from .nunnehi import NunnehiCreateView, NunnehiDetailView, NunnehiUpdateView

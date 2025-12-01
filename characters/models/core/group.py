@@ -49,9 +49,7 @@ class Group(Model):
             d[bgr.bg][bgr.note] += bgr.rating
         for bg in d.keys():
             for note in d[bg].keys():
-                p = PooledBackgroundRating.objects.get_or_create(
-                    bg=bg, note=note, group=self
-                )[0]
+                p = PooledBackgroundRating.objects.get_or_create(bg=bg, note=note, group=self)[0]
                 p.rating = d[bg][note]
                 p.save()
 

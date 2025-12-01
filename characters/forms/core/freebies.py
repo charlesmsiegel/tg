@@ -71,9 +71,7 @@ class HumanFreebiesForm(forms.Form):
         category = self.data.get("category")
         if category == "-----":
             raise forms.ValidationError("Must Choose Freebie Expenditure Type")
-        elif category == "MeritFlaw" and (
-            self.data["example"] == "" or self.data["value"] == ""
-        ):
+        elif category == "MeritFlaw" and (self.data["example"] == "" or self.data["value"] == ""):
             raise forms.ValidationError("Must Choose Merit/Flaw and rating")
         elif (
             category

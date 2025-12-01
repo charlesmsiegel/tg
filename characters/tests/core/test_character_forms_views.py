@@ -7,6 +7,7 @@ Tests cover:
 - Owner vs ST editing capabilities
 - Image status handling
 """
+
 from io import BytesIO
 
 from characters.forms.core import LimitedCharacterForm
@@ -164,9 +165,7 @@ class TestCharacterUpdateViewPermissions(TestCase):
         # Create users
         self.owner = User.objects.create_user(username="owner", password="password")
         self.st_user = User.objects.create_user(username="st", password="password")
-        self.other_user = User.objects.create_user(
-            username="other", password="password"
-        )
+        self.other_user = User.objects.create_user(username="other", password="password")
 
         # Create chronicle and make st_user a storyteller
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")

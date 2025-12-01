@@ -58,9 +58,7 @@ class TestMageFaction(TestCase):
 
 class TestMageFactionDetailView(TestCase):
     def setUp(self) -> None:
-        self.faction = MageFaction.objects.create(
-            name="Test MageFaction", description="Test"
-        )
+        self.faction = MageFaction.objects.create(name="Test MageFaction", description="Test")
         self.url = self.faction.get_absolute_url()
 
     def test_faction_detail_view_status_code(self):
@@ -99,9 +97,7 @@ class TestMageFactionCreateView(TestCase):
 
 class TestMageFactionUpdateView(TestCase):
     def setUp(self):
-        self.faction = MageFaction.objects.create(
-            name="Test MageFaction", description="Test"
-        )
+        self.faction = MageFaction.objects.create(name="Test MageFaction", description="Test")
         self.valid_data = {
             "name": "Test MageFaction Updated",
             "description": "Test",

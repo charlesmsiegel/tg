@@ -15,18 +15,14 @@ class WonderResonanceRatingForm(forms.ModelForm):
         fields = ["resonance", "rating"]
 
     rating = forms.IntegerField(min_value=0, max_value=5, initial=0)
-    resonance = forms.CharField(
-        required=False, widget=AutocompleteTextInput(suggestions=[])
-    )
+    resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)
         if suggestions is None:
             suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
         self.fields["resonance"].widget.suggestions = suggestions
-        self.fields["resonance"].widget.attrs.update(
-            {"placeholder": "Enter Resonance Trait"}
-        )
+        self.fields["resonance"].widget.attrs.update({"placeholder": "Enter Resonance Trait"})
 
     def clean_resonance(self):
         resonance = self.cleaned_data.get("resonance")
@@ -69,13 +65,9 @@ class WonderForm(forms.Form):
         "talisman": Talisman,
     }
 
-    wonder_type = forms.ChoiceField(
-        choices=WONDER_CHOICES, label="Wonder Type", required=True
-    )
+    wonder_type = forms.ChoiceField(choices=WONDER_CHOICES, label="Wonder Type", required=True)
     name = forms.CharField(max_length=100, label="Name", required=True)
-    description = forms.CharField(
-        widget=forms.Textarea, label="Description", required=True
-    )
+    description = forms.CharField(widget=forms.Textarea, label="Description", required=True)
     rank = forms.IntegerField(label="Arete", required=True)
     arete = forms.IntegerField(label="Arete", required=False)
 
@@ -84,9 +76,7 @@ class WonderForm(forms.Form):
         self.rank = kwargs.pop("rank", 0)
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
 
         self.resonance_formset = WonderResonanceRatingFormSet(
             instance=self.instance,
@@ -145,10 +135,7 @@ class WonderForm(forms.Form):
             raise forms.ValidationError("Rank cannot be none")
         points = rank * 3
 
-        if (
-            cleaned_data.get("arete") is None
-            and cleaned_data.get("wonder_type") != "artifact"
-        ):
+        if cleaned_data.get("arete") is None and cleaned_data.get("wonder_type") != "artifact":
             raise forms.ValidationError("Charms and Talismans must have Arete ratings")
 
         if not self.resonance_formset.is_valid():
@@ -178,12 +165,8 @@ class WonderForm(forms.Form):
 
         if not self.effect_formset.is_valid():
             raise forms.ValidationError("Effects invalid!")
-        num_powers = len(
-            [form.cleaned_data for form in self.effect_formset if form.cleaned_data]
-        )
-        if cleaned_data.get(
-            "wonder_type"
-        ) == "talisman" and num_powers > cleaned_data.get("rank"):
+        num_powers = len([form.cleaned_data for form in self.effect_formset if form.cleaned_data])
+        if cleaned_data.get("wonder_type") == "talisman" and num_powers > cleaned_data.get("rank"):
             raise forms.ValidationError("Talismans may up to their rank in powers")
         elif num_powers > 1:
             if cleaned_data.get("wonder_type") == "charm":
@@ -199,9 +182,9 @@ class WonderForm(forms.Form):
 
         total_cost = total_resonance_rating - cleaned_data.get("rank")
         if cleaned_data.get("wonder_type") != "talisman":
-            total_cost += cleaned_data.get(
-                "arete", cleaned_data.get("rank")
-            ) - cleaned_data.get("rank")
+            total_cost += cleaned_data.get("arete", cleaned_data.get("rank")) - cleaned_data.get(
+                "rank"
+            )
         for form in self.effect_formset:
             total_cost += form.cost()
 

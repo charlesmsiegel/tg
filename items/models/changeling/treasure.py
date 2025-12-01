@@ -39,17 +39,11 @@ class Treasure(ItemModel):
     creator = models.CharField(
         max_length=100, blank=True, default="", help_text="Who created this Treasure"
     )
-    creation_method = models.TextField(
-        blank=True, default="", help_text="How it was created"
-    )
-    permanence = models.BooleanField(
-        default=True, help_text="Whether this Treasure is permanent"
-    )
+    creation_method = models.TextField(blank=True, default="", help_text="How it was created")
+    permanence = models.BooleanField(default=True, help_text="Whether this Treasure is permanent")
 
     # Abilities and effects
-    effects = models.JSONField(
-        default=list, help_text="List of special abilities/effects"
-    )
+    effects = models.JSONField(default=list, help_text="List of special abilities/effects")
     special_abilities = models.TextField(
         blank=True, default="", help_text="Description of special abilities"
     )

@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-
 from locations.models.core.location import LocationModel
 
 
@@ -52,9 +51,7 @@ class CultTemple(LocationModel):
         help_text="Financial resources of the cult (0-5)",
     )
 
-    has_library = models.BooleanField(
-        default=False, help_text="Contains occult/Egyptian library"
-    )
+    has_library = models.BooleanField(default=False, help_text="Contains occult/Egyptian library")
 
     has_ritual_chamber = models.BooleanField(
         default=True, help_text="Space for performing Hekau rituals"

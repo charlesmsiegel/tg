@@ -13,9 +13,7 @@ class TestRenownIncidentDetailView(TestCase):
 
     def test_renownincident_detail_view_templates(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/werewolf/renownincident/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/werewolf/renownincident/detail.html")
 
 
 class TestRenownIncidentCreateView(TestCase):
@@ -38,9 +36,7 @@ class TestRenownIncidentCreateView(TestCase):
 
     def test_create_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/werewolf/renownincident/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/werewolf/renownincident/form.html")
 
     def test_create_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)
@@ -73,9 +69,7 @@ class TestRenownIncidentUpdateView(TestCase):
 
     def test_update_view_template(self):
         response = self.client.get(self.url)
-        self.assertTemplateUsed(
-            response, "characters/werewolf/renownincident/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/werewolf/renownincident/form.html")
 
     def test_update_view_successful_post(self):
         response = self.client.post(self.url, data=self.valid_data)

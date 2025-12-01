@@ -18,9 +18,7 @@ from game.models import FreebieSpendingRecord, XPSpendingRequest
 
 
 class Command(BaseCommand):
-    help = (
-        "Migrate spent_xp and spent_freebies JSONField data to proper model instances"
-    )
+    help = "Migrate spent_xp and spent_freebies JSONField data to proper model instances"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -33,9 +31,7 @@ class Command(BaseCommand):
         dry_run = options["dry_run"]
 
         if dry_run:
-            self.stdout.write(
-                self.style.WARNING("DRY RUN MODE - No changes will be saved")
-            )
+            self.stdout.write(self.style.WARNING("DRY RUN MODE - No changes will be saved"))
 
         self.stdout.write("Starting migration of JSONField data to models...")
 
@@ -46,9 +42,7 @@ class Command(BaseCommand):
         self.migrate_freebie_spending(dry_run)
 
         if dry_run:
-            self.stdout.write(
-                self.style.WARNING("DRY RUN COMPLETE - No changes were saved")
-            )
+            self.stdout.write(self.style.WARNING("DRY RUN COMPLETE - No changes were saved"))
         else:
             self.stdout.write(self.style.SUCCESS("Migration complete!"))
 
@@ -80,9 +74,7 @@ class Command(BaseCommand):
                 ).exists()
 
                 if existing:
-                    self.stdout.write(
-                        f"  Skipping duplicate: {character.name} - {trait_name}"
-                    )
+                    self.stdout.write(f"  Skipping duplicate: {character.name} - {trait_name}")
                     continue
 
                 if not dry_run:
@@ -101,9 +93,7 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"XP Migration: {migrated_records}/{total_records} records migrated"
-            )
+            self.style.SUCCESS(f"XP Migration: {migrated_records}/{total_records} records migrated")
         )
 
     @transaction.atomic
@@ -129,9 +119,7 @@ class Command(BaseCommand):
                 ).exists()
 
                 if existing:
-                    self.stdout.write(
-                        f"  Skipping duplicate: {human.name} - {trait_name}"
-                    )
+                    self.stdout.write(f"  Skipping duplicate: {human.name} - {trait_name}")
                     continue
 
                 if not dry_run:
@@ -144,9 +132,7 @@ class Command(BaseCommand):
                     )
 
                 migrated_records += 1
-                self.stdout.write(
-                    f"  Migrated: {human.name} - {trait_name} ({cost} freebies)"
-                )
+                self.stdout.write(f"  Migrated: {human.name} - {trait_name} ({cost} freebies)")
 
         self.stdout.write(
             self.style.SUCCESS(

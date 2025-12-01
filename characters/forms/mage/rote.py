@@ -13,9 +13,7 @@ class RoteCreationForm(forms.Form):
     select_or_create_effect = forms.BooleanField(required=False)
 
     rote_options = forms.ModelChoiceField(queryset=Rote.objects.all(), required=False)
-    effect_options = forms.ModelChoiceField(
-        queryset=Effect.objects.all(), required=False
-    )
+    effect_options = forms.ModelChoiceField(queryset=Effect.objects.all(), required=False)
 
     name = forms.CharField(max_length=100, required=False)
     practice = forms.ModelChoiceField(queryset=Practice.objects.none(), required=False)
@@ -48,12 +46,8 @@ class RoteCreationForm(forms.Form):
             id__in=[x.parent_practice.id for x in special_practices]
         )
 
-        self.fields["practice"].queryset = (
-            practice_choices | special_practices
-        ).order_by("name")
-        self.fields["correspondence"].widget.attrs["max"] = getattr(
-            self.instance, "correspondence"
-        )
+        self.fields["practice"].queryset = (practice_choices | special_practices).order_by("name")
+        self.fields["correspondence"].widget.attrs["max"] = getattr(self.instance, "correspondence")
         self.fields["time"].widget.attrs["max"] = getattr(self.instance, "time")
         self.fields["spirit"].widget.attrs["max"] = getattr(self.instance, "spirit")
         self.fields["matter"].widget.attrs["max"] = getattr(self.instance, "matter")
@@ -76,9 +70,7 @@ class RoteCreationForm(forms.Form):
                 self.instance, sphere.property_name
             )
 
-        rote_filter_dict["effect__rote_cost__lte"] = getattr(
-            self.instance, "rote_points"
-        )
+        rote_filter_dict["effect__rote_cost__lte"] = getattr(self.instance, "rote_points")
         effect_filter_dict["rote_cost__lte"] = getattr(self.instance, "rote_points")
 
         rote_filter_dict["practice__in"] = list(self.instance.practices.all()) + [
@@ -87,9 +79,7 @@ class RoteCreationForm(forms.Form):
             if getattr(x, "parent_practice", None) is not None
         ]
 
-        pracdict = {
-            x.practice: x.rating for x in self.instance.practicerating_set.all()
-        }
+        pracdict = {x.practice: x.rating for x in self.instance.practicerating_set.all()}
         pracdict.update(
             {
                 getattr(x.practice, "parent_practice", None): x.rating

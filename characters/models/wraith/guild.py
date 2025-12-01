@@ -13,9 +13,7 @@ class Guild(Model):
         ("banned", "Banned Guild"),
     ]
 
-    guild_type = models.CharField(
-        max_length=20, choices=GUILD_TYPE_CHOICES, default="greater"
-    )
+    guild_type = models.CharField(max_length=20, choices=GUILD_TYPE_CHOICES, default="greater")
     willpower = models.IntegerField(default=5)
 
     class Meta:

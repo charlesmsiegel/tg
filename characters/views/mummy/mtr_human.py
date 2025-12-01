@@ -4,11 +4,7 @@ from characters.forms.core.limited_edit import LimitedMtRHumanEditForm
 from characters.forms.mummy.mtr_human import MtRHumanCreationForm
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.views.core.human import HumanDetailView
-from core.mixins import (
-    EditPermissionMixin,
-    MessageMixin,
-    VisibilityFilterMixin,
-)
+from core.mixins import EditPermissionMixin, MessageMixin, VisibilityFilterMixin
 from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, ListView, UpdateView
 

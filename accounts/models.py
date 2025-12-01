@@ -76,13 +76,9 @@ class Profile(models.Model):
         default=False, help_text="Show your Discord ID to other players"
     )
 
-    lines_toggle = models.BooleanField(
-        default=False, help_text="Show your lines to other players"
-    )
+    lines_toggle = models.BooleanField(default=False, help_text="Show your lines to other players")
 
-    veils_toggle = models.BooleanField(
-        default=False, help_text="Show your veils to other players"
-    )
+    veils_toggle = models.BooleanField(default=False, help_text="Show your veils to other players")
 
     class Meta:
         verbose_name = "Profile"
@@ -152,9 +148,7 @@ class Profile(models.Model):
                 chronicle__in=self.user.chronicle_set.all(),
             )
             .select_related("chronicle")
-            .prefetch_related(
-                Prefetch("mage_set", queryset=Mage.objects.select_related("owner"))
-            )
+            .prefetch_related(Prefetch("mage_set", queryset=Mage.objects.select_related("owner")))
             .order_by("name")
         )
         return {r: list(r.mage_set.all()) for r in rotes}
@@ -180,9 +174,7 @@ class Profile(models.Model):
         return Character.objects.with_pending_images().for_user_chronicles(self.user)
 
     def location_images_to_approve(self):
-        return LocationModel.objects.with_pending_images().for_user_chronicles(
-            self.user
-        )
+        return LocationModel.objects.with_pending_images().for_user_chronicles(self.user)
 
     def item_images_to_approve(self):
         return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
@@ -199,12 +191,23 @@ class Profile(models.Model):
 
         # Validate theme is in valid choices
         if self.theme not in self.theme_list:
-            errors["theme"] = f"Invalid theme '{self.theme}'. Must be one of: {', '.join(self.theme_list)}"
+            errors["theme"] = (
+                f"Invalid theme '{self.theme}'. Must be one of: {', '.join(self.theme_list)}"
+            )
 
         # Validate preferred_heading is in valid choices
-        valid_headings = ["wod_heading", "vtm_heading", "wta_heading", "mta_heading", "ctd_heading", "wto_heading"]
+        valid_headings = [
+            "wod_heading",
+            "vtm_heading",
+            "wta_heading",
+            "mta_heading",
+            "ctd_heading",
+            "wto_heading",
+        ]
         if self.preferred_heading not in valid_headings:
-            errors["preferred_heading"] = f"Invalid preferred heading '{self.preferred_heading}'. Must be one of: {', '.join(valid_headings)}"
+            errors["preferred_heading"] = (
+                f"Invalid preferred heading '{self.preferred_heading}'. Must be one of: {', '.join(valid_headings)}"
+            )
 
         # Validate user is provided
         if not self.user_id:

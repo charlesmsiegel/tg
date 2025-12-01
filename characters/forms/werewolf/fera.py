@@ -42,12 +42,8 @@ class FeraCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
-        self.fields["breed"].widget.attrs.update(
-            {"placeholder": "Will be set by Fera type"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
+        self.fields["breed"].widget.attrs.update({"placeholder": "Will be set by Fera type"})
         self.fields["breed"].required = False
         self.fields["image"].required = False
 

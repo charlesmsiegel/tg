@@ -11,32 +11,18 @@ class MageFactionDetailView(DetailView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["languages"] = ", ".join([str(x) for x in self.object.languages.all()])
-        context["affinities"] = ", ".join(
-            [x.name for x in self.object.affinities.all()]
-        )
+        context["affinities"] = ", ".join([x.name for x in self.object.affinities.all()])
         context["paradigms"] = ", ".join(
-            [
-                f'<a href="{x.get_absolute_url()}">{x}</a>'
-                for x in self.object.paradigms.all()
-            ]
+            [f'<a href="{x.get_absolute_url()}">{x}</a>' for x in self.object.paradigms.all()]
         )
         context["practices"] = ", ".join(
-            [
-                f'<a href="{x.get_absolute_url()}">{x}</a>'
-                for x in self.object.practices.all()
-            ]
+            [f'<a href="{x.get_absolute_url()}">{x}</a>' for x in self.object.practices.all()]
         )
         context["media"] = ", ".join(
-            [
-                f'<a href="{x.get_absolute_url()}">{x}</a>'
-                for x in self.object.media.all()
-            ]
+            [f'<a href="{x.get_absolute_url()}">{x}</a>' for x in self.object.media.all()]
         )
         context["materials"] = ", ".join(
-            [
-                f'<a href="{x.get_absolute_url()}">{x}</a>'
-                for x in self.object.materials.all()
-            ]
+            [f'<a href="{x.get_absolute_url()}">{x}</a>' for x in self.object.materials.all()]
         )
         context["year"] = abs(self.object.founded)
         context["subfactions"] = ", ".join(

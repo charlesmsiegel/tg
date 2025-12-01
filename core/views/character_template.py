@@ -87,9 +87,7 @@ class CharacterTemplateDetailView(LoginRequiredMixin, STRequiredMixin, DetailVie
         return CharacterTemplate.objects.select_related("owner", "chronicle")
 
 
-class CharacterTemplateCreateView(
-    LoginRequiredMixin, STRequiredMixin, MessageMixin, CreateView
-):
+class CharacterTemplateCreateView(LoginRequiredMixin, STRequiredMixin, MessageMixin, CreateView):
     """Create a new user template (ST only)"""
 
     model = CharacterTemplate
@@ -106,9 +104,7 @@ class CharacterTemplateCreateView(
         return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateUpdateView(
-    LoginRequiredMixin, STRequiredMixin, MessageMixin, UpdateView
-):
+class CharacterTemplateUpdateView(LoginRequiredMixin, STRequiredMixin, MessageMixin, UpdateView):
     """Edit a user template (ST only, owner or superuser)"""
 
     model = CharacterTemplate
@@ -131,9 +127,7 @@ class CharacterTemplateUpdateView(
         return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
 
 
-class CharacterTemplateDeleteView(
-    LoginRequiredMixin, STRequiredMixin, MessageMixin, DeleteView
-):
+class CharacterTemplateDeleteView(LoginRequiredMixin, STRequiredMixin, MessageMixin, DeleteView):
     """Delete a user template (ST only, owner or superuser)"""
 
     model = CharacterTemplate
@@ -145,9 +139,7 @@ class CharacterTemplateDeleteView(
         # Only allow deleting own templates (not official ones) or if superuser
         if self.request.user.is_superuser:
             return CharacterTemplate.objects.all()
-        return CharacterTemplate.objects.filter(
-            owner=self.request.user, is_official=False
-        )
+        return CharacterTemplate.objects.filter(owner=self.request.user, is_official=False)
 
 
 class CharacterTemplateExportView(LoginRequiredMixin, STRequiredMixin, DetailView):
@@ -182,18 +174,14 @@ class CharacterTemplateExportView(LoginRequiredMixin, STRequiredMixin, DetailVie
         }
 
         # Create JSON response
-        response = HttpResponse(
-            json.dumps(export_data, indent=2), content_type="application/json"
-        )
+        response = HttpResponse(json.dumps(export_data, indent=2), content_type="application/json")
         filename = f"{template.name.replace(' ', '_').lower()}_template.json"
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         return response
 
 
-class CharacterTemplateImportView(
-    LoginRequiredMixin, STRequiredMixin, MessageMixin, FormView
-):
+class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMixin, FormView):
     """Import a template from JSON"""
 
     form_class = CharacterTemplateImportForm
@@ -215,9 +203,7 @@ class CharacterTemplateImportView(
             required_fields = ["name", "gameline", "character_type"]
             for field in required_fields:
                 if field not in json_data:
-                    messages.error(
-                        self.request, f"Missing required field in JSON: {field}"
-                    )
+                    messages.error(self.request, f"Missing required field in JSON: {field}")
                     return self.form_invalid(form)
 
             # Create template from JSON
@@ -237,9 +223,7 @@ class CharacterTemplateImportView(
                 specialties=json_data.get("specialties", []),
                 languages=json_data.get("languages", []),
                 equipment=json_data.get("equipment", ""),
-                suggested_freebie_spending=json_data.get(
-                    "suggested_freebie_spending", {}
-                ),
+                suggested_freebie_spending=json_data.get("suggested_freebie_spending", {}),
                 # Set ownership
                 owner=self.request.user,
                 is_official=False,

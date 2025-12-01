@@ -1,12 +1,7 @@
 import re
 from datetime import date, datetime, timedelta
 
-from core.constants import (
-    GameLine,
-    HeadingChoices,
-    ObjectTypeChoices,
-    XPApprovalStatus,
-)
+from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
 from core.utils import dice
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -37,13 +32,7 @@ class ObjectType(models.Model):
         ordering = ["type", "gameline", "name"]
 
     def __str__(self):
-        return (
-            self.get_gameline_display()
-            + "/"
-            + self.get_type_display()
-            + "/"
-            + self.name
-        )
+        return self.get_gameline_display() + "/" + self.get_type_display() + "/" + self.name
 
     def clean(self):
         """Validate object type data before saving."""
@@ -62,7 +51,9 @@ class ObjectType(models.Model):
         # Validate gameline is in valid choices (use GameLine constants)
         valid_gamelines = [code for code, _ in GameLine.CHOICES]
         if self.gameline not in valid_gamelines:
-            errors["gameline"] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -205,9 +196,7 @@ class Chronicle(models.Model):
 
             location = LocationModel.objects.get(name=location)
         if Scene.objects.filter(name=name, chronicle=self, location=location).exists():
-            return Scene.objects.filter(
-                name=name, chronicle=self, location=location
-            ).first()
+            return Scene.objects.filter(name=name, chronicle=self, location=location).first()
         s = Scene.objects.create(
             name=name,
             chronicle=self,
@@ -412,9 +401,7 @@ class Week(models.Model):
         # and then filter by conditions:
         # 1) Scene is finished
         # 2) The date portion of latest_post_date is between start_date and end_date
-        return Scene.objects.annotate(
-            latest_post_date=Subquery(recent_post_subquery)
-        ).filter(
+        return Scene.objects.annotate(latest_post_date=Subquery(recent_post_subquery)).filter(
             finished=True,
             latest_post_date__date__gte=self.start_date,
             latest_post_date__date__lte=self.end_date,
@@ -495,19 +482,13 @@ SceneManager = models.Manager.from_queryset(SceneQuerySet)
 
 class Scene(models.Model):
     name = models.CharField(max_length=100, default="")
-    chronicle = models.ForeignKey(
-        "game.Chronicle", on_delete=models.SET_NULL, null=True
-    )
+    chronicle = models.ForeignKey("game.Chronicle", on_delete=models.SET_NULL, null=True)
     date_played = models.DateField(auto_now_add=True)
     characters = models.ManyToManyField(
         "characters.CharacterModel", related_name="scenes", blank=True
     )
-    location = models.ForeignKey(
-        "locations.LocationModel", on_delete=models.SET_NULL, null=True
-    )
-    user_read_status = models.ManyToManyField(
-        User, blank=True, through="UserSceneReadStatus"
-    )
+    location = models.ForeignKey("locations.LocationModel", on_delete=models.SET_NULL, null=True)
+    user_read_status = models.ManyToManyField(User, blank=True, through="UserSceneReadStatus")
     finished = models.BooleanField(default=False, db_index=True)
     xp_given = models.BooleanField(default=False)
     waiting_for_st = models.BooleanField(default=False)
@@ -531,9 +512,7 @@ class Scene(models.Model):
 
     def close(self):
         self.finished = True
-        latest_post = (
-            Post.objects.filter(scene=self).order_by("-datetime_created").first()
-        )
+        latest_post = Post.objects.filter(scene=self).order_by("-datetime_created").first()
         if latest_post is None:
             from_date = date.today()
         else:
@@ -572,7 +551,12 @@ class Scene(models.Model):
             self.st_message = message[len("@storyteller ") :]
             self.save()
             return None
-        if character is not None and self.waiting_for_st and character.owner and character.owner.profile.is_st():
+        if (
+            character is not None
+            and self.waiting_for_st
+            and character.owner
+            and character.owner.profile.is_st()
+        ):
             self.waiting_for_st = False
             self.save()
         try:
@@ -585,15 +569,11 @@ class Scene(models.Model):
         character_owner = character.owner if character else None
         for user in User.objects.filter(charactermodel__scenes=self).distinct():
             if user != character_owner:
-                status = UserSceneReadStatus.objects.get_or_create(
-                    user=user, scene=self
-                )[0]
+                status = UserSceneReadStatus.objects.get_or_create(user=user, scene=self)[0]
                 status.read = False
                 status.save()
             else:
-                status = UserSceneReadStatus.objects.get_or_create(
-                    user=user, scene=self
-                )[0]
+                status = UserSceneReadStatus.objects.get_or_create(user=user, scene=self)[0]
                 status.read = True
                 status.save()
         return post
@@ -704,9 +684,7 @@ class JournalEntry(models.Model):
 
 
 class Journal(models.Model):
-    character = models.OneToOneField(
-        "characters.CharacterModel", on_delete=models.CASCADE
-    )
+    character = models.OneToOneField("characters.CharacterModel", on_delete=models.CASCADE)
 
     def add_post(self, date, message):
         try:
@@ -727,9 +705,7 @@ class Journal(models.Model):
 
 
 def message_processing(character, message):
-    temporary_point_regex = re.compile(
-        r"#WP(-?\d+)|#WP|#Q(-?\d+)|#P(-?\d+)|#(-?\d+)(B|L|A)"
-    )
+    temporary_point_regex = re.compile(r"#WP(-?\d+)|#WP|#Q(-?\d+)|#P(-?\d+)|#(-?\d+)(B|L|A)")
     wp_spend = False
     expenditures = []
     needs_save = False
@@ -787,9 +763,7 @@ def message_processing(character, message):
         ):
             num_dice = int(match.group("num_dice"))
             target_successes = int(match.group("target"))
-            difficulty = (
-                int(match.group("difficulty")) if match.group("difficulty") else 6
-            )
+            difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
             r = extended_roll(
@@ -821,9 +795,7 @@ def message_processing(character, message):
         ):
             num_rolls = int(match.group("num_rolls"))
             num_dice = int(match.group("num_dice"))
-            difficulty = (
-                int(match.group("difficulty")) if match.group("difficulty") else 6
-            )
+            difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
             r = rolls(
@@ -832,9 +804,7 @@ def message_processing(character, message):
                 difficulty=difficulty,
                 specialty=specialty,
             )
-            roll_description = (
-                f"{num_rolls} rolls of {num_dice} dice at difficulty {difficulty}"
-            )
+            roll_description = f"{num_rolls} rolls of {num_dice} dice at difficulty {difficulty}"
             if specialty:
                 roll_description += " with relevant specialty"
             m = ""
@@ -857,9 +827,7 @@ def message_processing(character, message):
             re.IGNORECASE,
         ):
             stats_string = match.group("stats").strip()
-            difficulty = (
-                int(match.group("difficulty")) if match.group("difficulty") else 6
-            )
+            difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
 
@@ -892,7 +860,9 @@ def message_processing(character, message):
                 willpower=wp_spend,
             )
             pool_description = " + ".join(stat_display_parts)
-            roll_description = f"roll of {pool_description} = {num_dice} dice at difficulty {difficulty}"
+            roll_description = (
+                f"roll of {pool_description} = {num_dice} dice at difficulty {difficulty}"
+            )
             if specialty:
                 roll_description += " with relevant specialty"
             m = ""
@@ -915,9 +885,7 @@ def message_processing(character, message):
             re.IGNORECASE,
         ):
             num_dice = int(match.group("num_dice"))
-            difficulty = (
-                int(match.group("difficulty")) if match.group("difficulty") else 6
-            )
+            difficulty = int(match.group("difficulty")) if match.group("difficulty") else 6
             specialty_str = match.group("specialty")
             specialty = specialty_str.lower() == "true" if specialty_str else False
             r = roll_once(
@@ -942,9 +910,7 @@ def message_processing(character, message):
 
 
 def roll_once(number_of_dice, difficulty=6, specialty=False, willpower=False):
-    roll, success_count = dice(
-        number_of_dice, difficulty=difficulty, specialty=specialty
-    )
+    roll, success_count = dice(number_of_dice, difficulty=difficulty, specialty=specialty)
     if willpower:
         success_count += 1
         if success_count < 0:
@@ -975,9 +941,7 @@ def rolls(num_rolls, num_dice, difficulty, specialty):
     return "Rolls:<br>" + f"<br>".join(join_list)
 
 
-def extended_roll(
-    num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100
-):
+def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100):
     """
     Perform an extended roll, accumulating successes until target is reached or botch occurs.
 
@@ -1025,7 +989,9 @@ def extended_roll(
     if botched:
         result += f"<br><b>BOTCH! Extended action failed catastrophically.</b>"
     elif cumulative_successes >= target_successes:
-        result += f"<br><b>SUCCESS! Target of {target_successes} reached in {len(roll_list)} rolls.</b>"
+        result += (
+            f"<br><b>SUCCESS! Target of {target_successes} reached in {len(roll_list)} rolls.</b>"
+        )
     else:
         result += f"<br><b>INCOMPLETE: Only {cumulative_successes}/{target_successes} successes after {max_rolls} rolls.</b>"
 
@@ -1034,9 +1000,7 @@ def extended_roll(
 
 class WeeklyXPRequest(models.Model):
     week = models.ForeignKey(Week, on_delete=models.SET_NULL, null=True)
-    character = models.ForeignKey(
-        "characters.CharacterModel", on_delete=models.SET_NULL, null=True
-    )
+    character = models.ForeignKey("characters.CharacterModel", on_delete=models.SET_NULL, null=True)
     finishing = models.BooleanField(default=True)
     learning = models.BooleanField(default=False)
     rp = models.BooleanField(default=False)
@@ -1070,17 +1034,15 @@ class WeeklyXPRequest(models.Model):
         super().clean()
         errors = {}
         if self.learning and not self.learning_scene:
-            errors[
-                "learning_scene"
-            ] = "Learning scene required when learning XP is claimed"
+            errors["learning_scene"] = "Learning scene required when learning XP is claimed"
         if self.rp and not self.rp_scene:
             errors["rp_scene"] = "RP scene required when RP XP is claimed"
         if self.focus and not self.focus_scene:
             errors["focus_scene"] = "Focus scene required when focus XP is claimed"
         if self.standingout and not self.standingout_scene:
-            errors[
-                "standingout_scene"
-            ] = "Standing out scene required when standing out XP is claimed"
+            errors["standingout_scene"] = (
+                "Standing out scene required when standing out XP is claimed"
+            )
         if errors:
             raise ValidationError(errors)
 
@@ -1091,16 +1053,12 @@ class WeeklyXPRequest(models.Model):
 
     def total_xp(self):
         """Calculate total XP for this request."""
-        return sum(
-            [self.finishing, self.learning, self.rp, self.focus, self.standingout]
-        )
+        return sum([self.finishing, self.learning, self.rp, self.focus, self.standingout])
 
 
 class StoryXPRequest(models.Model):
     story = models.ForeignKey(Story, on_delete=models.SET_NULL, null=True)
-    character = models.ForeignKey(
-        "characters.CharacterModel", on_delete=models.SET_NULL, null=True
-    )
+    character = models.ForeignKey("characters.CharacterModel", on_delete=models.SET_NULL, null=True)
     success = models.BooleanField(default=False)
     danger = models.BooleanField(default=False)
     growth = models.BooleanField(default=False)

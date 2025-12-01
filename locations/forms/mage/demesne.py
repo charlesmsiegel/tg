@@ -12,9 +12,7 @@ class DemesneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         self.fields["size"].widget.attrs.update(
             {"placeholder": "e.g., Small chamber, Expansive realm"}
         )
@@ -79,8 +77,6 @@ class DemesneForm(forms.ModelForm):
             raise forms.ValidationError("Reality Zone Ratings must total 0")
 
         if total_positive_rz_rating != rank:
-            raise forms.ValidationError(
-                "Positive Reality Zone Ratings must sum to Demesne rating"
-            )
+            raise forms.ValidationError("Positive Reality Zone Ratings must sum to Demesne rating")
 
         return cleaned_data

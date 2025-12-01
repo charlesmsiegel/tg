@@ -5,20 +5,25 @@ from django.shortcuts import redirect, render
 from django.views import View
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
-# Core models
-from locations.models.core.city import City
-from locations.models.core.location import LocationModel
+
 # Changeling models
 from locations.models.changeling.dream_realm import DreamRealm
 from locations.models.changeling.freehold import Freehold
 from locations.models.changeling.holding import Holding
 from locations.models.changeling.trod import Trod
+
+# Core models
+from locations.models.core.city import City
+from locations.models.core.location import LocationModel
+
 # Demon models
 from locations.models.demon.bastion import Bastion
 from locations.models.demon.reliquary import Reliquary
+
 # Hunter models
 from locations.models.hunter.huntingground import HuntingGround
 from locations.models.hunter.safehouse import Safehouse
+
 # Mage models
 from locations.models.mage.chantry import Chantry
 from locations.models.mage.demesne import Demesne
@@ -29,10 +34,12 @@ from locations.models.mage.reality_zone import RealityZone
 from locations.models.mage.realm import HorizonRealm
 from locations.models.mage.sanctum import Sanctum
 from locations.models.mage.sector import Sector
+
 # Mummy models
 from locations.models.mummy.cult_temple import CultTemple
 from locations.models.mummy.sanctuary import UndergroundSanctuary
 from locations.models.mummy.tomb import Tomb
+
 # Vampire models
 from locations.models.vampire.barrens import Barrens
 from locations.models.vampire.chantry import TremereChantry
@@ -40,8 +47,10 @@ from locations.models.vampire.domain import Domain
 from locations.models.vampire.elysium import Elysium
 from locations.models.vampire.haven import Haven
 from locations.models.vampire.rack import Rack
+
 # Werewolf models
 from locations.models.werewolf.caern import Caern
+
 # Wraith models
 from locations.models.wraith.byway import Byway
 from locations.models.wraith.citadel import Citadel
@@ -49,7 +58,6 @@ from locations.models.wraith.freehold import WraithFreehold
 from locations.models.wraith.haunt import Haunt
 from locations.models.wraith.necropolis import Necropolis
 from locations.models.wraith.nihil import Nihil
-
 from locations.views import mage, werewolf
 
 from .city import CityCreateView, CityDetailView, CityListView, CityUpdateView
@@ -199,15 +207,11 @@ class LocationIndexView(View):
         for chron in list(Chronicle.objects.all()) + [None]:
             if chron:
                 chron_dict[chron] = (
-                    LocationModel.objects.top_level()
-                    .filter(chronicle=chron)
-                    .order_by("name")
+                    LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
                 )
             else:
                 chron_dict[chron] = (
-                    LocationModel.objects.top_level()
-                    .filter(chronicle=chron)
-                    .order_by("name")
+                    LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
                 )
         context["form"] = LocationCreationForm(user=self.request.user)
         context["chrondict"] = chron_dict

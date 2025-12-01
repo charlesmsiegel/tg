@@ -5,9 +5,7 @@ from locations.models.core import LocationModel
 class TestLocation(TestCase):
     def setUp(self) -> None:
         self.location = LocationModel.objects.create(name="Location 1")
-        self.child = LocationModel.objects.create(
-            name="Location 2", parent=self.location
-        )
+        self.child = LocationModel.objects.create(name="Location 2", parent=self.location)
 
     def test_location_parent(self):
         self.assertEqual(self.child.parent, self.location)

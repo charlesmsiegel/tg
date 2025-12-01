@@ -6,6 +6,7 @@ A chronicle is considered inactive if it has:
 - No recent posts/journals for X days
 - All characters Retired/Deceased
 """
+
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -45,9 +46,7 @@ class Command(BaseCommand):
         self.list_only = options["list_only"]
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\nFinding chronicles inactive for {options['days']}+ days...\n"
-            )
+            self.style.SUCCESS(f"\nFinding chronicles inactive for {options['days']}+ days...\n")
         )
 
         # Find inactive chronicles
@@ -114,14 +113,11 @@ class Command(BaseCommand):
 
         characters = CharacterModel.objects.filter(chronicle=chronicle)
         info["total_characters"] = characters.count()
-        info["active_character_count"] = characters.filter(
-            status__in=["Sub", "App"]
-        ).count()
+        info["active_character_count"] = characters.filter(status__in=["Sub", "App"]).count()
 
         # Determine if inactive
         has_no_recent_scenes = (
-            info["last_scene_date"] is None
-            or info["last_scene_date"] < self.cutoff_date.date()
+            info["last_scene_date"] is None or info["last_scene_date"] < self.cutoff_date.date()
         )
         has_no_active_scenes = info["active_scene_count"] == 0
         has_no_active_characters = info["active_character_count"] == 0
@@ -136,9 +132,7 @@ class Command(BaseCommand):
     def display_inactive_chronicles(self, inactive_chronicles):
         """Display information about inactive chronicles."""
         self.stdout.write("=" * 70)
-        self.stdout.write(
-            self.style.WARNING(f"INACTIVE CHRONICLES: {len(inactive_chronicles)}")
-        )
+        self.stdout.write(self.style.WARNING(f"INACTIVE CHRONICLES: {len(inactive_chronicles)}"))
         self.stdout.write("=" * 70 + "\n")
 
         for item in inactive_chronicles:
@@ -146,15 +140,11 @@ class Command(BaseCommand):
             info = item["info"]
 
             self.stdout.write(f"\n{chronicle.name} (ID: {chronicle.id})")
-            self.stdout.write(
-                f"  Storytellers: {chronicle.storyteller_list() or 'None'}"
-            )
+            self.stdout.write(f"  Storytellers: {chronicle.storyteller_list() or 'None'}")
 
             if info["last_scene_date"]:
                 days_ago = (now().date() - info["last_scene_date"]).days
-                self.stdout.write(
-                    f"  Last scene: {info['last_scene_date']} ({days_ago} days ago)"
-                )
+                self.stdout.write(f"  Last scene: {info['last_scene_date']} ({days_ago} days ago)")
             else:
                 self.stdout.write("  Last scene: Never")
 
@@ -191,16 +181,12 @@ class Command(BaseCommand):
 
             try:
                 # Call export_chronicle command
-                call_command(
-                    "export_chronicle", chronicle.id, "--output", filename, "--pretty"
-                )
+                call_command("export_chronicle", chronicle.id, "--output", filename, "--pretty")
                 self.stdout.write(
                     self.style.SUCCESS(f"  ✓ Exported {chronicle.name} to {filename}")
                 )
             except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"  ✗ Failed to export {chronicle.name}: {e}")
-                )
+                self.stdout.write(self.style.ERROR(f"  ✗ Failed to export {chronicle.name}: {e}"))
 
     def mark_as_archived(self, inactive_chronicles):
         """Mark chronicles as archived by prefixing name."""
@@ -212,8 +198,6 @@ class Command(BaseCommand):
             if not chronicle.name.startswith("[ARCHIVED]"):
                 chronicle.name = f"[ARCHIVED] {chronicle.name}"
                 chronicle.save()
-                self.stdout.write(
-                    self.style.SUCCESS(f"  ✓ Marked as archived: {chronicle.name}")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  ✓ Marked as archived: {chronicle.name}"))
             else:
                 self.stdout.write(f"  - Already archived: {chronicle.name}")

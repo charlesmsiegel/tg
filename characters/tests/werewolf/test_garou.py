@@ -14,9 +14,7 @@ from items.models.werewolf.fetish import Fetish
 class TestWerewolf(TestCase):
     def setUp(self):
         self.player = User.objects.create_user(username="Player")
-        self.character = Werewolf.objects.create(
-            name="Test Werewolf", owner=self.player
-        )
+        self.character = Werewolf.objects.create(name="Test Werewolf", owner=self.player)
         werewolf_setup()
 
     def test_add_gift(self):
@@ -169,9 +167,7 @@ class TestWerewolf(TestCase):
     def test_has_renown(self):
         self.assertFalse(self.character.has_renown())
         self.character.set_auspice("ragabash")
-        self.assertEqual(
-            self.character.glory + self.character.honor + self.character.wisdom, 3
-        )
+        self.assertEqual(self.character.glory + self.character.honor + self.character.wisdom, 3)
         self.assertTrue(self.character.has_renown())
 
     def test_set_auspice(self):
@@ -198,13 +194,9 @@ class TestWerewolf(TestCase):
         self.assertEqual(self.character.rage, 5)
 
     def test_auspice_sets_renown(self):
-        self.assertEqual(
-            self.character.glory + self.character.honor + self.character.wisdom, 0
-        )
+        self.assertEqual(self.character.glory + self.character.honor + self.character.wisdom, 0)
         self.character.set_auspice("ragabash")
-        self.assertEqual(
-            self.character.glory + self.character.honor + self.character.wisdom, 3
-        )
+        self.assertEqual(self.character.glory + self.character.honor + self.character.wisdom, 3)
         self.character.set_auspice("theurge")
         self.assertEqual(self.character.glory, 0)
         self.assertEqual(self.character.honor, 0)
@@ -245,9 +237,7 @@ class TestWerewolf(TestCase):
 
     def test_no_homid_red_talons(self):
         self.character.breed = "homid"
-        self.assertFalse(
-            self.character.set_tribe(Tribe.objects.create(name="Red Talons"))
-        )
+        self.assertFalse(self.character.set_tribe(Tribe.objects.create(name="Red Talons")))
 
     # def test_no_male_black_furies(self):
     #     self.character.sex = "Male"
@@ -266,9 +256,7 @@ class TestWerewolf(TestCase):
         self.assertEqual(self.character.num_renown_incidents(), 2)
 
     def test_add_renown_incident(self):
-        r = RenownIncident.objects.create(
-            name="Test Renown Incident", glory=1, honor=1, wisdom=1
-        )
+        r = RenownIncident.objects.create(name="Test Renown Incident", glory=1, honor=1, wisdom=1)
         self.assertTrue(self.character.add_renown_incident(r))
         self.assertEqual(self.character.num_renown_incidents(), 1)
         self.assertIn("Test Renown Incident", self.character.renown_incidents)
@@ -284,9 +272,7 @@ class TestWerewolf(TestCase):
         self.assertEqual(self.character.temporary_glory, 0)
 
     def test_achieved_age_only_once(self):
-        r = RenownIncident.objects.create(
-            name="One Off", glory=1, wisdom=2, only_once=True
-        )
+        r = RenownIncident.objects.create(name="One Off", glory=1, wisdom=2, only_once=True)
         self.assertTrue(self.character.add_renown_incident(r))
         self.assertFalse(self.character.add_renown_incident(r))
 
@@ -297,9 +283,7 @@ class TestWerewolf(TestCase):
 
     def test_renown_check_if_has_rite(self):
         rite = Rite.objects.create(name="Test Rite for Renown")
-        renown = RenownIncident.objects.create(
-            name="Used Test Rite for Renown", rite=rite
-        )
+        renown = RenownIncident.objects.create(name="Used Test Rite for Renown", rite=rite)
         self.assertFalse(self.character.add_renown_incident(renown))
         self.character.add_rite(rite)
         self.assertTrue(self.character.add_renown_incident(renown))

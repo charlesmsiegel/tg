@@ -96,13 +96,9 @@ class DemonAbilityView(SpecialUserMixin, UpdateView):
                 form.add_error(None, "Abilities must range from 0-3")
                 return self.form_invalid(form)
 
-        talents = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.talents]
-        )
+        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
         skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.knowledges]
-        )
+        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
 
         triple = [talents, skills, knowledges]
         triple.sort()
@@ -155,8 +151,7 @@ class DemonLoresView(SpecialUserMixin, UpdateView):
         # Highlight house lores if house is set
         if self.object.house:
             house_lore_properties = [
-                f"lore_of_{lore.property_name}"
-                for lore in self.object.house.lores.all()
+                f"lore_of_{lore.property_name}" for lore in self.object.house.lores.all()
             ]
             for field_name in self.fields:
                 if field_name in house_lore_properties:
@@ -218,9 +213,7 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
             context["object"], self.request.user
         )
         context["points_spent"] = context["object"].apocalyptic_form_points_spent()
-        context["points_remaining"] = context[
-            "object"
-        ].apocalyptic_form_points_remaining()
+        context["points_remaining"] = context["object"].apocalyptic_form_points_remaining()
         context["points_budget"] = context["object"].apocalyptic_form_points
         return context
 

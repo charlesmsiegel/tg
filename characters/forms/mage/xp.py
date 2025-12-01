@@ -20,9 +20,7 @@ CATEGORY_CHOICES = CATEGORY_CHOICES + [
 
 class MageXPForm(XPForm):
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)
-    resonance = forms.CharField(
-        required=False, widget=AutocompleteTextInput(suggestions=[])
-    )
+    resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -115,9 +113,9 @@ class MageXPForm(XPForm):
         return True
 
     def practice_valid(self):
-        examples = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+        examples = Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+            polymorphic_ctype__model="corruptedpractice"
+        )
         spec = SpecializedPractice.objects.filter(faction=self.character.faction)
         if spec.count() > 0:
             examples = examples.exclude(

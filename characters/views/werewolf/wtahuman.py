@@ -192,9 +192,7 @@ class WtAHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "characters:werewolf:wtahuman_template", kwargs={"pk": self.object.pk}
-        )
+        return reverse("characters:werewolf:wtahuman_template", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -252,9 +250,7 @@ class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
                 f"Applied template '{template.name}'. You can now customize the character further.",
             )
         else:
-            messages.info(
-                self.request, "Starting with blank character. Fill in all attributes."
-            )
+            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
 
         # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1

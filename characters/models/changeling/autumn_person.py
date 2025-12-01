@@ -102,9 +102,7 @@ class AutumnPerson(CtDHuman):
         return reverse("characters:changeling:autumn_person", kwargs={"pk": self.pk})
 
     def get_update_url(self):
-        return reverse(
-            "characters:changeling:update:autumn_person", kwargs={"pk": self.pk}
-        )
+        return reverse("characters:changeling:update:autumn_person", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):

@@ -29,15 +29,13 @@ class MageCreationForm(forms.ModelForm):
         self.fields["faction"].queryset = MageFaction.objects.none()
         self.fields["subfaction"].queryset = MageFaction.objects.none()
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
         if self.user is not None:
             if not self.user.profile.is_st():
-                self.fields["affiliation"].queryset = self.fields[
-                    "affiliation"
-                ].queryset.exclude(name__in=["Nephandi", "Marauders"])
+                self.fields["affiliation"].queryset = self.fields["affiliation"].queryset.exclude(
+                    name__in=["Nephandi", "Marauders"]
+                )
 
         if self.is_bound:
             self.fields["faction"].queryset = MageFaction.objects.all()
@@ -126,10 +124,7 @@ class MageSpheresForm(forms.ModelForm):
         if affinity_sphere and self.instance:
             affinity_value = getattr(self.instance, affinity_sphere.property_name, None)
             # Check in cleaned_data first (in case it's being set now)
-            if (
-                affinity_value == 0
-                and cleaned_data.get(affinity_sphere.property_name, 0) == 0
-            ):
+            if affinity_value == 0 and cleaned_data.get(affinity_sphere.property_name, 0) == 0:
                 raise ValidationError("Affinity Sphere must be nonzero.")
 
         # Check total sphere points

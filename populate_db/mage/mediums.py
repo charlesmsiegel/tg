@@ -4,9 +4,7 @@ book = Medium.objects.get_or_create(name="Book")[0]
 journal = Medium.objects.get_or_create(
     name="Journal", length_modifier_type="/", length_modifier=40
 )[0]
-ebook = Medium.objects.get_or_create(
-    name="eBook", length_modifier_type="/", length_modifier=20
-)[0]
+ebook = Medium.objects.get_or_create(name="eBook", length_modifier_type="/", length_modifier=20)[0]
 flash_drive = Medium.objects.get_or_create(
     name="Flash Drive", length_modifier_type="/", length_modifier=10
 )[0]

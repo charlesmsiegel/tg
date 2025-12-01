@@ -8,9 +8,7 @@ class HorizonRealm(LocationModel):
     type = "horizon_realm"
     gameline = "mta"
 
-    reality_zone = models.ForeignKey(
-        RealityZone, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    reality_zone = models.ForeignKey(RealityZone, blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Horizon Realm"

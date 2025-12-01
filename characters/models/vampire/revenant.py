@@ -11,14 +11,10 @@ class RevenantFamily(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
-    weakness = models.TextField(
-        blank=True, help_text="Family curse or inherent weakness"
-    )
+    weakness = models.TextField(blank=True, help_text="Family curse or inherent weakness")
 
     # Family disciplines (typically 2-3)
-    disciplines = models.ManyToManyField(
-        "Discipline", blank=True, related_name="revenant_families"
-    )
+    disciplines = models.ManyToManyField("Discipline", blank=True, related_name="revenant_families")
 
     class Meta:
         verbose_name = "Revenant Family"
@@ -92,9 +88,7 @@ class Revenant(VtMHuman):
     )
 
     # Age tracking (revenants age slowly)
-    actual_age = models.IntegerField(
-        default=0, help_text="Actual chronological age in years"
-    )
+    actual_age = models.IntegerField(default=0, help_text="Actual chronological age in years")
     # apparent_age is inherited from Human
 
     class Meta:

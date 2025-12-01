@@ -57,9 +57,7 @@ class MeritFlawManager:
         Returns:
             list: List of tuples (MeritFlaw instance, rating)
         """
-        return [
-            (x, self.mf_rating(x)) for x in self.character.merits_and_flaws.all()
-        ]
+        return [(x, self.mf_rating(x)) for x in self.character.merits_and_flaws.all()]
 
     def add_mf(self, mf, rating):
         """
@@ -75,9 +73,7 @@ class MeritFlawManager:
         from characters.models.core.merit_flaw_block import MeritFlawRating
 
         if rating in mf.get_ratings():
-            mfr, _ = MeritFlawRating.objects.get_or_create(
-                character=self.character, mf=mf
-            )
+            mfr, _ = MeritFlawRating.objects.get_or_create(character=self.character, mf=mf)
             mfr.rating = rating
             mfr.save()
             return True
@@ -96,10 +92,7 @@ class MeritFlawManager:
         Returns:
             QuerySet: Filtered MeritFlaw queryset
         """
-        from characters.models.core.merit_flaw_block import (
-            MeritFlaw,
-            MeritFlawRating,
-        )
+        from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
         from game.models import ObjectType
 
         character_type = self.character.type
@@ -107,14 +100,12 @@ class MeritFlawManager:
             character_type = "human"
 
         # Get merits/flaws not yet taken
-        new_mfs = MeritFlaw.objects.exclude(
-            pk__in=self.character.merits_and_flaws.all()
-        )
+        new_mfs = MeritFlaw.objects.exclude(pk__in=self.character.merits_and_flaws.all())
 
         # Get merits/flaws taken but not at max rating
-        non_max_mf = MeritFlawRating.objects.filter(
-            character=self.character
-        ).exclude(Q(rating=F("mf__max_rating")))
+        non_max_mf = MeritFlawRating.objects.filter(character=self.character).exclude(
+            Q(rating=F("mf__max_rating"))
+        )
 
         had_mfs = MeritFlaw.objects.filter(pk__in=non_max_mf)
         mf = new_mfs | had_mfs
@@ -140,9 +131,7 @@ class MeritFlawManager:
         from characters.models.core.merit_flaw_block import MeritFlawRating
 
         try:
-            return MeritFlawRating.objects.get(
-                character=self.character, mf=mf
-            ).rating
+            return MeritFlawRating.objects.get(character=self.character, mf=mf).rating
         except MeritFlawRating.DoesNotExist:
             return 0
 
@@ -164,9 +153,9 @@ class MeritFlawManager:
         """
         from characters.models.core.merit_flaw_block import MeritFlawRating
 
-        result = MeritFlawRating.objects.filter(
-            character=self.character, rating__lt=0
-        ).aggregate(Sum("rating"))
+        result = MeritFlawRating.objects.filter(character=self.character, rating__lt=0).aggregate(
+            Sum("rating")
+        )
         return result["rating__sum"] or 0
 
     def total_merits(self):
@@ -178,9 +167,9 @@ class MeritFlawManager:
         """
         from characters.models.core.merit_flaw_block import MeritFlawRating
 
-        result = MeritFlawRating.objects.filter(
-            character=self.character, rating__gt=0
-        ).aggregate(Sum("rating"))
+        result = MeritFlawRating.objects.filter(character=self.character, rating__gt=0).aggregate(
+            Sum("rating")
+        )
         return result["rating__sum"] or 0
 
     def meritflaw_freebies(self, form):

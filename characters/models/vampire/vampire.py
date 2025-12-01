@@ -173,9 +173,7 @@ class Vampire(VtMHuman):
             15: (10, 1),
         }
         if self.generation_rating in generation_table:
-            self.max_blood_pool, self.blood_per_turn = generation_table[
-                self.generation_rating
-            ]
+            self.max_blood_pool, self.blood_per_turn = generation_table[self.generation_rating]
 
     def save(self, *args, **kwargs):
         """Override save to update generation-dependent values and handle path changes."""
@@ -350,9 +348,7 @@ class Vampire(VtMHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value)
-            if trait_value is not None
-            else 10000,
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
             {
                 "new_discipline": 10,
                 "clan_discipline": 5,

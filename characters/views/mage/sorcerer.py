@@ -92,9 +92,7 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
         form.fields["nature"].queryset = Archetype.objects.all().order_by("name")
         form.fields["demeanor"].queryset = Archetype.objects.all().order_by("name")
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        form.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         form.fields["image"].required = False
         form.fields["casting_attribute"].queryset = Attribute.objects.none()
         form.fields["affinity_path"].queryset = LinearMagicPath.objects.none()
@@ -117,9 +115,7 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
                 pk=form.data["casting_attribute"]
             )
         if form.data["affinity_path"]:
-            form.instance.affinity_path = LinearMagicPath.objects.get(
-                pk=form.data["affinity_path"]
-            )
+            form.instance.affinity_path = LinearMagicPath.objects.get(pk=form.data["affinity_path"])
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
@@ -180,18 +176,14 @@ class LoadExamplesView(View):
         elif category_choice == "Ability":
             examples = Ability.objects.order_by("name")
             examples = [x for x in examples if hasattr(m, x.property_name)]
-            examples = [
-                x for x in examples if isinstance(getattr(m, x.property_name), int)
-            ]
+            examples = [x for x in examples if isinstance(getattr(m, x.property_name), int)]
             examples = [x for x in examples if getattr(m, x.property_name, 0) < 4]
         elif category_choice == "New Background":
-            examples = Background.objects.filter(
-                property_name__in=m.allowed_backgrounds
-            ).order_by("name")
+            examples = Background.objects.filter(property_name__in=m.allowed_backgrounds).order_by(
+                "name"
+            )
         elif category_choice == "Existing Background":
-            examples = [
-                x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)
-            ]
+            examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
         elif category_choice == "MeritFlaw":
             companion = ObjectType.objects.get(name="companion")
             examples = MeritFlaw.objects.filter(allowed_types=companion)
@@ -209,9 +201,7 @@ class LoadExamplesView(View):
                 examples = LinearMagicPath.objects.filter(numina_type="hedge_magic")
             else:
                 examples = LinearMagicPath.objects.filter(numina_type="psychic")
-            examples = examples.filter(
-                id__in=[x.id for x in examples if 5 > m.path_rating(x) > 0]
-            )
+            examples = examples.filter(id__in=[x.id for x in examples if 5 > m.path_rating(x) > 0])
         elif category_choice == "Select Ritual":
             rituals = Q()
 
@@ -282,15 +272,11 @@ def get_abilities(request):
     prac = Practice.objects.get(id=practice_id)
     abilities = prac.abilities.all().order_by("name")
     abilities_list = [{"id": "", "name": "--------"}]  # Empty option
-    abilities_list += [
-        {"id": ability.id, "name": ability.name} for ability in abilities
-    ]
+    abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
     return JsonResponse(abilities_list, safe=False)
 
 
-class SorcererPsychicView(
-    SpecialUserMixin, MultipleFormsetsMixin, UpdateView
-):
+class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -338,9 +324,7 @@ class SorcererPsychicView(
         return super().form_valid(form)
 
 
-class SorcererPathView(
-    SpecialUserMixin, MultipleFormsetsMixin, UpdateView
-):
+class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     model = Sorcerer
     fields = []
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -460,10 +444,7 @@ class SorcererRitualView(EditPermissionMixin, FormView):
                 "One ritual per path dot at this stage",
             )
             return self.form_invalid(form)
-        if (
-            r.level != 1
-            and sorcerer.rituals.filter(path=p, level=r.level - 1).count() == 0
-        ):
+        if r.level != 1 and sorcerer.rituals.filter(path=p, level=r.level - 1).count() == 0:
             form.add_error(
                 None,
                 "Must learn rituals in ascending level",
@@ -665,9 +646,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
             )
         if self.object.freebies == 0:
             self.object.creation_status += 1
-            if "Language" not in self.object.merits_and_flaws.values_list(
-                "name", flat=True
-            ):
+            if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
                 self.object.creation_status += 1
                 self.object.languages.add(Language.objects.get(name="English"))
                 for step in [
@@ -788,9 +767,7 @@ class SorcererSpecialtiesView(EditPermissionMixin, FormView):
                 "science",
             ]
         ]
-        stats.extend(
-            [x for x in LinearMagicPath.objects.all() if companion.path_rating(x) >= 4]
-        )
+        stats.extend([x for x in LinearMagicPath.objects.all() if companion.path_rating(x) >= 4])
         kwargs["specialties_needed"] = [x.property_name for x in stats]
         return kwargs
 
@@ -843,9 +820,7 @@ class SorcererLibraryView(GenericBackgroundView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        form.fields["name"].initial = (
-            self.current_background.note or f"{obj.name}'s Library"
-        )
+        form.fields["name"].initial = self.current_background.note or f"{obj.name}'s Library"
         return form
 
 
@@ -868,9 +843,7 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
-        if not obj.backgrounds.filter(
-            bg__property_name="artifact", complete=False
-        ).exists():
+        if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -959,16 +932,12 @@ class SorcererChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(
-            pk=self.kwargs["pk"]
-        )
+        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.chantry_creation_form.fields[
-            "total_points"
-        ].initial = self.current_background.rating
+        form.chantry_creation_form.fields["total_points"].initial = self.current_background.rating
         form.chantry_creation_form.fields["total_points"].widget.attrs.update(
             {
                 "min": self.current_background.rating,

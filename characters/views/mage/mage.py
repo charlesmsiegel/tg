@@ -125,32 +125,24 @@ class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
     def tenet_options(self):
         metaphysical_tenet_q = (
-            Q(id=self.character.metaphysical_tenet.id)
-            if self.character.metaphysical_tenet
-            else Q()
+            Q(id=self.character.metaphysical_tenet.id) if self.character.metaphysical_tenet else Q()
         )
         personal_tenet_q = (
-            Q(id=self.character.personal_tenet.id)
-            if self.character.personal_tenet
-            else Q()
+            Q(id=self.character.personal_tenet.id) if self.character.personal_tenet else Q()
         )
         ascension_tenet_q = (
-            Q(id=self.character.ascension_tenet.id)
-            if self.character.ascension_tenet
-            else Q()
+            Q(id=self.character.ascension_tenet.id) if self.character.ascension_tenet else Q()
         )
-        other_tenets_q = Q(
-            id__in=self.character.other_tenets.all().values_list("id", flat=True)
-        )
+        other_tenets_q = Q(id__in=self.character.other_tenets.all().values_list("id", flat=True))
         related_tenets_q = (
             metaphysical_tenet_q | personal_tenet_q | ascension_tenet_q | other_tenets_q
         )
         return Tenet.objects.exclude(related_tenets_q)
 
     def practice_options(self):
-        examples = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+        examples = Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+            polymorphic_ctype__model="corruptedpractice"
+        )
         spec = SpecializedPractice.objects.filter(faction=self.character.faction)
         if spec.count() > 0:
             examples = examples.exclude(
@@ -164,13 +156,7 @@ class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
             x
             for x in examples
             if (
-                sum(
-                    [
-                        getattr(self.character, abb.property_name)
-                        for abb in x.abilities.all()
-                    ]
-                )
-                / 2
+                sum([getattr(self.character, abb.property_name) for abb in x.abilities.all()]) / 2
                 >= self.character.practice_rating(x) + 1
             )
         ]
@@ -240,9 +226,7 @@ class LoadXPExamplesView(View):
         elif category_choice == "MeritFlaw":
             mage = ObjectType.objects.get(name="mage")
             examples = MeritFlaw.objects.filter(allowed_types=mage, max_rating__gte=0)
-            examples = [
-                x for x in examples if self.character.mf_rating(x) != x.max_rating
-            ]
+            examples = [x for x in examples if self.character.mf_rating(x) != x.max_rating]
             examples = [
                 x
                 for x in examples
@@ -277,24 +261,16 @@ class LoadXPExamplesView(View):
                     self.character.ascension_tenet.id,
                 ]
             )
-            examples = examples.exclude(
-                id__in=[x.id for x in self.character.other_tenets.all()]
-            )
+            examples = examples.exclude(id__in=[x.id for x in self.character.other_tenets.all()])
         elif category_choice == "Remove Tenet":
             examples = self.character.other_tenets.all()
             types = [x.tenet_type for x in examples]
             if "met" in types:
-                examples |= Tenet.objects.filter(
-                    id__in=[self.character.metaphysical_tenet.id]
-                )
+                examples |= Tenet.objects.filter(id__in=[self.character.metaphysical_tenet.id])
             if "asc" in types:
-                examples |= Tenet.objects.filter(
-                    id__in=[self.character.ascension_tenet.id]
-                )
+                examples |= Tenet.objects.filter(id__in=[self.character.ascension_tenet.id])
             if "per" in types:
-                examples |= Tenet.objects.filter(
-                    id__in=[self.character.personal_tenet.id]
-                )
+                examples |= Tenet.objects.filter(id__in=[self.character.personal_tenet.id])
         elif category_choice == "Practice":
             examples = Practice.objects.exclude(
                 polymorphic_ctype__model="specializedpractice"
@@ -305,9 +281,9 @@ class LoadXPExamplesView(View):
                     id__in=[x.parent_practice.id for x in spec]
                 ) | Practice.objects.filter(id__in=[x.id for x in spec])
 
-            ids = PracticeRating.objects.filter(
-                mage=self.character, rating=5
-            ).values_list("practice__id", flat=True)
+            ids = PracticeRating.objects.filter(mage=self.character, rating=5).values_list(
+                "practice__id", flat=True
+            )
 
             filtered_practices = examples.exclude(pk__in=ids).order_by("name")
             examples = [
@@ -323,12 +299,7 @@ class LoadXPExamplesView(View):
                 x
                 for x in examples
                 if (
-                    sum(
-                        [
-                            getattr(self.character, abb.property_name)
-                            for abb in x.abilities.all()
-                        ]
-                    )
+                    sum([getattr(self.character, abb.property_name) for abb in x.abilities.all()])
                     / 2
                     > self.character.practice_rating(x) + 1
                 )
@@ -344,9 +315,7 @@ def get_abilities(request):
     abilities = prac.abilities.all().order_by("name")
     abilities = [x for x in abilities if getattr(object, x.property_name) > 0]
     abilities_list = [{"id": "", "name": "--------"}]  # Empty option
-    abilities_list += [
-        {"id": ability.id, "name": ability.name} for ability in abilities
-    ]
+    abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
     return JsonResponse(abilities_list, safe=False)
 
 
@@ -402,7 +371,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Ability":
@@ -416,7 +385,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "New Background":
@@ -432,7 +401,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on new background {trait}")
                         elif category == "Existing Background":
@@ -446,7 +415,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Willpower":
@@ -460,7 +429,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on Willpower")
                         elif category == "MeritFlaw":
@@ -473,7 +442,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=value
+                                trait_value=value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Sphere":
@@ -490,7 +459,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Rote Points":
@@ -503,7 +472,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on Rote Points")
                         elif category == "Resonance":
@@ -517,7 +486,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=current_value + 1
+                                trait_value=current_value + 1,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Tenet":
@@ -529,7 +498,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=0
+                                trait_value=0,
                             )
                             messages.success(request, f"Spent {cost} XP on tenet {trait}")
                         elif category == "Remove Tenet":
@@ -543,7 +512,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=0
+                                trait_value=0,
                             )
                             messages.success(request, f"Spent {cost} XP on removing tenet")
                         elif category == "Practice":
@@ -557,7 +526,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on {trait}")
                         elif category == "Arete":
@@ -571,7 +540,7 @@ class MageDetailView(HumanDetailView):
                                 trait_display=trait,
                                 cost=cost,
                                 category=trait_type,
-                                trait_value=new_value
+                                trait_value=new_value,
                             )
                             messages.success(request, f"Spent {cost} XP on Arete")
                     except ValidationError as e:
@@ -592,9 +561,7 @@ class MageDetailView(HumanDetailView):
                                 not rote_form.cleaned_data["select_or_create_effect"]
                                 and not rote_form.cleaned_data["effect_options"]
                             ):
-                                rote_form.add_error(
-                                    None, "Must create or select an effect"
-                                )
+                                rote_form.add_error(None, "Must create or select an effect")
                                 context["rote_form"] = rote_form
                                 return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["name"]:
@@ -614,16 +581,12 @@ class MageDetailView(HumanDetailView):
                                 context["rote_form"] = rote_form
                                 return render(request, self.template_name, context)
                             if not rote_form.cleaned_data["description"]:
-                                rote_form.add_error(
-                                    None, "Must choose rote description"
-                                )
+                                rote_form.add_error(None, "Must choose rote description")
                                 context["rote_form"] = rote_form
                                 return render(request, self.template_name, context)
                             if rote_form.cleaned_data["select_or_create_effect"]:
                                 if not rote_form.cleaned_data["systems"]:
-                                    rote_form.add_error(
-                                        None, "Must choose rote systems"
-                                    )
+                                    rote_form.add_error(None, "Must choose rote systems")
                                     context["rote_form"] = rote_form
                                     return render(request, self.template_name, context)
                                 if (
@@ -638,9 +601,7 @@ class MageDetailView(HumanDetailView):
                                     + rote_form.cleaned_data["time"]
                                     == 0
                                 ):
-                                    rote_form.add_error(
-                                        None, "Effects must have sphere ratings"
-                                    )
+                                    rote_form.add_error(None, "Effects must have sphere ratings")
                                     context["rote_form"] = rote_form
                                     return render(request, self.template_name, context)
                         try:
@@ -657,6 +618,7 @@ class MageDetailView(HumanDetailView):
             request_id = int(request_key.split("_")[2])
 
             from game.models import XPSpendingRequest
+
             try:
                 xp_request = self.object.xp_spendings.get(id=request_id, approved="Pending")
             except XPSpendingRequest.DoesNotExist:
@@ -672,11 +634,15 @@ class MageDetailView(HumanDetailView):
                 with transaction.atomic():
                     if trait_type == "attribute":
                         att = Attribute.objects.get(name=trait_name)
-                        self.object.approve_xp_spend(request_id, att.property_name, value, request.user)
+                        self.object.approve_xp_spend(
+                            request_id, att.property_name, value, request.user
+                        )
                         messages.success(request, f"Approved {att.name} increase to {value}")
                     elif trait_type == "ability":
                         abb = Ability.objects.get(name=trait_name)
-                        self.object.approve_xp_spend(request_id, abb.property_name, value, request.user)
+                        self.object.approve_xp_spend(
+                            request_id, abb.property_name, value, request.user
+                        )
                         messages.success(request, f"Approved {abb.name} increase to {value}")
                     elif trait_type == "background":
                         # Parse background name and note
@@ -753,7 +719,9 @@ class MageDetailView(HumanDetailView):
                         if tenet in self.object.other_tenets.all():
                             self.object.other_tenets.remove(tenet)
                         else:
-                            replacement = self.object.other_tenets.filter(tenet_type=tenet.tenet_type).first()
+                            replacement = self.object.other_tenets.filter(
+                                tenet_type=tenet.tenet_type
+                            ).first()
                             if replacement:
                                 if tenet.tenet_type == "met":
                                     self.object.metaphysical_tenet = replacement
@@ -810,6 +778,7 @@ class MageDetailView(HumanDetailView):
                 request_id = int(request_key.split("_")[2])
 
                 from game.models import XPSpendingRequest
+
                 try:
                     xp_request = self.object.xp_spendings.select_for_update().get(
                         id=request_id, approved="Pending"
@@ -1073,9 +1042,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["metaphysical_tenet"].queryset = Tenet.objects.filter(
-            tenet_type="met"
-        )
+        form.fields["metaphysical_tenet"].queryset = Tenet.objects.filter(tenet_type="met")
         form.fields["personal_tenet"].queryset = Tenet.objects.filter(tenet_type="per")
         form.fields["ascension_tenet"].queryset = Tenet.objects.filter(tenet_type="asc")
         form.fields["other_tenets"].queryset = Tenet.objects.filter(tenet_type="oth")
@@ -1125,11 +1092,7 @@ class MageFocusView(SpecialUserMixin, UpdateView):
                     ability_total = 0
                     for ability in practice.abilities.all():
                         ability_total += getattr(self.object, ability.property_name, 0)
-                    if (
-                        practice is not None
-                        and rating is not None
-                        and rating <= ability_total / 2
-                    ):
+                    if practice is not None and rating is not None and rating <= ability_total / 2:
                         pr = PracticeRating.objects.create(
                             mage=self.object, practice=practice, rating=rating
                         )
@@ -1157,9 +1120,9 @@ class MageSpheresView(SpecialUserMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields[
-            "affinity_sphere"
-        ].queryset = self.object.get_affinity_sphere_options().order_by("name")
+        form.fields["affinity_sphere"].queryset = (
+            self.object.get_affinity_sphere_options().order_by("name")
+        )
         form.fields["affinity_sphere"].empty_label = "Choose an Affinity"
         form.fields["resonance"].widget = AutocompleteTextInput(
             suggestions=[x.name.title() for x in Resonance.objects.order_by("name")]
@@ -1315,10 +1278,7 @@ class MageRoteView(SpecialUserMixin, CreateView):
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         mage = context["object"]
-        if (
-            not form.cleaned_data["select_or_create_rote"]
-            and not form.cleaned_data["rote_options"]
-        ):
+        if not form.cleaned_data["select_or_create_rote"] and not form.cleaned_data["rote_options"]:
             form.add_error(None, "Must create or select a rote")
             return super().form_invalid(form)
         if form.cleaned_data["select_or_create_rote"]:
@@ -1446,9 +1406,7 @@ class MageLibraryView(GenericBackgroundView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        form.fields["name"].initial = (
-            self.current_background.note or f"{obj.name}'s Library"
-        )
+        form.fields["name"].initial = self.current_background.note or f"{obj.name}'s Library"
         tmp = [obj.affiliation, obj.faction, obj.subfaction]
         tmp = [x.pk for x in tmp if hasattr(x, "pk")]
         form.fields["faction"].queryset = MageFaction.objects.filter(pk__in=tmp)
@@ -1497,16 +1455,12 @@ class MageChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(
-            pk=self.kwargs["pk"]
-        )
+        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.chantry_creation_form.fields[
-            "total_points"
-        ].initial = self.current_background.rating
+        form.chantry_creation_form.fields["total_points"].initial = self.current_background.rating
         form.chantry_creation_form.fields["total_points"].widget.attrs.update(
             {
                 "min": self.current_background.rating,

@@ -142,64 +142,42 @@ from populate_db.mage.instruments_INC import (
     writings,
 )
 
-alchemy = Practice.objects.get_or_create(name="Alchemy")[0].add_source(
-    "Prism of Focus", 34
-)
-animalism = Practice.objects.get_or_create(name="Animalism")[0].add_source(
-    "Prism of Focus", 36
-)
+alchemy = Practice.objects.get_or_create(name="Alchemy")[0].add_source("Prism of Focus", 34)
+animalism = Practice.objects.get_or_create(name="Animalism")[0].add_source("Prism of Focus", 36)
 appropriation = Practice.objects.get_or_create(name="Appropriation")[0].add_source(
     "Prism of Focus", 40
 )
 artofdesire = Practice.objects.get_or_create(name="Art of Desire")[0].add_source(
     "Prism of Focus", 42
 )
-bardism = Practice.objects.get_or_create(name="Bardism")[0].add_source(
-    "Prism of Focus", 46
-)
+bardism = Practice.objects.get_or_create(name="Bardism")[0].add_source("Prism of Focus", 46)
 chaosmagick = Practice.objects.get_or_create(name="Chaos Magick")[0].add_source(
     "Prism of Focus", 49
 )
-charity = Practice.objects.get_or_create(name="Charity")[0].add_source(
-    "Prism of Focus", 51
-)
-craftwork = Practice.objects.get_or_create(name="Craftwork")[0].add_source(
-    "Prism of Focus", 54
-)
+charity = Practice.objects.get_or_create(name="Charity")[0].add_source("Prism of Focus", 51)
+craftwork = Practice.objects.get_or_create(name="Craftwork")[0].add_source("Prism of Focus", 54)
 crazywisdom = Practice.objects.get_or_create(name="Crazy Wisdom")[0].add_source(
     "Prism of Focus", 56
 )
-cybernetics = Practice.objects.get_or_create(name="Cybernetics")[0].add_source(
-    "Prism of Focus", 60
-)
-dominion = Practice.objects.get_or_create(name="Dominion")[0].add_source(
-    "Prism of Focus", 63
-)
+cybernetics = Practice.objects.get_or_create(name="Cybernetics")[0].add_source("Prism of Focus", 60)
+dominion = Practice.objects.get_or_create(name="Dominion")[0].add_source("Prism of Focus", 63)
 elementalism = Practice.objects.get_or_create(name="Elementalism")[0].add_source(
     "Prism of Focus", 65
 )
 faith = Practice.objects.get_or_create(name="Faith")[0].add_source("Prism of Focus", 68)
-godbonding = Practice.objects.get_or_create(name="God-Bonding")[0].add_source(
-    "Prism of Focus", 72
-)
+godbonding = Practice.objects.get_or_create(name="God-Bonding")[0].add_source("Prism of Focus", 72)
 guttermagick = Practice.objects.get_or_create(name="Gutter Magick")[0].add_source(
     "Prism of Focus", 74
 )
-highritualmagick = Practice.objects.get_or_create(name="High Ritual Magick")[
-    0
-].add_source("Prism of Focus", 77)
-hypertech = Practice.objects.get_or_create(name="Hypertech")[0].add_source(
-    "Prism of Focus", 82
+highritualmagick = Practice.objects.get_or_create(name="High Ritual Magick")[0].add_source(
+    "Prism of Focus", 77
 )
-investment = Practice.objects.get_or_create(name="Investment")[0].add_source(
-    "Prism of Focus", 85
-)
+hypertech = Practice.objects.get_or_create(name="Hypertech")[0].add_source("Prism of Focus", 82)
+investment = Practice.objects.get_or_create(name="Investment")[0].add_source("Prism of Focus", 85)
 invigoration = Practice.objects.get_or_create(name="Invigoration")[0].add_source(
     "Prism of Focus", 87
 )
-maleficia = Practice.objects.get_or_create(name="Maleficia")[0].add_source(
-    "Prism of Focus", 90
-)
+maleficia = Practice.objects.get_or_create(name="Maleficia")[0].add_source("Prism of Focus", 90)
 martialarts = Practice.objects.get_or_create(name="Martial Arts")[0].add_source(
     "Prism of Focus", 93
 )
@@ -209,27 +187,17 @@ mediacontrol = Practice.objects.get_or_create(name="Media Control")[0].add_sourc
 medicinework = Practice.objects.get_or_create(name="Medicine-Work")[0].add_source(
     "Prism of Focus", 99
 )
-mediumship = Practice.objects.get_or_create(name="Mediumship")[0].add_source(
-    "Prism of Focus", 101
-)
-psionics = Practice.objects.get_or_create(name="Psionics")[0].add_source(
-    "Prism of Focus", 103
-)
+mediumship = Practice.objects.get_or_create(name="Mediumship")[0].add_source("Prism of Focus", 101)
+psionics = Practice.objects.get_or_create(name="Psionics")[0].add_source("Prism of Focus", 103)
 realityhacking = Practice.objects.get_or_create(name="Reality Hacking")[0].add_source(
     "Prism of Focus", 106
 )
-shamanism = Practice.objects.get_or_create(name="Shamanism")[0].add_source(
-    "Prism of Focus", 109
-)
-voudoun = Practice.objects.get_or_create(name="Voudoun")[0].add_source(
-    "Prism of Focus", 113
-)
+shamanism = Practice.objects.get_or_create(name="Shamanism")[0].add_source("Prism of Focus", 109)
+voudoun = Practice.objects.get_or_create(name="Voudoun")[0].add_source("Prism of Focus", 113)
 weirdscience = Practice.objects.get_or_create(name="Weird Science")[0].add_source(
     "Prism of Focus", 115
 )
-witchcraft = Practice.objects.get_or_create(name="Witchcraft")[0].add_source(
-    "Prism of Focus", 118
-)
+witchcraft = Practice.objects.get_or_create(name="Witchcraft")[0].add_source("Prism of Focus", 118)
 yoga = Practice.objects.get_or_create(name="Yoga")[0].add_source("Prism of Focus", 122)
 
 alchemy.add_abilities(
@@ -315,9 +283,7 @@ animalism.common_resonance_traits.add(
 animalism.save()
 
 appropriation.add_abilities([brawl, firearms, intimidation, law, politics])
-appropriation.instruments.add(
-    contracts, sacred_ground, social_dominion, precious_metals
-)
+appropriation.instruments.add(contracts, sacred_ground, social_dominion, precious_metals)
 appropriation.common_resonance_traits.add(
     Resonance.objects.get_or_create(name="Acquisitive")[0],
     Resonance.objects.get_or_create(name="Claiming")[0],
@@ -460,9 +426,7 @@ chaosmagick.common_resonance_traits.add(
 )
 chaosmagick.save()
 
-charity.add_abilities(
-    [art, cosmology, crafts, empathy, expression, politics, technology]
-)
+charity.add_abilities([art, cosmology, crafts, empathy, expression, politics, technology])
 charity.instruments.add(blessings, governments, money, physical_media)
 charity.common_resonance_traits.add(
     Resonance.objects.get_or_create(name="Altruistic")[0],
@@ -911,9 +875,7 @@ hypertech.common_resonance_traits.add(
 )
 hypertech.save()
 
-investment.add_abilities(
-    [academics, occult, investigation, law, leadership, politics, research]
-)
+investment.add_abilities([academics, occult, investigation, law, leadership, politics, research])
 investment.instruments.add(blessings, contracts, markets, money)
 investment.common_resonance_traits.add(
     Resonance.objects.get_or_create(name="Acquisitive")[0],

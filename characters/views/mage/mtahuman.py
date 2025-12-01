@@ -483,9 +483,7 @@ class MtAHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "characters:mage:mtahuman_template", kwargs={"pk": self.object.pk}
-        )
+        return reverse("characters:mage:mtahuman_template", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -543,9 +541,7 @@ class MtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
                 f"Applied template '{template.name}'. You can now customize the character further.",
             )
         else:
-            messages.info(
-                self.request, "Starting with blank character. Fill in all attributes."
-            )
+            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
 
         # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1
@@ -698,9 +694,7 @@ class MtAHumanLibraryView(GenericBackgroundView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        form.fields["name"].initial = (
-            self.current_background.note or f"{obj.name}'s Library"
-        )
+        form.fields["name"].initial = self.current_background.note or f"{obj.name}'s Library"
         form.fields["faction"].queryset = MageFaction.objects.all()
         return form
 
@@ -773,16 +767,12 @@ class MtAHumanChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(
-            pk=self.kwargs["pk"]
-        )
+        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.chantry_creation_form.fields[
-            "total_points"
-        ].initial = self.current_background.rating
+        form.chantry_creation_form.fields["total_points"].initial = self.current_background.rating
         form.chantry_creation_form.fields["total_points"].widget.attrs.update(
             {
                 "min": self.current_background.rating,

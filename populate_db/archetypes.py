@@ -256,87 +256,51 @@ zealot = Archetype.objects.get_or_create(
     name="Zealot",
     description="Your cause is everything, and you pursue it with fanatical devotion. The Zealot has found absolute truth and cannot comprehend why others don't see it. You will use any means necessary to advance your beliefs, viewing moderation and compromise as betrayal. You regain Willpower when you make converts to your cause or when you sacrifice significantly in service to your beliefs.",
 )[0].add_source("Book of Secrets", 17)
-addict = Archetype.objects.get_or_create(name="Addict")[0].add_source(
-    "Demon: the Fallen", 132
-)
+addict = Archetype.objects.get_or_create(name="Addict")[0].add_source("Demon: the Fallen", 132)
 architect = Archetype.objects.get_or_create(name="Architect")[0].add_source(
     "Demon: the Fallen", 133
 )
-autocrat = Archetype.objects.get_or_create(name="Autocrat")[0].add_source(
-    "Demon: the Fallen", 133
-)
+autocrat = Archetype.objects.get_or_create(name="Autocrat")[0].add_source("Demon: the Fallen", 133)
 bon_vivant = Archetype.objects.get_or_create(name="Bon Vivant")[0].add_source(
     "Demon: the Fallen", 133
 )
-bravo = Archetype.objects.get_or_create(name="Bravo")[0].add_source(
-    "Demon: the Fallen", 133
-)
+bravo = Archetype.objects.get_or_create(name="Bravo")[0].add_source("Demon: the Fallen", 133)
 caregiver = Archetype.objects.get_or_create(name="Caregiver")[0].add_source(
     "Demon: the Fallen", 133
 )
-child = Archetype.objects.get_or_create(name="Child")[0].add_source(
-    "Demon: the Fallen", 133
-)
+child = Archetype.objects.get_or_create(name="Child")[0].add_source("Demon: the Fallen", 133)
 competitor = Archetype.objects.get_or_create(name="Competitor")[0].add_source(
     "Demon: the Fallen", 133
 )
 conformist = Archetype.objects.get_or_create(name="Conformist")[0].add_source(
     "Demon: the Fallen", 133
 )
-conniver = Archetype.objects.get_or_create(name="Conniver")[0].add_source(
-    "Demon: the Fallen", 133
-)
+conniver = Archetype.objects.get_or_create(name="Conniver")[0].add_source("Demon: the Fallen", 133)
 curmudgeon = Archetype.objects.get_or_create(name="Curmudgeon")[0].add_source(
     "Demon: the Fallen", 134
 )
-deviant = Archetype.objects.get_or_create(name="Deviant")[0].add_source(
-    "Demon: the Fallen", 134
-)
-director = Archetype.objects.get_or_create(name="Director")[0].add_source(
-    "Demon: the Fallen", 134
-)
-fanatic = Archetype.objects.get_or_create(name="Fanatic")[0].add_source(
-    "Demon: the Fallen", 134
-)
-gallant = Archetype.objects.get_or_create(name="Gallant")[0].add_source(
-    "Demon: the Fallen", 134
-)
-gambler = Archetype.objects.get_or_create(name="Gambler")[0].add_source(
-    "Demon: the Fallen", 134
-)
-judge = Archetype.objects.get_or_create(name="Judge")[0].add_source(
-    "Demon: the Fallen", 134
-)
-loner = Archetype.objects.get_or_create(name="Loner")[0].add_source(
-    "Demon: the Fallen", 134
-)
-martyr = Archetype.objects.get_or_create(name="Martyr")[0].add_source(
-    "Demon: the Fallen", 134
-)
+deviant = Archetype.objects.get_or_create(name="Deviant")[0].add_source("Demon: the Fallen", 134)
+director = Archetype.objects.get_or_create(name="Director")[0].add_source("Demon: the Fallen", 134)
+fanatic = Archetype.objects.get_or_create(name="Fanatic")[0].add_source("Demon: the Fallen", 134)
+gallant = Archetype.objects.get_or_create(name="Gallant")[0].add_source("Demon: the Fallen", 134)
+gambler = Archetype.objects.get_or_create(name="Gambler")[0].add_source("Demon: the Fallen", 134)
+judge = Archetype.objects.get_or_create(name="Judge")[0].add_source("Demon: the Fallen", 134)
+loner = Archetype.objects.get_or_create(name="Loner")[0].add_source("Demon: the Fallen", 134)
+martyr = Archetype.objects.get_or_create(name="Martyr")[0].add_source("Demon: the Fallen", 134)
 masochist = Archetype.objects.get_or_create(name="Masochist")[0].add_source(
     "Demon: the Fallen", 135
 )
-monster = Archetype.objects.get_or_create(name="Monster")[0].add_source(
-    "Demon: the Fallen", 135
-)
+monster = Archetype.objects.get_or_create(name="Monster")[0].add_source("Demon: the Fallen", 135)
 pedagogue = Archetype.objects.get_or_create(name="Pedagogue")[0].add_source(
     "Demon: the Fallen", 135
 )
-penitent = Archetype.objects.get_or_create(name="Penitent")[0].add_source(
-    "Demon: the Fallen", 135
-)
+penitent = Archetype.objects.get_or_create(name="Penitent")[0].add_source("Demon: the Fallen", 135)
 perfectionist = Archetype.objects.get_or_create(name="Perfectionist")[0].add_source(
     "Demon: the Fallen", 135
 )
-rebel = Archetype.objects.get_or_create(name="Rebel")[0].add_source(
-    "Demon: the Fallen", 135
-)
-rogue = Archetype.objects.get_or_create(name="Rogue")[0].add_source(
-    "Demon: the Fallen", 135
-)
-survivor = Archetype.objects.get_or_create(name="Survivor")[0].add_source(
-    "Demon: the Fallen", 135
-)
+rebel = Archetype.objects.get_or_create(name="Rebel")[0].add_source("Demon: the Fallen", 135)
+rogue = Archetype.objects.get_or_create(name="Rogue")[0].add_source("Demon: the Fallen", 135)
+survivor = Archetype.objects.get_or_create(name="Survivor")[0].add_source("Demon: the Fallen", 135)
 thrill_seeker = Archetype.objects.get_or_create(name="Thrill-Seeker")[0].add_source(
     "Demon: the Fallen", 135
 )
@@ -349,9 +313,7 @@ trickster = Archetype.objects.get_or_create(name="Trickster")[0].add_source(
 visionary = Archetype.objects.get_or_create(name="Visionary")[0].add_source(
     "Demon: the Fallen", 136
 )
-zealot = Archetype.objects.get_or_create(name="Zealot")[0].add_source(
-    "Demon: the Fallen", 136
-)
+zealot = Archetype.objects.get_or_create(name="Zealot")[0].add_source("Demon: the Fallen", 136)
 damned_soul = Archetype.objects.get_or_create(name="Damned Soul")[0].add_source(
     "Dammned and Deceived", 60
 )

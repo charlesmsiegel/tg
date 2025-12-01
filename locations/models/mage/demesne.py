@@ -9,9 +9,7 @@ class Demesne(LocationModel):
     gameline = "mta"
 
     rank = models.IntegerField(default=0)
-    reality_zone = models.ForeignKey(
-        RealityZone, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    reality_zone = models.ForeignKey(RealityZone, blank=True, null=True, on_delete=models.SET_NULL)
     size = models.CharField(
         max_length=100,
         blank=True,

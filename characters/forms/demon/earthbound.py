@@ -28,9 +28,7 @@ class EarthboundCreationForm(forms.ModelForm):
 
         # Placeholders
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["reliquary_description"].widget = forms.Textarea(attrs={"rows": 4})
         self.fields["reliquary_description"].widget.attrs.update(
             {

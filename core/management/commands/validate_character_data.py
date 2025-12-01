@@ -8,6 +8,7 @@ Checks for:
 - Orphaned spent_xp entries
 - Polymorphic relationship integrity
 """
+
 from characters.models.core.character import Character, CharacterModel
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -134,9 +135,7 @@ class Command(BaseCommand):
 
         # Calculate total spent XP
         total_spent = sum(
-            spend.get("cost", 0)
-            for spend in char.spent_xp
-            if spend.get("approved") == "Approved"
+            spend.get("cost", 0) for spend in char.spent_xp if spend.get("approved") == "Approved"
         )
 
         # Check for negative XP situations
@@ -164,9 +163,7 @@ class Command(BaseCommand):
         # Submitted/Approved characters should have concept
         if char.status in ["Sub", "App"] and hasattr(char, "concept"):
             if not char.concept or char.concept == "":
-                issues.append(
-                    "Missing concept (required for Submitted/Approved status)"
-                )
+                issues.append("Missing concept (required for Submitted/Approved status)")
 
         # Approved characters should have owner
         if char.status == "App" and not char.owner:
@@ -186,9 +183,7 @@ class Command(BaseCommand):
             return
 
         # Count pending spends
-        pending_spends = [
-            spend for spend in char.spent_xp if spend.get("approved") == "Pending"
-        ]
+        pending_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Pending"]
 
         # Check for very old pending spends (potential orphans)
         # Note: This is a simple check - a more sophisticated version would
@@ -226,23 +221,17 @@ class Command(BaseCommand):
         total_issues = sum(len(v) for v in self.issues.values())
 
         if total_issues == 0:
-            self.stdout.write(
-                self.style.SUCCESS(f"✓ All {total} character(s) passed validation!")
-            )
+            self.stdout.write(self.style.SUCCESS(f"✓ All {total} character(s) passed validation!"))
         else:
             self.stdout.write(
-                self.style.WARNING(
-                    f"Found {total_issues} issue(s) across {total} character(s)\n"
-                )
+                self.style.WARNING(f"Found {total_issues} issue(s) across {total} character(s)\n")
             )
 
             # Report each category
             for category, issues in self.issues.items():
                 if issues:
                     self.stdout.write(
-                        self.style.WARNING(
-                            f"\n{category.replace('_', ' ').title()}: {len(issues)}"
-                        )
+                        self.style.WARNING(f"\n{category.replace('_', ' ').title()}: {len(issues)}")
                     )
 
                     for issue in issues[:10]:  # Show first 10 of each type
@@ -262,6 +251,4 @@ class Command(BaseCommand):
         self.stdout.write("\n" + "=" * 70 + "\n")
 
         if self.fix_mode:
-            self.stdout.write(
-                self.style.SUCCESS("Some issues were automatically fixed.")
-            )
+            self.stdout.write(self.style.SUCCESS("Some issues were automatically fixed."))

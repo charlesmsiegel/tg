@@ -17,9 +17,7 @@ class SpecialtiesForm(forms.Form):
             )
             self.fields[field] = forms.CharField(
                 widget=AutocompleteTextInput(
-                    suggestions=[
-                        x.name for x in Specialty.objects.filter(stat=s.property_name)
-                    ]
+                    suggestions=[x.name for x in Specialty.objects.filter(stat=s.property_name)]
                 ),
             )
             self.fields[field].label = s.name

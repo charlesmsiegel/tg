@@ -18,9 +18,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1"
-).split(",")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 # Note: IPv6 localhost [::1] removed - it breaks Django Channels origin validation
 
 # Development-specific email backend (prints to console)
@@ -37,18 +35,15 @@ try:
     import debug_toolbar  # noqa: F401
 
     INSTALLED_APPS += ["debug_toolbar"]  # noqa: F405
-    MIDDLEWARE = [
-        "debug_toolbar.middleware.DebugToolbarMiddleware"
-    ] + MIDDLEWARE  # noqa: F405
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE  # noqa: F405
     INTERNAL_IPS = ["127.0.0.1", "::1"]
 
     def show_toolbar_callback(request):
         """Only show debug toolbar to authenticated staff/superusers."""
         if not hasattr(request, "user"):
             return False
-        return (
-            request.user.is_authenticated
-            and (request.user.is_staff or request.user.is_superuser)
+        return request.user.is_authenticated and (
+            request.user.is_staff or request.user.is_superuser
         )
 
     DEBUG_TOOLBAR_CONFIG = {

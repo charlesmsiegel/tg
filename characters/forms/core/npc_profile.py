@@ -122,9 +122,7 @@ class NPCProfileForm(forms.Form):
     name = forms.CharField(
         max_length=100,
         label="Name",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Enter NPC name"}
-        ),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter NPC name"}),
     )
 
     concept = forms.CharField(

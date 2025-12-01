@@ -16,12 +16,8 @@ class DynastyForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter dynasty name"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description"}
-        )
-        self.fields["era"].widget.attrs.update(
-            {"placeholder": "e.g., Old Kingdom, Middle Kingdom"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description"})
+        self.fields["era"].widget.attrs.update({"placeholder": "e.g., Old Kingdom, Middle Kingdom"})
         self.fields["favored_hekau"].widget.attrs.update(
             {"placeholder": "e.g., Alchemy, Necromancy"}
         )

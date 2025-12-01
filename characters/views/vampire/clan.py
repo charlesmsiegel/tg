@@ -7,16 +7,14 @@ from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')  # Cache for 15 minutes
+@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
 class VampireClanDetailView(DetailView):
     model = VampireClan
     template_name = "characters/vampire/clan/detail.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["disciplines"] = ", ".join(
-            [x.name for x in self.object.disciplines.all()]
-        )
+        context["disciplines"] = ", ".join([x.name for x in self.object.disciplines.all()])
         if self.object.parent_clan:
             context["parent_clan"] = self.object.parent_clan
         context["bloodlines"] = VampireClan.objects.filter(parent_clan=self.object)
@@ -55,7 +53,7 @@ class VampireClanUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Vampire Clan."
 
 
-@method_decorator(cache_page(60 * 15), name='dispatch')  # Cache for 15 minutes
+@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
 class VampireClanListView(ListView):
     model = VampireClan
     ordering = ["name"]

@@ -3,9 +3,7 @@ from characters.models.core.background_block import Background
 Background.objects.get_or_create(name="Contacts", property_name="contacts")[0]
 Background.objects.get_or_create(name="Mentor", property_name="mentor")[0]
 Background.objects.get_or_create(name="Allies", property_name="allies")[0]
-Background.objects.get_or_create(
-    name="Alternate Identity", property_name="alternate_identity"
-)[0]
+Background.objects.get_or_create(name="Alternate Identity", property_name="alternate_identity")[0]
 arcane = Background.objects.get_or_create(name="Arcane", property_name="arcane")[0]
 arcane.alternate_name = "Cloaking"
 arcane.save()
@@ -25,13 +23,9 @@ Background.objects.get_or_create(name="Destiny", property_name="destiny")[0]
 dream = Background.objects.get_or_create(name="Dream", property_name="dream")[0]
 dream.alternate_name = "Hypercram"
 dream.save()
-Background.objects.get_or_create(
-    name="Enhancement", property_name="enhancement", multiplier=2
-)[0]
+Background.objects.get_or_create(name="Enhancement", property_name="enhancement", multiplier=2)[0]
 Background.objects.get_or_create(name="Fame", property_name="fame")[0]
-familiar = Background.objects.get_or_create(name="Familiar", property_name="familiar")[
-    0
-]
+familiar = Background.objects.get_or_create(name="Familiar", property_name="familiar")[0]
 familiar.alternate_name = "Companion"
 familiar.save()
 Background.objects.get_or_create(name="Influence", property_name="influence")[0]
@@ -44,14 +38,10 @@ Background.objects.get_or_create(name="Rank", property_name="rank")[0]
 Background.objects.get_or_create(name="Requisitions", property_name="requisitions")[0]
 Background.objects.get_or_create(name="Resources", property_name="resources")[0]
 Background.objects.get_or_create(name="Retainers", property_name="retainers")[0]
-sanctum = Background.objects.get_or_create(
-    name="Sanctum", property_name="sanctum", multiplier=2
-)[0]
+sanctum = Background.objects.get_or_create(name="Sanctum", property_name="sanctum", multiplier=2)[0]
 sanctum.alternate_name = "Laboratory"
 sanctum.save()
-Background.objects.get_or_create(name="Secret weapons", property_name="secret_weapons")[
-    0
-]
+Background.objects.get_or_create(name="Secret weapons", property_name="secret_weapons")[0]
 Background.objects.get_or_create(name="Spies", property_name="spies")[0]
 Background.objects.get_or_create(name="Status", property_name="status_background")[0]
 Background.objects.get_or_create(name="Totem", property_name="totem", multiplier=2)[0]
@@ -79,9 +69,7 @@ Background.objects.get_or_create(name="Fetish", property_name="fetish")[0]
 Background.objects.get_or_create(name="Kinfolk", property_name="kinfolk_rating")[0]
 Background.objects.get_or_create(name="Pure Breed", property_name="pure_breed")[0]
 Background.objects.get_or_create(name="Rites", property_name="rites")[0]
-Background.objects.get_or_create(
-    name="Spirit Heritage", property_name="spirit_heritage"
-)[0]
+Background.objects.get_or_create(name="Spirit Heritage", property_name="spirit_heritage")[0]
 
 
 Background.objects.get_or_create(name="Eidolon", property_name="eidolon")[0]
@@ -98,6 +86,4 @@ Background.objects.get_or_create(name="Followers", property_name="followers")[0]
 Background.objects.get_or_create(name="Legacy", property_name="legacy")[0]
 Background.objects.get_or_create(name="Pacts", property_name="pacts")[0]
 Background.objects.get_or_create(name="Paragon", property_name="paragon")[0]
-Background.objects.get_or_create(
-    name="Ritual Knowledge", property_name="ritual_knowledge"
-)[0]
+Background.objects.get_or_create(name="Ritual Knowledge", property_name="ritual_knowledge")[0]

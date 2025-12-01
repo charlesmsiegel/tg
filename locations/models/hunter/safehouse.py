@@ -1,6 +1,5 @@
 from django.db import models
 from django.urls import reverse
-
 from locations.models.core import LocationModel
 
 

@@ -30,21 +30,15 @@ class Node(LocationModel):
     type = "node"
     gameline = "mta"
 
-    rank = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    rank = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
 
     size = models.IntegerField(default=SizeChoices.NORMAL, choices=SizeChoices.choices)
-    ratio = models.IntegerField(
-        default=RatioChoices.NORMAL, choices=RatioChoices.choices
-    )
+    ratio = models.IntegerField(default=RatioChoices.NORMAL, choices=RatioChoices.choices)
 
     points = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    merits_and_flaws = models.ManyToManyField(
-        MeritFlaw, blank=True, through="NodeMeritFlawRating"
-    )
+    merits_and_flaws = models.ManyToManyField(MeritFlaw, blank=True, through="NodeMeritFlawRating")
     resonance = models.ManyToManyField(
         "characters.Resonance", blank=True, through="NodeResonanceRating"
     )
@@ -57,9 +51,7 @@ class Node(LocationModel):
     )
     tass_form = models.CharField(default="", max_length=100, blank=True)
     quintessence_form = models.CharField(default="", max_length=100, blank=True)
-    reality_zone = models.ForeignKey(
-        RealityZone, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    reality_zone = models.ForeignKey(RealityZone, blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Node"
@@ -106,9 +98,7 @@ class Node(LocationModel):
         return [(x, self.mf_rating(x)) for x in self.merits_and_flaws.all()]
 
     def add_mf(self, mf, rating):
-        node = ObjectType.objects.get_or_create(
-            name="node", type="loc", gameline="mta"
-        )[0]
+        node = ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")[0]
         if node not in mf.allowed_types.all():
             return False
         if not mf.ratings.filter(value=rating).exists():
@@ -133,9 +123,7 @@ class Node(LocationModel):
         return sum(x.rating for x in NodeMeritFlawRating.objects.filter(node=self))
 
     def filter_mf(self, minimum=-10, maximum=10):
-        node = ObjectType.objects.get_or_create(
-            name="node", type="loc", gameline="mta"
-        )[0]
+        node = ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")[0]
 
         new_mfs = MeritFlaw.objects.filter(allowed_types__in=[node.pk]).exclude(
             pk__in=self.merits_and_flaws.all()
@@ -143,9 +131,7 @@ class Node(LocationModel):
         had_mf_ratings = NodeMeritFlawRating.objects.all()
         had_mf_ratings = had_mf_ratings.filter(rating__lt=F("mf__max_rating"))
 
-        had_mfs = MeritFlaw.objects.filter(
-            pk__in=had_mf_ratings.values_list("mf", flat=True)
-        )
+        had_mfs = MeritFlaw.objects.filter(pk__in=had_mf_ratings.values_list("mf", flat=True))
         q = new_mfs | had_mfs
 
         q = q.filter(max_rating__lte=maximum)
@@ -168,9 +154,7 @@ class Node(LocationModel):
 
     def resonance_rating(self, resonance):
         if resonance in self.resonance.all():
-            return NodeResonanceRating.objects.get(
-                node=self, resonance=resonance
-            ).rating
+            return NodeResonanceRating.objects.get(node=self, resonance=resonance).rating
         return 0
 
     def filter_resonance(self, minimum=0, maximum=5, sphere=None):
@@ -215,13 +199,9 @@ class Node(LocationModel):
             res, _ = Resonance.objects.get_or_create(name="Corrupted")
             self.add_resonance(res)
             self.add_resonance(res)
-        if any(
-            [x.name.startswith("Sphere Attuned") for x in self.merits_and_flaws.all()]
-        ):
+        if any([x.name.startswith("Sphere Attuned") for x in self.merits_and_flaws.all()]):
             for mf in [
-                x
-                for x in self.merits_and_flaws.all()
-                if x.name.startswith("Sphere Attuned")
+                x for x in self.merits_and_flaws.all() if x.name.startswith("Sphere Attuned")
             ]:
                 sphere_name = mf.name.split("(")[-1].split(")")[0]
                 s = Sphere.objects.get(name=sphere_name)

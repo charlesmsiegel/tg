@@ -10,16 +10,12 @@ class SorcererArtifactForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
 
 
 class ArtifactCreateOrSelectForm(forms.Form):
     select_or_create = forms.BooleanField(required=False)
-    select = forms.ModelChoiceField(
-        queryset=SorcererArtifact.objects.all(), required=False
-    )
+    select = forms.ModelChoiceField(queryset=SorcererArtifact.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

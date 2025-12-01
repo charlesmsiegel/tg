@@ -6,6 +6,7 @@ Reports on:
 - Users with ST permissions but no active chronicles
 - Profile data completeness (lines/veils for safety tools)
 """
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from game.models import Chronicle, STRelationship
@@ -123,9 +124,7 @@ class Command(BaseCommand):
         # Count profiles with lines/veils set
         with_lines = profiles.exclude(Q(lines="") | Q(lines__isnull=True)).count()
         with_veils = profiles.exclude(Q(veils="") | Q(veils__isnull=True)).count()
-        with_discord = profiles.exclude(
-            Q(discord_id="") | Q(discord_id__isnull=True)
-        ).count()
+        with_discord = profiles.exclude(Q(discord_id="") | Q(discord_id__isnull=True)).count()
 
         # Visibility settings
         lines_visible = profiles.filter(lines_toggle=True).count()
@@ -182,9 +181,7 @@ class Command(BaseCommand):
                     has_profile = True
                     has_lines = bool(profile.lines and profile.lines.strip())
                     has_veils = bool(profile.veils and profile.veils.strip())
-                    has_discord = bool(
-                        profile.discord_id and profile.discord_id.strip()
-                    )
+                    has_discord = bool(profile.discord_id and profile.discord_id.strip())
                 except Profile.DoesNotExist:
                     has_profile = False
                     has_lines = False

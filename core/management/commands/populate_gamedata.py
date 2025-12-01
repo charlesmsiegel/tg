@@ -4,6 +4,7 @@ Management command to populate the database with game data from populate_db/ dir
 This command recursively searches populate_db/ and all subdirectories for .py scripts
 and provides more control over data loading.
 """
+
 import os
 import sys
 from pathlib import Path
@@ -91,24 +92,18 @@ class Command(BaseCommand):
         files_to_load = self.filter_files(all_files, options)
 
         if not files_to_load:
-            self.stdout.write(
-                self.style.WARNING("No files match the specified filters")
-            )
+            self.stdout.write(self.style.WARNING("No files match the specified filters"))
             return
 
         # Display what will be loaded
-        self.stdout.write(
-            self.style.SUCCESS(f"\nFound {len(files_to_load)} file(s) to load:")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nFound {len(files_to_load)} file(s) to load:"))
         for file in files_to_load:
             # Show relative path from populate_db for better context
             relative_path = file.relative_to(populate_dir)
             self.stdout.write(f"  - {relative_path}")
 
         if options["dry_run"]:
-            self.stdout.write(
-                self.style.WARNING("\n[DRY RUN] No data was actually loaded")
-            )
+            self.stdout.write(self.style.WARNING("\n[DRY RUN] No data was actually loaded"))
             return
 
         # Load each file
@@ -132,13 +127,9 @@ class Command(BaseCommand):
 
         # Summary
         self.stdout.write("\n" + "=" * 60)
-        self.stdout.write(
-            self.style.SUCCESS(f"Successfully loaded: {success_count} file(s)")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Successfully loaded: {success_count} file(s)"))
         if error_count > 0:
-            self.stdout.write(
-                self.style.ERROR(f"Failed to load: {error_count} file(s)")
-            )
+            self.stdout.write(self.style.ERROR(f"Failed to load: {error_count} file(s)"))
         self.stdout.write("=" * 60 + "\n")
 
     def filter_files(self, files, options):

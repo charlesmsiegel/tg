@@ -7,6 +7,7 @@ Tests cover:
 - Language model CRUD operations
 - NewsItem model ordering and display
 """
+
 from core.models import Book, HouseRule, Language, NewsItem
 from django.contrib.auth.models import User
 from django.test import TestCase

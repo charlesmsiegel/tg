@@ -61,7 +61,5 @@ urls = [
     path("rotes/<pk>/", views.mage.RoteDetailView.as_view(), name="rote"),
     path("paths/<pk>/", views.mage.PathDetailView.as_view(), name="path"),
     path("rituals/<pk>/", views.mage.RitualDetailView.as_view(), name="ritual"),
-    path(
-        "advantages/<pk>/", views.mage.AdvantageDetailView.as_view(), name="advantage"
-    ),
+    path("advantages/<pk>/", views.mage.AdvantageDetailView.as_view(), name="advantage"),
 ]

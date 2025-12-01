@@ -26,9 +26,7 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
-        if not obj.backgrounds.filter(
-            bg__property_name="enhancement", complete=False
-        ).exists():
+        if not obj.backgrounds.filter(bg__property_name="enhancement", complete=False).exists():
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())

@@ -74,12 +74,8 @@ class PracticeDetailView(DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["specializations"] = SpecializedPractice.objects.filter(
-            parent_practice=self.object
-        )
-        context["corruptions"] = CorruptedPractice.objects.filter(
-            parent_practice=self.object
-        )
+        context["specializations"] = SpecializedPractice.objects.filter(parent_practice=self.object)
+        context["corruptions"] = CorruptedPractice.objects.filter(parent_practice=self.object)
         return context
 
 
@@ -207,12 +203,8 @@ class TenetDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["associated_practices"] = display_queryset(
-            self.object.associated_practices.all()
-        )
-        context["limited_practices"] = display_queryset(
-            self.object.limited_practices.all()
-        )
+        context["associated_practices"] = display_queryset(self.object.associated_practices.all())
+        context["limited_practices"] = display_queryset(self.object.limited_practices.all())
         return context
 
 

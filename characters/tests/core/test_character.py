@@ -29,20 +29,14 @@ class TestCharacter(TestCase):
         self.assertNotEqual(self.character.concept, "")
 
     def test_absolute_url(self):
-        self.assertEqual(
-            self.character.get_absolute_url(), f"/characters/{self.character.id}/"
-        )
+        self.assertEqual(self.character.get_absolute_url(), f"/characters/{self.character.id}/")
 
 
 class TestGenericCharacterDetailViews(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="Test")
-        self.character = Character.objects.create(
-            name="Test Char", owner=self.player, status="App"
-        )
-        self.human = Human.objects.create(
-            name="Test Human", owner=self.player, status="App"
-        )
+        self.character = Character.objects.create(name="Test Char", owner=self.player, status="App")
+        self.human = Human.objects.create(name="Test Human", owner=self.player, status="App")
 
     def test_character_detail_view_templates(self):
         response = self.client.get(self.character.get_absolute_url())

@@ -43,14 +43,10 @@ class EnhancementForm(forms.Form):
         required=False, widget=AutocompleteTextInput(suggestions=[])
     )
 
-    new_device_effect = forms.ModelChoiceField(
-        queryset=Effect.objects.none(), required=False
-    )
+    new_device_effect = forms.ModelChoiceField(queryset=Effect.objects.none(), required=False)
 
     new_device_new_effect_name = forms.CharField(max_length=100, required=False)
-    new_device_new_effect_description = forms.CharField(
-        widget=forms.Textarea(), required=False
-    )
+    new_device_new_effect_description = forms.CharField(widget=forms.Textarea(), required=False)
     new_device_new_effect_correspondence = forms.IntegerField(
         min_value=0, max_value=5, initial=0, required=False
     )
@@ -121,27 +117,19 @@ class EnhancementForm(forms.Form):
             resonance = cleaned_data.get("new_device_resonance")
 
             if not new_power_option:
-                raise forms.ValidationError(
-                    "You must select a power option for the new device."
-                )
+                raise forms.ValidationError("You must select a power option for the new device.")
 
             if not wonder_type:
-                raise forms.ValidationError(
-                    "You must select a wonder type for the new device."
-                )
+                raise forms.ValidationError("You must select a wonder type for the new device.")
 
             if not resonance:
-                raise forms.ValidationError(
-                    "You must specify a resonance for the new device."
-                )
+                raise forms.ValidationError("You must specify a resonance for the new device.")
 
             # Validate effect-specific fields
             if new_power_option == "New Effect":
                 # Check that new effect fields are filled
                 if not cleaned_data.get("new_device_new_effect_name"):
-                    raise forms.ValidationError(
-                        "You must provide a name for the new effect."
-                    )
+                    raise forms.ValidationError("You must provide a name for the new effect.")
 
                 if not cleaned_data.get("new_device_new_effect_description"):
                     raise forms.ValidationError(
@@ -246,9 +234,7 @@ class EnhancementForm(forms.Form):
                 effect = Effect(
                     name=self.cleaned_data["new_device_new_effect_name"],
                     description=self.cleaned_data["new_device_new_effect_description"],
-                    correspondence=self.cleaned_data[
-                        "new_device_new_effect_correspondence"
-                    ],
+                    correspondence=self.cleaned_data["new_device_new_effect_correspondence"],
                     time=self.cleaned_data["new_device_new_effect_time"],
                     spirit=self.cleaned_data["new_device_new_effect_spirit"],
                     matter=self.cleaned_data["new_device_new_effect_matter"],

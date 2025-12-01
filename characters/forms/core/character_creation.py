@@ -156,9 +156,7 @@ class CharacterCreationForm(forms.Form):
 
                 # Create gameline choices from GameLine.CHOICES, filtered to those with characters
                 gameline_choices = [
-                    (code, name)
-                    for code, name in GameLine.CHOICES
-                    if code in gamelines_with_chars
+                    (code, name) for code, name in GameLine.CHOICES if code in gamelines_with_chars
                 ]
                 self.fields["gameline"].choices = gameline_choices
 
@@ -177,9 +175,9 @@ class CharacterCreationForm(forms.Form):
                     char_types_by_gameline[gameline].sort(key=lambda x: x["label"])
 
                 # Store in widget attrs for JavaScript access
-                self.fields["char_type"].widget.attrs[
-                    "data-types-by-gameline"
-                ] = json.dumps(char_types_by_gameline)
+                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+                    char_types_by_gameline
+                )
 
                 # Initially populate with first gameline's types
                 if gameline_choices:
@@ -193,9 +191,9 @@ class CharacterCreationForm(forms.Form):
                 # For regular users, only show mage gameline
                 self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
 
-                mage_types = ObjectType.objects.filter(
-                    type="char", gameline="mta"
-                ).exclude(name__in=excluded_types)
+                mage_types = ObjectType.objects.filter(type="char", gameline="mta").exclude(
+                    name__in=excluded_types
+                )
 
                 char_types_by_gameline = {
                     "mta": [
@@ -205,9 +203,9 @@ class CharacterCreationForm(forms.Form):
                 }
                 char_types_by_gameline["mta"].sort(key=lambda x: x["label"])
 
-                self.fields["char_type"].widget.attrs[
-                    "data-types-by-gameline"
-                ] = json.dumps(char_types_by_gameline)
+                self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+                    char_types_by_gameline
+                )
                 self.fields["char_type"].choices = [
                     (t["value"], t["label"]) for t in char_types_by_gameline["mta"]
                 ]

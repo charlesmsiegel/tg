@@ -163,9 +163,7 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         # Shadow archetype is required
         if not form.cleaned_data.get("shadow_archetype"):
             form.add_error("shadow_archetype", "Shadow Archetype is required")
-            messages.error(
-                self.request, "You must select a Shadow Archetype to continue."
-            )
+            messages.error(self.request, "You must select a Shadow Archetype to continue.")
             return self.form_invalid(form)
 
         self.object.creation_status += 1
@@ -344,16 +342,12 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
         # Validate that death-related fields are filled
         if not form.cleaned_data.get("age_at_death"):
             form.add_error("age_at_death", "Age at death is required")
-            messages.error(
-                self.request, "Age at death is required for Wraith characters."
-            )
+            messages.error(self.request, "Age at death is required for Wraith characters.")
             return self.form_invalid(form)
 
         if not form.cleaned_data.get("death_description"):
             form.add_error("death_description", "Death description is required")
-            messages.error(
-                self.request, "Death description is required for Wraith characters."
-            )
+            messages.error(self.request, "Death description is required for Wraith characters.")
             return self.form_invalid(form)
 
         self.object.creation_status += 1
@@ -385,15 +379,11 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
             }
         )
         form.fields["goals"].widget.attrs.update(
-            {
-                "placeholder": "Describe your character's long and short term goals as a wraith."
-            }
+            {"placeholder": "Describe your character's long and short term goals as a wraith."}
         )
         form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
         form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character."
-            }
+            {"placeholder": "This will be displayed to all players who look at your character."}
         )
         return form
 
@@ -438,9 +428,7 @@ class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):
         """Return available arcanoi for freebie spending."""
         arcanoi = wraith.get_arcanoi()
         return [
-            (name.replace("_", " ").title(), name)
-            for name, value in arcanoi.items()
-            if value < 5
+            (name.replace("_", " ").title(), name) for name, value in arcanoi.items() if value < 5
         ]
 
     def pathos_options(self, wraith):
@@ -556,9 +544,7 @@ class WraithSpecialtiesView(EditPermissionMixin, FormView):
             wraith.specialties.add(spec)
         wraith.status = "Sub"
         wraith.save()
-        messages.success(
-            self.request, f"Wraith '{wraith.name}' submitted for approval!"
-        )
+        messages.success(self.request, f"Wraith '{wraith.name}' submitted for approval!")
         return HttpResponseRedirect(wraith.get_absolute_url())
 
 

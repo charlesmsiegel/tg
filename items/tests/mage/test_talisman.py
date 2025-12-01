@@ -101,6 +101,4 @@ class TestTalismanUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.talisman.refresh_from_db()
         self.assertEqual(self.talisman.name, "Test Talisman Updated")
-        self.assertEqual(
-            self.talisman.description, "A test description for the talisman."
-        )
+        self.assertEqual(self.talisman.description, "A test description for the talisman.")

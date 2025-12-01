@@ -19,16 +19,12 @@ class SorcererArtifactCreateView(MessageMixin, CreateView):
     fields = ["name", "rank", "background_cost", "description", "power"]
     template_name = "items/mage/sorcerer_artifact/form.html"
     success_message = "Sorcerer Artifact '{name}' created successfully!"
-    error_message = (
-        "Failed to create Sorcerer Artifact. Please correct the errors below."
-    )
+    error_message = "Failed to create Sorcerer Artifact. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 
@@ -37,14 +33,10 @@ class SorcererArtifactUpdateView(MessageMixin, UpdateView):
     fields = ["name", "rank", "background_cost", "description", "power"]
     template_name = "items/mage/sorcerer_artifact/form.html"
     success_message = "Sorcerer Artifact '{name}' updated successfully!"
-    error_message = (
-        "Failed to update Sorcerer Artifact. Please correct the errors below."
-    )
+    error_message = "Failed to update Sorcerer Artifact. Please correct the errors below."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form

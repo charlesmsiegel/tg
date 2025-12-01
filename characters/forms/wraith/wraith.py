@@ -22,9 +22,7 @@ class WraithCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
         self.fields["guild"].required = True
         self.fields["guild"].queryset = Guild.objects.all()

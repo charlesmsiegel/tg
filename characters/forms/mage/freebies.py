@@ -38,9 +38,9 @@ class CompanionFreebiesForm(HumanFreebiesForm):
 
 class SorcererFreebiesForm(HumanFreebiesForm):
     practice = forms.ModelChoiceField(
-        queryset=Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice"),
+        queryset=Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
+            polymorphic_ctype__model="corruptedpractice"
+        ),
         required=False,
     )
     ability = forms.ModelChoiceField(queryset=Ability.objects.all(), required=False)
@@ -75,9 +75,7 @@ class SorcererFreebiesForm(HumanFreebiesForm):
 
 class MageFreebiesForm(HumanFreebiesForm):
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)
-    resonance = forms.CharField(
-        required=False, widget=AutocompleteTextInput(suggestions=[])
-    )
+    resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)

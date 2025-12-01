@@ -151,9 +151,7 @@ class Werewolf(WtAHuman):
                 GiftPermission.objects.get_or_create(shifter="werewolf", condition=a)[0]
             )
         self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(shifter="werewolf", condition=auspice)[
-                0
-            ]
+            GiftPermission.objects.get_or_create(shifter="werewolf", condition=auspice)[0]
         )
 
         self.auspice = auspice
@@ -191,14 +189,10 @@ class Werewolf(WtAHuman):
     def set_tribe(self, tribe):
         for t in Tribe.objects.all():
             self.gift_permissions.remove(
-                GiftPermission.objects.get_or_create(
-                    shifter="werewolf", condition=t.name
-                )[0]
+                GiftPermission.objects.get_or_create(shifter="werewolf", condition=t.name)[0]
             )
         self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(
-                shifter="werewolf", condition=tribe.name
-            )[0]
+            GiftPermission.objects.get_or_create(shifter="werewolf", condition=tribe.name)[0]
         )
 
         if tribe.name == "Red Talons" and self.breed == "homid":
@@ -218,12 +212,7 @@ class Werewolf(WtAHuman):
     def add_camp(self, camp):
         if camp is None:
             return False
-        if (
-            GiftPermission.objects.filter(
-                shifter="werewolf", condition=camp.name
-            ).count()
-            == 1
-        ):
+        if GiftPermission.objects.filter(shifter="werewolf", condition=camp.name).count() == 1:
             self.gift_permissions.add(
                 GiftPermission.objects.filter(shifter="werewolf", condition=camp.name)
             )
@@ -245,12 +234,10 @@ class Werewolf(WtAHuman):
 
     def has_gifts(self):
         b = self.gifts.count() >= 3
-        breed = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.breed
-        )[0]
-        auspice = GiftPermission.objects.get_or_create(
-            shifter="werewolf", condition=self.auspice
-        )[0]
+        breed = GiftPermission.objects.get_or_create(shifter="werewolf", condition=self.breed)[0]
+        auspice = GiftPermission.objects.get_or_create(shifter="werewolf", condition=self.auspice)[
+            0
+        ]
         if self.tribe is not None:
             tribe = GiftPermission.objects.get_or_create(
                 shifter="werewolf", condition=self.tribe.name
@@ -391,9 +378,9 @@ class Werewolf(WtAHuman):
         return True
 
     def filter_fetishes(self, min_rating=0, max_rating=5):
-        return Fetish.objects.filter(
-            rank__lte=max_rating, rank__gte=min_rating
-        ).exclude(pk__in=self.fetishes_owned.all())
+        return Fetish.objects.filter(rank__lte=max_rating, rank__gte=min_rating).exclude(
+            pk__in=self.fetishes_owned.all()
+        )
 
     def total_fetish_rating(self):
         return sum(x.rank for x in self.fetishes_owned.all())
@@ -417,9 +404,7 @@ class Werewolf(WtAHuman):
         from collections import defaultdict
 
         costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value)
-            if trait_value is not None
-            else 10000,
+            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
             {
                 "gift": 3,
                 "rite": 1,

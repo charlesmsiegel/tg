@@ -36,19 +36,15 @@ sf = SorcererFellowship.objects.get_or_create(name="Lone Practicitioner")[0].add
 )
 sf.favored_attributes.add(*Attribute.objects.all())
 sf.favored_paths.add(*LinearMagicPath.objects.filter(numina_type="hedge_magic"))
-sf = SorcererFellowship.objects.get_or_create(name="Ancient Order of the Aeon Rites")[
-    0
-].add_source("M20 Sorcerer", 80)
-sf.favored_attributes.add(intelligence, wits)
-sf.favored_paths.add(conjuration, divination, enchantment, summoning)
-sf = SorcererFellowship.objects.get_or_create(name="Arcanum")[0].add_source(
+sf = SorcererFellowship.objects.get_or_create(name="Ancient Order of the Aeon Rites")[0].add_source(
     "M20 Sorcerer", 80
 )
 sf.favored_attributes.add(intelligence, wits)
+sf.favored_paths.add(conjuration, divination, enchantment, summoning)
+sf = SorcererFellowship.objects.get_or_create(name="Arcanum")[0].add_source("M20 Sorcerer", 80)
+sf.favored_attributes.add(intelligence, wits)
 sf.favored_paths.add(alchemy, conveyance, enchantment, summoning)
-sf = SorcererFellowship.objects.get_or_create(name="Balamo'ob")[0].add_source(
-    "M20 Sorcerer", 81
-)
+sf = SorcererFellowship.objects.get_or_create(name="Balamo'ob")[0].add_source("M20 Sorcerer", 81)
 sf.favored_attributes.add(stamina, wits)
 sf.favored_paths.add(alchemy, healing, shapeshifting, summoning)
 sf = SorcererFellowship.objects.get_or_create(name="Children of Osiris")[0].add_source(
@@ -56,9 +52,7 @@ sf = SorcererFellowship.objects.get_or_create(name="Children of Osiris")[0].add_
 )
 sf.favored_attributes.add(intelligence, wits)
 sf.favored_paths.add(ephemera, healing, alchemy, oneiromancy)
-sf = SorcererFellowship.objects.get_or_create(name="Cult of Isis")[0].add_source(
-    "M20 Sorcerer", 83
-)
+sf = SorcererFellowship.objects.get_or_create(name="Cult of Isis")[0].add_source("M20 Sorcerer", 83)
 sf.favored_attributes.add(charisma, manipulation)
 sf.favored_paths.add(divination, fascination, fortune, healing)
 sf = SorcererFellowship.objects.get_or_create(name="Cult of Mercury")[0].add_source(
@@ -66,34 +60,26 @@ sf = SorcererFellowship.objects.get_or_create(name="Cult of Mercury")[0].add_sou
 )
 sf.favored_attributes.add(charisma, stamina)
 sf.favored_paths.add(conjuration, conveyance, divination, fortune)
-sf = SorcererFellowship.objects.get_or_create(
-    name="Dozen Priests of the Pythian Order"
-)[0].add_source("M20 Sorcerer", 84)
+sf = SorcererFellowship.objects.get_or_create(name="Dozen Priests of the Pythian Order")[
+    0
+].add_source("M20 Sorcerer", 84)
 sf.favored_attributes.add(charisma, intelligence)
 sf.favored_paths.add(divination, healing, shapeshifting, weather_control)
-sf = SorcererFellowship.objects.get_or_create(name="Fenian")[0].add_source(
-    "M20 Sorcerer", 85
-)
+sf = SorcererFellowship.objects.get_or_create(name="Fenian")[0].add_source("M20 Sorcerer", 85)
 sf.favored_attributes.add(manipulation, appearance)
 sf.favored_paths.add(fascination, shapeshifting, weather_control)
-sf = SorcererFellowship.objects.get_or_create(name="Forn Jafnaðr")[0].add_source(
-    "M20 Sorcerer", 85
-)
+sf = SorcererFellowship.objects.get_or_create(name="Forn Jafnaðr")[0].add_source("M20 Sorcerer", 85)
 sf.favored_attributes.add(dexterity, wits)
 sf.favored_paths.add(divination, enchantment, hellfire, summoning)
-sf = SorcererFellowship.objects.get_or_create(name="Maison Liban")[0].add_source(
-    "M20 Sorcerer", 87
-)
+sf = SorcererFellowship.objects.get_or_create(name="Maison Liban")[0].add_source("M20 Sorcerer", 87)
 sf.favored_attributes.add(intelligence, manipulation)
 sf.favored_paths.add(fortune, shadows, summoning, quintessence_manipulation)
-sf = SorcererFellowship.objects.get_or_create(name="Mogen HaLev")[0].add_source(
-    "M20 Sorcerer", 87
-)
+sf = SorcererFellowship.objects.get_or_create(name="Mogen HaLev")[0].add_source("M20 Sorcerer", 87)
 sf.favored_attributes.add(intelligence, perception)
 sf.favored_paths.add(divination, ephemera, summoning, fortune, healing, weather_control)
-sf = SorcererFellowship.objects.get_or_create(
-    name="Nebuu-Afef, the Order of the Golden Fly"
-)[0].add_source("M20 Sorcerer", 88)
+sf = SorcererFellowship.objects.get_or_create(name="Nebuu-Afef, the Order of the Golden Fly")[
+    0
+].add_source("M20 Sorcerer", 88)
 sf.favored_attributes.add(strength, stamina)
 sf.favored_paths.add(conjuration, hellfire, shadows, shapeshifting)
 sf = SorcererFellowship.objects.get_or_create(name="Nephite Priesthood")[0].add_source(
@@ -111,29 +97,23 @@ sf = SorcererFellowship.objects.get_or_create(name="Silver Portal")[0].add_sourc
 )
 sf.favored_attributes.add(charisma, perception)
 sf.favored_paths.add(ephemera, fascination, oneiromancy, shadows)
-sf = SorcererFellowship.objects.get_or_create(
-    name="Society of Enlightened Altruistic Ideologies"
-)[0].add_source("M20 Sorcerer", 91)
+sf = SorcererFellowship.objects.get_or_create(name="Society of Enlightened Altruistic Ideologies")[
+    0
+].add_source("M20 Sorcerer", 91)
 sf.favored_attributes.add(intelligence, manipulation)
 sf.favored_paths.add(alchemy, conjuration, conveyance, enchantment)
-sf = SorcererFellowship.objects.get_or_create(name="Star Council")[0].add_source(
-    "M20 Sorcerer", 92
-)
+sf = SorcererFellowship.objects.get_or_create(name="Star Council")[0].add_source("M20 Sorcerer", 92)
 sf.favored_attributes.add(perception, intelligence)
 sf.favored_paths.add(enchantment, healing, shadows, quintessence_manipulation)
-sf = SorcererFellowship.objects.get_or_create(name="Thal'hun")[0].add_source(
-    "M20 Sorcerer", 92
-)
+sf = SorcererFellowship.objects.get_or_create(name="Thal'hun")[0].add_source("M20 Sorcerer", 92)
 sf.favored_attributes.add(intelligence, wits)
 sf.favored_paths.add(conjuration, fortune, hellfire, quintessence_manipulation)
-sf = SorcererFellowship.objects.get_or_create(
-    name="U.S. Government (Project Twilight)"
-)[0].add_source("M20 Sorcerer", 93)
+sf = SorcererFellowship.objects.get_or_create(name="U.S. Government (Project Twilight)")[
+    0
+].add_source("M20 Sorcerer", 93)
 sf.favored_attributes.add(dexterity, wits)
 sf.favored_paths.add(divination, fortune, hellfire)
-sf = SorcererFellowship.objects.get_or_create(name="Uzoma")[0].add_source(
-    "M20 Sorcerer", 95
-)
+sf = SorcererFellowship.objects.get_or_create(name="Uzoma")[0].add_source("M20 Sorcerer", 95)
 sf.favored_attributes.add(charisma, wits)
 sf.favored_paths.add(alchemy, healing, summoning, quintessence_manipulation)
 
@@ -276,9 +256,7 @@ sf = (
     .add_source("Sorcerer: Paths of Power", 29)
 )
 sf.favored_attributes.add(intelligence)
-sf.favored_paths.add(
-    alchemy, hellfire, conjuration, summoning, quintessence_manipulation
-)
+sf.favored_paths.add(alchemy, hellfire, conjuration, summoning, quintessence_manipulation)
 sf = (
     SorcererFellowship.objects.get_or_create(name="Society of Ether")[0]
     .add_source("M20 Sorcerer", 97)

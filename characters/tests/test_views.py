@@ -9,6 +9,7 @@ Tests cover:
 - Character delete view
 - Permission enforcement on all views
 """
+
 from characters.models.core import Character, Human
 from core.permissions import PermissionManager
 from django.contrib.auth.models import User
@@ -38,13 +39,9 @@ class TestCharacterListView(TestCase):
     def test_index_view_shows_visible_characters(self):
         """Test that logged-in users see visible characters."""
         # Create characters with display=True (visible)
-        char1 = Human.objects.create(
-            name="Visible Character", owner=self.user, display=True
-        )
+        char1 = Human.objects.create(name="Visible Character", owner=self.user, display=True)
         # Create character with display=False (not visible to others)
-        char2 = Human.objects.create(
-            name="Hidden Character", owner=self.other_user, display=False
-        )
+        char2 = Human.objects.create(name="Hidden Character", owner=self.other_user, display=False)
 
         self.client.login(username="testuser", password="password")
         response = self.client.get(reverse("characters:index"))
@@ -56,9 +53,7 @@ class TestCharacterListView(TestCase):
 
     def test_index_view_groups_by_chronicle(self):
         """Test that index view groups characters by chronicle."""
-        char = Human.objects.create(
-            name="Chronicle Character", owner=self.user, display=True
-        )
+        char = Human.objects.create(name="Chronicle Character", owner=self.user, display=True)
 
         self.client.login(username="testuser", password="password")
         response = self.client.get(reverse("characters:index"))
@@ -84,9 +79,7 @@ class TestCharacterDetailView(TestCase):
         self.viewer = User.objects.create_user(
             username="viewer", email="viewer@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.character = Human.objects.create(
             name="Test Character",
             owner=self.owner,
@@ -265,9 +258,7 @@ class TestCharacterPermissions(TestCase):
         self.owner = User.objects.create_user(
             username="owner", email="owner@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.admin = User.objects.create_user(
             username="admin", email="admin@test.com", password="password", is_staff=True
         )
@@ -279,9 +270,7 @@ class TestCharacterPermissions(TestCase):
 
         # Make ST a storyteller for the chronicle
         mta = Gameline.objects.create(name="Mage: the Ascension")
-        STRelationship.objects.create(
-            user=self.st, gameline=mta, chronicle=self.chronicle
-        )
+        STRelationship.objects.create(user=self.st, gameline=mta, chronicle=self.chronicle)
 
         self.character = Human.objects.create(
             name="Test Character",

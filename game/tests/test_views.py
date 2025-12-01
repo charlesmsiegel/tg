@@ -22,9 +22,7 @@ from locations.models.core import LocationModel
 class ChronicleTest(TestCase):
     def setUp(self):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_add_scene(self):
         self.assertEqual(self.chronicle.total_scenes(), 0)
@@ -36,9 +34,7 @@ class SceneTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -107,9 +103,7 @@ class TestChronicleDetailView(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_chronicle_detail_view_requires_login(self):
         """Test that unauthenticated users are redirected."""
@@ -175,9 +169,7 @@ class TestSceneDetailView(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -208,9 +200,7 @@ class TestSceneDetailView(TestCase):
     def test_non_st_cannot_close_scene(self):
         """Test that non-storytellers cannot close scenes."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
-            f"/game/scene/{self.scene.id}", {"close_scene": "true"}
-        )
+        response = self.client.post(f"/game/scene/{self.scene.id}", {"close_scene": "true"})
         self.assertEqual(response.status_code, 403)
         self.scene.refresh_from_db()
         self.assertFalse(self.scene.finished)
@@ -218,9 +208,7 @@ class TestSceneDetailView(TestCase):
     def test_st_can_close_scene(self):
         """Test that storytellers can close scenes."""
         self.client.login(username="stuser", password="password")
-        response = self.client.post(
-            f"/game/scene/{self.scene.id}", {"close_scene": "true"}
-        )
+        response = self.client.post(f"/game/scene/{self.scene.id}", {"close_scene": "true"})
         self.assertEqual(response.status_code, 302)
         self.scene.refresh_from_db()
         self.assertTrue(self.scene.finished)
@@ -244,9 +232,7 @@ class TestSceneDetailView(TestCase):
             concept="Test",
         )
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
-            f"/game/scene/{self.scene.id}", {"character_to_add": char2.id}
-        )
+        response = self.client.post(f"/game/scene/{self.scene.id}", {"character_to_add": char2.id})
         self.assertEqual(response.status_code, 403)
 
     def test_404_for_nonexistent_scene(self):
@@ -271,9 +257,7 @@ class TestWeeklyXPRequestValidation(TestCase):
         from datetime import date
 
         self.week = Week.objects.create(end_date=date(2024, 1, 7))
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, location=self.location
         )
@@ -289,18 +273,14 @@ class TestWeeklyXPRequestValidation(TestCase):
 
     def test_rp_requires_scene(self):
         """Test that RP XP requires a scene."""
-        request = WeeklyXPRequest(
-            week=self.week, character=self.char, rp=True, rp_scene=None
-        )
+        request = WeeklyXPRequest(week=self.week, character=self.char, rp=True, rp_scene=None)
         with self.assertRaises(ValidationError) as context:
             request.full_clean()
         self.assertIn("rp_scene", context.exception.message_dict)
 
     def test_focus_requires_scene(self):
         """Test that focus XP requires a scene."""
-        request = WeeklyXPRequest(
-            week=self.week, character=self.char, focus=True, focus_scene=None
-        )
+        request = WeeklyXPRequest(week=self.week, character=self.char, focus=True, focus_scene=None)
         with self.assertRaises(ValidationError) as context:
             request.full_clean()
         self.assertIn("focus_scene", context.exception.message_dict)

@@ -6,6 +6,7 @@ Tests cover:
 - boxes filter for alternative rating display
 - sanitize_html filter
 """
+
 from core.templatetags.dots import boxes, dots
 from core.templatetags.sanitize_text import sanitize_html
 from django.test import TestCase
@@ -147,7 +148,7 @@ class TestSanitizeHTMLFilter(TestCase):
 
     def test_sanitize_removes_dangerous_protocols(self):
         """Test that dangerous URL protocols are removed."""
-        html = '<a href="javascript:alert(\'XSS\')">Click</a>'
+        html = "<a href=\"javascript:alert('XSS')\">Click</a>"
         result = sanitize_html(html)
         self.assertNotIn("javascript:", result)
 
@@ -173,6 +174,7 @@ class TestGetHeadingFilter(TestCase):
 
     def test_get_heading_for_vtm(self):
         """Test heading class for Vampire: the Masquerade."""
+
         class MockObject:
             gameline = "vtm"
 
@@ -192,6 +194,7 @@ class TestGetHeadingFilter(TestCase):
 
     def test_get_heading_for_mta(self):
         """Test heading class for Mage: the Ascension."""
+
         class MockObject:
             gameline = "mta"
 
@@ -211,6 +214,7 @@ class TestGetHeadingFilter(TestCase):
 
     def test_get_heading_for_unknown_gameline(self):
         """Test heading class for unknown gameline."""
+
         class MockObject:
             gameline = "unknown"
 

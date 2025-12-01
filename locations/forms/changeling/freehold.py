@@ -74,9 +74,7 @@ class FreeholdForm(forms.ModelForm):
 
         # Set placeholders
         self.fields["name"].widget.attrs.update({"placeholder": "Enter freehold name"})
-        self.fields["academy_ability"].widget.attrs.update(
-            {"placeholder": "E.g., Melee, Kenning"}
-        )
+        self.fields["academy_ability"].widget.attrs.update({"placeholder": "E.g., Melee, Kenning"})
         self.fields["dual_nature_ability"].widget.attrs.update(
             {"placeholder": "If dual nature second archetype is Academy"}
         )
@@ -86,9 +84,7 @@ class FreeholdForm(forms.ModelForm):
         self.fields["owned_by"].required = False
 
         # Set help text
-        self.fields[
-            "balefire"
-        ].help_text = "0-5 dots. Determines Glamour/dross generation"
+        self.fields["balefire"].help_text = "0-5 dots. Determines Glamour/dross generation"
         self.fields["size"].help_text = "0-5 dots. Determines physical size"
         self.fields["sanctuary"].help_text = "0-5 dots. Grants defense bonuses"
         self.fields["resources"].help_text = "0-5 dots. Mundane or chimerical resources"
@@ -112,9 +108,7 @@ class FreeholdForm(forms.ModelForm):
 
         # Validate Academy archetype has ability
         if archetype == "academy" and not cleaned_data.get("academy_ability"):
-            raise forms.ValidationError(
-                "Academy archetype requires an associated ability"
-            )
+            raise forms.ValidationError("Academy archetype requires an associated ability")
 
         # Validate Hearth archetype has ability choice
         if archetype == "hearth" and not cleaned_data.get("hearth_ability"):
@@ -132,9 +126,7 @@ class FreeholdForm(forms.ModelForm):
             and cleaned_data.get("dual_nature_archetype") == "academy"
             and not cleaned_data.get("dual_nature_ability")
         ):
-            raise forms.ValidationError(
-                "Dual Nature Academy requires an associated ability"
-            )
+            raise forms.ValidationError("Dual Nature Academy requires an associated ability")
 
         # Calculate feature points
         balefire = cleaned_data.get("balefire", 0)

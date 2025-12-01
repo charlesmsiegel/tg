@@ -12,9 +12,7 @@ class Thorn(Model):
         ("collective", "Collective Thorn"),
     ]
 
-    thorn_type = models.CharField(
-        max_length=20, choices=THORN_TYPE_CHOICES, default="individual"
-    )
+    thorn_type = models.CharField(max_length=20, choices=THORN_TYPE_CHOICES, default="individual")
     point_cost = models.IntegerField(default=1)
     activation_cost = models.CharField(max_length=100, default="")  # e.g., "1 Angst"
     activation_trigger = models.TextField(default="")

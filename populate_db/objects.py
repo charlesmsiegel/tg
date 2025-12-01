@@ -53,9 +53,7 @@ ObjectType.objects.get_or_create(name="tremere_chantry", type="loc", gameline="v
 ObjectType.objects.get_or_create(name="barrens", type="loc", gameline="vtm")
 
 # WtA Character Objects
-werewolf = ObjectType.objects.get_or_create(
-    name="werewolf", type="char", gameline="wta"
-)[0]
+werewolf = ObjectType.objects.get_or_create(name="werewolf", type="char", gameline="wta")[0]
 ObjectType.objects.get_or_create(name="fera", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="ajaba", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="ananasi", type="char", gameline="wta")
@@ -71,9 +69,7 @@ ObjectType.objects.get_or_create(name="ratkin", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="rokea", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="battle_scar", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="camp", type="char", gameline="wta")
-kinfolk = ObjectType.objects.get_or_create(name="kinfolk", type="char", gameline="wta")[
-    0
-]
+kinfolk = ObjectType.objects.get_or_create(name="kinfolk", type="char", gameline="wta")[0]
 ObjectType.objects.get_or_create(name="fomor", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="drone", type="char", gameline="wta")
 ObjectType.objects.get_or_create(name="wta_human", type="char", gameline="wta")
@@ -103,9 +99,7 @@ ObjectType.objects.get_or_create(name="rote", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="resonance", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="instrument", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="practice", type="char", gameline="mta")
-ObjectType.objects.get_or_create(
-    name="specialized_practice", type="char", gameline="mta"
-)
+ObjectType.objects.get_or_create(name="specialized_practice", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="corrupted_practice", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="tenet", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="paradigm", type="char", gameline="mta")
@@ -114,13 +108,9 @@ ObjectType.objects.get_or_create(name="effect", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="advantage", type="char", gameline="mta")
 mage = ObjectType.objects.get_or_create(name="mage", type="char", gameline="mta")[0]
 ObjectType.objects.get_or_create(name="mta_human", type="char", gameline="mta")
-companion = ObjectType.objects.get_or_create(
-    name="companion", type="char", gameline="mta"
-)[0]
+companion = ObjectType.objects.get_or_create(name="companion", type="char", gameline="mta")[0]
 ObjectType.objects.get_or_create(name="cabal", type="char", gameline="mta")
-sorcerer = ObjectType.objects.get_or_create(
-    name="sorcerer", type="char", gameline="mta"
-)[0]
+sorcerer = ObjectType.objects.get_or_create(name="sorcerer", type="char", gameline="mta")[0]
 ObjectType.objects.get_or_create(name="sorcerer_fellowship", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="linear_magic_path", type="char", gameline="mta")
 ObjectType.objects.get_or_create(name="linear_magic_ritual", type="char", gameline="mta")
@@ -146,9 +136,7 @@ ObjectType.objects.get_or_create(name="reality_zone", type="loc", gameline="mta"
 ObjectType.objects.get_or_create(name="demesne", type="loc", gameline="mta")
 
 # CtD Character Objects
-changeling = ObjectType.objects.get_or_create(
-    name="changeling", type="char", gameline="ctd"
-)[0]
+changeling = ObjectType.objects.get_or_create(name="changeling", type="char", gameline="ctd")[0]
 ObjectType.objects.get_or_create(name="ctd_human", type="char", gameline="ctd")
 ObjectType.objects.get_or_create(name="autumn_person", type="char", gameline="ctd")
 ObjectType.objects.get_or_create(name="inanimae", type="char", gameline="ctd")
@@ -196,12 +184,8 @@ ObjectType.objects.get_or_create(name="wraith_freehold", type="loc", gameline="w
 # DtF Character Objects
 demon = ObjectType.objects.get_or_create(name="demon", type="char", gameline="dtf")[0]
 thrall = ObjectType.objects.get_or_create(name="thrall", type="char", gameline="dtf")[0]
-earthbound = ObjectType.objects.get_or_create(
-    name="earthbound", type="char", gameline="dtf"
-)[0]
-dtfhuman = ObjectType.objects.get_or_create(
-    name="dtf_human", type="char", gameline="dtf"
-)[0]
+earthbound = ObjectType.objects.get_or_create(name="earthbound", type="char", gameline="dtf")[0]
+dtfhuman = ObjectType.objects.get_or_create(name="dtf_human", type="char", gameline="dtf")[0]
 ObjectType.objects.get_or_create(name="conclave", type="char", gameline="dtf")
 ObjectType.objects.get_or_create(name="demon_faction", type="char", gameline="dtf")
 ObjectType.objects.get_or_create(name="demon_house", type="char", gameline="dtf")

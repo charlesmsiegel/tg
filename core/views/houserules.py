@@ -33,9 +33,7 @@ class HouseRuleCreateView(MessageMixin, CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 
@@ -49,7 +47,5 @@ class HouseRuleUpdateView(MessageMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form

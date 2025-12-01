@@ -25,9 +25,7 @@ class RenownIncident(Model):
         return reverse("characters:werewolf:renownincident", kwargs={"pk": self.pk})
 
     def get_update_url(self):
-        return reverse(
-            "characters:werewolf:update:renownincident", kwargs={"pk": self.pk}
-        )
+        return reverse("characters:werewolf:update:renownincident", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):

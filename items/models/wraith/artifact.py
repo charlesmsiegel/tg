@@ -30,9 +30,7 @@ class WraithArtifact(ItemModel):
         ("labyrinthine_adamas", "Labyrinthine Adamas"),
     ]
 
-    material = models.CharField(
-        max_length=30, choices=MATERIAL_CHOICES, default="soulsteel"
-    )
+    material = models.CharField(max_length=30, choices=MATERIAL_CHOICES, default="soulsteel")
 
     # Properties
     corpus = models.IntegerField(default=0)

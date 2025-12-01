@@ -2,6 +2,7 @@
 Tests for Freehold creation, both multi-step and direct.
 Tests cover the complete creation workflow from Book of Freeholds.
 """
+
 from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
@@ -144,9 +145,7 @@ class TestFreeholdMultiStepCreation(TestCase):
         response = self.client.get(url)
 
         # Should render powers template (step 3)
-        self.assertTemplateUsed(
-            response, "locations/changeling/freehold/chargen/powers.html"
-        )
+        self.assertTemplateUsed(response, "locations/changeling/freehold/chargen/powers.html")
 
     def test_feature_point_calculation(self):
         """Test that feature points are calculated correctly"""
@@ -397,9 +396,7 @@ class TestFreeholdModel(TestCase):
 
     def test_has_power(self):
         """Test has_power() method"""
-        freehold = Freehold.objects.create(
-            name="Test", powers=["glamour_to_dross", "warning_call"]
-        )
+        freehold = Freehold.objects.create(name="Test", powers=["glamour_to_dross", "warning_call"])
 
         self.assertTrue(freehold.has_power("glamour_to_dross"))
         self.assertTrue(freehold.has_power("warning_call"))

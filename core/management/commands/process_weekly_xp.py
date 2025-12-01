@@ -4,6 +4,7 @@ Management command to process weekly XP for characters.
 Creates Week objects and generates WeeklyXPRequest objects for characters
 who participated in finished scenes during the week.
 """
+
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -45,13 +46,9 @@ class Command(BaseCommand):
             from datetime import datetime
 
             try:
-                week_ending = datetime.strptime(
-                    options["week_ending"], "%Y-%m-%d"
-                ).date()
+                week_ending = datetime.strptime(options["week_ending"], "%Y-%m-%d").date()
             except ValueError:
-                self.stdout.write(
-                    self.style.ERROR("Invalid date format. Use YYYY-MM-DD")
-                )
+                self.stdout.write(self.style.ERROR("Invalid date format. Use YYYY-MM-DD"))
                 return
         else:
             # Default to last Sunday
@@ -73,17 +70,13 @@ class Command(BaseCommand):
         else:
             if self.dry_run:
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"\n[DRY RUN] Would create week ending {week_ending}"
-                    )
+                    self.style.WARNING(f"\n[DRY RUN] Would create week ending {week_ending}")
                 )
                 week = type("Week", (), {"end_date": week_ending, "id": "NEW"})()
             else:
                 week = Week.objects.create(end_date=week_ending)
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        f"\n✓ Created week ending {week_ending} (ID: {week.id})"
-                    )
+                    self.style.SUCCESS(f"\n✓ Created week ending {week_ending} (ID: {week.id})")
                 )
 
         # Get characters who participated in finished scenes this week
@@ -130,9 +123,7 @@ class Command(BaseCommand):
         self.stdout.write("=" * 70 + "\n")
 
         if characters.count() == 0:
-            self.stdout.write(
-                self.style.WARNING("No characters participated in scenes this week.")
-            )
+            self.stdout.write(self.style.WARNING("No characters participated in scenes this week."))
             return
 
         # Create XP requests for each character
@@ -143,9 +134,7 @@ class Command(BaseCommand):
         for character in characters:
             # Check if request already exists
             if not self.dry_run:
-                existing = WeeklyXPRequest.objects.filter(
-                    week=week, character=character
-                ).first()
+                existing = WeeklyXPRequest.objects.filter(week=week, character=character).first()
 
                 if existing:
                     existing_count += 1
@@ -157,9 +146,7 @@ class Command(BaseCommand):
             # Create request
             if self.dry_run:
                 self.stdout.write(
-                    self.style.WARNING(
-                        f"  [DRY RUN] Would create XP request for {character.name}"
-                    )
+                    self.style.WARNING(f"  [DRY RUN] Would create XP request for {character.name}")
                 )
                 created_count += 1
             else:
@@ -182,9 +169,7 @@ class Command(BaseCommand):
                         )
                     )
                 else:
-                    self.stdout.write(
-                        f"  ✓ {character.name}: Created request (ID: {request.id})"
-                    )
+                    self.stdout.write(f"  ✓ {character.name}: Created request (ID: {request.id})")
 
         # Summary
         self.stdout.write("\n" + "=" * 70)
@@ -198,9 +183,7 @@ class Command(BaseCommand):
         self.stdout.write("=" * 70 + "\n")
 
         if self.dry_run:
-            self.stdout.write(
-                self.style.WARNING("[DRY RUN] No data was actually created")
-            )
+            self.stdout.write(self.style.WARNING("[DRY RUN] No data was actually created"))
 
         # Send notifications if requested
         if options["notify"] and not self.dry_run and created_count > 0:

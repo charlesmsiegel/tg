@@ -3,7 +3,6 @@ WebSocket URL routing for the game app.
 """
 
 from django.urls import re_path
-
 from game.consumers import SceneChatConsumer
 
 websocket_urlpatterns = [

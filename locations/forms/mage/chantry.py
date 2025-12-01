@@ -46,9 +46,7 @@ class ChantryPointForm(forms.Form):
 
         if self.object.integrated_effects_score == 10:
             self.fields["category"].choices = [
-                x
-                for x in self.fields["category"].choices
-                if x[0] != "Integrated Effects"
+                x for x in self.fields["category"].choices if x[0] != "Integrated Effects"
             ]
 
         category = self.data.get("category")
@@ -128,9 +126,7 @@ class ChantryCreateForm(forms.ModelForm):
         ]
         widgets = {
             "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
-            "description": forms.Textarea(
-                attrs={"placeholder": "Enter description here"}
-            ),
+            "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
         }
 
     def save(self, commit=True):

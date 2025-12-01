@@ -90,9 +90,7 @@ class SpecializedPractice(Practice):
         verbose_name_plural = "Specialized Practices"
 
     def get_update_url(self):
-        return reverse(
-            "characters:mage:update:specialized_practice", kwargs={"pk": self.pk}
-        )
+        return reverse("characters:mage:update:specialized_practice", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
@@ -120,9 +118,7 @@ class CorruptedPractice(Practice):
         verbose_name_plural = "Corrupted Practices"
 
     def get_update_url(self):
-        return reverse(
-            "characters:mage:update:corrupted_practice", kwargs={"pk": self.pk}
-        )
+        return reverse("characters:mage:update:corrupted_practice", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
@@ -203,9 +199,7 @@ class Paradigm(Model):
         associated_practices = Practice.objects.none()
 
         for tenet in self.tenets.all():
-            associated_practices = (
-                associated_practices | tenet.associated_practices.all()
-            )
+            associated_practices = associated_practices | tenet.associated_practices.all()
 
         return associated_practices.distinct().exclude(
             id__in=self.get_intersection_practices().values("id")
@@ -225,9 +219,7 @@ class Paradigm(Model):
         associated_practices = Practice.objects.none()
         limited_practices = Practice.objects.none()
         for tenet in self.tenets.all():
-            associated_practices = (
-                associated_practices | tenet.associated_practices.all()
-            )
+            associated_practices = associated_practices | tenet.associated_practices.all()
             limited_practices = limited_practices | tenet.limited_practices.all()
 
         return associated_practices & limited_practices

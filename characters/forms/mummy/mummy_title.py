@@ -15,6 +15,4 @@ class MummyTitleForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"placeholder": "Enter title name"})
-        self.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description"}
-        )
+        self.fields["description"].widget.attrs.update({"placeholder": "Enter description"})

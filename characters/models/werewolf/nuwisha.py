@@ -50,9 +50,7 @@ class Nuwisha(Fera):
             GiftPermission.objects.get_or_create(shifter="nuwisha", condition=breed)[0]
         )
         self.gift_permissions.add(
-            GiftPermission.objects.get_or_create(
-                shifter="nuwisha", condition="nuwisha"
-            )[0]
+            GiftPermission.objects.get_or_create(shifter="nuwisha", condition="nuwisha")[0]
         )
 
         # Set starting Gnosis by breed
@@ -74,9 +72,7 @@ class Nuwisha(Fera):
         if role:
             self.role = role
             self.gift_permissions.add(
-                GiftPermission.objects.get_or_create(shifter="nuwisha", condition=role)[
-                    0
-                ]
+                GiftPermission.objects.get_or_create(shifter="nuwisha", condition=role)[0]
             )
             self.save()
         return True

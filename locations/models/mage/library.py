@@ -61,16 +61,11 @@ class Library(LocationModel):
         from characters.models.mage.faction import MageFaction
         from items.models.mage.grimoire import Grimoire
 
-        book = Grimoire.objects.create(
-            name="", owner=self.owner, chronicle=self.chronicle
-        )
+        book = Grimoire.objects.create(name="", owner=self.owner, chronicle=self.chronicle)
         if self.owned_by:
             book.owned_by.add(self.owned_by)
         rank = random.randint(1, self.rank)
-        if (
-            random.random() < 0.5
-            and MageFaction.objects.filter(parent=self.faction).exists()
-        ):
+        if random.random() < 0.5 and MageFaction.objects.filter(parent=self.faction).exists():
             f = MageFaction.objects.filter(parent=self.faction).order_by("?").first()
         else:
             f = self.faction

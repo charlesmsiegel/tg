@@ -33,16 +33,10 @@ class GiftListView(ListView):
         context = super().get_context_data(**kwargs)
         # Get unique shifter types for filtering
         context["shifter_types"] = (
-            GiftPermission.objects.values_list("shifter", flat=True)
-            .distinct()
-            .order_by("shifter")
+            GiftPermission.objects.values_list("shifter", flat=True).distinct().order_by("shifter")
         )
         # Get all permissions for more specific filtering
-        context["gift_permissions"] = GiftPermission.objects.all().order_by(
-            "shifter", "condition"
-        )
+        context["gift_permissions"] = GiftPermission.objects.all().order_by("shifter", "condition")
         # Get unique ranks
-        context["ranks"] = (
-            Gift.objects.values_list("rank", flat=True).distinct().order_by("rank")
-        )
+        context["ranks"] = Gift.objects.values_list("rank", flat=True).distinct().order_by("rank")
         return context

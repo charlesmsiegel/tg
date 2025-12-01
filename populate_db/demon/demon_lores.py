@@ -177,6 +177,4 @@ lore_of_humanity = Lore.objects.get_or_create(
     property_name="humanity",
     description="Engage, influence, and manipulate mortals; human psychology and control",
 )[0]
-lore_of_humanity.houses.add(
-    devils, scourges, malefactors, fiends, defilers, devourers, slayers
-)
+lore_of_humanity.houses.add(devils, scourges, malefactors, fiends, defilers, devourers, slayers)

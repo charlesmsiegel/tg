@@ -55,9 +55,9 @@ class ChangelingDetailView(ViewPermissionMixin, DetailView):
         for key, value in specialties.items():
             context[f"{key}_spec"] = value
 
-        context["merits_and_flaws"] = MeritFlawRating.objects.order_by(
-            "mf__name"
-        ).filter(character=self.object)
+        context["merits_and_flaws"] = MeritFlawRating.objects.order_by("mf__name").filter(
+            character=self.object
+        )
         return context
 
 
@@ -468,9 +468,7 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
         )
         form.fields["notes"].widget.attrs.update({"placeholder": "Notes"})
         form.fields["public_info"].widget.attrs.update(
-            {
-                "placeholder": "This will be displayed to all players who look at your character."
-            }
+            {"placeholder": "This will be displayed to all players who look at your character."}
         )
         form.fields["true_name"].widget.attrs.update(
             {"placeholder": "Your character's fae true name"}
@@ -643,9 +641,7 @@ class ChangelingSpecialtiesView(EditPermissionMixin, FormView):
             changeling.specialties.add(spec)
         changeling.status = "Sub"
         changeling.save()
-        messages.success(
-            self.request, f"Changeling '{changeling.name}' submitted for approval!"
-        )
+        messages.success(self.request, f"Changeling '{changeling.name}' submitted for approval!")
         return HttpResponseRedirect(changeling.get_absolute_url())
 
 

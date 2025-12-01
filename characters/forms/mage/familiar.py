@@ -19,9 +19,7 @@ class FamiliarForm(forms.ModelForm):
         self.fields["nature"].queryset = Archetype.objects.all().order_by("name")
         self.fields["demeanor"].queryset = Archetype.objects.all().order_by("name")
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        self.fields["concept"].widget.attrs.update(
-            {"placeholder": "Enter concept here"}
-        )
+        self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
 
     def save(self, commit=True):

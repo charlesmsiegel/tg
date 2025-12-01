@@ -79,9 +79,7 @@ class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 
@@ -113,9 +111,7 @@ class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update(
-            {"placeholder": "Enter description here"}
-        )
+        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
 
@@ -129,15 +125,13 @@ class LoadExamplesView(View):
 
         category_choice = request.GET.get("category")
         if category_choice == "New Background":
-            examples = Background.objects.filter(
-                property_name__in=m.allowed_backgrounds
-            ).order_by("name")
+            examples = Background.objects.filter(property_name__in=m.allowed_backgrounds).order_by(
+                "name"
+            )
             if m.points < 5:
                 examples = examples.exclude(property_name__in=["sanctum"])
             if m.points < 4:
-                examples = examples.exclude(
-                    property_name__in=["enhancement", "requisitions"]
-                )
+                examples = examples.exclude(property_name__in=["enhancement", "requisitions"])
             if m.points < 3:
                 examples = examples.exclude(property_name__in=["node", "resources"])
             if m.points < 2:
@@ -158,9 +152,7 @@ class LoadExamplesView(View):
             if m.points < 5:
                 examples = examples.exclude(bg__property_name__in=["sanctum"])
             if m.points < 4:
-                examples = examples.exclude(
-                    bg__property_name__in=["enhancement", "requisitions"]
-                )
+                examples = examples.exclude(bg__property_name__in=["enhancement", "requisitions"])
             if m.points < 3:
                 examples = examples.exclude(bg__property_name__in=["node", "resources"])
             if m.points < 2:

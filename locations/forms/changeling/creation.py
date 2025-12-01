@@ -2,6 +2,7 @@
 Multi-step forms for Freehold creation.
 Each step corresponds to a stage in the creation process from Book of Freeholds.
 """
+
 from django import forms
 from locations.models.changeling import Freehold
 
@@ -31,15 +32,13 @@ class FreeholdBasicsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter freehold name"})
         self.fields["name"].help_text = "The name of your freehold"
-        self.fields[
-            "archetype"
-        ].help_text = "The role this freehold plays in changeling society"
-        self.fields[
-            "aspect"
-        ].help_text = "The underlying dream or story (e.g., water aspect, birthplace of  creatures)"
-        self.fields[
-            "description"
-        ].help_text = "Acquisition story: how did you come across this freehold?"
+        self.fields["archetype"].help_text = "The role this freehold plays in changeling society"
+        self.fields["aspect"].help_text = (
+            "The underlying dream or story (e.g., water aspect, birthplace of  creatures)"
+        )
+        self.fields["description"].help_text = (
+            "Acquisition story: how did you come across this freehold?"
+        )
 
 
 class FreeholdFeaturesForm(forms.ModelForm):
@@ -66,21 +65,11 @@ class FreeholdFeaturesForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields[
-            "balefire"
-        ].help_text = "0-5 dots. Generates this many Glamour/dross per day"
-        self.fields[
-            "size"
-        ].help_text = "0-5 dots. Determines physical area of the freehold"
-        self.fields[
-            "sanctuary"
-        ].help_text = "0-5 dots. Grants defense bonuses and threshold"
-        self.fields[
-            "resources"
-        ].help_text = "0-5 dots. Mundane or chimerical resources generated"
-        self.fields[
-            "passages"
-        ].help_text = (
+        self.fields["balefire"].help_text = "0-5 dots. Generates this many Glamour/dross per day"
+        self.fields["size"].help_text = "0-5 dots. Determines physical area of the freehold"
+        self.fields["sanctuary"].help_text = "0-5 dots. Grants defense bonuses and threshold"
+        self.fields["resources"].help_text = "0-5 dots. Mundane or chimerical resources generated"
+        self.fields["passages"].help_text = (
             "Number of trods/raths (first is free, others cost 1 feature point each)"
         )
 
@@ -118,12 +107,10 @@ class FreeholdPowersForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["dual_nature_archetype"].required = False
         self.fields["dual_nature_ability"].required = False
-        self.fields[
-            "dual_nature_archetype"
-        ].help_text = "Required if Dual Nature power is selected"
-        self.fields[
-            "dual_nature_ability"
-        ].help_text = "Required if dual nature archetype is Academy"
+        self.fields["dual_nature_archetype"].help_text = "Required if Dual Nature power is selected"
+        self.fields["dual_nature_ability"].help_text = (
+            "Required if dual nature archetype is Academy"
+        )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -135,12 +122,10 @@ class FreeholdPowersForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "Dual Nature power requires selecting a second archetype"
                 )
-            if cleaned_data.get(
-                "dual_nature_archetype"
-            ) == "academy" and not cleaned_data.get("dual_nature_ability"):
-                raise forms.ValidationError(
-                    "Dual Nature Academy requires specifying an ability"
-                )
+            if cleaned_data.get("dual_nature_archetype") == "academy" and not cleaned_data.get(
+                "dual_nature_ability"
+            ):
+                raise forms.ValidationError("Dual Nature Academy requires specifying an ability")
 
         return cleaned_data
 
@@ -203,9 +188,7 @@ class FreeholdDetailsForm(forms.ModelForm):
 
             # Validate Academy archetype
             if archetype == "academy" and not cleaned_data.get("academy_ability"):
-                raise forms.ValidationError(
-                    "Academy archetype requires an associated ability"
-                )
+                raise forms.ValidationError("Academy archetype requires an associated ability")
 
             # Validate Hearth archetype
             if archetype == "hearth" and not cleaned_data.get("hearth_ability"):

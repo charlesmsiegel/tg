@@ -96,9 +96,9 @@ class Fera(WtAHuman):
         return self.faction != ""
 
     def filter_fetishes(self, min_rating=0, max_rating=5):
-        return Fetish.objects.filter(
-            rank__lte=max_rating, rank__gte=min_rating
-        ).exclude(pk__in=self.fetishes_owned.all())
+        return Fetish.objects.filter(rank__lte=max_rating, rank__gte=min_rating).exclude(
+            pk__in=self.fetishes_owned.all()
+        )
 
     def total_fetish_rating(self):
         return sum(x.rank for x in self.fetishes_owned.all())

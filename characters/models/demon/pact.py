@@ -9,9 +9,7 @@ class Pact(models.Model):
     thrall = models.ForeignKey("Thrall", on_delete=models.CASCADE, null=True)
 
     terms = models.TextField(default="")
-    faith_payment = models.IntegerField(
-        default=0
-    )  # How much Faith thrall provides per interval
+    faith_payment = models.IntegerField(default=0)  # How much Faith thrall provides per interval
     enhancements = models.JSONField(default=list)  # List of enhancements granted
 
     active = models.BooleanField(default=True)

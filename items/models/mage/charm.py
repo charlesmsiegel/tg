@@ -8,9 +8,7 @@ class Charm(Wonder):
     type = "charm"
 
     arete = models.IntegerField(default=0)
-    power = models.ForeignKey(
-        "characters.Effect", blank=True, null=True, on_delete=models.SET_NULL
-    )
+    power = models.ForeignKey("characters.Effect", blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Charm"

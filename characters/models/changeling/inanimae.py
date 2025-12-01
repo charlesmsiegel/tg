@@ -60,9 +60,7 @@ class Inanimae(CtDHuman):
     )
 
     # Inanimae use Mana instead of Glamour
-    mana = models.IntegerField(
-        default=4, help_text="Elemental power (equivalent to Glamour)"
-    )
+    mana = models.IntegerField(default=4, help_text="Elemental power (equivalent to Glamour)")
 
     # Inanimae are less affected by Banality but have Anchors
     anchor_description = models.TextField(

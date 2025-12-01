@@ -24,12 +24,8 @@ class HumanUrlBlock:
 
     @classmethod
     def get_full_creation_url(cls):
-        return reverse(
-            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full"
-        )
+        return reverse(f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full")
 
     @classmethod
     def get_creation_url(cls):
-        return reverse(
-            f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}"
-        )
+        return reverse(f"characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}")

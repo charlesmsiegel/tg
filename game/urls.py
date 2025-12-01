@@ -64,9 +64,7 @@ urlpatterns = [
         char_views.core.DeceasedCharacterIndex.as_view(),
         name="deceased",
     ),
-    path(
-        "chronicle/<pk>/npc/", char_views.core.NPCCharacterIndex.as_view(), name="npc"
-    ),
+    path("chronicle/<pk>/npc/", char_views.core.NPCCharacterIndex.as_view(), name="npc"),
     path("scenes/", views.SceneListView.as_view(), name="scenes"),
     path("scene/<pk>", views.SceneDetailView.as_view(), name="scene"),
     path("commands/", views.CommandsView.as_view(), name="commands"),

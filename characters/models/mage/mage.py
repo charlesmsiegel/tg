@@ -296,9 +296,7 @@ class Mage(MtAHuman):
         return add_dot(self, background, maximum)
 
     def total_backgrounds(self):
-        return (
-            super().total_backgrounds() + self.enhancement + self.sanctum + self.totem
-        )
+        return super().total_backgrounds() + self.enhancement + self.sanctum + self.totem
 
     def add_sphere(self, sphere):
         if self.faction is not None:
@@ -413,20 +411,13 @@ class Mage(MtAHuman):
         else:
             all_res = Resonance.objects.all()
 
-        maxed_resonance = [
-            x.id for x in ResRating.objects.filter(mage=self, rating__gt=maximum)
-        ]
-        mined_resonance = [
-            x.id for x in ResRating.objects.filter(mage=self, rating__lt=minimum)
-        ]
+        maxed_resonance = [x.id for x in ResRating.objects.filter(mage=self, rating__gt=maximum)]
+        mined_resonance = [x.id for x in ResRating.objects.filter(mage=self, rating__lt=minimum)]
         all_res = all_res.exclude(pk__in=maxed_resonance)
         all_res = all_res.exclude(pk__in=mined_resonance)
         if minimum > 0:
             all_res = all_res.filter(
-                pk__in=[
-                    x.resonance.id
-                    for x in ResRating.objects.filter(mage=self, rating__gt=0)
-                ]
+                pk__in=[x.resonance.id for x in ResRating.objects.filter(mage=self, rating__gt=0)]
             )
         return all_res
 
@@ -443,9 +434,7 @@ class Mage(MtAHuman):
 
     def filter_effects(self, max_cost=100):
         effects = Effect.objects.filter(rote_cost__lte=max_cost)
-        effects = effects.exclude(
-            id__in=self.rotes.all().values_list("effect", flat=True)
-        )
+        effects = effects.exclude(id__in=self.rotes.all().values_list("effect", flat=True))
 
         spheres = self.get_spheres()
         spheres = {k + "__lte": v for k, v in spheres.items()}
@@ -547,16 +536,12 @@ class Mage(MtAHuman):
                 cost = mage.xp_cost("sphere") * getattr(mage, trait)
             if cost == 0:
                 cost = 10
-            if mage.merits_and_flaws.filter(
-                name=f"Sphere Natural - {trait.title()}"
-            ).exists():
+            if mage.merits_and_flaws.filter(name=f"Sphere Natural - {trait.title()}").exists():
                 cost *= 0.7
                 if cost % 1 != 0:
                     cost += 1
                 cost = int(cost)
-            if mage.merits_and_flaws.filter(
-                name=f"Sphere Inept - {trait.title()}"
-            ).exists():
+            if mage.merits_and_flaws.filter(name=f"Sphere Inept - {trait.title()}").exists():
                 cost *= 1.3
                 if cost % 1 != 0:
                     cost += 1
@@ -670,9 +655,7 @@ class Mage(MtAHuman):
         return trait
 
     def has_library(self):
-        return (
-            sum([x.rank for x in Library.objects.filter(owned_by=self)]) == self.library
-        )
+        return sum([x.rank for x in Library.objects.filter(owned_by=self)]) == self.library
 
     def has_node(self):
         return sum([x.rank for x in Node.objects.filter(owned_by=self)]) == self.node
@@ -752,9 +735,7 @@ class Mage(MtAHuman):
         return PracticeRating.objects.filter(mage=self, rating__gt=0)
 
     def get_resonance(self):
-        return ResRating.objects.filter(mage=self, rating__gte=1).order_by(
-            "resonance__name"
-        )
+        return ResRating.objects.filter(mage=self, rating__gte=1).order_by("resonance__name")
 
     def sphere_freebies(self, form):
         cost = 7

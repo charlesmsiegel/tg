@@ -176,9 +176,7 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
             for field in self.fields:
                 rating = form.cleaned_data.get(field, 0)
                 if rating > 0 and field not in clan_discipline_properties:
-                    form.add_error(
-                        field, f"You can only spend starting dots on clan Disciplines."
-                    )
+                    form.add_error(field, f"You can only spend starting dots on clan Disciplines.")
                     messages.error(
                         self.request,
                         "You can only allocate starting dots to your clan's Disciplines.",

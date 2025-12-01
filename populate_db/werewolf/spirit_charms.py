@@ -40,19 +40,15 @@ SpiritCharm.objects.get_or_create(name="Calcify", point_cost=5)[0].add_source(
 SpiritCharm.objects.get_or_create(name="Call for Aid", point_cost=5)[0].add_source(
     "Mage: the Ascension 20th Anniversary Edition", 491
 )
-SpiritCharm.objects.get_or_create(name="Cleanse the Blight", point_cost=10)[
-    0
-].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 366).add_source(
-    "Mage: the Ascension 20th Anniversary Edition", 491
-)
+SpiritCharm.objects.get_or_create(name="Cleanse the Blight", point_cost=10)[0].add_source(
+    "Werewolf: the Apocalypse 20th Anniversary Edition", 366
+).add_source("Mage: the Ascension 20th Anniversary Edition", 491)
 SpiritCharm.objects.get_or_create(name="Cling", point_cost=1)[0].add_source(
     "Mage: the Ascension 20th Anniversary Edition", 491
 )
-SpiritCharm.objects.get_or_create(name="Control Electrical Systems", point_cost=5)[
-    0
-].add_source("Werewolf: the Apocalypse 20th Anniversary Edition", 366).add_source(
-    "Mage: the Ascension 20th Anniversary Edition", 491
-)
+SpiritCharm.objects.get_or_create(name="Control Electrical Systems", point_cost=5)[0].add_source(
+    "Werewolf: the Apocalypse 20th Anniversary Edition", 366
+).add_source("Mage: the Ascension 20th Anniversary Edition", 491)
 SpiritCharm.objects.get_or_create(name="Corruption", point_cost=1)[0].add_source(
     "Werewolf: the Apocalypse 20th Anniversary Edition", 367
 ).add_source("Mage: the Ascension 20th Anniversary Edition", 491)
@@ -65,9 +61,9 @@ SpiritCharm.objects.get_or_create(name="Create Wind", point_cost=5)[0].add_sourc
 SpiritCharm.objects.get_or_create(name="Death Fertility", point_cost=5)[0].add_source(
     "Mage: the Ascension 20th Anniversary Edition", 491
 )
-SpiritCharm.objects.get_or_create(name="Digital Disruption", point_cost=5)[
-    0
-].add_source("Mage: the Ascension 20th Anniversary Edition", 491)
+SpiritCharm.objects.get_or_create(name="Digital Disruption", point_cost=5)[0].add_source(
+    "Mage: the Ascension 20th Anniversary Edition", 491
+)
 SpiritCharm.objects.get_or_create(name="Disable", point_cost=5)[0].add_source(
     "Mage: the Ascension 20th Anniversary Edition", 491
 )
@@ -227,21 +223,21 @@ SpiritCharm.objects.get_or_create(name="Rouse the Dead", point_cost=0)[0].add_so
 SpiritCharm.objects.get_or_create(name="Sand Storm", point_cost=8)[0].add_source(
     "Gods and Monsters", 218
 )
-SpiritCharm.objects.get_or_create(name="Sand Swallow/Sinkhole", point_cost=5)[
-    0
-].add_source("Gods and Monsters", 219)
-SpiritCharm.objects.get_or_create(name="Smoke Screen/Blinding Fog", point_cost=2)[
-    0
-].add_source("Gods and Monsters", 219)
+SpiritCharm.objects.get_or_create(name="Sand Swallow/Sinkhole", point_cost=5)[0].add_source(
+    "Gods and Monsters", 219
+)
+SpiritCharm.objects.get_or_create(name="Smoke Screen/Blinding Fog", point_cost=2)[0].add_source(
+    "Gods and Monsters", 219
+)
 SpiritCharm.objects.get_or_create(name="Spirit Gossip", point_cost=5)[0].add_source(
     "Gods and Monsters", 219
 )
 SpiritCharm.objects.get_or_create(name="Teleport", point_cost=10)[0].add_source(
     "Gods and Monsters", 219
 )
-SpiritCharm.objects.get_or_create(name="Teleport (With Other)", point_cost=20)[
-    0
-].add_source("Gods and Monsters", 219)
+SpiritCharm.objects.get_or_create(name="Teleport (With Other)", point_cost=20)[0].add_source(
+    "Gods and Monsters", 219
+)
 SpiritCharm.objects.get_or_create(name="Wish Fulfillment", point_cost=0)[0].add_source(
     "Gods and Monsters", 219
 )

@@ -17,9 +17,7 @@ class GroupCreationForm(forms.Form):
                 # STs can create all group types
                 choices = [
                     (x.name, x.name.replace("_", " ").title())
-                    for x in ObjectType.objects.filter(
-                        type="char", name__in=group_types
-                    )
+                    for x in ObjectType.objects.filter(type="char", name__in=group_types)
                 ]
                 # Sort alphabetically by label
                 self.fields["group_type"].choices = sorted(choices, key=lambda x: x[1])

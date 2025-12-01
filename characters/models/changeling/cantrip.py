@@ -69,9 +69,7 @@ class Cantrip(Model):
         default=8, help_text="Base difficulty (usually 8, modified by circumstances)"
     )
     duration = models.TextField(blank=True, default="", help_text="Duration of effect")
-    range = models.CharField(
-        max_length=100, blank=True, default="", help_text="Range of effect"
-    )
+    range = models.CharField(max_length=100, blank=True, default="", help_text="Range of effect")
     effect = models.TextField(blank=True, default="", help_text="Detailed effect")
     type_of_effect = models.CharField(
         max_length=20,

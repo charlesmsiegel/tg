@@ -57,7 +57,9 @@ ghostly_inferno.secondary_lore_requirements = [
 ]
 ghostly_inferno.base_cost = 10
 ghostly_inferno.minimum_casting_time = 25
-ghostly_inferno.restrictions = "The ritual requires that a burnt offering of flesh be placed in the center of the sigil."
+ghostly_inferno.restrictions = (
+    "The ritual requires that a burnt offering of flesh be placed in the center of the sigil."
+)
 ghostly_inferno.system = """Roll Manipulation + Survival. The flames fill an area in the spirit world with a radius equal to the successes in yards, out to a range equal to 10 times the Ankida's permanent Faith in yards. The fire's intensity is equal to the number of successes rolled, and it burns for a number of minutes equal to the Ankida's Faith.
 
 The flames are invisible to the normal eye, but the Ankida can vaguely perceive a patch of shimmering haze where the blaze lies, and he can attempt to control it while the ritual persists. Make a Faith roll for the Ankida each turn to control the flames. Each success increases or decreases the blaze's radius by a yard or moves the blaze a yard in any chosen direction.

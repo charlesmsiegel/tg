@@ -297,16 +297,14 @@ class WerewolfGiftsView(SpecialUserMixin, UpdateView):
         else:
             tribe_perm = None
 
-        context["breed_gifts"] = Gift.objects.filter(
-            rank=1, allowed=breed_perm
-        ).order_by("name")
-        context["auspice_gifts"] = Gift.objects.filter(
-            rank=1, allowed=auspice_perm
-        ).order_by("name")
+        context["breed_gifts"] = Gift.objects.filter(rank=1, allowed=breed_perm).order_by("name")
+        context["auspice_gifts"] = Gift.objects.filter(rank=1, allowed=auspice_perm).order_by(
+            "name"
+        )
         if tribe_perm:
-            context["tribe_gifts"] = Gift.objects.filter(
-                rank=1, allowed=tribe_perm
-            ).order_by("name")
+            context["tribe_gifts"] = Gift.objects.filter(rank=1, allowed=tribe_perm).order_by(
+                "name"
+            )
         else:
             context["tribe_gifts"] = []
         return context
@@ -331,12 +329,10 @@ class WerewolfHistoryView(SpecialUserMixin, UpdateView):
                 "placeholder": "Describe your character's First Change. Include where they were, what triggered it, and how they dealt with the immediate aftermath."
             }
         )
-        form.fields[
-            "first_change"
-        ].help_text = "This is a pivotal moment in every Garou's life."
-        form.fields[
-            "age_of_first_change"
-        ].help_text = "The age at which the character first changed into Crinos form."
+        form.fields["first_change"].help_text = "This is a pivotal moment in every Garou's life."
+        form.fields["age_of_first_change"].help_text = (
+            "The age at which the character first changed into Crinos form."
+        )
         return form
 
     def form_valid(self, form):
@@ -441,9 +437,7 @@ class WerewolfFetishView(GenericBackgroundView):
         context = super().get_context_data(**kwargs)
         # Get the current background rating for fetish
         fetish_bg = Background.objects.get(property_name="fetish")
-        fetish_rating = BackgroundRating.objects.filter(
-            char=self.object, bg=fetish_bg
-        ).first()
+        fetish_rating = BackgroundRating.objects.filter(char=self.object, bg=fetish_bg).first()
         if fetish_rating:
             context["max_fetish_rating"] = fetish_rating.rating
             context["current_fetish_total"] = self.object.total_fetish_rating()

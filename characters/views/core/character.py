@@ -3,12 +3,8 @@ from typing import Any
 from characters.forms.core import LimitedCharacterForm
 from characters.forms.core.limited_edit import LimitedCharacterEditForm
 from characters.models.core import Character
-from core.cache import cache_function, CACHE_TIMEOUT_MEDIUM
-from core.mixins import (
-    EditPermissionMixin,
-    ViewPermissionMixin,
-    VisibilityFilterMixin,
-)
+from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
+from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -67,9 +63,7 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
                 self.object.save()
             # STs/Admins can mark as deceased
             elif "decease" in request.POST:
-                return redirect(
-                    reverse("characters:character", kwargs={"pk": self.object.pk})
-                )
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
         else:
             # Handle retirement and death status changes
             if "retire" in request.POST:

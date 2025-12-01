@@ -193,9 +193,7 @@ class ParadoxRealm(HorizonRealm):
             return paradigm_map[roll], None
         elif 14 <= roll <= 16:
             # Character's paradigm - use a random one for base generation
-            options = [
-                p for p in ParadigmChoices.values if p not in [ParadigmChoices.UNSTABLE]
-            ]
+            options = [p for p in ParadigmChoices.values if p not in [ParadigmChoices.UNSTABLE]]
             return random.choice(options), None
         elif 17 <= roll <= 19:
             return ParadigmChoices.ANTIMAGICK, None
@@ -354,9 +352,7 @@ class ParadoxObstacle(models.Model):
         help_text="The specific obstacle from the sphere's table (1-10)"
     )
 
-    order = models.IntegerField(
-        default=0, help_text="Order in which this obstacle appears"
-    )
+    order = models.IntegerField(default=0, help_text="Order in which this obstacle appears")
 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -728,9 +724,7 @@ class ParadoxAtmosphere(models.Model):
             },
         }
 
-        return atmospheres.get(paradigm, {}).get(
-            roll, f"Atmosphere element {roll} for {paradigm}"
-        )
+        return atmospheres.get(paradigm, {}).get(roll, f"Atmosphere element {roll} for {paradigm}")
 
     def __str__(self):
         return f"{self.get_paradigm_display()} Atmosphere #{self.atmosphere_number}"

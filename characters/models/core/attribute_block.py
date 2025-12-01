@@ -25,9 +25,7 @@ class AttributeBlock(models.Model):
     intelligence = models.IntegerField(
         default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    wits = models.IntegerField(
-        default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
+    wits = models.IntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(10)])
     charisma = models.IntegerField(
         default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
@@ -109,9 +107,7 @@ class AttributeBlock(models.Model):
         if attribute_dict is None:
             attribute_dict = self.get_attributes()
         return {
-            k: v
-            for k, v in attribute_dict.items()
-            if k in ["strength", "dexterity", "stamina"]
+            k: v for k, v in attribute_dict.items() if k in ["strength", "dexterity", "stamina"]
         }
 
     def get_social_attributes(self, attribute_dict=None):
@@ -127,9 +123,7 @@ class AttributeBlock(models.Model):
         if attribute_dict is None:
             attribute_dict = self.get_attributes()
         return {
-            k: v
-            for k, v in attribute_dict.items()
-            if k in ["perception", "intelligence", "wits"]
+            k: v for k, v in attribute_dict.items() if k in ["perception", "intelligence", "wits"]
         }
 
     def total_physical_attributes(self, attribute_dict=None):
@@ -144,9 +138,7 @@ class AttributeBlock(models.Model):
     def total_attributes(self):
         return sum(self.get_attributes().values())
 
-    def has_attributes(
-        self, primary=7, secondary=5, tertiary=3, max_value=5, attribute_dict=None
-    ):
+    def has_attributes(self, primary=7, secondary=5, tertiary=3, max_value=5, attribute_dict=None):
         triple = [
             self.total_physical_attributes(attribute_dict=attribute_dict),
             self.total_mental_attributes(attribute_dict=attribute_dict),
@@ -156,9 +148,7 @@ class AttributeBlock(models.Model):
         return triple == [3 + tertiary, 3 + secondary, 3 + primary]
 
     def filter_attributes(self, minimum=0, maximum=5):
-        return {
-            k: v for k, v in self.get_attributes().items() if minimum <= v <= maximum
-        }
+        return {k: v for k, v in self.get_attributes().items() if minimum <= v <= maximum}
 
     def attribute_freebies(self, form):
         cost = 5

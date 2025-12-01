@@ -12,9 +12,7 @@ class Rote(Model):
     gameline = "mta"
 
     effect = models.ForeignKey(Effect, on_delete=models.SET_NULL, null=True)
-    practice = models.ForeignKey(
-        Practice, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True, blank=True)
     attribute = models.ForeignKey(Attribute, on_delete=models.SET_NULL, null=True)
     ability = models.ForeignKey(Ability, on_delete=models.SET_NULL, null=True)
 
@@ -37,16 +35,12 @@ class Rote(Model):
         return "mta_heading"
 
     def random_name(self):
-        self.name = (
-            f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
-        )
+        self.name = f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
         self.save()
 
     def random(self, mage=None, book=None):
         self.update_status("Ran")
-        self.name = (
-            f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
-        )
+        self.name = f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
 
         if mage is not None:
             self.practice = mage.practices.order_by("?").first()

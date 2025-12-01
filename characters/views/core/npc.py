@@ -45,9 +45,7 @@ class NPCProfileCreateView(LoginRequiredMixin, View):
 
         if form.is_valid():
             npc = form.save()
-            messages.success(
-                request, f'NPC "{npc.name}" has been created successfully.'
-            )
+            messages.success(request, f'NPC "{npc.name}" has been created successfully.')
             return redirect(npc.get_absolute_url())
 
         context = {

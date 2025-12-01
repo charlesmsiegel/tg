@@ -58,12 +58,8 @@ class TestConcurrentXPSpending(TransactionTestCase):
                 errors.append(e)
 
         # Create two threads that try to spend 6 XP each from a pool of 10
-        thread1 = threading.Thread(
-            target=spend_xp_thread, args=(character.pk, 6, "test1")
-        )
-        thread2 = threading.Thread(
-            target=spend_xp_thread, args=(character.pk, 6, "test2")
-        )
+        thread1 = threading.Thread(target=spend_xp_thread, args=(character.pk, 6, "test1"))
+        thread2 = threading.Thread(target=spend_xp_thread, args=(character.pk, 6, "test2"))
 
         # Start both threads nearly simultaneously
         thread1.start()
@@ -116,9 +112,7 @@ class TestConcurrentXPSpending(TransactionTestCase):
         # Create 5 threads each spending 3 XP (total 15 from pool of 20)
         threads = []
         for i in range(5):
-            thread = threading.Thread(
-                target=spend_xp_thread, args=(character.pk, 3, f"test{i}")
-            )
+            thread = threading.Thread(target=spend_xp_thread, args=(character.pk, 3, f"test{i}"))
             threads.append(thread)
             thread.start()
 
@@ -162,9 +156,7 @@ class TestConcurrentXPSpending(TransactionTestCase):
         # Create 5 threads each spending 4 XP (total 20 from pool of 10)
         threads = []
         for i in range(5):
-            thread = threading.Thread(
-                target=spend_xp_thread, args=(character.pk, 4, f"test{i}")
-            )
+            thread = threading.Thread(target=spend_xp_thread, args=(character.pk, 4, f"test{i}"))
             threads.append(thread)
             thread.start()
 
@@ -271,9 +263,7 @@ class TestApproveXPSpendRollback(TransactionTestCase):
         )
 
         # Approve successfully
-        result = human.approve_xp_spend(
-            spend_index=0, trait_property_name="strength", new_value=4
-        )
+        result = human.approve_xp_spend(spend_index=0, trait_property_name="strength", new_value=4)
 
         # Verify both changes persisted
         human.refresh_from_db()
@@ -456,17 +446,11 @@ class TestAwardXPAtomicity(TransactionTestCase):
                 errors.append(e)
 
         # Convert awards to use IDs for thread safety
-        awards_with_ids = {
-            char.pk: should_award for char, should_award in awards.items()
-        }
+        awards_with_ids = {char.pk: should_award for char, should_award in awards.items()}
 
         # Two threads try to award XP
-        thread1 = threading.Thread(
-            target=award_thread, args=(scene.pk, awards_with_ids)
-        )
-        thread2 = threading.Thread(
-            target=award_thread, args=(scene.pk, awards_with_ids)
-        )
+        thread1 = threading.Thread(target=award_thread, args=(scene.pk, awards_with_ids))
+        thread2 = threading.Thread(target=award_thread, args=(scene.pk, awards_with_ids))
 
         thread1.start()
         thread2.start()
@@ -542,12 +526,8 @@ class TestSelectForUpdateLocking(TransactionTestCase):
 
         # Thread 1 locks and holds for 0.5 seconds
         # Thread 2 tries to lock immediately but must wait
-        thread1 = threading.Thread(
-            target=modify_with_lock, args=(character.pk, "first", 0.5)
-        )
-        thread2 = threading.Thread(
-            target=modify_with_lock, args=(character.pk, "second", 0.1)
-        )
+        thread1 = threading.Thread(target=modify_with_lock, args=(character.pk, "first", 0.5))
+        thread2 = threading.Thread(target=modify_with_lock, args=(character.pk, "second", 0.1))
 
         thread1.start()
         time.sleep(0.1)  # Ensure thread1 gets lock first

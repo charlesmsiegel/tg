@@ -10,11 +10,7 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
-from core.mixins import (
-    EditPermissionMixin,
-    MessageMixin,
-    SpendFreebiesPermissionMixin,
-)
+from core.mixins import EditPermissionMixin, MessageMixin, SpendFreebiesPermissionMixin
 from core.models import Language
 from core.views.generic import DictView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -72,9 +68,7 @@ class HumanCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanUpdateView(
-    EditPermissionMixin, MessageMixin, UpdateView
-):
+class HumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     """
     Update view for Human characters.
     Only STs and Admins can directly edit character fields.
@@ -131,9 +125,7 @@ class HumanBasicsView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HumanAttributeView(
-    SpendFreebiesPermissionMixin, UpdateView
-):
+class HumanAttributeView(SpendFreebiesPermissionMixin, UpdateView):
     """
     Character creation step: allocating attribute points.
     Uses SpendFreebiesPermissionMixin - only owners of unfinished characters can access.
@@ -207,9 +199,7 @@ class HumanAttributeView(
         return context
 
 
-class HumanAbilityView(
-    SpendFreebiesPermissionMixin, UpdateView
-):
+class HumanAbilityView(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = Human.primary_abilities
     template_name = "characters/wraith/wtohuman/chargen.html"
@@ -231,13 +221,9 @@ class HumanAbilityView(
                 form.add_error(None, "Abilities must range from 0-3")
                 return self.form_invalid(form)
 
-        talents = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.talents]
-        )
+        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
         skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.knowledges]
-        )
+        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
 
         triple = [talents, skills, knowledges]
         triple.sort()
@@ -252,9 +238,7 @@ class HumanAbilityView(
         return super().form_valid(form)
 
 
-class HumanBiographicalInformation(
-    SpendFreebiesPermissionMixin, UpdateView
-):
+class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     fields = [
         "age",
@@ -364,9 +348,7 @@ class HumanFreebieFormPopulationView(View):
 
     def attribute_options(self):
         return [
-            x
-            for x in Attribute.objects.all()
-            if getattr(self.character, x.property_name, 0) < 5
+            x for x in Attribute.objects.all() if getattr(self.character, x.property_name, 0) < 5
         ]
 
     def ability_options(self):
@@ -383,10 +365,7 @@ class HumanFreebieFormPopulationView(View):
         ).order_by("name")
 
     def existing_background_options(self):
-        return [
-            x
-            for x in BackgroundRating.objects.filter(char=self.character, rating__lt=5)
-        ]
+        return [x for x in BackgroundRating.objects.filter(char=self.character, rating__lt=5)]
 
     def meritflaw_options(self):
         char_type = self.primary_class.type
@@ -422,9 +401,7 @@ class HumanFreebieFormPopulationView(View):
         return examples.filter(id__in=affordable_mfs)
 
 
-class HumanFreebiesView(
-    SpendFreebiesPermissionMixin, UpdateView
-):
+class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/human/human/chargen.html"

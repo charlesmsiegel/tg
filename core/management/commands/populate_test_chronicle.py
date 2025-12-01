@@ -7,6 +7,7 @@ Creates:
 - XP history
 - Relationships
 """
+
 from datetime import date, timedelta
 from random import choice, randint
 
@@ -52,9 +53,7 @@ class Command(BaseCommand):
         except Chronicle.DoesNotExist:
             raise CommandError(f"Chronicle {options['chronicle']} not found")
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\nPopulating test data for: {chronicle.name}\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"\nPopulating test data for: {chronicle.name}\n"))
 
         # Create test user if needed
         test_user, created = User.objects.get_or_create(
@@ -66,9 +65,7 @@ class Command(BaseCommand):
         if created:
             test_user.set_password("test123")
             test_user.save()
-            self.stdout.write(
-                "  ✓ Created test user (username: test_player, password: test123)"
-            )
+            self.stdout.write("  ✓ Created test user (username: test_player, password: test123)")
 
         # Create characters
         characters = self.create_characters(
@@ -131,11 +128,7 @@ class Command(BaseCommand):
         statuses = ["App", "App", "App", "Sub", "Un"]  # Weighted towards approved
 
         for i in range(count):
-            name = (
-                choice(names)
-                + " "
-                + choice(["Smith", "Jones", "Martinez", "Chen", "O'Brien"])
-            )
+            name = choice(names) + " " + choice(["Smith", "Jones", "Martinez", "Chen", "O'Brien"])
             concept = choice(concepts)
             status = choice(statuses)
 
@@ -166,9 +159,7 @@ class Command(BaseCommand):
 
             characters.append(char)
 
-        self.stdout.write(
-            self.style.SUCCESS(f"  ✓ Created {len(characters)} character(s)")
-        )
+        self.stdout.write(self.style.SUCCESS(f"  ✓ Created {len(characters)} character(s)"))
 
         return characters
 

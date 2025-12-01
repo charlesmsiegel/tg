@@ -89,6 +89,4 @@ class TestArtifactUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.artifact.refresh_from_db()
         self.assertEqual(self.artifact.name, "Test Artifact Updated")
-        self.assertEqual(
-            self.artifact.description, "A test description for the artifact."
-        )
+        self.assertEqual(self.artifact.description, "A test description for the artifact.")

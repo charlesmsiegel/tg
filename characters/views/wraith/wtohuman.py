@@ -197,9 +197,7 @@ class WtOHumanBasicsView(LoginRequiredMixin, FormView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        return reverse(
-            "characters:wraith:wtohuman_template", kwargs={"pk": self.object.pk}
-        )
+        return reverse("characters:wraith:wtohuman_template", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateSelectionForm(forms.Form):
@@ -257,9 +255,7 @@ class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
                 f"Applied template '{template.name}'. You can now customize the character further.",
             )
         else:
-            messages.info(
-                self.request, "Starting with blank character. Fill in all attributes."
-            )
+            messages.info(self.request, "Starting with blank character. Fill in all attributes.")
 
         # Set creation_status to 1 to proceed to attribute allocation
         self.object.creation_status = 1
@@ -297,18 +293,12 @@ class WtOHumanAbilityView(SpecialUserMixin, UpdateView):
         for ability in self.model.primary_abilities:
             if form.cleaned_data.get(ability) < 0 or form.cleaned_data.get(ability) > 3:
                 form.add_error(None, "Abilities must range from 0-3")
-                messages.error(
-                    self.request, "All abilities must be between 0 and 3 dots."
-                )
+                messages.error(self.request, "All abilities must be between 0 and 3 dots.")
                 return self.form_invalid(form)
 
-        talents = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.talents]
-        )
+        talents = sum([form.cleaned_data.get(ability) for ability in self.model.talents])
         skills = sum([form.cleaned_data.get(ability) for ability in self.model.skills])
-        knowledges = sum(
-            [form.cleaned_data.get(ability) for ability in self.model.knowledges]
-        )
+        knowledges = sum([form.cleaned_data.get(ability) for ability in self.model.knowledges])
 
         triple = [talents, skills, knowledges]
         triple.sort()
@@ -480,9 +470,7 @@ class WtOHumanSpecialtiesView(EditPermissionMixin, FormView):
             wraith.specialties.add(spec)
         wraith.status = "Sub"
         wraith.save()
-        messages.success(
-            self.request, f"Wraith Human '{wraith.name}' submitted for approval!"
-        )
+        messages.success(self.request, f"Wraith Human '{wraith.name}' submitted for approval!")
         return HttpResponseRedirect(wraith.get_absolute_url())
 
 

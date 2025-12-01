@@ -38,21 +38,13 @@ class Haven(LocationModel):
     has_guardian = models.BooleanField(
         default=False, help_text="Haven protected by guardian (ghoul, etc.)"
     )
-    has_luxury = models.BooleanField(
-        default=False, help_text="Haven has luxurious appointments"
-    )
-    is_hidden = models.BooleanField(
-        default=False, help_text="Haven location is concealed"
-    )
+    has_luxury = models.BooleanField(default=False, help_text="Haven has luxurious appointments")
+    is_hidden = models.BooleanField(default=False, help_text="Haven location is concealed")
     has_library = models.BooleanField(default=False, help_text="Haven contains library")
-    has_workshop = models.BooleanField(
-        default=False, help_text="Haven contains workshop"
-    )
+    has_workshop = models.BooleanField(default=False, help_text="Haven contains workshop")
 
     # Merits and Flaws
-    merits_and_flaws = models.ManyToManyField(
-        MeritFlaw, blank=True, through="HavenMeritFlawRating"
-    )
+    merits_and_flaws = models.ManyToManyField(MeritFlaw, blank=True, through="HavenMeritFlawRating")
 
     class Meta:
         verbose_name = "Haven"
