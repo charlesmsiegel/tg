@@ -575,31 +575,6 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
         return s.translate(translation_table)
 
 
-class ChronicleScenesDetailView(LoginRequiredMixin, DetailView):
-    """View for displaying chronicle scenes. Requires authentication."""
-
-    model = Chronicle
-    template_name = "game/scenes/detail.html"
-    context_object_name = "chronicle"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        chronicle = self.object
-
-        scenes = Scene.objects.for_chronicle(chronicle).with_location()
-
-        # Group scenes by year and month
-        scenes_grouped = [
-            (datetime(year=year, month=month, day=1), list(scenes_in_month))
-            for (year, month), scenes_in_month in itertools.groupby(
-                scenes, key=lambda x: (x.date_of_scene.year, x.date_of_scene.month)
-            )
-        ]
-
-        context["scenes_grouped"] = scenes_grouped
-        return context
-
-
 class CommandsView(LoginRequiredMixin, TemplateView):
     template_name = "game/scene/commands.html"
 

@@ -187,9 +187,6 @@ class Chronicle(models.Model):
     def storyteller_list(self):
         return ", ".join([x.username for x in self.storytellers.all()])
 
-    def get_scenes_url(self):
-        return reverse("game:chronicle_scenes", kwargs={"pk": self.pk})
-
     def add_setting_element(self, name, description):
         se = SettingElement.objects.get_or_create(name=name, description=description)[0]
         self.common_knowledge_elements.add(se)

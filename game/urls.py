@@ -50,11 +50,6 @@ urlpatterns = [
     path("chronicles/", views.ChronicleListView.as_view(), name="chronicles"),
     path("chronicle/<pk>", views.ChronicleDetailView.as_view(), name="chronicle"),
     path(
-        "chronicle/<pk>/scenes/",
-        views.ChronicleScenesDetailView.as_view(),
-        name="chronicle_scenes",
-    ),
-    path(
         "chronicle/<pk>/retired/",
         char_views.core.RetiredCharacterIndex.as_view(),
         name="retired",
