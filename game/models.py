@@ -653,8 +653,8 @@ class PostManager(models.Manager):
     """Custom manager for Post with optimized queries."""
 
     def for_scene_optimized(self, scene):
-        """Get posts for a scene with character data pre-fetched"""
-        return self.filter(scene=scene).select_related("character")
+        """Get posts for a scene with character data pre-fetched, oldest first"""
+        return self.filter(scene=scene).select_related("character").order_by("datetime_created")
 
 
 class Post(models.Model):
@@ -679,6 +679,7 @@ class Post(models.Model):
             # Character-based queries (get all posts by a character chronologically)
             models.Index(fields=["character", "-datetime_created"]),
         ]
+        ordering = ["datetime_created"]
 
     def __str__(self):
         if self.display_name:

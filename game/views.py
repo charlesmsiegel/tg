@@ -1,5 +1,6 @@
 import itertools
 from collections import OrderedDict
+from datetime import datetime
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
@@ -298,9 +299,28 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
         return result
 
+    def _group_scenes_by_month(self, queryset):
+        """
+        Group scenes by year/month. Returns list of (date, scenes) tuples.
+        """
+        scenes_list = list(queryset)
+        if not scenes_list:
+            return []
+
+        return [
+            (datetime(year=year, month=month, day=1), list(scenes_in_month))
+            for (year, month), scenes_in_month in itertools.groupby(
+                scenes_list,
+                key=lambda x: (
+                    (x.date_of_scene.year, x.date_of_scene.month) if x.date_of_scene else (1900, 1)
+                ),
+            )
+        ]
+
     def _group_scenes_by_gameline(self, queryset):
         """
         Group scenes by gameline. Scenes have a direct gameline field.
+        Each gameline entry includes scenes grouped by month.
         """
         result = OrderedDict()
 
@@ -309,6 +329,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
             result["wod"] = {
                 "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
                 "scenes": queryset,
+                "scenes_by_month": self._group_scenes_by_month(queryset),
             }
 
         # Add specific gamelines that have content
@@ -320,6 +341,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 result[gl_code] = {
                     "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
                     "scenes": filtered,
+                    "scenes_by_month": self._group_scenes_by_month(filtered),
                 }
 
         return result
