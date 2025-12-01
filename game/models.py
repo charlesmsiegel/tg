@@ -197,19 +197,22 @@ class Chronicle(models.Model):
     def total_scenes(self):
         return Scene.objects.filter(chronicle=self).count()
 
-    def add_scene(self, name, location, date_of_scene=None):
+    def add_scene(self, name, location, date_of_scene=None, gameline=None):
         if isinstance(location, str):
             from locations.models import LocationModel
 
             location = LocationModel.objects.get(name=location)
         if Scene.objects.filter(name=name, chronicle=self, location=location).exists():
             return Scene.objects.filter(name=name, chronicle=self, location=location).first()
-        s = Scene.objects.create(
-            name=name,
-            chronicle=self,
-            location=location,
-            date_of_scene=date_of_scene,
-        )
+        scene_kwargs = {
+            "name": name,
+            "chronicle": self,
+            "location": location,
+            "date_of_scene": date_of_scene,
+        }
+        if gameline:
+            scene_kwargs["gameline"] = gameline
+        s = Scene.objects.create(**scene_kwargs)
         self.save()
         return s
 
@@ -501,6 +504,13 @@ class Scene(models.Model):
     waiting_for_st = models.BooleanField(default=False)
     st_message = models.CharField(max_length=300, default="")
     date_of_scene = models.DateField(default=now, null=True, blank=True)
+    gameline = models.CharField(
+        max_length=10,
+        choices=GameLine.CHOICES,
+        default=GameLine.WOD,
+        db_index=True,
+        help_text="Game line this scene is primarily focused on",
+    )
 
     objects = SceneManager()
 

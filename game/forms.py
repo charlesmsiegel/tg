@@ -1,4 +1,5 @@
 from characters.models.core import CharacterModel
+from core.constants import GameLine
 from django import forms
 from game.models import Story, WeeklyXPRequest
 from locations.models.core import LocationModel
@@ -12,6 +13,10 @@ class SceneCreationForm(forms.Form):
         queryset=LocationModel.objects.order_by("name"), empty_label="Scene Location"
     )
     date_of_scene = forms.CharField(max_length=100, widget=forms.DateInput(attrs={"type": "date"}))
+    gameline = forms.ChoiceField(
+        choices=GameLine.CHOICES,
+        initial=GameLine.WOD,
+    )
 
     def __init__(self, *args, **kwargs):
         chronicle = kwargs.pop("chronicle")

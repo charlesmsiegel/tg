@@ -119,8 +119,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "vtmhuman",
                 "ghoul",
                 "vampire",
-                "revenantfamily",
-                "vtmcreature",
+                "revenant",
             ],
             "wta": [
                 "wtahuman",
@@ -129,25 +128,24 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "spiritcharacter",
                 "fera",
                 "fomor",
-                "wtacreature",
+                "drone",
             ],
             "mta": [
                 "mtahuman",
                 "companion",
                 "sorcerer",
-                "linearsorcerer",
                 "mage",
-                "mtacreature",
             ],
             "wto": [
                 "wtohuman",
                 "wraith",
-                "wtocreature",
             ],
             "ctd": [
                 "ctdhuman",
                 "changeling",
-                "ctdcreature",
+                "nunnehi",
+                "inanimae",
+                "autumnperson",
             ],
             "htr": [
                 "htrhuman",
@@ -161,7 +159,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "dtfhuman",
                 "demon",
                 "thrall",
-                "dtfcreature",
+                "earthbound",
             ],
         }
 
@@ -300,6 +298,32 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
         return result
 
+    def _group_scenes_by_gameline(self, queryset):
+        """
+        Group scenes by gameline. Scenes have a direct gameline field.
+        """
+        result = OrderedDict()
+
+        # All shows everything if there's any content
+        if queryset.exists():
+            result["wod"] = {
+                "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "scenes": queryset,
+            }
+
+        # Add specific gamelines that have content
+        for gl_code in self.GAMELINE_ORDER:
+            if gl_code == "wod":
+                continue
+            filtered = queryset.filter(gameline=gl_code)
+            if filtered.exists():
+                result[gl_code] = {
+                    "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "scenes": filtered,
+                }
+
+        return result
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chronicle = self.object
@@ -343,6 +367,11 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         all_items = ItemModel.objects.for_chronicle(chronicle).order_by("name")
         items_by_gameline = self._group_items_by_gameline(all_items)
 
+        # --- Scenes by status ---
+        all_scenes = Scene.objects.filter(chronicle=chronicle).order_by("-date_of_scene")
+        active_scenes = all_scenes.filter(finished=False)
+        completed_scenes = all_scenes.filter(finished=True)
+
         context.update(
             {
                 # Common Knowledge
@@ -363,9 +392,13 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 # Items
                 "items": all_items,
                 "items_by_gameline": items_by_gameline,
+                # Scenes by status and gameline
+                "all_scenes_by_gameline": self._group_scenes_by_gameline(all_scenes),
+                "active_scenes_by_gameline": self._group_scenes_by_gameline(active_scenes),
+                "completed_scenes_by_gameline": self._group_scenes_by_gameline(completed_scenes),
                 # Forms and other
                 "form": SceneCreationForm(chronicle=chronicle),
-                "active_scenes": Scene.objects.active_for_chronicle(chronicle),
+                "active_scenes": active_scenes,  # Keep for backward compatibility
                 "story_form": StoryForm(),
                 "header": chronicle.headings,
             }
@@ -392,6 +425,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 request.POST["name"],
                 location,
                 date_of_scene=request.POST["date_of_scene"],
+                gameline=request.POST.get("gameline", "wod"),
             )
             messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
             return redirect(scene)

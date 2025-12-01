@@ -1,0 +1,119 @@
+{% load field %}
+<!-- Status Tabs (All, Active, Completed) -->
+<ul class="nav nav-tabs tg-nav-tabs mb-4 justify-content-center" id="sceneStatusTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link active" id="scenes-all-tab" data-toggle="tab" href="#scenes-all" role="tab"
+           aria-controls="scenes-all" aria-selected="true">
+            All
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link" id="scenes-active-tab" data-toggle="tab" href="#scenes-active" role="tab"
+           aria-controls="scenes-active" aria-selected="false">
+            Active
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link" id="scenes-completed-tab" data-toggle="tab" href="#scenes-completed" role="tab"
+           aria-controls="scenes-completed" aria-selected="false">
+            Completed
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content" id="sceneStatusTabsContent">
+    <!-- All Scenes Tab -->
+    <div class="tab-pane fade show active" id="scenes-all" role="tabpanel" aria-labelledby="scenes-all-tab">
+        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=all_scenes_by_gameline tab_prefix="all" %}
+    </div>
+
+    <!-- Active Scenes Tab -->
+    <div class="tab-pane fade" id="scenes-active" role="tabpanel" aria-labelledby="scenes-active-tab">
+        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=active_scenes_by_gameline tab_prefix="active" %}
+    </div>
+
+    <!-- Completed Scenes Tab -->
+    <div class="tab-pane fade" id="scenes-completed" role="tabpanel" aria-labelledby="scenes-completed-tab">
+        {% include "game/chronicle/display_includes/scene_gameline_tabs.html" with scenes_by_gameline=completed_scenes_by_gameline tab_prefix="completed" %}
+    </div>
+</div>
+
+<!-- Scene and Story Creation Forms -->
+{% if request.user.is_authenticated %}
+    <hr class="my-4">
+    <div class="row">
+        <!-- Create Scene Form -->
+        <div class="col-lg-8 mb-4">
+            <div class="tg-card h-100">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Scene</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="row align-items-end">
+                            <div class="col-md-4 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
+                                    {{ form.name|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
+                                    {{ form.location|add_class:"tg-form-control tg-form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.date_of_scene.id_for_label }}" class="tg-form-label">Date</label>
+                                    {{ form.date_of_scene|add_class:"tg-form-control" }}
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="tg-form-group">
+                                    <label for="{{ form.gameline.id_for_label }}" class="tg-form-label">Gameline</label>
+                                    {{ form.gameline|add_class:"tg-form-control tg-form-select" }}
+                                </div>
+                            </div>
+                            <div class="col-md-1 mb-3">
+                                <button type="submit" name="create_scene" class="tg-btn btn-primary w-100" style="height: 38px;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Story Form (ST only) -->
+        {% if request.user.profile.is_st %}
+            <div class="col-lg-4 mb-4">
+                <div class="tg-card h-100">
+                    <div class="tg-card-header text-center">
+                        <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Story</h5>
+                    </div>
+                    <div class="tg-card-body" style="padding: 20px;">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="row align-items-end">
+                                <div class="col-9 mb-3">
+                                    <div class="tg-form-group">
+                                        <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
+                                        {{ story_form.name|add_class:"tg-form-control" }}
+                                    </div>
+                                </div>
+                                <div class="col-3 mb-3">
+                                    <button type="submit" name="create_story" class="tg-btn btn-primary w-100" style="height: 38px;">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

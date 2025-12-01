@@ -116,9 +116,6 @@
 
         <!-- Chronicle Details -->
         <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title">Chronicle Information</h3>
-            </div>
             <div class="tg-card-body" style="padding: 20px;">
                 <div class="row text-center">
                     <div class="col-md-6 mb-3">
@@ -159,7 +156,7 @@
             </div>
         </div>
 
-        <!-- Main Section Tabs: Common Knowledge, Characters, Locations, Items -->
+        <!-- Main Section Tabs: Common Knowledge, Characters, Locations, Items, Scenes -->
         <div class="tg-card mb-4">
             <div class="tg-card-header">
                 <ul class="nav nav-tabs card-header-tabs tg-nav-tabs justify-content-center" id="mainSectionTabs" role="tablist">
@@ -191,6 +188,13 @@
                             <i class="fas fa-box mr-2"></i>Items
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link tg-nav-link {{ object.headings }}"
+                           id="scenes-tab" data-toggle="tab" href="#scenes" role="tab"
+                           aria-controls="scenes" aria-selected="false">
+                            <i class="fas fa-theater-masks mr-2"></i>Scenes
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="tg-card-body" style="padding-top: 24px;">
@@ -214,126 +218,13 @@
                     <div class="tab-pane fade" id="items" role="tabpanel" aria-labelledby="items-tab">
                         {% include "game/chronicle/display_includes/items_section.html" %}
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Scenes Section -->
-        <div class="tg-card mb-4">
-            <div class="tg-card-header text-center">
-                <h3 class="tg-card-title {{ object.headings }}">
-                    <a href="{{ object.get_scenes_url }}" class="text-decoration-none">Scene List</a>
-                </h3>
-            </div>
-            <div class="tg-card-body" style="padding: 0;">
-                <div class="tg-card-header {{ object.headings }} pointer text-center"
-                     data-toggle="collapse"
-                     data-target="#scenes-Section"
-                     aria-expanded="true"
-                     aria-controls="scenes-Section"
-                     style="margin: 0; border-radius: 0;">
-                    <h5 class="mb-0">Active Scenes</h5>
-                </div>
-                <div id="scenes-Section" class="collapse show">
-                    {% if active_scenes %}
-                        <div class="tg-table-responsive" style="padding: 20px;">
-                            <table class="tg-table" style="margin: 0 auto;">
-                                <thead>
-                                    <tr>
-                                        <th style="padding: 16px 20px; text-align: center;">Title</th>
-                                        <th style="padding: 16px 20px; text-align: center;">Location</th>
-                                        <th style="padding: 16px 20px; text-align: center;">Date of Scene</th>
-                                        <th style="padding: 16px 20px; text-align: center;">Last Post Character</th>
-                                        <th style="padding: 16px 20px; text-align: center;">Last Post Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for scene in active_scenes %}
-                                        <tr>
-                                            <td data-label="Title" style="padding: 16px 20px; text-align: center;">
-                                                <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
-                                                {% if not scene.finished %}
-                                                    <br><span class="tg-badge badge-pill" style="background-color: rgba(255, 193, 7, 0.15); color: #d39e00; border-radius: 20px; margin-top: 4px;">Ongoing</span>
-                                                {% endif %}
-                                            </td>
-                                            <td data-label="Location" style="padding: 16px 20px; text-align: center;">
-                                                <a href="{{ scene.location.get_absolute_url }}">{{ scene.location }}</a>
-                                            </td>
-                                            <td data-label="Date of Scene" style="padding: 16px 20px; text-align: center;">{{ scene.date_of_scene|date:"F d, Y" }}</td>
-                                            <td data-label="Last Post Character" style="padding: 16px 20px; text-align: center;">{{ scene.most_recent_post.display_name }}</td>
-                                            <td data-label="Last Post Date" style="padding: 16px 20px; text-align: center;">{{ scene.most_recent_post.datetime_created }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <p class="text-muted mb-0">No active scenes</p>
-                        </div>
-                    {% endif %}
+                    <!-- Scenes Tab -->
+                    <div class="tab-pane fade" id="scenes" role="tabpanel" aria-labelledby="scenes-tab">
+                        {% include "game/chronicle/display_includes/scenes_section.html" %}
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- Forms Section -->
-        {% if request.user.is_authenticated %}
-            <div class="tg-card mb-4">
-                <div class="tg-card-header text-center">
-                    <h4 class="tg-card-title {{ object.headings }}">Create New Scene</h4>
-                </div>
-                <div class="tg-card-body" style="padding: 24px;">
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        <div class="row align-items-end">
-                            <div class="col-lg-4 col-md-6 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
-                                    {{ form.name|add_class:"tg-form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
-                                    {{ form.location|add_class:"tg-form-control tg-form-select" }}
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ form.date_of_scene.id_for_label }}" class="tg-form-label">Date</label>
-                                    {{ form.date_of_scene|add_class:"tg-form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-6 mb-3">
-                                <button type="submit" name="create_scene" class="tg-btn btn-primary w-100" style="height: 38px;">Create Scene</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            {% if request.user.profile.is_st %}
-                <div class="tg-card mb-4">
-                    <div class="tg-card-header text-center">
-                        <h4 class="tg-card-title {{ object.headings }}">Create New Story</h4>
-                    </div>
-                    <div class="tg-card-body" style="padding: 24px;">
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            <div class="row align-items-end">
-                                <div class="col-md-8 mb-3">
-                                    <div class="tg-form-group">
-                                        <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
-                                        {{ story_form.name|add_class:"tg-form-control" }}
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <button type="submit" name="create_story" class="tg-btn btn-primary w-100" style="height: 38px;">Create Story</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            {% endif %}
-        {% endif %}
     </div>
 {% endblock content %}

@@ -1,0 +1,103 @@
+{% if scenes_by_gameline %}
+    <!-- Gameline Sub-tabs (Pills for visual differentiation from main tabs) -->
+    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="scene{{ tab_prefix }}GamelineTabs" role="tablist">
+        {% for gl_code, gl_data in scenes_by_gameline.items %}
+            <li class="nav-item">
+                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
+                   id="scene-{{ tab_prefix }}-{{ gl_code }}-tab" data-toggle="pill" href="#scene-{{ tab_prefix }}-{{ gl_code }}" role="tab"
+                   aria-controls="scene-{{ tab_prefix }}-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ gl_data.name }}
+                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.scenes.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="scene{{ tab_prefix }}GamelineTabsContent">
+        {% for gl_code, gl_data in scenes_by_gameline.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                 id="scene-{{ tab_prefix }}-{{ gl_code }}" role="tabpanel" aria-labelledby="scene-{{ tab_prefix }}-{{ gl_code }}-tab">
+                {% if gl_data.scenes %}
+                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                        <table class="tg-table table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">
+                                        <i class="fas fa-theater-masks mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Title
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Location
+                                    </th>
+                                    <th style="width: 15%;">
+                                        <i class="fas fa-calendar mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Date
+                                    </th>
+                                    <th style="width: 15%;">
+                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Last Post
+                                    </th>
+                                    <th style="width: 15%;">
+                                        <i class="fas fa-clock mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Last Activity
+                                    </th>
+                                    <th style="width: 10%;">
+                                        <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for scene in gl_data.scenes %}
+                                    <tr style="transition: var(--transition-fast);">
+                                        <td data-label="Title" style="padding: 16px;">
+                                            <a href="{{ scene.get_absolute_url }}" class="{{ scene.gameline }}_heading" style="font-weight: 600;">
+                                                {{ scene.name }}
+                                            </a>
+                                        </td>
+                                        <td data-label="Location" style="padding: 16px;">
+                                            {% if scene.location %}
+                                                <a href="{{ scene.location.get_absolute_url }}">{{ scene.location.name }}</a>
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Date" style="padding: 16px;">
+                                            {{ scene.date_of_scene|date:"M d, Y" }}
+                                        </td>
+                                        <td data-label="Last Post" style="padding: 16px;">
+                                            {% if scene.most_recent_post %}
+                                                {{ scene.most_recent_post.display_name }}
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Last Activity" style="padding: 16px;">
+                                            {% if scene.most_recent_post %}
+                                                {{ scene.most_recent_post.datetime_created|date:"M d, Y" }}
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Status" style="padding: 16px;">
+                                            {% if scene.finished %}
+                                                <span class="tg-badge badge-pill badge-secondary">Completed</span>
+                                            {% else %}
+                                                <span class="tg-badge badge-pill" style="background-color: rgba(40, 167, 69, 0.15); color: #28a745;">Active</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                        <i class="fas fa-theater-masks fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0" style="font-size: var(--font-size-base);">No scenes found for this gameline.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+        <i class="fas fa-theater-masks fa-3x mb-3" style="opacity: 0.3;"></i>
+        <p class="mb-0" style="font-size: var(--font-size-base);">No scenes found.</p>
+    </div>
+{% endif %}
