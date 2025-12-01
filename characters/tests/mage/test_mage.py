@@ -21,7 +21,7 @@ class TestMage(TestCase):
     def setUp(self):
         mage_setup()
         self.player = User.objects.create_user(username="Test")
-        self.character = Mage.objects.create(name="", owner=self.player)
+        self.character = Mage.objects.create(name="Test Mage", owner=self.player)
 
     def set_abilities(self):
         self.character.alertness = 1

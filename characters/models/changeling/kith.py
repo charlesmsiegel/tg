@@ -7,9 +7,9 @@ class Kith(Model):
     type = "kith"
     gameline = "ctd"
 
-    affinity = models.CharField(max_length=20, default="")
-    birthrights = models.JSONField(default=list)
-    frailty = models.TextField(default="")
+    affinity = models.CharField(max_length=20, default="", blank=True)
+    birthrights = models.JSONField(default=list, blank=True)
+    frailty = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Kith"

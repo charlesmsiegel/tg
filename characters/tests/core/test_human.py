@@ -21,7 +21,7 @@ class TestHuman(TestCase):
     def setUp(self) -> None:
         human_setup()
         self.user = User.objects.create_user(username="Test")
-        self.character = Human.objects.create(name="", owner=self.user)
+        self.character = Human.objects.create(name="Test Human", owner=self.user)
         for i in range(10):
             Archetype.objects.create(name=f"Archetype {i}")
 

@@ -86,7 +86,7 @@ def werewolf_setup():
     Background.objects.get_or_create(property_name="spirit_heritage")[0]
     Background.objects.get_or_create(property_name="totem")[0]
 
-    w = WtAHuman.objects.create(name="")
+    w = WtAHuman.objects.create(name="Test WtAHuman")
     for i in range(5):
         w = Werewolf.objects.create(name=f"Character {i}")
     for i in range(5):

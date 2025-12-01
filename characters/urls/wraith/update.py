@@ -3,6 +3,11 @@ from django.urls import path
 
 urls = [
     path(
+        "circle/<pk>/",
+        views.wraith.CircleUpdateView.as_view(),
+        name="circle",
+    ),
+    path(
         "thorn/<pk>/",
         views.wraith.ThornUpdateView.as_view(),
         name="thorn",

@@ -10,8 +10,5 @@ python manage.py migrate
 # Collect static files
 yes yes | python manage.py collectstatic
 
-# Create superuser (interactive)
-python manage.py createsuperuser
-
 # Populate game data
 python manage.py populate_gamedata

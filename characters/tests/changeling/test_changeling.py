@@ -10,25 +10,28 @@ from django.test import TestCase
 class TestChangeling(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="User1", password="12345")
-        self.character = Changeling.objects.create(owner=self.player, name="")
+        self.character = Changeling.objects.create(
+            owner=self.player,
+            name="Test Changeling",
+        )
         changeling_setup()
 
     def test_set_seeming(self):
         self.assertFalse(self.character.has_seeming())
-        c = Changeling.objects.create(name="Childling")
+        c = Changeling.objects.create(owner=self.player, name="Childling")
         self.assertFalse(c.has_seeming())
         glamour = 4
         willpower = 4
         self.assertTrue(c.set_seeming("childling"))
         self.assertEqual(c.glamour, glamour + 1)
         self.assertTrue(c.has_seeming())
-        c = Changeling.objects.create(name="Wilder")
+        c = Changeling.objects.create(owner=self.player, name="Wilder")
         self.assertFalse(c.has_seeming())
         glamour = 4
         willpower = 4
         self.assertTrue(c.set_seeming("wilder"))
         self.assertEqual(c.glamour + c.willpower, glamour + willpower + 1)
-        c = Changeling.objects.create(name="Grump")
+        c = Changeling.objects.create(owner=self.player, name="Grump")
         self.assertFalse(c.has_seeming())
         glamour = 4
         willpower = 4
@@ -37,7 +40,7 @@ class TestChangeling(TestCase):
 
     def test_has_seeming(self):
         self.assertFalse(self.character.has_seeming())
-        self.character.set_seeming("childer")
+        self.character.set_seeming("childling")
         self.assertTrue(self.character.has_seeming())
 
     def test_set_court(self):
@@ -358,11 +361,11 @@ class TestChangeling(TestCase):
         troll = Kith.objects.create(name="Troll")
         autumn_sidhe = Kith.objects.create(name="Autumn Sidhe")
         arcadian_sidhe = Kith.objects.create(name="Arcadian Sidhe")
-        char1 = Changeling.objects.create(name="Char 1", kith=piskey)
-        char2 = Changeling.objects.create(name="Char 2", kith=satyr)
-        char3 = Changeling.objects.create(name="Char 3", kith=troll)
-        char4 = Changeling.objects.create(name="Char 4", kith=autumn_sidhe)
-        char5 = Changeling.objects.create(name="Char 5", kith=arcadian_sidhe)
+        char1 = Changeling.objects.create(owner=self.player, name="Char 1", kith=piskey)
+        char2 = Changeling.objects.create(owner=self.player, name="Char 2", kith=satyr)
+        char3 = Changeling.objects.create(owner=self.player, name="Char 3", kith=troll)
+        char4 = Changeling.objects.create(owner=self.player, name="Char 4", kith=autumn_sidhe)
+        char5 = Changeling.objects.create(owner=self.player, name="Char 5", kith=arcadian_sidhe)
         char1.birthright_correction()
         char2.birthright_correction()
         char3.birthright_correction()
@@ -412,7 +415,8 @@ class TestChangelingDetailView(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="User1", password="12345")
         self.changeling = Changeling.objects.create(
-            name="Test Changeling", owner=self.player
+            name="Test Changeling",
+            owner=self.player,
         )
         self.url = self.changeling.get_absolute_url()
 
@@ -536,8 +540,10 @@ class TestChangelingCreateView(TestCase):
 
 class TestChangelingUpdateView(TestCase):
     def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
         self.changeling = Changeling.objects.create(
             name="Test Changeling",
+            owner=self.player,
             description="Test description",
         )
         self.valid_data = {

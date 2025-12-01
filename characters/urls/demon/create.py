@@ -1,4 +1,5 @@
 from characters.views.demon import (
+    ConclaveCreateView,
     DemonBasicsView,
     DemonFactionCreateView,
     DemonHouseCreateView,
@@ -16,6 +17,7 @@ urls = [
     path("dtfhuman/", DtFHumanBasicsView.as_view(), name="dtfhuman"),
     path("thrall/", ThrallBasicsView.as_view(), name="thrall"),
     path("earthbound/", EarthboundCreateView.as_view(), name="earthbound"),
+    path("conclave/", ConclaveCreateView.as_view(), name="conclave"),
     path("faction/", DemonFactionCreateView.as_view(), name="faction"),
     path("house/", DemonHouseCreateView.as_view(), name="house"),
     path("visage/", VisageCreateView.as_view(), name="visage"),

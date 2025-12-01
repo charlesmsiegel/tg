@@ -10,7 +10,7 @@ class TestMtAHuman(TestCase):
         mage_setup()
 
         self.player = User.objects.create_user(username="Test")
-        self.character = MtAHuman.objects.create(name="", owner=self.player)
+        self.character = MtAHuman.objects.create(name="Test MtAHuman", owner=self.player)
 
     def set_abilities(self):
         self.character.alertness = 1

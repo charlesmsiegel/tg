@@ -77,7 +77,8 @@ class TestSTRelationships(TestCase):
         )
 
         st_relations = self.st_user.profile.st_relations()
-        self.assertIn(self.chronicle, [rel.chronicle for rel in st_relations])
+        # st_relations() returns a dict mapping Chronicle to list of STRelationships
+        self.assertIn(self.chronicle, st_relations)
 
     def test_st_for_multiple_chronicles(self):
         """Test that a user can be ST for multiple chronicles."""
@@ -91,7 +92,8 @@ class TestSTRelationships(TestCase):
         )
 
         relations = self.st_user.profile.st_relations()
-        self.assertEqual(relations.count(), 2)
+        # st_relations() returns a dict mapping Chronicle to list of STRelationships
+        self.assertEqual(len(relations), 2)
 
     def test_st_for_multiple_gamelines(self):
         """Test that an ST can run multiple gamelines in same chronicle."""
@@ -105,7 +107,10 @@ class TestSTRelationships(TestCase):
         )
 
         relations = self.st_user.profile.st_relations()
-        self.assertEqual(relations.count(), 2)
+        # st_relations() returns a dict mapping Chronicle to list of STRelationships
+        # Both relationships are for the same chronicle, so we count the relationships
+        total_relationships = sum(len(rels) for rels in relations.values())
+        self.assertEqual(total_relationships, 2)
 
 
 class TestObjectsToApprove(TestCase):

@@ -16,6 +16,7 @@ class Changeling(CtDHuman):
         default="",
         max_length=20,
         choices=[("seelie", "Seelie"), ("unseelie", "Unseelie")],
+        blank=True,
     )
     seelie_legacy = models.ForeignKey(
         Legacy,
@@ -37,6 +38,7 @@ class Changeling(CtDHuman):
         default="",
         max_length=15,
         choices=[("childling", "Childling"), ("wilder", "Wilder"), ("grump", "Grump")],
+        blank=True,
     )
     house = models.ForeignKey(House, null=True, blank=True, on_delete=models.SET_NULL)
 

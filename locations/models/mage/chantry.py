@@ -369,8 +369,8 @@ class ChantryBackgroundRating(models.Model):
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    note = models.CharField(default="", max_length=100)
-    url = models.CharField(default="", max_length=500)
+    note = models.CharField(default="", max_length=100, blank=True)
+    url = models.CharField(default="", max_length=500, blank=True)
     complete = models.BooleanField(default=False)
     display_alt_name = models.BooleanField(default=False)
 

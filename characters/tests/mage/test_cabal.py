@@ -9,7 +9,7 @@ from django.urls import reverse
 class TestCabal(TestCase):
     def setUp(self):
         self.player = User.objects.create_user(username="Player")
-        self.character = Mage.objects.create(name="", owner=self.player)
+        self.character = Mage.objects.create(name="Test Mage", owner=self.player)
         mage_setup()
         for i in range(4):
             Mage.objects.create(name=f"Character {i}", owner=self.player)

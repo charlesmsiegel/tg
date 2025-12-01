@@ -8,7 +8,7 @@ class Fetish(Wonder):
     gameline = "wta"
 
     gnosis = models.IntegerField(default=0)
-    spirit = models.CharField(default="", max_length=100)
+    spirit = models.CharField(default="", max_length=100, blank=True)
 
     class Meta:
         verbose_name = "Fetish"

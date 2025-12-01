@@ -14,8 +14,8 @@ class House(Model):
         blank=True,
         null=True,
     )
-    boon = models.TextField(default="")
-    flaw = models.TextField(default="")
+    boon = models.TextField(default="", blank=True)
+    flaw = models.TextField(default="", blank=True)
     factions = models.ManyToManyField(HouseFaction, blank=True)
 
     class Meta:

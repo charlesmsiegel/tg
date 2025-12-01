@@ -13,6 +13,23 @@ Tests all permission scenarios across different user roles:
 Tests visibility tiers and proper 404 responses for unauthorized access.
 """
 
+try:
+    import pytest
+except ImportError:
+    # Create mock pytest module for Django's test runner
+    class MockPytest:
+        """Mock pytest for when running under Django's test runner."""
+        class mark:
+            @staticmethod
+            def django_db(cls):
+                return cls
+
+        @staticmethod
+        def fixture(func):
+            return func
+
+    pytest = MockPytest()
+
 from characters.models.core.character import Character
 from characters.models.core.human import Human
 from core.models import Observer
@@ -57,7 +74,6 @@ class TestPermissionRoles(TestCase):
         # Create test chronicle
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
-            description="A test chronicle for permissions",
         )
         # Set head ST (assuming Chronicle has head_st field or storytellers M2M)
         # Adjust based on your actual Chronicle model

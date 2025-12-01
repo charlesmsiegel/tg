@@ -8,7 +8,7 @@ from django.test import TestCase
 class TestCtDHuman(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="User1", password="12345")
-        self.character = Changeling.objects.create(owner=self.player, name="")
+        self.character = Changeling.objects.create(owner=self.player, name="Test Changeling")
         changeling_setup()
 
     def set_abilities(self):

@@ -48,4 +48,10 @@ from .thrall_chargen import (
     ThrallCharacterCreationView,
     ThrallFreebieFormPopulationView,
 )
+from .conclave import (
+    ConclaveCreateView,
+    ConclaveDetailView,
+    ConclaveListView,
+    ConclaveUpdateView,
+)
 from .visage import VisageCreateView, VisageDetailView, VisageListView, VisageUpdateView

@@ -6,7 +6,7 @@ from django.test import TestCase
 class TestCharacter(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="User1", password="12345")
-        self.character = Character.objects.create(owner=self.player, name="")
+        self.character = Character.objects.create(owner=self.player, name="Test Character")
 
     def test_has_name(self):
         self.assertFalse(self.character.has_name())

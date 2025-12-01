@@ -24,7 +24,7 @@ class Caern(LocationModel):
         ("wyld", "Wyld"),
     ]
 
-    caern_type = models.CharField(default="", choices=TYPES, max_length=15)
+    caern_type = models.CharField(default="", choices=TYPES, max_length=15, blank=True)
 
     class Meta:
         verbose_name = "Caern"

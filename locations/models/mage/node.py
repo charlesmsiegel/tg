@@ -55,8 +55,8 @@ class Node(LocationModel):
     tass_per_week = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    tass_form = models.CharField(default="", max_length=100)
-    quintessence_form = models.CharField(default="", max_length=100)
+    tass_form = models.CharField(default="", max_length=100, blank=True)
+    quintessence_form = models.CharField(default="", max_length=100, blank=True)
     reality_zone = models.ForeignKey(
         RealityZone, blank=True, null=True, on_delete=models.SET_NULL
     )

@@ -13,7 +13,7 @@ class Talen(Wonder):
     gameline = "wta"
 
     gnosis = models.IntegerField(default=0)
-    spirit = models.CharField(default="", max_length=200)
+    spirit = models.CharField(default="", max_length=200, blank=True)
 
     class Meta:
         verbose_name = "Talen"
