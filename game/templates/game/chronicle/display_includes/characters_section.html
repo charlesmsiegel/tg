@@ -1,0 +1,50 @@
+<!-- Status Tabs (Primary level) -->
+<ul class="nav nav-tabs tg-nav-tabs mb-4 justify-content-center" id="statusTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link active {{ object.headings }}" id="active-tab" data-toggle="tab" href="#active" role="tab" aria-controls="active" aria-selected="true">
+            Active
+            <span class="tg-badge badge-pill badge-secondary ml-1">{{ character_list.count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link {{ object.headings }}" id="retired-tab" data-toggle="tab" href="#retired" role="tab" aria-controls="retired" aria-selected="false">
+            Retired
+            <span class="tg-badge badge-pill badge-secondary ml-1">{{ retired_characters.count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link {{ object.headings }}" id="deceased-tab" data-toggle="tab" href="#deceased" role="tab" aria-controls="deceased" aria-selected="false">
+            Deceased
+            <span class="tg-badge badge-pill badge-secondary ml-1">{{ deceased_characters.count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tg-nav-link {{ object.headings }}" id="npc-tab" data-toggle="tab" href="#npc" role="tab" aria-controls="npc" aria-selected="false">
+            NPC
+            <span class="tg-badge badge-pill badge-secondary ml-1">{{ npc_characters.count }}</span>
+        </a>
+    </li>
+</ul>
+
+<!-- Status Tab Content -->
+<div class="tab-content" id="statusTabsContent">
+    <!-- Active Characters -->
+    <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=active_by_gameline status_id="active" %}
+    </div>
+
+    <!-- Retired Characters -->
+    <div class="tab-pane fade" id="retired" role="tabpanel" aria-labelledby="retired-tab">
+        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=retired_by_gameline status_id="retired" %}
+    </div>
+
+    <!-- Deceased Characters -->
+    <div class="tab-pane fade" id="deceased" role="tabpanel" aria-labelledby="deceased-tab">
+        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=deceased_by_gameline status_id="deceased" %}
+    </div>
+
+    <!-- NPC Characters -->
+    <div class="tab-pane fade" id="npc" role="tabpanel" aria-labelledby="npc-tab">
+        {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=npc_by_gameline status_id="npc" %}
+    </div>
+</div>

@@ -1,0 +1,29 @@
+{% if characters_by_gameline %}
+    <!-- Gameline Sub-tabs (Pills for visual differentiation from status tabs) -->
+    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="charGamelineTabs-{{ status_id }}" role="tablist">
+        {% for gl_code, gl_data in characters_by_gameline.items %}
+            <li class="nav-item">
+                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
+                   id="char-{{ status_id }}-{{ gl_code }}-tab" data-toggle="pill" href="#char-{{ status_id }}-{{ gl_code }}" role="tab"
+                   aria-controls="char-{{ status_id }}-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ gl_data.name }}
+                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.characters.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="charGamelineTabsContent-{{ status_id }}">
+        {% for gl_code, gl_data in characters_by_gameline.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                 id="char-{{ status_id }}-{{ gl_code }}" role="tabpanel" aria-labelledby="char-{{ status_id }}-{{ gl_code }}-tab">
+                {% include "game/chronicle/display_includes/character_table.html" with character_queryset=gl_data.characters table_id=status_id|add:"-"|add:gl_code %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+        <p class="mb-0" style="font-size: var(--font-size-base);">No characters found in this category.</p>
+    </div>
+{% endif %}

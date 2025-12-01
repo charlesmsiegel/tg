@@ -1,0 +1,83 @@
+{% if items_by_gameline %}
+    <!-- Gameline Sub-tabs (Pills for visual differentiation from main tabs) -->
+    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="itemsGamelineTabs" role="tablist">
+        {% for gl_code, gl_data in items_by_gameline.items %}
+            <li class="nav-item">
+                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
+                   id="item-{{ gl_code }}-tab" data-toggle="pill" href="#item-{{ gl_code }}" role="tab"
+                   aria-controls="item-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ gl_data.name }}
+                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.items.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="itemsGamelineTabsContent">
+        {% for gl_code, gl_data in items_by_gameline.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                 id="item-{{ gl_code }}" role="tabpanel" aria-labelledby="item-{{ gl_code }}-tab">
+                {% if gl_data.items %}
+                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                        <table class="tg-table table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%;">
+                                        <i class="fas fa-box mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Item Name
+                                    </th>
+                                    <th style="width: 25%;">
+                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                    </th>
+                                    <th style="width: 20%;">
+                                        <i class="fas fa-info-circle mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in gl_data.items %}
+                                    <tr style="transition: var(--transition-fast);">
+                                        <td data-label="Item" style="padding: 16px;">
+                                            <a href="{{ item.get_absolute_url }}" class="{{ item.gameline }}_heading">{{ item.name }}</a>
+                                        </td>
+                                        <td data-label="Owner" style="padding: 16px;">
+                                            {% if item.owned_by.first %}
+                                                <a href="{{ item.owned_by.first.get_absolute_url }}">{{ item.owned_by.first.name }}</a>
+                                            {% else %}
+                                                <span style="color: var(--theme-text-muted); font-style: italic;">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Type" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {{ item.get_badge_class }}">{{ item.get_type }}</span>
+                                        </td>
+                                        <td data-label="Status" style="padding: 16px;">
+                                            <span class="tg-badge badge-pill {% if item.status == 'App' %}badge-success{% elif item.status == 'Sub' %}badge-warning{% elif item.status == 'Dec' %}badge-danger{% elif item.status == 'Ret' %}badge-info{% else %}badge-secondary{% endif %}">{{ item.get_status_display }}</span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-3" style="color: var(--theme-text-muted);">
+                                            No items found for this gameline.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                        <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0" style="font-size: var(--font-size-base);">No items found for this gameline.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+        <i class="fas fa-box-open fa-3x mb-3" style="opacity: 0.3;"></i>
+        <p class="mb-0" style="font-size: var(--font-size-base);">No items defined for this chronicle.</p>
+    </div>
+{% endif %}

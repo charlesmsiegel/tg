@@ -1,7 +1,9 @@
 import itertools
+from collections import OrderedDict
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
+from core.constants import GameLine
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     EditPermissionMixin,
@@ -57,51 +59,312 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
     model = Chronicle
     template_name = "game/chronicle/detail.html"
 
+    # Gameline ordering for consistent tab display
+    GAMELINE_ORDER = ["wod", "vtm", "wta", "mta", "wto", "ctd", "htr", "mtr", "dtf"]
+
+    # Short display names for gamelines (used in tabs)
+    GAMELINE_SHORT_NAMES = {
+        "wod": "All",
+        "vtm": "Vampire",
+        "wta": "Werewolf",
+        "mta": "Mage",
+        "wto": "Wraith",
+        "ctd": "Changeling",
+        "htr": "Hunter",
+        "mtr": "Mummy",
+        "dtf": "Demon",
+    }
+
     def get_queryset(self):
         return super().get_queryset().prefetch_related("storytellers", "allowed_objects")
+
+    def _group_by_gameline(self, queryset, gameline_attr="gameline"):
+        """
+        Group items by gameline, only including gamelines that have content.
+        Returns an OrderedDict with 'wod' (All) first if there's content,
+        followed by specific gamelines in GAMELINE_ORDER.
+        """
+        result = OrderedDict()
+
+        # 'wod' (All) shows everything if there's any content
+        if queryset.exists():
+            result["wod"] = {
+                "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "items": queryset,
+            }
+
+        # Add specific gamelines that have content
+        for gl_code in self.GAMELINE_ORDER:
+            if gl_code == "wod":
+                continue
+            filtered = queryset.filter(**{gameline_attr: gl_code})
+            if filtered.exists():
+                result[gl_code] = {
+                    "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "items": filtered,
+                }
+
+        return result
+
+    def _group_characters_by_gameline(self, queryset):
+        """
+        Group characters by gameline based on polymorphic content type.
+        Characters don't have a direct gameline field, so we filter by model type.
+        """
+        result = OrderedDict()
+
+        # Character model to gameline mapping
+        char_gameline_map = {
+            "vtm": [
+                "vtmhuman",
+                "ghoul",
+                "vampire",
+                "revenantfamily",
+                "vtmcreature",
+            ],
+            "wta": [
+                "wtahuman",
+                "kinfolk",
+                "werewolf",
+                "spiritcharacter",
+                "fera",
+                "fomor",
+                "wtacreature",
+            ],
+            "mta": [
+                "mtahuman",
+                "companion",
+                "sorcerer",
+                "linearsorcerer",
+                "mage",
+                "mtacreature",
+            ],
+            "wto": [
+                "wtohuman",
+                "wraith",
+                "wtocreature",
+            ],
+            "ctd": [
+                "ctdhuman",
+                "changeling",
+                "ctdcreature",
+            ],
+            "htr": [
+                "htrhuman",
+                "hunter",
+            ],
+            "mtr": [
+                "mtrhuman",
+                "mummy",
+            ],
+            "dtf": [
+                "dtfhuman",
+                "demon",
+                "thrall",
+                "dtfcreature",
+            ],
+        }
+
+        # All shows everything if there's any content
+        if queryset.exists():
+            result["wod"] = {
+                "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "characters": queryset,
+            }
+
+        # Add specific gamelines that have content
+        for gl_code in self.GAMELINE_ORDER:
+            if gl_code == "wod":
+                continue
+            model_names = char_gameline_map.get(gl_code, [])
+            if model_names:
+                filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
+                if filtered.exists():
+                    result[gl_code] = {
+                        "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                        "characters": filtered,
+                    }
+
+        return result
+
+    def _group_locations_by_gameline(self, queryset):
+        """
+        Group locations by gameline based on polymorphic content type.
+        Each gameline tab shows generic locations (Location, City) plus
+        that gameline's specific locations, excluding other gamelines' locations.
+        """
+        result = OrderedDict()
+
+        # Generic location types that appear in ALL gameline tabs
+        generic_loc_types = ["locationmodel", "city"]
+
+        # Location model to gameline mapping (gameline-specific types only)
+        loc_gameline_map = {
+            "vtm": ["haven", "domain", "elysium", "rack", "tremerechantry", "barrens"],
+            "wta": ["caern"],
+            "mta": [
+                "node",
+                "sector",
+                "library",
+                "horizonrealm",
+                "paradoxrealm",
+                "chantry",
+                "sanctum",
+                "realityzone",
+                "demesne",
+            ],
+            "wto": [
+                "haunt",
+                "necropolis",
+                "citadel",
+                "nihil",
+                "byway",
+                "wraithfreehold",
+            ],
+            "ctd": ["freehold", "dreamrealm", "trod", "holding"],
+            "dtf": ["bastion", "reliquary"],
+            "htr": ["huntingground", "safehouse"],
+            "mtr": ["tomb", "culttemple", "undergroundsanctuary"],
+        }
+
+        # Collect all gameline-specific types for the "All" tab filter
+        all_specific_types = []
+        for types in loc_gameline_map.values():
+            all_specific_types.extend(types)
+        all_allowed_types = generic_loc_types + all_specific_types
+
+        # All shows everything if there's any content
+        # Only show root locations (parent=None) - children handled by recursive template
+        if queryset.exists():
+            result["wod"] = {
+                "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "locations": queryset.filter(parent=None),
+                "allowed_types": all_allowed_types,
+            }
+
+        # Add specific gamelines - include generic types + that gameline's types
+        for gl_code in self.GAMELINE_ORDER:
+            if gl_code == "wod":
+                continue
+            gameline_specific_types = loc_gameline_map.get(gl_code, [])
+            # Include generic types + this gameline's specific types
+            allowed_types = generic_loc_types + gameline_specific_types
+            filtered = queryset.filter(polymorphic_ctype__model__in=allowed_types)
+            if filtered.exists():
+                # Only show root locations - children handled by recursive template
+                result[gl_code] = {
+                    "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "locations": filtered.filter(parent=None),
+                    "allowed_types": allowed_types,
+                }
+
+        return result
+
+    def _group_items_by_gameline(self, queryset):
+        """
+        Group items by gameline based on polymorphic content type.
+        """
+        result = OrderedDict()
+
+        # Item model to gameline mapping
+        item_gameline_map = {
+            "vtm": ["bloodstone", "artifact"],
+            "wta": ["fetish", "talen"],
+            "mta": ["wonder", "grimoire", "device", "sorcererartifact"],
+            "wto": ["relic", "wraithartifact", "memoriam"],
+            "ctd": ["treasure", "dross"],
+            "dtf": ["demonrelic"],
+            "htr": ["hunterrelic", "gear"],
+            "mtr": ["ushabti", "mummyrelic", "vessel"],
+        }
+
+        # All shows everything if there's any content
+        if queryset.exists():
+            result["wod"] = {
+                "name": self.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "items": queryset,
+            }
+
+        # Add specific gamelines that have content
+        for gl_code in self.GAMELINE_ORDER:
+            if gl_code == "wod":
+                continue
+            model_names = item_gameline_map.get(gl_code, [])
+            if model_names:
+                filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
+                if filtered.exists():
+                    result[gl_code] = {
+                        "name": self.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                        "items": filtered,
+                    }
+
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chronicle = self.object
 
+        # --- Common Knowledge (SettingElements) by gameline ---
+        all_setting_elements = chronicle.common_knowledge_elements.all()
+        setting_elements_by_gameline = self._group_by_gameline(
+            all_setting_elements, gameline_attr="gameline"
+        )
+
+        # --- Locations ---
         top_locations = (
             LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
         )
-        # Active player characters (not NPCs, not retired/deceased)
+        locations_by_gameline = self._group_locations_by_gameline(top_locations)
+
+        # --- Characters by status ---
         active_characters = (
             Character.objects.active()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
         )
-        # Retired characters (not NPCs)
         retired_characters = (
             Character.objects.retired()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
         )
-        # Deceased characters (not NPCs)
         deceased_characters = (
             Character.objects.deceased()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
         )
-        # NPC characters (active only)
         npc_characters = (
             Character.objects.active().npcs().with_group_ordering().filter(chronicle=chronicle)
         )
 
+        # --- Items ---
+        all_items = ItemModel.objects.for_chronicle(chronicle).order_by("name")
+        items_by_gameline = self._group_items_by_gameline(all_items)
+
         context.update(
             {
+                # Common Knowledge
+                "setting_elements_by_gameline": setting_elements_by_gameline,
+                # Characters (base querysets for backward compatibility)
                 "character_list": active_characters,
                 "retired_characters": retired_characters,
                 "deceased_characters": deceased_characters,
                 "npc_characters": npc_characters,
-                "items": ItemModel.objects.for_chronicle(chronicle).order_by("name"),
-                "form": SceneCreationForm(chronicle=chronicle),
+                # Characters by gameline
+                "active_by_gameline": self._group_characters_by_gameline(active_characters),
+                "retired_by_gameline": self._group_characters_by_gameline(retired_characters),
+                "deceased_by_gameline": self._group_characters_by_gameline(deceased_characters),
+                "npc_by_gameline": self._group_characters_by_gameline(npc_characters),
+                # Locations
                 "top_locations": top_locations,
+                "locations_by_gameline": locations_by_gameline,
+                # Items
+                "items": all_items,
+                "items_by_gameline": items_by_gameline,
+                # Forms and other
+                "form": SceneCreationForm(chronicle=chronicle),
                 "active_scenes": Scene.objects.active_for_chronicle(chronicle),
                 "story_form": StoryForm(),
                 "header": chronicle.headings,
@@ -700,7 +963,7 @@ class SettingElementDetailView(LoginRequiredMixin, DetailView):
 
 class SettingElementCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
     model = SettingElement
-    fields = ["name", "description"]
+    fields = ["name", "description", "gameline"]
     template_name = "game/setting_element/form.html"
     success_message = "Setting element '{name}' created successfully!"
     error_message = "Failed to create setting element. Please correct the errors below."
@@ -711,7 +974,7 @@ class SettingElementCreateView(StorytellerRequiredMixin, MessageMixin, CreateVie
 
 class SettingElementUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
     model = SettingElement
-    fields = ["name", "description"]
+    fields = ["name", "description", "gameline"]
     template_name = "game/setting_element/form.html"
     success_message = "Setting element '{name}' updated successfully!"
     error_message = "Failed to update setting element. Please correct the errors below."

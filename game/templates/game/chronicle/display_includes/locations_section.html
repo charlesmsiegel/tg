@@ -1,0 +1,58 @@
+{% load sanitize_text %}
+{% if locations_by_gameline %}
+    <!-- Gameline Sub-tabs (Pills for visual differentiation from main tabs) -->
+    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="locationGamelineTabs" role="tablist">
+        {% for gl_code, gl_data in locations_by_gameline.items %}
+            <li class="nav-item">
+                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
+                   id="loc-{{ gl_code }}-tab" data-toggle="pill" href="#loc-{{ gl_code }}" role="tab"
+                   aria-controls="loc-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ gl_data.name }}
+                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.locations.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="locationGamelineTabsContent">
+        {% for gl_code, gl_data in locations_by_gameline.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                 id="loc-{{ gl_code }}" role="tabpanel" aria-labelledby="loc-{{ gl_code }}-tab">
+                {% if gl_data.locations %}
+                    <div class="tg-table-responsive" style="border-radius: var(--border-radius-base); overflow: hidden; box-shadow: var(--shadow-sm);">
+                        <table class="tg-table table-striped" style="margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Location Name
+                                    </th>
+                                    <th style="width: 25%;">
+                                        <i class="fas fa-user mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Owner
+                                    </th>
+                                    <th style="width: 25%;">
+                                        <i class="fas fa-tag mr-2" style="color: var(--color-primary); font-size: 0.9em;"></i>Type
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loc in gl_data.locations %}
+                                    {% include "game/chronicle/display_includes/location_row.html" with location=loc level=0 allowed_types=gl_data.allowed_types gameline_code=gl_code %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+                        <i class="fas fa-map fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0" style="font-size: var(--font-size-base);">No locations found for this gameline.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5" style="color: var(--theme-text-muted); background: var(--theme-bg-secondary); border-radius: var(--border-radius-base); border: 2px dashed var(--theme-border-color);">
+        <i class="fas fa-map fa-3x mb-3" style="opacity: 0.3;"></i>
+        <p class="mb-0" style="font-size: var(--font-size-base);">No locations defined for this chronicle.</p>
+    </div>
+{% endif %}

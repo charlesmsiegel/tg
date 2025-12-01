@@ -67,6 +67,13 @@ class ObjectType(models.Model):
 class SettingElement(models.Model):
     name = models.CharField(max_length=100, default="")
     description = models.TextField(default="")
+    gameline = models.CharField(
+        max_length=10,
+        choices=GameLine.CHOICES,
+        default=GameLine.WOD,
+        db_index=True,
+        help_text="Game line this setting element belongs to",
+    )
 
     def __str__(self):
         return self.name

@@ -70,7 +70,8 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(SettingElement)
 class SettingElementAdmin(admin.ModelAdmin):
-    list_display = ("name", "description")
+    list_display = ("name", "gameline", "description")
+    list_filter = ("gameline",)
     search_fields = ("name", "description")
 
 

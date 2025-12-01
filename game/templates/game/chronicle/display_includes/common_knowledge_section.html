@@ -1,0 +1,48 @@
+{% load sanitize_text %}
+{% if setting_elements_by_gameline %}
+    <!-- Gameline Sub-tabs (Pills for visual differentiation from main tabs) -->
+    <ul class="nav nav-pills tg-nav-pills mb-4 justify-content-center flex-wrap" id="commonKnowledgeTabs" role="tablist">
+        {% for gl_code, gl_data in setting_elements_by_gameline.items %}
+            <li class="nav-item">
+                <a class="nav-link tg-nav-link {% if forloop.first %}active{% endif %} {{ gl_code }}_heading"
+                   id="ck-{{ gl_code }}-tab" data-toggle="pill" href="#ck-{{ gl_code }}" role="tab"
+                   aria-controls="ck-{{ gl_code }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ gl_data.name }}
+                    <span class="tg-badge badge-pill badge-secondary ml-1">{{ gl_data.items.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="commonKnowledgeTabsContent">
+        {% for gl_code, gl_data in setting_elements_by_gameline.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                 id="ck-{{ gl_code }}" role="tabpanel" aria-labelledby="ck-{{ gl_code }}-tab">
+                {% for se in gl_data.items %}
+                    <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 style="font-weight: 600; margin-bottom: 8px;">
+                                <a href="{{ se.get_absolute_url }}" class="{{ se.gameline }}_heading">{{ se.name }}</a>
+                            </h6>
+                            {% if se.gameline != "wod" %}
+                                <span class="tg-badge badge-pill {{ se.gameline }}_heading" style="font-size: 0.7rem;">
+                                    {{ se.get_gameline_display }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="mb-0" style="line-height: 1.6;">{{ se.description|simple_markdown }}</div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-3" style="color: var(--theme-text-muted);">
+                        <p class="mb-0">No common knowledge elements for this gameline.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5" style="color: var(--theme-text-muted);">
+        <i class="fas fa-book fa-3x mb-3" style="opacity: 0.3;"></i>
+        <p class="mb-0">No common knowledge elements defined for this chronicle.</p>
+    </div>
+{% endif %}
