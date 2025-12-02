@@ -32,7 +32,7 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         return list(
             Scene.objects.filter(characters__id=character_id)
             .select_related("chronicle", "location")
-            .prefetch_related("characters", "participants")
+            .prefetch_related("characters")
             .order_by("-date_of_scene")
         )
 
