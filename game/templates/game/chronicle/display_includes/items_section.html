@@ -81,3 +81,63 @@
         <p class="mb-0" style="font-size: var(--font-size-base);">No items defined for this chronicle.</p>
     </div>
 {% endif %}
+
+<!-- Item Creation Form -->
+{% if request.user.is_authenticated and item_form.fields.gameline.choices %}
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Item</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 24px;">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="tg-form-group mb-3">
+                            <label for="id_chronicle_item_gameline" class="tg-form-label">Game Line</label>
+                            <select name="gameline" id="id_chronicle_item_gameline" class="tg-form-control tg-form-select">
+                                {% for value, label in item_form.gameline.field.choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="tg-form-group mb-3">
+                            <label for="id_chronicle_item_type" class="tg-form-label">Item Type</label>
+                            {{ item_form.item_type }}
+                        </div>
+                        <div class="text-center mt-2">
+                            <button type="submit" name="create_item" class="tg-btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Item
+                            </button>
+                        </div>
+                    </form>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const gamelineSelect = document.getElementById('id_chronicle_item_gameline');
+                            const itemTypeSelect = document.getElementById('id_chronicle_item_type');
+                            if (gamelineSelect && itemTypeSelect) {
+                                const typesByGameline = JSON.parse(itemTypeSelect.dataset.typesByGameline || '{}');
+
+                                function updateItemTypes() {
+                                    const selectedGameline = gamelineSelect.value;
+                                    const types = typesByGameline[selectedGameline] || [];
+                                    itemTypeSelect.innerHTML = '';
+                                    types.forEach(function(type) {
+                                        const option = document.createElement('option');
+                                        option.value = type.value;
+                                        option.textContent = type.label;
+                                        itemTypeSelect.appendChild(option);
+                                    });
+                                }
+
+                                gamelineSelect.addEventListener('change', updateItemTypes);
+                                updateItemTypes();
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

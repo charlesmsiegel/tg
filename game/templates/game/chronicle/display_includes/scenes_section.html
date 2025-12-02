@@ -38,82 +38,75 @@
     </div>
 </div>
 
-<!-- Scene and Story Creation Forms -->
+<!-- Scene Creation Form -->
 {% if request.user.is_authenticated %}
     <hr class="my-4">
     <div class="row">
-        <!-- Create Scene Form -->
-        <div class="col-lg-8 mb-4">
-            <div class="tg-card h-100">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="tg-card">
                 <div class="tg-card-header text-center">
                     <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Scene</h5>
                 </div>
-                <div class="tg-card-body" style="padding: 20px;">
+                <div class="tg-card-body" style="padding: 24px;">
                     <form method="post" action="">
                         {% csrf_token %}
-                        <div class="row align-items-end">
-                            <div class="col-md-4 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
-                                    {{ form.name|add_class:"tg-form-control" }}
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="tg-form-group">
-                                    <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
-                                    {{ form.location|add_class:"tg-form-control tg-form-select" }}
-                                </div>
-                            </div>
-                            <div class="col-md-2 mb-3">
-                                <div class="tg-form-group">
+                        <div class="tg-form-group mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="tg-form-label">Scene Name</label>
+                            {{ form.name|add_class:"tg-form-control" }}
+                        </div>
+                        <div class="tg-form-group mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="tg-form-label">Location</label>
+                            {{ form.location|add_class:"tg-form-control tg-form-select" }}
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="tg-form-group mb-3">
                                     <label for="{{ form.date_of_scene.id_for_label }}" class="tg-form-label">Date</label>
                                     {{ form.date_of_scene|add_class:"tg-form-control" }}
                                 </div>
                             </div>
-                            <div class="col-md-2 mb-3">
-                                <div class="tg-form-group">
+                            <div class="col-6">
+                                <div class="tg-form-group mb-3">
                                     <label for="{{ form.gameline.id_for_label }}" class="tg-form-label">Gameline</label>
                                     {{ form.gameline|add_class:"tg-form-control tg-form-select" }}
                                 </div>
                             </div>
-                            <div class="col-md-1 mb-3">
-                                <button type="submit" name="create_scene" class="tg-btn btn-primary w-100" style="height: 38px;">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <button type="submit" name="create_scene" class="tg-btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Scene
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+    </div>
+{% endif %}
 
-        <!-- Create Story Form (ST only) -->
-        {% if request.user.profile.is_st %}
-            <div class="col-lg-4 mb-4">
-                <div class="tg-card h-100">
-                    <div class="tg-card-header text-center">
-                        <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Story</h5>
-                    </div>
-                    <div class="tg-card-body" style="padding: 20px;">
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            <div class="row align-items-end">
-                                <div class="col-9 mb-3">
-                                    <div class="tg-form-group">
-                                        <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
-                                        {{ story_form.name|add_class:"tg-form-control" }}
-                                    </div>
-                                </div>
-                                <div class="col-3 mb-3">
-                                    <button type="submit" name="create_story" class="tg-btn btn-primary w-100" style="height: 38px;">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+<!-- Story Creation Form (ST and Admin only) -->
+{% if request.user.profile.is_st or request.user.is_staff %}
+    <div class="row mt-4">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Story</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 24px;">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="tg-form-group mb-3">
+                            <label for="{{ story_form.name.id_for_label }}" class="tg-form-label">Story Name</label>
+                            {{ story_form.name|add_class:"tg-form-control" }}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" name="create_story" class="tg-btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Story
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        {% endif %}
+        </div>
     </div>
 {% endif %}

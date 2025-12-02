@@ -1,7 +1,9 @@
+import json
+
 from characters.models.core import CharacterModel
 from core.constants import GameLine
 from django import forms
-from game.models import Story, WeeklyXPRequest
+from game.models import ObjectType, STRelationship, Story, WeeklyXPRequest
 from locations.models.core import LocationModel
 
 
@@ -10,7 +12,7 @@ class SceneCreationForm(forms.Form):
         max_length=100, widget=forms.TextInput(attrs={"placeholder": "Scene Title"})
     )
     location = forms.ModelChoiceField(
-        queryset=LocationModel.objects.order_by("name"), empty_label="Scene Location"
+        queryset=LocationModel.objects.order_by("name"), empty_label="Select Location"
     )
     date_of_scene = forms.CharField(max_length=100, widget=forms.DateInput(attrs={"type": "date"}))
     gameline = forms.ChoiceField(
@@ -18,12 +20,347 @@ class SceneCreationForm(forms.Form):
         initial=GameLine.WOD,
     )
 
+    # Mapping from Gameline model names to GameLine choice codes
+    GAMELINE_NAME_TO_CODE = {
+        "World of Darkness": GameLine.WOD,
+        "Vampire: the Masquerade": GameLine.VTM,
+        "Werewolf: the Apocalypse": GameLine.WTA,
+        "Mage: the Ascension": GameLine.MTA,
+        "Wraith: the Oblivion": GameLine.WTO,
+        "Changeling: the Dreaming": GameLine.CTD,
+        "Demon: the Fallen": GameLine.DTF,
+        "Hunter: the Reckoning": GameLine.HTR,
+        "Mummy: the Resurrection": GameLine.MTR,
+    }
+
     def __init__(self, *args, **kwargs):
         chronicle = kwargs.pop("chronicle")
         super().__init__(*args, **kwargs)
         self.fields["location"].queryset = LocationModel.objects.filter(
             chronicle=chronicle
         ).order_by("name")
+
+        # Filter gameline choices to only those with STs for this chronicle
+        from game.models import STRelationship
+
+        st_gamelines = STRelationship.objects.filter(chronicle=chronicle).values_list(
+            "gameline__name", flat=True
+        )
+        allowed_codes = {
+            self.GAMELINE_NAME_TO_CODE.get(name)
+            for name in st_gamelines
+            if name in self.GAMELINE_NAME_TO_CODE
+        }
+
+        if allowed_codes:
+            self.fields["gameline"].choices = [
+                (code, label) for code, label in GameLine.CHOICES if code in allowed_codes
+            ]
+            # Set default to first available gameline if WOD is not available
+            if GameLine.WOD not in allowed_codes:
+                self.fields["gameline"].initial = self.fields["gameline"].choices[0][0]
+
+
+class ChronicleObjectCreationFormBase(forms.Form):
+    """Base class for chronicle-aware object creation forms."""
+
+    # Mapping from Gameline model names to GameLine choice codes
+    GAMELINE_NAME_TO_CODE = {
+        "World of Darkness": GameLine.WOD,
+        "Vampire: the Masquerade": GameLine.VTM,
+        "Werewolf: the Apocalypse": GameLine.WTA,
+        "Mage: the Ascension": GameLine.MTA,
+        "Wraith: the Oblivion": GameLine.WTO,
+        "Changeling: the Dreaming": GameLine.CTD,
+        "Demon: the Fallen": GameLine.DTF,
+        "Hunter: the Reckoning": GameLine.HTR,
+        "Mummy: the Resurrection": GameLine.MTR,
+    }
+
+    # Subclasses must define these
+    object_type_code = None  # 'char', 'loc', or 'obj'
+    type_field_name = None  # 'char_type', 'loc_type', or 'item_type'
+
+    gameline = forms.ChoiceField(choices=[], label="Game Line")
+    # type field is added dynamically in subclasses
+
+    def _format_label(self, name):
+        """Format type labels with special handling."""
+        # Mapping of gameline prefixes to full names for humans
+        gameline_map = {
+            "mta": "Mage",
+            "wto": "Wraith",
+            "ctd": "Changeling",
+            "wta": "Werewolf",
+            "vtm": "Vampire",
+            "dtf": "Demon",
+            "htr": "Hunter",
+            "mtr": "Mummy",
+        }
+
+        # Check if this is a human type
+        if "_human" in name:
+            prefix = name.split("_")[0]
+            gameline = gameline_map.get(prefix, prefix.upper())
+            return f"Human ({gameline})"
+
+        # Special cases
+        if name == "spirit_character":
+            return "Spirit"
+
+        # Default: title case with underscores replaced
+        return name.replace("_", " ").title()
+
+    def _get_st_gameline_codes(self, chronicle):
+        """Get the set of gameline codes that have STs for this chronicle."""
+        st_gamelines = STRelationship.objects.filter(chronicle=chronicle).values_list(
+            "gameline__name", flat=True
+        )
+        return {
+            self.GAMELINE_NAME_TO_CODE.get(name)
+            for name in st_gamelines
+            if name in self.GAMELINE_NAME_TO_CODE
+        }
+
+    def _get_allowed_type_names(self, chronicle):
+        """Get allowed object type names from chronicle's allowed_objects."""
+        return set(
+            chronicle.allowed_objects.filter(type=self.object_type_code).values_list(
+                "name", flat=True
+            )
+        )
+
+    def _build_choices(self, chronicle, user, excluded_types=None):
+        """Build gameline and type choices based on permissions."""
+        excluded_types = excluded_types or []
+        is_privileged = user.is_staff or user.profile.is_st()
+
+        # Get all object types for this category
+        all_types = ObjectType.objects.filter(type=self.object_type_code).exclude(
+            name__in=excluded_types
+        )
+
+        if is_privileged:
+            # STs and admins can create anything
+            allowed_gamelines = {obj.gameline for obj in all_types}
+            allowed_type_names = {obj.name for obj in all_types}
+        else:
+            # Regular users: filter by ST gamelines and allowed_objects
+            allowed_gamelines = self._get_st_gameline_codes(chronicle)
+            allowed_type_names = self._get_allowed_type_names(chronicle)
+
+        # Build gameline choices
+        gameline_choices = [
+            (code, label) for code, label in GameLine.CHOICES if code in allowed_gamelines
+        ]
+
+        # Build type choices organized by gameline
+        types_by_gameline = {}
+        for obj in all_types:
+            if obj.gameline in allowed_gamelines and obj.name in allowed_type_names:
+                if obj.gameline not in types_by_gameline:
+                    types_by_gameline[obj.gameline] = []
+                types_by_gameline[obj.gameline].append(
+                    {"value": obj.name, "label": self._format_label(obj.name)}
+                )
+
+        # Sort each gameline's types
+        for gameline in types_by_gameline:
+            types_by_gameline[gameline].sort(key=lambda x: x["label"])
+
+        return gameline_choices, types_by_gameline
+
+
+class ChronicleCharacterCreationForm(ChronicleObjectCreationFormBase):
+    """Character creation form filtered by chronicle's allowed_objects and ST gamelines."""
+
+    object_type_code = "char"
+    type_field_name = "char_type"
+
+    char_type = forms.ChoiceField(
+        choices=[],
+        label="Character Type",
+        widget=forms.Select(attrs={"id": "id_chronicle_char_type"}),
+    )
+
+    # Group types and non-character types to exclude
+    EXCLUDED_TYPES = [
+        # Groups
+        "cabal",
+        "group",
+        "pack",
+        "motley",
+        "coterie",
+        "circle",
+        "conclave",
+        # Core mechanics
+        "statistic",
+        "specialty",
+        "attribute",
+        "merit_flaw",
+        "human",
+        "derangement",
+        "character",
+        "archetype",
+        "ability",
+        "background",
+        "gameline",
+        "house_rule",
+        # Changeling mechanics
+        "kith",
+        "house",
+        "house_faction",
+        "legacy",
+        "cantrip",
+        "chimera",
+        # Demon mechanics
+        "demon_faction",
+        "demon_house",
+        "lore",
+        "visage",
+        "pact",
+        "demon_ritual",
+        "apocalyptic_form_trait",
+        # Hunter mechanics
+        "creed",
+        "edge",
+        "hunter_organization",
+        # Mage mechanics
+        "sphere",
+        "rote",
+        "resonance",
+        "instrument",
+        "practice",
+        "specialized_practice",
+        "corrupted_practice",
+        "tenet",
+        "paradigm",
+        "mage_faction",
+        "effect",
+        "advantage",
+        "sorcerer_fellowship",
+        "linear_magic_path",
+        "linear_magic_ritual",
+        # Mummy mechanics
+        "dynasty",
+        "mummy_title",
+        # Vampire mechanics
+        "discipline",
+        "path",
+        "vampire_clan",
+        "vampire_sect",
+        "vampire_title",
+        "revenant_family",
+        # Werewolf mechanics
+        "battle_scar",
+        "camp",
+        "totem",
+        "spirit",
+        "spirit_charm",
+        "tribe",
+        "renown_incident",
+        "rite",
+        "gift",
+        "gift_permission",
+        "fomori_power",
+        "sept_position",
+        # Wraith mechanics
+        "wraith_faction",
+        "guild",
+        "arcanos",
+        "thorn",
+        "shadow_archetype",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        chronicle = kwargs.pop("chronicle")
+        user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+        gameline_choices, types_by_gameline = self._build_choices(
+            chronicle, user, self.EXCLUDED_TYPES
+        )
+
+        self.fields["gameline"].choices = gameline_choices
+        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_gameline"
+
+        # Store types in widget for JavaScript
+        self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+            types_by_gameline
+        )
+
+        # Set initial choices
+        if gameline_choices and types_by_gameline:
+            first_gameline = gameline_choices[0][0]
+            self.fields["char_type"].choices = [
+                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
+            ]
+
+
+class ChronicleLocationCreationForm(ChronicleObjectCreationFormBase):
+    """Location creation form filtered by chronicle's allowed_objects and ST gamelines."""
+
+    object_type_code = "loc"
+    type_field_name = "loc_type"
+
+    loc_type = forms.ChoiceField(
+        choices=[],
+        label="Location Type",
+        widget=forms.Select(attrs={"id": "id_chronicle_loc_type"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        chronicle = kwargs.pop("chronicle")
+        user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+        gameline_choices, types_by_gameline = self._build_choices(chronicle, user)
+
+        self.fields["gameline"].choices = gameline_choices
+        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_loc_gameline"
+
+        self.fields["loc_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+            types_by_gameline
+        )
+
+        if gameline_choices and types_by_gameline:
+            first_gameline = gameline_choices[0][0]
+            self.fields["loc_type"].choices = [
+                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
+            ]
+
+
+class ChronicleItemCreationForm(ChronicleObjectCreationFormBase):
+    """Item creation form filtered by chronicle's allowed_objects and ST gamelines."""
+
+    object_type_code = "obj"
+    type_field_name = "item_type"
+
+    item_type = forms.ChoiceField(
+        choices=[],
+        label="Item Type",
+        widget=forms.Select(attrs={"id": "id_chronicle_item_type"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        chronicle = kwargs.pop("chronicle")
+        user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+        gameline_choices, types_by_gameline = self._build_choices(chronicle, user)
+
+        self.fields["gameline"].choices = gameline_choices
+        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_item_gameline"
+
+        self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
+            types_by_gameline
+        )
+
+        if gameline_choices and types_by_gameline:
+            first_gameline = gameline_choices[0][0]
+            self.fields["item_type"].choices = [
+                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
+            ]
 
 
 class AddCharForm(forms.Form):

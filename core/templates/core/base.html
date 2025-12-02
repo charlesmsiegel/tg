@@ -192,21 +192,23 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="chroniclesDropdown">
                                 {% for chronicle in chronicles %}
+                                    {% with active_scenes=chronicle.get_active_scenes %}
+                                    {% if active_scenes %}
                                     <li class="dropdown-submenu">
                                         <a class="dropdown-item dropdown-toggle"
                                            href="{{ chronicle.get_absolute_url }}">{{ chronicle }}</a>
                                         <ul class="dropdown-menu">
-                                            {% for scene in chronicle.get_active_scenes %}
+                                            {% for scene in active_scenes %}
                                                 <a class="dropdown-item" href="{{ scene.get_absolute_url }}">{{ scene }}</a>
                                             {% endfor %}
-                                            {% if chronicle.get_active_scenes %}
-                                                <div class="dropdown-divider"></div>
-                                            {% endif %}
-                                            <a class="dropdown-item" href="{{ chronicle.get_absolute_url }}#scenes">
-                                                <i class="fas fa-list"></i> All Scenes
-                                            </a>
                                         </ul>
                                     </li>
+                                    {% else %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ chronicle.get_absolute_url }}">{{ chronicle }}</a>
+                                    </li>
+                                    {% endif %}
+                                    {% endwith %}
                                 {% endfor %}
                             </ul>
                         </li>

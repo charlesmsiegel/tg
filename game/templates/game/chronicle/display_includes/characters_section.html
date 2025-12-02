@@ -48,3 +48,63 @@
         {% include "game/chronicle/display_includes/character_gameline_tabs.html" with characters_by_gameline=npc_by_gameline status_id="npc" %}
     </div>
 </div>
+
+<!-- Character Creation Form -->
+{% if request.user.is_authenticated and char_form.fields.gameline.choices %}
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title {{ object.headings }} mb-0">Create New Character</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 24px;">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="tg-form-group mb-3">
+                            <label for="{{ char_form.gameline.id_for_label }}" class="tg-form-label">Game Line</label>
+                            <select name="gameline" id="id_chronicle_gameline" class="tg-form-control tg-form-select">
+                                {% for value, label in char_form.gameline.field.choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="tg-form-group mb-3">
+                            <label for="{{ char_form.char_type.id_for_label }}" class="tg-form-label">Character Type</label>
+                            {{ char_form.char_type }}
+                        </div>
+                        <div class="text-center mt-2">
+                            <button type="submit" name="create_character" class="tg-btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Character
+                            </button>
+                        </div>
+                    </form>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const gamelineSelect = document.getElementById('id_chronicle_gameline');
+                            const charTypeSelect = document.getElementById('id_chronicle_char_type');
+                            if (gamelineSelect && charTypeSelect) {
+                                const typesByGameline = JSON.parse(charTypeSelect.dataset.typesByGameline || '{}');
+
+                                function updateCharTypes() {
+                                    const selectedGameline = gamelineSelect.value;
+                                    const types = typesByGameline[selectedGameline] || [];
+                                    charTypeSelect.innerHTML = '';
+                                    types.forEach(function(type) {
+                                        const option = document.createElement('option');
+                                        option.value = type.value;
+                                        option.textContent = type.label;
+                                        charTypeSelect.appendChild(option);
+                                    });
+                                }
+
+                                gamelineSelect.addEventListener('change', updateCharTypes);
+                                updateCharTypes();
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

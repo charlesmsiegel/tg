@@ -31,6 +31,9 @@ from django.views.generic import (
 )
 from game.forms import (
     AddCharForm,
+    ChronicleCharacterCreationForm,
+    ChronicleItemCreationForm,
+    ChronicleLocationCreationForm,
     JournalEntryForm,
     PostForm,
     SceneCreationForm,
@@ -38,6 +41,7 @@ from game.forms import (
     STResponseForm,
     WeeklyXPRequestForm,
 )
+from game.models import ObjectType
 from game.models import (
     Chronicle,
     Journal,
@@ -423,34 +427,97 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "active_scenes": active_scenes,  # Keep for backward compatibility
                 "story_form": StoryForm(),
                 "header": chronicle.headings,
+                # Creation forms for Characters, Locations, Items
+                "char_form": ChronicleCharacterCreationForm(
+                    chronicle=chronicle, user=self.request.user
+                ),
+                "loc_form": ChronicleLocationCreationForm(
+                    chronicle=chronicle, user=self.request.user
+                ),
+                "item_form": ChronicleItemCreationForm(chronicle=chronicle, user=self.request.user),
             }
         )
         return context
+
+    def _get_create_redirect_url(self, obj_type, type_name):
+        """Get the redirect URL for creating an object of the given type."""
+        obj = ObjectType.objects.get(name=type_name)
+        gameline = obj.gameline
+
+        # Map gameline codes to URL namespace paths
+        gameline_url_map = {
+            "wod": "",
+            "vtm": "vampire:",
+            "wta": "werewolf:",
+            "mta": "mage:",
+            "wto": "wraith:",
+            "ctd": "changeling:",
+            "dtf": "demon:",
+            "htr": "hunter:",
+            "mtr": "mummy:",
+        }
+
+        prefix = gameline_url_map.get(gameline, "")
+
+        if obj_type == "char":
+            return f"characters:{prefix}create:{type_name}"
+        elif obj_type == "loc":
+            return f"locations:{prefix}create:{type_name}"
+        elif obj_type == "obj":
+            return f"items:{prefix}create:{type_name}"
+
+        return None
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         chronicle = self.object
 
-        # Check if user is a storyteller for this chronicle
-        if not request.user.profile.is_st():
-            messages.error(request, "Only storytellers can create stories and scenes.")
-            raise PermissionDenied("Only storytellers can create stories and scenes")
+        # Handle character creation (redirects to create view)
+        if "create_character" in request.POST and "char_type" in request.POST:
+            type_name = request.POST["char_type"]
+            redirect_url = self._get_create_redirect_url("char", type_name)
+            if redirect_url:
+                return redirect(redirect_url)
 
+        # Handle location creation (redirects to create view)
+        if "create_location" in request.POST and "loc_type" in request.POST:
+            type_name = request.POST["loc_type"]
+            redirect_url = self._get_create_redirect_url("loc", type_name)
+            if redirect_url:
+                return redirect(redirect_url)
+
+        # Handle item creation (redirects to create view)
+        if "create_item" in request.POST and "item_type" in request.POST:
+            type_name = request.POST["item_type"]
+            redirect_url = self._get_create_redirect_url("obj", type_name)
+            if redirect_url:
+                return redirect(redirect_url)
+
+        # Story and scene creation require ST permissions
         create_story_flag = request.POST.get("create_story")
         create_scene_flag = request.POST.get("create_scene")
-        if create_story_flag is not None:
-            story = Story.objects.create(name=request.POST["name"])
-            messages.success(request, f"Story '{story.name}' created successfully!")
-        if create_scene_flag is not None:
-            location = get_object_or_404(LocationModel, pk=request.POST["location"])
-            scene = chronicle.add_scene(
-                request.POST["name"],
-                location,
-                date_of_scene=request.POST["date_of_scene"],
-                gameline=request.POST.get("gameline", "wod"),
-            )
-            messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
-            return redirect(scene)
+
+        if create_story_flag is not None or create_scene_flag is not None:
+            # Check if user is a storyteller for story/scene creation
+            if not request.user.profile.is_st() and not request.user.is_staff:
+                messages.error(request, "Only storytellers can create stories and scenes.")
+                raise PermissionDenied("Only storytellers can create stories and scenes")
+
+            if create_story_flag is not None:
+                story = Story.objects.create(name=request.POST["name"])
+                messages.success(request, f"Story '{story.name}' created successfully!")
+
+            if create_scene_flag is not None:
+                location = get_object_or_404(LocationModel, pk=request.POST["location"])
+                scene = chronicle.add_scene(
+                    request.POST["name"],
+                    location,
+                    date_of_scene=request.POST["date_of_scene"],
+                    gameline=request.POST.get("gameline", "wod"),
+                )
+                messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
+                return redirect(scene)
+
         return self.render_to_response(self.get_context_data())
 
 
