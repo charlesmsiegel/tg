@@ -29,39 +29,22 @@
         </div>
     </div>
 {% endblock basics %}
+{% block backgrounds %}
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
+{% endblock backgrounds %}
 {% block advantages %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title htr_heading">Advantages</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h6 class="htr_heading">Backgrounds</h6>
-                        </div>
-                        <div class="col-sm-6">
-                            <h6 class="htr_heading">Other</h6>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Allies</div>
-                        <div class="col-sm dots">{{ object.allies|dots }}</div>
-                        <div class="col-sm">Willpower</div>
-                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Influence</div>
-                        <div class="col-sm dots">{{ object.influence|dots }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm">Resources</div>
-                        <div class="col-sm dots">{{ object.resources|dots }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-0 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
+                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
                     </div>
                 </div>
             </div>

@@ -210,10 +210,12 @@
         </div>
         <div class="col-sm dots">{{ object.science|dots }}</div>
     </div>
+    {% with secondaries=object.get_secondaries_for_display %}
+    {% if secondaries %}
     <div class="row">
         <h2 class="col-sm {{ object.get_heading }}">Secondary Abilities</h2>
     </div>
-    {% for tal, ski, kno in object.get_secondaries_for_display %}
+    {% for tal, ski, kno in secondaries %}
         <div class="row">
             <div class="col-sm">
                 {{ tal|first }}
@@ -250,6 +252,8 @@
             {% endif %}
         </div>
     {% endfor %}
+    {% endif %}
+    {% endwith %}
     {% if object.faction.name == "Akashayana" %}
         <div class="row">
             <div class="col-sm">

@@ -48,47 +48,47 @@
     </div>
 {% endblock basics %}
 {% block advantages %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
+                <div class="tg-card-header text-center">
                     <h5 class="tg-card-title htr_heading">Advantages</h5>
                 </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-4">
-                            <h6 class="htr_heading">Virtues</h6>
-                        </div>
-                        <div class="col-sm-4">
-                            <h6 class="htr_heading">Temporary</h6>
-                        </div>
-                        <div class="col-sm-4">
-                            <h6 class="htr_heading">Willpower</h6>
-                        </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Willpower:</div>
+                        <div class="col-3 dots">{{ object.willpower|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Willpower:</div>
+                        <div class="col-3 dots">{{ object.temporary_willpower|boxes:10 }}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Conviction</div>
-                        <div class="col-sm dots">{{ object.conviction|dots }}</div>
-                        <div class="col-sm">Temp. Conv.</div>
-                        <div class="col-sm dots">{{ object.temporary_conviction|dots }}</div>
-                        <div class="col-sm">Willpower</div>
-                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="tg-card">
+                <div class="tg-card-header text-center">
+                    <h5 class="tg-card-title htr_heading">Virtues</h5>
+                </div>
+                <div class="tg-card-body" style="padding: 20px;">
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Conviction:</div>
+                        <div class="col-3 dots">{{ object.conviction|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Conviction:</div>
+                        <div class="col-3 dots">{{ object.temporary_conviction|boxes:10 }}</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">Vision</div>
-                        <div class="col-sm dots">{{ object.vision|dots }}</div>
-                        <div class="col-sm">Temp. Vision</div>
-                        <div class="col-sm dots">{{ object.temporary_vision|dots }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
+                    <div class="row mb-2 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Vision:</div>
+                        <div class="col-3 dots">{{ object.vision|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Vision:</div>
+                        <div class="col-3 dots">{{ object.temporary_vision|boxes:10 }}</div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm">Zeal</div>
-                        <div class="col-sm dots">{{ object.zeal|dots }}</div>
-                        <div class="col-sm">Temp. Zeal</div>
-                        <div class="col-sm dots">{{ object.temporary_zeal|dots }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
+                    <div class="row mb-0 text-center">
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Zeal:</div>
+                        <div class="col-3 dots">{{ object.zeal|dots:10 }}</div>
+                        <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Zeal:</div>
+                        <div class="col-3 dots">{{ object.temporary_zeal|boxes:10 }}</div>
                     </div>
                 </div>
             </div>

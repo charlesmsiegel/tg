@@ -22,13 +22,13 @@
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Gnosis:</div>
                         <div class="col-3 dots">{{ object.gnosis|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Gnosis:</div>
-                        <div class="col-3 dots">{{ object.temporary_gnosis|default:0|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_gnosis|default:0|boxes:10 }}</div>
                     </div>
                     <div class="row mb-0 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Rage:</div>
                         <div class="col-3 dots">{{ object.rage|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Rage:</div>
-                        <div class="col-3 dots">{{ object.temporary_rage|default:0|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_rage|default:0|boxes:10 }}</div>
                     </div>
                 </div>
             </div>
@@ -47,19 +47,19 @@
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glory:</div>
                         <div class="col-3 dots">{{ object.glory|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glory:</div>
-                        <div class="col-3 dots">{{ object.temporary_glory|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_glory|boxes:10 }}</div>
                     </div>
                     <div class="row mb-2 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Honor:</div>
                         <div class="col-3 dots">{{ object.honor|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Honor:</div>
-                        <div class="col-3 dots">{{ object.temporary_honor|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_honor|boxes:10 }}</div>
                     </div>
                     <div class="row mb-0 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Wisdom:</div>
                         <div class="col-3 dots">{{ object.wisdom|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Wisdom:</div>
-                        <div class="col-3 dots">{{ object.temporary_wisdom|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_wisdom|boxes:10 }}</div>
                     </div>
                 </div>
             </div>
@@ -221,21 +221,35 @@
                         <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.first_change|sanitize_html|linebreaks }}</p>
                     </div>
                     
-                    <!-- Additional Information Row -->
-                    <div class="d-flex justify-content-center align-items-center flex-wrap">
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Battle Scars:</span>
-                            {% for scar in object.battle_scars.all %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                    <!-- Goals -->
+                    {% if object.goals %}
+                        <div class="mb-3 text-center">
+                            <div class="mb-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Goals:</span>
+                            </div>
+                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.goals|sanitize_html|linebreaks }}</p>
                         </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Goals:</span>
-                            {{ object.goals|sanitize_html|linebreaks }}
+                    {% endif %}
+
+                    <!-- Battle Scars -->
+                    {% if object.battle_scars.all %}
+                        <div class="mb-3 text-center">
+                            <div class="mb-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Battle Scars:</span>
+                            </div>
+                            <p class="mb-0 text-center">{% for scar in object.battle_scars.all %}<a href="{{ scar.get_absolute_url }}">{{ scar.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                         </div>
-                        <div class="px-3 py-2">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Notes:</span>
-                            {{ object.notes|sanitize_html|linebreaks }}
+                    {% endif %}
+
+                    <!-- Notes -->
+                    {% if object.notes %}
+                        <div class="text-center">
+                            <div class="mb-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Notes:</span>
+                            </div>
+                            <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.notes|sanitize_html|linebreaks }}</p>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -263,22 +277,24 @@
             </div>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Renown Incidents</h5>
-                </div>
-                <div class="tg-card-body">
-                    {% for incident in object.renown_incidents %}
-                        <div class="row mb-2">
-                            <div class="col-sm text-center">
-                                <a href="{{ incident.get_absolute_url }}">{{ incident }}</a>
+    {% if object.renown_incidents %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Renown Incidents</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        {% for incident in object.renown_incidents %}
+                            <div class="row mb-2">
+                                <div class="col-sm text-center">
+                                    <a href="{{ incident.get_absolute_url }}">{{ incident }}</a>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock xp %}

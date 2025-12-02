@@ -1,6 +1,6 @@
 <div class="col-md mb-3">
-    <div class="card h-100">
-        <div class="card-body py-3">
+    <div class="tg-card h-100">
+        <div class="tg-card-body py-3">
             <div class="d-flex justify-content-around align-items-center flex-wrap mb-3">
                 <div class="text-center px-3 py-2">
                     <h6 class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 600;">Willpower</h6>
@@ -23,6 +23,12 @@
                 <div class="text-center pt-2 border-top">
                     <span class="text-muted font-weight-bold">Concept:</span>
                     <span>{{ object.concept }}</span>
+                </div>
+            {% endif %}
+            {% if object.description %}
+                <div class="text-center pt-2 {% if not object.concept %}border-top{% endif %}">
+                    <span class="text-muted font-weight-bold">Description:</span>
+                    <span>{{ object.description }}</span>
                 </div>
             {% endif %}
         </div>

@@ -22,13 +22,13 @@
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glamour:</div>
                         <div class="col-3 dots">{{ object.glamour|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glamour:</div>
-                        <div class="col-3 dots">{{ object.temporary_glamour|default:0|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_glamour|default:0|boxes:10 }}</div>
                     </div>
                     <div class="row mb-3 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Banality:</div>
                         <div class="col-3 dots">{{ object.banality|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Banality:</div>
-                        <div class="col-3 dots">{{ object.temporary_banality|default:0|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_banality|default:0|boxes:10 }}</div>
                     </div>
                     
                     <!-- Changeling-specific thresholds -->
@@ -52,92 +52,228 @@
     </div>
 {% endblock advantages %}
 {% block powers %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Arts</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Autumn:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.autumn|dots }}</div>
-                        <div class="col-sm-2"><strong>Chicanery:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.chicanery|dots }}</div>
-                        <div class="col-sm-2"><strong>Chronos:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.chronos|dots }}</div>
+    {% if object.autumn or object.chicanery or object.chronos or object.contract or object.dragons_ire or object.legerdemain or object.metamorphosis or object.naming or object.oneiromancy or object.primal or object.pyretics or object.skycraft or object.soothsay or object.sovereign or object.spring or object.summer or object.wayfare or object.winter %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Arts</h5>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Contract:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.contract|dots }}</div>
-                        <div class="col-sm-2"><strong>Dragon's Ire:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.dragons_ire|dots }}</div>
-                        <div class="col-sm-2"><strong>Legerdemain:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.legerdemain|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Metamorphosis:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.metamorphosis|dots }}</div>
-                        <div class="col-sm-2"><strong>Naming:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.naming|dots }}</div>
-                        <div class="col-sm-2"><strong>Oneiromancy:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.oneiromancy|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Primal:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.primal|dots }}</div>
-                        <div class="col-sm-2"><strong>Pyretics:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.pyretics|dots }}</div>
-                        <div class="col-sm-2"><strong>Skycraft:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.skycraft|dots }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Soothsay:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.soothsay|dots }}</div>
-                        <div class="col-sm-2"><strong>Sovereign:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.sovereign|dots }}</div>
-                        <div class="col-sm-2"><strong>Spring:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.spring|dots }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-2"><strong>Summer:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.summer|dots }}</div>
-                        <div class="col-sm-2"><strong>Wayfare:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.wayfare|dots }}</div>
-                        <div class="col-sm-2"><strong>Winter:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.winter|dots }}</div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% if object.autumn %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Autumn:</strong></div>
+                                        <div class="col-6 dots">{{ object.autumn|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.chicanery %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Chicanery:</strong></div>
+                                        <div class="col-6 dots">{{ object.chicanery|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.chronos %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Chronos:</strong></div>
+                                        <div class="col-6 dots">{{ object.chronos|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.contract %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Contract:</strong></div>
+                                        <div class="col-6 dots">{{ object.contract|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.dragons_ire %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Dragon's Ire:</strong></div>
+                                        <div class="col-6 dots">{{ object.dragons_ire|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.legerdemain %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Legerdemain:</strong></div>
+                                        <div class="col-6 dots">{{ object.legerdemain|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.metamorphosis %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Metamorphosis:</strong></div>
+                                        <div class="col-6 dots">{{ object.metamorphosis|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.naming %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Naming:</strong></div>
+                                        <div class="col-6 dots">{{ object.naming|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.oneiromancy %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Oneiromancy:</strong></div>
+                                        <div class="col-6 dots">{{ object.oneiromancy|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.primal %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Primal:</strong></div>
+                                        <div class="col-6 dots">{{ object.primal|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.pyretics %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Pyretics:</strong></div>
+                                        <div class="col-6 dots">{{ object.pyretics|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.skycraft %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Skycraft:</strong></div>
+                                        <div class="col-6 dots">{{ object.skycraft|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.soothsay %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Soothsay:</strong></div>
+                                        <div class="col-6 dots">{{ object.soothsay|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.sovereign %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Sovereign:</strong></div>
+                                        <div class="col-6 dots">{{ object.sovereign|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.spring %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Spring:</strong></div>
+                                        <div class="col-6 dots">{{ object.spring|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.summer %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Summer:</strong></div>
+                                        <div class="col-6 dots">{{ object.summer|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.wayfare %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Wayfare:</strong></div>
+                                        <div class="col-6 dots">{{ object.wayfare|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.winter %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Winter:</strong></div>
+                                        <div class="col-6 dots">{{ object.winter|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Realms</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Actor:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.actor|dots }}</div>
-                        <div class="col-sm-2"><strong>Fae:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.fae|dots }}</div>
-                        <div class="col-sm-2"><strong>Nature:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.nature_realm|dots }}</div>
+    {% endif %}
+    {% if object.actor or object.fae or object.nature_realm or object.prop or object.scene or object.time %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Realms</h5>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-2"><strong>Prop:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.prop|dots }}</div>
-                        <div class="col-sm-2"><strong>Scene:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.scene|dots }}</div>
-                        <div class="col-sm-2"><strong>Time:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.time|dots }}</div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% if object.actor %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Actor:</strong></div>
+                                        <div class="col-6 dots">{{ object.actor|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.fae %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Fae:</strong></div>
+                                        <div class="col-6 dots">{{ object.fae|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.nature_realm %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Nature:</strong></div>
+                                        <div class="col-6 dots">{{ object.nature_realm|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.prop %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Prop:</strong></div>
+                                        <div class="col-6 dots">{{ object.prop|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.scene %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Scene:</strong></div>
+                                        <div class="col-6 dots">{{ object.scene|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if object.time %}
+                                <div class="col-sm-4 mb-2">
+                                    <div class="row">
+                                        <div class="col-6"><strong>Time:</strong></div>
+                                        <div class="col-6 dots">{{ object.time|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock powers %}
 {% block appearance %}
     <div class="row mb-3">

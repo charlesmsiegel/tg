@@ -43,19 +43,19 @@
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Glory:</div>
                         <div class="col-3 dots">{{ object.glory|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Glory:</div>
-                        <div class="col-3 dots">{{ object.temporary_glory|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_glory|boxes:10 }}</div>
                     </div>
                     <div class="row mb-2 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Honor:</div>
                         <div class="col-3 dots">{{ object.honor|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Honor:</div>
-                        <div class="col-3 dots">{{ object.temporary_honor|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_honor|boxes:10 }}</div>
                     </div>
                     <div class="row mb-0 text-center">
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Wisdom:</div>
                         <div class="col-3 dots">{{ object.wisdom|dots:10 }}</div>
                         <div class="col-3" style="font-weight: 600; color: var(--theme-text-secondary);">Temporary Wisdom:</div>
-                        <div class="col-3 dots">{{ object.temporary_wisdom|dots:10 }}</div>
+                        <div class="col-3 dots">{{ object.temporary_wisdom|boxes:10 }}</div>
                     </div>
                 </div>
             </div>
@@ -63,32 +63,7 @@
     </div>
 {% endblock advantages %}
 {% block backgrounds %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Backgrounds</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-2"><strong>Allies:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.allies|dots }}</div>
-                        <div class="col-sm-2"><strong>Contacts:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.contacts|dots }}</div>
-                        <div class="col-sm-2"><strong>Mentor:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.mentor|dots }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-4"></div>
-                        <div class="col-sm-2"><strong>Pure Breed:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.pure_breed|dots }}</div>
-                        <div class="col-sm-2"><strong>Resources:</strong></div>
-                        <div class="col-sm-2 dots">{{ object.resources|dots }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "characters/core/background_block/detail.html" with backgrounds=object.backgrounds %}
 {% endblock backgrounds %}
 {% block powers %}
     <!-- Gifts Section (only if gifts exist) -->
