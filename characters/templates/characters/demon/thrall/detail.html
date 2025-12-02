@@ -65,15 +65,15 @@
                         <div class="col-sm">Faith Potential</div>
                         <div class="col-sm dots">{{ object.faith_potential|dots }}</div>
                         <div class="col-sm">Willpower</div>
-                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                        <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm">Conviction</div>
                         <div class="col-sm dots">{{ object.conviction|dots }}</div>
                         <div class="col-sm">Daily Faith</div>
                         <div class="col-sm">{{ object.daily_faith_offered }}</div>
-                        <div class="col-sm"></div>
-                        <div class="col-sm"></div>
+                        <div class="col-sm">Temp. Willpower</div>
+                        <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
                     </div>
                     <div class="row mb-0">
                         <div class="col-sm">Courage</div>

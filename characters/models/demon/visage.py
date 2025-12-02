@@ -5,7 +5,12 @@ from django.urls import reverse
 
 
 class Visage(Model):
-    """Represents a specific visage/aspect of an apocalyptic form."""
+    """
+    Represents a specific visage/aspect of a demon's apocalyptic form.
+
+    A Visage is primarily descriptive - it has a name and description.
+    It also has a default ApocalypticForm that demons can use as a starting point.
+    """
 
     type = "visage"
     gameline = "dtf"
@@ -18,12 +23,14 @@ class Visage(Model):
         blank=True,
     )
 
-    # Available apocalyptic form traits for this visage
-    low_torment_traits = models.ManyToManyField(
-        "ApocalypticFormTrait", blank=True, related_name="low_torment_visages"
-    )
-    high_torment_traits = models.ManyToManyField(
-        "ApocalypticFormTrait", blank=True, related_name="high_torment_visages"
+    # Default apocalyptic form for this visage
+    default_apocalyptic_form = models.ForeignKey(
+        "ApocalypticForm",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="visages_using_as_default",
+        help_text="The default apocalyptic form traits for this visage",
     )
 
     class Meta:
@@ -46,11 +53,3 @@ class Visage(Model):
 
     def get_heading(self):
         return "dtf_heading"
-
-    def get_available_traits(self):
-        """Get all traits available for this visage."""
-        return self.available_traits.all()
-
-    def total_traits(self):
-        """Get total number of available traits."""
-        return self.available_traits.count()

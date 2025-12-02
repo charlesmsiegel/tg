@@ -46,18 +46,6 @@
                                 {{ object.celestial_name }}
                             </div>
                         {% endif %}
-                        {% if object.host_name %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Host Name:</span>
-                                {{ object.host_name }}
-                            </div>
-                        {% endif %}
-                        {% if object.visage %}
-                            <div class="px-3 py-2">
-                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Visage:</span>
-                                <a href="{{ object.visage.get_absolute_url }}">{{ object.visage }}</a>
-                            </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -87,23 +75,31 @@
                         <div class="col-sm">Conscience</div>
                         <div class="col-sm dots">{{ object.conscience|dots }}</div>
                         <div class="col-sm">Faith</div>
-                        <div class="col-sm dots">{{ object.faith|dots }}</div>
+                        <div class="col-sm dots">{{ object.faith|dots:10 }}</div>
                         <div class="col-sm">Willpower</div>
-                        <div class="col-sm dots">{{ object.willpower|dots }}</div>
+                        <div class="col-sm dots">{{ object.willpower|dots:10 }}</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm">Conviction</div>
                         <div class="col-sm dots">{{ object.conviction|dots }}</div>
                         <div class="col-sm">Temp. Faith</div>
-                        <div class="col-sm dots">{{ object.temporary_faith|dots }}</div>
+                        <div class="col-sm dots">{{ object.temporary_faith|boxes:10 }}</div>
+                        <div class="col-sm">Temp. Willpower</div>
+                        <div class="col-sm dots">{{ object.temporary_willpower|boxes:10 }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Courage</div>
+                        <div class="col-sm dots">{{ object.courage|dots }}</div>
+                        <div class="col-sm">Torment</div>
+                        <div class="col-sm dots">{{ object.torment|dots:10 }}</div>
                         <div class="col-sm"></div>
                         <div class="col-sm"></div>
                     </div>
                     <div class="row mb-0">
-                        <div class="col-sm">Courage</div>
-                        <div class="col-sm dots">{{ object.courage|dots }}</div>
-                        <div class="col-sm">Torment</div>
-                        <div class="col-sm dots">{{ object.torment|dots }}</div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm">Temp. Torment</div>
+                        <div class="col-sm dots">{{ object.temporary_torment|boxes:10 }}</div>
                         <div class="col-sm"></div>
                         <div class="col-sm"></div>
                     </div>
@@ -113,38 +109,14 @@
     </div>
 {% endblock advantages %}
 {% block powers %}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Lores</h5>
-                </div>
-                <div class="tg-card-body">
-                    {% if object.get_lores %}
-                        {% for lore in object.get_lores %}
-                            <div class="row mb-1">
-                                <div class="col-sm">
-                                    <a href="{{ lore.get_absolute_url }}">{{ lore.name }}</a>
-                                </div>
-                                <div class="col-sm dots">{{ lore.rating|dots }}</div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="row">
-                            <div class="col-sm">No lores selected.</div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-    {% if object.visage or object.apocalyptic_form.all %}
+    {% include "characters/demon/display_includes/lore_block.html" %}
+    {% if object.visage or object.apocalyptic_form %}
         <div class="row mb-4">
             <div class="col-12">
                 <div class="tg-card">
                     <div class="tg-card-header">
                         <h5 class="tg-card-title {{ object.get_heading }}">
-                            Apocalyptic Form{% if object.visage %}: {{ object.visage.name }}{% endif %}
+                            Visage{% if object.visage %}: <a href="{{ object.visage.get_absolute_url }}">{{ object.visage.name }}</a>{% endif %}
                         </h5>
                     </div>
                     <div class="tg-card-body">
@@ -153,28 +125,48 @@
                                 <p style="line-height: 1.6; font-style: italic;">{{ object.visage.description }}</p>
                             </div>
                         {% endif %}
-                        {% if object.apocalyptic_form.all %}
-                            <h6 class="{{ object.get_heading }} mb-3">Apocalyptic Form Traits ({{ object.apocalyptic_form.count }}/8)</h6>
+                        {% if object.apocalyptic_form %}
                             <div class="row">
-                                {% for trait in object.apocalyptic_form.all %}
-                                    <div class="col-md-6 mb-3">
-                                        <div class="p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
+                                {# Low Torment Traits Column #}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="{{ object.get_heading }} mb-3">Low Torment Traits ({{ object.apocalyptic_form_low_torment_count }}/4)</h6>
+                                    {% for trait in object.get_low_torment_traits %}
+                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
                                             <div class="d-flex justify-content-between align-items-start mb-1">
                                                 <strong>{{ trait.name }}</strong>
-                                                <span class="badge {% if trait.high_torment_only %}bg-danger{% else %}bg-secondary{% endif %}" style="font-size: 0.7rem;">
-                                                    {% if trait.high_torment_only %}High Torment{% else %}{{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}{% endif %}
+                                                <span class="badge bg-secondary" style="font-size: 0.7rem;">
+                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
                                                 </span>
                                             </div>
                                             <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
                                         </div>
-                                    </div>
-                                {% endfor %}
+                                    {% empty %}
+                                        <p class="text-muted">No low torment traits selected.</p>
+                                    {% endfor %}
+                                </div>
+                                {# High Torment Traits Column #}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="{{ object.get_heading }} mb-3">High Torment Traits ({{ object.apocalyptic_form_high_torment_count }}/4)</h6>
+                                    {% for trait in object.get_high_torment_traits %}
+                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <strong>{{ trait.name }}</strong>
+                                                <span class="badge {% if trait.high_torment_only %}bg-danger{% else %}bg-warning{% endif %}" style="font-size: 0.7rem;">
+                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted">No high torment traits selected.</p>
+                                    {% endfor %}
+                                </div>
                             </div>
                             <div class="mt-2 text-muted" style="font-size: 0.875rem;">
-                                <strong>Points Spent:</strong> {{ object.apocalyptic_form_points_spent }}/{{ object.apocalyptic_form_points }}
+                                <strong>Points Spent:</strong> {{ object.apocalyptic_form_points_spent }}/16
                             </div>
                         {% else %}
-                            <p class="text-muted">No apocalyptic form traits selected.</p>
+                            <p class="text-muted">No apocalyptic form selected.</p>
                         {% endif %}
                     </div>
                 </div>

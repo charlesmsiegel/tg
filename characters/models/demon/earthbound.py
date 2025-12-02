@@ -1,6 +1,8 @@
+from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore_block import LoreBlock
+from characters.models.demon.visage import Visage
 from django.db import models
 from django.urls import reverse
 
@@ -37,6 +39,24 @@ class Earthbound(LoreBlock, DtFHuman):
     # House (original angelic house)
     house = models.ForeignKey(
         DemonHouse,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="earthbound",
+    )
+
+    # Visage (descriptive aspect of apocalyptic form)
+    visage = models.ForeignKey(
+        Visage,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="earthbound",
+    )
+
+    # Apocalyptic Form (the actual traits)
+    apocalyptic_form = models.ForeignKey(
+        ApocalypticForm,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -115,24 +135,6 @@ class Earthbound(LoreBlock, DtFHuman):
     reliquary_soak = models.IntegerField(
         default=0,
         help_text="Soak rating (= permanent Willpower for perfect/location, temp Willpower for improvised)",
-    )
-
-    # APOCALYPTIC FORM - Earthbound design custom visages
-    # They get 16 form points to spend on 8 features
-    visage_features = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="List of 8 visage features with point costs, e.g., [{'name': 'Claws/Teeth', 'cost': 2}, ...]",
-    )
-
-    visage_grotesqueries = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="List of 8 grotesqueries (cosmetic deformities), e.g., ['Decaying', 'Multiple Eyes', ...]",
-    )
-
-    total_form_points = models.IntegerField(
-        default=16, help_text="Total form points available (default 16)"
     )
 
     # MANIFESTATION
@@ -249,18 +251,43 @@ class Earthbound(LoreBlock, DtFHuman):
             self.temporary_faith > 0 and self.reliquary_current_health < self.reliquary_max_health
         )
 
-    def get_total_visage_feature_cost(self):
-        """Calculate total form points spent on visage features"""
-        total = 0
-        for feature in self.visage_features:
-            if isinstance(feature, dict) and "cost" in feature:
-                total += feature.get("cost", 0)
-        return total
+    # Apocalyptic Form methods - delegate to ApocalypticForm object
+    def has_apocalyptic_form(self):
+        """Check if earthbound has a valid apocalyptic form."""
+        return self.apocalyptic_form is not None and self.apocalyptic_form.is_valid()
 
-    def has_valid_visage(self):
-        """Check if visage has 8 features totaling 16 points or less"""
-        return (
-            len(self.visage_features) == 8
-            and len(self.visage_grotesqueries) == 8
-            and self.get_total_visage_feature_cost() <= self.total_form_points
-        )
+    def get_low_torment_traits(self):
+        """Get low torment apocalyptic form traits."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.low_torment_traits.all()
+        return ApocalypticFormTrait.objects.none()
+
+    def get_high_torment_traits(self):
+        """Get high torment apocalyptic form traits."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.high_torment_traits.all()
+        return ApocalypticFormTrait.objects.none()
+
+    def apocalyptic_form_low_torment_count(self):
+        """Count low torment traits in apocalyptic form."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.low_torment_count()
+        return 0
+
+    def apocalyptic_form_high_torment_count(self):
+        """Count high torment traits in apocalyptic form."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.high_torment_count()
+        return 0
+
+    def apocalyptic_form_points_spent(self):
+        """Calculate total points spent on apocalyptic form traits."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.total_points()
+        return 0
+
+    def apocalyptic_form_points_remaining(self):
+        """Calculate remaining points for apocalyptic form."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.points_remaining()
+        return 16

@@ -56,25 +56,13 @@
                     <h5 class="tg-card-title {{ object.get_heading }}">Urges</h5>
                 </div>
                 <div class="tg-card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_flesh|dots }}</div>
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Flesh)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_thought|dots }}</div>
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Thought)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--theme-text-primary); margin-bottom: 4px;">{{ object.urge_emotion|dots }}</div>
-                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--theme-text-secondary);">Urge (Emotion)</div>
-                            </div>
-                        </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">Flesh</div>
+                        <div class="col-sm dots">{{ object.urge_flesh|dots }}</div>
+                        <div class="col-sm">Thought</div>
+                        <div class="col-sm dots">{{ object.urge_thought|dots }}</div>
+                        <div class="col-sm">Emotion</div>
+                        <div class="col-sm dots">{{ object.urge_emotion|dots }}</div>
                     </div>
                 </div>
             </div>
@@ -140,59 +128,67 @@
 {% block powers %}
     {{ block.super }}
 
-    {# Lores Section #}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Lores</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row">
-                        {% for lore_name, lore_value in object.get_lores.items %}
-                            {% if lore_value > 0 %}
-                                <div class="col-md-6 mb-2">
-                                    <strong>{{ lore_name|title }}:</strong> {{ lore_value|dots }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {# Lores Section - using shared include #}
+    {% include "characters/demon/display_includes/lore_block.html" %}
 
-    {# Visage Features Section #}
-    {% if object.visage_features %}
+    {# Visage and Apocalyptic Form Section #}
+    {% if object.visage or object.apocalyptic_form %}
         <div class="row mb-4">
             <div class="col-12">
                 <div class="tg-card">
                     <div class="tg-card-header">
-                        <h5 class="tg-card-title {{ object.get_heading }}">Apocalyptic Form</h5>
+                        <h5 class="tg-card-title {{ object.get_heading }}">
+                            Visage{% if object.visage %}: <a href="{{ object.visage.get_absolute_url }}">{{ object.visage.name }}</a>{% endif %}
+                        </h5>
                     </div>
                     <div class="tg-card-body">
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <strong>Features:</strong>
+                        {% if object.visage and object.visage.description %}
+                            <div class="mb-4">
+                                <p style="line-height: 1.6; font-style: italic;">{{ object.visage.description }}</p>
                             </div>
-                        </div>
-                        {% for feature in object.visage_features %}
-                            <div class="row mb-2">
-                                <div class="col-sm-8">{{ feature.name }}</div>
-                                <div class="col-sm-4">Cost: {{ feature.cost }}</div>
-                            </div>
-                        {% endfor %}
-                        {% if object.visage_grotesqueries %}
-                            <div class="row mt-3 mb-2">
-                                <div class="col-12">
-                                    <strong>Grotesqueries:</strong>
+                        {% endif %}
+                        {% if object.apocalyptic_form %}
+                            <div class="row">
+                                {# Low Torment Traits Column #}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="{{ object.get_heading }} mb-3">Low Torment Traits ({{ object.apocalyptic_form_low_torment_count }}/4)</h6>
+                                    {% for trait in object.get_low_torment_traits %}
+                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <strong>{{ trait.name }}</strong>
+                                                <span class="badge bg-secondary" style="font-size: 0.7rem;">
+                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted">No low torment traits selected.</p>
+                                    {% endfor %}
+                                </div>
+                                {# High Torment Traits Column #}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="{{ object.get_heading }} mb-3">High Torment Traits ({{ object.apocalyptic_form_high_torment_count }}/4)</h6>
+                                    {% for trait in object.get_high_torment_traits %}
+                                        <div class="mb-3 p-2" style="background-color: rgba(0,0,0,0.03); border-radius: 6px;">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <strong>{{ trait.name }}</strong>
+                                                <span class="badge {% if trait.high_torment_only %}bg-danger{% else %}bg-warning{% endif %}" style="font-size: 0.7rem;">
+                                                    {{ trait.cost }} pt{% if trait.cost != 1 %}s{% endif %}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 0.875rem; color: var(--theme-text-secondary);">{{ trait.description }}</div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted">No high torment traits selected.</p>
+                                    {% endfor %}
                                 </div>
                             </div>
-                            {% for grotesque in object.visage_grotesqueries %}
-                                <div class="row mb-1">
-                                    <div class="col-12">{{ grotesque }}</div>
-                                </div>
-                            {% endfor %}
+                            <div class="mt-2 text-muted" style="font-size: 0.875rem;">
+                                <strong>Points Spent:</strong> {{ object.apocalyptic_form_points_spent }}/16
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No apocalyptic form selected.</p>
                         {% endif %}
                     </div>
                 </div>

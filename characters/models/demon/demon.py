@@ -55,9 +55,18 @@ class Demon(LoreBlock, DtFHuman):
         related_name="members",
     )
 
-    # Visage (apocalyptic form)
+    # Visage (descriptive aspect of apocalyptic form)
     visage = models.ForeignKey(
         Visage,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="demons",
+    )
+
+    # Apocalyptic Form (the actual traits)
+    apocalyptic_form = models.ForeignKey(
+        "ApocalypticForm",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -82,11 +91,6 @@ class Demon(LoreBlock, DtFHuman):
 
     # Learned rituals
     rituals = models.ManyToManyField("Ritual", blank=True, related_name="demons_who_know")
-
-    # Apocalyptic form (select 8 traits)
-    apocalyptic_form = models.ManyToManyField(
-        "ApocalypticFormTrait", blank=True, related_name="demons_with_trait"
-    )
 
     # Host information
     host_name = models.CharField(max_length=200, default="", blank=True)
@@ -186,62 +190,50 @@ class Demon(LoreBlock, DtFHuman):
             and (self.conviction + self.courage + self.conscience) == 6
         )
 
+    # Apocalyptic Form methods - delegate to ApocalypticForm object
+    def has_apocalyptic_form(self):
+        """Check if demon has a valid apocalyptic form."""
+        return self.apocalyptic_form is not None and self.apocalyptic_form.is_valid()
+
+    def get_low_torment_traits(self):
+        """Get low torment apocalyptic form traits."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.low_torment_traits.all()
+        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
+
+        return ApocalypticFormTrait.objects.none()
+
+    def get_high_torment_traits(self):
+        """Get high torment apocalyptic form traits."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.high_torment_traits.all()
+        from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
+
+        return ApocalypticFormTrait.objects.none()
+
+    def apocalyptic_form_low_torment_count(self):
+        """Count low torment traits in apocalyptic form."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.low_torment_count()
+        return 0
+
+    def apocalyptic_form_high_torment_count(self):
+        """Count high torment traits in apocalyptic form."""
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.high_torment_count()
+        return 0
+
     def apocalyptic_form_points_spent(self):
         """Calculate total points spent on apocalyptic form traits."""
-        return sum(trait.cost for trait in self.apocalyptic_form.all())
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.total_points()
+        return 0
 
     def apocalyptic_form_points_remaining(self):
         """Calculate remaining points for apocalyptic form."""
-        return self.apocalyptic_form_points - self.apocalyptic_form_points_spent()
-
-    def has_apocalyptic_form(self):
-        """Check if apocalyptic form is complete (spent all or most points)."""
-        # Complete if spent at least 80% of points (8 out of 10)
-        return self.apocalyptic_form_points_spent() >= 8
-
-    def add_apocalyptic_trait(self, trait):
-        """Add a trait to apocalyptic form (respects point budget and max 8 traits)."""
-        # Check if already has trait
-        if trait in self.apocalyptic_form.all():
-            return False
-
-        # Check max 8 traits limit
-        if self.apocalyptic_form.count() >= 8:
-            return False
-
-        # Check point budget
-        if self.apocalyptic_form_points_spent() + trait.cost > self.apocalyptic_form_points:
-            return False
-
-        self.apocalyptic_form.add(trait)
-        return True
-
-    def remove_apocalyptic_trait(self, trait):
-        """Remove a trait from apocalyptic form."""
-        if trait in self.apocalyptic_form.all():
-            self.apocalyptic_form.remove(trait)
-            return True
-        return False
-
-    def get_apocalyptic_traits(self):
-        """Get all selected apocalyptic form traits."""
-        return self.apocalyptic_form.all()
-
-    def get_available_apocalyptic_traits(self):
-        """Get traits available from demon's visage (excluding already selected)."""
-        if self.visage:
-            return self.visage.available_traits.exclude(
-                id__in=self.apocalyptic_form.values_list("id", flat=True)
-            )
-        return None
-
-    def get_affordable_apocalyptic_traits(self):
-        """Get traits available that can be afforded with remaining points."""
-        available = self.get_available_apocalyptic_traits()
-        if available is not None:
-            remaining_points = self.apocalyptic_form_points_remaining()
-            return available.filter(cost__lte=remaining_points)
-        return None
+        if self.apocalyptic_form:
+            return self.apocalyptic_form.points_remaining()
+        return 16
 
     # Ritual methods
     def get_rituals(self):
