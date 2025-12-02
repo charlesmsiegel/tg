@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+{% block title %}
+    {{ object.name }} - Revenant Family
+{% endblock title %}
+{% block content %}
+    <div class="container" style="max-width: 1200px; margin: 0 auto;">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card header-card" data-gameline="vtm">
+                    <div class="tg-card-header text-center">
+                        <h1 class="tg-card-title vtm_heading">{{ object.name }}</h1>
+                        <p class="tg-card-subtitle">Revenant Family</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if object.description %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title vtm_heading">Description</h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
+                            <p style="line-height: 1.6;">{{ object.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if object.weakness %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title vtm_heading">Family Weakness</h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
+                            <p style="line-height: 1.6;">{{ object.weakness }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if object.disciplines.exists %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title vtm_heading">Family Disciplines</h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for discipline in object.disciplines.all %}
+                                    <a href="{{ discipline.get_absolute_url }}" class="tg-badge badge-pill" style="background-color: var(--theme-card-bg); border: 1px solid var(--theme-border-color); padding: 6px 12px;">
+                                        {{ discipline.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if object.revenants.exists %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tg-card">
+                        <div class="tg-card-header">
+                            <h5 class="tg-card-title vtm_heading">Family Members</h5>
+                        </div>
+                        <div class="tg-card-body" style="padding: 20px;">
+                            <div class="row">
+                                {% for revenant in object.revenants.all %}
+                                    <div class="col-md-4 mb-2">
+                                        <a href="{{ revenant.get_absolute_url }}">{{ revenant.name }}</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <a href="{{ object.get_update_url }}" class="btn btn-primary">Edit</a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

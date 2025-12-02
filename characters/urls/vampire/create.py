@@ -53,4 +53,9 @@ urls = [
         views.vampire.CoterieCreateView.as_view(),
         name="coterie",
     ),
+    path(
+        "revenant_family/",
+        views.vampire.RevenantFamilyCreateView.as_view(),
+        name="revenant_family",
+    ),
 ]

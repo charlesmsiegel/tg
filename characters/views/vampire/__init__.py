@@ -38,6 +38,12 @@ from .revenant import (
     RevenantListView,
     RevenantUpdateView,
 )
+from .revenant_family import (
+    RevenantFamilyCreateView,
+    RevenantFamilyDetailView,
+    RevenantFamilyListView,
+    RevenantFamilyUpdateView,
+)
 from .sect import (
     VampireSectCreateView,
     VampireSectDetailView,

@@ -1,0 +1,33 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Revenant Family
+{% endblock creation_title %}
+{% block creation_title_2 %}
+    {% if object %}Update{% else %}Create{% endif %} Revenant Family
+{% endblock creation_title_2 %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+        </div>
+        <div class="col-sm-9">{{ form.name }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+        </div>
+        <div class="col-sm-9">{{ form.description }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.weakness.id_for_label }}" class="form-label">Family Weakness</label>
+        </div>
+        <div class="col-sm-9">{{ form.weakness }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.disciplines.id_for_label }}" class="form-label">Disciplines</label>
+        </div>
+        <div class="col-sm-9">{{ form.disciplines }}</div>
+    </div>
+{% endblock contents %}

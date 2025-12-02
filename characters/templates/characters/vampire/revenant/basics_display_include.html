@@ -14,7 +14,7 @@
                     {% if object.family %}
                         <div class="px-3 py-2">
                             <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Family:</span>
-                            {{ object.family.name }}
+                            <a href="{{ object.family.get_absolute_url }}">{{ object.family.name }}</a>
                         </div>
                     {% endif %}
                     <div class="px-3 py-2">

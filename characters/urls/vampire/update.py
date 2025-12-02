@@ -58,4 +58,9 @@ urls = [
         views.vampire.CoterieUpdateView.as_view(),
         name="coterie",
     ),
+    path(
+        "revenant_family/<pk>/",
+        views.vampire.RevenantFamilyUpdateView.as_view(),
+        name="revenant_family",
+    ),
 ]

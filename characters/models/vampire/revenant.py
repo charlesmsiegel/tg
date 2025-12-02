@@ -23,6 +23,16 @@ class RevenantFamily(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("characters:vampire:revenant_family", args=[str(self.id)])
+
+    def get_update_url(self):
+        return reverse("characters:vampire:update:revenant_family", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        return reverse("characters:vampire:create:revenant_family")
+
 
 class Revenant(VtMHuman):
     """
