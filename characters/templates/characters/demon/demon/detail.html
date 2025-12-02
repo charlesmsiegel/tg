@@ -5,94 +5,59 @@
     Create Demon
 {% endblock creation_title %}
 {% block basics %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title {{ object.get_heading }}">Basics</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Name:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.name }}</div>
-                        <div class="col-sm-3">
-                            <strong>Nature:</strong>
-                        </div>
-                        <div class="col-sm-3">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
                             {% if object.nature %}
                                 <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
                             {% else %}
                                 -
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Player:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.owner }}</div>
-                        <div class="col-sm-3">
-                            <strong>Demeanor:</strong>
-                        </div>
-                        <div class="col-sm-3">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
                             {% if object.demeanor %}
                                 <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
                             {% else %}
                                 -
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Concept:</strong>
-                        </div>
-                        <div class="col-sm-9">{{ object.concept }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>House:</strong>
-                        </div>
-                        <div class="col-sm-3">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">House:</span>
                             {% if object.house %}
                                 <a href="{{ object.house.get_absolute_url }}">{{ object.house }}</a>
                             {% else %}
                                 -
                             {% endif %}
                         </div>
-                        <div class="col-sm-3">
-                            <strong>Faction:</strong>
-                        </div>
-                        <div class="col-sm-3">
-                            {% if object.faction %}
+                        {% if object.faction %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Faction:</span>
                                 <a href="{{ object.faction.get_absolute_url }}">{{ object.faction }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Celestial Name:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.celestial_name|default:"-" }}</div>
-                        <div class="col-sm-3">
-                            <strong>Host Name:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.host_name|default:"-" }}</div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-3">
-                            <strong>Visage:</strong>
-                        </div>
-                        <div class="col-sm-9">
-                            {% if object.visage %}
+                            </div>
+                        {% endif %}
+                        {% if object.celestial_name %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Celestial Name:</span>
+                                {{ object.celestial_name }}
+                            </div>
+                        {% endif %}
+                        {% if object.host_name %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Host Name:</span>
+                                {{ object.host_name }}
+                            </div>
+                        {% endif %}
+                        {% if object.visage %}
+                            <div class="px-3 py-2">
+                                <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Visage:</span>
                                 <a href="{{ object.visage.get_absolute_url }}">{{ object.visage }}</a>
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

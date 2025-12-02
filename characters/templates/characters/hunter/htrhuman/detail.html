@@ -2,50 +2,27 @@
 {% load dots %}
 {% load get_specialty %}
 {% block basics %}
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="tg-card">
-                <div class="tg-card-header">
-                    <h5 class="tg-card-title htr_heading">Basics</h5>
-                </div>
-                <div class="tg-card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Name:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.name }}</div>
-                        <div class="col-sm-3">
-                            <strong>Nature:</strong>
-                        </div>
-                        <div class="col-sm-3">
+                <div class="tg-card-body text-center" style="padding: 20px;">
+                    <div class="d-flex justify-content-center align-items-center flex-wrap">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Nature:</span>
                             {% if object.nature %}
                                 <a href="{{ object.nature.get_absolute_url }}">{{ object.nature }}</a>
                             {% else %}
                                 -
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-3">
-                            <strong>Player:</strong>
-                        </div>
-                        <div class="col-sm-3">{{ object.owner }}</div>
-                        <div class="col-sm-3">
-                            <strong>Demeanor:</strong>
-                        </div>
-                        <div class="col-sm-3">
+                        <div class="px-3 py-2">
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Demeanor:</span>
                             {% if object.demeanor %}
                                 <a href="{{ object.demeanor.get_absolute_url }}">{{ object.demeanor }}</a>
                             {% else %}
                                 -
                             {% endif %}
                         </div>
-                    </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-3">
-                            <strong>Concept:</strong>
-                        </div>
-                        <div class="col-sm-9">{{ object.concept }}</div>
                     </div>
                 </div>
             </div>
