@@ -6,7 +6,7 @@ from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
 from characters.models.core.specialty import Specialty
 from characters.models.core.statistic import Statistic
-from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
+from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
 from characters.models.demon.demon import Demon
 from characters.models.demon.lore import Lore
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -193,16 +193,27 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
         form = super().get_form(form_class)
         demon = get_object_or_404(Demon, pk=self.kwargs["pk"])
 
-        # Get available traits from visage
-        if demon.visage:
-            available_traits = demon.get_available_apocalyptic_traits()
-            if available_traits:
-                for trait in available_traits:
-                    form.fields[f"trait_{trait.id}"] = forms.BooleanField(
-                        required=False,
-                        label=f"{trait.name} ({trait.cost} points)",
-                        help_text=trait.description,
-                    )
+        # Get all available traits, separated by type
+        # Low torment traits (exclude high_torment_only traits)
+        low_torment_traits = ApocalypticFormTrait.objects.filter(high_torment_only=False)
+        # High torment traits (all traits can be high torment)
+        high_torment_traits = ApocalypticFormTrait.objects.all()
+
+        # Add low torment trait fields
+        for trait in low_torment_traits:
+            form.fields[f"low_trait_{trait.id}"] = forms.BooleanField(
+                required=False,
+                label=f"{trait.name} ({trait.cost} points)",
+                help_text=trait.description,
+            )
+
+        # Add high torment trait fields
+        for trait in high_torment_traits:
+            form.fields[f"high_trait_{trait.id}"] = forms.BooleanField(
+                required=False,
+                label=f"{trait.name} ({trait.cost} points)",
+                help_text=trait.description,
+            )
 
         return form
 
@@ -214,47 +225,75 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
         )
         context["points_spent"] = context["object"].apocalyptic_form_points_spent()
         context["points_remaining"] = context["object"].apocalyptic_form_points_remaining()
-        context["points_budget"] = context["object"].apocalyptic_form_points
+        context["points_budget"] = 16
         return context
 
     def form_valid(self, form):
         demon = get_object_or_404(Demon, pk=self.kwargs["pk"])
 
-        # Clear existing selections
-        demon.apocalyptic_form.clear()
+        # Create or get an ApocalypticForm for this demon
+        form_name = f"{demon.name}'s Apocalyptic Form"
+        apoc_form, _ = ApocalypticForm.objects.get_or_create(
+            name=form_name,
+            defaults={"description": f"Apocalyptic form for {demon.name}"},
+        )
 
-        # Add selected traits
+        # Clear existing selections
+        apoc_form.low_torment_traits.clear()
+        apoc_form.high_torment_traits.clear()
+
+        # Collect selected traits
+        low_traits = []
+        high_traits = []
         total_cost = 0
-        traits_selected = 0
 
         for field_name, value in form.cleaned_data.items():
-            if field_name.startswith("trait_") and value:
-                trait_id = int(field_name.split("_")[1])
-                trait = ApocalypticFormTrait.objects.get(id=trait_id)
-                total_cost += trait.cost
-                traits_selected += 1
+            if value:
+                if field_name.startswith("low_trait_"):
+                    trait_id = int(field_name.split("_")[2])
+                    trait = ApocalypticFormTrait.objects.get(id=trait_id)
+                    low_traits.append(trait)
+                    total_cost += trait.cost
+                elif field_name.startswith("high_trait_"):
+                    trait_id = int(field_name.split("_")[2])
+                    trait = ApocalypticFormTrait.objects.get(id=trait_id)
+                    high_traits.append(trait)
+                    total_cost += trait.cost
 
-                if traits_selected > 8:
-                    form.add_error(None, "You can select a maximum of 8 traits")
-                    return self.form_invalid(form)
-
-                if total_cost > demon.apocalyptic_form_points:
-                    form.add_error(
-                        None,
-                        f"Point budget exceeded. You have {demon.apocalyptic_form_points} points available.",
-                    )
-                    return self.form_invalid(form)
-
-                demon.apocalyptic_form.add(trait)
-
-        # Must spend at least 8 points
-        if total_cost < 8:
+        # Validate selections
+        if len(low_traits) != 4:
             form.add_error(
-                None,
-                f"You must spend at least 8 points on Apocalyptic Form traits. Currently: {total_cost}",
+                None, f"You must select exactly 4 low torment traits. Currently: {len(low_traits)}"
             )
             return self.form_invalid(form)
 
+        if len(high_traits) != 4:
+            form.add_error(
+                None,
+                f"You must select exactly 4 high torment traits. Currently: {len(high_traits)}",
+            )
+            return self.form_invalid(form)
+
+        if total_cost > 16:
+            form.add_error(
+                None, f"Point budget exceeded. Maximum is 16 points. Currently: {total_cost}"
+            )
+            return self.form_invalid(form)
+
+        # Check for duplicate traits between low and high
+        low_ids = {t.id for t in low_traits}
+        high_ids = {t.id for t in high_traits}
+        if low_ids & high_ids:
+            form.add_error(None, "A trait cannot be selected as both low and high torment.")
+            return self.form_invalid(form)
+
+        # Add traits to the form
+        for trait in low_traits:
+            apoc_form.low_torment_traits.add(trait)
+        for trait in high_traits:
+            apoc_form.high_torment_traits.add(trait)
+
+        demon.apocalyptic_form = apoc_form
         demon.creation_status += 1
         demon.save()
         return HttpResponseRedirect(demon.get_absolute_url())
