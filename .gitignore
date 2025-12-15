@@ -110,3 +110,4 @@ populate_db/chronicles/
 
 ### Claude Code ###
 .claude/settings.local.json
+dl/
