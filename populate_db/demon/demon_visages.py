@@ -1,6 +1,36 @@
-from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
+from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
+
+
+def create_visage_with_form(
+    name, house, description, low_traits, high_traits, source_book, source_page
+):
+    """
+    Helper to create a Visage with its default ApocalypticForm.
+    Returns the Visage instance.
+    """
+    # Create the visage
+    visage, _ = Visage.objects.get_or_create(
+        name=name,
+        house=house,
+        defaults={"description": description},
+    )
+    visage.add_source(source_book, source_page)
+
+    # Create or get the default apocalyptic form for this visage
+    form, _ = ApocalypticForm.objects.get_or_create(
+        name=f"{name} (Default)",
+    )
+    form.low_torment_traits.set(low_traits)
+    form.high_torment_traits.set(high_traits)
+
+    # Link the form to the visage
+    visage.default_apocalyptic_form = form
+    visage.save()
+
+    return visage
+
 
 # Get the houses
 from populate_db.demon.demon_houses import (
@@ -407,553 +437,448 @@ trait_improved_physical_capabilities_scourges = ApocalypticFormTrait.objects.get
 
 # DEVIL VISAGES
 # Bel, the Visage of the Celestials
-bel = Visage.objects.get_or_create(
+bel = create_visage_with_form(
     name="Bel",
     house=devils,
-    defaults={
-        "description": "The apocalyptic form of the Lore of the Celestials reveals the fallen as a luminous, lordly angel, radiating divine grandeur and authority. Her skin literally glows, wreathing her in an aura of golden light that shifts in intensity depending on her mood. Her eyes blaze with the cold light of the stars. Despite her actual physical appearance, the fallen seems to tower over everyone around her."
-    },
-)[0]
-bel.add_source("Demon: The Fallen", 176)
-bel.low_torment_traits.set(
-    [
+    description="The apocalyptic form of the Lore of the Celestials reveals the fallen as a luminous, lordly angel, radiating divine grandeur and authority. Her skin literally glows, wreathing her in an aura of golden light that shifts in intensity depending on her mood. Her eyes blaze with the cold light of the stars. Despite her actual physical appearance, the fallen seems to tower over everyone around her.",
+    low_traits=[
         trait_wings,
         trait_lordly_mien_devils,
         trait_enhanced_senses,
         trait_increased_awareness_devils,
-    ]
-)
-bel.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_scales_devils,
         trait_increased_size,
         trait_dread_gaze_devils,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=176,
 )
 
 # Nusku, the Visage of the Flames
-nusku = Visage.objects.get_or_create(
+nusku = create_visage_with_form(
     name="Nusku",
     house=devils,
-    defaults={
-        "description": "These demons reveal themselves in a blaze of yellow-orange light. Their skin glows with the seething brilliance of the sun, and their image shimmers like a mirage. Their eyes take on the color of burnished gold, and when angered, the Nusku radiate palpable waves of heat. An angel's hair becomes a deep red or reddish-gold and thickens into a leonine mane. Open flames flare brightly in his presence, seeming to bow toward their master as the tongues of flame are drawn to the divinity in their midst."
-    },
-)[0]
-nusku.add_source("Demon: The Fallen", 178)
-nusku.low_torment_traits.set(
-    [
+    description="These demons reveal themselves in a blaze of yellow-orange light. Their skin glows with the seething brilliance of the sun, and their image shimmers like a mirage. Their eyes take on the color of burnished gold, and when angered, the Nusku radiate palpable waves of heat. An angel's hair becomes a deep red or reddish-gold and thickens into a leonine mane. Open flames flare brightly in his presence, seeming to bow toward their master as the tongues of flame are drawn to the divinity in their midst.",
+    low_traits=[
         trait_shroud_of_flames_devils,
         trait_immunity_to_fire_devils,
         trait_extra_actions,
         trait_improved_initiative,
-    ]
-)
-nusku.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_lashing_tail,
         trait_increased_size,
         trait_fiery_blood_devils,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=178,
 )
 
 # Qingu, the Visage of Radiance
-qingu = Visage.objects.get_or_create(
+qingu = create_visage_with_form(
     name="Qingu",
     house=devils,
-    defaults={
-        "description": "The apocalyptic form of the masters of Radiance is an incandescent figure wreathed in a corona of jewel-like color. Their physical features have more in common with the smooth perfection of marble than with human skin. Their voices are pure as crystal, and they cut through the petty din of the mortal world like a razor."
-    },
-)[0]
-qingu.add_source("Demon: The Fallen", 180)
-qingu.low_torment_traits.set(
-    [
+    description="The apocalyptic form of the masters of Radiance is an incandescent figure wreathed in a corona of jewel-like color. Their physical features have more in common with the smooth perfection of marble than with human skin. Their voices are pure as crystal, and they cut through the petty din of the mortal world like a razor.",
+    low_traits=[
         trait_wings,
         trait_inhuman_allure_devils,
         trait_radiant_aura_devils,
         trait_sense_the_hidden_devils,
-    ]
-)
-qingu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_voice_of_the_damned_devils,
         trait_casts_no_reflection,
         trait_corrosive_spit_devils,
         trait_horns,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=180,
 )
 
 # SCOURGE VISAGES
 # Dagan, the Visage of Awakenings
-dagan = Visage.objects.get_or_create(
+dagan = create_visage_with_form(
     name="Dagan",
     house=scourges,
-    defaults={
-        "description": "The apocalyptic form of the masters of animation infuses the angel's mortal body with the blush of youth and vibrant health - even the oldest mortal vessel appears to be in the prime of life and moves with inhuman grace, speed and strength. This aura of life and vitality radiates as a palpable sense of warmth, like a beam of sunlight, and every living being touched is temporarily suffused with its power. Wilted flowers return to full bloom, the injured gain strength and the old forget their afflictions."
-    },
-)[0]
-dagan.add_source("Demon: The Fallen", 182)
-dagan.low_torment_traits.set(
-    [
+    description="The apocalyptic form of the masters of animation infuses the angel's mortal body with the blush of youth and vibrant health - even the oldest mortal vessel appears to be in the prime of life and moves with inhuman grace, speed and strength. This aura of life and vitality radiates as a palpable sense of warmth, like a beam of sunlight, and every living being touched is temporarily suffused with its power. Wilted flowers return to full bloom, the injured gain strength and the old forget their afflictions.",
+    low_traits=[
         trait_aura_of_vitality_scourges,
         trait_pass_without_trace,
         trait_improved_physical_capabilities_scourges,
         trait_wings,
-    ]
-)
-dagan.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_miasma_scourges,
         trait_extra_health_levels,
         trait_viscous_flesh_scourges,
         trait_extra_limbs,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=182,
 )
 
 # Anshar, the Visage of the Firmament
-anshar = Visage.objects.get_or_create(
+anshar = create_visage_with_form(
     name="Anshar",
     house=scourges,
-    defaults={
-        "description": "These Angels of the Firmament reveal themselves as lithe, ethereal figures with pale skin and large gray eyes. When they speak, their voice echoes faintly, as if from a great distance, and they alternate between bouts of quiet distraction and periods of intense, disquieting scrutiny."
-    },
-)[0]
-anshar.add_source("Demon: The Fallen", 184)
-anshar.low_torment_traits.set(
-    [
+    description="These Angels of the Firmament reveal themselves as lithe, ethereal figures with pale skin and large gray eyes. When they speak, their voice echoes faintly, as if from a great distance, and they alternate between bouts of quiet distraction and periods of intense, disquieting scrutiny.",
+    low_traits=[
         trait_enhanced_senses,
         trait_wings,
         trait_enhanced_intuition_scourges,
         trait_enhanced_dodge_scourges,
-    ]
-)
-anshar.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_cloak_of_shadows_scourges,
         trait_multiple_eyes_scourges,
         trait_improved_initiative,
         trait_claws_teeth,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=184,
 )
 
 # Ellil, the Visage of the Winds
-ellil = Visage.objects.get_or_create(
+ellil = create_visage_with_form(
     name="Ellil",
     house=scourges,
-    defaults={
-        "description": "The monarchs of the air reveal themselves as tall and lithe, with large eyes and swift, graceful movements. When in revelatory form, the Ellil are constantly surrounded by shifting winds that ebb and flow with the intensity of their emotions. Any smoke or steam in the area is often sucked by these winds into a swirling vortex that circles their heads and shoulders like an ominous halo."
-    },
-)[0]
-ellil.add_source("Demon: The Fallen", 185)
-ellil.low_torment_traits.set(
-    [
+    description="The monarchs of the air reveal themselves as tall and lithe, with large eyes and swift, graceful movements. When in revelatory form, the Ellil are constantly surrounded by shifting winds that ebb and flow with the intensity of their emotions. Any smoke or steam in the area is often sucked by these winds into a swirling vortex that circles their heads and shoulders like an ominous halo.",
+    low_traits=[
         trait_supernatural_vision_scourges,
         trait_wings,
         trait_perfect_balance_scourges,
         trait_immune_to_falling_damage_scourges,
-    ]
-)
-ellil.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_extra_actions,
         trait_quills_scourges,
         trait_caustic_bile_scourges,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=185,
 )
 
 # MALEFACTOR VISAGES
 # Kishar, the Visage of the Earth
-kishar = Visage.objects.get_or_create(
+kishar = create_visage_with_form(
     name="Kishar",
     house=malefactors,
-    defaults={
-        "description": "These angels manifest as towering figures with dark skin that ranges from a creamy brown to utter black, and their bodies appear as though hewn from stone, with muscle and bone etched in sharp relief on a frame devoid of soft flesh or fat. The Kishar are hairless, and the irises of their eyes have the clarity and color of gemstones: ruby, sapphire, emerald, garnet, topaz and diamond. The air about them smells of freshly turned earth, rich with the promise of life."
-    },
-)[0]
-kishar.add_source("Demon: The Fallen", 188)
-kishar.low_torment_traits.set(
-    [
+    description="These angels manifest as towering figures with dark skin that ranges from a creamy brown to utter black, and their bodies appear as though hewn from stone, with muscle and bone etched in sharp relief on a frame devoid of soft flesh or fat. The Kishar are hairless, and the irises of their eyes have the clarity and color of gemstones: ruby, sapphire, emerald, garnet, topaz and diamond. The air about them smells of freshly turned earth, rich with the promise of life.",
+    low_traits=[
         trait_increased_size,
         trait_immune_to_bashing_damage_malefactors,
         trait_irresistible_force_malefactors,
         trait_night_vision_malefactors,
-    ]
-)
-kishar.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_extra_limbs,
         trait_gaping_maw,
         trait_spikes_malefactors,
         trait_ichor_malefactors,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=188,
 )
 
 # Antu, the Visage of the Paths
-antu = Visage.objects.get_or_create(
+antu = create_visage_with_form(
     name="Antu",
     house=malefactors,
-    defaults={
-        "description": "The angels of the pathways closely resemble mortals at first glance. Their skin is deeply tanned, as though they'd spent a lifetime in the sun, and the skin around their dark eyes are deeply lined, casting their orbits in permanent shadow. It is only on closer inspection that the worry lines are revealed as intricate patterns that radiate from the angel's eyes and continue to run across the planes of her face, disappearing into her scalp and circling her throat in intricate tattoos. At night these lines reflect the moonlight in ghostly traceries that seem to shift and realign themselves as the angel speaks."
-    },
-)[0]
-antu.add_source("Demon: The Fallen", 189)
-antu.low_torment_traits.set(
-    [
+    description="The angels of the pathways closely resemble mortals at first glance. Their skin is deeply tanned, as though they'd spent a lifetime in the sun, and the skin around their dark eyes are deeply lined, casting their orbits in permanent shadow. It is only on closer inspection that the worry lines are revealed as intricate patterns that radiate from the angel's eyes and continue to run across the planes of her face, disappearing into her scalp and circling her throat in intricate tattoos. At night these lines reflect the moonlight in ghostly traceries that seem to shift and realign themselves as the angel speaks.",
+    low_traits=[
         trait_dead_reckoning_malefactors,
         trait_enhanced_perception_malefactors,
         trait_improved_initiative,
         trait_flashing_fingers_malefactors,
-    ]
-)
-antu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_pass_without_trace,
         trait_alter_size_malefactors,
         trait_mirage_malefactors,
         trait_relentless_malefactors,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=189,
 )
 
 # Mummu, the Visage of the Forge
-mummu = Visage.objects.get_or_create(
+mummu = create_visage_with_form(
     name="Mummu",
     house=malefactors,
-    defaults={
-        "description": "The angels of the forge appear as giants hammered from the black iron of the earth, their powerfully muscled forms lit with veins of hot magma, and their eyes shining like disks of burnished brass. Their voices are deep and thunderous, like the roar of a furnace. When in their apocalyptic form, these fallen are immune to extremes of temperature and pressure. They can handle hot coals as mortals do ice cubes."
-    },
-)[0]
-mummu.add_source("Demon: The Fallen", 191)
-mummu.low_torment_traits.set(
-    [
+    description="The angels of the forge appear as giants hammered from the black iron of the earth, their powerfully muscled forms lit with veins of hot magma, and their eyes shining like disks of burnished brass. Their voices are deep and thunderous, like the roar of a furnace. When in their apocalyptic form, these fallen are immune to extremes of temperature and pressure. They can handle hot coals as mortals do ice cubes.",
+    low_traits=[
         trait_master_artisan_malefactors,
         trait_increased_size,
         trait_thunderous_voice_malefactors,
         trait_immune_to_fire_malefactors,
-    ]
-)
-mummu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_blades_malefactors,
         trait_extra_limbs,
         trait_magnetic_field_malefactors,
         trait_iron_skin_malefactors,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=191,
 )
 
 # FIEND VISAGES
 # Ninsun, the Visage of Patterns
-ninsun = Visage.objects.get_or_create(
+ninsun = create_visage_with_form(
     name="Ninsun",
     house=fiends,
-    defaults={
-        "description": "The angels of the great pattern have skins of indigo. Their hairless bodies are covered with intricate lines and patterns etched in silvery blue light that shifts and realigns depending on the angle of light and the intensity of the angel's mood. Their eyes are like bright sapphires, casting the cold light of the stars."
-    },
-)[0]
-ninsun.add_source("Demon: The Fallen", 194)
-ninsun.low_torment_traits.set(
-    [
+    description="The angels of the great pattern have skins of indigo. Their hairless bodies are covered with intricate lines and patterns etched in silvery blue light that shifts and realigns depending on the angle of light and the intensity of the angel's mood. Their eyes are like bright sapphires, casting the cold light of the stars.",
+    low_traits=[
         trait_wings,
         trait_improved_initiative,
         trait_enhanced_intuition_fiends,
         trait_enhanced_mental_acuity_fiends,
-    ]
-)
-ninsun.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_aura_of_misfortune_fiends,
         trait_extra_actions,
         trait_extra_limbs,
         trait_sibilant_whispers_fiends,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=194,
 )
 
 # Nedu, the Visage of Portals
-nedu = Visage.objects.get_or_create(
+nedu = create_visage_with_form(
     name="Nedu",
     house=fiends,
-    defaults={
-        "description": "The angels of the threshold are tall, ethereal figures, their long limbs and lean bodies wreathed in a veil of shifting shadow. Their movements are as fluid as they are soundless, and their feet leave no impression to mark their passing. When they pass into deep shadow, their eyes shine with a cold, blue light."
-    },
-)[0]
-nedu.add_source("Demon: The Fallen", 196)
-nedu.low_torment_traits.set(
-    [
+    description="The angels of the threshold are tall, ethereal figures, their long limbs and lean bodies wreathed in a veil of shifting shadow. Their movements are as fluid as they are soundless, and their feet leave no impression to mark their passing. When they pass into deep shadow, their eyes shine with a cold, blue light.",
+    low_traits=[
         trait_pass_without_trace,
         trait_enhanced_senses,
         trait_increased_awareness_fiends,
         trait_wings,
-    ]
-)
-nedu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_cloak_of_shadows_fiends,
         trait_improved_initiative,
         trait_enhanced_dodge_fiends,
         trait_casts_no_reflection,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=196,
 )
 
 # Shamash, the Visage of Light
-shamash = Visage.objects.get_or_create(
+shamash = create_visage_with_form(
     name="Shamash",
     house=fiends,
-    defaults={
-        "description": "The apocalyptic form of the masters of this lore paints a demon in shifting patterns of shadow and pale, silvery starlight. These hypnotic images draw the eye and beguile the senses, at times hinting at subtle flashes that reflect the demon's inner thoughts. The Shamash are alluring, chimerical, deceptive, terrifying or achingly beautiful, often from moment to moment."
-    },
-)[0]
-shamash.add_source("Demon: The Fallen", 198)
-shamash.low_torment_traits.set(
-    [
+    description="The apocalyptic form of the masters of this lore paints a demon in shifting patterns of shadow and pale, silvery starlight. These hypnotic images draw the eye and beguile the senses, at times hinting at subtle flashes that reflect the demon's inner thoughts. The Shamash are alluring, chimerical, deceptive, terrifying or achingly beautiful, often from moment to moment.",
+    low_traits=[
         trait_enhanced_mental_acuity_fiends,
         trait_night_sight_fiends,
         trait_chimerical_aura_fiends,
         trait_unearthly_glamour_fiends,
-    ]
-)
-shamash.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_hypnotic_visions_fiends,
         trait_dread_mien_fiends,
         trait_chimerical_attack_fiends,
         trait_casts_no_reflection,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=198,
 )
 
 # DEFILER VISAGES
 # Ishhara, the Visage of Longing
-ishhara = Visage.objects.get_or_create(
+ishhara = create_visage_with_form(
     name="Ishhara",
     house=defilers,
-    defaults={
-        "description": "The angels of inspiration are visions of beauty, compared to whom even the radiant angels of the Namaru pale. Their golden hair and perfectly sculpted features are the romantic ideal spoken of in mortal poetry and prose, and their honeyed voices melt even the hardest hearts."
-    },
-)[0]
-ishhara.add_source("Demon: The Fallen", 199)
-ishhara.low_torment_traits.set(
-    [
+    description="The angels of inspiration are visions of beauty, compared to whom even the radiant angels of the Namaru pale. Their golden hair and perfectly sculpted features are the romantic ideal spoken of in mortal poetry and prose, and their honeyed voices melt even the hardest hearts.",
+    low_traits=[
         trait_enhanced_social_traits_devourers,
         trait_lyrical_voice_defilers,
         trait_enhanced_senses,
         trait_enhanced_intuition_defilers,
-    ]
-)
-ishhara.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_venom_defilers,
         trait_extra_limbs,
         trait_casts_no_reflection,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=199,
 )
 
 # Adad, the Visage of Storms
-adad = Visage.objects.get_or_create(
+adad = create_visage_with_form(
     name="Adad",
     house=defilers,
-    defaults={
-        "description": "The angels of the storm are tall, statuesque figures, their skins glistening like opal and their dark hair tinged with the deep green of the ocean depths. Blue flickers of ball lightning writhe and dance across their bodies, forming an angry nimbus surrounding their head and shoulders when their fury is aroused."
-    },
-)[0]
-adad.add_source("Demon: The Fallen", 201)
-adad.low_torment_traits.set(
-    [
+    description="The angels of the storm are tall, statuesque figures, their skins glistening like opal and their dark hair tinged with the deep green of the ocean depths. Blue flickers of ball lightning writhe and dance across their bodies, forming an angry nimbus surrounding their head and shoulders when their fury is aroused.",
+    low_traits=[
         trait_weather_sense_defilers,
         trait_immune_to_electricity_defilers,
         trait_improved_initiative,
         trait_shocking_touch_defilers,
-    ]
-)
-adad.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_spines_defilers,
         trait_shark_hide_defilers,
         trait_ink_cloud_defilers,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=201,
 )
 
 # Mammetum, the Visage of Transfiguration
-mammetum = Visage.objects.get_or_create(
+mammetum = create_visage_with_form(
     name="Mammetum",
     house=defilers,
-    defaults={
-        "description": "The angels of transfiguration reveal themselves as luminescent figures devoid of identifying feature or expression, haunting in their silence and deliberate grace. Their entire body is a mirror reflecting the moods and thoughts of those around them, shifting like quicksilver amid a riot of conflicting feelings and expressions."
-    },
-)[0]
-mammetum.add_source("Demon: The Fallen", 203)
-mammetum.low_torment_traits.set(
-    [
+    description="The angels of transfiguration reveal themselves as luminescent figures devoid of identifying feature or expression, haunting in their silence and deliberate grace. Their entire body is a mirror reflecting the moods and thoughts of those around them, shifting like quicksilver amid a riot of conflicting feelings and expressions.",
+    low_traits=[
         trait_enhanced_empathy_defilers,
         trait_casts_no_reflection,
         trait_pass_without_trace,
         trait_improved_dexterity_defilers,
-    ]
-)
-mammetum.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_claws_teeth,
         trait_improved_initiative,
         trait_venom_defilers,
         trait_extra_actions,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=203,
 )
 
 # DEVOURER VISAGES
 # Zaltu, the Visage of the Beast
-zaltu = Visage.objects.get_or_create(
+zaltu = create_visage_with_form(
     name="Zaltu",
     house=devourers,
-    defaults={
-        "description": "The angels of the hunt are fearsome in their strength and majesty, stalking invisibly through the darkness with panther-like strength and supple grace. The physical appearances of these fallen are many and varied, but most are powerfully muscled and covered in a pelt of fur, with large, golden eyes that glow like coals in the moonlight. They speak in a low, liquid rumble, and their howls chill the blood for miles when they hunt."
-    },
-)[0]
-zaltu.add_source("Demon: The Fallen", 205)
-zaltu.low_torment_traits.set(
-    [
+    description="The angels of the hunt are fearsome in their strength and majesty, stalking invisibly through the darkness with panther-like strength and supple grace. The physical appearances of these fallen are many and varied, but most are powerfully muscled and covered in a pelt of fur, with large, golden eyes that glow like coals in the moonlight. They speak in a low, liquid rumble, and their howls chill the blood for miles when they hunt.",
+    low_traits=[
         trait_increased_size,
         trait_enhanced_senses,
         trait_claws_teeth,
         trait_extra_actions,
-    ]
-)
-zaltu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_thick_hide_devourers,
         trait_gaping_maw,
         trait_extra_limbs,
         trait_chameleon_skin_devourers,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=205,
 )
 
 # Ninurtu, the Visage of the Wild
-ninurtu = Visage.objects.get_or_create(
+ninurtu = create_visage_with_form(
     name="Ninurtu",
     house=devourers,
-    defaults={
-        "description": "The angels of the wilderness manifest as an amalgam of the flora they command and the fauna that thrive beneath their aegis. Their skin is commonly covered by a fine pelt similar to a deer's, and they often possess hooves instead of feet. Their bodies are powerfully muscled, and their eyes change colors like the seasons, ranging from pale gray to deep summer green."
-    },
-)[0]
-ninurtu.add_source("Demon: The Fallen", 207)
-ninurtu.low_torment_traits.set(
-    [
+    description="The angels of the wilderness manifest as an amalgam of the flora they command and the fauna that thrive beneath their aegis. Their skin is commonly covered by a fine pelt similar to a deer's, and they often possess hooves instead of feet. Their bodies are powerfully muscled, and their eyes change colors like the seasons, ranging from pale gray to deep summer green.",
+    low_traits=[
         trait_enhanced_senses,
         trait_chameleon_skin_devourers,
         trait_pass_without_trace,
         trait_extra_health_levels,
-    ]
-)
-ninurtu.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_thorns_devourers,
         trait_increased_size,
         trait_extra_limbs,
         trait_toxins_devourers,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=207,
 )
 
 # Aruru, the Visage of Flesh
-aruru = Visage.objects.get_or_create(
+aruru = create_visage_with_form(
     name="Aruru",
     house=devourers,
-    defaults={
-        "description": "The angels of the flesh, who can alter their forms more completely than even the Defilers, manifest themselves as idealized versions of their own mortal forms. Their power exalts the mortal shells that they inhabit, removing any blemishes or deformities and refining their original features to perfection. In a way, this makes their appearance just as alien and wondrous as the shimmering apparitions of their Celestial kin."
-    },
-)[0]
-aruru.add_source("Demon: The Fallen", 209)
-aruru.low_torment_traits.set(
-    [
+    description="The angels of the flesh, who can alter their forms more completely than even the Defilers, manifest themselves as idealized versions of their own mortal forms. Their power exalts the mortal shells that they inhabit, removing any blemishes or deformities and refining their original features to perfection. In a way, this makes their appearance just as alien and wondrous as the shimmering apparitions of their Celestial kin.",
+    low_traits=[
         trait_enhanced_social_traits_devourers,
         trait_immune_to_poisons_devourers,
         trait_improved_initiative,
         trait_casts_no_reflection,
-    ]
-)
-aruru.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_extra_health_levels,
         trait_armor,
         trait_gaping_maw,
         trait_regeneration,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=209,
 )
 
 # SLAYER VISAGES
 # Namtar, the Visage of Death
-namtar = Visage.objects.get_or_create(
+namtar = create_visage_with_form(
     name="Namtar",
     house=slayers,
-    defaults={
-        "description": "These angels manifest as shadowy figures wreathed in tendrils of ghostly mist that shift and writhe from moment to moment, occasionally reflecting the angels' thoughts in strange, symbolic forms. A pall of silence surrounds these figures, and their feet never seem to touch the ground. Their skin is as pale as alabaster, and their faces are constantly hidden in deep shadow."
-    },
-)[0]
-namtar.add_source("Demon: The Fallen", 211)
-namtar.low_torment_traits.set(
-    [
+    description="These angels manifest as shadowy figures wreathed in tendrils of ghostly mist that shift and writhe from moment to moment, occasionally reflecting the angels' thoughts in strange, symbolic forms. A pall of silence surrounds these figures, and their feet never seem to touch the ground. Their skin is as pale as alabaster, and their faces are constantly hidden in deep shadow.",
+    low_traits=[
         trait_wings,
         trait_improved_initiative,
         trait_pass_without_trace,
         trait_casts_no_reflection,
-    ]
-)
-namtar.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_cloak_of_shadows_slayers,
         trait_death_grip_slayers,
         trait_aura_of_entropy_slayers,
         trait_damage_resistance,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=211,
 )
 
 # Nergal, the Visage of the Spirit
-nergal = Visage.objects.get_or_create(
+nergal = create_visage_with_form(
     name="Nergal",
     house=slayers,
-    defaults={
-        "description": "The angels of the spirit world appear as pale, serene figures reminiscent of the images of human saints, beautiful, silent and remote. Like others of their House, the Nergal move without noise or effort, seeming to glide along the ground as they move. Only their eyes, colored in shifting patterns of gray and black, hint at the bleak world beyond the mortal realm."
-    },
-)[0]
-nergal.add_source("Demon: The Fallen", 213)
-nergal.low_torment_traits.set(
-    [
+    description="The angels of the spirit world appear as pale, serene figures reminiscent of the images of human saints, beautiful, silent and remote. Like others of their House, the Nergal move without noise or effort, seeming to glide along the ground as they move. Only their eyes, colored in shifting patterns of gray and black, hint at the bleak world beyond the mortal realm.",
+    low_traits=[
         trait_ghost_sight_slayers,
         trait_enhanced_social_traits_slayers,
         trait_pass_without_trace,
         trait_wings,
-    ]
-)
-nergal.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_cloak_of_shadows_slayers,
         trait_howl_of_the_damned_slayers,
         trait_aura_of_dread_slayers,
         trait_damage_resistance,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=213,
 )
 
 # Ereshkigal, the Visage of the Realms
-ereshkigal = Visage.objects.get_or_create(
+ereshkigal = create_visage_with_form(
     name="Ereshkigal",
     house=slayers,
-    defaults={
-        "description": "Angels of the Second World manifest as shadowy figures whose features are hidden in perpetual darkness. The air itself seems to wrap about them like a robe of night, conjuring the image of the cowled ferryman of human myth. Their hands are white and bony, like a skeleton's, and they move without effort or sound."
-    },
-)[0]
-ereshkigal.add_source("Demon: The Fallen", 215)
-ereshkigal.low_torment_traits.set(
-    [
+    description="Angels of the Second World manifest as shadowy figures whose features are hidden in perpetual darkness. The air itself seems to wrap about them like a robe of night, conjuring the image of the cowled ferryman of human myth. Their hands are white and bony, like a skeleton's, and they move without effort or sound.",
+    low_traits=[
         trait_dead_reckoning_slayers,
         trait_pass_without_trace,
         trait_enhanced_awareness_slayers,
         trait_conjure_from_nothing_slayers,
-    ]
-)
-ereshkigal.high_torment_traits.set(
-    [
+    ],
+    high_traits=[
         trait_cloak_of_shadows_slayers,
         trait_relentless_slayers,
         trait_voice_of_the_grave_slayers,
         trait_dread_gaze_slayers,
-    ]
+    ],
+    source_book="Demon: The Fallen",
+    source_page=215,
 )
