@@ -189,6 +189,12 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
     template_name = "characters/demon/demon/chargen.html"
     form_class = forms.Form
 
+    def get_object(self):
+        """Return the Demon object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Demon, pk=self.kwargs["pk"])
+        return self.object
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         demon = get_object_or_404(Demon, pk=self.kwargs["pk"])
@@ -219,10 +225,7 @@ class DemonApocalypticFormView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Demon, pk=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         context["points_spent"] = context["object"].apocalyptic_form_points_spent()
         context["points_remaining"] = context["object"].apocalyptic_form_points_remaining()
         context["points_budget"] = 16

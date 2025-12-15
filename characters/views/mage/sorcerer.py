@@ -378,6 +378,12 @@ class SorcererRitualView(EditPermissionMixin, FormView):
     form_class = NuminaRitualForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
+    def get_object(self):
+        """Return the Sorcerer object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Sorcerer, pk=self.kwargs.get("pk"))
+        return self.object
+
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type != "hedge_mage":
@@ -394,10 +400,7 @@ class SorcererRitualView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
     def form_valid(self, form):
@@ -696,6 +699,12 @@ class SorcererLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
+    def get_object(self):
+        """Return the Human object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
+        return self.object
+
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -722,10 +731,7 @@ class SorcererLanguagesView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
 
@@ -733,12 +739,15 @@ class SorcererSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
+    def get_object(self):
+        """Return the Sorcerer object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = Sorcerer.objects.get(id=self.kwargs["pk"])
+        return self.object
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = Sorcerer.objects.get(id=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
     def get_form_kwargs(self):
@@ -841,6 +850,12 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
         "allies",
     ]
 
+    def get_object(self):
+        """Return the Sorcerer object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Sorcerer, pk=self.kwargs.get("pk"))
+        return self.object
+
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
@@ -852,9 +867,6 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["object"] = Human.objects.get(id=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
         context["current_artifact"] = (
             context["object"]
             .backgrounds.filter(bg__property_name="artifact", complete=False)

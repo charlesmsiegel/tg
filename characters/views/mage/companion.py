@@ -421,6 +421,12 @@ class CompanionLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/companion/chargen.html"
 
+    def get_object(self):
+        """Return the Human object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
+        return self.object
+
     # Overriding `get_form_kwargs` to pass custom arguments to the form
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -447,10 +453,7 @@ class CompanionLanguagesView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
 
@@ -458,17 +461,20 @@ class CompanionSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/companion/chargen.html"
 
+    def get_object(self):
+        """Return the Companion object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = Companion.objects.get(id=self.kwargs["pk"])
+        return self.object
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = Companion.objects.get(id=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        companion = Companion.objects.get(id=self.kwargs["pk"])
+        companion = self.get_object()
         kwargs["object"] = companion
         stats = list(Attribute.objects.all()) + list(Ability.objects.all())
         stats = [x for x in stats if getattr(companion, x.property_name, 0) >= 4] + [

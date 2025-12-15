@@ -15,6 +15,12 @@ class HumanBackgroundsView(EditPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
 
+    def get_object(self):
+        """Return the Human object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = Human.objects.get(pk=self.kwargs["pk"])
+        return self.object
+
     def get_success_url(self):
         return Human.objects.get(pk=self.kwargs["pk"]).get_absolute_url()
 

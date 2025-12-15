@@ -17,6 +17,12 @@ class GenericBackgroundView(EditPermissionMixin, FormView):
     multiple_ownership = False
     is_owned = True
 
+    def get_object(self):
+        """Return the primary object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
+        return self.object
+
     def special_valid_action(self, background_object):
         return None
 
@@ -51,10 +57,7 @@ class GenericBackgroundView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         context["current_background"] = (
             context["object"]
             .backgrounds.filter(bg__property_name=self.background_name, complete=False)

@@ -294,6 +294,12 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
+    def get_object(self):
+        """Return the Fomor object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Fomor, pk=self.kwargs.get("pk"))
+        return self.object
+
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Fomor, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
@@ -326,10 +332,7 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Fomor, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
 
@@ -351,17 +354,20 @@ class FomorSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/werewolf/fomor/chargen.html"
 
+    def get_object(self):
+        """Return the Fomor object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = Fomor.objects.get(id=self.kwargs["pk"])
+        return self.object
+
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["object"] = Fomor.objects.get(id=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        fomor = Fomor.objects.get(id=self.kwargs["pk"])
+        fomor = self.get_object()
         kwargs["object"] = fomor
         kwargs["specialties_needed"] = fomor.needed_specialties()
         return kwargs

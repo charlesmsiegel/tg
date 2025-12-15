@@ -632,6 +632,12 @@ class MtAHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
+    def get_object(self):
+        """Return the Human object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
+        return self.object
+
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
@@ -667,10 +673,7 @@ class MtAHumanLanguagesView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object"] = get_object_or_404(Human, pk=self.kwargs.get("pk"))
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
 
@@ -710,17 +713,20 @@ class MtAHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/mtahuman/chargen.html"
 
+    def get_object(self):
+        """Return the MtAHuman object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = MtAHuman.objects.get(id=self.kwargs["pk"])
+        return self.object
+
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["object"] = MtAHuman.objects.get(id=self.kwargs["pk"])
-        context["is_approved_user"] = self.check_if_special_user(
-            context["object"], self.request.user
-        )
+        context["object"] = self.get_object()
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        mage = MtAHuman.objects.get(id=self.kwargs["pk"])
+        mage = self.get_object()
         kwargs["object"] = mage
         kwargs["specialties_needed"] = mage.needed_specialties()
         return kwargs
