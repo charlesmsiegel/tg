@@ -3,7 +3,7 @@ import json
 from characters.models.core import CharacterModel
 from core.constants import GameLine
 from django import forms
-from game.models import ObjectType, STRelationship, Story, WeeklyXPRequest
+from game.models import ObjectType, Story, STRelationship, WeeklyXPRequest
 from locations.models.core import LocationModel
 
 

@@ -6,7 +6,10 @@ from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
 from characters.models.core.specialty import Specialty
 from characters.models.core.statistic import Statistic
-from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
+from characters.models.demon.apocalyptic_form import (
+    ApocalypticForm,
+    ApocalypticFormTrait,
+)
 from characters.models.demon.demon import Demon
 from characters.models.demon.lore import Lore
 from characters.views.core.backgrounds import HumanBackgroundsView

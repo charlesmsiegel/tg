@@ -41,11 +41,11 @@ from game.forms import (
     STResponseForm,
     WeeklyXPRequestForm,
 )
-from game.models import ObjectType
 from game.models import (
     Chronicle,
     Journal,
     JournalEntry,
+    ObjectType,
     Post,
     Scene,
     SettingElement,
