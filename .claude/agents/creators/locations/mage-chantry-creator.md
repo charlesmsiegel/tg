@@ -440,7 +440,9 @@ Create separate location files for significant areas within the chantry. These a
 
 ## Phase 9: Invoke Sub-Agents for Detailed Content
 
-After creating the basic structure, invoke specialized agents for detailed mechanical content:
+**CRITICAL**: After creating the basic structure, you MUST invoke specialized creator agents for all mechanical content. DO NOT create these files manually - always use the appropriate creator agent to ensure mechanical validity and completeness.
+
+### Agent Invocation Requirements
 
 ### For Each Node
 Invoke **node-creator** with:
@@ -540,6 +542,8 @@ items/
     ├── helenas_warding_amulet.md   # Personal protective item
     └── ezras_prosthetic_arm.md     # Character-specific creation
 ```
+
+**REMINDER**: DO NOT write item files manually. Always invoke the appropriate creator agent (charm-creator, talisman-creator, mage-artifact-creator, periapt-creator, or wonder-creator) to ensure proper mechanical statistics, resonance, and M20 compliance.
 
 ## Phase 10: Comprehensive Cross-Linking Pass
 
