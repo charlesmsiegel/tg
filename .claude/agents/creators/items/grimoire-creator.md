@@ -202,11 +202,31 @@ Grimoires are often written in languages associated with their authoring faction
 
 ## Rote Creation
 
-When a Grimoire includes rotes, you should invoke the **rote-creator** agent to design each rote. Rotes must:
+**IMPORTANT: When a Grimoire includes rotes, you MUST invoke the rote-creator agent to design each rote with FULL mechanical and narrative detail.** Do NOT summarize rotes - each rote should be a complete, playable write-up.
+
+Rotes must:
 - Use Practices contained in the Grimoire
 - Use Spheres contained in the Grimoire
 - Use Abilities associated with the Practices in the Grimoire
 - Cost points equal to the total Sphere dots (e.g., Life 3 costs 3 points)
+
+### Rote Invocation Process
+
+For each rote in the Grimoire:
+1. Invoke rote-creator with the rote concept
+2. Provide the Practice, Spheres, and Abilities from the Grimoire
+3. Request full narrative description and mechanical systems
+4. Include the complete rote in the Grimoire output OR as a linked separate file
+
+If the Grimoire is part of a larger chantry creation, create separate rote files in the `/rotes/` folder and link to them from the Grimoire document:
+```markdown
+### Rotes
+
+| Rote Name | Spheres | Description |
+|-----------|---------|-------------|
+| [The Silver Conduit](../rotes/the_silver_conduit.md) | Prime 3, Correspondence 2 | Quintessence transfer |
+| [Ward of Binding](../rotes/ward_of_binding.md) | Prime 2, Spirit 3 | Protective ward |
+```
 
 ## Grimoire Validation Rules
 
