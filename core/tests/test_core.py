@@ -146,7 +146,6 @@ class NewUserTest(FunctionalTest):
         submit_button.click()
 
     def test_create_account(self):
-
         self.browser.get(self.live_server_url)
 
         self.client.get("/accounts/signup/")

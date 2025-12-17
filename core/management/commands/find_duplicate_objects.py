@@ -249,7 +249,6 @@ class Command(BaseCommand):
         for obj in objects:
             # Only delete if Unfinished, no description, and no other significant data
             if obj.status == "Un" and (not obj.description or obj.description.strip() == ""):
-
                 obj.delete()
                 self.stdout.write(
                     self.style.SUCCESS(f"  ✓ Deleted empty duplicate: {obj.name} (ID: {obj.id})")

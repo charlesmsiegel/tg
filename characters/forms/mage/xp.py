@@ -44,7 +44,6 @@ class MageXPForm(XPForm):
                 x for x in self.fields["category"].choices if x[0] != "Tenet"
             ]
         if not self.remove_tenet_valid():
-
             self.fields["category"].choices = [
                 x for x in self.fields["category"].choices if x[0] != "Remove Tenet"
             ]
