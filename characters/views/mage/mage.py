@@ -224,7 +224,9 @@ class LoadXPExamplesView(View):
             ]
             examples = filtered_for_xp_cost
         elif category_choice == "MeritFlaw":
-            mage = ObjectType.objects.get(name="mage")
+            mage, _ = ObjectType.objects.get_or_create(
+                name="mage", defaults={"type": "char", "gameline": "mta"}
+            )
             examples = MeritFlaw.objects.filter(allowed_types=mage, max_rating__gte=0)
             examples = [x for x in examples if self.character.mf_rating(x) != x.max_rating]
             examples = [
@@ -1335,9 +1337,13 @@ class MageRoteView(SpecialUserMixin, CreateView):
                     "sanctum",
                     "allies",
                 ]:
+                    bg, _ = Background.objects.get_or_create(
+                        property_name=step,
+                        defaults={"name": step.replace("_", " ").title()},
+                    )
                     if (
                         BackgroundRating.objects.filter(
-                            bg=Background.objects.get(property_name=step),
+                            bg=bg,
                             char=mage,
                             complete=False,
                         ).count()

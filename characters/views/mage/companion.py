@@ -99,7 +99,9 @@ class LoadExamplesView(View):
         elif category_choice == "Existing Background":
             examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
         elif category_choice == "MeritFlaw":
-            companion = ObjectType.objects.get(name="companion")
+            companion, _ = ObjectType.objects.get_or_create(
+                name="companion", defaults={"type": "char", "gameline": "mta"}
+            )
             examples = MeritFlaw.objects.filter(allowed_types=companion)
             max_flaws = 7
             if m.total_flaws() <= 0:
@@ -374,7 +376,8 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
             self.object.creation_status += 1
             if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
                 self.object.creation_status += 1
-                self.object.languages.add(Language.objects.get(name="English"))
+                english, _ = Language.objects.get_or_create(name="English")
+                self.object.languages.add(english)
             for step in [
                 "node",
                 "library",
@@ -383,9 +386,13 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
                 "sanctum",
                 "allies",
             ]:
+                bg, _ = Background.objects.get_or_create(
+                    property_name=step,
+                    defaults={"name": step.replace("_", " ").title()},
+                )
                 if (
                     BackgroundRating.objects.filter(
-                        bg=Background.objects.get(property_name=step),
+                        bg=bg,
                         char=self.object,
                         complete=False,
                     ).count()

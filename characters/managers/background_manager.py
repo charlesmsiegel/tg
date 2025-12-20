@@ -83,7 +83,10 @@ class BackgroundManager:
         from characters.models.core.background_block import Background, BackgroundRating
 
         if isinstance(background, str):
-            bg = Background.objects.get(property_name=background)
+            bg, _ = Background.objects.get_or_create(
+                property_name=background,
+                defaults={"name": background.replace("_", " ").title()},
+            )
             ratings = BackgroundRating.objects.filter(char=self.character, bg=bg)
             if ratings.filter(rating__lt=5).count() > 0:
                 background = ratings.filter(rating__lt=5).first()
@@ -249,9 +252,13 @@ class BackgroundManager:
         from characters.models.core.background_block import Background, BackgroundRating
 
         if value != 0:
+            bg, _ = Background.objects.get_or_create(
+                property_name=bg_name,
+                defaults={"name": bg_name.replace("_", " ").title()},
+            )
             BackgroundRating.objects.create(
                 char=self.character,
-                bg=Background.objects.get(property_name=bg_name),
+                bg=bg,
                 rating=value,
             )
         else:

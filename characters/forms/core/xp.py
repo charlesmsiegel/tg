@@ -81,11 +81,10 @@ class XPForm(forms.Form):
             if "human" in char_type:
                 char_type = "human"
 
-            try:
-                chartype = ObjectType.objects.get(name=char_type)
-                filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
-            except ObjectType.DoesNotExist:
-                filtered_mfs = MeritFlaw.objects.none()
+            chartype, _ = ObjectType.objects.get_or_create(
+                name=char_type, defaults={"type": "char", "gameline": "wod"}
+            )
+            filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
             # Only show merit/flaws with at least one affordable rating
             affordable_mfs = []
@@ -175,11 +174,10 @@ class XPForm(forms.Form):
         if "human" in char_type:
             char_type = "human"
 
-        try:
-            chartype = ObjectType.objects.get(name=char_type)
-            filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
-        except ObjectType.DoesNotExist:
-            return False
+        chartype, _ = ObjectType.objects.get_or_create(
+            name=char_type, defaults={"type": "char", "gameline": "wod"}
+        )
+        filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
         # Check if any merit/flaw has an affordable rating
         for mf in filtered_mfs:

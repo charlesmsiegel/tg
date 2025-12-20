@@ -97,9 +97,10 @@ class BackgroundBlock(models.Model):
 
     def _set_property(self, prop, value):
         if value != 0:
-            BackgroundRating.objects.create(
-                char=self, bg=Background.objects.get(property_name=prop), rating=value
+            bg, _ = Background.objects.get_or_create(
+                property_name=prop, defaults={"name": prop.replace("_", " ").title()}
             )
+            BackgroundRating.objects.create(char=self, bg=bg, rating=value)
         else:
             BackgroundRating.objects.filter(char=self, bg__property_name=prop).delete()
 
@@ -116,7 +117,10 @@ class BackgroundBlock(models.Model):
 
     def add_background(self, background, maximum=5):
         if isinstance(background, str):
-            bg = Background.objects.get(property_name=background)
+            bg, _ = Background.objects.get_or_create(
+                property_name=background,
+                defaults={"name": background.replace("_", " ").title()},
+            )
             ratings = BackgroundRating.objects.filter(char=self, bg=bg)
             if ratings.filter(rating__lt=5).count() > 0:
                 background = ratings.filter(rating__lt=5).first()

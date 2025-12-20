@@ -200,7 +200,11 @@ class EnhancementForm(forms.Form):
             )
         self.fields["flaw"].queryset = MeritFlaw.objects.filter(
             ratings__value__in=[-self.rank],
-            allowed_types__in=[ObjectType.objects.get(name="mage")],
+            allowed_types__in=[
+                ObjectType.objects.get_or_create(
+                    name="mage", defaults={"type": "char", "gameline": "mta"}
+                )[0]
+            ],
         )
         self.fields["device"].queryset = Wonder.objects.filter(rank=self.rank).exclude(
             polymorphic_ctype__model="charm"
@@ -291,8 +295,11 @@ class EnhancementForm(forms.Form):
         note = ", ".join(note)
         # url
 
+        enhancement_bg, _ = Background.objects.get_or_create(
+            property_name="enhancement", defaults={"name": "Enhancement"}
+        )
         bgr = char.backgrounds.filter(
-            bg=Background.objects.get(property_name="enhancement"),
+            bg=enhancement_bg,
             rating=self.rank,
             complete=False,
         ).first()

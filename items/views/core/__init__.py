@@ -181,7 +181,9 @@ class ItemIndexView(View):
         context = self.get_context()
         action = request.POST.get("action")
         item_type = request.POST["item_type"]
-        obj = ObjectType.objects.get(name=item_type)
+        obj, _ = ObjectType.objects.get_or_create(
+            name=item_type, defaults={"type": "obj", "gameline": "wod"}
+        )
         gameline = obj.gameline
         if action == "create":
             if gameline == "wod":

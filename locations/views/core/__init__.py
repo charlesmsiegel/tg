@@ -177,7 +177,9 @@ class LocationIndexView(View):
         context = self.get_context()
         action = request.POST.get("action")
         loc_type = request.POST["loc_type"]
-        obj = ObjectType.objects.get(name=loc_type)
+        obj, _ = ObjectType.objects.get_or_create(
+            name=loc_type, defaults={"type": "loc", "gameline": "wod"}
+        )
         gameline = obj.gameline
         if action == "create":
             if gameline == "wod":

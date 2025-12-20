@@ -637,7 +637,9 @@ class FeraFetishView(GenericBackgroundView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get the current background rating for fetish
-        fetish_bg = Background.objects.get(property_name="fetish")
+        fetish_bg, _ = Background.objects.get_or_create(
+            property_name="fetish", defaults={"name": "Fetish"}
+        )
         fetish_rating = BackgroundRating.objects.filter(char=self.object, bg=fetish_bg).first()
         if fetish_rating:
             context["max_fetish_rating"] = fetish_rating.rating

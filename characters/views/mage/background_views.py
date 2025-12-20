@@ -41,9 +41,12 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         obj = Human.objects.get(id=self.kwargs["pk"])
+        enhancement_bg, _ = Background.objects.get_or_create(
+            property_name="enhancement", defaults={"name": "Enhancement"}
+        )
         self.current_enhancement = BackgroundRating.objects.filter(
             char=obj,
-            bg=Background.objects.get(property_name="enhancement"),
+            bg=enhancement_bg,
             complete=False,
         ).first()
         kwargs["rank"] = self.current_enhancement.rating
@@ -52,9 +55,12 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         obj = get_object_or_404(Human, pk=self.kwargs.get("pk"))
+        enhancement_bg, _ = Background.objects.get_or_create(
+            property_name="enhancement", defaults={"name": "Enhancement"}
+        )
         self.current_enhancement = BackgroundRating.objects.filter(
             char=obj,
-            bg=Background.objects.get(property_name="enhancement"),
+            bg=enhancement_bg,
             complete=False,
         ).first()
         return form
@@ -72,10 +78,13 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
         form.save(char=obj)
 
         # Check if there are more enhancements to complete
+        enhancement_bg, _ = Background.objects.get_or_create(
+            property_name="enhancement", defaults={"name": "Enhancement"}
+        )
         if (
             BackgroundRating.objects.filter(
                 char=obj,
-                bg=Background.objects.get(property_name="enhancement"),
+                bg=enhancement_bg,
                 complete=False,
             ).count()
             == 0
@@ -83,9 +92,13 @@ class MtAEnhancementView(SpendFreebiesPermissionMixin, FormView):
             obj.creation_status += 1
             obj.save()
             for step in self.potential_skip:
+                bg, _ = Background.objects.get_or_create(
+                    property_name=step,
+                    defaults={"name": step.replace("_", " ").title()},
+                )
                 if (
                     BackgroundRating.objects.filter(
-                        bg=Background.objects.get(property_name=step),
+                        bg=bg,
                         char=obj,
                         complete=False,
                     ).count()

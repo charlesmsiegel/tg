@@ -303,7 +303,8 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Fomor, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            obj.languages.add(Language.objects.get(name="English"))
+            english, _ = Language.objects.get_or_create(name="English")
+            obj.languages.add(english)
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -320,7 +321,8 @@ class FomorLanguagesView(EditPermissionMixin, FormView):
         fomor_pk = self.kwargs.get("pk")
         fomor = get_object_or_404(Fomor, pk=fomor_pk)
         num_languages = fomor.num_languages()
-        fomor.languages.add(Language.objects.get(name="English"))
+        english, _ = Language.objects.get_or_create(name="English")
+        fomor.languages.add(english)
         for i in range(num_languages):
             language_name = form.cleaned_data.get(f"language_{i+1}")
             if language_name:

@@ -576,7 +576,8 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Changeling, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            obj.languages.add(Language.objects.get(name="English"))
+            english, _ = Language.objects.get_or_create(name="English")
+            obj.languages.add(english)
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -593,7 +594,8 @@ class ChangelingLanguagesView(EditPermissionMixin, FormView):
         changeling_pk = self.kwargs.get("pk")
         changeling = get_object_or_404(Changeling, pk=changeling_pk)
         num_languages = changeling.num_languages()
-        changeling.languages.add(Language.objects.get(name="English"))
+        english, _ = Language.objects.get_or_create(name="English")
+        changeling.languages.add(english)
         for i in range(num_languages):
             language_name = form.cleaned_data.get(f"language_{i+1}")
             if language_name:

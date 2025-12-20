@@ -374,7 +374,9 @@ class CharacterIndexView(ListView):
             context = self.get_context_data()
             return render(request, "characters/index.html", context)
 
-        obj = ObjectType.objects.get(name=type_name)
+        obj, _ = ObjectType.objects.get_or_create(
+            name=type_name, defaults={"type": "char", "gameline": "wod"}
+        )
         gameline = obj.gameline
 
         if action == "create" or action == "create_group":

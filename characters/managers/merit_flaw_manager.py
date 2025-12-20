@@ -115,7 +115,9 @@ class MeritFlawManager:
             mf = mf.filter(max_rating__gt=0)
 
         # Filter by character type
-        character_type_object = ObjectType.objects.get(name=character_type)
+        character_type_object, _ = ObjectType.objects.get_or_create(
+            name=character_type, defaults={"type": "char", "gameline": "wod"}
+        )
         return mf.filter(allowed_types=character_type_object)
 
     def mf_rating(self, mf):

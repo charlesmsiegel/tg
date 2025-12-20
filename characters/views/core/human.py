@@ -371,7 +371,9 @@ class HumanFreebieFormPopulationView(View):
         char_type = self.primary_class.type
         if "human" in char_type:
             char_type = "human"
-        chartype = ObjectType.objects.get(name=char_type)
+        chartype, _ = ObjectType.objects.get_or_create(
+            name=char_type, defaults={"type": "char", "gameline": "wod"}
+        )
         examples = MeritFlaw.objects.filter(allowed_types=chartype)
 
         # Filter to only show merit/flaws with at least one affordable rating
@@ -461,7 +463,8 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
-            obj.languages.add(Language.objects.get(name="English"))
+            english, _ = Language.objects.get_or_create(name="English")
+            obj.languages.add(english)
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -481,7 +484,8 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
         human_pk = self.kwargs.get("pk")
         human = get_object_or_404(Human, pk=human_pk)
         num_languages = human.num_languages()
-        human.languages.add(Language.objects.get(name="English"))
+        english, _ = Language.objects.get_or_create(name="English")
+        human.languages.add(english)
         for i in range(num_languages):
             language_name = form.cleaned_data.get(f"language_{i+1}")
             if language_name:

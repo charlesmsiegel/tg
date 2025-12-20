@@ -441,7 +441,9 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
     def _get_create_redirect_url(self, obj_type, type_name):
         """Get the redirect URL for creating an object of the given type."""
-        obj = ObjectType.objects.get(name=type_name)
+        obj, _ = ObjectType.objects.get_or_create(
+            name=type_name, defaults={"type": "char", "gameline": "wod"}
+        )
         gameline = obj.gameline
 
         # Map gameline codes to URL namespace paths
