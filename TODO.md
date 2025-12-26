@@ -652,27 +652,12 @@ This document tracks remaining work across the codebase with context about what 
 
 ### Code Quality Improvements
 
-18. **Simplify Gameline Detection**
-    - **Files**: `core/models.py:352-372`
-    - **Impact**: LOW - Fragile string parsing
-    - **Issue**: Models detect gameline by parsing class module path strings
-    - **Current**: Parses `'characters.models.vampire.vtmhuman'` to extract 'vampire'
-    - **Action**:
-      1. Add gameline attribute to model classes:
-         ```python
-         class VtMHuman(Human):
-             gameline = 'vtm'
-         ```
-      2. Update `get_gameline()` to check attribute first:
-         ```python
-         def get_gameline(self):
-             if hasattr(self, 'gameline'):
-                 return self.gameline
-             # Fall back to existing string parsing
-         ```
-      3. Use existing `get_gameline_name()` from `core/utils.py:75-87` for display names
-    - **Context**: Explicit is better than implicit - fragile string parsing can break with refactoring
-    - **Independence**: Standalone task - can be done independently
+18. ~~**Simplify Gameline Detection**~~ ✅ COMPLETED
+    - **Status**: All 160 model classes now have explicit `gameline` class attributes
+    - **Changes**:
+      - `core/models.py:get_gameline()` updated to use `getattr()` with fallback
+      - Added comprehensive tests for gameline detection
+    - **Reference**: Issue #1046
 
 19. **Simplify Observer Permission Check**
     - **Files**: `core/permissions.py:156-164`

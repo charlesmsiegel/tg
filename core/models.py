@@ -395,10 +395,13 @@ class Model(PermissionMixin, PolymorphicModel):
         """
         Get the gameline code for this model.
 
+        Returns the gameline class attribute, with 'wod' as a fallback
+        for any model that doesn't explicitly define a gameline.
+
         Returns:
             str: Gameline code (e.g., 'vtm', 'wta', 'wod')
         """
-        return self.__class__.gameline
+        return getattr(self.__class__, "gameline", "wod")
 
     def get_full_gameline(self):
         """

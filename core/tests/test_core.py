@@ -249,6 +249,47 @@ class TestModel(TestCase):
         m = Human.objects.create(name="Test Human from WoD")
         self.assertEqual(m.get_gameline(), "wod")
 
+    def test_get_gameline_uses_class_attribute(self):
+        """Verify get_gameline uses class attribute, not string parsing."""
+        from characters.models.changeling.changeling import Changeling
+        from characters.models.demon.demon import Demon
+        from characters.models.mage.mage import Mage
+        from characters.models.vampire.vampire import Vampire
+        from characters.models.werewolf.garou import Werewolf
+        from characters.models.wraith.wraith import Wraith
+        from items.models.mage.wonder import Wonder
+        from locations.models.mage.node import Node
+
+        # Test character gamelines
+        self.assertEqual(Vampire.gameline, "vtm")
+        self.assertEqual(Werewolf.gameline, "wta")
+        self.assertEqual(Mage.gameline, "mta")
+        self.assertEqual(Changeling.gameline, "ctd")
+        self.assertEqual(Wraith.gameline, "wto")
+        self.assertEqual(Demon.gameline, "dtf")
+
+        # Test item and location gamelines
+        self.assertEqual(Wonder.gameline, "mta")
+        self.assertEqual(Node.gameline, "mta")
+
+    def test_get_full_gameline(self):
+        """Verify get_full_gameline returns full name from settings."""
+        m = Human.objects.create(name="Test Human")
+        self.assertEqual(m.get_full_gameline(), "World of Darkness")
+
+    def test_gameline_inheritance(self):
+        """Verify subclasses inherit gameline from parent when not overridden."""
+        from characters.models.vampire.ghoul import Ghoul
+        from characters.models.vampire.vampire import Vampire
+        from characters.models.vampire.vtmhuman import VtMHuman
+
+        # VtMHuman defines gameline = "vtm"
+        self.assertEqual(VtMHuman.gameline, "vtm")
+        # Vampire inherits from VtMHuman but doesn't override gameline
+        self.assertEqual(Vampire.gameline, "vtm")
+        # Ghoul also inherits from VtMHuman
+        self.assertEqual(Ghoul.gameline, "vtm")
+
 
 class TestDots(TestCase):
     def test_length(self):
