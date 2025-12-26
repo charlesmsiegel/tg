@@ -26,7 +26,7 @@ class Creed(models.Model):
     description = models.TextField(blank=True)
 
     # Preferred Edges (edges this creed commonly uses)
-    favored_edges = models.JSONField(default=list, blank=True)
+    favored_edges = models.JSONField(default=list, blank=True)  # list is callable - safe
 
     class Meta:
         verbose_name = "Creed"

@@ -700,6 +700,8 @@ class CharacterTemplate(Model):
     )
 
     # Character Data (stored as JSON)
+    # Note: default=list and default=dict are safe in Django's JSONField.
+    # Django treats them as callable factories, calling them each time to get a fresh instance.
     basic_info = models.JSONField(
         default=dict, blank=True, help_text="Nature, demeanor, concept, etc."
     )

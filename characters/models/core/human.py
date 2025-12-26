@@ -114,7 +114,7 @@ class Human(
 
     freebies = models.IntegerField(default=15)
     # DEPRECATED: Use FreebieSpendingRecord model instead (see JSONFIELD_MIGRATION_GUIDE.md)
-    spent_freebies = models.JSONField(default=list, blank=True)
+    spent_freebies = models.JSONField(default=list, blank=True)  # list is callable - safe
     background_points = 5
 
     class Meta:

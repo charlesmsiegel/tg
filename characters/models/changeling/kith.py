@@ -8,7 +8,7 @@ class Kith(Model):
     gameline = "ctd"
 
     affinity = models.CharField(max_length=20, default="", blank=True)
-    birthrights = models.JSONField(default=list, blank=True)
+    birthrights = models.JSONField(default=list, blank=True)  # list is callable - safe
     frailty = models.TextField(default="", blank=True)
 
     class Meta:

@@ -28,7 +28,7 @@ class Thrall(DtFHuman):
     )
 
     # Enhancements granted by pact
-    enhancements = models.JSONField(default=list)
+    enhancements = models.JSONField(default=list)  # list is callable - safe
 
     # Virtues (same as demons)
     conviction = models.IntegerField(default=1)
