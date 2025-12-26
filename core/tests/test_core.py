@@ -493,3 +493,26 @@ class TestFilePath(TestCase):
             filepath(m, "test.jpg"),
             "characters/core/human/human/test_human.jpg",
         )
+
+    def test_filepath_sanitizes_path_traversal(self):
+        """Test that path traversal attempts are sanitized."""
+        m = Human.objects.create(name="../../etc/passwd")
+        result = filepath(m, "test.jpg")
+        self.assertNotIn("..", result)
+        self.assertNotIn("/etc/", result)
+        # The .. is stripped and / becomes _, so ../../etc/passwd -> __etc_passwd
+        self.assertEqual(result, "characters/core/human/human/__etc_passwd.jpg")
+
+    def test_filepath_sanitizes_forward_slashes(self):
+        """Test that forward slashes in names are replaced with underscores."""
+        m = Human.objects.create(name="path/to/evil")
+        result = filepath(m, "test.jpg")
+        self.assertNotIn("/to/", result)
+        self.assertEqual(result, "characters/core/human/human/path_to_evil.jpg")
+
+    def test_filepath_sanitizes_backslashes(self):
+        """Test that backslashes in names are replaced with underscores."""
+        m = Human.objects.create(name="path\\to\\evil")
+        result = filepath(m, "test.jpg")
+        self.assertNotIn("\\", result)
+        self.assertEqual(result, "characters/core/human/human/path_to_evil.jpg")
