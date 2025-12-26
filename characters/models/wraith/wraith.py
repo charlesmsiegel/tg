@@ -804,8 +804,18 @@ class Wraith(WtOHuman):
 
 
 class ThornRating(models.Model):
-    wraith = models.ForeignKey(Wraith, on_delete=models.CASCADE)
-    thorn = models.ForeignKey(Thorn, on_delete=models.CASCADE)
+    wraith = models.ForeignKey(
+        Wraith,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="thorn_ratings",
+    )
+    thorn = models.ForeignKey(
+        Thorn,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="wraith_ratings",
+    )
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )

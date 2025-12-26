@@ -570,8 +570,18 @@ class Demon(LoreBlock, DtFHuman):
 class LoreRating(models.Model):
     """Through table for Demon-Lore relationships with ratings."""
 
-    demon = models.ForeignKey("Demon", on_delete=models.CASCADE, null=True)
-    lore = models.ForeignKey(Lore, on_delete=models.CASCADE, null=True)
+    demon = models.ForeignKey(
+        "Demon",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="lore_ratings",
+    )
+    lore = models.ForeignKey(
+        Lore,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="demon_ratings",
+    )
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
