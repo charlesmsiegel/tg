@@ -63,7 +63,7 @@ class Werewolf(WtAHuman):
     honor = models.IntegerField(default=0)
     temporary_honor = models.IntegerField(default=0)
 
-    renown_incidents = models.JSONField(default=list, blank=True)
+    renown_incidents = models.JSONField(default=list, blank=True)  # list is callable - safe
 
     gifts = models.ManyToManyField(Gift, blank=True)
     rites_known = models.ManyToManyField(Rite, blank=True)

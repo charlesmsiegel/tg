@@ -43,7 +43,9 @@ class Treasure(ItemModel):
     permanence = models.BooleanField(default=True, help_text="Whether this Treasure is permanent")
 
     # Abilities and effects
-    effects = models.JSONField(default=list, help_text="List of special abilities/effects")
+    effects = models.JSONField(
+        default=list, help_text="List of special abilities/effects"
+    )  # list is callable - safe
     special_abilities = models.TextField(
         blank=True, default="", help_text="Description of special abilities"
     )

@@ -393,3 +393,46 @@ class TestCharacterStatusTransitions(TestCase):
         character.save()
         character.refresh_from_db()
         self.assertEqual(character.status, "Dec")
+
+
+class TestJSONFieldDefaultBehavior(TestCase):
+    """Test that JSONField defaults don't share state between instances.
+
+    Django's JSONField treats default=list and default=dict as callable factories,
+    calling them each time to get a fresh instance. These tests verify this behavior.
+    See issue #1096 for context.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+
+    def test_spent_freebies_not_shared(self):
+        """Test that spent_freebies JSONField default doesn't share state."""
+        human1 = Human.objects.create(name="Human 1", owner=self.user)
+        human2 = Human.objects.create(name="Human 2", owner=self.user)
+
+        # Modify human1's spent_freebies
+        human1.spent_freebies.append({"attribute": 5})
+        human1.save()
+
+        # Reload human2 to ensure it has fresh data
+        human2.refresh_from_db()
+
+        # human2 should NOT be affected
+        self.assertEqual(human2.spent_freebies, [])
+        self.assertNotEqual(human1.spent_freebies, human2.spent_freebies)
+
+    def test_jsonfield_defaults_are_independent(self):
+        """Test that each instance gets its own default list/dict."""
+        human1 = Human(name="Human 1", owner=self.user)
+        human2 = Human(name="Human 2", owner=self.user)
+
+        # Without saving, the defaults should still be independent
+        self.assertIsNot(human1.spent_freebies, human2.spent_freebies)
+
+        # Mutating one should not affect the other
+        human1.spent_freebies.append("test")
+        self.assertEqual(human1.spent_freebies, ["test"])
+        self.assertEqual(human2.spent_freebies, [])

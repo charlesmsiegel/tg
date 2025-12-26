@@ -10,7 +10,9 @@ class Pact(models.Model):
 
     terms = models.TextField(default="")
     faith_payment = models.IntegerField(default=0)  # How much Faith thrall provides per interval
-    enhancements = models.JSONField(default=list)  # List of enhancements granted
+    enhancements = models.JSONField(
+        default=list
+    )  # List of enhancements granted (list is callable - safe)
 
     active = models.BooleanField(default=True)
 
