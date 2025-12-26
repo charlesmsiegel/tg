@@ -97,10 +97,8 @@ class DemonCreateView(MessageMixin, CreateView):
         "courage",
         "conscience",
         "apocalyptic_form",
-        "host_name",
         "days_until_consumption",
         "celestial_name",
-        "",
         "age_of_fall",
         "abyss_duration",
     ]
@@ -184,7 +182,6 @@ class DemonUpdateView(EditPermissionMixin, UpdateView):
         "courage",
         "conscience",
         "apocalyptic_form",
-        "host_name",
         "days_until_consumption",
         "celestial_name",
         "age_of_fall",

@@ -93,7 +93,6 @@ class Demon(LoreBlock, DtFHuman):
     rituals = models.ManyToManyField("Ritual", blank=True, related_name="demons_who_know")
 
     # Host information
-    host_name = models.CharField(max_length=200, default="", blank=True)
     days_until_consumption = models.IntegerField(default=30)
 
     # Celestial names
