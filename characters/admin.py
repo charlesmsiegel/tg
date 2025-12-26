@@ -508,6 +508,7 @@ admin.site.register(GiftPermission)
 class DemonAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "celestial_name",
         "owner",
         "house",
         "faction",
@@ -517,6 +518,8 @@ class DemonAdmin(admin.ModelAdmin):
         "status",
     )
     list_filter = ("owner", "house", "faction", "chronicle", "status")
+    search_fields = ("name", "celestial_name")
+    ordering = ("name",)
 
 
 admin.site.register(DtFHuman)
