@@ -13,6 +13,7 @@ from core.forms.language import HumanLanguageForm
 from core.mixins import EditPermissionMixin, MessageMixin, SpendFreebiesPermissionMixin
 from core.models import Language
 from core.views.generic import DictView
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -256,6 +257,7 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
         return super().form_valid(form)
 
 
+@login_required
 def load_examples(request):
     category_choice = request.GET.get("category")
     if category_choice == "Attribute":
@@ -275,6 +277,7 @@ def load_examples(request):
     )
 
 
+@login_required
 def load_values(request):
     mf = MeritFlaw.objects.get(pk=request.GET.get("example"))
     character_id = request.GET.get("object")

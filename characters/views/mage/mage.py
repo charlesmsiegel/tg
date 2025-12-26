@@ -46,6 +46,7 @@ from core.models import Language
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -65,6 +66,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
+@login_required
 def load_factions(request):
     affiliation_id = request.GET.get("affiliation")
     factions = MageFaction.objects.filter(parent=affiliation_id).order_by("name")
@@ -75,6 +77,7 @@ def load_factions(request):
     )
 
 
+@login_required
 def load_subfactions(request):
     faction_id = request.GET.get("faction")
     subfactions = MageFaction.objects.filter(parent=faction_id).order_by("name")
@@ -85,6 +88,7 @@ def load_subfactions(request):
     )
 
 
+@login_required
 def load_mf_ratings(request):
     mf_id = request.GET.get("mf")
     ratings = MeritFlaw.objects.get(pk=mf_id).ratings
@@ -309,6 +313,7 @@ class LoadXPExamplesView(View):
         return render(request, self.template_name, {"examples": examples})
 
 
+@login_required
 def get_abilities(request):
     object_id = request.GET.get("object")
     object = Human.objects.get(id=object_id)

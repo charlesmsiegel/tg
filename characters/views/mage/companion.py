@@ -32,6 +32,7 @@ from core.mixins import (
 )
 from core.models import Language
 from django import forms
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -73,7 +74,7 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
     error_message = "There was an error updating the Companion."
 
 
-class LoadExamplesView(View):
+class LoadExamplesView(LoginRequiredMixin, View):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def get(self, request, *args, **kwargs):
@@ -125,6 +126,7 @@ class LoadExamplesView(View):
         return render(request, self.template_name, {"examples": examples})
 
 
+@login_required
 def load_companion_values(request):
     advantage = Advantage.objects.get(pk=request.GET.get("example"))
     ratings = [x.value for x in advantage.ratings.all()]

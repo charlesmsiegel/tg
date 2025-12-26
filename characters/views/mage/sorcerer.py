@@ -47,6 +47,7 @@ from core.mixins import (
 from core.models import Language
 from core.views.generic import MultipleFormsetsMixin
 from django import forms
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
@@ -120,6 +121,7 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@login_required
 def load_attributes(request):
     fellowship_id = request.GET.get("fellowship")
     sf = SorcererFellowship.objects.get(id=fellowship_id)
@@ -130,6 +132,7 @@ def load_attributes(request):
     )
 
 
+@login_required
 def load_affinities(request):
     fellowship_id = request.GET.get("fellowship")
     sf = SorcererFellowship.objects.get(id=fellowship_id)
@@ -161,7 +164,7 @@ class SorcererDetailView(HumanDetailView):
         return context
 
 
-class LoadExamplesView(View):
+class LoadExamplesView(LoginRequiredMixin, View):
     template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def get(self, request, *args, **kwargs):
@@ -232,6 +235,7 @@ class LoadExamplesView(View):
         return render(request, self.template_name, {"examples": examples})
 
 
+@login_required
 def load_companion_values(request):
     advantage = Advantage.objects.get(pk=request.GET.get("example"))
     ratings = [x.value for x in advantage.ratings.all()]
@@ -269,6 +273,7 @@ class SorcererBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
+@login_required
 def get_abilities(request):
     practice_id = request.GET.get("practice_id")
     prac = Practice.objects.get(id=practice_id)
