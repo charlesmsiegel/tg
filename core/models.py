@@ -515,6 +515,9 @@ class NewsItem(models.Model):
         verbose_name = "News Item"
         verbose_name_plural = "News Items"
 
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
         return reverse("newsitem", kwargs={"pk": self.pk})
 

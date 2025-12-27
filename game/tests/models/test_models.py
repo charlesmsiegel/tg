@@ -404,3 +404,116 @@ class TestWeekAndXPRequests(TestCase):
 
         # finishing + learning = 2 XP
         self.assertEqual(xp_request.total_xp(), 2)
+
+
+class TestStrMethods(TestCase):
+    """Test __str__ methods for game models."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Vampire")
+        self.location = LocationModel.objects.create(
+            name="Test Location",
+            chronicle=self.chronicle,
+        )
+
+    def test_journal_entry_str(self):
+        """Test JournalEntry __str__ method."""
+        from characters.models.core import Human
+
+        character = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+        )
+        journal, _ = Journal.objects.get_or_create(character=character)
+
+        # Create an entry with a specific date
+        entry = JournalEntry.objects.create(
+            journal=journal,
+            message="Test message",
+            date=now(),
+        )
+
+        # String should contain journal name and date
+        str_repr = str(entry)
+        self.assertIn("Test Character's Journal", str_repr)
+        self.assertIn("-", str_repr)  # Date separator
+
+    def test_journal_entry_str_with_null_journal(self):
+        """Test JournalEntry __str__ when journal is null."""
+        entry = JournalEntry.objects.create(
+            journal=None,
+            message="Orphan entry",
+            date=now(),
+        )
+
+        str_repr = str(entry)
+        self.assertIn("No Journal", str_repr)
+
+    def test_st_relationship_str(self):
+        """Test STRelationship __str__ method."""
+        from game.models import STRelationship
+
+        relationship = STRelationship.objects.create(
+            user=self.user,
+            chronicle=self.chronicle,
+            gameline=self.gameline,
+        )
+
+        str_repr = str(relationship)
+        self.assertIn("testuser", str_repr)
+        self.assertIn("Test Chronicle", str_repr)
+        self.assertIn("Vampire", str_repr)
+
+    def test_st_relationship_str_with_nulls(self):
+        """Test STRelationship __str__ with null values."""
+        from game.models import STRelationship
+
+        # Need to create without validation since we're testing edge cases
+        relationship = STRelationship(
+            user=None,
+            chronicle=None,
+            gameline=None,
+        )
+        # Don't save - just test the __str__ method
+        str_repr = str(relationship)
+        self.assertIn("No User", str_repr)
+        self.assertIn("No Chronicle", str_repr)
+        self.assertIn("No Gameline", str_repr)
+
+    def test_story_xp_request_str(self):
+        """Test StoryXPRequest __str__ method."""
+        from characters.models.core import Human
+        from game.models import StoryXPRequest
+
+        story = Story.objects.create(name="Epic Adventure")
+        character = Human.objects.create(
+            name="Hero Character",
+            owner=self.user,
+        )
+
+        request = StoryXPRequest.objects.create(
+            story=story,
+            character=character,
+            success=True,
+        )
+
+        str_repr = str(request)
+        self.assertIn("Hero Character", str_repr)
+        self.assertIn("Epic Adventure", str_repr)
+
+    def test_story_xp_request_str_with_nulls(self):
+        """Test StoryXPRequest __str__ with null values."""
+        from game.models import StoryXPRequest
+
+        request = StoryXPRequest.objects.create(
+            story=None,
+            character=None,
+        )
+
+        str_repr = str(request)
+        self.assertIn("No Character", str_repr)
+        self.assertIn("No Story", str_repr)

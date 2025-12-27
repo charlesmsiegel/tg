@@ -188,3 +188,31 @@ class TestRandomUtils(TestCase):
         common_count = results.count("common")
         rare_count = results.count("rare")
         self.assertGreater(common_count, rare_count)
+
+
+class TestNewsItemStr(TestCase):
+    """Test NewsItem __str__ method."""
+
+    def test_newsitem_str_returns_title(self):
+        """Test NewsItem __str__ returns the title."""
+        from core.models import NewsItem
+
+        news = NewsItem.objects.create(
+            title="Important Announcement",
+            content="This is the content of the news item.",
+        )
+
+        self.assertEqual(str(news), "Important Announcement")
+
+    def test_newsitem_str_with_empty_title(self):
+        """Test NewsItem __str__ with empty title."""
+        from core.models import NewsItem
+
+        # Create with empty title (validation will fail, so don't save)
+        news = NewsItem(
+            title="",
+            content="Content here",
+        )
+
+        # __str__ should still work and return empty string
+        self.assertEqual(str(news), "")
