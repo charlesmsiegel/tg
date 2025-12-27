@@ -1,13 +1,4 @@
-"""
-Additional tests for Profile model beyond existing tests.
-
-Tests cover:
-- Profile creation on user signup
-- ST relationship management
-- objects_to_approve() method
-- Theme preferences
-- Permission cascading for STs
-"""
+"""Tests for accounts models (Profile)."""
 
 from characters.models.core import Human
 from django.contrib.auth.models import User
@@ -279,3 +270,96 @@ class TestProfileStringRepresentation(TestCase):
 
         # Should include the username
         self.assertIn("testuser", profile_str)
+
+
+class TestProfileSTMethods(TestCase):
+    """Test Profile methods related to ST functionality."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle1 = Chronicle.objects.create(name="Chronicle 1")
+        self.chronicle2 = Chronicle.objects.create(name="Chronicle 2")
+        self.gameline1 = Gameline.objects.create(name="Vampire")
+        self.gameline2 = Gameline.objects.create(name="Mage")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle1, gameline=self.gameline1
+        )
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle2, gameline=self.gameline2
+        )
+
+    def test_is_st_returns_true_for_storyteller(self):
+        """Test that is_st returns True for users with ST relationships."""
+        self.assertTrue(self.st_user.profile.is_st())
+
+    def test_is_st_returns_false_for_non_storyteller(self):
+        """Test that is_st returns False for regular users."""
+        self.assertFalse(self.user.profile.is_st())
+
+    def test_st_relations_returns_grouped_relationships(self):
+        """Test that st_relations returns relationships grouped by chronicle."""
+        relations = self.st_user.profile.st_relations()
+        self.assertIn(self.chronicle1, relations)
+        self.assertIn(self.chronicle2, relations)
+        self.assertEqual(len(relations[self.chronicle1]), 1)
+        self.assertEqual(relations[self.chronicle1][0].gameline, self.gameline1)
+
+    def test_st_relations_empty_for_non_st(self):
+        """Test that st_relations is empty for non-storytellers."""
+        relations = self.user.profile.st_relations()
+        self.assertEqual(len(relations), 0)
+
+
+class TestProfileObjectQueries(TestCase):
+    """Test Profile methods for querying owned objects."""
+
+    def setUp(self):
+        from items.models.core import ItemModel
+        from locations.models.core import LocationModel
+
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.char1 = Human.objects.create(name="Character 1", owner=self.user, concept="Test")
+        self.char2 = Human.objects.create(name="Character 2", owner=self.user, concept="Test")
+        self.location = LocationModel.objects.create(name="My Location", owner=self.user)
+        self.item = ItemModel.objects.create(name="My Item", owner=self.user)
+
+    def test_my_characters_returns_owned_characters(self):
+        """Test that my_characters returns all owned characters."""
+        chars = self.user.profile.my_characters()
+        self.assertEqual(chars.count(), 2)
+        self.assertIn(self.char1, chars)
+        self.assertIn(self.char2, chars)
+
+    def test_my_locations_returns_owned_locations(self):
+        """Test that my_locations returns all owned locations."""
+        locs = self.user.profile.my_locations()
+        self.assertEqual(locs.count(), 1)
+        self.assertIn(self.location, locs)
+
+    def test_my_items_returns_owned_items(self):
+        """Test that my_items returns all owned items."""
+        items = self.user.profile.my_items()
+        self.assertEqual(items.count(), 1)
+        self.assertIn(self.item, items)
+
+
+class TestProfileThemeMethods(TestCase):
+    """Test Profile theme-related methods."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+
+    def test_get_theme_css_path_light(self):
+        """Test theme CSS path for light theme."""
+        self.user.profile.theme = "light"
+        self.user.profile.save()
+        path = self.user.profile.get_theme_css_path()
+        self.assertEqual(path, "themes/light.css")
+
+    def test_get_theme_css_path_dark(self):
+        """Test theme CSS path for dark theme."""
+        self.user.profile.theme = "dark"
+        self.user.profile.save()
+        path = self.user.profile.get_theme_css_path()
+        self.assertEqual(path, "themes/dark.css")
