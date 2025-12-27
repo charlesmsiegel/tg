@@ -724,3 +724,131 @@ class PostModelIntegrationTests(TestCase):
         # @storyteller messages return None
         self.assertIsNone(result)
         self.assertTrue(self.scene.waiting_for_st)
+
+
+@override_settings(CHANNEL_LAYERS=TEST_CHANNEL_LAYERS)
+class SceneChatConsumerXSSTests(TransactionTestCase):
+    """Test XSS prevention in WebSocket message handling.
+
+    These tests verify that potentially malicious content is handled safely.
+    The server transmits messages as-is (for flexibility), and the client-side
+    JavaScript uses escapeHtml() to prevent XSS when rendering.
+
+    See issue #1094 for details on the vulnerability and fix.
+    """
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        self.scene = Scene.objects.create(
+            name="Test Scene", chronicle=self.chronicle, location=self.location
+        )
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+        self.scene.add_character(self.character)
+
+    async def test_xss_payload_in_message_transmitted_unmodified(self):
+        """Test that XSS payloads in messages are transmitted as-is.
+
+        The server does not sanitize messages - this is intentional so that
+        legitimate angle brackets and HTML entities in game text are preserved.
+        The client-side JavaScript MUST escape all user content before rendering
+        with innerHTML using the escapeHtml() function.
+        """
+        from tg.asgi import application
+
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
+        communicator.scope["user"] = self.user
+        await communicator.connect()
+
+        # Send a message with XSS payload
+        xss_payload = "<img src=x onerror=\"alert('XSS')\">"
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": xss_payload,
+            }
+        )
+
+        # Receive the broadcast - message should be transmitted as-is
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "new_post")
+        self.assertEqual(response["post"]["message"], xss_payload)
+
+        await communicator.disconnect()
+
+    async def test_script_tag_in_message_transmitted_unmodified(self):
+        """Test that script tags in messages are transmitted as-is.
+
+        Client-side escaping handles this - see test above for explanation.
+        """
+        from tg.asgi import application
+
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
+        communicator.scope["user"] = self.user
+        await communicator.connect()
+
+        xss_payload = '<script>alert("XSS")</script>'
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": xss_payload,
+            }
+        )
+
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "new_post")
+        self.assertEqual(response["post"]["message"], xss_payload)
+
+        await communicator.disconnect()
+
+    async def test_legitimate_angle_brackets_preserved(self):
+        """Test that legitimate angle brackets in game text are preserved.
+
+        Players often use angle brackets for actions, e.g., <waves hand>.
+        These should be transmitted and then escaped on the client side.
+        """
+        from tg.asgi import application
+
+        communicator = WebsocketCommunicator(application, f"/ws/scene/{self.scene.pk}/")
+        communicator.scope["user"] = self.user
+        await communicator.connect()
+
+        message = "The mage says <mystically> you shall not pass!"
+        await communicator.send_json_to(
+            {
+                "type": "chat_message",
+                "character_id": self.character.pk,
+                "display_name": "",
+                "message": message,
+            }
+        )
+
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "new_post")
+        self.assertEqual(response["post"]["message"], message)
+
+        await communicator.disconnect()
+
+    def test_xss_payload_stored_in_database(self):
+        """Test that XSS payloads in posts are stored as-is in database.
+
+        Database stores raw content. Client-side rendering handles escaping.
+        """
+        xss_payload = "<img src=x onerror=\"alert('XSS')\">"
+        post = self.scene.add_post(self.character, "", xss_payload)
+
+        post.refresh_from_db()
+        self.assertEqual(post.message, xss_payload)

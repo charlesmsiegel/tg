@@ -324,12 +324,12 @@
                 highlightClass = 'class="highlight"';
             }
 
-            // Create HTML (using the sanitized message from server)
+            // Create HTML with all user content escaped
             postDiv.innerHTML = `
                 <p class="post mb-0" style="line-height: 1.6;">
                     <strong ${highlightClass}>
                         <a href="${escapeHtml(post.character_url)}" style="font-weight: 600;">${escapeHtml(post.display_name)}</a>
-                    </strong>: ${post.message}
+                    </strong>: ${escapeHtml(post.message)}
                 </p>
             `;
 
