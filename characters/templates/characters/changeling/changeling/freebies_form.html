@@ -132,15 +132,15 @@
             }
 
             // Make the AJAX call
-            $.ajax({                       // initialize an AJAX request
-                url: '{% url 'characters:changeling:ajax:load_changeling_examples' %}',                    // set the url of the request
+            $.ajax({
+                url: '{% url 'characters:changeling:ajax:load_changeling_examples' %}',
                 data: {
-                'category': this.value,       // add the category to the GET parameters
-                'object': {{object.id}}
+                    'category': this.value,
+                    'object': {{object.id}}
                 },
-                success: function (data) {   // `data` is the return of the view function
-                $("#id_example").html(data);  // replace the contents of the example input with the data from the server
-                $("#id_value").html('<option value="">---</option>');
+                success: function (data) {
+                    populateDropdown('#id_example', data.options);
+                    populateDropdownFromValues('#id_value', []);
                 }
             });
         });
@@ -154,7 +154,7 @@
                         'example': this.value
                     },
                     success: function (data) {
-                        $("#id_value").html(data);
+                        populateDropdownFromValues('#id_value', data.values);
                     }
                 });
             }

@@ -336,7 +336,6 @@ class WtAHumanFreebiesView(HumanFreebiesView):
 
 class WtAHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = WtAHuman
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class WtAHumanLanguagesView(EditPermissionMixin, FormView):

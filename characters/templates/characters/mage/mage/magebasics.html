@@ -63,35 +63,32 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
- $("#id_affiliation").change(function () {
-    var url = $("#mageForm").attr("data-factions-url");  // get the url of the `load_character_type` view
-    var affiliationId = $(this).val();  // get the selected gameline ID from the HTML input                  
-    $.ajax({                       // initialize an AJAX request
-        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-character-type/)
+$("#id_affiliation").change(function () {
+    var url = $("#mageForm").attr("data-factions-url");
+    var affiliationId = $(this).val();
+    $.ajax({
+        url: url,
         data: {
-        'affiliation': affiliationId       // add the gameline id to the GET parameters
+            'affiliation': affiliationId
         },
-        success: function (data) {   // `data` is the return of the `load_character_type` view function
-        $("#id_faction").html(data);  // replace the contents of the character_type input with the data that came from the server
-        $("#id_subfaction").html('<option value="">---------</option>');
+        success: function (data) {
+            populateDropdown('#id_faction', data.options);
+            populateDropdown('#id_subfaction', []);
         }
     });
-    });
-        
-// this one is for fetching subfaction data
-$("#id_faction").change(function () { //django-model-form created this id
-var url = $("#mageForm").attr("data-subfactions-url");  // get the url of the `load_subfactions` view
-var factionId = $(this).val();  // get the selected affiliation ID from the HTML input
-        
-$.ajax({                       // initialize an AJAX request
-    url: '{% url 'characters:mage:ajax:load_subfactions' %}',                    // set the url of the request (= localhost:8000/hr/ajax/load-factions/) person_form.html template has this url var
-    data: {
-    'faction': factionId       // add the affiliation id to the GET parameters
-    },
-    success: function (data) {   // `data` is the return of the `load_factions` view function
-    $("#id_subfaction").html(data);  // replace the contents of the faction input with the data that came from the server
-    }
 });
+
+$("#id_faction").change(function () {
+    var factionId = $(this).val();
+    $.ajax({
+        url: '{% url 'characters:mage:ajax:load_subfactions' %}',
+        data: {
+            'faction': factionId
+        },
+        success: function (data) {
+            populateDropdown('#id_subfaction', data.options);
+        }
+    });
 });
     </script>
 {% endblock contents %}

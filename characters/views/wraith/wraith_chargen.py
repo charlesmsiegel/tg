@@ -409,7 +409,6 @@ class WraithFreebiesView(HumanFreebiesView):
 
 class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Wraith
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def category_method_map(self):
         base_map = super().category_method_map()

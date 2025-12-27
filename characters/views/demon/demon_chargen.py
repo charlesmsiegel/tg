@@ -458,7 +458,6 @@ class DemonSpecialtiesView(HumanSpecialtiesView):
 
 class DemonFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Demon
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def category_method_map(self):
         d = super().category_method_map()

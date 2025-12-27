@@ -59,23 +59,23 @@
             const fellowshipSelectMenu = document.getElementById("id_fellowship");
 
             fellowshipSelectMenu.addEventListener("change", function() {
-                $.ajax({                       // initialize an AJAX request
-                    url: '{% url 'characters:mage:ajax:load_attributes' %}',                    // set the url of the request (= localhost:8000/hr/ajax/load-character-type/)
+                $.ajax({
+                    url: '{% url 'characters:mage:ajax:load_attributes' %}',
                     data: {
-                    'fellowship': this.value,       // add the gameline id to the GET parameters
+                        'fellowship': this.value
                     },
-                    success: function (data) {   // `data` is the return of the `load_character_type` view function
-                    $("#id_casting_attribute").html(data);  // replace the contents of the character_type input with the data that came from the server
+                    success: function (data) {
+                        populateDropdown('#id_casting_attribute', data.options);
                     }
                 });
 
-                $.ajax({                       // initialize an AJAX request
-                    url: '{% url 'characters:mage:ajax:load_affinities' %}',                    // set the url of the request (= localhost:8000/hr/ajax/load-character-type/)
+                $.ajax({
+                    url: '{% url 'characters:mage:ajax:load_affinities' %}',
                     data: {
-                    'fellowship': this.value,       // add the gameline id to the GET parameters
+                        'fellowship': this.value
                     },
-                    success: function (data) {   // `data` is the return of the `load_character_type` view function
-                    $("#id_affinity_path").html(data);  // replace the contents of the character_type input with the data that came from the server
+                    success: function (data) {
+                        populateDropdown('#id_affinity_path', data.options);
                     }
                 });
             });

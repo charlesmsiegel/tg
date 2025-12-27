@@ -115,12 +115,12 @@
             $.ajax({
                 url: '{% url 'characters:vampire:ajax:load_ghoul_examples' %}',
                 data: {
-                'category': this.value,
-                'object': {{object.id}}
+                    'category': this.value,
+                    'object': {{object.id}}
                 },
                 success: function (data) {
-                $("#id_example").html(data);
-                $("#id_value").html('<option value="">---</option>');
+                    populateDropdown('#id_example', data.options);
+                    populateDropdownFromValues('#id_value', []);
                 }
             });
         });
@@ -135,7 +135,7 @@
                         'object': {{object.id}}
                     },
                     success: function (data) {
-                        $("#id_value").html(data);
+                        populateDropdownFromValues('#id_value', data.values);
                     }
                 });
             }

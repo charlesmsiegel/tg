@@ -285,13 +285,13 @@
 
                 // Assuming "MeritFlaw" is a category for example purposes
                     $.ajax({
-                        url: '{% url 'characters:ajax:load_values' %}',  // Update with your actual URL
+                        url: '{% url 'characters:ajax:load_values' %}',
                         data: {
                             'example': selectedValue
                         },
                         success: function (data) {
                             // Update the corresponding rating field with the AJAX response
-                            $(ratingFieldId).html(data);
+                            populateDropdownFromValues(ratingFieldId, data.values);
                         }
                     });
             }

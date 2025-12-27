@@ -607,7 +607,6 @@ class FeraExtrasView(SpecialUserMixin, UpdateView):
 
 class FeraFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Fera
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class FeraFreebiesView(HumanFreebiesView):

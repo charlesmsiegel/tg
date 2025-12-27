@@ -211,7 +211,6 @@ class ThrallSpecialtiesView(HumanSpecialtiesView):
 
 class ThrallFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Thrall
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class ThrallCharacterCreationView(HumanCharacterCreationView):

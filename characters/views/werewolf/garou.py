@@ -392,7 +392,6 @@ class WerewolfExtrasView(SpecialUserMixin, UpdateView):
 
 class WerewolfFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Werewolf
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class WerewolfFreebiesView(HumanFreebiesView):

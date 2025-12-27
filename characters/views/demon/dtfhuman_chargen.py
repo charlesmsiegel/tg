@@ -242,7 +242,6 @@ class DtFHumanSpecialtiesView(HumanSpecialtiesView):
 
 class DtFHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = DtFHuman
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class DtFHumanCharacterCreationView(HumanCharacterCreationView):

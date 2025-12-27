@@ -162,15 +162,15 @@
             }
             
             // Make the AJAX call
-            $.ajax({                       // initialize an AJAX request
-                url: '{% url 'characters:mage:ajax:load_mage_examples' %}',                    // set the url of the request (= localhost:8000/hr/ajax/load-character-type/)
+            $.ajax({
+                url: '{% url 'characters:mage:ajax:load_mage_examples' %}',
                 data: {
-                'category': this.value,       // add the gameline id to the GET parameters
-                'object': {{object.id}}
+                    'category': this.value,
+                    'object': {{object.id}}
                 },
-                success: function (data) {   // `data` is the return of the `load_character_type` view function
-                $("#id_example").html(data);  // replace the contents of the character_type input with the data that came from the server
-                $("#id_value").html('<option value="">---</option>');
+                success: function (data) {
+                    populateDropdown('#id_example', data.options);
+                    populateDropdownFromValues('#id_value', []);
                 }
             });
         });
@@ -185,7 +185,7 @@
                         'object': {{object.id}}
                     },
                     success: function (data) {
-                        $("#id_value").html(data);
+                        populateDropdownFromValues('#id_value', data.values);
                     }
                 });
             }

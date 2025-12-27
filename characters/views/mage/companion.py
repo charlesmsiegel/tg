@@ -75,9 +75,9 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
 
 
 class LoadExamplesView(LoginRequiredMixin, View):
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
-
     def get(self, request, *args, **kwargs):
+        from core.ajax import dropdown_options_response
+
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
         m = Companion.objects.get(pk=object_id)
@@ -123,19 +123,17 @@ class LoadExamplesView(LoginRequiredMixin, View):
         else:
             examples = []
 
-        return render(request, self.template_name, {"examples": examples})
+        return dropdown_options_response(examples, label_attr="__str__")
 
 
 @login_required
 def load_companion_values(request):
+    from core.ajax import simple_values_response
+
     advantage = Advantage.objects.get(pk=request.GET.get("example"))
     ratings = [x.value for x in advantage.ratings.all()]
     ratings.sort()
-    return render(
-        request,
-        "characters/core/human/load_values_dropdown_list.html",
-        {"values": ratings},
-    )
+    return simple_values_response(ratings)
 
 
 class CompanionBasicsView(LoginRequiredMixin, CreateView):
