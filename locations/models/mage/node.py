@@ -205,7 +205,10 @@ class Node(LocationModel):
             ]:
                 sphere_name = mf.name.split("(")[-1].split(")")[0]
                 s = Sphere.objects.get(name=sphere_name)
-                # self.random_resonance(sphere=s.property_name)
+                # Add a resonance attuned to this sphere
+                sphere_resonances = Resonance.objects.filter(**{s.property_name: True})
+                if sphere_resonances.exists():
+                    self.add_resonance(sphere_resonances.first())
 
     def has_resonance(self):
         return self.total_resonance() >= self.rank

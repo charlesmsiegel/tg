@@ -103,6 +103,16 @@ class Chantry(BackgroundBlock, LocationModel):
     integrated_effects = models.ManyToManyField(Effect, blank=True)
     integrated_effects_score = models.IntegerField(default=0)
 
+    # Chantry-specific resources
+    nodes = models.ManyToManyField("locations.Node", blank=True, related_name="chantry_nodes")
+    chantry_library = models.ForeignKey(
+        "locations.Library",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="chantry",
+    )
+
     members = models.ManyToManyField(Human, blank=True, related_name="member_of")
     cabals = models.ManyToManyField("characters.Cabal", blank=True)
 
