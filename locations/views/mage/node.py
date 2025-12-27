@@ -14,11 +14,15 @@ class NodeDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["resonance"] = NodeResonanceRating.objects.filter(node=self.object).order_by(
-            "resonance__name"
+        context["resonance"] = (
+            NodeResonanceRating.objects.filter(node=self.object)
+            .select_related("resonance")
+            .order_by("resonance__name")
         )
-        context["merits_and_flaws"] = NodeMeritFlawRating.objects.filter(node=self.object).order_by(
-            "mf__name"
+        context["merits_and_flaws"] = (
+            NodeMeritFlawRating.objects.filter(node=self.object)
+            .select_related("mf")
+            .order_by("mf__name")
         )
         return context
 
