@@ -1,16 +1,22 @@
-# MODEL_STANDARDS.md
+---
+name: model-standards
+description: Provides comprehensive code standards and templates for implementing Django models, views, forms, templates, and URLs in the World of Darkness application. Use when creating new models or CRUD views, implementing URL patterns, designing forms, or ensuring consistency across gamelines. Covers polymorphic model inheritance, reference models, through models, and complete implementation checklists.
+allowed-tools: Read, Glob, Grep, Write, Edit
+---
 
-This document defines the code standards and templates for implementing models, views, forms, templates, and URLs in this project. Following these standards ensures consistency, maintainability, and completeness across all gamelines.
+# Model Standards
 
-## Table of Contents
+This skill provides the complete code standards and templates for implementing models, views, forms, templates, and URLs in this project. Following these standards ensures consistency, maintainability, and completeness across all gamelines.
 
-1. [Model Standards](#model-standards)
-2. [URL Standards](#url-standards)
-3. [View Standards](#view-standards)
-4. [Form Standards](#form-standards)
-5. [Template Standards](#template-standards)
-6. [Index Integration Standards](#index-integration-standards)
-7. [Complete Implementation Checklist](#complete-implementation-checklist)
+## When to Use This Skill
+
+- Creating new polymorphic models (characters, items, locations)
+- Implementing reference/lookup models (factions, clans, disciplines)
+- Setting up URL patterns for CRUD operations
+- Building list, detail, create, and update views
+- Creating forms with proper validation and widgets
+- Designing templates that follow project conventions
+- Ensuring new implementations are complete (using the checklist)
 
 ---
 
