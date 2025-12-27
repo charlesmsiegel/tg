@@ -71,3 +71,6 @@ class CabalListView(ListView):
     model = Cabal
     ordering = ["name"]
     template_name = "characters/mage/cabal/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("leader").prefetch_related("members")

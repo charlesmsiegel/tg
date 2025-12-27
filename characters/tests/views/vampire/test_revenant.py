@@ -2,4 +2,5 @@
 
 from django.test import TestCase
 
-# TODO: Move relevant tests from existing test files here
+# RevenantListView has optimized queries but no URL is registered for it.
+# The optimization will be tested when a URL is added.

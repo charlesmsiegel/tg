@@ -21,7 +21,7 @@
                                 <div class="tg-card-body text-center" style="padding: 16px;">
                                     <a href="{{ week.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">{{ week }}</a>
                                     <div style="font-size: 0.75rem; color: var(--theme-text-secondary); margin-top: 8px;">
-                                        {{ week.finished_scenes.count }} scenes
+                                        {{ week.cached_scene_count }} scene{{ week.cached_scene_count|pluralize }}
                                     </div>
                                 </div>
                             </div>

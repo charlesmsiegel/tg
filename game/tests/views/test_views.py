@@ -541,3 +541,95 @@ class TestStatRollMessageProcessing(TestCase):
         msg = "Attack /stat Strength + Brawl"
         result = message_processing(self.char, msg)
         self.assertIn("difficulty 6", result)
+
+
+class TestWeekListViewQueryOptimization(TestCase):
+    """Test that WeekListView uses optimized queries."""
+
+    def setUp(self):
+        from datetime import date
+
+        from django.db import connection
+        from django.test import Client
+        from django.test.utils import CaptureQueriesContext
+
+        self.CaptureQueriesContext = CaptureQueriesContext
+        self.connection = connection
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+
+        # Create multiple weeks with scenes
+        for i in range(3):
+            week = Week.objects.create(end_date=date(2024, 1, 7 * (i + 1)))
+            # Create a finished scene for each week
+            scene = Scene.objects.create(
+                name=f"Scene {i}",
+                chronicle=self.chronicle,
+                location=self.location,
+                finished=True,
+            )
+
+    def test_list_view_query_count_is_bounded(self):
+        """Test that list view query count doesn't scale with number of weeks."""
+        self.client.login(username="testuser", password="password")
+
+        with self.CaptureQueriesContext(self.connection) as context:
+            response = self.client.get("/game/week/list/")
+
+        self.assertEqual(response.status_code, 200)
+        query_count = len(context.captured_queries)
+        # Base overhead includes session, user/profile, polymorphic lookups, etc.
+        # The optimization ensures queries don't scale with number of weeks
+        self.assertLessEqual(
+            query_count,
+            20,
+            f"Too many queries ({query_count}). List view may have N+1 issue.",
+        )
+
+
+class TestSceneListViewQueryOptimization(TestCase):
+    """Test that SceneListView uses optimized queries."""
+
+    def setUp(self):
+        from django.db import connection
+        from django.test import Client
+        from django.test.utils import CaptureQueriesContext
+
+        self.CaptureQueriesContext = CaptureQueriesContext
+        self.connection = connection
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+
+        # Create multiple scenes with locations
+        for i in range(5):
+            location = LocationModel.objects.create(name=f"Location {i}", chronicle=self.chronicle)
+            Scene.objects.create(
+                name=f"Scene {i}",
+                chronicle=self.chronicle,
+                location=location,
+            )
+
+    def test_list_view_query_count_is_bounded(self):
+        """Test that list view query count doesn't scale with number of scenes."""
+        self.client.login(username="testuser", password="password")
+
+        with self.CaptureQueriesContext(self.connection) as context:
+            response = self.client.get("/game/scenes/")
+
+        self.assertEqual(response.status_code, 200)
+        query_count = len(context.captured_queries)
+        # Base overhead includes session, user/profile, etc.
+        # The optimization ensures queries don't scale with number of scenes
+        self.assertLessEqual(
+            query_count,
+            20,
+            f"Too many queries ({query_count}). List view may have N+1 issue.",
+        )

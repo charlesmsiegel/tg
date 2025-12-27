@@ -91,7 +91,7 @@ class CharacterListView(VisibilityFilterMixin, ListView):
         """Get filtered queryset based on permissions."""
         qs = super().get_queryset()
         # Additional filtering can be added here (e.g., by status, chronicle, etc.)
-        return qs.order_by("name")
+        return qs.select_related("owner", "chronicle").order_by("name")
 
 
 class CharacterCreateView(LoginRequiredMixin, CreateView):

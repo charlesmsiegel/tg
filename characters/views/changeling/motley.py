@@ -28,3 +28,6 @@ class MotleyListView(ListView):
     model = Motley
     ordering = ["name"]
     template_name = "characters/changeling/motley/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("leader").prefetch_related("members")
