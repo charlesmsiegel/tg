@@ -1,7 +1,7 @@
 from characters.models.core.statistic import Statistic
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, Sum
 
 
 class Background(Statistic):
@@ -105,12 +105,10 @@ class BackgroundBlock(models.Model):
             BackgroundRating.objects.filter(char=self, bg__property_name=prop).delete()
 
     def total_background_rating(self, bg_name):
-        return sum(
-            [
-                x.rating
-                for x in BackgroundRating.objects.filter(bg__property_name=bg_name, char=self)
-            ]
+        result = BackgroundRating.objects.filter(bg__property_name=bg_name, char=self).aggregate(
+            total=Sum("rating")
         )
+        return result["total"] or 0
 
     def get_backgrounds(self):
         return {bg: getattr(self, bg) for bg in self.allowed_backgrounds}
@@ -121,17 +119,14 @@ class BackgroundBlock(models.Model):
                 property_name=background,
                 defaults={"name": background.replace("_", " ").title()},
             )
-            ratings = BackgroundRating.objects.filter(char=self, bg=bg)
-            if ratings.filter(rating__lt=5).count() > 0:
-                background = ratings.filter(rating__lt=5).first()
-            else:
+            background = BackgroundRating.objects.filter(char=self, bg=bg, rating__lt=5).first()
+            if not background:
                 background = BackgroundRating.objects.create(char=self, bg=bg)
         elif isinstance(background, Background):
-            ratings = BackgroundRating.objects.filter(char=self, bg=background)
-            if ratings.filter(rating__lt=5).count() > 0:
-                background = ratings.filter(rating__lt=5).first()
-            else:
-                background = BackgroundRating.objects.create(char=self, bg=background)
+            bg = background
+            background = BackgroundRating.objects.filter(char=self, bg=bg, rating__lt=5).first()
+            if not background:
+                background = BackgroundRating.objects.create(char=self, bg=bg)
         else:
             raise ValueError(
                 "Must be a background name, Background object, or BackgroundRating object"

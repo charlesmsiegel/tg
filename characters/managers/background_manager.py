@@ -46,15 +46,12 @@ class BackgroundManager:
             int: Sum of all ratings for this background type
         """
         from characters.models.core.background_block import BackgroundRating
+        from django.db.models import Sum
 
-        return sum(
-            [
-                x.rating
-                for x in BackgroundRating.objects.filter(
-                    bg__property_name=bg_name, char=self.character
-                )
-            ]
-        )
+        result = BackgroundRating.objects.filter(
+            bg__property_name=bg_name, char=self.character
+        ).aggregate(total=Sum("rating"))
+        return result["total"] or 0
 
     def get_backgrounds(self):
         """
@@ -87,17 +84,18 @@ class BackgroundManager:
                 property_name=background,
                 defaults={"name": background.replace("_", " ").title()},
             )
-            ratings = BackgroundRating.objects.filter(char=self.character, bg=bg)
-            if ratings.filter(rating__lt=5).count() > 0:
-                background = ratings.filter(rating__lt=5).first()
-            else:
+            background = BackgroundRating.objects.filter(
+                char=self.character, bg=bg, rating__lt=5
+            ).first()
+            if not background:
                 background = BackgroundRating.objects.create(char=self.character, bg=bg)
         elif isinstance(background, Background):
-            ratings = BackgroundRating.objects.filter(char=self.character, bg=background)
-            if ratings.filter(rating__lt=5).count() > 0:
-                background = ratings.filter(rating__lt=5).first()
-            else:
-                background = BackgroundRating.objects.create(char=self.character, bg=background)
+            bg = background
+            background = BackgroundRating.objects.filter(
+                char=self.character, bg=bg, rating__lt=5
+            ).first()
+            if not background:
+                background = BackgroundRating.objects.create(char=self.character, bg=bg)
         else:
             raise ValueError(
                 "Must be a background name, Background object, or BackgroundRating object"
