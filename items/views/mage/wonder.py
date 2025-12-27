@@ -34,6 +34,7 @@ class WonderCreateView(MessageMixin, CreateView):
 
 
 class WonderUpdateView(MessageMixin, UpdateView):
+    model = Wonder
     form_class = WonderForm
     template_name = "items/mage/wonder/form.html"
     success_message = "Wonder '{name}' updated successfully!"
