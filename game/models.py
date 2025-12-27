@@ -275,6 +275,12 @@ class STRelationship(models.Model):
             ),
         ]
 
+    def __str__(self):
+        user_name = self.user.username if self.user else "No User"
+        chronicle_name = self.chronicle.name if self.chronicle else "No Chronicle"
+        gameline_name = self.gameline.name if self.gameline else "No Gameline"
+        return f"{user_name} - {chronicle_name} ({gameline_name})"
+
     def clean(self):
         """Validate ST relationship data before saving."""
         super().clean()
@@ -697,6 +703,11 @@ class JournalEntry(models.Model):
             models.Index(fields=["journal", "-date"]),
         ]
 
+    def __str__(self):
+        journal_name = str(self.journal) if self.journal else "No Journal"
+        date_str = self.date.strftime("%Y-%m-%d") if self.date else "No Date"
+        return f"{journal_name} - {date_str}"
+
 
 class Journal(models.Model):
     character = models.OneToOneField("characters.CharacterModel", on_delete=models.CASCADE)
@@ -1079,6 +1090,11 @@ class StoryXPRequest(models.Model):
     growth = models.BooleanField(default=False)
     drama = models.BooleanField(default=False)
     duration = models.IntegerField(default=0)
+
+    def __str__(self):
+        char_name = self.character.name if self.character else "No Character"
+        story_name = self.story.name if self.story else "No Story"
+        return f"{char_name} - {story_name}"
 
 
 class XPSpendingRequest(models.Model):
