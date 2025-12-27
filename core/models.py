@@ -470,6 +470,11 @@ class Model(PermissionMixin, PolymorphicModel):
         """Return valid status keys from CharacterStatus."""
         return [key for key, _ in CharacterStatus.CHOICES]
 
+    @property
+    def image_status_keys(self):
+        """Return valid image status keys from ImageStatus."""
+        return [key for key, _ in ImageStatus.CHOICES]
+
     def clean(self):
         """Validate model data before saving."""
         super().clean()
@@ -486,10 +491,9 @@ class Model(PermissionMixin, PolymorphicModel):
             )
 
         # Validate image_status is in valid choices
-        valid_image_statuses = ["sub", "app"]
-        if self.image_status not in valid_image_statuses:
+        if self.image_status not in self.image_status_keys:
             errors["image_status"] = (
-                f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(valid_image_statuses)}"
+                f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(self.image_status_keys)}"
             )
 
         if errors:

@@ -5,10 +5,12 @@ from unittest import mock
 from unittest.mock import Mock
 
 from characters.models.core import CharacterModel, Human
+from core.constants import CharacterStatus, ImageStatus
 from core.models import Language, NewsItem
 from core.templatetags.dots import dots
 from core.utils import dice, filepath
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import LiveServerTestCase, TestCase
 from django.utils.timezone import now
 from selenium import webdriver
@@ -289,6 +291,54 @@ class TestModel(TestCase):
         self.assertEqual(Vampire.gameline, "vtm")
         # Ghoul also inherits from VtMHuman
         self.assertEqual(Ghoul.gameline, "vtm")
+
+    def test_status_keys_property(self):
+        """Verify status_keys returns all valid CharacterStatus values."""
+        model = CharacterModel(name="Test")
+        expected_keys = [key for key, _ in CharacterStatus.CHOICES]
+        self.assertEqual(model.status_keys, expected_keys)
+        self.assertIn("Un", model.status_keys)
+        self.assertIn("Sub", model.status_keys)
+        self.assertIn("App", model.status_keys)
+        self.assertIn("Dec", model.status_keys)
+        self.assertIn("Ret", model.status_keys)
+
+    def test_image_status_keys_property(self):
+        """Verify image_status_keys returns all valid ImageStatus values."""
+        model = CharacterModel(name="Test")
+        expected_keys = [key for key, _ in ImageStatus.CHOICES]
+        self.assertEqual(model.image_status_keys, expected_keys)
+        self.assertIn("un", model.image_status_keys)
+        self.assertIn("sub", model.image_status_keys)
+        self.assertIn("app", model.image_status_keys)
+
+    def test_clean_validates_all_status_values(self):
+        """Verify clean() accepts all valid CharacterStatus values."""
+        for status_key, _ in CharacterStatus.CHOICES:
+            model = CharacterModel(name="Test", status=status_key)
+            # Should not raise
+            model.clean()
+
+    def test_clean_validates_all_image_status_values(self):
+        """Verify clean() accepts all valid ImageStatus values including 'un'."""
+        for status_key, _ in ImageStatus.CHOICES:
+            model = CharacterModel(name="Test", image_status=status_key)
+            # Should not raise - particularly important for 'un' (unapproved)
+            model.clean()
+
+    def test_clean_rejects_invalid_status(self):
+        """Verify clean() rejects invalid status values."""
+        model = CharacterModel(name="Test", status="XX")
+        with self.assertRaises(ValidationError) as context:
+            model.clean()
+        self.assertIn("status", context.exception.message_dict)
+
+    def test_clean_rejects_invalid_image_status(self):
+        """Verify clean() rejects invalid image_status values."""
+        model = CharacterModel(name="Test", image_status="invalid")
+        with self.assertRaises(ValidationError) as context:
+            model.clean()
+        self.assertIn("image_status", context.exception.message_dict)
 
 
 class TestDots(TestCase):
