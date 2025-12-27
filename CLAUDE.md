@@ -347,4 +347,9 @@ See `SOURCES/STYLE.md` for complete style guide with examples.
 
 ## Testing
 
-Tests organized by app and gameline: `characters/tests/vampire/`, `items/tests/mage/`, etc. Uses Django's unittest framework. Run `python manage.py test --verbosity=2` for verbose output.
+Test structure mirrors source code structure within each app. For example:
+- `characters/models/vampire/vampire.py` → `characters/tests/models/vampire/test_vampire.py`
+- `items/views/mage/wonder.py` → `items/tests/views/mage/test_wonder.py`
+- `locations/forms/node.py` → `locations/tests/forms/test_node.py`
+
+Uses Django's unittest framework. Run `python manage.py test --verbosity=2` for verbose output.
