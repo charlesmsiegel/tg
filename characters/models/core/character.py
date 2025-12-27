@@ -482,3 +482,22 @@ class Character(CharacterModel):
         )
 
         return total
+
+    def total_xp(self):
+        """Calculate total XP (earned XP).
+
+        Returns:
+            int: Total XP earned by this character
+        """
+        return self.xp
+
+    def available_xp(self):
+        """Calculate available (unspent) XP.
+
+        This returns the current XP pool which already accounts for spending
+        (XP is deducted when a spending request is created).
+
+        Returns:
+            int: Available XP to spend
+        """
+        return self.xp

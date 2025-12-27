@@ -243,6 +243,16 @@ class Mage(MtAHuman):
         self.affiliation = affiliation
         self.faction = faction
         self.subfaction = subfaction
+
+        # Marauders are defined by their permanent Quiet
+        if affiliation is not None and affiliation.name == "Marauders":
+            import random
+
+            if self.quiet == 0:
+                self.quiet = random.randint(1, 5)
+            if self.quiet_type == "none":
+                self.quiet_type = random.choice(["denial", "madness", "monstrous"])
+
         self.save()
         return True
 
@@ -423,7 +433,18 @@ class Mage(MtAHuman):
 
     def add_effect(self, effect):
         if effect.is_learnable(self):
-            r = Rote.objects.create(effect=effect)
+            from characters.models.core import Ability, Attribute
+
+            # Get default attribute and ability for rote creation
+            attribute = Attribute.objects.first()
+            ability = Ability.objects.first()
+
+            r = Rote.objects.create(
+                name=f"{effect.name} Rote",
+                effect=effect,
+                attribute=attribute,
+                ability=ability,
+            )
             self.rote_points -= effect.cost()
             self.rotes.add(r)
             return True

@@ -594,17 +594,17 @@ class TestHuman(TestCase):
     def test_language_merit(self):
         m = MeritFlaw.objects.create(name="Language")
         m.add_ratings([1, 2, 3, 4, 5])
-        self.character.status = "Ran"
-        self.character.save()
-        self.assertEqual(self.character.languages.count(), 0)
+        # Character starts as 'Un' (unfinished) - no status change needed
+        # num_languages() returns the number of languages entitled by the Language merit
+        self.assertEqual(self.character.num_languages(), 0)
         for i in range(5):
             self.character.add_mf(m, i + 1)
-            self.assertEqual(self.character.languages.count(), 1 + i)
+            self.assertEqual(self.character.num_languages(), i + 1)
 
     def test_natural_linguist_merit(self):
-        self.assertEqual(self.character.languages.count(), 0)
-        self.character.status = "Ran"
-        self.character.save()
+        # num_languages() returns the number of languages entitled by merits
+        # Natural Linguist doubles the Language merit rating
+        self.assertEqual(self.character.num_languages(), 0)
         nl = MeritFlaw.objects.create(name="Natural Linguist")
         nl.add_rating(1)
         m = MeritFlaw.objects.create(name="Language")
@@ -612,13 +612,17 @@ class TestHuman(TestCase):
         self.character.add_mf(nl, 1)
         for i in range(5):
             self.character.add_mf(m, i + 1)
-            self.assertEqual(self.character.languages.count(), 2 * (i + 1))
-        lt = Human.objects.create(name="language tester", owner=self.user, status="Ran")
-        self.assertEqual(lt.languages.count(), 0)
+            # With Natural Linguist, language count is doubled
+            self.assertEqual(self.character.num_languages(), 2 * (i + 1))
+        # Create new character in default 'Un' status
+        lt = Human.objects.create(name="language tester", owner=self.user)
+        self.assertEqual(lt.num_languages(), 0)
         lt.add_mf(m, 1)
-        self.assertEqual(lt.languages.count(), 1)
+        # Without Natural Linguist, just the Language rating
+        self.assertEqual(lt.num_languages(), 1)
         lt.add_mf(nl, 1)
-        self.assertEqual(lt.languages.count(), 2)
+        # With Natural Linguist added, the Language rating is doubled
+        self.assertEqual(lt.num_languages(), 2)
 
     def test_add_specialty(self):
         num = self.character.specialties.count()

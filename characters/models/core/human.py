@@ -580,6 +580,37 @@ class Human(
         """DEPRECATED: Use character.merit_flaw_manager.meritflaw_freebies()"""
         return self.merit_flaw_manager.meritflaw_freebies(form)
 
+    def mf_based_corrections(self):
+        """Apply corrections based on merit/flaw effects.
+
+        This method applies mechanical effects of certain merits and flaws
+        to the character's stats. For example, the "Ability Deficit" flaw
+        causes one ability category to be zeroed out.
+
+        Subclasses should call super().mf_based_corrections() to ensure
+        all parent class corrections are applied.
+        """
+        # Check for Ability Deficit flaw
+        if self.merits_and_flaws.filter(name="Ability Deficit").exists():
+            # Zero out the ability category with the lowest total
+            totals = {
+                "talents": self.total_talents(),
+                "skills": self.total_skills(),
+                "knowledges": self.total_knowledges(),
+            }
+            # Find the category with the lowest total
+            min_category = min(totals.keys(), key=lambda k: totals[k])
+
+            if min_category == "talents":
+                for talent in self.talents:
+                    setattr(self, talent, 0)
+            elif min_category == "skills":
+                for skill in self.skills:
+                    setattr(self, skill, 0)
+            else:  # knowledges
+                for knowledge in self.knowledges:
+                    setattr(self, knowledge, 0)
+
     # BackgroundBlock backward compatibility
     def total_background_rating(self, bg_name):
         """DEPRECATED: Use character.background_manager.total_background_rating()"""
