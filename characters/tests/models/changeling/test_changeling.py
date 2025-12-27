@@ -5,6 +5,7 @@ from characters.models.changeling.legacy import Legacy
 from characters.tests.utils import changeling_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestChangeling(TestCase):
@@ -415,22 +416,29 @@ class TestChangelingDetailView(TestCase):
         self.changeling = Changeling.objects.create(
             name="Test Changeling",
             owner=self.player,
+            status="App",
         )
         self.url = self.changeling.get_absolute_url()
 
     def test_changeling_detail_view_status_code(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_changeling_detail_view_templates(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/changeling/changeling/detail.html")
 
 
 class TestChangelingCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Changeling",
+            "owner": self.st.id,
             "description": "Test",
             "strength": 1,
             "dexterity": 1,
@@ -462,7 +470,8 @@ class TestChangelingCreateView(TestCase):
             "science": 1,
             "contacts": 1,
             "mentor": 1,
-            "willpower": 1,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 1,
             "apparent_age": 1,
             "history": "ava",
@@ -520,30 +529,38 @@ class TestChangelingCreateView(TestCase):
         self.url = Changeling.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/changeling/changeling/form.html")
+        self.assertTemplateUsed(response, "characters/changeling/changeling/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        # Test basic creation with name only - the basics form
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Test Changeling"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Changeling.objects.count(), 1)
-        self.assertEqual(Changeling.objects.first().name, "Changeling")
+        self.assertEqual(Changeling.objects.first().name, "Test Changeling")
 
 
 class TestChangelingUpdateView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="User1", password="12345")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.changeling = Changeling.objects.create(
             name="Test Changeling",
-            owner=self.player,
+            owner=self.st,
+            chronicle=self.chronicle,
             description="Test description",
         )
         self.valid_data = {
             "name": "Changeling Updated",
+            "owner": self.st.id,
             "description": "Test",
             "strength": 1,
             "dexterity": 1,
@@ -573,7 +590,8 @@ class TestChangelingUpdateView(TestCase):
             "investigation": 1,
             "medicine": 1,
             "science": 1,
-            "willpower": 1,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 1,
             "apparent_age": 1,
             "history": "ava",
@@ -630,14 +648,17 @@ class TestChangelingUpdateView(TestCase):
         self.url = self.changeling.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/changeling/changeling/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.changeling.refresh_from_db()

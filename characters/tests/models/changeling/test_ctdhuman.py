@@ -3,6 +3,7 @@ from characters.models.changeling.ctdhuman import CtDHuman
 from characters.tests.utils import changeling_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestCtDHuman(TestCase):
@@ -158,22 +159,31 @@ class TestCtDHuman(TestCase):
 
 class TestCtDHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.ctdhuman = CtDHuman.objects.create(name="Test CtDHuman")
+        self.player = User.objects.create_user(username="Player", password="password")
+        self.ctdhuman = CtDHuman.objects.create(
+            name="Test CtDHuman", owner=self.player, status="App"
+        )
         self.url = self.ctdhuman.get_absolute_url()
 
     def test_ctdhuman_detail_view_status_code(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_ctdhuman_detail_view_templates(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/changeling/ctdhuman/detail.html")
 
 
 class TestCtDHumanCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "CtDHuman",
+            "owner": self.st.id,
             "description": "Test",
             "strength": 1,
             "dexterity": 1,
@@ -205,7 +215,8 @@ class TestCtDHumanCreateView(TestCase):
             "science": 1,
             "contacts": 1,
             "mentor": 1,
-            "willpower": 1,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 1,
             "apparent_age": 1,
             "history": "ava",
@@ -234,28 +245,38 @@ class TestCtDHumanCreateView(TestCase):
         self.url = CtDHuman.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/changeling/ctdhuman/form.html")
+        self.assertTemplateUsed(response, "characters/changeling/ctdhuman/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        # Test basic creation with name only - the basics form
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Test CtDHuman"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(CtDHuman.objects.count(), 1)
-        self.assertEqual(CtDHuman.objects.first().name, "CtDHuman")
+        self.assertEqual(CtDHuman.objects.first().name, "Test CtDHuman")
 
 
 class TestCtDHumanUpdateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.ctdhuman = CtDHuman.objects.create(
             name="Test CtDHuman",
             description="Test description",
+            owner=self.st,
+            chronicle=self.chronicle,
         )
         self.valid_data = {
             "name": "CtDHuman Updated",
+            "owner": self.st.id,
             "description": "Test",
             "strength": 1,
             "dexterity": 1,
@@ -287,7 +308,8 @@ class TestCtDHumanUpdateView(TestCase):
             "science": 1,
             "contacts": 1,
             "mentor": 1,
-            "willpower": 1,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 1,
             "apparent_age": 1,
             "history": "ava",
@@ -316,14 +338,17 @@ class TestCtDHumanUpdateView(TestCase):
         self.url = self.ctdhuman.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/changeling/ctdhuman/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.ctdhuman.refresh_from_db()

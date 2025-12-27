@@ -3,6 +3,7 @@ from characters.models.mage.mtahuman import MtAHuman
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestMtAHuman(TestCase):
@@ -578,24 +579,33 @@ class TestMtAHuman(TestCase):
 
 class TestMtAHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.mtahuman = MtAHuman.objects.create(name="Test MtAHuman")
+        self.player = User.objects.create_user(username="Player", password="password")
+        self.mtahuman = MtAHuman.objects.create(
+            name="Test MtAHuman", owner=self.player, status="App"
+        )
         self.url = self.mtahuman.get_absolute_url()
 
     def test_effect_detail_view_status_code(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_effect_detail_view_templates(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/mtahuman/detail.html")
 
 
 class TestMtAHumanCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test MtAHuman",
             "description": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": 0,
@@ -727,15 +737,18 @@ class TestMtAHumanCreateView(TestCase):
         self.url = MtAHuman.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/mage/mtahuman/form.html")
+        self.assertTemplateUsed(response, "characters/mage/mtahuman/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Test MtAHuman"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(MtAHuman.objects.count(), 1)
         self.assertEqual(MtAHuman.objects.first().name, "Test MtAHuman")
@@ -743,11 +756,20 @@ class TestMtAHumanCreateView(TestCase):
 
 class TestMtAHumanUpdateView(TestCase):
     def setUp(self):
-        self.mtahuman = MtAHuman.objects.create(name="Test MtAHuman", description="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.mtahuman = MtAHuman.objects.create(
+            name="Test MtAHuman",
+            description="Test",
+            owner=self.st,
+            chronicle=self.chronicle,
+        )
         self.valid_data = {
             "name": "Test MtAHuman 2",
             "description": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": 0,
@@ -879,14 +901,17 @@ class TestMtAHumanUpdateView(TestCase):
         self.url = self.mtahuman.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/mtahuman/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.mtahuman.refresh_from_db()

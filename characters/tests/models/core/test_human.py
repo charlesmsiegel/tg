@@ -14,7 +14,7 @@ from core.models import Language, Number
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.timezone import now
-from game.models import ObjectType
+from game.models import Chronicle, ObjectType
 
 
 class TestHuman(TestCase):
@@ -769,25 +769,29 @@ class TestHuman(TestCase):
 
 class TestHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.player = User.objects.create_user(username="Test")
+        self.player = User.objects.create_user(username="Test", password="password")
         self.human = Human.objects.create(name="Test Human", owner=self.player, status="App")
         self.url = self.human.get_absolute_url()
 
     def test_human_detail_view_status_code(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_human_detail_view_templates(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/detail.html")
 
 
 class TestHumanCreateView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test Human",
-            "owner": self.player.id,
+            "owner": self.st.id,
             "description": "Test",
             "willpower": 3,
             "childhood": "Test",
@@ -807,14 +811,17 @@ class TestHumanCreateView(TestCase):
         self.url = Human.get_full_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/form.html")
 
     def test_create_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Human.objects.count(), 1)
@@ -823,14 +830,17 @@ class TestHumanCreateView(TestCase):
 
 class TestHumanUpdateView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.human = Human.objects.create(
             name="Test Human",
-            owner=self.player,
+            owner=self.st,
+            chronicle=self.chronicle,
         )
         self.valid_data = {
             "name": "Test Human Updated",
-            "owner": self.player.id,
+            "owner": self.st.id,
             "description": "Test",
             "willpower": 3,
             "childhood": "Test",
@@ -850,14 +860,17 @@ class TestHumanUpdateView(TestCase):
         self.url = self.human.get_full_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.human.refresh_from_db()
@@ -866,7 +879,7 @@ class TestHumanUpdateView(TestCase):
 
 class TestHumanBasicsView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="Test")
+        self.player = User.objects.create_user(username="Test", password="password")
         self.n = Archetype.objects.create(name="Nature")
         self.d = Archetype.objects.create(name="Demeanor")
         self.valid_data = {
@@ -878,14 +891,17 @@ class TestHumanBasicsView(TestCase):
         self.url = Human.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/humanbasics.html")
 
     def test_create_view_successful_post(self):
+        self.client.login(username="Test", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Human.objects.count(), 1)
@@ -897,7 +913,7 @@ class TestHumanBasicsView(TestCase):
 
 class TestAttributeView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="Test")
+        self.player = User.objects.create_user(username="Test", password="password")
         self.human = Human.objects.create(
             name="Test Human",
             owner=self.player,
@@ -916,14 +932,17 @@ class TestAttributeView(TestCase):
         self.url = self.human.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/attributes.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="Test", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.human.refresh_from_db()
@@ -941,7 +960,7 @@ class TestAttributeView(TestCase):
 
 class TestHumanCharacterCreationView(TestCase):
     def setUp(self) -> None:
-        self.player = User.objects.create_user(username="Test")
+        self.player = User.objects.create_user(username="Test", password="password")
         self.human = Human.objects.create(
             name="Test Human",
             owner=self.player,
@@ -949,6 +968,7 @@ class TestHumanCharacterCreationView(TestCase):
         self.url = self.human.get_absolute_url()
 
     def test_creation_status_selector(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/human/attributes.html")
         self.human.creation_status = 10

@@ -8,6 +8,7 @@ from characters.models.werewolf.tribe import Tribe
 from characters.tests.utils import werewolf_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 from items.models.werewolf.fetish import Fetish
 
 
@@ -130,20 +131,30 @@ class TestKinfolk(TestCase):
 
 class TestKinfolkDetailView(TestCase):
     def setUp(self) -> None:
-        self.kinfolk = Kinfolk.objects.create(name="Test Kinfolk")
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.kinfolk = Kinfolk.objects.create(
+            name="Test Kinfolk",
+            owner=self.player,
+            status="App",
+        )
         self.url = self.kinfolk.get_absolute_url()
 
     def test_kinfolk_detail_view_status_code(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_kinfolk_detail_view_templates(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/werewolf/kinfolk/detail.html")
 
 
 class TestKinfolkCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Kinfolk",
             "description": "Test",
@@ -207,15 +218,18 @@ class TestKinfolkCreateView(TestCase):
         self.url = Kinfolk.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/werewolf/kinfolk/form.html")
+        self.assertTemplateUsed(response, "characters/werewolf/kinfolk/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Kinfolk"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Kinfolk.objects.count(), 1)
         self.assertEqual(Kinfolk.objects.first().name, "Kinfolk")
@@ -223,12 +237,18 @@ class TestKinfolkCreateView(TestCase):
 
 class TestKinfolkUpdateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.kinfolk = Kinfolk.objects.create(
             name="Test Kinfolk",
+            owner=self.st,
+            chronicle=self.chronicle,
             description="Test description",
         )
         self.valid_data = {
             "name": "Kinfolk Updated",
+            "owner": self.st.id,
             "description": "Test",
             "concept": 0,
             "strength": 0,
@@ -259,7 +279,8 @@ class TestKinfolkUpdateView(TestCase):
             "investigation": 0,
             "medicine": 0,
             "science": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": "aasf",
@@ -289,14 +310,17 @@ class TestKinfolkUpdateView(TestCase):
         self.url = self.kinfolk.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/werewolf/kinfolk/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.kinfolk.refresh_from_db()
