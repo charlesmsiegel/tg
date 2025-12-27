@@ -1,17 +1,23 @@
 from characters.models.core import Archetype
+from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import TestCase
 
 
 class TestArchetypeDetailView(TestCase):
     def setUp(self) -> None:
+        cache.clear()  # Clear cache before each test
+        self.user = User.objects.create_user(username="Test", password="password")
         self.archetype = Archetype.objects.create(name="Test Archetype")
         self.url = self.archetype.get_absolute_url()
 
     def test_archetype_detail_view_status_code(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_archetype_detail_view_templates(self):
+        self.client.login(username="Test", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/archetype/detail.html")
 

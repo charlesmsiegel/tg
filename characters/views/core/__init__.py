@@ -152,8 +152,11 @@ class GenericCharacterDetailView(DictView):
             werewolf,
             wraith,
         )
+        from characters.views.core.human import HumanCharacterCreationView
 
         return {
+            # Core
+            "human": HumanCharacterCreationView,
             # Vampire
             "vtm_human": vampire.VtMHumanCharacterCreationView,
             "vampire": vampire.VampireCharacterCreationView,

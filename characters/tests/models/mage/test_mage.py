@@ -13,6 +13,7 @@ from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
 
@@ -516,20 +517,26 @@ class TestMageDetailView(TestCase):
         self.url = self.mage.get_absolute_url()
 
     def test_mage_detail_view_status_code(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_mage_detail_view_templates(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/mage/detail.html")
 
 
 class TestMageCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test Mage",
             "description": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": 0,
@@ -649,19 +656,20 @@ class TestMageCreateView(TestCase):
             "quiet_type": "none",
             "public_info": "Test Info",
         }
-        self.player = User.objects.create_user(username="User1", password="12345")
-        self.client.login(username="User1", password="12345")
         self.url = Mage.get_full_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/mage/form.html")
 
     def test_create_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, Mage.objects.first().get_absolute_url())
@@ -671,15 +679,21 @@ class TestMageCreateView(TestCase):
 
 class TestMageHumanUpdateView(TestCase):
     def setUp(self):
-        self.player = User.objects.create_user(username="User1", password="12345")
-        self.client.login(username="User1", password="12345")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.mage = Mage.objects.create(
-            name="Test Mage", description="Test", status="App", owner=self.player
+            name="Test Mage",
+            description="Test",
+            status="App",
+            owner=self.st,
+            chronicle=self.chronicle,
         )
         self.valid_data = {
             "name": "Test Mage 2",
             "description": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": 0,
@@ -802,14 +816,17 @@ class TestMageHumanUpdateView(TestCase):
         self.url = self.mage.get_full_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/mage/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.mage.get_absolute_url())

@@ -2,6 +2,7 @@ from characters.models.werewolf.wtahuman import WtAHuman
 from characters.tests.utils import werewolf_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestWtAHuman(TestCase):
@@ -253,20 +254,30 @@ class TestWtAHuman(TestCase):
 
 class TestWtAHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.wtahuman = WtAHuman.objects.create(name="Test WtAHuman")
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.wtahuman = WtAHuman.objects.create(
+            name="Test WtAHuman",
+            owner=self.player,
+            status="App",
+        )
         self.url = self.wtahuman.get_absolute_url()
 
     def test_effect_detail_view_status_code(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_effect_detail_view_templates(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/werewolf/wtahuman/detail.html")
 
 
 class TestWtAHumanCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test WtAHuman",
             "description": "Test",
@@ -321,15 +332,18 @@ class TestWtAHumanCreateView(TestCase):
         self.url = WtAHuman.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/werewolf/wtahuman/form.html")
+        self.assertTemplateUsed(response, "characters/werewolf/wtahuman/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Test WtAHuman"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(WtAHuman.objects.count(), 1)
         self.assertEqual(WtAHuman.objects.first().name, "Test WtAHuman")
@@ -337,9 +351,18 @@ class TestWtAHumanCreateView(TestCase):
 
 class TestWtAHumanUpdateView(TestCase):
     def setUp(self):
-        self.wtahuman = WtAHuman.objects.create(name="Test WtAHuman", description="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.wtahuman = WtAHuman.objects.create(
+            name="Test WtAHuman",
+            owner=self.st,
+            chronicle=self.chronicle,
+            description="Test",
+        )
         self.valid_data = {
             "name": "Test WtAHuman 2",
+            "owner": self.st.id,
             "description": "Tst",
             "concept": 0,
             "strength": 0,
@@ -370,7 +393,8 @@ class TestWtAHumanUpdateView(TestCase):
             "investigation": 0,
             "medicine": 0,
             "science": 0,
-            "willpower": 0,
+            "willpower": 3,
+            "temporary_willpower": 3,
             "age": 0,
             "apparent_age": 0,
             "history": "aasf",
@@ -391,14 +415,17 @@ class TestWtAHumanUpdateView(TestCase):
         self.url = self.wtahuman.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/werewolf/wtahuman/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.wtahuman.refresh_from_db()

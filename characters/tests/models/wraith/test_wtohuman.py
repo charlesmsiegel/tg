@@ -2,6 +2,7 @@ from characters.models.wraith.wtohuman import WtOHuman
 from characters.tests.utils import wraith_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestWtOHuman(TestCase):
@@ -171,80 +172,46 @@ class TestWtOHuman(TestCase):
 
 class TestWtOHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.wtohuman = WtOHuman.objects.create(name="Test WtOHuman")
+        self.player = User.objects.create_user(username="Player", password="password")
+        self.wtohuman = WtOHuman.objects.create(
+            name="Test WtOHuman", owner=self.player, status="App"
+        )
         self.url = self.wtohuman.get_absolute_url()
 
     def test_effect_detail_view_status_code(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_effect_detail_view_templates(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/wraith/wtohuman/detail.html")
 
 
 class TestWtOHumanCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test WtOHuman",
-            "description": "Test",
-            "concept": 0,
-            "strength": 0,
-            "dexterity": 0,
-            "stamina": 0,
-            "perception": 0,
-            "intelligence": 0,
-            "wits": 0,
-            "charisma": 0,
-            "manipulation": 0,
-            "appearance": 0,
-            "alertness": 0,
-            "athletics": 0,
-            "brawl": 0,
-            "empathy": 0,
-            "expression": 0,
-            "intimidation": 0,
-            "streetwise": 0,
-            "subterfuge": 0,
-            "crafts": 0,
-            "drive": 0,
-            "etiquette": 0,
-            "firearms": 0,
-            "melee": 0,
-            "stealth": 0,
-            "academics": 0,
-            "computer": 0,
-            "investigation": 0,
-            "medicine": 0,
-            "science": 0,
-            "willpower": 0,
-            "age": 0,
-            "apparent_age": 0,
-            "history": "aasf",
-            "goals": "aasf",
-            "notes": "aasf",
-            "awareness": 0,
-            "persuasion": 0,
-            "larceny": 0,
-            "meditation": 0,
-            "performance": 0,
-            "bureaucracy": 0,
-            "enigmas": 0,
-            "occult": 0,
-            "politics": 0,
-            "technology": 0,
+            "concept": "Test Concept",
         }
         self.url = WtOHuman.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/wraith/wtohuman/form.html")
+        self.assertTemplateUsed(response, "characters/wraith/wtohuman/basics.html")
 
     def test_create_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(WtOHuman.objects.count(), 1)
@@ -253,20 +220,30 @@ class TestWtOHumanCreateView(TestCase):
 
 class TestWtOHumanUpdateView(TestCase):
     def setUp(self):
-        self.wtohuman = WtOHuman.objects.create(name="Test WtOHuman", description="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.wtohuman = WtOHuman.objects.create(
+            name="Test WtOHuman",
+            description="Test",
+            owner=self.st,
+            chronicle=self.chronicle,
+            willpower=3,
+            temporary_willpower=3,
+        )
         self.valid_data = {
             "name": "Test WtOHuman 2",
             "description": "Tst",
-            "concept": 0,
-            "strength": 0,
-            "dexterity": 0,
-            "stamina": 0,
-            "perception": 0,
-            "intelligence": 0,
-            "wits": 0,
-            "charisma": 0,
-            "manipulation": 0,
-            "appearance": 0,
+            "concept": "",
+            "strength": 1,
+            "dexterity": 1,
+            "stamina": 1,
+            "perception": 1,
+            "intelligence": 1,
+            "wits": 1,
+            "charisma": 1,
+            "manipulation": 1,
+            "appearance": 1,
             "alertness": 0,
             "athletics": 0,
             "brawl": 0,
@@ -286,10 +263,9 @@ class TestWtOHumanUpdateView(TestCase):
             "investigation": 0,
             "medicine": 0,
             "science": 0,
-            "willpower": 0,
+            "willpower": 3,
             "age": 0,
             "apparent_age": 0,
-            "childhood": "aasf",
             "history": "aasf",
             "goals": "aasf",
             "notes": "aasf",
@@ -307,14 +283,17 @@ class TestWtOHumanUpdateView(TestCase):
         self.url = self.wtohuman.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/wraith/wtohuman/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.wtohuman.refresh_from_db()

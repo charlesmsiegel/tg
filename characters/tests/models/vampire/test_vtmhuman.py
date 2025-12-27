@@ -2,6 +2,7 @@ from characters.models.vampire.vtmhuman import VtMHuman
 from characters.tests.utils import vampire_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from game.models import Chronicle
 
 
 class TestVtMHuman(TestCase):
@@ -188,24 +189,34 @@ class TestVtMHuman(TestCase):
 
 class TestVtMHumanDetailView(TestCase):
     def setUp(self) -> None:
-        self.vtmhuman = VtMHuman.objects.create(name="Test VtMHuman")
+        self.player = User.objects.create_user(username="Player", password="password")
+        self.vtmhuman = VtMHuman.objects.create(
+            name="Test VtMHuman", owner=self.player, status="App"
+        )
         self.url = self.vtmhuman.get_absolute_url()
 
-    def test_effect_detail_view_status_code(self):
+    def test_vtmhuman_detail_view_status_code(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def test_effect_detail_view_templates(self):
+    def test_vtmhuman_detail_view_templates(self):
+        self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/vtmhuman/detail.html")
 
 
 class TestVtMHumanCreateView(TestCase):
     def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test VtMHuman",
+            "owner": self.st.id,
             "description": "Test",
             "willpower": 3,
+            "temporary_willpower": 3,
             "age": 200,
             "apparent_age": 18,
             "history": "afasf",
@@ -255,15 +266,19 @@ class TestVtMHumanCreateView(TestCase):
         self.url = VtMHuman.get_creation_url()
 
     def test_create_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "characters/vampire/vtmhuman/form.html")
+        self.assertTemplateUsed(response, "characters/vampire/vtmhuman/basics.html")
 
     def test_create_view_successful_post(self):
-        response = self.client.post(self.url, data=self.valid_data)
+        # Test basic creation with name only - the basics form
+        self.client.login(username="ST", password="password")
+        response = self.client.post(self.url, data={"name": "Test VtMHuman"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(VtMHuman.objects.count(), 1)
         self.assertEqual(VtMHuman.objects.first().name, "Test VtMHuman")
@@ -271,11 +286,21 @@ class TestVtMHumanCreateView(TestCase):
 
 class TestVtMHumanUpdateView(TestCase):
     def setUp(self):
-        self.vtmhuman = VtMHuman.objects.create(name="Test VtMHuman", description="Test")
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        self.vtmhuman = VtMHuman.objects.create(
+            name="Test VtMHuman",
+            description="Test",
+            owner=self.st,
+            chronicle=self.chronicle,
+        )
         self.valid_data = {
             "name": "Test VtMHuman 2",
+            "owner": self.st.id,
             "description": "Tst",
             "willpower": 3,
+            "temporary_willpower": 3,
             "age": 200,
             "apparent_age": 18,
             "history": "afasf",
@@ -325,14 +350,17 @@ class TestVtMHumanUpdateView(TestCase):
         self.url = self.vtmhuman.get_update_url()
 
     def test_update_view_status_code(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        self.client.login(username="ST", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/vtmhuman/form.html")
 
     def test_update_view_successful_post(self):
+        self.client.login(username="ST", password="password")
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.vtmhuman.refresh_from_db()
