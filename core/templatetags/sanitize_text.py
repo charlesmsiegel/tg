@@ -17,11 +17,22 @@ def sanitize_html(value):
     if not isinstance(value, str):
         value = str(value)
 
-    allowed_tags = ["b", "i", "em", "strong", "p", "br", "strike", "ul", "li", "span"]
-    allowed_attributes = {"span": lambda tag, name, value: name == "class" and value == "quote"}
+    allowed_tags = ["a", "b", "i", "em", "strong", "u", "p", "br", "strike", "ul", "li", "span"]
+    allowed_attributes = {
+        "a": ["href"],
+        "span": lambda tag, name, value: name == "class" and value == "quote",
+    }
+    # Only allow safe protocols in links
+    allowed_protocols = ["http", "https", "mailto"]
 
     # Clean the HTML
-    cleaned_text = bleach.clean(value, tags=allowed_tags, attributes=allowed_attributes, strip=True)
+    cleaned_text = bleach.clean(
+        value,
+        tags=allowed_tags,
+        attributes=allowed_attributes,
+        protocols=allowed_protocols,
+        strip=True,
+    )
 
     return format_html(cleaned_text)
 

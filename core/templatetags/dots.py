@@ -5,12 +5,28 @@ register = template.Library()
 
 @register.filter(name="dots")
 def dots(value, maximum=5):
+    # Handle None
+    if value is None:
+        value = 0
+    # Handle strings that represent numbers
+    if isinstance(value, str):
+        try:
+            value = int(value)
+        except (ValueError, TypeError):
+            return value
+    # Handle non-integer values
     if not isinstance(value, int):
         return value
-    if value > maximum:
-        maximum = 10
+    # Handle negative values
     if value < 0:
-        value = -value
+        value = 0
+    # Only auto-expand to 10 if no custom maximum was provided (maximum=5 is default)
+    # and value exceeds 5. If a custom maximum was provided, respect it.
+    if maximum == 5 and value > 5:
+        maximum = 10
+    # Cap value at maximum
+    if value > maximum:
+        value = maximum
     return "●" * value + "○" * (maximum - value)
 
 
