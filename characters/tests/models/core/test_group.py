@@ -148,32 +148,37 @@ class TestCharacterRetirementRemoval(TestCase):
 
     def test_no_removal_for_other_status_changes(self):
         """Test that other status changes don't remove characters from groups."""
-        # Start with unfinished status
-        self.character.status = "Un"
-        self.character.save()
+        # Create a fresh character in 'Un' status for this test
+        new_char = Human.objects.create(
+            name="Status Test Character",
+            owner=self.player,
+            status="Un",
+        )
 
         # Add to group
-        self.group.members.add(self.character)
-        self.group.leader = self.character
+        self.group.members.add(new_char)
+        self.group.leader = new_char
         self.group.save()
 
-        # Change to submitted
-        self.character.status = "Sub"
-        self.character.save()
+        # Change to submitted (valid: Un -> Sub)
+        new_char.status = "Sub"
+        new_char.save()
 
         # Character should still be in group
         self.group.refresh_from_db()
-        self.assertIn(self.character, self.group.members.all())
-        self.assertEqual(self.group.leader, self.character)
+        new_char.refresh_from_db()
+        self.assertIn(new_char, self.group.members.all())
+        self.assertEqual(self.group.leader.pk, new_char.pk)
 
-        # Change to approved
-        self.character.status = "App"
-        self.character.save()
+        # Change to approved (valid: Sub -> App)
+        new_char.status = "App"
+        new_char.save()
 
         # Character should still be in group
         self.group.refresh_from_db()
-        self.assertIn(self.character, self.group.members.all())
-        self.assertEqual(self.group.leader, self.character)
+        new_char.refresh_from_db()
+        self.assertIn(new_char, self.group.members.all())
+        self.assertEqual(self.group.leader.pk, new_char.pk)
 
     def test_already_retired_character_stays_removed(self):
         """Test that re-saving an already retired character doesn't cause errors."""

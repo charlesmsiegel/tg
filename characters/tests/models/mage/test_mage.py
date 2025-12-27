@@ -353,14 +353,19 @@ class TestMage(TestCase):
         self.assertTrue(self.character.has_focus())
 
     def test_set_essence(self):
-        self.assertFalse(self.character.has_essence())
-        self.assertTrue(self.character.set_essence("questing"))
+        # Mages have a default essence ("Dynamic"), so has_essence is True initially
+        self.assertTrue(self.character.has_essence())
+        self.assertEqual(self.character.essence, "Dynamic")
+        self.assertTrue(self.character.set_essence("Questing"))
+        self.assertEqual(self.character.essence, "Questing")
         self.assertTrue(self.character.has_essence())
 
     def test_has_essence(self):
-        self.assertFalse(self.character.has_essence())
-        self.character.set_essence("questing")
+        # Mages have a default essence ("Dynamic"), so has_essence is True initially
         self.assertTrue(self.character.has_essence())
+        self.character.set_essence("Questing")
+        self.assertTrue(self.character.has_essence())
+        self.assertEqual(self.character.essence, "Questing")
 
     def test_add_resonance(self):
         res = Resonance.objects.order_by("?").first()
@@ -494,7 +499,9 @@ class TestMage(TestCase):
         self.assertTrue(self.character.has_specialties())
         self.character.forces = 4
         self.assertFalse(self.character.has_specialties())
-        self.character.add_specialty(Specialty.objects.create(stat="forces"))
+        self.character.add_specialty(
+            Specialty.objects.create(name="Forces Specialty", stat="forces")
+        )
         self.assertTrue(self.character.has_specialties())
 
     def test_has_library(self):

@@ -220,6 +220,7 @@ class TestSceneXPForm(TestCase):
         form.save()
         self.char1.refresh_from_db()
         self.char2.refresh_from_db()
+        self.scene.refresh_from_db()
         self.assertEqual(self.char1.xp, 1)
         self.assertEqual(self.char2.xp, 0)
         self.assertTrue(self.scene.xp_given)
@@ -229,6 +230,7 @@ class TestSceneXPForm(TestCase):
         form = SceneXP(data={"Character One": False}, scene=self.scene)
         form.is_valid()
         form.save()
+        self.scene.refresh_from_db()
         self.assertTrue(self.scene.xp_given)
 
 
@@ -241,11 +243,13 @@ class TestFreebieAwardForm(TestCase):
 
     def test_valid_freebie_award(self):
         """Test valid freebie award."""
+        initial_freebies = self.char.freebies  # Default is 15
         form = FreebieAwardForm(data={"backstory_freebies": 10}, character=self.char)
         self.assertTrue(form.is_valid())
         form.save()
         self.char.refresh_from_db()
-        self.assertEqual(self.char.freebies, 10)
+        # Backstory freebies are added to existing freebies
+        self.assertEqual(self.char.freebies, initial_freebies + 10)
         self.assertTrue(self.char.freebies_approved)
 
     def test_freebie_award_max_15(self):

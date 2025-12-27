@@ -847,8 +847,9 @@ def message_processing(character, message):
         text = text.strip()
         roll = roll.strip()
         # Pattern for stat-based roll: "Dexterity + Firearms" or "Strength + Brawl + 2" difficulty 6
+        # The stats group must stop at 'difficulty' or end of string, and specialty only follows difficulty
         if match := re.match(
-            r"^(?P<stats>[a-zA-Z0-9\s+]+?)(?:\s+difficulty\s+(?P<difficulty>\d+))?(?:\s+(?P<specialty>\S+))?$",
+            r"^(?P<stats>[a-zA-Z0-9\s+]+?)(?:\s+difficulty\s+(?P<difficulty>\d+)(?:\s+(?P<specialty>\S+))?)?$",
             roll,
             re.IGNORECASE,
         ):

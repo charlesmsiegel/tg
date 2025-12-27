@@ -6,9 +6,9 @@ from django.test import TestCase
 
 class TestMageFaction(TestCase):
     def setUp(self):
-        self.faction1 = MageFaction.objects.create()
-        self.faction2 = MageFaction.objects.create(parent=self.faction1)
-        self.faction3 = MageFaction.objects.create(parent=self.faction2)
+        self.faction1 = MageFaction.objects.create(name="Faction 1")
+        self.faction2 = MageFaction.objects.create(name="Faction 2", parent=self.faction1)
+        self.faction3 = MageFaction.objects.create(name="Faction 3", parent=self.faction2)
 
         self.paradigm1 = Paradigm.objects.create(name="Paradigm 1")
         self.paradigm2 = Paradigm.objects.create(name="Paradigm 2")

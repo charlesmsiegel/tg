@@ -111,12 +111,8 @@ class SceneXP(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        cleaned_data = {self.scene.characters.get(name=k): v for k, v in cleaned_data.items()}
-        for key1 in cleaned_data.keys():
-            for key2 in self.data.keys():
-                if key1.name in key2:
-                    cleaned_data[key1] = True
-        return cleaned_data
+        # Map character names to Character objects, preserving the boolean value
+        return {self.scene.characters.get(name=k): v for k, v in cleaned_data.items()}
 
 
 class StoryXP(forms.Form):

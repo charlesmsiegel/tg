@@ -80,17 +80,36 @@ class TestCharacter(TestCase):
         self.assertGreaterEqual(total, 15)
 
     def test_character_spent_xp_tracking(self):
-        """Test spent XP tracking via JSONField."""
+        """Test spent XP tracking via XPSpendingRequest model."""
+        from game.models import XPSpendingRequest
+
         character = Character.objects.create(
             name="Test",
             owner=self.user,
-            spent_xp={
-                "attribute_increase": {"amount": 5, "approved": True},
-                "ability_increase": {"amount": 3, "approved": False},
-            },
+            xp=20,
         )
-        self.assertIn("attribute_increase", character.spent_xp)
-        self.assertEqual(character.spent_xp["attribute_increase"]["amount"], 5)
+        # Create XP spending requests (the new model-based approach)
+        XPSpendingRequest.objects.create(
+            character=character,
+            trait_name="Strength",
+            trait_type="attribute",
+            trait_value=4,
+            cost=5,
+            approved="Approved",
+        )
+        XPSpendingRequest.objects.create(
+            character=character,
+            trait_name="Alertness",
+            trait_type="ability",
+            trait_value=2,
+            cost=3,
+            approved="Pending",
+        )
+
+        # Test that spending requests are tracked correctly
+        self.assertEqual(character.xp_spendings.count(), 2)
+        self.assertEqual(character.xp_spendings.filter(approved="Approved").count(), 1)
+        self.assertEqual(character.total_spent_xp(), 5)  # Only approved spending
 
     def test_character_available_xp(self):
         """Test calculating available (unspent) XP."""
@@ -104,17 +123,39 @@ class TestCharacter(TestCase):
         self.assertLessEqual(available, 20)
 
     def test_character_status_choices(self):
-        """Test that status can be set to valid choices."""
+        """Test that status can be set through valid transitions."""
         character = Character.objects.create(
             name="Test",
             owner=self.user,
         )
-        valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]
-        for status in valid_statuses:
-            character.status = status
-            character.save()
-            character.refresh_from_db()
-            self.assertEqual(character.status, status)
+        # Test valid transition sequence: Un -> Sub -> App -> Dec
+        self.assertEqual(character.status, "Un")
+
+        character.status = "Sub"
+        character.save()
+        character.refresh_from_db()
+        self.assertEqual(character.status, "Sub")
+
+        character.status = "App"
+        character.save()
+        character.refresh_from_db()
+        self.assertEqual(character.status, "App")
+
+        character.status = "Dec"
+        character.save()
+        character.refresh_from_db()
+        self.assertEqual(character.status, "Dec")
+
+        # Test Ret status with a fresh character
+        char2 = Character.objects.create(name="Test2", owner=self.user)
+        char2.status = "Sub"
+        char2.save()
+        char2.status = "App"
+        char2.save()
+        char2.status = "Ret"
+        char2.save()
+        char2.refresh_from_db()
+        self.assertEqual(char2.status, "Ret")
 
     def test_character_npc_flag(self):
         """Test NPC flag functionality."""
