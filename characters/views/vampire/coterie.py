@@ -28,3 +28,6 @@ class CoterieListView(ListView):
     model = Coterie
     ordering = ["name"]
     template_name = "characters/vampire/coterie/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("leader").prefetch_related("members")

@@ -709,6 +709,11 @@ class SceneListView(LoginRequiredMixin, ListView):
     ordering = ["-date_of_scene", "-date_played"]
     template_name = "game/scene/list.html"
 
+    def get_queryset(self):
+        # Pre-fetch related objects to prevent N+1 queries
+        # location is accessed in Scene.__str__ when name is empty
+        return super().get_queryset().select_related("chronicle", "location")
+
 
 class JournalListView(LoginRequiredMixin, ListView):
     model = Journal
@@ -787,8 +792,38 @@ class WeekListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_context_data(self, **kwargs):
+        from datetime import timedelta
+
+        from django.db.models import Max
+
         context = super().get_context_data(**kwargs)
         context["is_st"] = self.request.user.profile.is_st()
+
+        # Pre-compute finished scene counts for all weeks in the page to avoid N+1 queries
+        # Get all finished scenes with their latest post dates in one query
+        latest_post_subquery = (
+            Post.objects.filter(scene=OuterRef("pk"))
+            .values("scene")
+            .annotate(latest_dt=Max("datetime_created"))
+            .values("latest_dt")
+        )
+
+        finished_scenes = list(
+            Scene.objects.filter(finished=True)
+            .annotate(latest_post_date=Subquery(latest_post_subquery))
+            .values("pk", "latest_post_date")
+        )
+
+        # Attach scene counts to each week object to avoid N+1 queries in template
+        for week in context["object_list"]:
+            start_date = week.end_date - timedelta(days=7)
+            week.cached_scene_count = sum(
+                1
+                for scene in finished_scenes
+                if scene["latest_post_date"]
+                and start_date <= scene["latest_post_date"].date() <= week.end_date
+            )
+
         return context
 
 

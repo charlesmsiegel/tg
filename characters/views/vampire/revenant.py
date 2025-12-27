@@ -73,3 +73,6 @@ class RevenantListView(ListView):
     model = Revenant
     ordering = ["name"]
     template_name = "characters/vampire/revenant/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("family")

@@ -60,3 +60,6 @@ class CircleListView(ListView):
     model = Circle
     ordering = ["name"]
     template_name = "characters/wraith/circle/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("leader").prefetch_related("members")

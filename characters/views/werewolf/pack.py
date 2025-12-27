@@ -28,3 +28,6 @@ class PackListView(ListView):
     model = Pack
     ordering = ["name"]
     template_name = "characters/werewolf/pack/list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("totem", "leader").prefetch_related("members")

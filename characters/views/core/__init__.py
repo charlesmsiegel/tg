@@ -398,6 +398,8 @@ class CharacterIndexView(ListView):
         return render(request, "characters/index.html", context)
 
     def get_context_data(self, **kwargs):
+        from collections import defaultdict
+
         context = super().get_context_data(**kwargs)
         context["title"] = "Characters"
         context["button_include"] = True
@@ -408,23 +410,30 @@ class CharacterIndexView(ListView):
         else:
             context["header"] = "wod_heading"
 
-        # Create chron_dict similar to items and locations
-        chron_dict = {}
-        for chron in list(Chronicle.objects.all()) + [None]:
-            chron_dict[chron] = {
-                "active": list(
-                    self.get_queryset()
-                    .filter(chronicle=chron, status__in=["Un", "Sub", "App"], npc=False)
-                    .visible()
-                ),
-                "retired": list(
-                    self.get_queryset().filter(chronicle=chron, status="Ret").visible()
-                ),
-                "deceased": list(
-                    self.get_queryset().filter(chronicle=chron, status="Dec").visible()
-                ),
-                "npc": list(self.get_queryset().filter(chronicle=chron, npc=True).visible()),
-            }
+        # Optimize: fetch all visible characters in one query, then group by chronicle
+        all_characters = list(self.get_queryset().select_related("owner", "chronicle").visible())
+
+        # Initialize chron_dict with all chronicles and None
+        chronicles = list(Chronicle.objects.all()) + [None]
+        chron_dict = {
+            chron: {"active": [], "retired": [], "deceased": [], "npc": []} for chron in chronicles
+        }
+
+        # Group characters by chronicle and status
+        for char in all_characters:
+            chron = char.chronicle
+            if chron not in chron_dict:
+                # Handle characters with chronicles not in initial list
+                chron_dict[chron] = {"active": [], "retired": [], "deceased": [], "npc": []}
+
+            if char.npc:
+                chron_dict[chron]["npc"].append(char)
+            elif char.status == "Ret":
+                chron_dict[chron]["retired"].append(char)
+            elif char.status == "Dec":
+                chron_dict[chron]["deceased"].append(char)
+            elif char.status in ["Un", "Sub", "App"]:
+                chron_dict[chron]["active"].append(char)
 
         context["chron_dict"] = chron_dict
         return context
