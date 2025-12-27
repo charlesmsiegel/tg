@@ -28,7 +28,7 @@
                         <button type="submit" class="btn btn-primary">
                             {% if object %}Update{% else %}Create{% endif %} Freehold
                         </button>
-                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'locations:changeling:freehold:list' %}{% endif %}" class="btn btn-secondary">
+                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'locations:changeling:list:freehold' %}{% endif %}" class="btn btn-secondary">
                             Cancel
                         </a>
                     </div>
