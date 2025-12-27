@@ -508,7 +508,6 @@ class ChangelingFreebiesView(HumanFreebiesView):
 
 class ChangelingFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Changeling
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def category_method_map(self):
         base_map = super().category_method_map()

@@ -116,9 +116,9 @@ class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
 
 
 class LoadExamplesView(View):
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
-
     def get(self, request, *args, **kwargs):
+        from core.ajax import dropdown_options_response
+
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
         m = Chantry.objects.get(pk=object_id)
@@ -171,7 +171,7 @@ class LoadExamplesView(View):
         else:
             examples = []
 
-        return render(request, self.template_name, {"examples": examples})
+        return dropdown_options_response(examples, label_attr="__str__")
 
 
 class ChantryBasicsView(FormView):

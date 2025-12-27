@@ -68,40 +68,33 @@ from locations.forms.mage.sanctum import SanctumForm
 
 @login_required
 def load_factions(request):
+    from core.ajax import dropdown_options_response
+
     affiliation_id = request.GET.get("affiliation")
     factions = MageFaction.objects.filter(parent=affiliation_id).order_by("name")
-    return render(
-        request,
-        "characters/mage/mage/load_faction_dropdown_list.html",
-        {"factions": factions},
-    )
+    return dropdown_options_response(factions)
 
 
 @login_required
 def load_subfactions(request):
+    from core.ajax import dropdown_options_response
+
     faction_id = request.GET.get("faction")
     subfactions = MageFaction.objects.filter(parent=faction_id).order_by("name")
-    return render(
-        request,
-        "characters/mage/mage/load_subfaction_dropdown_list.html",
-        {"subfactions": subfactions},
-    )
+    return dropdown_options_response(subfactions)
 
 
 @login_required
 def load_mf_ratings(request):
+    from core.ajax import simple_values_response
+
     mf_id = request.GET.get("mf")
-    ratings = MeritFlaw.objects.get(pk=mf_id).ratings
-    return render(
-        request,
-        "characters/mage/mage/load_mf_rating_dropdown_list.html",
-        {"ratings": ratings},
-    )
+    ratings = MeritFlaw.objects.get(pk=mf_id).ratings.values_list("value", flat=True)
+    return simple_values_response(ratings)
 
 
 class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Mage
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def category_method_map(self):
         d = super().category_method_map()
@@ -167,9 +160,9 @@ class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
 
 class LoadXPExamplesView(View):
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
-
     def get(self, request, *args, **kwargs):
+        from core.ajax import dropdown_options_response
+
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
         self.character = Mage.objects.get(pk=object_id)
@@ -310,7 +303,7 @@ class LoadXPExamplesView(View):
                     > self.character.practice_rating(x) + 1
                 )
             ]
-        return render(request, self.template_name, {"examples": examples})
+        return dropdown_options_response(examples, label_attr="__str__")
 
 
 @login_required

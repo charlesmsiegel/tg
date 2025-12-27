@@ -291,7 +291,6 @@ class VtMHumanFreebiesView(HumanFreebiesView):
 
 class VtMHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = VtMHuman
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class VtMHumanLanguagesView(EditPermissionMixin, FormView):

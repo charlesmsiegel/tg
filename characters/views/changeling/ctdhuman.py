@@ -266,7 +266,6 @@ class CtDHumanFreebiesView(HumanFreebiesView):
 
 class CtDHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = CtDHuman
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class CtDHumanLanguagesView(EditPermissionMixin, FormView):

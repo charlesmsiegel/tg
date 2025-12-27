@@ -287,7 +287,6 @@ class FomorFreebiesView(HumanFreebiesView):
 
 class FomorFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = Fomor
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
 
 class FomorLanguagesView(EditPermissionMixin, FormView):

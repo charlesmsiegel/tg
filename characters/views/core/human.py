@@ -259,6 +259,8 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
 
 @login_required
 def load_examples(request):
+    from core.ajax import dropdown_options_response
+
     category_choice = request.GET.get("category")
     if category_choice == "Attribute":
         examples = Attribute.objects.all()
@@ -270,11 +272,7 @@ def load_examples(request):
         examples = MeritFlaw.objects.all()
     else:
         examples = []
-    return render(
-        request,
-        "characters/core/human/load_examples_dropdown_list.html",
-        {"examples": examples},
-    )
+    return dropdown_options_response(examples, label_attr="__str__")
 
 
 @login_required
@@ -319,18 +317,17 @@ def load_values(request):
 
         ratings = affordable_ratings
 
-    return render(
-        request,
-        "characters/core/human/load_values_dropdown_list.html",
-        {"values": ratings},
-    )
+    from core.ajax import simple_values_response
+
+    return simple_values_response(ratings)
 
 
 class HumanFreebieFormPopulationView(View):
     primary_class = Human
-    template_name = "characters/core/human/load_examples_dropdown_list.html"
 
     def get(self, request, *args, **kwargs):
+        from core.ajax import dropdown_options_response
+
         category_choice = request.GET.get("category")
         self.character = self.primary_class.objects.get(pk=request.GET.get("object"))
         examples = []
@@ -338,7 +335,7 @@ class HumanFreebieFormPopulationView(View):
             examples = self.category_method_map()[category_choice]()
         else:
             examples = []
-        return render(request, self.template_name, {"examples": examples})
+        return dropdown_options_response(examples, label_attr="__str__")
 
     def category_method_map(self):
         return {
