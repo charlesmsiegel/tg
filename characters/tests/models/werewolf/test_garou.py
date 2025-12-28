@@ -299,8 +299,9 @@ class TestWerewolf(TestCase):
 
     def test_learn_a_new_rite(self):
         r = RenownIncident.objects.create(name="Learning a new rite")
+        rite = Rite.objects.create(name="Test Rite")
         num = self.character.rites_known.count()
-        self.character.add_renown_incident(r)
+        self.character.add_renown_incident(r, rite=rite)
         self.assertEqual(self.character.rites_known.count(), num + 1)
 
     def test_add_battle_scar(self):

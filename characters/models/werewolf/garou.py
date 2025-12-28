@@ -319,6 +319,8 @@ class Werewolf(WtAHuman):
         self.temporary_glory = max(0, self.temporary_glory)
         self.temporary_honor = max(0, self.temporary_honor)
         self.temporary_wisdom = max(0, self.temporary_wisdom)
+        if rite is not None:
+            self.rites_known.add(rite)
         return True
 
     def add_gnosis(self):
