@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 
 
@@ -9,7 +9,7 @@ class DictView(View):
     default_redirect = None
 
     def get_object(self, pk):
-        return self.model_class.objects.get(pk=pk)
+        return get_object_or_404(self.model_class, pk=pk)
 
     def handle_request(self, request, *args, **kwargs):
         obj = self.get_object(kwargs["pk"])

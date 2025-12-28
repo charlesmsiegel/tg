@@ -112,11 +112,13 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         if form.data["casting_attribute"]:
-            form.instance.casting_attribute = Attribute.objects.get(
-                pk=form.data["casting_attribute"]
+            form.instance.casting_attribute = get_object_or_404(
+                Attribute, pk=form.data["casting_attribute"]
             )
         if form.data["affinity_path"]:
-            form.instance.affinity_path = LinearMagicPath.objects.get(pk=form.data["affinity_path"])
+            form.instance.affinity_path = get_object_or_404(
+                LinearMagicPath, pk=form.data["affinity_path"]
+            )
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
@@ -126,7 +128,7 @@ def load_attributes(request):
     from core.ajax import dropdown_options_response
 
     fellowship_id = request.GET.get("fellowship")
-    sf = SorcererFellowship.objects.get(id=fellowship_id)
+    sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
     return dropdown_options_response(sf.favored_attributes.all())
 
 
@@ -135,7 +137,7 @@ def load_affinities(request):
     from core.ajax import dropdown_options_response
 
     fellowship_id = request.GET.get("fellowship")
-    sf = SorcererFellowship.objects.get(id=fellowship_id)
+    sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
     return dropdown_options_response(sf.favored_paths.all())
 
 
@@ -166,7 +168,7 @@ class LoadExamplesView(LoginRequiredMixin, View):
 
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
-        m = Sorcerer.objects.get(pk=object_id)
+        m = get_object_or_404(Sorcerer, pk=object_id)
 
         category_choice = request.GET.get("category")
         if category_choice == "Attribute":
@@ -235,7 +237,7 @@ class LoadExamplesView(LoginRequiredMixin, View):
 def load_companion_values(request):
     from core.ajax import simple_values_response
 
-    advantage = Advantage.objects.get(pk=request.GET.get("example"))
+    advantage = get_object_or_404(Advantage, pk=request.GET.get("example"))
     ratings = [x.value for x in advantage.ratings.all()]
     ratings.sort()
     return simple_values_response(ratings)
@@ -270,7 +272,7 @@ class SorcererBackgroundsView(HumanBackgroundsView):
 @login_required
 def get_abilities(request):
     practice_id = request.GET.get("practice_id")
-    prac = Practice.objects.get(id=practice_id)
+    prac = get_object_or_404(Practice, id=practice_id)
     abilities = prac.abilities.all().order_by("name")
     abilities_list = [{"id": "", "name": "--------"}]  # Empty option
     abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
@@ -303,7 +305,7 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         sorcerer = context["object"]
         numina_data = self.get_form_data("numina_form")
         for numina in numina_data:
-            numina["path"] = LinearMagicPath.objects.get(id=numina["path"])
+            numina["path"] = get_object_or_404(LinearMagicPath, id=numina["path"])
             numina["rating"] = int(numina["rating"])
             if numina["rating"] > sorcerer.willpower // 2:
                 pass
@@ -350,10 +352,10 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         sorcerer = context["object"]
         numina_data = self.get_form_data("numina_form")
         for numina in numina_data:
-            numina["path"] = LinearMagicPath.objects.get(id=numina["path"])
+            numina["path"] = get_object_or_404(LinearMagicPath, id=numina["path"])
             numina["rating"] = int(numina["rating"])
-            numina["practice"] = Practice.objects.get(id=numina["practice"])
-            numina["ability"] = Ability.objects.get(id=numina["ability"])
+            numina["practice"] = get_object_or_404(Practice, id=numina["practice"])
+            numina["ability"] = get_object_or_404(Ability, id=numina["ability"])
         total_numina = sum(x["rating"] for x in numina_data)
         if total_numina != 5:
             form.add_error(None, "Must choose exactly five levels of Numina")
@@ -563,19 +565,19 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
             form.add_error(None, f"Not Enough Freebies! {trait_type} costs {cost}")
             return super().form_invalid(form)
         if form.data["category"] == "Attribute":
-            trait = Attribute.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Attribute, pk=form.data["example"])
             value = getattr(self.object, trait.property_name) + 1
             self.object.add_attribute(trait.property_name)
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "Ability":
-            trait = Ability.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Ability, pk=form.data["example"])
             value = getattr(self.object, trait.property_name) + 1
             self.object.add_ability(trait.property_name)
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "New Background":
-            trait = Background.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Background, pk=form.data["example"])
             cost *= trait.multiplier
             value = 1
             BackgroundRating.objects.create(
@@ -586,7 +588,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
             if form.data["note"]:
                 trait += f" ({form.data['note']})"
         elif form.data["category"] == "Existing Background":
-            trait = BackgroundRating.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(BackgroundRating, pk=form.data["example"])
             cost *= trait.bg.multiplier
             value = trait.rating + 1
             trait.rating += 1
@@ -599,22 +601,22 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
             self.object.add_willpower()
             self.object.freebies -= cost
         elif form.data["category"] == "MeritFlaw":
-            trait = MeritFlaw.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(MeritFlaw, pk=form.data["example"])
             value = int(form.data["value"])
             self.object.add_mf(trait, value)
             self.object.freebies -= cost
             trait = trait.name
         elif "Path" in form.data["category"]:
-            trait = LinearMagicPath.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(LinearMagicPath, pk=form.data["example"])
             value = self.object.path_rating(trait) + 1
             prac = form.data.get("practice", None)
             if prac != "":
-                prac = Practice.objects.get(pk=prac)
+                prac = get_object_or_404(Practice, pk=prac)
             else:
                 prac = None
             ability = form.data.get("ability", None)
             if ability != "":
-                ability = Ability.objects.get(pk=ability)
+                ability = get_object_or_404(Ability, pk=ability)
             else:
                 ability = None
             self.object.add_path(trait, prac, ability)
@@ -624,7 +626,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
                 trait += f"({prac.name}, {ability.name})"
         elif form.data["category"] == "Create Ritual":
             name = form.data["name"]
-            path = LinearMagicPath.objects.get(pk=int(form.data["path"]))
+            path = get_object_or_404(LinearMagicPath, pk=int(form.data["path"]))
             level = int(form.data["level"])
             description = form.data["description"]
             trait = LinearMagicRitual.objects.create(
@@ -635,7 +637,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "Select Ritual":
-            trait = LinearMagicRitual.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(LinearMagicRitual, pk=form.data["example"])
             value = cost
             self.object.add_ritual(trait)
             self.object.freebies -= cost
@@ -715,7 +717,8 @@ class SorcererLanguagesView(EditPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
+        human = get_object_or_404(Human, pk=human_pk)
+        num_languages = human.num_languages()
         kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
         return kwargs
 
@@ -748,7 +751,7 @@ class SorcererSpecialtiesView(EditPermissionMixin, FormView):
     def get_object(self):
         """Return the Sorcerer object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
-            self.object = Sorcerer.objects.get(id=self.kwargs["pk"])
+            self.object = get_object_or_404(Sorcerer, id=self.kwargs["pk"])
         return self.object
 
     def get_context_data(self, **kwargs):
@@ -758,7 +761,7 @@ class SorcererSpecialtiesView(EditPermissionMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        companion = Sorcerer.objects.get(id=self.kwargs["pk"])
+        companion = get_object_or_404(Sorcerer, id=self.kwargs["pk"])
         kwargs["object"] = companion
         stats = list(Attribute.objects.all()) + list(
             Ability.objects.all().exclude(property_name="rituals")
@@ -950,7 +953,7 @@ class SorcererChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
+        kwargs["character"] = get_object_or_404(self.primary_object_class, pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
