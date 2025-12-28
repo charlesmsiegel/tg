@@ -1034,16 +1034,16 @@ class WeeklyXPRequest(models.Model):
     focus = models.BooleanField(default=False)
     standingout = models.BooleanField(default=False)
     learning_scene = models.ForeignKey(
-        Scene, on_delete=models.SET_NULL, null=True, related_name="learning_requests"
+        Scene, on_delete=models.SET_NULL, null=True, blank=True, related_name="learning_requests"
     )
     rp_scene = models.ForeignKey(
-        Scene, on_delete=models.SET_NULL, null=True, related_name="rp_requests"
+        Scene, on_delete=models.SET_NULL, null=True, blank=True, related_name="rp_requests"
     )
     focus_scene = models.ForeignKey(
-        Scene, on_delete=models.SET_NULL, null=True, related_name="focus_requests"
+        Scene, on_delete=models.SET_NULL, null=True, blank=True, related_name="focus_requests"
     )
     standingout_scene = models.ForeignKey(
-        Scene, on_delete=models.SET_NULL, null=True, related_name="standingout_requests"
+        Scene, on_delete=models.SET_NULL, null=True, blank=True, related_name="standingout_requests"
     )
     approved = models.BooleanField(default=False)
 

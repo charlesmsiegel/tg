@@ -132,6 +132,8 @@ class TestMtAHuman(TestCase):
                 "theology": 0,
                 "unconventional_warface": 0,
                 "vice": 0,
+                "enochian": 0,
+                "umbrood_protocols": 0,
             },
         )
         self.set_abilities()
@@ -238,6 +240,8 @@ class TestMtAHuman(TestCase):
                 "theology": 0,
                 "unconventional_warface": 0,
                 "vice": 0,
+                "enochian": 0,
+                "umbrood_protocols": 0,
             },
         )
 
@@ -442,6 +446,8 @@ class TestMtAHuman(TestCase):
                 "theology": 0,
                 "unconventional_warface": 0,
                 "vice": 0,
+                "enochian": 0,
+                "umbrood_protocols": 0,
             },
         )
         self.set_abilities()
@@ -477,6 +483,8 @@ class TestMtAHuman(TestCase):
                 "theology": 0,
                 "unconventional_warface": 0,
                 "vice": 0,
+                "enochian": 0,
+                "umbrood_protocols": 0,
             },
         )
 

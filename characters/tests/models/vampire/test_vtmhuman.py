@@ -1,3 +1,4 @@
+from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.tests.utils import vampire_setup
 from django.contrib.auth.models import User
@@ -31,20 +32,25 @@ class TestVtMHuman(TestCase):
         self.character.technology = 4
 
     def set_backgrounds(self):
-        self.character.contacts = 1
-        self.character.mentor = 2
-        self.character.allies = 3
-        self.character.alternate_identity = 4
-        self.character.black_hand_membership = 5
-        self.character.domain = 4
-        self.character.fame = 3
-        self.character.generation = 2
-        self.character.herd = 1
-        self.character.influence = 2
-        self.character.resources = 3
-        self.character.retainers = 4
-        self.character.rituals = 5
-        self.character.status_background = 5
+        backgrounds_data = [
+            ("contacts", 1),
+            ("mentor", 2),
+            ("allies", 3),
+            ("alternate_identity", 4),
+            ("black_hand_membership", 5),
+            ("domain", 4),
+            ("fame", 3),
+            ("generation", 2),
+            ("herd", 1),
+            ("influence", 2),
+            ("resources", 3),
+            ("retainers", 4),
+            ("rituals", 5),
+            ("status_background", 5),
+        ]
+        for bg_name, rating in backgrounds_data:
+            bg = Background.objects.get(property_name=bg_name)
+            BackgroundRating.objects.create(bg=bg, char=self.character, rating=rating)
 
     def test_get_talents(self):
         self.assertEqual(
