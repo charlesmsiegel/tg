@@ -133,6 +133,51 @@ class TestNode(TestCase):
         NodeMeritFlawRating.objects.create(node=self.node, mf=mf, rating=rating)
         self.assertEqual(self.node.mf_rating(mf), rating)
 
+    def test_total_merits(self):
+        """Test inherited total_merits() method from MeritFlawBlock."""
+        self.assertEqual(self.node.total_merits(), 0)
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 3"), 3)
+        self.assertEqual(self.node.total_merits(), 3)
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 2"), 2)
+        self.assertEqual(self.node.total_merits(), 5)
+        # Flaws don't count toward merits total
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Flaw 1"), -1)
+        self.assertEqual(self.node.total_merits(), 5)
+
+    def test_total_flaws(self):
+        """Test inherited total_flaws() method from MeritFlawBlock."""
+        self.assertEqual(self.node.total_flaws(), 0)
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Flaw 2"), -2)
+        self.assertEqual(self.node.total_flaws(), -2)
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Flaw 3"), -3)
+        self.assertEqual(self.node.total_flaws(), -5)
+        # Merits don't count toward flaws total
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Merit 1"), 1)
+        self.assertEqual(self.node.total_flaws(), -5)
+
+    def test_has_max_flaws(self):
+        """Test inherited has_max_flaws() method from MeritFlawBlock."""
+        self.assertFalse(self.node.has_max_flaws())
+        # Add flaws totaling -7 (the max)
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Flaw 5"), -5)
+        self.assertFalse(self.node.has_max_flaws())
+        self.node.add_mf(MeritFlaw.objects.get(name="Node Flaw 2"), -2)
+        self.assertTrue(self.node.has_max_flaws())
+
+    def test_get_mf_and_rating_list(self):
+        """Test inherited get_mf_and_rating_list() method from MeritFlawBlock."""
+        self.assertEqual(self.node.get_mf_and_rating_list(), [])
+        merit = MeritFlaw.objects.get(name="Node Merit 3")
+        flaw = MeritFlaw.objects.get(name="Node Flaw 2")
+        self.node.add_mf(merit, 3)
+        self.node.add_mf(flaw, -2)
+        mf_list = self.node.get_mf_and_rating_list()
+        self.assertEqual(len(mf_list), 2)
+        # Check that each tuple contains a MeritFlaw and its rating
+        mf_dict = {mf.name: rating for mf, rating in mf_list}
+        self.assertEqual(mf_dict["Node Merit 3"], 3)
+        self.assertEqual(mf_dict["Node Flaw 2"], -2)
+
     def test_set_size(self):
         self.assertEqual(self.node.size, 0)
         self.assertEqual(self.node.get_size_display(), "Average Room")
