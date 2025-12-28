@@ -1,11 +1,22 @@
 from characters.models.mage.sphere import Sphere
-from core.models import Language, Model
+from core.models import Language, Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.urls import reverse
 from items.models.core.material import Material
 from items.models.core.medium import Medium
 
 from .focus import Paradigm, Practice
+
+
+class MageFactionQuerySet(ModelQuerySet):
+    """Custom queryset for MageFaction with chainable query patterns."""
+
+    def top_level(self):
+        """Top-level factions (no parent)."""
+        return self.filter(parent=None)
+
+
+MageFactionManager = ModelManager.from_queryset(MageFactionQuerySet)
 
 
 class MageFaction(Model):
@@ -21,6 +32,8 @@ class MageFaction(Model):
     founded = models.IntegerField(default=-5000)
     ended = models.IntegerField(default=5000)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
+
+    objects = MageFactionManager()
 
     class Meta:
         verbose_name = "Mage Faction"

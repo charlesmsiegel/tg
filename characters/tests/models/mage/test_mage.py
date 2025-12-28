@@ -541,6 +541,7 @@ class TestMageCreateView(TestCase):
         self.chronicle.storytellers.add(self.st)
         self.valid_data = {
             "name": "Test Mage",
+            "owner": self.st.id,
             "description": 0,
             "willpower": 3,
             "temporary_willpower": 3,
