@@ -65,7 +65,16 @@ Use `{{ object.get_heading }}` and `{{ object.get_badge_class }}` for dynamic cl
 2. Read [references/form-examples.md](references/form-examples.md) for the Haven gold standard
 3. Extend `core/form.html`
 
-### Quick Patterns (No Reference Needed)
+### Choosing Layout Patterns
+
+Read [references/layout-decisions.md](references/layout-decisions.md) for guidance on:
+- Border radius standards (4-6px vs 6-8px)
+- Link styling (text links vs card links)
+- Compact vs spacious layouts
+- When to use tables vs card grids vs stat boxes
+- Responsive breakpoints
+
+## Quick Patterns (No Reference Needed)
 
 **Page Header Card:**
 ```html
