@@ -173,8 +173,15 @@ class TestCharacterFormValidation(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
 
-    def test_limited_form_rejects_html_injection(self):
-        """Test that form sanitizes or rejects malicious HTML."""
+    def test_limited_form_accepts_html_sanitized_at_render(self):
+        """Test that form accepts HTML which is sanitized at template render time.
+
+        The project uses template-level sanitization via the sanitize_html filter,
+        not form-level sanitization. This test verifies the form accepts the data
+        and that the sanitize_html filter properly strips dangerous HTML.
+        """
+        from core.templatetags.sanitize_text import sanitize_html
+
         human = Human.objects.create(
             name="Test",
             owner=self.user,
@@ -189,8 +196,9 @@ class TestCharacterFormValidation(TestCase):
 
         if form.is_valid():
             saved = form.save()
-            # Script tags should be stripped or escaped
-            self.assertNotIn("<script>", saved.description)
+            # Script tags should be stripped by the sanitize_html filter at render time
+            sanitized = sanitize_html(saved.description)
+            self.assertNotIn("<script>", sanitized)
 
     def test_form_handles_very_long_text(self):
         """Test that form handles very long text appropriately."""

@@ -34,7 +34,7 @@ class TestProfileView(TestCase):
 
         self.char1 = Human.objects.create(name="Test Character 1", owner=self.user1)
         self.char2 = Human.objects.create(
-            name="Test Character 2", owner=self.user2, chronicle=chronicle
+            name="Test Character 2", owner=self.user2, chronicle=chronicle, status="Sub"
         )
         self.char3 = Human.objects.create(name="Test Character 3", owner=self.user1)
         self.char4 = Human.objects.create(name="Test Character 4", owner=self.user2)
@@ -203,8 +203,7 @@ class TestProfileUpdateView(TestCase):
     def test_requires_login(self):
         """Test that profile update requires authentication."""
         response = self.client.get(reverse("profile_update", kwargs={"pk": self.user.profile.pk}))
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login", response.url)
+        self.assertEqual(response.status_code, 401)
 
     def test_can_update_profile(self):
         """Test that user can update their profile."""

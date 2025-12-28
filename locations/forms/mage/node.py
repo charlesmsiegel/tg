@@ -61,7 +61,9 @@ class NodeMeritFlawForm(forms.ModelForm):
     mf = forms.ModelChoiceField(queryset=MeritFlaw.objects.none())
 
     def __init__(self, *args, **kwargs):
-        n = ObjectType.objects.get_or_create(name="node")[0]
+        n = ObjectType.objects.get_or_create(
+            name="node", defaults={"type": "loc", "gameline": "mta"}
+        )[0]
         super().__init__(*args, **kwargs)
         self.fields["mf"].queryset = MeritFlaw.objects.filter(allowed_types__in=[n])
 

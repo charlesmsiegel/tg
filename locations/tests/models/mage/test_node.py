@@ -204,25 +204,17 @@ class TestNodeDetailView(TestCase):
 
 
 class TestNodeCreateView(TestCase):
-    """Test Node create view GET requests.
-
-    Note: These tests are skipped because the Node form has a pre-existing bug
-    in locations/forms/mage/node.py that tries to call
-    ObjectType.objects.get_or_create(name="node") without required type/gameline fields.
-    This should be fixed in a separate issue.
-    """
+    """Test Node create view GET requests."""
 
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.url = Node.get_creation_url()
 
-    @unittest.skip("Node form has pre-existing ObjectType bug")
     def test_create_view_status_code(self):
         self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip("Node form has pre-existing ObjectType bug")
     def test_create_view_template(self):
         self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)

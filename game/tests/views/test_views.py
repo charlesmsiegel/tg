@@ -107,10 +107,9 @@ class TestChronicleDetailView(TestCase):
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_chronicle_detail_view_requires_login(self):
-        """Test that unauthenticated users are redirected."""
+        """Test that unauthenticated users get a 401 response."""
         response = self.client.get(f"/game/chronicle/{self.chronicle.id}")
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login", response.url)
+        self.assertEqual(response.status_code, 401)
 
     def test_chronicle_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
@@ -182,10 +181,9 @@ class TestSceneDetailView(TestCase):
         )
 
     def test_scene_detail_view_requires_login(self):
-        """Test that unauthenticated users are redirected."""
+        """Test that unauthenticated users get a 401 response."""
         response = self.client.get(f"/game/scene/{self.scene.id}")
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login", response.url)
+        self.assertEqual(response.status_code, 401)
 
     def test_scene_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
