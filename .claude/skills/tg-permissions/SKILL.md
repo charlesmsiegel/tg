@@ -47,15 +47,11 @@ if user.profile.is_st():
 {% if user.profile.is_st %}
     <!-- ST-only controls -->
 {% endif %}
-
-# General role checks
-if request.user.profile.is_st():
-    # Allow ST-only actions
 ```
 
 ## View Mixins
 
-All mixins in `core/mixins.py`. Import from there:
+All mixins in `core/mixins.py`:
 
 ```python
 from core.mixins import (
@@ -66,33 +62,22 @@ from core.mixins import (
     VisibilityFilterMixin,    # Filter queryset by visibility
     OwnerRequiredMixin,       # Must be object owner
     STRequiredMixin,          # Must be storyteller
-    SuccessMessageMixin,      # Success flash messages
-    ErrorMessageMixin,        # Error flash messages
-    MessageMixin,             # Both success and error
-    DeleteMessageMixin,       # Delete confirmation messages
-    SpecialUserMixin,         # Special user access
+    MessageMixin,             # Success and error messages
 )
 ```
 
 ### Mixin Stacking Order (left to right)
 
 ```python
-# Update views
 class MyView(EditPermissionMixin, MessageMixin, UpdateView): pass
-
-# List views
 class MyListView(VisibilityFilterMixin, ListView): pass
-
-# Create views
 class MyCreateView(LoginRequiredMixin, MessageMixin, CreateView): pass
-
-# ST-only views
 class MySTView(STRequiredMixin, MessageMixin, CreateView): pass
 ```
 
 ## Limited Forms for Owners
 
-Owners can only edit descriptive fields. Implement in update views:
+Owners can only edit descriptive fields:
 
 ```python
 def get_form_class(self):
@@ -113,10 +98,16 @@ class LimitedCharacterEditForm(forms.ModelForm):
 Only allow: `notes`, `description`, `public_info`, `image`, `history`, `goals`.
 Never allow owners to edit: stats, XP, status, mechanical fields.
 
+## Detailed Documentation
+
+For comprehensive implementation details, see:
+- [references/implementation-guide.md](references/implementation-guide.md) - Full PermissionManager implementation, query optimization, view patterns
+- [references/user-profile-pattern.md](references/user-profile-pattern.md) - User + Profile architecture, performance tips
+
 ## Guidelines
 
 - Use **PermissionManager/mixins** for detail/update/delete views
 - Use **is_st()** for forms, templates, general role checks
 - Use **Limited forms** to restrict owner editing
 - Permission mixins handle view-level checks automatically
-- See `docs/design/permissions_system.md` for full documentation
+- See `docs/design/permissions_system.md` for full design documentation

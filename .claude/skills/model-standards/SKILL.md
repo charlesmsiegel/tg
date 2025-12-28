@@ -10,19 +10,22 @@ Project-specific Django patterns for the World of Darkness application. These st
 ## Workflow Decision Tree
 
 **Creating a new polymorphic model?**
-→ See [model-templates.md](references/model-templates.md) for Character/Item/Location inheritance patterns
+→ See [references/model-templates.md](references/model-templates.md) for Character/Item/Location inheritance patterns
 
 **Setting up CRUD views?**
-→ See [view-templates.md](references/view-templates.md) for mixin order and permission patterns
+→ See [references/view-templates.md](references/view-templates.md) for mixin order and permission patterns
 
 **Building forms?**
-→ See [form-templates.md](references/form-templates.md) for ModelForm and formset patterns
+→ See [references/form-templates.md](references/form-templates.md) for ModelForm and formset patterns
 
 **Creating templates?**
-→ See [template-patterns.md](references/template-patterns.md) for inheritance and includes
+→ See [references/template-patterns.md](references/template-patterns.md) for inheritance and includes
 
 **Configuring URLs?**
-→ See [url-patterns.md](references/url-patterns.md) for namespace hierarchy
+→ See [references/url-patterns.md](references/url-patterns.md) for namespace hierarchy
+
+**Checking what's implemented?**
+→ See [references/model-inventory.md](references/model-inventory.md) for full model status
 
 ## Project-Specific Conventions
 
