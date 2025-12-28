@@ -78,11 +78,12 @@ class TestWtOHuman(TestCase):
                 "drive": 0,
                 "etiquette": 0,
                 "firearms": 0,
-                "melee": 0,
-                "stealth": 0,
                 "larceny": 0,
+                "leadership": 0,
                 "meditation": 0,
+                "melee": 0,
                 "performance": 0,
+                "stealth": 0,
             },
         )
         self.set_abilities()
@@ -93,11 +94,12 @@ class TestWtOHuman(TestCase):
                 "drive": 0,
                 "etiquette": 0,
                 "firearms": 0,
-                "melee": 0,
-                "stealth": 3,
                 "larceny": 2,
+                "leadership": 0,
                 "meditation": 0,
+                "melee": 0,
                 "performance": 0,
+                "stealth": 3,
             },
         )
 

@@ -73,6 +73,8 @@ class Kinfolk(WtAHuman):
         return self.tribe is not None
 
     def set_tribe(self, tribe):
+        from characters.models.core.derangement import Derangement
+
         for t in Tribe.objects.all():
             self.gift_permissions.remove(
                 GiftPermission.objects.get_or_create(shifter="werewolf", condition=t.name)[0]
@@ -86,6 +88,10 @@ class Kinfolk(WtAHuman):
         self.tribe = tribe
         if self.tribe.name == "Silver Fangs" and self.pure_breed < 1:
             self.pure_breed = 1
+        if self.tribe.name == "Black Spiral Dancers":
+            derangement = Derangement.objects.first()
+            if derangement:
+                self.derangements.add(derangement)
         self.save()
         return True
 
@@ -139,6 +145,10 @@ class Kinfolk(WtAHuman):
             gnosis = MeritFlaw.objects.get(name="Gnosis")
             rating = MeritFlawRating.objects.get(mf=gnosis, character=self).rating
             self.gnosis = rating - 4
+        if self.merits_and_flaws.filter(name="Fetish").exists():
+            fetish = Fetish.objects.first()
+            if fetish:
+                self.fetishes_owned.add(fetish)
         return super().mf_based_corrections()
 
     def add_fetish(self, fetish):
