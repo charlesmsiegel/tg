@@ -165,6 +165,9 @@ class Changeling(CtDHuman):
         self.seeming = seeming
         if self.seeming == "childling":
             self.add_glamour()
+        if self.seeming == "wilder":
+            # Wilder can add to either glamour or willpower
+            self.add_glamour()
         if self.seeming == "grump":
             self.add_willpower()
         return True
