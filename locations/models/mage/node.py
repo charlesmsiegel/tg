@@ -1,11 +1,11 @@
 from characters.models.core import MeritFlaw
+from characters.models.core.merit_flaw_block import MeritFlawBlock
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import CheckConstraint, F, Q
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
-from game.models import ObjectType
 from locations.models.core import LocationModel
 from locations.models.mage.reality_zone import RealityZone
 
@@ -26,7 +26,7 @@ class RatioChoices(models.IntegerChoices):
     HUGE = 2, "1.0"
 
 
-class Node(LocationModel):
+class Node(MeritFlawBlock, LocationModel):
     type = "node"
     gameline = "mta"
 
@@ -94,55 +94,35 @@ class Node(LocationModel):
         self.points = 3 * self.rank
         return True
 
-    def get_mf_and_rating_list(self):
-        return [(x, self.mf_rating(x)) for x in self.merits_and_flaws.all()]
-
-    def add_mf(self, mf, rating):
-        node = ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")[0]
-        if node not in mf.allowed_types.all():
-            return False
-        if not mf.ratings.filter(value=rating).exists():
-            return False
-        if mf in self.merits_and_flaws.all():
-            current_rating = NodeMeritFlawRating.objects.get(node=self, mf=mf).rating
-            if 0 < current_rating < rating:
-                x = NodeMeritFlawRating.objects.get(node=self, mf=mf)
-                x.rating = rating
-                x.save()
-                return True
-            if 0 > current_rating > rating:
-                x = NodeMeritFlawRating.objects.get(node=self, mf=mf)
-                x.rating = rating
-                x.save()
-                return True
-            return False
-        NodeMeritFlawRating.objects.create(node=self, mf=mf, rating=rating)
-        return True
-
-    def total_mf(self):
-        return sum(x.rating for x in NodeMeritFlawRating.objects.filter(node=self))
+    # Merit/Flaw methods inherited from MeritFlawBlock:
+    # - get_mf_and_rating_list()
+    # - add_mf(mf, rating)
+    # - mf_rating(mf)
+    # - total_mf()
+    # - total_merits()
+    # - total_flaws()
+    # - has_max_flaws()
+    # - filter_mfs()
 
     def filter_mf(self, minimum=-10, maximum=10):
-        node = ObjectType.objects.get_or_create(name="node", type="loc", gameline="mta")[0]
+        """
+        Filter available merits/flaws with min/max rating constraints.
 
-        new_mfs = MeritFlaw.objects.filter(allowed_types__in=[node.pk]).exclude(
-            pk__in=self.merits_and_flaws.all()
-        )
-        had_mf_ratings = NodeMeritFlawRating.objects.all()
-        had_mf_ratings = had_mf_ratings.filter(rating__lt=F("mf__max_rating"))
+        This extends the base filter_mfs() method with additional rating filtering.
 
-        had_mfs = MeritFlaw.objects.filter(pk__in=had_mf_ratings.values_list("mf", flat=True))
-        q = new_mfs | had_mfs
+        Args:
+            minimum: Minimum rating value to include (default -10)
+            maximum: Maximum rating value to include (default 10)
 
-        q = q.filter(max_rating__lte=maximum)
-        q = q.filter(min_rating__gte=minimum)
-
-        return q
-
-    def mf_rating(self, mf):
-        if mf not in self.merits_and_flaws.all():
-            return 0
-        return NodeMeritFlawRating.objects.get(node=self, mf=mf).rating
+        Returns:
+            QuerySet of MeritFlaw objects that can be added to this node
+        """
+        # Get base filtered queryset from MeritFlawBlock
+        queryset = self.filter_mfs()
+        # Apply additional min/max filters
+        queryset = queryset.filter(max_rating__lte=maximum)
+        queryset = queryset.filter(min_rating__gte=minimum)
+        return queryset
 
     def add_resonance(self, resonance):
         r, _ = NodeResonanceRating.objects.get_or_create(resonance=resonance, node=self)
