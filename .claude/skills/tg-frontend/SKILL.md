@@ -1,6 +1,6 @@
 ---
 name: tg-frontend
-description: Frontend design system for Tellurium Games World of Darkness web application. Use when creating/modifying HTML templates (detail views, forms, lists), implementing components or stat displays, reviewing templates for design consistency, applying gameline-specific theming (Mage, Vampire, Werewolf, Changeling, Wraith, Hunter, Demon, Mummy), building responsive layouts, or styling forms. Triggers on WoD template work, tg-card components, gameline headings, Django template tags like dots/boxes filters.
+description: Frontend design system for Tellurium Games World of Darkness web application. Use when creating/modifying HTML templates (detail views, forms, lists), implementing components or stat displays, applying gameline-specific theming (Mage, Vampire, Werewolf, Changeling, Wraith, Hunter, Demon, Mummy), building responsive layouts, styling forms, or using template tags (dots, boxes, sanitize_html). Triggers on WoD template work, tg-card components, gameline headings, Django template tags.
 ---
 
 # TG Frontend Design System
@@ -37,11 +37,17 @@ Use `{{ object.get_heading }}` and `{{ object.get_badge_class }}` for dynamic cl
 
 ```html
 {% load sanitize_text dots %}
-{{ rating|dots }}       {# ●●●○○ #}
+{{ rating|dots }}       {# ●●●○○ (auto 5 or 10 max) #}
 {{ rating|dots:10 }}    {# explicit max 10 #}
 {{ value|boxes }}       {# ■■■□□ for temp values #}
 {{ content|sanitize_html|linebreaks }}
 ```
+
+**`dots` filter**: Converts numeric rating to WoD-style dots. Auto-detects max of 5 or 10 based on value. Returns empty string for non-numeric input.
+
+**`boxes` filter**: Similar to dots but uses boxes (■□). Used for temporary values, health tracking, damage.
+
+**`sanitize_html` filter**: Sanitizes user HTML, preserves safe formatting (p, br, strong, em, ul, ol, li, a, h1-h6). Strips scripts, event handlers, iframes. Always use for user-generated content.
 
 ### Status Badges
 
@@ -49,36 +55,21 @@ Use `{{ object.get_heading }}` and `{{ object.get_badge_class }}` for dynamic cl
 <span class="tg-badge badge-{{ object.status|lower }}">{{ object.get_status_display }}</span>
 ```
 
-`badge-un` (gray), `badge-sub` (blue), `badge-app` (green), `badge-ret` (orange), `badge-dec` (red)
+Classes: `badge-un` (gray), `badge-sub` (blue), `badge-app` (green), `badge-ret` (orange), `badge-dec` (red)
 
 ## Task-Based Workflow
 
-### Creating/Editing Detail Views
+**Creating/Editing Detail Views**: See [references/detail-patterns.md](references/detail-patterns.md)
 
-1. Read [references/detail-patterns.md](references/detail-patterns.md) for component patterns
-2. Read [references/detail-examples.md](references/detail-examples.md) for real working examples
-3. Extend appropriate base: `core/object.html`, `locations/core/location/detail.html`, `characters/core/character/detail.html`, `items/core/item/detail.html`
+**Creating/Editing Forms**: See [references/form-patterns.md](references/form-patterns.md)
 
-### Creating/Editing Forms
+**Choosing Layout Patterns**: See [references/layout-decisions.md](references/layout-decisions.md)
 
-1. Read [references/form-patterns.md](references/form-patterns.md) for field patterns
-2. Read [references/form-examples.md](references/form-examples.md) for the Haven gold standard
-3. Extend `core/form.html`
-
-### Choosing Layout Patterns
-
-Read [references/layout-decisions.md](references/layout-decisions.md) for guidance on:
-- Border radius standards (4-6px vs 6-8px)
-- Link styling (text links vs card links)
-- Compact vs spacious layouts
-- When to use tables vs card grids vs stat boxes
-- Responsive breakpoints
-
-## Quick Patterns (No Reference Needed)
+## Quick Patterns
 
 **Page Header Card:**
 ```html
-<div class="tg-card header-card mb-4" data-gameline="mta">
+<div class="tg-card header-card mb-4" data-gameline="{{ object.gameline|lower }}">
     <div class="tg-card-header">
         <h1 class="tg-card-title {{ object.get_heading }}">{{ object.name }}</h1>
     </div>
@@ -94,6 +85,14 @@ Read [references/layout-decisions.md](references/layout-decisions.md) for guidan
     <div class="tg-card-body text-center" style="padding: 20px;">
         <!-- Content -->
     </div>
+</div>
+```
+
+**Trait Row with Dots:**
+```html
+<div class="trait-row">
+    <span class="trait-name">Strength:</span>
+    <span class="trait-dots">{{ character.strength|dots }}</span>
 </div>
 ```
 
@@ -126,7 +125,6 @@ Read [references/layout-decisions.md](references/layout-decisions.md) for guidan
 - Card body: `padding: 20px;` (standard) or `padding: 24px;` (spacious)
 - Section gaps: `mb-4` or `mb-5`
 - Related items: `mb-3`
-- Label-value gap: `margin-right: 8px`
 
 ### Backgrounds
 - Primary stat: `rgba(0,0,0,0.05)`
@@ -144,16 +142,7 @@ Read [references/layout-decisions.md](references/layout-decisions.md) for guidan
 
 - [ ] All cards use `tg-card` (not Bootstrap `card`)
 - [ ] Headers have gameline class and `data-gameline`
-- [ ] Headers centered where appropriate
 - [ ] Labels uppercase, values bold
-- [ ] Forms use `form-label` class
-- [ ] Checkboxes in `form-check` divs
 - [ ] Template loads `{% load dots sanitize_text %}`
 - [ ] Equal-height cards use `h-100`
 - [ ] Responsive with proper column classes
-
-## Reference Files in Codebase
-
-- Style guide: `SOURCES/STYLE.md`
-- CSS components: `static/themes/components.css`
-- Base styles: `static/style.css`
