@@ -1,5 +1,7 @@
+from core.models import BaseMeritFlawRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 from locations.models.core.location import LocationModel
 
@@ -195,11 +197,17 @@ class Tomb(LocationModel):
         verbose_name_plural = "Tombs"
 
 
-# Through model for Merits/Flaws
-class TombMeritFlawRating(models.Model):
+class TombMeritFlawRating(BaseMeritFlawRating):
+    """Through model for Tomb merit/flaw ratings."""
+
     tomb = models.ForeignKey(Tomb, on_delete=models.CASCADE)
-    mf = models.ForeignKey("characters.MeritFlaw", on_delete=models.CASCADE)
-    rating = models.IntegerField(default=1)
 
     class Meta:
         unique_together = ["tomb", "mf"]
+        constraints = [
+            CheckConstraint(
+                check=Q(rating__gte=-10, rating__lte=10),
+                name="locations_tombmeritflawrating_rating_range",
+                violation_error_message="Tomb merit/flaw rating must be between -10 and 10",
+            ),
+        ]

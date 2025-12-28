@@ -1,5 +1,4 @@
-from core.models import Model, Number
-from django.core.validators import MaxValueValidator, MinValueValidator
+from core.models import BaseMeritFlawRating, Model, Number
 from django.db import models
 from django.db.models import CheckConstraint, F, Q
 from django.urls import reverse
@@ -71,12 +70,11 @@ class MeritFlaw(Model):
         return False
 
 
-class MeritFlawRating(models.Model):
+class MeritFlawRating(BaseMeritFlawRating):
+    """Through model for Character merit/flaw ratings."""
+
     character = models.ForeignKey("Human", on_delete=models.SET_NULL, null=True)
     mf = models.ForeignKey(MeritFlaw, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(-10), MaxValueValidator(10)]
-    )
 
     class Meta:
         verbose_name = "Merit or Flaw Rating"
@@ -88,9 +86,6 @@ class MeritFlawRating(models.Model):
                 violation_error_message="Merit/Flaw rating must be between -10 and 10",
             ),
         ]
-
-    def __str__(self):
-        return f"{self.mf}: {self.rating}"
 
 
 class MeritFlawBlock(models.Model):
