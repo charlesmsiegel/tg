@@ -8,6 +8,7 @@ from core.mixins import (
     ViewPermissionMixin,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
@@ -18,11 +19,11 @@ class HumanBackgroundsView(EditPermissionMixin, FormView):
     def get_object(self):
         """Return the Human object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
-            self.object = Human.objects.get(pk=self.kwargs["pk"])
+            self.object = get_object_or_404(Human, pk=self.kwargs["pk"])
         return self.object
 
     def get_success_url(self):
-        return Human.objects.get(pk=self.kwargs["pk"]).get_absolute_url()
+        return get_object_or_404(Human, pk=self.kwargs["pk"]).get_absolute_url()
 
     def form_valid(self, form):
         self.get_context_data()
@@ -47,7 +48,7 @@ class HumanBackgroundsView(EditPermissionMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        self.object = Human.objects.get(pk=self.kwargs["pk"])
+        self.object = get_object_or_404(Human, pk=self.kwargs["pk"])
         kwargs["character"] = self.object
         kwargs["instance"] = self.object  # Required for inline formset
         return kwargs
@@ -60,7 +61,7 @@ class HumanBackgroundsView(EditPermissionMixin, FormView):
         context = super().get_context_data(**kwargs)
         # Ensure self.object is set (it's set in get_form_kwargs during POST/GET)
         if not hasattr(self, "object") or self.object is None:
-            self.object = Human.objects.get(pk=self.kwargs["pk"])
+            self.object = get_object_or_404(Human, pk=self.kwargs["pk"])
         context["object"] = self.object
         for form in context["form"]:
             form.fields["bg"].queryset = Background.objects.filter(

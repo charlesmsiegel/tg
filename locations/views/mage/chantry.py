@@ -121,7 +121,7 @@ class LoadExamplesView(View):
 
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
-        m = Chantry.objects.get(pk=object_id)
+        m = get_object_or_404(Chantry, pk=object_id)
 
         category_choice = request.GET.get("category")
         if category_choice == "New Background":
@@ -196,7 +196,7 @@ class ChantryPointsView(EditPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["pk"] = self.kwargs.get("pk")
-        self.object = Chantry.objects.get(pk=self.kwargs["pk"])
+        self.object = get_object_or_404(Chantry, pk=self.kwargs["pk"])
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -228,7 +228,7 @@ class ChantryIntegratedEffectsView(EditPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["pk"] = self.kwargs.get("pk")
-        self.object = Chantry.objects.get(pk=self.kwargs["pk"])
+        self.object = get_object_or_404(Chantry, pk=self.kwargs["pk"])
         return kwargs
 
     def get_context_data(self, **kwargs):

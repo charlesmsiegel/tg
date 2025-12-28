@@ -89,7 +89,8 @@ def load_mf_ratings(request):
     from core.ajax import simple_values_response
 
     mf_id = request.GET.get("mf")
-    ratings = MeritFlaw.objects.get(pk=mf_id).ratings.values_list("value", flat=True)
+    mf = get_object_or_404(MeritFlaw, pk=mf_id)
+    ratings = mf.ratings.values_list("value", flat=True)
     return simple_values_response(ratings)
 
 
@@ -165,7 +166,7 @@ class LoadXPExamplesView(View):
 
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
-        self.character = Mage.objects.get(pk=object_id)
+        self.character = get_object_or_404(Mage, pk=object_id)
         examples = []
 
         if category_choice == "Attribute":
@@ -309,11 +310,11 @@ class LoadXPExamplesView(View):
 @login_required
 def get_abilities(request):
     object_id = request.GET.get("object")
-    object = Human.objects.get(id=object_id)
+    obj = get_object_or_404(Human, id=object_id)
     practice_id = request.GET.get("practice_id")
-    prac = Practice.objects.get(id=practice_id)
+    prac = get_object_or_404(Practice, id=practice_id)
     abilities = prac.abilities.all().order_by("name")
-    abilities = [x for x in abilities if getattr(object, x.property_name) > 0]
+    abilities = [x for x in abilities if getattr(obj, x.property_name) > 0]
     abilities_list = [{"id": "", "name": "--------"}]  # Empty option
     abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
     return JsonResponse(abilities_list, safe=False)
@@ -1253,7 +1254,7 @@ class MageRoteView(SpecialUserMixin, CreateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         mage_id = self.kwargs.get("pk")
-        context["object"] = Mage.objects.get(id=mage_id)
+        context["object"] = get_object_or_404(Mage, id=mage_id)
         context["is_approved_user"] = self.check_if_special_user(
             context["object"], self.request.user
         )
@@ -1262,7 +1263,7 @@ class MageRoteView(SpecialUserMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         mage_id = self.kwargs.get("pk")
-        mage = Mage.objects.get(pk=mage_id)
+        mage = get_object_or_404(Mage, pk=mage_id)
         kwargs["instance"] = mage
         return kwargs
 

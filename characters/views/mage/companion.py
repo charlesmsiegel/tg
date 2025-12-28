@@ -80,7 +80,7 @@ class LoadExamplesView(LoginRequiredMixin, View):
 
         category_choice = request.GET.get("category")
         object_id = request.GET.get("object")
-        m = Companion.objects.get(pk=object_id)
+        m = get_object_or_404(Companion, pk=object_id)
 
         category_choice = request.GET.get("category")
         if category_choice == "Attribute":
@@ -130,7 +130,7 @@ class LoadExamplesView(LoginRequiredMixin, View):
 def load_companion_values(request):
     from core.ajax import simple_values_response
 
-    advantage = Advantage.objects.get(pk=request.GET.get("example"))
+    advantage = get_object_or_404(Advantage, pk=request.GET.get("example"))
     ratings = [x.value for x in advantage.ratings.all()]
     ratings.sort()
     return simple_values_response(ratings)
@@ -304,19 +304,19 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
             form.add_error(None, "Not Enough Freebies!")
             return super().form_invalid(form)
         if form.data["category"] == "Attribute":
-            trait = Attribute.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Attribute, pk=form.data["example"])
             value = getattr(self.object, trait.property_name) + 1
             self.object.add_attribute(trait.property_name)
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "Ability":
-            trait = Ability.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Ability, pk=form.data["example"])
             value = getattr(self.object, trait.property_name) + 1
             self.object.add_ability(trait.property_name)
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "New Background":
-            trait = Background.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Background, pk=form.data["example"])
             cost *= trait.multiplier
             value = 1
             BackgroundRating.objects.create(
@@ -327,7 +327,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
             if form.data["note"]:
                 trait += f" ({form.data['note']})"
         elif form.data["category"] == "Existing Background":
-            trait = BackgroundRating.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(BackgroundRating, pk=form.data["example"])
             cost *= trait.bg.multiplier
             value = trait.rating + 1
             trait.rating += 1
@@ -341,13 +341,13 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
             self.object.add_willpower()
             self.object.freebies -= cost
         elif form.data["category"] == "MeritFlaw":
-            trait = MeritFlaw.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(MeritFlaw, pk=form.data["example"])
             value = int(form.data["value"])
             self.object.add_mf(trait, value)
             self.object.freebies -= cost
             trait = trait.name
         elif form.data["category"] == "Advantage":
-            trait = Advantage.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(Advantage, pk=form.data["example"])
             value = int(form.data["value"])
             self.object.add_advantage(trait, value)
             self.object.freebies -= cost
@@ -356,7 +356,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
                 r = value // 2
                 self.object.rage = r
         elif form.data["category"] == "Charms":
-            trait = SpiritCharm.objects.get(pk=form.data["example"])
+            trait = get_object_or_404(SpiritCharm, pk=form.data["example"])
             cost *= trait.point_cost
             value = cost
             self.object.add_charm(trait)
@@ -438,7 +438,8 @@ class CompanionLanguagesView(EditPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
+        human = get_object_or_404(Human, pk=human_pk)
+        num_languages = human.num_languages()
         kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
         return kwargs
 
@@ -471,7 +472,7 @@ class CompanionSpecialtiesView(EditPermissionMixin, FormView):
     def get_object(self):
         """Return the Companion object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
-            self.object = Companion.objects.get(id=self.kwargs["pk"])
+            self.object = get_object_or_404(Companion, id=self.kwargs["pk"])
         return self.object
 
     def get_context_data(self, **kwargs):
@@ -579,7 +580,7 @@ class CompanionChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
+        kwargs["character"] = get_object_or_404(self.primary_object_class, pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
