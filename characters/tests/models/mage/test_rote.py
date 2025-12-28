@@ -8,7 +8,10 @@ from django.test import TestCase
 
 class TestRoteDetailView(TestCase):
     def setUp(self) -> None:
-        self.rote = Rote.objects.create(name="Test Rote")
+        e = Effect.objects.create(name="Test Effect")
+        att = Attribute.objects.create(name="A", property_name="a")
+        abb = Ability.objects.create(name="B", property_name="b")
+        self.rote = Rote.objects.create(name="Test Rote", effect=e, attribute=att, ability=abb)
         self.url = self.rote.get_absolute_url()
 
     def test_effect_detail_view_status_code(self):
@@ -52,9 +55,11 @@ class TestRoteCreateView(TestCase):
 class TestRoteUpdateView(TestCase):
     def setUp(self):
         e = Effect.objects.create(name="Test Effect")
-        self.rote = Rote.objects.create(name="Test Rote", description="Test")
         att = Attribute.objects.create(name="A", property_name="a")
         abb = Ability.objects.create(name="B", property_name="b")
+        self.rote = Rote.objects.create(
+            name="Test Rote", description="Test", effect=e, attribute=att, ability=abb
+        )
         self.valid_data = {
             "name": "Test Rote 2",
             "effect": e.id,

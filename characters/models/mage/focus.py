@@ -97,6 +97,10 @@ class SpecializedPractice(Practice):
         return reverse("characters:mage:create:specialized_practice")
 
     def get_rotes(self):
+        if self.parent_practice is None:
+            from characters.models.mage.rote import Rote
+
+            return Rote.objects.none()
         return self.parent_practice.get_rotes()
 
 
@@ -125,6 +129,10 @@ class CorruptedPractice(Practice):
         return reverse("characters:mage:create:corrupted_practice")
 
     def get_rotes(self):
+        if self.parent_practice is None:
+            from characters.models.mage.rote import Rote
+
+            return Rote.objects.none()
         return self.parent_practice.get_rotes()
 
 
