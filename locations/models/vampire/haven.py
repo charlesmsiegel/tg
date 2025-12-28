@@ -1,5 +1,5 @@
 from characters.models.core import MeritFlaw
-from django.core.validators import MaxValueValidator, MinValueValidator
+from core.models import BaseMeritFlawRating
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
@@ -82,14 +82,10 @@ class Haven(LocationModel):
         super().save(*args, **kwargs)
 
 
-class HavenMeritFlawRating(models.Model):
-    """Through table for Haven merits and flaws with ratings."""
+class HavenMeritFlawRating(BaseMeritFlawRating):
+    """Through model for Haven merit/flaw ratings."""
 
     haven = models.ForeignKey(Haven, on_delete=models.CASCADE)
-    mf = models.ForeignKey(MeritFlaw, on_delete=models.CASCADE)
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(-10), MaxValueValidator(10)]
-    )
 
     class Meta:
         unique_together = ("haven", "mf")
