@@ -5,9 +5,7 @@ Real working examples extracted from the TG codebase.
 ## Page Headers
 
 ### Location Header (Node)
-
 From `locations/templates/locations/mage/node/detail.html`:
-
 ```html
 <div class="tg-card header-card mb-4" data-gameline="mta">
     <div class="tg-card-header">
@@ -25,15 +23,11 @@ From `locations/templates/locations/mage/node/detail.html`:
 ```
 
 ### Character Header
-
 From `characters/templates/characters/core/character/detail.html`:
-
 ```html
 <div class="tg-card header-card mb-2" data-gameline="{{ object.gameline|lower }}">
     <div class="tg-card-header">
-        <h1 class="tg-card-title {{ object.get_heading }}">
-            {{ object.name }}
-        </h1>
+        <h1 class="tg-card-title {{ object.get_heading }}">{{ object.name }}</h1>
         <p class="tg-card-subtitle mb-0 text-center">
             {{ object.concept }}{% if object.chronicle %} | <a href="{{ object.chronicle.get_absolute_url }}">{{ object.chronicle }}</a>{% endif %}
         </p>
@@ -41,38 +35,10 @@ From `characters/templates/characters/core/character/detail.html`:
 </div>
 ```
 
-### Changeling Freehold Header (with subtitle)
-
-From `locations/templates/locations/changeling/freehold/detail.html`:
-
-```html
-<div class="tg-card header-card mb-4" data-gameline="ctd">
-    <div class="tg-card-header">
-        <h1 class="tg-card-title ctd_heading">
-            {{ object.name }}
-            {% if object.balefire %}<small><span class="dots colored-dots">{{ object.balefire|dots }}</span></small>{% endif %}
-        </h1>
-        {% if object.parent %}
-            <p class="tg-card-subtitle mb-0">
-                Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
-            </p>
-        {% endif %}
-        <p class="tg-card-subtitle mb-0">
-            <strong>{{ object.get_archetype_display }}</strong>
-            {% if object.aspect %} - {{ object.aspect }}{% endif %}
-        </p>
-    </div>
-</div>
-```
-
----
-
 ## Stat Display Blocks
 
 ### Node Properties (Inline + Large Stats)
-
 From `locations/templates/locations/mage/node/display_includes/basics.html`:
-
 ```html
 <div class="col-md-6 mb-3">
     <div class="tg-card h-100">
@@ -114,9 +80,7 @@ From `locations/templates/locations/mage/node/display_includes/basics.html`:
 ```
 
 ### Haven Statistics (Total + Components)
-
 From `locations/templates/locations/vampire/haven/display_includes/basics.html`:
-
 ```html
 <div class="col-md-6 mb-3">
     <div class="tg-card h-100">
@@ -159,9 +123,7 @@ From `locations/templates/locations/vampire/haven/display_includes/basics.html`:
 ```
 
 ### Boolean Features Grid
-
 From `locations/templates/locations/vampire/haven/display_includes/basics.html`:
-
 ```html
 <div class="col-md-6 mb-3">
     <div class="tg-card h-100">
@@ -182,21 +144,16 @@ From `locations/templates/locations/vampire/haven/display_includes/basics.html`:
                         <div style="font-weight: 700; color: var(--theme-text-primary);">{{ object.has_luxury|yesno:"Yes,No" }}</div>
                     </div>
                 </div>
-                <!-- More features... -->
             </div>
         </div>
     </div>
 </div>
 ```
 
----
-
 ## Reusable Display Includes
 
 ### Merits & Flaws Block
-
 From `characters/templates/characters/core/meritflaw/display_includes/meritflaw_block.html`:
-
 ```html
 {% if object.get_mf_and_rating_list %}
 <div class="row mb-3">
@@ -222,9 +179,7 @@ From `characters/templates/characters/core/meritflaw/display_includes/meritflaw_
 ```
 
 ### Resonance Display
-
 From `characters/templates/characters/mage/resonance/display_includes/resonance.html`:
-
 ```html
 {% load dots %}
 {% if resonance %}
@@ -257,9 +212,7 @@ From `characters/templates/characters/mage/resonance/display_includes/resonance.
 ```
 
 ### Status Display
-
 From `core/templates/core/includes/status.html`:
-
 ```html
 <div class="col-md mb-1">
     <div class="tg-card h-100">
@@ -278,14 +231,10 @@ From `core/templates/core/includes/status.html`:
 </div>
 ```
 
----
-
 ## Character-Specific Patterns
 
 ### Garou Advantages (Dots with Labels)
-
 From `characters/templates/characters/werewolf/garou/detail.html`:
-
 ```html
 <div class="row mb-3">
     <div class="col-12">
@@ -313,9 +262,7 @@ From `characters/templates/characters/werewolf/garou/detail.html`:
 ```
 
 ### Gifts Grid
-
 From `characters/templates/characters/werewolf/garou/detail.html`:
-
 ```html
 {% if object.gifts.all %}
 <div class="row mb-3">
@@ -344,38 +291,4 @@ From `characters/templates/characters/werewolf/garou/detail.html`:
     </div>
 </div>
 {% endif %}
-```
-
-### Appearance Section (Inline Stats + Text)
-
-From `characters/templates/characters/werewolf/garou/detail.html`:
-
-```html
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="tg-card">
-            <div class="tg-card-header text-center">
-                <h5 class="tg-card-title {{ object.get_heading }}">Appearance</h5>
-            </div>
-            <div class="tg-card-body text-center" style="padding: 20px;">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Date of Birth:</span>
-                        {{ object.date_of_birth }}
-                    </div>
-                    <div class="px-3 py-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary); margin-right: 8px;">Age:</span>
-                        {{ object.age }}
-                    </div>
-                </div>
-                <div class="mt-3 text-center">
-                    <div class="mb-2">
-                        <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Description:</span>
-                    </div>
-                    <p class="mb-0 text-center" style="line-height: 1.6;">{{ object.description|sanitize_html|linebreaks }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 ```
