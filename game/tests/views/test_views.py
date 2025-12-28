@@ -76,6 +76,7 @@ class SceneTest(TestCase):
         initial_xp = self.char.xp
         self.scene.award_xp({self.char: True})
         self.char.refresh_from_db()
+        self.scene.refresh_from_db()  # Refresh to see updated xp_given
         self.assertEqual(self.char.xp, initial_xp + 1)
         self.assertTrue(self.scene.xp_given)
 

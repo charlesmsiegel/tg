@@ -58,13 +58,12 @@ class TestXPSpendingRequest(TestCase):
     def test_get_pending_xp_requests(self):
         """Test retrieving pending XP requests."""
         # Create multiple requests
-        self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
+        alertness_req = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
+        strength_req = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
 
-        # Approve one
-        request = self.char.xp_spendings.first()
-        request.approved = "Approved"
-        request.save()
+        # Approve Alertness (leaves Strength pending)
+        alertness_req.approved = "Approved"
+        alertness_req.save()
 
         # Check pending requests
         pending = self.char.get_pending_xp_requests()
@@ -115,22 +114,23 @@ class TestXPSpendingRequest(TestCase):
         with self.assertRaises(XPSpendingRequest.DoesNotExist):
             self.char.approve_xp_request(request.id, self.user)
 
-    def test_has_pending_xp_model_requests(self):
-        """Test checking for pending XP model requests."""
-        self.assertFalse(self.char.has_pending_xp_model_requests())
+    def test_waiting_for_xp_spend(self):
+        """Test checking for pending XP requests."""
+        self.assertFalse(self.char.waiting_for_xp_spend())
 
         self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        self.assertTrue(self.char.has_pending_xp_model_requests())
+        self.assertTrue(self.char.waiting_for_xp_spend())
 
         # Approve it
         request = self.char.xp_spendings.first()
         self.char.approve_xp_request(request.id, self.user)
-        self.assertFalse(self.char.has_pending_xp_model_requests())
+        self.assertFalse(self.char.waiting_for_xp_spend())
 
     def test_xp_spending_request_string_representation(self):
         """Test XPSpendingRequest __str__ method."""
         request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        expected = f"{self.char.name} - Alertness (6 XP) - Pending"
+        # Format: "{character.name} - {trait_name} ({approved})"
+        expected = f"{self.char.name} - Alertness (Pending)"
         self.assertEqual(str(request), expected)
 
 
@@ -191,8 +191,8 @@ class TestFreebieSpendingRecord(TestCase):
         self.assertEqual(str(record), expected)
 
 
-class TestDualSystemSupport(TestCase):
-    """Test that both JSONField and model systems work together during migration."""
+class TestXPSpendingSystem(TestCase):
+    """Test XP spending using XPSpendingRequest model."""
 
     def setUp(self):
         """Set up test data."""
@@ -211,78 +211,23 @@ class TestDualSystemSupport(TestCase):
             freebies=15,
         )
 
-    def test_has_pending_xp_or_model_requests_jsonfield(self):
-        """Test checking for pending XP in JSONField."""
-        # Add pending XP in JSONField
-        self.char.spent_xp = [
-            {
-                "trait": "Alertness",
-                "value": 3,
-                "cost": 6,
-                "approved": "Pending",
-                "index": "0",
-            }
-        ]
-        self.char.save()
+    def test_waiting_for_xp_spend_no_requests(self):
+        """Test character with no pending XP requests."""
+        self.assertFalse(self.char.waiting_for_xp_spend())
 
-        self.assertTrue(self.char.has_pending_xp_or_model_requests())
-
-    def test_has_pending_xp_or_model_requests_model(self):
-        """Test checking for pending XP in model."""
+    def test_waiting_for_xp_spend_with_pending(self):
+        """Test checking for pending XP requests."""
         self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
-        self.assertTrue(self.char.has_pending_xp_or_model_requests())
+        self.assertTrue(self.char.waiting_for_xp_spend())
 
-    def test_has_pending_xp_or_model_requests_both(self):
-        """Test checking for pending XP in both systems."""
-        # JSONField
-        self.char.spent_xp = [
-            {
-                "trait": "Alertness",
-                "value": 3,
-                "cost": 6,
-                "approved": "Pending",
-                "index": "0",
-            }
-        ]
-        self.char.save()
+    def test_waiting_for_xp_spend_after_approval(self):
+        """Test that approved requests don't show as pending."""
+        request = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
+        self.char.approve_xp_request(request.id, self.user)
+        self.assertFalse(self.char.waiting_for_xp_spend())
 
-        # Model
-        self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
-
-        self.assertTrue(self.char.has_pending_xp_or_model_requests())
-
-    def test_total_spent_xp_combined_jsonfield_only(self):
-        """Test total XP calculation from JSONField only."""
-        self.char.spent_xp = [
-            {
-                "trait": "Alertness",
-                "value": 3,
-                "cost": 6,
-                "approved": "Approved",
-                "index": "0",
-            },
-            {
-                "trait": "Strength",
-                "value": 4,
-                "cost": 8,
-                "approved": "Approved",
-                "index": "1",
-            },
-            {
-                "trait": "Wits",
-                "value": 3,
-                "cost": 5,
-                "approved": "Pending",  # Not approved, shouldn't count
-                "index": "2",
-            },
-        ]
-        self.char.save()
-
-        total = self.char.total_spent_xp_combined()
-        self.assertEqual(total, 14)  # 6 + 8, excluding pending
-
-    def test_total_spent_xp_combined_model_only(self):
-        """Test total XP calculation from model only."""
+    def test_total_spent_xp_with_approved_requests(self):
+        """Test total XP calculation from approved requests."""
         # Create and approve requests
         request1 = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
         request2 = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
@@ -292,45 +237,28 @@ class TestDualSystemSupport(TestCase):
         self.char.approve_xp_request(request2.id, self.user)
         # Leave request3 pending
 
-        total = self.char.total_spent_xp_combined()
+        total = self.char.total_spent_xp()
         self.assertEqual(total, 14)  # 6 + 8, excluding pending
 
-    def test_total_spent_xp_combined_both_systems(self):
-        """Test total XP calculation from both systems combined."""
-        # JSONField
-        self.char.spent_xp = [
-            {
-                "trait": "Alertness",
-                "value": 3,
-                "cost": 6,
-                "approved": "Approved",
-                "index": "0",
-            }
-        ]
-        self.char.save()
+    def test_total_spent_xp_no_approved_requests(self):
+        """Test total XP is zero when no approved requests exist."""
+        # Create but don't approve
+        self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
+        total = self.char.total_spent_xp()
+        self.assertEqual(total, 0)
 
-        # Model
-        request = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
-        self.char.approve_xp_request(request.id, self.user)
+    def test_get_pending_xp_requests(self):
+        """Test getting pending XP requests."""
+        self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
+        request2 = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
+        self.char.approve_xp_request(request2.id, self.user)
 
-        total = self.char.total_spent_xp_combined()
-        self.assertEqual(total, 14)  # 6 + 8 from both systems
+        pending = self.char.get_pending_xp_requests()
+        self.assertEqual(pending.count(), 1)
+        self.assertEqual(pending.first().trait_name, "Alertness")
 
-    def test_total_freebies_combined_jsonfield_only(self):
-        """Test total freebies calculation from JSONField only."""
-        initial_freebies = self.human.freebies
-        self.human.spent_freebies = [
-            {"trait": "Strength", "value": 4, "cost": 5},
-            {"trait": "Alertness", "value": 2, "cost": 2},
-        ]
-        self.human.save()
-
-        # JSONField total
-        jsonfield_total = sum(x["cost"] for x in self.human.spent_freebies)
-        self.assertEqual(jsonfield_total, 7)
-
-    def test_total_freebies_from_model_only(self):
-        """Test total freebies calculation from model only."""
+    def test_total_freebies_from_model(self):
+        """Test total freebies calculation from model records."""
         initial_freebies = self.human.freebies
         self.human.create_freebie_spending_record("Strength", "attribute", 4, 5)
         self.human.create_freebie_spending_record("Alertness", "ability", 2, 2)
@@ -419,8 +347,8 @@ class TestFreebieSpendingIndexes(TestCase):
         self.assertEqual(history.last(), record1)
 
 
-class TestMigrationEdgeCases(TestCase):
-    """Test edge cases during migration."""
+class TestXPSpendingEdgeCases(TestCase):
+    """Test edge cases for XP spending system."""
 
     def setUp(self):
         """Set up test data."""
@@ -439,21 +367,11 @@ class TestMigrationEdgeCases(TestCase):
             freebies=15,
         )
 
-    def test_empty_jsonfield_and_no_model_records(self):
-        """Test character with no spending in either system."""
-        self.assertFalse(self.char.has_pending_xp_or_model_requests())
-        self.assertEqual(self.char.total_spent_xp_combined(), 0)
+    def test_character_with_no_spending_records(self):
+        """Test character with no spending records."""
+        self.assertFalse(self.char.waiting_for_xp_spend())
+        self.assertEqual(self.char.total_spent_xp(), 0)
         self.assertEqual(self.char.get_xp_spending_history().count(), 0)
-
-    def test_malformed_jsonfield_data(self):
-        """Test handling of malformed JSONField data."""
-        # Missing 'approved' key
-        self.char.spent_xp = [{"trait": "Alertness", "value": 3, "cost": 6, "index": "0"}]
-        self.char.save()
-
-        # Should not crash
-        total = self.char.total_spent_xp_combined()
-        self.assertGreaterEqual(total, 0)  # May be 0 if malformed data is skipped
 
     def test_character_with_only_denied_requests(self):
         """Test character with only denied XP requests."""
@@ -463,8 +381,8 @@ class TestMigrationEdgeCases(TestCase):
         self.char.deny_xp_request(request1.id, self.user)
         self.char.deny_xp_request(request2.id, self.user)
 
-        self.assertFalse(self.char.has_pending_xp_or_model_requests())
-        self.assertEqual(self.char.total_spent_xp_combined(), 0)  # Denied requests don't count
+        self.assertFalse(self.char.waiting_for_xp_spend())
+        self.assertEqual(self.char.total_spent_xp(), 0)  # Denied requests don't count
 
     def test_freebie_record_with_zero_cost(self):
         """Test freebie record with zero cost (edge case)."""
@@ -473,53 +391,15 @@ class TestMigrationEdgeCases(TestCase):
         total = self.human.total_freebies_from_model()
         self.assertEqual(total, self.human.freebies)  # Zero cost shouldn't affect total
 
+    def test_mixed_approved_pending_denied_requests(self):
+        """Test character with mixed request statuses."""
+        request1 = self.char.create_xp_spending_request("Alertness", "ability", 3, 6)
+        request2 = self.char.create_xp_spending_request("Strength", "attribute", 4, 8)
+        request3 = self.char.create_xp_spending_request("Wits", "attribute", 3, 5)
 
-class TestBackwardCompatibility(TestCase):
-    """Test that new system doesn't break existing JSONField functionality."""
+        self.char.approve_xp_request(request1.id, self.user)  # Approved - 6 XP
+        # request2 stays Pending
+        self.char.deny_xp_request(request3.id, self.user)  # Denied
 
-    def setUp(self):
-        """Set up test data."""
-        self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.char = Character.objects.create(
-            name="Test Character",
-            owner=self.user,
-            chronicle=self.chronicle,
-            xp=20,
-        )
-
-    def test_jsonfield_still_accessible(self):
-        """Test that JSONField is still accessible."""
-        self.char.spent_xp = [
-            {
-                "trait": "Alertness",
-                "value": 3,
-                "cost": 6,
-                "approved": "Approved",
-                "index": "0",
-            }
-        ]
-        self.char.save()
-        self.char.refresh_from_db()
-
-        self.assertEqual(len(self.char.spent_xp), 1)
-        self.assertEqual(self.char.spent_xp[0]["trait"], "Alertness")
-
-    def test_can_append_to_jsonfield(self):
-        """Test that appending to JSONField still works."""
-        self.char.spent_xp = []
-        self.char.save()
-
-        self.char.spent_xp.append(
-            {
-                "trait": "Strength",
-                "value": 4,
-                "cost": 8,
-                "approved": "Pending",
-                "index": "0",
-            }
-        )
-        self.char.save()
-        self.char.refresh_from_db()
-
-        self.assertEqual(len(self.char.spent_xp), 1)
+        self.assertTrue(self.char.waiting_for_xp_spend())  # Has pending
+        self.assertEqual(self.char.total_spent_xp(), 6)  # Only approved counts
