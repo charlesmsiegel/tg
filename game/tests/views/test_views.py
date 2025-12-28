@@ -382,11 +382,15 @@ class TestExtendedRoll(TestCase):
         self.assertIn("Target of 5 reached", result)
 
     def test_extended_roll_max_rolls_limit(self):
-        """Test that extended roll respects max_rolls limit."""
+        """Test that extended roll respects max_rolls limit or ends on botch."""
         # Use impossible target with very few max rolls
+        # Result can be INCOMPLETE (max rolls reached) or BOTCH (catastrophic failure)
         result = extended_roll(1, 1000, difficulty=10, max_rolls=3)
-        self.assertIn("INCOMPLETE:", result)
-        self.assertIn("after 3 rolls", result)
+        # Either we hit max rolls (INCOMPLETE) or botched before reaching max
+        self.assertTrue(
+            "INCOMPLETE:" in result or "BOTCH!" in result,
+            f"Expected INCOMPLETE or BOTCH in result: {result}",
+        )
 
     def test_extended_roll_with_specialty(self):
         """Test extended roll with specialty parameter."""

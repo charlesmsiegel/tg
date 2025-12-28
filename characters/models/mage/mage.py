@@ -251,7 +251,7 @@ class Mage(MtAHuman):
             if self.quiet == 0:
                 self.quiet = random.randint(1, 5)
             if self.quiet_type == "none":
-                self.quiet_type = random.choice(["denial", "madness", "monstrous"])
+                self.quiet_type = random.choice(["denial", "madness", "morbidity"])
 
         self.save()
         return True
