@@ -15,7 +15,7 @@ class TestTalisman(TestCase):
         self.effect3 = Effect.objects.create(name="Effect 3", time=3)
 
     def test_add_power(self):
-        talisman = Talisman.objects.create(rank=2)
+        talisman = Talisman.objects.create(name="Test Talisman", rank=2)
         self.assertEqual(talisman.powers.count(), 0)
         talisman.add_power(self.effect1)
         self.assertEqual(talisman.powers.count(), 1)
@@ -23,7 +23,7 @@ class TestTalisman(TestCase):
         self.assertEqual(talisman.powers.count(), 2)
 
     def test_has_powers(self):
-        talisman = Talisman.objects.create(rank=2)
+        talisman = Talisman.objects.create(name="Test Talisman 2", rank=2)
         self.assertFalse(talisman.has_powers())
         talisman.add_power(self.effect1)
         self.assertFalse(talisman.has_powers())
