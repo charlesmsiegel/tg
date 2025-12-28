@@ -1,4 +1,5 @@
 from characters.models.core.ability_block import Ability
+from characters.models.core.attribute_block import Attribute
 from characters.models.mage import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Instrument, Practice
@@ -29,8 +30,15 @@ class TestGrimoire(TestCase):
         self.cover_material = Material.objects.create(name="Test Cover Material")
         self.inner_material = Material.objects.create(name="Test Inner Material")
         self.medium = Medium.objects.create(name="Test Medium")
+        # Create an attribute and ability for Rote requirements
+        attribute = Attribute.objects.create(name="Intelligence", property_name="intelligence")
         self.rotes = [
-            Rote.objects.create(effect=Effect.objects.create(name=f"Test Effect {i}"))
+            Rote.objects.create(
+                name=f"Test Rote {i}",
+                effect=Effect.objects.create(name=f"Test Effect {i}"),
+                attribute=attribute,
+                ability=science,
+            )
             for i in range(4)
         ]
         correspondence = Sphere.objects.create(

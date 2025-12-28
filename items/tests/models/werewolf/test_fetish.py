@@ -4,7 +4,7 @@ from items.models.werewolf.fetish import Fetish
 
 class TestFetish(TestCase):
     def test_save(self):
-        fetish = Fetish.objects.create(rank=2)
+        fetish = Fetish.objects.create(name="Test Fetish", rank=2)
         self.assertEqual(fetish.background_cost, 2)
 
 

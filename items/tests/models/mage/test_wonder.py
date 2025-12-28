@@ -12,13 +12,13 @@ class TestWonder(TestCase):
         self.wonder = Wonder.objects.create(name="Test Wonder")
 
     def test_set_rank(self):
-        g = Wonder.objects.create(name="")
+        g = Wonder.objects.create(name="Test Wonder for Rank")
         self.assertFalse(g.has_rank())
         self.assertTrue(g.set_rank(3))
         self.assertEqual(g.rank, 3)
 
     def test_has_rank(self):
-        g = Wonder.objects.create(name="")
+        g = Wonder.objects.create(name="Test Wonder for Has Rank")
         self.assertFalse(g.has_rank())
         g.set_rank(3)
         self.assertTrue(g.has_rank())
