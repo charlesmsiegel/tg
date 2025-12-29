@@ -62,7 +62,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
             WeeklyXPRequestForm(
                 character=c,
                 week=w,
-                instance=WeeklyXPRequest.objects.get(character=c, week=w),
+                instance=get_object_or_404(WeeklyXPRequest, character=c, week=w),
             )
             for c, w in self.object.get_unfulfilled_weekly_xp_requests_to_approve()
         ]

@@ -634,13 +634,13 @@ class MageDetailView(HumanDetailView):
             try:
                 with transaction.atomic():
                     if trait_type == "attribute":
-                        att = Attribute.objects.get(name=trait_name)
+                        att = get_object_or_404(Attribute, name=trait_name)
                         self.object.approve_xp_spend(
                             request_id, att.property_name, value, request.user
                         )
                         messages.success(request, f"Approved {att.name} increase to {value}")
                     elif trait_type == "ability":
-                        abb = Ability.objects.get(name=trait_name)
+                        abb = get_object_or_404(Ability, name=trait_name)
                         self.object.approve_xp_spend(
                             request_id, abb.property_name, value, request.user
                         )
@@ -672,7 +672,7 @@ class MageDetailView(HumanDetailView):
                             bg_name = trait_name.strip()
                             note = ""
                         BackgroundRating.objects.create(
-                            bg=Background.objects.get(name=bg_name),
+                            bg=get_object_or_404(Background, name=bg_name),
                             rating=1,
                             char=self.object,
                             note=note,
@@ -686,7 +686,7 @@ class MageDetailView(HumanDetailView):
                         self.object.approve_xp_spend(request_id, "willpower", value, request.user)
                         messages.success(request, f"Approved Willpower increase to {value}")
                     elif trait_type == "meritflaw":
-                        mf = MeritFlaw.objects.get(name=trait_name)
+                        mf = get_object_or_404(MeritFlaw, name=trait_name)
                         self.object.add_mf(mf, value)
                         xp_request.approved = "Approved"
                         xp_request.approved_by = request.user
@@ -694,7 +694,7 @@ class MageDetailView(HumanDetailView):
                         xp_request.save()
                         messages.success(request, f"Approved merit/flaw {trait_name}")
                     elif trait_type == "sphere":
-                        s = Sphere.objects.get(name=trait_name)
+                        s = get_object_or_404(Sphere, name=trait_name)
                         setattr(self.object, s.property_name, value)
                         self.object.save()
                         xp_request.approved = "Approved"
@@ -706,7 +706,7 @@ class MageDetailView(HumanDetailView):
                         self.object.approve_xp_spend(request_id, "arete", value, request.user)
                         messages.success(request, f"Approved Arete increase to {value}")
                     elif trait_type == "tenet":
-                        t = Tenet.objects.get(name=trait_name)
+                        t = get_object_or_404(Tenet, name=trait_name)
                         self.object.other_tenets.add(t)
                         xp_request.approved = "Approved"
                         xp_request.approved_by = request.user
@@ -716,7 +716,7 @@ class MageDetailView(HumanDetailView):
                     elif trait_type == "remove tenet" or trait_type == "remove-tenet":
                         # Remove "Remove " prefix if present
                         tenet_name = trait_name.replace("Remove ", "")
-                        tenet = Tenet.objects.get(name=tenet_name)
+                        tenet = get_object_or_404(Tenet, name=tenet_name)
                         if tenet in self.object.other_tenets.all():
                             self.object.other_tenets.remove(tenet)
                         else:
@@ -738,7 +738,7 @@ class MageDetailView(HumanDetailView):
                         xp_request.save()
                         messages.success(request, f"Approved removal of tenet {tenet_name}")
                     elif trait_type == "practice":
-                        practice = Practice.objects.get(name=trait_name)
+                        practice = get_object_or_404(Practice, name=trait_name)
                         self.object.add_practice(practice)
                         xp_request.approved = "Approved"
                         xp_request.approved_by = request.user
@@ -1460,7 +1460,7 @@ class MageChantryView(GenericBackgroundView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = self.primary_object_class.objects.get(pk=self.kwargs["pk"])
+        kwargs["character"] = get_object_or_404(self.primary_object_class, pk=self.kwargs["pk"])
         return kwargs
 
     def get_form(self, form_class=None):
