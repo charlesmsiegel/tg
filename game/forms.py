@@ -1,9 +1,19 @@
 import json
 
 from characters.models.core import CharacterModel
-from core.constants import GameLine
+from core.constants import GameLine, XPApprovalStatus
 from django import forms
-from game.models import ObjectType, Story, STRelationship, WeeklyXPRequest
+from game.models import (
+    Chronicle,
+    FreebieSpendingRecord,
+    ObjectType,
+    Scene,
+    Story,
+    StoryXPRequest,
+    STRelationship,
+    WeeklyXPRequest,
+    XPSpendingRequest,
+)
 from locations.models.core import LocationModel
 
 
@@ -538,3 +548,122 @@ class WeeklyXPRequestForm(forms.ModelForm):
             if cleaned_data["standingout_scene"] is None:
                 raise forms.ValidationError("Must include scene for any XP claimed")
         return cleaned_data
+
+
+class XPSpendingRequestForm(forms.ModelForm):
+    """Form for creating and updating XP spending requests."""
+
+    class Meta:
+        model = XPSpendingRequest
+        fields = ["trait_name", "trait_type", "trait_value", "cost"]
+
+    def __init__(self, *args, **kwargs):
+        self.character = kwargs.pop("character", None)
+        super().__init__(*args, **kwargs)
+        # Add help text placeholders
+        self.fields["trait_name"].widget.attrs.update({"placeholder": "e.g., Strength"})
+        self.fields["trait_type"].widget.attrs.update({"placeholder": "e.g., Attribute"})
+        self.fields["trait_value"].widget.attrs.update({"placeholder": "New value"})
+        self.fields["cost"].widget.attrs.update({"placeholder": "XP cost"})
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.character:
+            instance.character = self.character
+        if commit:
+            instance.save()
+        return instance
+
+
+class XPSpendingRequestApprovalForm(forms.ModelForm):
+    """Form for STs to approve/deny XP spending requests."""
+
+    class Meta:
+        model = XPSpendingRequest
+        fields = ["approved"]
+        widgets = {
+            "approved": forms.Select(choices=XPApprovalStatus.CHOICES),
+        }
+
+
+class FreebieSpendingRecordForm(forms.ModelForm):
+    """Form for creating and updating freebie spending records."""
+
+    class Meta:
+        model = FreebieSpendingRecord
+        fields = ["trait_name", "trait_type", "trait_value", "cost"]
+
+    def __init__(self, *args, **kwargs):
+        self.character = kwargs.pop("character", None)
+        super().__init__(*args, **kwargs)
+        self.fields["trait_name"].widget.attrs.update({"placeholder": "e.g., Strength"})
+        self.fields["trait_type"].widget.attrs.update({"placeholder": "e.g., Attribute"})
+        self.fields["trait_value"].widget.attrs.update({"placeholder": "Value gained"})
+        self.fields["cost"].widget.attrs.update({"placeholder": "Freebie cost"})
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.character:
+            instance.character = self.character
+        if commit:
+            instance.save()
+        return instance
+
+
+class StoryXPRequestForm(forms.ModelForm):
+    """Form for creating and updating story XP requests."""
+
+    class Meta:
+        model = StoryXPRequest
+        fields = ["story", "success", "danger", "growth", "drama", "duration"]
+
+    def __init__(self, *args, **kwargs):
+        self.character = kwargs.pop("character", None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.character:
+            instance.character = self.character
+        if commit:
+            instance.save()
+        return instance
+
+
+class ChronicleForm(forms.ModelForm):
+    """Form for creating and updating chronicles."""
+
+    class Meta:
+        model = Chronicle
+        fields = ["name", "head_st", "theme", "mood", "year", "headings"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update({"placeholder": "Chronicle Name"})
+        self.fields["theme"].widget.attrs.update({"placeholder": "Chronicle Theme (optional)"})
+        self.fields["mood"].widget.attrs.update({"placeholder": "Chronicle Mood (optional)"})
+        self.fields["year"].widget.attrs.update({"placeholder": "In-game year"})
+
+
+class SceneForm(forms.ModelForm):
+    """Form for updating scene details."""
+
+    class Meta:
+        model = Scene
+        fields = ["name", "location", "date_of_scene", "gameline", "finished", "xp_given"]
+        widgets = {
+            "date_of_scene": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.chronicle = kwargs.pop("chronicle", None)
+        super().__init__(*args, **kwargs)
+        # Filter location by chronicle if available
+        if self.chronicle:
+            self.fields["location"].queryset = LocationModel.objects.filter(
+                chronicle=self.chronicle
+            ).order_by("name")
+        elif self.instance and self.instance.chronicle:
+            self.fields["location"].queryset = LocationModel.objects.filter(
+                chronicle=self.instance.chronicle
+            ).order_by("name")
