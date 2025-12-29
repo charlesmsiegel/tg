@@ -11,6 +11,7 @@ from core.permissions import Permission, PermissionManager, VisibilityTier
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.views import View
 
 
 class PermissionRequiredMixin:
@@ -417,3 +418,118 @@ class CharacterOwnerOrSTMixin:
                 return super().dispatch(request, *args, **kwargs)
 
         raise PermissionDenied("Only the character owner or storytellers can access this")
+
+
+class AjaxLoginRequiredMixin:
+    """
+    Mixin for AJAX views that require login.
+
+    Returns a JSON error response for unauthenticated users instead of redirecting
+    to the login page (which would cause issues for AJAX requests).
+
+    Usage:
+        class MyAjaxView(AjaxLoginRequiredMixin, View):
+            def get(self, request, *args, **kwargs):
+                return JsonResponse({'data': 'value'})
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        from django.http import JsonResponse
+
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Authentication required"}, status=401)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DropdownOptionsView(AjaxLoginRequiredMixin, View):
+    """
+    Base class for AJAX views that return dropdown options.
+
+    Subclasses should override get_queryset() or get_options() to return
+    the queryset or list of options.
+
+    Attributes:
+        value_attr: Attribute name for option value (default: 'pk')
+        label_attr: Attribute name for option label (default: 'name')
+
+    Usage:
+        class LoadFactionsView(DropdownOptionsView):
+            label_attr = 'name'
+
+            def get_queryset(self):
+                affiliation_id = self.request.GET.get('affiliation')
+                return MageFaction.objects.filter(parent=affiliation_id)
+    """
+
+    value_attr = "pk"
+    label_attr = "name"
+
+    def get_queryset(self):
+        """Override to return queryset of options."""
+        return []
+
+    def get_options(self):
+        """Override for custom option generation (default: use get_queryset)."""
+        return self.get_queryset()
+
+    def get(self, request, *args, **kwargs):
+        from core.ajax import dropdown_options_response
+
+        options = self.get_options()
+        return dropdown_options_response(
+            options, value_attr=self.value_attr, label_attr=self.label_attr
+        )
+
+
+class SimpleValuesView(AjaxLoginRequiredMixin, View):
+    """
+    Base class for AJAX views that return simple value lists.
+
+    Subclasses should override get_values() to return the list of values.
+
+    Usage:
+        class LoadRatingsView(SimpleValuesView):
+            def get_values(self):
+                mf = get_object_or_404(MeritFlaw, pk=self.request.GET.get('mf'))
+                return mf.ratings.values_list('value', flat=True)
+    """
+
+    def get_values(self):
+        """Override to return list of values."""
+        return []
+
+    def get(self, request, *args, **kwargs):
+        from core.ajax import simple_values_response
+
+        values = self.get_values()
+        return simple_values_response(values)
+
+
+class JsonListView(AjaxLoginRequiredMixin, View):
+    """
+    Base class for AJAX views that return a JSON list of objects.
+
+    Subclasses should override get_items() to return the list of dicts.
+
+    Usage:
+        class GetAbilitiesView(JsonListView):
+            def get_items(self):
+                practice = get_object_or_404(Practice, id=self.request.GET.get('practice_id'))
+                abilities = practice.abilities.all()
+                return [{'id': a.id, 'name': a.name} for a in abilities]
+    """
+
+    include_empty_option = True
+    empty_option_label = "--------"
+
+    def get_items(self):
+        """Override to return list of dicts."""
+        return []
+
+    def get(self, request, *args, **kwargs):
+        from django.http import JsonResponse
+
+        items = self.get_items()
+        if self.include_empty_option:
+            items = [{"id": "", "name": self.empty_option_label}] + list(items)
+        return JsonResponse(items, safe=False)

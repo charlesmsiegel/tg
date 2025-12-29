@@ -3,10 +3,14 @@ Tests for AJAX views returning JSON responses.
 
 These tests verify that AJAX endpoints return properly formatted JSON
 responses instead of HTML fragments, to prevent XSS vulnerabilities.
+
+Also tests that AJAX views properly require authentication and return
+appropriate error responses for unauthenticated users.
 """
 
 import json
 
+from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
 from characters.models.core.merit_flaw_block import MeritFlaw
@@ -190,3 +194,110 @@ class TestMageLoadMfRatingsJsonResponse(TestCase):
 
         self.assertIn("values", data)
         self.assertIsInstance(data["values"], list)
+
+
+class TestAjaxAuthenticationRequired(TestCase):
+    """Test that all AJAX views require authentication."""
+
+    def setUp(self):
+        self.client = Client()
+        # Create test data
+        Attribute.objects.get_or_create(name="Strength", property_name="strength")
+
+    def test_load_examples_requires_auth(self):
+        """Test that load_examples returns 401 for unauthenticated users."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "Attribute"},
+        )
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.content)
+        self.assertIn("error", data)
+
+    def test_load_values_requires_auth(self):
+        """Test that load_values returns 401 for unauthenticated users."""
+        mf = MeritFlaw.objects.create(name="Test Merit", max_rating=3)
+        response = self.client.get(
+            reverse("characters:ajax:load_values"),
+            {"example": mf.pk},
+        )
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.content)
+        self.assertIn("error", data)
+
+    def test_load_factions_requires_auth(self):
+        """Test that load_factions returns 401 for unauthenticated users."""
+        response = self.client.get(
+            reverse("characters:mage:ajax:load_factions"),
+            {"affiliation": "1"},
+        )
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.content)
+        self.assertIn("error", data)
+
+
+class TestLoadExamplesCategories(TestCase):
+    """Test that load_examples returns correct data for different categories."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.client.login(username="testuser", password="password")
+
+        # Create test data for each category
+        Attribute.objects.get_or_create(name="Strength", property_name="strength")
+        Ability.objects.get_or_create(name="Alertness", property_name="alertness")
+        Background.objects.get_or_create(name="Allies", property_name="allies")
+        MeritFlaw.objects.create(name="Test Merit", max_rating=3)
+
+    def test_load_attributes(self):
+        """Test loading Attribute category."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "Attribute"},
+        )
+        data = json.loads(response.content)
+        self.assertIn("options", data)
+        self.assertGreater(len(data["options"]), 0)
+
+    def test_load_abilities(self):
+        """Test loading Ability category."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "Ability"},
+        )
+        data = json.loads(response.content)
+        self.assertIn("options", data)
+        self.assertGreater(len(data["options"]), 0)
+
+    def test_load_backgrounds(self):
+        """Test loading Background category."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "Background"},
+        )
+        data = json.loads(response.content)
+        self.assertIn("options", data)
+        self.assertGreater(len(data["options"]), 0)
+
+    def test_load_meritflaws(self):
+        """Test loading MeritFlaw category."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "MeritFlaw"},
+        )
+        data = json.loads(response.content)
+        self.assertIn("options", data)
+        self.assertGreater(len(data["options"]), 0)
+
+    def test_invalid_category_returns_empty(self):
+        """Test that invalid category returns empty options list."""
+        response = self.client.get(
+            reverse("characters:ajax:load_examples"),
+            {"category": "InvalidCategory"},
+        )
+        data = json.loads(response.content)
+        self.assertIn("options", data)
+        self.assertEqual(len(data["options"]), 0)
