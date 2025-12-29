@@ -1,0 +1,31 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}
+        Edit {{ object.name }}
+    {% else %}
+        Create Linear Magic Ritual
+    {% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-sm-3"><label for="id_name" class="form-label">Name</label></div>
+        <div class="col-sm-9">{{ form.name }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3"><label for="id_path" class="form-label">Path</label></div>
+        <div class="col-sm-9">{{ form.path }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3"><label for="id_level" class="form-label">Level</label></div>
+        <div class="col-sm-9">{{ form.level }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3"><label for="id_description" class="form-label">Description</label></div>
+        <div class="col-sm-9">{{ form.description }}</div>
+    </div>
+{% endblock contents %}
+{% block buttons %}
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Save Ritual
+    </button>
+{% endblock buttons %}

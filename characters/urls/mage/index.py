@@ -44,5 +44,7 @@ urls = [
         name="sorcerer_fellowship",
     ),
     path("rotes/", views.mage.RoteListView.as_view(), name="rote"),
+    path("paths/", views.mage.PathListView.as_view(), name="path"),
+    path("rituals/", views.mage.RitualListView.as_view(), name="ritual"),
     path("cabal/", views.mage.CabalListView.as_view(), name="cabal"),
 ]
