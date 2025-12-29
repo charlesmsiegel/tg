@@ -13,7 +13,7 @@ class DemonHouse(Model):
     starting_torment = models.IntegerField(default=3)
 
     # Domain/specialty description
-    domain = models.TextField(default="")
+    domain = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "House"

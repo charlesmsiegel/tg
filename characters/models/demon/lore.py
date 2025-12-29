@@ -16,7 +16,7 @@ class Lore(Model):
     houses = models.ManyToManyField(DemonHouse, blank=True, related_name="lores")
 
     # Description of what this lore does
-    description = models.TextField(default="")
+    description = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Lore"
