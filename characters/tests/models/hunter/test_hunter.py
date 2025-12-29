@@ -267,6 +267,57 @@ class TestHunter(TestCase):
         """Test Hunter has correct freebie step."""
         self.assertEqual(Hunter.freebie_step, 7)
 
+    def test_spend_xp_on_edge(self):
+        """Test XP spending on edges."""
+        # Set an edge value
+        self.hunter.discern = 2
+        self.hunter.save()
+
+        # Spend XP on edge should return correct result
+        result = self.hunter.spend_xp("discern")
+
+        self.assertTrue(result["success"])
+        self.assertEqual(result["cost"], 9)  # (2+1) * 3 = 9
+        self.assertEqual(result["trait"], "discern")
+
+    def test_spend_xp_on_all_edge_types(self):
+        """Test XP spending works for all edge types."""
+        # Test conviction edges
+        conviction_edges = [
+            "discern", "burden", "balance", "expose",
+            "investigate", "witness", "prosecute",
+        ]
+        for edge in conviction_edges:
+            setattr(self.hunter, edge, 1)
+            self.hunter.save()
+            result = self.hunter.spend_xp(edge)
+            self.assertTrue(result["success"], f"Failed for edge: {edge}")
+            self.assertEqual(result["cost"], 6, f"Wrong cost for edge: {edge}")  # (1+1) * 3
+
+        # Test vision edges
+        vision_edges = [
+            "illuminate", "ward", "cleave", "hide",
+            "blaze", "radiate", "vengeance",
+        ]
+        for edge in vision_edges:
+            setattr(self.hunter, edge, 2)
+            self.hunter.save()
+            result = self.hunter.spend_xp(edge)
+            self.assertTrue(result["success"], f"Failed for edge: {edge}")
+            self.assertEqual(result["cost"], 9, f"Wrong cost for edge: {edge}")  # (2+1) * 3
+
+        # Test zeal edges
+        zeal_edges = [
+            "demand", "confront", "donate", "becalm",
+            "respire", "rejuvenate", "redeem",
+        ]
+        for edge in zeal_edges:
+            setattr(self.hunter, edge, 0)
+            self.hunter.save()
+            result = self.hunter.spend_xp(edge)
+            self.assertTrue(result["success"], f"Failed for edge: {edge}")
+            self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")  # (0+1) * 3
+
 
 class TestHtRHuman(TestCase):
     """Tests for the HtRHuman model (mortal with Hunter abilities)."""
