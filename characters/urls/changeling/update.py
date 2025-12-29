@@ -1,10 +1,13 @@
+from characters.views.changeling.autumn_person import AutumnPersonUpdateView
 from characters.views.changeling.changeling import ChangelingUpdateView
 from characters.views.changeling.ctdhuman import CtDHumanUpdateView
 from characters.views.changeling.house import HouseUpdateView
 from characters.views.changeling.house_faction import HouseFactionUpdateView
+from characters.views.changeling.inanimae import InanimaeUpdateView
 from characters.views.changeling.kith import KithUpdateView
 from characters.views.changeling.legacy import LegacyUpdateView
 from characters.views.changeling.motley import MotleyUpdateView
+from characters.views.changeling.nunnehi import NunnehiUpdateView
 from django.urls import path
 
 urls = [
@@ -52,5 +55,20 @@ urls = [
         "ctdhuman/full/<pk>/",
         CtDHumanUpdateView.as_view(),
         name="ctd_human_full",
+    ),
+    path(
+        "inanimae/<pk>/",
+        InanimaeUpdateView.as_view(),
+        name="inanimae",
+    ),
+    path(
+        "nunnehi/<pk>/",
+        NunnehiUpdateView.as_view(),
+        name="nunnehi",
+    ),
+    path(
+        "autumn_person/<pk>/",
+        AutumnPersonUpdateView.as_view(),
+        name="autumn_person",
     ),
 ]

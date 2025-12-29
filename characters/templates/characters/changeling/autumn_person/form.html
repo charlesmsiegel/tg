@@ -1,0 +1,72 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Autumn Person
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Chronicle</div>
+        <div class="col-sm">{{ form.chronicle }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Nature</div>
+        <div class="col-sm">{{ form.nature }}</div>
+        <div class="col-sm">Demeanor</div>
+        <div class="col-sm">{{ form.demeanor }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Concept</div>
+        <div class="col-sm">{{ form.concept }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Archetype</div>
+        <div class="col-sm">{{ form.archetype }}</div>
+        <div class="col-sm">Awareness</div>
+        <div class="col-sm">{{ form.awareness }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Banality Rating</div>
+        <div class="col-sm">{{ form.banality_rating }}</div>
+    </div>
+    {% if form.organization %}
+        <div class="row">
+            <div class="col-sm">Organization</div>
+            <div class="col-sm">{{ form.organization }}</div>
+        </div>
+    {% endif %}
+    {% if form.motivation %}
+        <div class="row">
+            <div class="col-sm">Motivation</div>
+            <div class="col-sm">{{ form.motivation }}</div>
+        </div>
+    {% endif %}
+    {% if form.sphere_of_influence %}
+        <div class="row">
+            <div class="col-sm">Sphere of Influence</div>
+            <div class="col-sm">{{ form.sphere_of_influence }}</div>
+        </div>
+    {% endif %}
+    {% if form.is_dauntain %}
+        <div class="row">
+            <div class="col-sm">Is Dauntain</div>
+            <div class="col-sm">{{ form.is_dauntain }}</div>
+        </div>
+    {% endif %}
+    {% if form.former_kith %}
+        <div class="row">
+            <div class="col-sm">Former Kith</div>
+            <div class="col-sm">{{ form.former_kith }}</div>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm">Image</div>
+        <div class="col-sm">{{ form.image }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">NPC</div>
+        <div class="col-sm">{{ form.npc }}</div>
+    </div>
+{% endblock contents %}
