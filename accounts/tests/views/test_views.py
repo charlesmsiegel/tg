@@ -1,13 +1,13 @@
 """Tests for accounts views."""
 
+from datetime import date
+
 from characters.models.core import Human
 from characters.models.core.human import Human
 from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from datetime import date
-
 from game.models import (
     Chronicle,
     Gameline,
@@ -250,9 +250,7 @@ class TestProfileSceneXPWorkflow(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
@@ -486,9 +484,7 @@ class TestProfileWeeklyXPWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.char = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -530,9 +526,7 @@ class TestProfileWeeklyXPApprovalWorkflow(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.char = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -579,9 +573,7 @@ class TestProfileSceneReadWorkflow(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
@@ -615,8 +607,7 @@ class TestProfileEditPreferencesRedirect(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.url,
-            reverse("profile_update", kwargs={"pk": self.user.profile.pk})
+            response.url, reverse("profile_update", kwargs={"pk": self.user.profile.pk})
         )
 
 

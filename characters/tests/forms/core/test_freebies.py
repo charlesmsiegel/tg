@@ -10,15 +10,14 @@ Tests cover:
 - Example queryset population based on category
 """
 
-from django.contrib.auth.models import User
-from django.test import TestCase
-
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
+from django.contrib.auth.models import User
+from django.test import TestCase
 from game.models import ObjectType
 
 

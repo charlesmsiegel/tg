@@ -121,9 +121,9 @@ class Book(models.Model):
         # Validate gameline is in valid choices
         valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
         if self.gameline not in valid_gamelines:
-            errors[
-                "gameline"
-            ] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -221,9 +221,9 @@ class Observer(models.Model):
             try:
                 model_class = self.content_type.model_class()
                 if not model_class.objects.filter(pk=self.object_id).exists():
-                    errors[
-                        "object_id"
-                    ] = f"No {model_class.__name__} with ID {self.object_id} exists"
+                    errors["object_id"] = (
+                        f"No {model_class.__name__} with ID {self.object_id} exists"
+                    )
             except Exception:
                 pass  # If content_type isn't loaded yet, skip this check
 
@@ -488,15 +488,15 @@ class Model(PermissionMixin, PolymorphicModel):
 
         # Validate status is in valid choices
         if self.status not in self.status_keys:
-            errors[
-                "status"
-            ] = f"Invalid status '{self.status}'. Must be one of: {', '.join(self.status_keys)}"
+            errors["status"] = (
+                f"Invalid status '{self.status}'. Must be one of: {', '.join(self.status_keys)}"
+            )
 
         # Validate image_status is in valid choices
         if self.image_status not in self.image_status_keys:
-            errors[
-                "image_status"
-            ] = f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(self.image_status_keys)}"
+            errors["image_status"] = (
+                f"Invalid image status '{self.image_status}'. Must be one of: {', '.join(self.image_status_keys)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -693,9 +693,9 @@ class HouseRule(models.Model):
         # Validate gameline is in valid choices
         valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
         if self.gameline not in valid_gamelines:
-            errors[
-                "gameline"
-            ] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -895,9 +895,9 @@ class CharacterTemplate(Model):
         # Validate gameline is in valid choices (already done in Model, but verify)
         valid_gamelines = ["wod", "vtm", "wta", "mta", "wto", "ctd", "dtf"]
         if self.gameline not in valid_gamelines:
-            errors[
-                "gameline"
-            ] = f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            errors["gameline"] = (
+                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
+            )
 
         if errors:
             raise ValidationError(errors)

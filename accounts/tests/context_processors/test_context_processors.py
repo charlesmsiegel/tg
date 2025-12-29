@@ -62,9 +62,7 @@ class TestNotificationCountContextProcessor(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_unauthenticated_user_gets_zero_notifications(self):
         """Test that unauthenticated users get zero notifications."""
@@ -153,9 +151,7 @@ class TestNotificationCountContextProcessor(TestCase):
 
     def test_st_sees_items_to_approve(self):
         """Test that storytellers see items to approve."""
-        ItemModel.objects.create(
-            name="Pending Item", chronicle=self.chronicle, status="Sub"
-        )
+        ItemModel.objects.create(name="Pending Item", chronicle=self.chronicle, status="Sub")
         request = self.factory.get("/")
         request.user = self.st_user
         context = notification_count(request)

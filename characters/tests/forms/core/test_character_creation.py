@@ -10,10 +10,9 @@ Tests cover:
 - Data attributes for JavaScript filtering
 """
 
+from characters.forms.core.character_creation import CharacterCreationForm
 from django.contrib.auth.models import User
 from django.test import TestCase
-
-from characters.forms.core.character_creation import CharacterCreationForm
 from game.models import Chronicle, Gameline, ObjectType, STRelationship
 
 
