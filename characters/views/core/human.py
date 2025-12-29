@@ -277,7 +277,7 @@ def load_examples(request):
 
 @login_required
 def load_values(request):
-    mf = MeritFlaw.objects.get(pk=request.GET.get("example"))
+    mf = get_object_or_404(MeritFlaw, pk=request.GET.get("example"))
     character_id = request.GET.get("object")
     is_xp = request.GET.get("xp", "false").lower() == "true"
 
@@ -286,9 +286,9 @@ def load_values(request):
 
     # Filter ratings based on character's available freebies/XP and flaw limit
     if character_id:
-        from characters.models import Human
+        from characters.models.core import Human
 
-        character = Human.objects.get(pk=character_id)
+        character = get_object_or_404(Human, pk=character_id)
         current_rating = character.mf_rating(mf)
 
         affordable_ratings = []
@@ -329,7 +329,7 @@ class HumanFreebieFormPopulationView(View):
         from core.ajax import dropdown_options_response
 
         category_choice = request.GET.get("category")
-        self.character = self.primary_class.objects.get(pk=request.GET.get("object"))
+        self.character = get_object_or_404(self.primary_class, pk=request.GET.get("object"))
         examples = []
         if category_choice in self.category_method_map().keys():
             examples = self.category_method_map()[category_choice]()
@@ -474,7 +474,8 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
+        human = get_object_or_404(Human, pk=human_pk)
+        num_languages = human.num_languages()
         kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
         return kwargs
 
@@ -508,7 +509,7 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     def get_object(self):
         """Return the Human object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
-            self.object = Human.objects.get(id=self.kwargs["pk"])
+            self.object = get_object_or_404(Human, id=self.kwargs["pk"])
         return self.object
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:

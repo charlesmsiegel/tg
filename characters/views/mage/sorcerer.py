@@ -875,7 +875,7 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["object"] = Human.objects.get(id=self.kwargs["pk"])
+        context["object"] = get_object_or_404(Human, id=self.kwargs["pk"])
         context["current_artifact"] = (
             context["object"]
             .backgrounds.filter(bg__property_name="artifact", complete=False)
