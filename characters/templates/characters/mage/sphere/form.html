@@ -1,0 +1,14 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Sphere{% else %}Create Sphere{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Property Name</div>
+        <div class="col-sm">{{ form.property_name }}</div>
+    </div>
+{% endblock contents %}

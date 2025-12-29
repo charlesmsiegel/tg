@@ -93,4 +93,9 @@ urls = [
         views.mage.CabalCreateView.as_view(),
         name="cabal",
     ),
+    path(
+        "sphere/",
+        views.mage.SphereCreateView.as_view(),
+        name="sphere",
+    ),
 ]
