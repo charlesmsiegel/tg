@@ -104,7 +104,7 @@ class FreeholdForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         archetype = cleaned_data.get("archetype")
-        powers = cleaned_data.get("powers", [])
+        powers = cleaned_data.get("powers") or []
 
         # Validate Academy archetype has ability
         if archetype == "academy" and not cleaned_data.get("academy_ability"):
@@ -161,12 +161,16 @@ class FreeholdForm(forms.ModelForm):
     def save(self, commit=True):
         freehold = super().save(commit=False)
 
+        # Ensure powers is a list (not None)
+        if freehold.powers is None:
+            freehold.powers = []
+
         # Clear archetype-specific fields that don't apply
         if freehold.archetype != "academy":
             freehold.academy_ability = ""
         if freehold.archetype != "hearth":
             freehold.hearth_ability = ""
-        if "dual_nature" not in freehold.powers:
+        if not freehold.powers or "dual_nature" not in freehold.powers:
             freehold.dual_nature_archetype = ""
             freehold.dual_nature_ability = ""
 
