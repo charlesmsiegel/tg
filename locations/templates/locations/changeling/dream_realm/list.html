@@ -1,0 +1,71 @@
+{% extends "core/base.html" %}
+{% load dots %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Dream Realms</h1>
+            </div>
+        </div>
+
+        {% if object_list %}
+            <div class="row">
+                {% for realm in object_list %}
+                    <div class="col-md-6 mb-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <h5 class="tg-card-title">
+                                    <a href="{{ realm.get_absolute_url }}">{{ realm.name }}</a>
+                                </h5>
+                                <h6 class="tg-card-subtitle mb-2" style="color: var(--theme-text-secondary);">
+                                    {{ realm.get_realm_type_display }} - {{ realm.get_depth_display }}
+                                </h6>
+                                {% if realm.emotional_tone %}
+                                    <p class="mb-2" style="font-style: italic; color: var(--theme-text-secondary);">
+                                        {{ realm.emotional_tone }}
+                                    </p>
+                                {% endif %}
+                                {% if realm.description %}
+                                    <p class="mb-2">{{ realm.description|truncatewords:25 }}</p>
+                                {% endif %}
+                                <div style="margin-top: 12px;">
+                                    {% if realm.stability > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Stability <span class="dots colored-dots">{{ realm.stability|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                    {% if realm.accessibility > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Access <span class="dots colored-dots">{{ realm.accessibility|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                    {% if realm.glamour_level > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Glamour {{ realm.glamour_level }}
+                                        </span>
+                                    {% endif %}
+                                    {% if realm.provides_glamour %}
+                                        <span class="tg-badge badge-pill">
+                                            Harvestable
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 40px;">
+                    <p class="mb-0">No dream realms have been created yet.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'locations:changeling:create:dream_realm' %}" class="btn btn-primary">Create New Dream Realm</a>
+        </div>
+    </div>
+{% endblock content %}
