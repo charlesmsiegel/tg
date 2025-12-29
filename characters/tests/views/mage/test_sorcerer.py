@@ -1,12 +1,11 @@
 """Tests for sorcerer views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.archetype import Archetype
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle
 
 
@@ -21,9 +20,7 @@ class TestSorcererDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -130,9 +127,7 @@ class TestSorcererUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -147,9 +142,7 @@ class TestSorcererUpdateView(TestCase):
     def test_full_update_view_denied_to_owner(self):
         """Test that full update is denied to owners (ST-only)."""
         self.client.login(username="owner", password="password")
-        url = reverse(
-            "characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk}
-        )
+        url = reverse("characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk})
         response = self.client.get(url)
         # Owners don't have EDIT_FULL permission
         self.assertEqual(response.status_code, 403)
@@ -157,18 +150,14 @@ class TestSorcererUpdateView(TestCase):
     def test_full_update_view_accessible_to_st(self):
         """Test that full sorcerer update view is accessible to storytellers."""
         self.client.login(username="st", password="password")
-        url = reverse(
-            "characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk}
-        )
+        url = reverse("characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_full_update_view_denied_to_other_users(self):
         """Test that full sorcerer update view is denied to other users."""
         self.client.login(username="other", password="password")
-        url = reverse(
-            "characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk}
-        )
+        url = reverse("characters:mage:update:sorcerer_full", kwargs={"pk": self.sorcerer.pk})
         response = self.client.get(url)
         # Should be forbidden
         self.assertIn(response.status_code, [403, 302])
@@ -222,9 +211,7 @@ class TestSorcererPathView(TestCase):
             sorcerer_type="hedge_mage",
             willpower=5,
         )
-        self.path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
 
     def test_path_view_accessible_to_owner(self):
         """Test that path view is accessible to owner."""
@@ -242,9 +229,7 @@ class TestPsychicViews(TestCase):
         self.owner = User.objects.create_user(
             username="owner", email="owner@test.com", password="password"
         )
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
         self.psychic = Sorcerer.objects.create(
             name="Test Psychic",
             owner=self.owner,

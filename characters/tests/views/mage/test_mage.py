@@ -1,15 +1,14 @@
 """Tests for mage views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.archetype import Archetype
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle
 
 
@@ -24,9 +23,7 @@ class TestMageDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -100,9 +97,7 @@ class TestMageCreateView(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -137,9 +132,7 @@ class TestMageBasicsView(TestCase):
         self.nature = Archetype.objects.create(name="Survivor")
         self.demeanor = Archetype.objects.create(name="Caregiver")
         self.affiliation = MageFaction.objects.create(name="Traditions")
-        self.faction = MageFaction.objects.create(
-            name="Order of Hermes", parent=self.affiliation
-        )
+        self.faction = MageFaction.objects.create(name="Order of Hermes", parent=self.affiliation)
 
     def test_basics_view_accessible_when_logged_in(self):
         """Test that mage basics view is accessible when logged in."""
@@ -167,9 +160,7 @@ class TestMageUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -339,12 +330,8 @@ class TestMageFreebiesView(TestCase):
         self.owner = User.objects.create_user(
             username="owner", email="owner@test.com", password="password"
         )
-        self.met_tenet = Tenet.objects.create(
-            name="Everything is Data", tenet_type="met"
-        )
-        self.per_tenet = Tenet.objects.create(
-            name="Self-Empowerment", tenet_type="per"
-        )
+        self.met_tenet = Tenet.objects.create(name="Everything is Data", tenet_type="met")
+        self.per_tenet = Tenet.objects.create(name="Self-Empowerment", tenet_type="per")
         self.asc_tenet = Tenet.objects.create(
             name="Enlightenment Through Technology", tenet_type="asc"
         )

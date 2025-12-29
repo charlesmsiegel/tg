@@ -701,9 +701,7 @@ class TestSceneModel(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.character = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -869,9 +867,7 @@ class TestSceneQuerySet(TestCase):
 
     def setUp(self):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_active_queryset(self):
         """Test Scene.objects.active() returns only unfinished scenes."""
@@ -1053,8 +1049,20 @@ class TestStoryModel(TestCase):
 
         story.award_xp(
             {
-                char1: {"success": True, "danger": False, "growth": False, "drama": False, "duration": 1},
-                char2: {"success": True, "danger": True, "growth": True, "drama": True, "duration": 0},
+                char1: {
+                    "success": True,
+                    "danger": False,
+                    "growth": False,
+                    "drama": False,
+                    "duration": 1,
+                },
+                char2: {
+                    "success": True,
+                    "danger": True,
+                    "growth": True,
+                    "drama": True,
+                    "duration": 0,
+                },
             }
         )
 
@@ -1077,10 +1085,30 @@ class TestStoryModel(TestCase):
             chronicle=self.chronicle,
         )
 
-        story.award_xp({character: {"success": True, "danger": False, "growth": False, "drama": False, "duration": 0}})
+        story.award_xp(
+            {
+                character: {
+                    "success": True,
+                    "danger": False,
+                    "growth": False,
+                    "drama": False,
+                    "duration": 0,
+                }
+            }
+        )
 
         with self.assertRaises(ValidationError) as context:
-            story.award_xp({character: {"success": True, "danger": False, "growth": False, "drama": False, "duration": 0}})
+            story.award_xp(
+                {
+                    character: {
+                        "success": True,
+                        "danger": False,
+                        "growth": False,
+                        "drama": False,
+                        "duration": 0,
+                    }
+                }
+            )
         self.assertEqual(context.exception.code, "xp_already_given")
 
 
@@ -1092,9 +1120,7 @@ class TestWeekModel(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
 
     def test_week_str_representation(self):
         """Test Week __str__ shows date range."""
@@ -1317,9 +1343,7 @@ class TestWeeklyXPRequestModel(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.character = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -1477,9 +1501,7 @@ class TestPostModel(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
@@ -1540,9 +1562,7 @@ class TestUserSceneReadStatus(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,

@@ -94,9 +94,7 @@ class NPCProfileCreateViewGETTestCase(TestCase):
     def test_get_for_related_character(self):
         """Test GET request with related character."""
         chronicle = Chronicle.objects.create(name="Test Chronicle")
-        character = Human.objects.create(
-            name="Test PC", owner=self.user, chronicle=chronicle
-        )
+        character = Human.objects.create(name="Test PC", owner=self.user, chronicle=chronicle)
 
         url = reverse("characters:create:npc_for_character", kwargs={"pk": character.pk})
         response = self.client.get(url)
@@ -244,9 +242,7 @@ class NPCProfileCreateViewPOSTTestCase(TestCase):
             "name": "Message Test NPC",
             "concept": "Test concept",
         }
-        response = self.client.post(
-            reverse("characters:create:npc"), data=data, follow=True
-        )
+        response = self.client.post(reverse("characters:create:npc"), data=data, follow=True)
 
         # Check for success message in response
         messages = list(response.context.get("messages", []))
@@ -306,9 +302,7 @@ class NPCProfileCreateViewEdgeCasesTestCase(TestCase):
                 "concept": "Test concept",
             }
             response = self.client.post(reverse("characters:create:npc"), data=data)
-            self.assertEqual(
-                response.status_code, 302, f"Failed for {npc_type}"
-            )
+            self.assertEqual(response.status_code, 302, f"Failed for {npc_type}")
 
             npc = expected_class.objects.get(name=f"Test {npc_type}")
             self.assertIsInstance(npc, expected_class)

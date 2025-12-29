@@ -1,10 +1,9 @@
 """Tests for mage background views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.mage.mage import Mage
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
 from game.models import Chronicle
 
 

@@ -372,8 +372,8 @@ class TestWeeklyXPRequestForm(TestCase):
         )
         self.scene.characters.add(self.character)
         # Need to add a post so the scene counts as finished for the week
-        from game.models import Post
         from django.utils.timezone import now
+        from game.models import Post
 
         Post.objects.create(
             character=self.character,

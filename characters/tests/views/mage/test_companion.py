@@ -1,12 +1,11 @@
 """Tests for companion views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.archetype import Archetype
 from characters.models.mage.companion import Companion
 from characters.models.mage.faction import MageFaction
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle
 
 
@@ -21,9 +20,7 @@ class TestCompanionDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -134,9 +131,7 @@ class TestCompanionUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -151,9 +146,7 @@ class TestCompanionUpdateView(TestCase):
     def test_full_update_view_denied_to_owner(self):
         """Test that full update is denied to owners (ST-only)."""
         self.client.login(username="owner", password="password")
-        url = reverse(
-            "characters:mage:update:companion_full", kwargs={"pk": self.companion.pk}
-        )
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
         response = self.client.get(url)
         # Owners don't have EDIT_FULL permission
         self.assertEqual(response.status_code, 403)
@@ -161,18 +154,14 @@ class TestCompanionUpdateView(TestCase):
     def test_full_update_view_accessible_to_st(self):
         """Test that companion full update view is accessible to storytellers."""
         self.client.login(username="st", password="password")
-        url = reverse(
-            "characters:mage:update:companion_full", kwargs={"pk": self.companion.pk}
-        )
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_full_update_view_denied_to_other_users(self):
         """Test that companion full update view is denied to other users."""
         self.client.login(username="other", password="password")
-        url = reverse(
-            "characters:mage:update:companion_full", kwargs={"pk": self.companion.pk}
-        )
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
         response = self.client.get(url)
         # Should be forbidden
         self.assertIn(response.status_code, [403, 302])

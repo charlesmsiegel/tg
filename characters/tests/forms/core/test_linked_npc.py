@@ -183,9 +183,7 @@ class LinkedNPCFormValidationTestCase(TestCase):
                 "rank": 2,
             }
             form = LinkedNPCForm(data=data)
-            self.assertTrue(
-                form.is_valid(), f"Failed for {npc_type}: {form.errors}"
-            )
+            self.assertTrue(form.is_valid(), f"Failed for {npc_type}: {form.errors}")
 
 
 class LinkedNPCFormSaveTestCase(TestCase):
