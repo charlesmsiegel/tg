@@ -59,6 +59,13 @@ class TestChangeling(TestCase):
         self.character.kith = Kith.objects.create(name="Arcadian Sidhe")
         self.assertTrue(self.character.eligible_for_house())
 
+    def test_eligible_for_house_no_kith(self):
+        """Test eligible_for_house when character has no kith (uses title only)."""
+        self.character.kith = None
+        self.assertFalse(self.character.eligible_for_house())
+        self.character.title = 1
+        self.assertTrue(self.character.eligible_for_house())
+
     def test_has_house(self):
         self.character.title = 1
         self.character.court = "seelie"
@@ -134,6 +141,12 @@ class TestChangeling(TestCase):
         self.character.wayfare = 0
         self.assertTrue(self.character.add_art("wayfare"))
         self.assertEqual(self.character.wayfare, 1)
+
+    def test_add_art_at_max(self):
+        """Test that add_art fails when art is already at maximum (5)."""
+        self.character.wayfare = 5
+        self.assertFalse(self.character.add_art("wayfare"))
+        self.assertEqual(self.character.wayfare, 5)
 
     def test_get_arts(self):
         self.assertEqual(
@@ -244,6 +257,12 @@ class TestChangeling(TestCase):
         self.assertTrue(self.character.add_realm("actor"))
         self.assertEqual(self.character.actor, 1)
 
+    def test_add_realm_at_max(self):
+        """Test that add_realm fails when realm is already at maximum (5)."""
+        self.character.actor = 5
+        self.assertFalse(self.character.add_realm("actor"))
+        self.assertEqual(self.character.actor, 5)
+
     def test_get_realms(self):
         self.assertEqual(
             self.character.get_realms(),
@@ -351,10 +370,22 @@ class TestChangeling(TestCase):
         self.assertTrue(self.character.add_glamour())
         self.assertEqual(self.character.glamour, g + 1)
 
+    def test_add_glamour_at_max(self):
+        """Test that add_glamour fails when glamour is at maximum (10)."""
+        self.character.glamour = 10
+        self.assertFalse(self.character.add_glamour())
+        self.assertEqual(self.character.glamour, 10)
+
     def test_add_banality(self):
         b = self.character.banality
         self.assertTrue(self.character.add_banality())
         self.assertEqual(self.character.banality, b + 1)
+
+    def test_add_banality_at_max(self):
+        """Test that add_banality fails when banality is at maximum (10)."""
+        self.character.banality = 10
+        self.assertFalse(self.character.add_banality())
+        self.assertEqual(self.character.banality, 10)
 
     def test_birthright_corrections(self):
         piskey = Kith.objects.create(name="Piskey")
@@ -408,6 +439,124 @@ class TestChangeling(TestCase):
         self.assertEqual(self.character.crysalis, crysalis)
         self.assertEqual(self.character.date_of_crysalis, date_of_crysalis)
         self.assertTrue(self.character.has_changeling_history())
+
+
+class TestChangelingXPMethods(TestCase):
+    """Tests for XP spending methods on Changeling model."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.character = Changeling.objects.create(
+            owner=self.player,
+            name="Test Changeling",
+            xp=100,  # Give enough XP to test spending
+        )
+        changeling_setup()
+
+    def test_xp_frequencies(self):
+        """Test that xp_frequencies returns correct distribution."""
+        frequencies = self.character.xp_frequencies()
+        self.assertIn("art", frequencies)
+        self.assertIn("realm", frequencies)
+        self.assertIn("glamour", frequencies)
+        self.assertIn("banality", frequencies)
+        self.assertEqual(frequencies["art"], 30)
+        self.assertEqual(frequencies["realm"], 15)
+        self.assertEqual(frequencies["glamour"], 3)
+        self.assertEqual(frequencies["banality"], 1)
+
+    def test_xp_cost_art(self):
+        """Test XP cost calculation for arts."""
+        self.assertEqual(self.character.xp_cost("art", 1), 8)
+        self.assertEqual(self.character.xp_cost("art", 2), 16)
+        self.assertEqual(self.character.xp_cost("art", 3), 24)
+        # Test without value
+        self.assertEqual(self.character.xp_cost("art"), 8)
+
+    def test_xp_cost_realm(self):
+        """Test XP cost calculation for realms."""
+        self.assertEqual(self.character.xp_cost("realm", 1), 5)
+        self.assertEqual(self.character.xp_cost("realm", 2), 10)
+        self.assertEqual(self.character.xp_cost("realm", 3), 15)
+        # Test without value
+        self.assertEqual(self.character.xp_cost("realm"), 5)
+
+    def test_xp_cost_glamour(self):
+        """Test XP cost calculation for glamour."""
+        self.assertEqual(self.character.xp_cost("glamour", 5), 15)
+        self.assertEqual(self.character.xp_cost("glamour", 6), 18)
+        # Test without value
+        self.assertEqual(self.character.xp_cost("glamour"), 3)
+
+    def test_xp_cost_banality(self):
+        """Test XP cost calculation for banality."""
+        self.assertEqual(self.character.xp_cost("banality", 4), 8)
+        self.assertEqual(self.character.xp_cost("banality", 5), 10)
+        # Test without value
+        self.assertEqual(self.character.xp_cost("banality"), 2)
+
+    def test_spend_xp_unknown_trait(self):
+        """Test spending XP on unknown trait returns trait name."""
+        result = self.character.spend_xp("unknown_trait")
+        self.assertEqual(result, "unknown_trait")
+
+
+class TestChangelingFreebieMethods(TestCase):
+    """Tests for freebie spending methods on Changeling model."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.character = Changeling.objects.create(
+            owner=self.player,
+            name="Test Changeling",
+            freebies=50,  # Give enough freebies to test spending
+        )
+        changeling_setup()
+
+    def test_freebie_frequencies(self):
+        """Test that freebie_frequencies returns correct distribution."""
+        frequencies = self.character.freebie_frequencies()
+        self.assertIn("art", frequencies)
+        self.assertIn("realm", frequencies)
+        self.assertIn("glamour", frequencies)
+        self.assertIn("banality", frequencies)
+        self.assertEqual(frequencies["art"], 25)
+        self.assertEqual(frequencies["realm"], 15)
+        self.assertEqual(frequencies["glamour"], 5)
+        self.assertEqual(frequencies["banality"], 1)
+
+    def test_freebie_costs(self):
+        """Test that freebie_costs returns correct costs."""
+        costs = self.character.freebie_costs()
+        self.assertIn("art", costs)
+        self.assertIn("realm", costs)
+        self.assertIn("glamour", costs)
+        self.assertIn("banality", costs)
+        self.assertEqual(costs["art"], 5)
+        self.assertEqual(costs["realm"], 3)
+        self.assertEqual(costs["glamour"], 3)
+        self.assertEqual(costs["banality"], 2)
+
+    def test_freebie_cost_art(self):
+        """Test freebie cost for arts."""
+        self.assertEqual(self.character.freebie_cost("art"), 5)
+
+    def test_freebie_cost_realm(self):
+        """Test freebie cost for realms."""
+        self.assertEqual(self.character.freebie_cost("realm"), 3)
+
+    def test_freebie_cost_glamour(self):
+        """Test freebie cost for glamour."""
+        self.assertEqual(self.character.freebie_cost("glamour"), 3)
+
+    def test_freebie_cost_banality(self):
+        """Test freebie cost for banality."""
+        self.assertEqual(self.character.freebie_cost("banality"), 2)
+
+    def test_spend_freebies_unknown_trait(self):
+        """Test spending freebies on unknown trait returns trait name."""
+        result = self.character.spend_freebies("unknown_trait")
+        self.assertEqual(result, "unknown_trait")
 
 
 class TestChangelingDetailView(TestCase):
