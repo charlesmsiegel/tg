@@ -7,12 +7,16 @@ from django.test import TestCase
 from django.urls import reverse
 from game.models import (
     Chronicle,
+    FreebieSpendingRecord,
     Gameline,
     ObjectType,
     Scene,
+    Story,
+    StoryXPRequest,
     STRelationship,
     Week,
     WeeklyXPRequest,
+    XPSpendingRequest,
     extended_roll,
     message_processing,
 )
@@ -636,3 +640,436 @@ class TestSceneListViewQueryOptimization(TestCase):
             20,
             f"Too many queries ({query_count}). List view may have N+1 issue.",
         )
+
+
+class TestXPSpendingRequestViews(TestCase):
+    """Test views for XPSpendingRequest."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+        self.xp_request = XPSpendingRequest.objects.create(
+            character=self.char,
+            trait_name="Strength",
+            trait_type="Attribute",
+            trait_value=4,
+            cost=16,
+        )
+
+    def test_list_view_requires_login(self):
+        """Test that list view requires authentication."""
+        response = self.client.get(reverse("game:xp_spending_request:list"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_view_accessible_to_logged_in_user(self):
+        """Test that list view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:xp_spending_request:list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/xp_spending_request/list.html")
+
+    def test_list_view_filters_by_owner_for_non_st(self):
+        """Test that non-STs only see their own requests."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:xp_spending_request:list"))
+        self.assertContains(response, "Strength")
+
+    def test_detail_view_requires_login(self):
+        """Test that detail view requires authentication."""
+        response = self.client.get(
+            reverse("game:xp_spending_request:detail", kwargs={"pk": self.xp_request.pk})
+        )
+        # CharacterOwnerOrSTMixin returns 403 for anonymous users
+        self.assertEqual(response.status_code, 403)
+
+    def test_detail_view_accessible_to_owner(self):
+        """Test that detail view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:xp_spending_request:detail", kwargs={"pk": self.xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/xp_spending_request/detail.html")
+
+    def test_detail_view_accessible_to_st(self):
+        """Test that detail view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:xp_spending_request:detail", kwargs={"pk": self.xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_view_requires_login(self):
+        """Test that create view requires authentication."""
+        response = self.client.get(
+            reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk})
+        )
+        # Anonymous user accessing character-specific page returns 403
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_accessible_to_owner(self):
+        """Test that create view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/xp_spending_request/form.html")
+
+    def test_create_view_forbidden_for_non_owner(self):
+        """Test that create view is forbidden for non-owners."""
+        self.client.login(username="otheruser", password="password")
+        response = self.client.get(
+            reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_creates_request(self):
+        """Test that create view creates a new XP spending request."""
+        self.client.login(username="testuser", password="password")
+        initial_count = XPSpendingRequest.objects.count()
+        response = self.client.post(
+            reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk}),
+            {
+                "trait_name": "Dexterity",
+                "trait_type": "Attribute",
+                "trait_value": 3,
+                "cost": 12,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(XPSpendingRequest.objects.count(), initial_count + 1)
+
+    def test_update_view_accessible_to_owner(self):
+        """Test that update view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:xp_spending_request:update", kwargs={"pk": self.xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/xp_spending_request/form.html")
+
+    def test_approve_view_requires_st(self):
+        """Test that approve view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.post(
+            reverse("game:xp_spending_request:approve", kwargs={"pk": self.xp_request.pk}),
+            {"approved": "Approved"},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_approve_view_st_can_approve(self):
+        """Test that storyteller can approve requests."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.post(
+            reverse("game:xp_spending_request:approve", kwargs={"pk": self.xp_request.pk}),
+            {"approved": "Approved"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.xp_request.refresh_from_db()
+        self.assertEqual(self.xp_request.approved, "Approved")
+
+
+class TestFreebieSpendingRecordViews(TestCase):
+    """Test views for FreebieSpendingRecord."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+        self.freebie_record = FreebieSpendingRecord.objects.create(
+            character=self.char,
+            trait_name="Strength",
+            trait_type="Attribute",
+            trait_value=4,
+            cost=5,
+        )
+
+    def test_list_view_requires_login(self):
+        """Test that list view requires authentication."""
+        response = self.client.get(reverse("game:freebie_spending_record:list"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_view_accessible_to_logged_in_user(self):
+        """Test that list view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:freebie_spending_record:list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/freebie_spending_record/list.html")
+
+    def test_detail_view_accessible_to_owner(self):
+        """Test that detail view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:freebie_spending_record:detail", kwargs={"pk": self.freebie_record.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/freebie_spending_record/detail.html")
+
+    def test_create_view_accessible_to_owner(self):
+        """Test that create view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:freebie_spending_record:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/freebie_spending_record/form.html")
+
+    def test_create_view_forbidden_for_non_owner(self):
+        """Test that create view is forbidden for non-owners."""
+        self.client.login(username="otheruser", password="password")
+        response = self.client.get(
+            reverse("game:freebie_spending_record:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_creates_record(self):
+        """Test that create view creates a new freebie spending record."""
+        self.client.login(username="testuser", password="password")
+        initial_count = FreebieSpendingRecord.objects.count()
+        response = self.client.post(
+            reverse("game:freebie_spending_record:create", kwargs={"character_pk": self.char.pk}),
+            {
+                "trait_name": "Dexterity",
+                "trait_type": "Attribute",
+                "trait_value": 3,
+                "cost": 5,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(FreebieSpendingRecord.objects.count(), initial_count + 1)
+
+
+class TestStoryXPRequestViews(TestCase):
+    """Test views for StoryXPRequest."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+        )
+        self.story = Story.objects.create(name="Test Story")
+        self.story_xp_request = StoryXPRequest.objects.create(
+            character=self.char,
+            story=self.story,
+            success=True,
+            danger=False,
+            growth=True,
+            drama=False,
+            duration=2,
+        )
+
+    def test_list_view_accessible_to_logged_in_user(self):
+        """Test that list view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:story_xp_request:list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story_xp_request/list.html")
+
+    def test_detail_view_accessible_to_owner(self):
+        """Test that detail view is accessible to character owner."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:story_xp_request:detail", kwargs={"pk": self.story_xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story_xp_request/detail.html")
+
+    def test_create_view_requires_st(self):
+        """Test that create view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:story_xp_request:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_accessible_to_st(self):
+        """Test that create view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:story_xp_request:create", kwargs={"character_pk": self.char.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story_xp_request/form.html")
+
+    def test_update_view_requires_st(self):
+        """Test that update view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:story_xp_request:update", kwargs={"pk": self.story_xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_view_accessible_to_st(self):
+        """Test that update view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:story_xp_request:update", kwargs={"pk": self.story_xp_request.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story_xp_request/form.html")
+
+
+class TestChronicleCreateUpdateViews(TestCase):
+    """Test views for Chronicle create/update."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+
+    def test_create_view_requires_st(self):
+        """Test that create view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:chronicle_manage:create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_accessible_to_st(self):
+        """Test that create view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:chronicle_manage:create"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/chronicle/form.html")
+
+    def test_create_view_creates_chronicle(self):
+        """Test that create view creates a new chronicle."""
+        self.client.login(username="stuser", password="password")
+        initial_count = Chronicle.objects.count()
+        response = self.client.post(
+            reverse("game:chronicle_manage:create"),
+            {
+                "name": "New Chronicle",
+                "year": 2024,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Chronicle.objects.count(), initial_count + 1)
+
+    def test_update_view_requires_st(self):
+        """Test that update view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:chronicle_manage:update", kwargs={"pk": self.chronicle.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_view_accessible_to_st(self):
+        """Test that update view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:chronicle_manage:update", kwargs={"pk": self.chronicle.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/chronicle/form.html")
+
+
+class TestSceneCreateUpdateViews(TestCase):
+    """Test views for Scene create/update."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        self.scene = Scene.objects.create(
+            name="Test Scene", chronicle=self.chronicle, location=self.location
+        )
+
+    def test_create_view_requires_st(self):
+        """Test that create view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:scene_manage:create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_accessible_to_st(self):
+        """Test that create view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:scene_manage:create"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/scene/form.html")
+
+    def test_create_for_chronicle_accessible_to_st(self):
+        """Test that create for chronicle view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse(
+                "game:scene_manage:create_for_chronicle", kwargs={"chronicle_pk": self.chronicle.pk}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/scene/form.html")
+
+    def test_update_view_requires_st(self):
+        """Test that update view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:scene_manage:update", kwargs={"pk": self.scene.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_view_accessible_to_st(self):
+        """Test that update view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:scene_manage:update", kwargs={"pk": self.scene.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/scene/form.html")
+
+    def test_update_view_updates_scene(self):
+        """Test that update view updates a scene."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.post(
+            reverse("game:scene_manage:update", kwargs={"pk": self.scene.pk}),
+            {
+                "name": "Updated Scene Name",
+                "location": self.location.pk,
+                "date_of_scene": "2024-01-15",
+                "gameline": "wod",
+                "finished": False,
+                "xp_given": False,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.scene.refresh_from_db()
+        self.assertEqual(self.scene.name, "Updated Scene Name")
