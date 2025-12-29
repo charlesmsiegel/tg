@@ -130,8 +130,6 @@ class TestEffectFormValidation(TestCase):
         self.assertTrue(form.is_valid())
 
 
-
-
 class TestEffectCreateOrSelectFormInit(TestCase):
     """Test EffectCreateOrSelectForm initialization."""
 

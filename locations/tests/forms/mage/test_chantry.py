@@ -66,9 +66,7 @@ class TestChantryPointFormBasics(TestChantryPointFormSetup):
 
     def test_category_includes_existing_background_when_has_backgrounds(self):
         """Test that Existing Background is included when chantry has backgrounds."""
-        ChantryBackgroundRating.objects.create(
-            bg=self.background, chantry=self.chantry, rating=1
-        )
+        ChantryBackgroundRating.objects.create(bg=self.background, chantry=self.chantry, rating=1)
         form = ChantryPointForm(pk=self.chantry.pk)
 
         category_values = [choice[0] for choice in form.fields["category"].choices]
@@ -105,9 +103,7 @@ class TestChantryPointFormValidation(TestChantryPointFormSetup):
 
     def test_clean_requires_example_for_existing_background(self):
         """Test that Existing Background requires an example to be selected."""
-        ChantryBackgroundRating.objects.create(
-            bg=self.background, chantry=self.chantry, rating=1
-        )
+        ChantryBackgroundRating.objects.create(bg=self.background, chantry=self.chantry, rating=1)
 
         form_data = {
             "category": "Existing Background",
@@ -388,9 +384,7 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
     def test_existing_chantry_queryset_filtered_by_chronicle(self):
         """Test that existing_chantry queryset is filtered by character's chronicle."""
         other_chronicle = Chronicle.objects.create(name="Other Chronicle")
-        other_chantry = Chantry.objects.create(
-            name="Other Chantry", chronicle=other_chronicle
-        )
+        other_chantry = Chantry.objects.create(name="Other Chantry", chronicle=other_chronicle)
 
         form = ChantrySelectOrCreateForm(character=self.character)
 

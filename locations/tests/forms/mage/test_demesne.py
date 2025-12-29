@@ -82,9 +82,7 @@ class TestDemesneFormBasics(TestDemesneFormSetup):
     def test_existing_demesne_uses_existing_reality_zone(self):
         """Test that existing demesne uses its reality zone."""
         reality_zone = RealityZone.objects.create(name="Test Zone")
-        demesne = Demesne.objects.create(
-            name="Test Demesne", rank=2, reality_zone=reality_zone
-        )
+        demesne = Demesne.objects.create(name="Test Demesne", rank=2, reality_zone=reality_zone)
 
         form = DemesneForm(instance=demesne)
 
@@ -395,6 +393,4 @@ class TestDemesneFormAccessibility(TestDemesneFormSetup):
             }
 
             form = DemesneForm(data=form_data)
-            self.assertTrue(
-                form.is_valid(), f"Form should be valid for accessibility '{choice}'"
-            )
+            self.assertTrue(form.is_valid(), f"Form should be valid for accessibility '{choice}'")

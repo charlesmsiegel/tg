@@ -20,7 +20,11 @@ from characters.forms.mage.numina import (
     PsychicPathRatingFormSet,
 )
 from characters.models.core.ability_block import Ability
-from characters.models.mage.focus import CorruptedPractice, Practice, SpecializedPractice
+from characters.models.mage.focus import (
+    CorruptedPractice,
+    Practice,
+    SpecializedPractice,
+)
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
@@ -34,16 +38,12 @@ class TestNuminaPathFormInit(TestCase):
         mage_setup()
         self.user = User.objects.create_user(username="testuser", password="password")
         # Create hedge magic paths
-        self.hedge_path1 = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.hedge_path1 = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
         self.hedge_path2 = LinearMagicPath.objects.create(
             name="Enchantment", numina_type="hedge_magic"
         )
         # Create psychic path
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
 
     def test_form_has_expected_fields(self):
         """Test that form has expected fields."""
@@ -86,9 +86,7 @@ class TestNuminaPathFormInit(TestCase):
     def test_practice_queryset_excludes_corrupted(self):
         """Test that practice queryset excludes corrupted practices."""
         parent = Practice.objects.first()
-        corrupted = CorruptedPractice.objects.create(
-            name="Corrupted Test", parent_practice=parent
-        )
+        corrupted = CorruptedPractice.objects.create(name="Corrupted Test", parent_practice=parent)
 
         form = NuminaPathForm()
         practice_queryset = form.fields["practice"].queryset
@@ -103,15 +101,11 @@ class TestPsychicPathFormInit(TestCase):
         mage_setup()
         self.user = User.objects.create_user(username="testuser", password="password")
         # Create paths
-        self.psychic_path1 = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.psychic_path1 = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
         self.psychic_path2 = LinearMagicPath.objects.create(
             name="Pyrokinesis", numina_type="psychic"
         )
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
 
     def test_form_has_expected_fields(self):
         """Test that form has expected fields."""
@@ -162,12 +156,8 @@ class TestNuminaPathRatingFormSet(TestCase):
             owner=self.user,
             sorcerer_type="hedge_mage",
         )
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
 
     def test_formset_filters_paths_for_hedge_magic(self):
         """Test that formset filters paths for hedge magic."""
@@ -197,12 +187,8 @@ class TestPsychicPathRatingFormSet(TestCase):
             owner=self.user,
             sorcerer_type="psychic",
         )
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
 
     def test_formset_filters_paths_for_psychic(self):
         """Test that formset filters paths for psychic."""
@@ -227,9 +213,11 @@ class TestNuminaRitualFormInit(TestCase):
         mage_setup()
         self.user = User.objects.create_user(username="testuser", password="password")
         self.ability = Ability.objects.first()
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
 
         # Create sorcerer with a path
         self.sorcerer = Sorcerer.objects.create(
@@ -237,9 +225,7 @@ class TestNuminaRitualFormInit(TestCase):
             owner=self.user,
             sorcerer_type="hedge_mage",
         )
-        self.path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
         self.sorcerer.add_path(self.path, self.practice, self.ability)
 
     def test_form_initializes_with_pk(self):
@@ -261,9 +247,7 @@ class TestNuminaRitualFormInit(TestCase):
 
     def test_form_path_queryset_filters_to_sorcerer_paths(self):
         """Test that path queryset only includes sorcerer's paths."""
-        other_path = LinearMagicPath.objects.create(
-            name="Enchantment", numina_type="hedge_magic"
-        )
+        other_path = LinearMagicPath.objects.create(name="Enchantment", numina_type="hedge_magic")
 
         form = NuminaRitualForm(pk=self.sorcerer.pk)
         path_queryset = form.fields["path"].queryset
@@ -297,18 +281,18 @@ class TestNuminaRitualFormRitualFiltering(TestCase):
         mage_setup()
         self.user = User.objects.create_user(username="testuser", password="password")
         self.ability = Ability.objects.first()
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
 
         self.sorcerer = Sorcerer.objects.create(
             name="Test Sorcerer",
             owner=self.user,
             sorcerer_type="hedge_mage",
         )
-        self.path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
         # Add path at rating 3
         self.sorcerer.add_path(self.path, self.practice, self.ability)
         self.sorcerer.add_path(self.path, self.practice, self.ability)
@@ -380,18 +364,18 @@ class TestNuminaRitualFormValidation(TestCase):
         mage_setup()
         self.user = User.objects.create_user(username="testuser", password="password")
         self.ability = Ability.objects.first()
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
 
         self.sorcerer = Sorcerer.objects.create(
             name="Test Sorcerer",
             owner=self.user,
             sorcerer_type="hedge_mage",
         )
-        self.path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
         self.sorcerer.add_path(self.path, self.practice, self.ability)
 
         self.ritual = LinearMagicRitual.objects.create(

@@ -16,7 +16,11 @@ from characters.forms.mage.practiceform import (
     PracticeRatingFormSet,
 )
 from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import CorruptedPractice, Practice, SpecializedPractice
+from characters.models.mage.focus import (
+    CorruptedPractice,
+    Practice,
+    SpecializedPractice,
+)
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
@@ -304,9 +308,11 @@ class TestPracticeRatingFormValidation(TestCase):
             name="Test Mage",
             owner=self.user,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
 
     def test_form_valid_with_practice_and_rating(self):
         """Test that form is valid with practice and rating."""

@@ -15,7 +15,11 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import CorruptedPractice, Practice, SpecializedPractice
+from characters.models.mage.focus import (
+    CorruptedPractice,
+    Practice,
+    SpecializedPractice,
+)
 from characters.models.mage.mage import Mage, PracticeRating
 from characters.models.mage.rote import Rote
 from characters.tests.utils import mage_setup
@@ -40,9 +44,11 @@ class TestRoteCreationFormInit(TestCase):
             rote_points=6,
         )
         # Add a practice to the mage
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
     def test_form_has_expected_fields(self):
@@ -151,9 +157,11 @@ class TestRoteCreationFormSphereConstraints(TestCase):
             life=1,
             rote_points=6,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
     def test_sphere_max_set_by_mage_rating(self):
@@ -186,21 +194,19 @@ class TestRoteCreationFormRoteFiltering(TestCase):
             mind=2,
             rote_points=6,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
         self.attribute = Attribute.objects.first()
         self.ability = Ability.objects.first()
 
         # Create effects and rotes
-        self.affordable_effect = Effect.objects.create(
-            name="Affordable Effect", forces=2
-        )
-        self.expensive_effect = Effect.objects.create(
-            name="Expensive Effect", forces=5
-        )
+        self.affordable_effect = Effect.objects.create(name="Affordable Effect", forces=2)
+        self.expensive_effect = Effect.objects.create(name="Expensive Effect", forces=5)
         self.affordable_rote = Rote.objects.create(
             name="Affordable Rote",
             effect=self.affordable_effect,
@@ -248,9 +254,11 @@ class TestRoteCreationFormEffectFiltering(TestCase):
             mind=2,
             rote_points=6,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
         self.attribute = Attribute.objects.first()
@@ -310,9 +318,11 @@ class TestRoteCreationFormSave(TestCase):
             mind=2,
             rote_points=6,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
         self.attribute = Attribute.objects.first()
@@ -431,9 +441,11 @@ class TestRoteCreationFormValidation(TestCase):
             mind=2,
             rote_points=6,
         )
-        self.practice = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice").first()
+        self.practice = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .first()
+        )
         PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
 
         self.attribute = Attribute.objects.first()

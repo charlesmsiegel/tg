@@ -61,9 +61,7 @@ class TestEnhancementFormInit(TestCase):
         custom_suggestions = ["Custom 1", "Custom 2"]
         form = EnhancementForm(rank=1, suggestions=custom_suggestions)
 
-        self.assertEqual(
-            form.fields["new_device_resonance"].widget.suggestions, custom_suggestions
-        )
+        self.assertEqual(form.fields["new_device_resonance"].widget.suggestions, custom_suggestions)
 
     def test_form_includes_wonder_form_fields(self):
         """Test that form includes embedded WonderForm fields."""

@@ -22,9 +22,7 @@ class TestLocationCreationFormSetup(TestCase):
     def setUpTestData(cls):
         """Create test data for LocationCreationForm tests."""
         # Create users
-        cls.regular_user = User.objects.create_user(
-            username="regular", password="password"
-        )
+        cls.regular_user = User.objects.create_user(username="regular", password="password")
         Profile.objects.get_or_create(user=cls.regular_user)
 
         cls.st_user = User.objects.create_user(username="st", password="password")
