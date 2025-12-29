@@ -59,6 +59,16 @@ urls = [
         name="rote",
     ),
     path(
+        "paths/<pk>/",
+        views.mage.PathUpdateView.as_view(),
+        name="path",
+    ),
+    path(
+        "rituals/<pk>/",
+        views.mage.RitualUpdateView.as_view(),
+        name="ritual",
+    ),
+    path(
         "mtahuman/<pk>/",
         views.mage.MtAHumanUpdateView.as_view(),
         name="mta_human",
