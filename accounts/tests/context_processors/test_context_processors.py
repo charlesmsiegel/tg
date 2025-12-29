@@ -304,3 +304,73 @@ class TestNotificationCountContextProcessor(TestCase):
         request.user = self.st_user
         context = notification_count(request)
         self.assertIn("Weekly XP to Approve", context["notification_breakdown"])
+
+    def test_st_sees_xp_spend_requests(self):
+        """Test that storytellers see XP spend requests."""
+        from game.models import XPSpendingRequest
+
+        char = Human.objects.create(
+            name="XP Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="App",
+        )
+        XPSpendingRequest.objects.create(
+            character=char,
+            trait="strength",
+            xp_cost=5,
+            approved="Pending",
+        )
+        request = self.factory.get("/")
+        request.user = self.st_user
+        context = notification_count(request)
+        self.assertIn("XP Spend Requests", context["notification_breakdown"])
+
+    def test_notification_count_handles_exceptions(self):
+        """Test that notification_count returns 0 on exception.
+
+        We simulate this by creating a user without a profile (which shouldn't
+        happen in normal operation but tests the exception handling).
+        """
+        from unittest.mock import patch
+
+        request = self.factory.get("/")
+        request.user = self.user
+
+        # Patch the profile to raise an exception
+        with patch.object(type(self.user), "profile", property(lambda _: (_ for _ in ()).throw(Exception("Test error")))):
+            context = notification_count(request)
+            self.assertEqual(context["notification_count"], 0)
+            self.assertEqual(context["notification_breakdown"], {})
+
+
+class TestThemeContextHighlightVariations(TestCase):
+    """Additional tests for theme_context variations."""
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_theme_context_with_highlight_true(self):
+        """Test theme_context with highlight_text enabled."""
+        user = User.objects.create_user("highlight_user", "hl@test.com", "password")
+        user.profile.theme = "light"
+        user.profile.highlight_text = True
+        user.profile.save()
+
+        request = self.factory.get("/")
+        request.user = user
+        context = theme_context(request)
+        self.assertEqual(context["user_theme"], "light")
+        self.assertEqual(context["user_highlight_text"], True)
+
+    def test_theme_context_default_theme(self):
+        """Test theme_context with default theme."""
+        user = User.objects.create_user("default_user", "default@test.com", "password")
+        # Don't modify the profile, use defaults
+
+        request = self.factory.get("/")
+        request.user = user
+        context = theme_context(request)
+        self.assertEqual(context["user_theme"], user.profile.theme)
+        self.assertEqual(context["user_highlight_text"], user.profile.highlight_text)

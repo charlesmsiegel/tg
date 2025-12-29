@@ -1073,3 +1073,505 @@ class TestSceneCreateUpdateViews(TestCase):
         self.assertEqual(response.status_code, 302)
         self.scene.refresh_from_db()
         self.assertEqual(self.scene.name, "Updated Scene Name")
+
+
+class TestCommandsView(TestCase):
+    """Test the CommandsView."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+
+    def test_commands_view_requires_login(self):
+        """Test that commands view requires authentication."""
+        response = self.client.get("/game/commands/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_commands_view_accessible(self):
+        """Test that commands view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get("/game/commands/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/scene/commands.html")
+
+
+class TestJournalListView(TestCase):
+    """Test the JournalListView."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        # Create characters with journals
+        self.char1 = Human.objects.create(
+            name="My Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.char2 = Human.objects.create(
+            name="Other Character",
+            owner=self.other_user,
+            chronicle=self.chronicle,
+        )
+
+    def test_list_view_requires_login(self):
+        """Test that journal list requires authentication."""
+        response = self.client.get("/game/journal/list/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_view_accessible(self):
+        """Test that journal list is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get("/game/journal/list/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/journal/list.html")
+
+    def test_filter_by_mine(self):
+        """Test filtering journals by own characters."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get("/game/journal/list/?filter=mine")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["current_filter"], "mine")
+
+    def test_filter_by_st(self):
+        """Test filtering journals by ST chronicles."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get("/game/journal/list/?filter=st")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["current_filter"], "st")
+
+
+class TestJournalDetailView(TestCase):
+    """Test the JournalDetailView."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        from game.models import Journal
+
+        self.journal, _ = Journal.objects.get_or_create(character=self.char)
+
+    def test_owner_can_add_entry(self):
+        """Test that character owner can add journal entries."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.post(
+            f"/game/journal/{self.journal.pk}/",
+            {
+                "submit_entry": "true",
+                "date": "2024-01-15",
+                "message": "Test journal entry",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_non_owner_cannot_add_entry(self):
+        """Test that non-owners cannot add entries."""
+        other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.client.login(username="otheruser", password="password")
+        response = self.client.post(
+            f"/game/journal/{self.journal.pk}/",
+            {
+                "submit_entry": "true",
+                "date": "2024-01-15",
+                "message": "Malicious entry",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
+
+class TestSettingElementViews(TestCase):
+    """Test views for SettingElement."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        from game.models import SettingElement
+
+        self.element = SettingElement.objects.create(
+            name="The Camarilla",
+            description="A sect of vampires",
+            gameline="vtm",
+        )
+        self.chronicle.common_knowledge_elements.add(self.element)
+
+    def test_list_view_requires_login(self):
+        """Test that list view requires authentication."""
+        response = self.client.get(reverse("game:setting_element:list"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_view_accessible(self):
+        """Test that list view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:setting_element:list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/setting_element/list.html")
+        self.assertContains(response, "The Camarilla")
+
+    def test_detail_view_accessible(self):
+        """Test that detail view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:setting_element:detail", kwargs={"pk": self.element.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/setting_element/detail.html")
+        self.assertContains(response, "The Camarilla")
+
+    def test_create_view_requires_st(self):
+        """Test that create view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:setting_element:create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_view_accessible_to_st(self):
+        """Test that create view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:setting_element:create"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/setting_element/form.html")
+
+    def test_create_view_creates_element(self):
+        """Test that create view creates a new element."""
+        from game.models import SettingElement
+
+        self.client.login(username="stuser", password="password")
+        initial_count = SettingElement.objects.count()
+        response = self.client.post(
+            reverse("game:setting_element:create"),
+            {
+                "name": "The Sabbat",
+                "description": "Another sect of vampires",
+                "gameline": "vtm",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(SettingElement.objects.count(), initial_count + 1)
+
+    def test_update_view_requires_st(self):
+        """Test that update view requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("game:setting_element:update", kwargs={"pk": self.element.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_view_accessible_to_st(self):
+        """Test that update view is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(
+            reverse("game:setting_element:update", kwargs={"pk": self.element.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/setting_element/form.html")
+
+
+class TestWeeklyXPRequestBatchApproveView(TestCase):
+    """Test the WeeklyXPRequestBatchApproveView."""
+
+    def setUp(self):
+        from datetime import date
+
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        self.scene = Scene.objects.create(
+            name="Test Scene",
+            chronicle=self.chronicle,
+            location=self.location,
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.week = Week.objects.create(end_date=date(2024, 1, 14))
+        self.xp_request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.char,
+            finishing=True,
+            learning_scene=self.scene,
+            rp_scene=self.scene,
+            focus_scene=self.scene,
+            standingout_scene=self.scene,
+        )
+
+    def test_batch_approve_requires_st(self):
+        """Test that batch approve requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.post(
+            reverse("game:weekly_xp_request:batch_approve"),
+            {"request_ids": [self.xp_request.pk]},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_batch_approve_with_no_requests(self):
+        """Test batch approve with no request IDs."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.post(
+            reverse("game:weekly_xp_request:batch_approve"),
+            {"request_ids": []},
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_batch_approve_approves_requests(self):
+        """Test that batch approve approves multiple requests."""
+        self.client.login(username="stuser", password="password")
+        initial_xp = self.char.xp
+        response = self.client.post(
+            reverse("game:weekly_xp_request:batch_approve"),
+            {"request_ids": [self.xp_request.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.xp_request.refresh_from_db()
+        self.char.refresh_from_db()
+        self.assertTrue(self.xp_request.approved)
+        self.assertEqual(self.char.xp, initial_xp + 1)
+
+
+class TestChronicleDetailViewPost(TestCase):
+    """Test ChronicleDetailView POST actions."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        # Create object types for character/location/item creation
+        ObjectType.objects.create(name="human", type="char", gameline="wod")
+
+    def test_non_st_cannot_create_story(self):
+        """Test that non-storytellers cannot create stories."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.post(
+            f"/game/chronicle/{self.chronicle.pk}",
+            {"create_story": "true", "name": "New Story"},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_st_can_create_story(self):
+        """Test that storytellers can create stories."""
+        from game.models import Story
+
+        self.client.login(username="stuser", password="password")
+        initial_count = Story.objects.count()
+        response = self.client.post(
+            f"/game/chronicle/{self.chronicle.pk}",
+            {"create_story": "true", "name": "Epic Quest"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Story.objects.count(), initial_count + 1)
+
+
+class TestWeekViews(TestCase):
+    """Test Week-related views."""
+
+    def setUp(self):
+        from datetime import date
+
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.week = Week.objects.create(end_date=date(2024, 1, 14))
+
+    def test_week_list_view_requires_login(self):
+        """Test that week list requires authentication."""
+        response = self.client.get("/game/week/list/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_week_list_view_accessible(self):
+        """Test that week list is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get("/game/week/list/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/week/list.html")
+
+    def test_week_list_view_context(self):
+        """Test that week list includes is_st context."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get("/game/week/list/")
+        self.assertTrue(response.context["is_st"])
+
+    def test_week_detail_view_accessible(self):
+        """Test that week detail is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(f"/game/week/{self.week.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/week/detail.html")
+
+    def test_week_create_requires_st(self):
+        """Test that week creation requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:week:create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_week_create_accessible_to_st(self):
+        """Test that week creation is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:week:create"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_week_update_requires_st(self):
+        """Test that week update requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:week:update", kwargs={"pk": self.week.pk}))
+        self.assertEqual(response.status_code, 403)
+
+
+class TestStoryViews(TestCase):
+    """Test Story-related views."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        from game.models import Story
+
+        self.story = Story.objects.create(name="Test Story")
+
+    def test_story_list_view_requires_login(self):
+        """Test that story list requires authentication."""
+        response = self.client.get(reverse("game:story:list"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_story_list_view_accessible(self):
+        """Test that story list is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:story:list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story/list.html")
+        self.assertContains(response, "Test Story")
+
+    def test_story_detail_view_accessible(self):
+        """Test that story detail is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:story:detail", kwargs={"pk": self.story.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/story/detail.html")
+
+    def test_story_create_requires_st(self):
+        """Test that story creation requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:story:create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_story_create_accessible_to_st(self):
+        """Test that story creation is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:story:create"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_story_update_requires_st(self):
+        """Test that story update requires storyteller permissions."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:story:update", kwargs={"pk": self.story.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_story_update_accessible_to_st(self):
+        """Test that story update is accessible to storytellers."""
+        self.client.login(username="stuser", password="password")
+        response = self.client.get(reverse("game:story:update", kwargs={"pk": self.story.pk}))
+        self.assertEqual(response.status_code, 200)
+
+
+class TestSceneDetailViewPost(TestCase):
+    """Test SceneDetailView POST actions."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        self.scene = Scene.objects.create(
+            name="Test Scene", chronicle=self.chronicle, location=self.location
+        )
+        self.char = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.scene.characters.add(self.char)
+
+    def test_post_with_invalid_form_shows_error(self):
+        """Test that posting with invalid form shows error message."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.post(
+            f"/game/scene/{self.scene.pk}",
+            {
+                "character": self.char.pk,
+                "display_name": "",
+                "message": "",  # Empty message is invalid
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_post_straightens_quotes(self):
+        """Test that curly quotes are straightened in posts."""
+        from game.views import SceneDetailView
+
+        # Test the static method directly
+        input_text = "\u201cHello\u201d \u2018World\u2019"
+        result = SceneDetailView.straighten_quotes(input_text)
+        self.assertEqual(result, '"Hello" \'World\'')
+
+
+class TestChronicleListView(TestCase):
+    """Test ChronicleListView."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        Chronicle.objects.create(name="Chronicle A")
+        Chronicle.objects.create(name="Chronicle B")
+
+    def test_list_view_requires_login(self):
+        """Test that list view requires authentication."""
+        response = self.client.get(reverse("game:chronicle_list"))
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_view_accessible(self):
+        """Test that list view is accessible to logged-in users."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse("game:chronicle_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "game/chronicle/list.html")
+        self.assertContains(response, "Chronicle A")
+        self.assertContains(response, "Chronicle B")
