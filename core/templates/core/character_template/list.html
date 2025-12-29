@@ -12,10 +12,10 @@
     <div class="tg-card-body" style="padding: 24px;">
         <!-- Action buttons -->
         <div class="mb-4" style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <a href="{% url 'core:character_template_create' %}" class="btn btn-primary">
+            <a href="{% url 'character_template_create' %}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Create New Template
             </a>
-            <a href="{% url 'core:character_template_import' %}" class="btn btn-secondary">
+            <a href="{% url 'character_template_import' %}" class="btn btn-secondary">
                 <i class="fas fa-file-import"></i> Import Template
             </a>
         </div>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary me-2">Apply</button>
-                    <a href="{% url 'core:character_template_list' %}" class="btn btn-outline-secondary">Clear</a>
+                    <a href="{% url 'character_template_list' %}" class="btn btn-outline-secondary">Clear</a>
                 </div>
             </form>
         </div>
@@ -65,7 +65,7 @@
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                                     <div style="flex: 1;">
                                         <h5 class="tg-card-title mb-2">
-                                            <a href="{% url 'core:character_template_detail' template.pk %}" style="text-decoration: none; color: inherit;">
+                                            <a href="{% url 'character_template_detail' template.pk %}" style="text-decoration: none; color: inherit;">
                                                 {{ template.name }}
                                             </a>
                                         </h5>
@@ -101,9 +101,9 @@
                                         <i class="fas fa-download"></i> {{ template.times_used }} uses
                                     </div>
                                     <div style="display: flex; gap: 8px;">
-                                        <a href="{% url 'core:character_template_detail' template.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="{% url 'character_template_detail' template.pk %}" class="btn btn-sm btn-outline-primary">View</a>
                                         {% if template.owner == user or user.is_superuser %}
-                                            <a href="{% url 'core:character_template_update' template.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            <a href="{% url 'character_template_update' template.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         {% endif %}
                                     </div>
                                 </div>
