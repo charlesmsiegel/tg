@@ -3,6 +3,7 @@ from characters.models.changeling.ctdhuman import CtDHuman
 from characters.tests.utils import changeling_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 from game.models import Chronicle
 
 
@@ -20,6 +21,50 @@ class TestCtDHuman(TestCase):
         self.character.larceny = 2
         self.character.enigmas = 2
         self.character.gremayre = 3
+
+    def test_ctdhuman_type(self):
+        """Test that CtDHuman has correct type attribute."""
+        ctdhuman = CtDHuman.objects.create(owner=self.player, name="Test CtDHuman")
+        self.assertEqual(ctdhuman.type, "ctd_human")
+
+    def test_ctdhuman_gameline(self):
+        """Test that CtDHuman has correct gameline."""
+        ctdhuman = CtDHuman.objects.create(owner=self.player, name="Test CtDHuman")
+        self.assertEqual(ctdhuman.gameline, "ctd")
+
+    def test_ctdhuman_freebie_step(self):
+        """Test that CtDHuman has correct freebie step."""
+        self.assertEqual(CtDHuman.freebie_step, 5)
+
+    def test_ctdhuman_talents_list(self):
+        """Test that talents list includes CtD-specific abilities."""
+        self.assertIn("kenning", CtDHuman.talents)
+        self.assertIn("leadership", CtDHuman.talents)
+
+    def test_ctdhuman_skills_list(self):
+        """Test that skills list includes CtD-specific abilities."""
+        self.assertIn("animal_ken", CtDHuman.skills)
+        self.assertIn("larceny", CtDHuman.skills)
+        self.assertIn("performance", CtDHuman.skills)
+        self.assertIn("survival", CtDHuman.skills)
+
+    def test_ctdhuman_knowledges_list(self):
+        """Test that knowledges list includes CtD-specific abilities."""
+        self.assertIn("enigmas", CtDHuman.knowledges)
+        self.assertIn("gremayre", CtDHuman.knowledges)
+        self.assertIn("law", CtDHuman.knowledges)
+        self.assertIn("politics", CtDHuman.knowledges)
+        self.assertIn("technology", CtDHuman.knowledges)
+
+    def test_ctdhuman_allowed_backgrounds(self):
+        """Test that allowed backgrounds includes CtD-specific backgrounds."""
+        self.assertIn("chimera", CtDHuman.allowed_backgrounds)
+        self.assertIn("dreamers", CtDHuman.allowed_backgrounds)
+        self.assertIn("holdings", CtDHuman.allowed_backgrounds)
+        self.assertIn("remembrance", CtDHuman.allowed_backgrounds)
+        self.assertIn("retinue", CtDHuman.allowed_backgrounds)
+        self.assertIn("title", CtDHuman.allowed_backgrounds)
+        self.assertIn("treasure", CtDHuman.allowed_backgrounds)
 
     def test_get_talents(self):
         self.assertEqual(
@@ -354,3 +399,163 @@ class TestCtDHumanUpdateView(TestCase):
         self.ctdhuman.refresh_from_db()
         self.assertEqual(self.ctdhuman.name, "CtDHuman Updated")
         self.assertEqual(self.ctdhuman.description, "Test")
+
+
+class TestCtDHumanBasicsView(TestCase):
+    """Tests for the CtDHumanBasicsView."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        self.st = User.objects.create_user(username="ST", password="12345")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+
+    def test_basics_view_requires_login(self):
+        """Test that the basics view requires login."""
+        response = self.client.get(CtDHuman.get_creation_url())
+        self.assertEqual(response.status_code, 302)  # Redirect to login
+
+    def test_basics_view_logged_in(self):
+        """Test that logged in users can access the basics view."""
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(CtDHuman.get_creation_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_basics_view_shows_storyteller_context_for_st(self):
+        """Test that storyteller context is True for storytellers."""
+        self.client.login(username="ST", password="12345")
+        response = self.client.get(CtDHuman.get_creation_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["storyteller"])
+
+    def test_basics_view_shows_storyteller_context_for_player(self):
+        """Test that storyteller context is False for regular players."""
+        self.client.login(username="User1", password="12345")
+        response = self.client.get(CtDHuman.get_creation_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["storyteller"])
+
+
+class TestCtDHumanExtrasView(TestCase):
+    """Tests for the CtDHumanExtrasView."""
+
+    def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        changeling_setup()
+        self.ctdhuman = CtDHuman.objects.create(
+            name="Test CtDHuman",
+            owner=self.st,
+            chronicle=self.chronicle,
+            creation_status=4,  # At extras step
+        )
+
+    def test_extras_view_form_valid(self):
+        """Test that extras view form submission works."""
+        self.client.login(username="ST", password="password")
+        url = reverse("characters:changeling:ctdhuman_extras", kwargs={"pk": self.ctdhuman.pk})
+        data = {
+            "date_of_birth": "1990-01-01",
+            "apparent_age": "30",
+            "age": "35",
+            "description": "A test character",
+            "history": "Test history",
+            "goals": "Test goals",
+            "notes": "Test notes",
+            "public_info": "Public information",
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.ctdhuman.refresh_from_db()
+        self.assertEqual(self.ctdhuman.creation_status, 5)
+
+    def test_extras_view_form_has_date_widgets(self):
+        """Test that extras view has date input widgets."""
+        self.client.login(username="ST", password="password")
+        url = reverse("characters:changeling:ctdhuman_extras", kwargs={"pk": self.ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Check that form has date_of_birth field
+        self.assertIn("date_of_birth", response.context["form"].fields)
+
+
+class TestCtDHumanCharacterCreationView(TestCase):
+    """Tests for the CtDHumanCharacterCreationView."""
+
+    def setUp(self):
+        self.st = User.objects.create_user(username="ST", password="password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle.storytellers.add(self.st)
+        changeling_setup()
+
+    def test_creation_view_dispatches_to_correct_step(self):
+        """Test that character creation dispatches to the correct step based on creation_status."""
+        ctdhuman = CtDHuman.objects.create(
+            name="Test CtDHuman",
+            owner=self.st,
+            chronicle=self.chronicle,
+            creation_status=1,  # Attribute step
+        )
+        self.client.login(username="ST", password="password")
+        url = reverse("characters:changeling:ctdhuman_creation", kwargs={"pk": ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_creation_view_redirects_on_completed(self):
+        """Test that character creation redirects to detail view when complete."""
+        ctdhuman = CtDHuman.objects.create(
+            name="Test CtDHuman",
+            owner=self.st,
+            chronicle=self.chronicle,
+            creation_status=100,  # Past all steps
+            status="App",
+        )
+        self.client.login(username="ST", password="password")
+        url = reverse("characters:changeling:ctdhuman_creation", kwargs={"pk": ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+
+class TestCtDHumanTemplateSelectView(TestCase):
+    """Tests for the CtDHumanTemplateSelectView."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="User1", password="12345")
+        changeling_setup()
+        self.ctdhuman = CtDHuman.objects.create(
+            name="Test CtDHuman",
+            owner=self.player,
+            creation_status=0,  # Before template selection
+        )
+
+    def test_template_select_view_requires_login(self):
+        """Test that template select view requires login."""
+        url = reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_template_select_view_accessible(self):
+        """Test that template select view is accessible for character owner."""
+        self.client.login(username="User1", password="12345")
+        url = reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_select_view_redirects_if_creation_started(self):
+        """Test that template select redirects if creation has started."""
+        self.ctdhuman.creation_status = 1
+        self.ctdhuman.save()
+        self.client.login(username="User1", password="12345")
+        url = reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.ctdhuman.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_template_select_no_template_choice(self):
+        """Test submitting without selecting a template."""
+        self.client.login(username="User1", password="12345")
+        url = reverse("characters:changeling:ctdhuman_template", kwargs={"pk": self.ctdhuman.pk})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 302)
+        self.ctdhuman.refresh_from_db()
+        self.assertEqual(self.ctdhuman.creation_status, 1)
