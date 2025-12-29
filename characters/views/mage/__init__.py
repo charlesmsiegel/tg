@@ -22,6 +22,7 @@ from .fellowship import (
 from .focus import (
     CorruptedPracticeCreateView,
     CorruptedPracticeDetailView,
+    CorruptedPracticeListView,
     CorruptedPracticeUpdateView,
     GenericPracticeDetailView,
     InstrumentCreateView,
@@ -38,6 +39,7 @@ from .focus import (
     PracticeUpdateView,
     SpecializedPracticeCreateView,
     SpecializedPracticeDetailView,
+    SpecializedPracticeListView,
     SpecializedPracticeUpdateView,
     TenetCreateView,
     TenetDetailView,

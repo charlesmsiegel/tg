@@ -44,6 +44,16 @@ urls = [
         name="practice",
     ),
     path(
+        "specialized_practices/<pk>/",
+        views.mage.SpecializedPracticeDetailView.as_view(),
+        name="specialized_practice",
+    ),
+    path(
+        "corrupted_practices/<pk>/",
+        views.mage.CorruptedPracticeDetailView.as_view(),
+        name="corrupted_practice",
+    ),
+    path(
         "tenet/<pk>/",
         views.mage.TenetDetailView.as_view(),
         name="tenet",

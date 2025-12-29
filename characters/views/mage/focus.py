@@ -158,6 +158,12 @@ class CorruptedPracticeUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Corrupted Practice."
 
 
+class CorruptedPracticeListView(ListView):
+    model = CorruptedPractice
+    ordering = ["name"]
+    template_name = "characters/mage/corrupted_practice/list.html"
+
+
 class SpecializedPracticeDetailView(PracticeDetailView):
     model = SpecializedPractice
     template_name = "characters/mage/specialized_practice/detail.html"
@@ -195,6 +201,12 @@ class SpecializedPracticeUpdateView(MessageMixin, UpdateView):
     template_name = "characters/mage/specialized_practice/form.html"
     success_message = "Specialized Practice updated successfully."
     error_message = "There was an error updating the Specialized Practice."
+
+
+class SpecializedPracticeListView(ListView):
+    model = SpecializedPractice
+    ordering = ["name"]
+    template_name = "characters/mage/specialized_practice/list.html"
 
 
 class TenetDetailView(DetailView):

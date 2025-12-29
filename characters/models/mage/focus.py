@@ -89,6 +89,9 @@ class SpecializedPractice(Practice):
         verbose_name = "Specialized Practice"
         verbose_name_plural = "Specialized Practices"
 
+    def get_absolute_url(self):
+        return reverse("characters:mage:specialized_practice", args=[str(self.id)])
+
     def get_update_url(self):
         return reverse("characters:mage:update:specialized_practice", kwargs={"pk": self.pk})
 
@@ -120,6 +123,9 @@ class CorruptedPractice(Practice):
     class Meta:
         verbose_name = "Corrupted Practice"
         verbose_name_plural = "Corrupted Practices"
+
+    def get_absolute_url(self):
+        return reverse("characters:mage:corrupted_practice", args=[str(self.id)])
 
     def get_update_url(self):
         return reverse("characters:mage:update:corrupted_practice", kwargs={"pk": self.pk})
