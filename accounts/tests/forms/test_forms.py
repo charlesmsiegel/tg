@@ -1,15 +1,17 @@
 """Tests for accounts forms."""
 
 from accounts.forms import (
+    CustomAuthenticationForm,
     CustomUserCreationForm,
     FreebieAwardForm,
     ProfileUpdateForm,
     SceneXP,
+    StoryXP,
 )
 from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.test import TestCase
-from game.models import Chronicle, Scene
+from game.models import Chronicle, Scene, Story
 from locations.models.core import LocationModel
 
 
@@ -271,3 +273,67 @@ class TestFreebieAwardForm(TestCase):
         form.save()
         self.char.refresh_from_db()
         self.assertEqual(self.char.freebies, 15)
+
+
+class TestStoryXPForm(TestCase):
+    """Test StoryXP form for awarding story XP."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.story = Story.objects.create(name="Test Story")
+        self.char1 = Human.objects.create(
+            name="Character One",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="App",
+        )
+        self.char2 = Human.objects.create(
+            name="Character Two",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="App",
+        )
+
+    def test_form_creates_fields_for_approved_characters(self):
+        """Test that form creates fields for approved characters."""
+        form = StoryXP(story=self.story)
+        # Form creates fields for each character for success, danger, growth, drama, duration
+        self.assertIn("Character One-success", form.fields)
+        self.assertIn("Character One-danger", form.fields)
+        self.assertIn("Character One-growth", form.fields)
+        self.assertIn("Character One-drama", form.fields)
+        self.assertIn("Character One-duration", form.fields)
+
+    def test_form_clean_processes_data_correctly(self):
+        """Test that form clean method processes data into character dict."""
+        form = StoryXP(
+            data={
+                f"story_{self.story.pk}-Character One-success": "on",
+                f"story_{self.story.pk}-Character One-danger": "on",
+                f"story_{self.story.pk}-Character One-growth": "",
+                f"story_{self.story.pk}-Character One-drama": "",
+                f"story_{self.story.pk}-Character One-duration": "2",
+            },
+            story=self.story,
+        )
+        self.assertTrue(form.is_valid())
+        cleaned = form.cleaned_data
+        self.assertIn(self.char1, cleaned)
+        self.assertTrue(cleaned[self.char1]["success"])
+        self.assertTrue(cleaned[self.char1]["danger"])
+        self.assertFalse(cleaned[self.char1]["growth"])
+        self.assertFalse(cleaned[self.char1]["drama"])
+        self.assertEqual(cleaned[self.char1]["duration"], 2)
+
+
+class TestCustomAuthenticationForm(TestCase):
+    """Test CustomAuthenticationForm styling."""
+
+    def test_form_has_tg_form_control_class(self):
+        """Test that form fields have tg-form-control class."""
+        form = CustomAuthenticationForm()
+        self.assertIn("tg-form-control", form.fields["username"].widget.attrs.get("class", ""))
+        self.assertIn("tg-form-control", form.fields["password"].widget.attrs.get("class", ""))
