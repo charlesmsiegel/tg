@@ -1,4 +1,370 @@
 {% extends "core/form.html" %}
+{% load dots %}
+{% block creation_title %}
+    {% if object %}Edit Sorcerer{% else %}Create Sorcerer{% endif %}
+{% endblock creation_title %}
+
 {% block contents %}
-    {{ form.as_p }}
+    <!-- Basic Information Section -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">Basic Information</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name <span style="color: #dc3545;">*</span></label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.owner.id_for_label }}" class="form-label">Player</label>
+                    {{ form.owner }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.chronicle.id_for_label }}" class="form-label">Chronicle</label>
+                    {{ form.chronicle }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                    {{ form.status }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.nature.id_for_label }}" class="form-label">Nature</label>
+                    {{ form.nature }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.demeanor.id_for_label }}" class="form-label">Demeanor</label>
+                    {{ form.demeanor }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.concept.id_for_label }}" class="form-label">Concept</label>
+                    {{ form.concept }}
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check mt-4">
+                        {{ form.npc }}
+                        <label class="form-check-label" for="{{ form.npc.id_for_label }}">NPC</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sorcerer-Specific Information -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">Sorcerer Details</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.sorcerer_type.id_for_label }}" class="form-label">Sorcerer Type</label>
+                    {{ form.sorcerer_type }}
+                    <small class="text-muted">Hedge Mage uses linear magic paths; Psychic uses psychic phenomena.</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.fellowship.id_for_label }}" class="form-label">Fellowship</label>
+                    {{ form.fellowship }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.affinity_path.id_for_label }}" class="form-label">Affinity Path</label>
+                    {{ form.affinity_path }}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.casting_attribute.id_for_label }}" class="form-label">Casting Attribute</label>
+                    {{ form.casting_attribute }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.quintessence.id_for_label }}" class="form-label">Quintessence</label>
+                    {{ form.quintessence }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.willpower.id_for_label }}" class="form-label">Willpower</label>
+                    {{ form.willpower }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attributes Section -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">Attributes</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Physical</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Strength</label></div>
+                        <div class="col-6">{{ form.strength }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Dexterity</label></div>
+                        <div class="col-6">{{ form.dexterity }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Stamina</label></div>
+                        <div class="col-6">{{ form.stamina }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Social</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Charisma</label></div>
+                        <div class="col-6">{{ form.charisma }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Manipulation</label></div>
+                        <div class="col-6">{{ form.manipulation }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Appearance</label></div>
+                        <div class="col-6">{{ form.appearance }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Mental</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Perception</label></div>
+                        <div class="col-6">{{ form.perception }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Intelligence</label></div>
+                        <div class="col-6">{{ form.intelligence }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Wits</label></div>
+                        <div class="col-6">{{ form.wits }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Abilities Section -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">Abilities</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Talents</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Alertness</label></div>
+                        <div class="col-6">{{ form.alertness }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Art</label></div>
+                        <div class="col-6">{{ form.art }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Athletics</label></div>
+                        <div class="col-6">{{ form.athletics }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Awareness</label></div>
+                        <div class="col-6">{{ form.awareness }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Brawl</label></div>
+                        <div class="col-6">{{ form.brawl }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Empathy</label></div>
+                        <div class="col-6">{{ form.empathy }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Expression</label></div>
+                        <div class="col-6">{{ form.expression }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Intimidation</label></div>
+                        <div class="col-6">{{ form.intimidation }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Leadership</label></div>
+                        <div class="col-6">{{ form.leadership }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Streetwise</label></div>
+                        <div class="col-6">{{ form.streetwise }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Subterfuge</label></div>
+                        <div class="col-6">{{ form.subterfuge }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Skills</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Crafts</label></div>
+                        <div class="col-6">{{ form.crafts }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Drive</label></div>
+                        <div class="col-6">{{ form.drive }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Etiquette</label></div>
+                        <div class="col-6">{{ form.etiquette }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Firearms</label></div>
+                        <div class="col-6">{{ form.firearms }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Larceny</label></div>
+                        <div class="col-6">{{ form.larceny }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Meditation</label></div>
+                        <div class="col-6">{{ form.meditation }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Melee</label></div>
+                        <div class="col-6">{{ form.melee }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Research</label></div>
+                        <div class="col-6">{{ form.research }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Stealth</label></div>
+                        <div class="col-6">{{ form.stealth }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Survival</label></div>
+                        <div class="col-6">{{ form.survival }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Technology</label></div>
+                        <div class="col-6">{{ form.technology }}</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mta_heading text-center mb-3">Knowledges</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Academics</label></div>
+                        <div class="col-6">{{ form.academics }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Computer</label></div>
+                        <div class="col-6">{{ form.computer }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Cosmology</label></div>
+                        <div class="col-6">{{ form.cosmology }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Enigmas</label></div>
+                        <div class="col-6">{{ form.enigmas }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Finance</label></div>
+                        <div class="col-6">{{ form.finance }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Investigation</label></div>
+                        <div class="col-6">{{ form.investigation }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Law</label></div>
+                        <div class="col-6">{{ form.law }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Medicine</label></div>
+                        <div class="col-6">{{ form.medicine }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Occult</label></div>
+                        <div class="col-6">{{ form.occult }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Politics</label></div>
+                        <div class="col-6">{{ form.politics }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><label class="form-label">Science</label></div>
+                        <div class="col-6">{{ form.science }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">Appearance</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">Date of Birth</label>
+                    {{ form.date_of_birth }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.age.id_for_label }}" class="form-label">Age</label>
+                    {{ form.age }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.apparent_age.id_for_label }}" class="form-label">Apparent Age</label>
+                    {{ form.apparent_age }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="tg-card">
+        <div class="tg-card-header">
+            <h2 class="tg-card-title mta_heading">History & Notes</h2>
+        </div>
+        <div class="tg-card-body" style="padding: 24px;">
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.history.id_for_label }}" class="form-label">History</label>
+                    {{ form.history }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.goals.id_for_label }}" class="form-label">Goals</label>
+                    {{ form.goals }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.public_info.id_for_label }}" class="form-label">Public Information</label>
+                    {{ form.public_info }}
+                    <small class="text-muted">This will be displayed to all players who look at your character.</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">Notes (ST Only)</label>
+                    {{ form.notes }}
+                    <small class="text-muted">Private notes visible only to storytellers.</small>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock contents %}
