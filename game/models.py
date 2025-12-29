@@ -9,6 +9,7 @@ from django.db import models, transaction
 from django.db.models import Max, OuterRef, Subquery
 from django.urls import reverse
 from django.utils.timezone import (  # ensure timezone-aware now if using TIME_ZONE settings
+    make_aware,
     now,
 )
 
@@ -717,7 +718,12 @@ class Journal(models.Model):
             message = message_processing(self.character, message)
         except ValueError:
             return
-        je = JournalEntry.objects.create(journal=self, message=message, date=date)
+        # Convert date to timezone-aware datetime if needed
+        if isinstance(date, datetime):
+            aware_date = date if date.tzinfo is not None else make_aware(date)
+        else:
+            aware_date = make_aware(datetime.combine(date, datetime.min.time()))
+        je = JournalEntry.objects.create(journal=self, message=message, date=aware_date)
         return je
 
     def get_absolute_url(self):

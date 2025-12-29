@@ -7,6 +7,7 @@ from characters.models.core.human import Human
 from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
+from django.utils import timezone
 from game.models import (
     Chronicle,
     Gameline,
@@ -270,7 +271,7 @@ class TestNotificationCountContextProcessor(TestCase):
         )
         # Character creation automatically creates a Journal, so get the existing one
         journal = char.journal
-        JournalEntry.objects.create(journal=journal, st_message="", date=date.today())
+        JournalEntry.objects.create(journal=journal, st_message="", date=timezone.now())
         request = self.factory.get("/")
         request.user = self.st_user
         context = notification_count(request)
