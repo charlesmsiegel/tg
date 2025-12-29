@@ -25,6 +25,7 @@ from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
@@ -32,7 +33,6 @@ from core.mixins import (
 )
 from core.models import Language
 from django import forms
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -126,14 +126,14 @@ class LoadExamplesView(LoginRequiredMixin, View):
         return dropdown_options_response(examples, label_attr="__str__")
 
 
-@login_required
-def load_companion_values(request):
-    from core.ajax import simple_values_response
+class LoadCompanionValuesView(SimpleValuesView):
+    """AJAX view to load available rating values for a companion advantage."""
 
-    advantage = get_object_or_404(Advantage, pk=request.GET.get("example"))
-    ratings = [x.value for x in advantage.ratings.all()]
-    ratings.sort()
-    return simple_values_response(ratings)
+    def get_values(self):
+        advantage = get_object_or_404(Advantage, pk=self.request.GET.get("example"))
+        ratings = [x.value for x in advantage.ratings.all()]
+        ratings.sort()
+        return ratings
 
 
 class CompanionBasicsView(LoginRequiredMixin, CreateView):

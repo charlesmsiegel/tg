@@ -38,7 +38,9 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
+    DropdownOptionsView,
     EditPermissionMixin,
+    JsonListView,
     MessageMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
@@ -48,7 +50,6 @@ from core.mixins import (
 from core.models import Language
 from core.views.generic import MultipleFormsetsMixin
 from django import forms
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
@@ -124,22 +125,22 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-@login_required
-def load_attributes(request):
-    from core.ajax import dropdown_options_response
+class LoadAttributesView(DropdownOptionsView):
+    """AJAX view to load favored attributes for a sorcerer fellowship."""
 
-    fellowship_id = request.GET.get("fellowship")
-    sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
-    return dropdown_options_response(sf.favored_attributes.all())
+    def get_queryset(self):
+        fellowship_id = self.request.GET.get("fellowship")
+        sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
+        return sf.favored_attributes.all()
 
 
-@login_required
-def load_affinities(request):
-    from core.ajax import dropdown_options_response
+class LoadAffinitiesView(DropdownOptionsView):
+    """AJAX view to load favored paths (affinities) for a sorcerer fellowship."""
 
-    fellowship_id = request.GET.get("fellowship")
-    sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
-    return dropdown_options_response(sf.favored_paths.all())
+    def get_queryset(self):
+        fellowship_id = self.request.GET.get("fellowship")
+        sf = get_object_or_404(SorcererFellowship, id=fellowship_id)
+        return sf.favored_paths.all()
 
 
 class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
@@ -230,16 +231,6 @@ class LoadExamplesView(LoginRequiredMixin, View):
         return dropdown_options_response(examples, label_attr="__str__")
 
 
-@login_required
-def load_companion_values(request):
-    from core.ajax import simple_values_response
-
-    advantage = get_object_or_404(Advantage, pk=request.GET.get("example"))
-    ratings = [x.value for x in advantage.ratings.all()]
-    ratings.sort()
-    return simple_values_response(ratings)
-
-
 class SorcererAttributeView(HumanAttributeView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -266,14 +257,14 @@ class SorcererBackgroundsView(HumanBackgroundsView):
     template_name = "characters/mage/sorcerer/chargen.html"
 
 
-@login_required
-def get_abilities(request):
-    practice_id = request.GET.get("practice_id")
-    prac = get_object_or_404(Practice, id=practice_id)
-    abilities = prac.abilities.all().order_by("name")
-    abilities_list = [{"id": "", "name": "--------"}]  # Empty option
-    abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
-    return JsonResponse(abilities_list, safe=False)
+class GetPracticeAbilitiesView(JsonListView):
+    """AJAX view to get abilities for a practice."""
+
+    def get_items(self):
+        practice_id = self.request.GET.get("practice_id")
+        prac = get_object_or_404(Practice, id=practice_id)
+        abilities = prac.abilities.all().order_by("name")
+        return [{"id": ability.id, "name": ability.name} for ability in abilities]
 
 
 class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):

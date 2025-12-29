@@ -10,10 +10,15 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
-from core.mixins import EditPermissionMixin, MessageMixin, SpendFreebiesPermissionMixin
+from core.mixins import (
+    DropdownOptionsView,
+    EditPermissionMixin,
+    MessageMixin,
+    SimpleValuesView,
+    SpendFreebiesPermissionMixin,
+)
 from core.models import Language
 from core.views.generic import DictView
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -257,69 +262,67 @@ class HumanBiographicalInformation(SpendFreebiesPermissionMixin, UpdateView):
         return super().form_valid(form)
 
 
-@login_required
-def load_examples(request):
-    from core.ajax import dropdown_options_response
+class LoadExamplesView(DropdownOptionsView):
+    """AJAX view to load examples for dropdown options (Attribute, Ability, Background, MeritFlaw)."""
 
-    category_choice = request.GET.get("category")
-    if category_choice == "Attribute":
-        examples = Attribute.objects.all()
-    elif category_choice == "Ability":
-        examples = Ability.objects.all()
-    elif category_choice == "Background":
-        examples = Background.objects.all()
-    elif category_choice == "MeritFlaw":
-        examples = MeritFlaw.objects.all()
-    else:
-        examples = []
-    return dropdown_options_response(examples, label_attr="__str__")
+    label_attr = "__str__"
+
+    def get_options(self):
+        category_choice = self.request.GET.get("category")
+        if category_choice == "Attribute":
+            return Attribute.objects.all()
+        elif category_choice == "Ability":
+            return Ability.objects.all()
+        elif category_choice == "Background":
+            return Background.objects.all()
+        elif category_choice == "MeritFlaw":
+            return MeritFlaw.objects.all()
+        return []
 
 
-@login_required
-def load_values(request):
-    mf = get_object_or_404(MeritFlaw, pk=request.GET.get("example"))
-    character_id = request.GET.get("object")
-    is_xp = request.GET.get("xp", "false").lower() == "true"
+class LoadValuesView(SimpleValuesView):
+    """AJAX view to load merit/flaw rating values filtered by affordability."""
 
-    ratings = [x.value for x in mf.ratings.all()]
-    ratings.sort()
+    def get_values(self):
+        mf = get_object_or_404(MeritFlaw, pk=self.request.GET.get("example"))
+        character_id = self.request.GET.get("object")
+        is_xp = self.request.GET.get("xp", "false").lower() == "true"
 
-    # Filter ratings based on character's available freebies/XP and flaw limit
-    if character_id:
-        from characters.models.core import Human
+        ratings = [x.value for x in mf.ratings.all()]
+        ratings.sort()
 
-        character = get_object_or_404(Human, pk=character_id)
-        current_rating = character.mf_rating(mf)
+        # Filter ratings based on character's available freebies/XP and flaw limit
+        if character_id:
+            character = get_object_or_404(Human, pk=character_id)
+            current_rating = character.mf_rating(mf)
 
-        affordable_ratings = []
+            affordable_ratings = []
 
-        if is_xp:
-            # For XP spending: cost = 3 × |new_rating - current_rating|
-            available_xp = character.xp
-            for rating in ratings:
-                cost = 3 * abs(rating - current_rating)
-                if cost <= available_xp and rating != current_rating:
-                    affordable_ratings.append(rating)
-        else:
-            # For freebie spending: cost = rating value
-            current_flaws = character.total_flaws()
-            available_freebies = character.freebies
-
-            for rating in ratings:
-                # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
-                if rating < 0:
-                    if current_flaws + rating >= -7:
+            if is_xp:
+                # For XP spending: cost = 3 × |new_rating - current_rating|
+                available_xp = character.xp
+                for rating in ratings:
+                    cost = 3 * abs(rating - current_rating)
+                    if cost <= available_xp and rating != current_rating:
                         affordable_ratings.append(rating)
-                # Merits and neutral (0) ratings are affordable if we have enough freebies
-                else:
-                    if rating <= available_freebies:
-                        affordable_ratings.append(rating)
+            else:
+                # For freebie spending: cost = rating value
+                current_flaws = character.total_flaws()
+                available_freebies = character.freebies
 
-        ratings = affordable_ratings
+                for rating in ratings:
+                    # Flaws (negative ratings) are affordable if they don't exceed the -7 limit
+                    if rating < 0:
+                        if current_flaws + rating >= -7:
+                            affordable_ratings.append(rating)
+                    # Merits and neutral (0) ratings are affordable if we have enough freebies
+                    else:
+                        if rating <= available_freebies:
+                            affordable_ratings.append(rating)
 
-    from core.ajax import simple_values_response
+            ratings = affordable_ratings
 
-    return simple_values_response(ratings)
+        return ratings
 
 
 class HumanFreebieFormPopulationView(View):

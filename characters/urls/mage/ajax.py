@@ -5,17 +5,17 @@ app_name = "mage:ajax"
 urls = [
     path(
         "load_faction_details/",
-        views.mage.load_factions,
+        views.mage.mage.LoadFactionsView.as_view(),
         name="load_factions",
     ),
     path(
         "load_subfaction_details/",
-        views.mage.load_subfactions,
+        views.mage.mage.LoadSubfactionsView.as_view(),
         name="load_subfactions",
     ),
     path(
         "load_mf_ratings/",
-        views.mage.load_mf_ratings,
+        views.mage.mage.LoadMFRatingsView.as_view(),
         name="load_mf_ratings",
     ),
     path(
@@ -45,19 +45,27 @@ urls = [
     ),
     path(
         "load_advantage_values/",
-        views.mage.companion.load_companion_values,
+        views.mage.companion.LoadCompanionValuesView.as_view(),
         name="load_advantage_values",
     ),
     path(
         "get_abilities/",
-        views.mage.mage.get_abilities,
+        views.mage.mage.GetAbilitiesView.as_view(),
         name="get_abilities",
     ),
     path(
         "get_practice_abilities/",
-        views.mage.sorcerer.get_abilities,
+        views.mage.sorcerer.GetPracticeAbilitiesView.as_view(),
         name="get_practice_abilities",
     ),
-    path("load_attributes/", views.mage.sorcerer.load_attributes, name="load_attributes"),
-    path("load_affinities/", views.mage.sorcerer.load_affinities, name="load_affinities"),
+    path(
+        "load_attributes/",
+        views.mage.sorcerer.LoadAttributesView.as_view(),
+        name="load_attributes",
+    ),
+    path(
+        "load_affinities/",
+        views.mage.sorcerer.LoadAffinitiesView.as_view(),
+        name="load_affinities",
+    ),
 ]

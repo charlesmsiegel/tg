@@ -55,14 +55,15 @@ from .hedge_magic import (
     RitualUpdateView,
 )
 from .mage import (
+    GetAbilitiesView,
+    LoadFactionsView,
+    LoadMFRatingsView,
+    LoadSubfactionsView,
     MageBasicsView,
     MageCharacterCreationView,
     MageCreateView,
     MageDetailView,
     MageUpdateView,
-    load_factions,
-    load_mf_ratings,
-    load_subfactions,
 )
 from .mtahuman import (
     MtAHumanAbilityView,
@@ -81,11 +82,15 @@ from .resonance import (
 )
 from .rote import RoteCreateView, RoteDetailView, RoteListView, RoteUpdateView
 from .sorcerer import (
+    GetPracticeAbilitiesView,
+    LoadAffinitiesView,
+    LoadAttributesView,
     SorcererBasicsView,
     SorcererCharacterCreationView,
     SorcererDetailView,
     SorcererUpdateView,
 )
+from .companion import LoadCompanionValuesView
 from .sphere import (
     SphereCreateView,
     SphereDetailView,

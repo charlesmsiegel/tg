@@ -35,8 +35,11 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
+    DropdownOptionsView,
     EditPermissionMixin,
+    JsonListView,
     MessageMixin,
+    SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
@@ -46,7 +49,6 @@ from core.models import Language
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -66,32 +68,29 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-@login_required
-def load_factions(request):
-    from core.ajax import dropdown_options_response
+class LoadFactionsView(DropdownOptionsView):
+    """AJAX view to load faction options filtered by affiliation."""
 
-    affiliation_id = request.GET.get("affiliation")
-    factions = MageFaction.objects.filter(parent=affiliation_id).order_by("name")
-    return dropdown_options_response(factions)
-
-
-@login_required
-def load_subfactions(request):
-    from core.ajax import dropdown_options_response
-
-    faction_id = request.GET.get("faction")
-    subfactions = MageFaction.objects.filter(parent=faction_id).order_by("name")
-    return dropdown_options_response(subfactions)
+    def get_queryset(self):
+        affiliation_id = self.request.GET.get("affiliation")
+        return MageFaction.objects.filter(parent=affiliation_id).order_by("name")
 
 
-@login_required
-def load_mf_ratings(request):
-    from core.ajax import simple_values_response
+class LoadSubfactionsView(DropdownOptionsView):
+    """AJAX view to load subfaction options filtered by faction."""
 
-    mf_id = request.GET.get("mf")
-    mf = get_object_or_404(MeritFlaw, pk=mf_id)
-    ratings = mf.ratings.values_list("value", flat=True)
-    return simple_values_response(ratings)
+    def get_queryset(self):
+        faction_id = self.request.GET.get("faction")
+        return MageFaction.objects.filter(parent=faction_id).order_by("name")
+
+
+class LoadMFRatingsView(SimpleValuesView):
+    """AJAX view to load merit/flaw rating values."""
+
+    def get_values(self):
+        mf_id = self.request.GET.get("mf")
+        mf = get_object_or_404(MeritFlaw, pk=mf_id)
+        return mf.ratings.values_list("value", flat=True)
 
 
 class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
@@ -307,17 +306,17 @@ class LoadXPExamplesView(View):
         return dropdown_options_response(examples, label_attr="__str__")
 
 
-@login_required
-def get_abilities(request):
-    object_id = request.GET.get("object")
-    obj = get_object_or_404(Human, id=object_id)
-    practice_id = request.GET.get("practice_id")
-    prac = get_object_or_404(Practice, id=practice_id)
-    abilities = prac.abilities.all().order_by("name")
-    abilities = [x for x in abilities if getattr(obj, x.property_name) > 0]
-    abilities_list = [{"id": "", "name": "--------"}]  # Empty option
-    abilities_list += [{"id": ability.id, "name": ability.name} for ability in abilities]
-    return JsonResponse(abilities_list, safe=False)
+class GetAbilitiesView(JsonListView):
+    """AJAX view to get abilities for a practice, filtered to those the character has."""
+
+    def get_items(self):
+        object_id = self.request.GET.get("object")
+        obj = get_object_or_404(Human, id=object_id)
+        practice_id = self.request.GET.get("practice_id")
+        prac = get_object_or_404(Practice, id=practice_id)
+        abilities = prac.abilities.all().order_by("name")
+        abilities = [x for x in abilities if getattr(obj, x.property_name) > 0]
+        return [{"id": ability.id, "name": ability.name} for ability in abilities]
 
 
 class MageDetailView(HumanDetailView):
