@@ -29,6 +29,16 @@ urls = [
         name="practice",
     ),
     path(
+        "specialized_practices/",
+        views.mage.SpecializedPracticeListView.as_view(),
+        name="specialized_practice",
+    ),
+    path(
+        "corrupted_practices/",
+        views.mage.CorruptedPracticeListView.as_view(),
+        name="corrupted_practice",
+    ),
+    path(
         "tenet/",
         views.mage.TenetListView.as_view(),
         name="tenet",

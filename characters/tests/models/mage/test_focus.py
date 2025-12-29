@@ -508,6 +508,120 @@ class TestParadigmUpdateView(TestCase):
         self.assertEqual(self.paradigm.name, "Test Paradigm 2")
 
 
+class TestInstrumentListView(TestCase):
+    def setUp(self):
+        self.instrument = Instrument.objects.create(name="Test Instrument")
+        self.url = "/characters/mage/list/instruments/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/instrument/list.html")
+
+    def test_list_view_contains_instrument(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Instrument")
+
+
+class TestPracticeListView(TestCase):
+    def setUp(self):
+        self.practice = Practice.objects.create(name="Test Practice")
+        self.url = "/characters/mage/list/practices/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/practice/list.html")
+
+    def test_list_view_contains_practice(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Practice")
+
+
+class TestSpecializedPracticeListView(TestCase):
+    def setUp(self):
+        self.practice = Practice.objects.create(name="Parent Practice")
+        self.specialized_practice = SpecializedPractice.objects.create(
+            name="Test Specialized Practice", parent_practice=self.practice
+        )
+        self.url = "/characters/mage/list/specialized_practices/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/specialized_practice/list.html")
+
+    def test_list_view_contains_specialized_practice(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Specialized Practice")
+
+
+class TestCorruptedPracticeListView(TestCase):
+    def setUp(self):
+        self.practice = Practice.objects.create(name="Parent Practice")
+        self.corrupted_practice = CorruptedPractice.objects.create(
+            name="Test Corrupted Practice", parent_practice=self.practice
+        )
+        self.url = "/characters/mage/list/corrupted_practices/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/corrupted_practice/list.html")
+
+    def test_list_view_contains_corrupted_practice(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Corrupted Practice")
+
+
+class TestTenetListView(TestCase):
+    def setUp(self):
+        self.tenet = Tenet.objects.create(name="Test Tenet")
+        self.url = "/characters/mage/list/tenet/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/tenet/list.html")
+
+    def test_list_view_contains_tenet(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Tenet")
+
+
+class TestParadigmListView(TestCase):
+    def setUp(self):
+        self.paradigm = Paradigm.objects.create(name="Test Paradigm")
+        self.url = "/characters/mage/list/paradigms/"
+
+    def test_list_view_status_code(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "characters/mage/paradigm/list.html")
+
+    def test_list_view_contains_paradigm(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "Test Paradigm")
+
+
 class TestGenericCharacterDetailViews(TestCase):
     def setUp(self) -> None:
         self.practice = Practice.objects.create(name="Practice")
