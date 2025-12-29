@@ -1,0 +1,66 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    Create Nunnehi
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Chronicle</div>
+        <div class="col-sm">{{ form.chronicle }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Nature</div>
+        <div class="col-sm">{{ form.nature }}</div>
+        <div class="col-sm">Demeanor</div>
+        <div class="col-sm">{{ form.demeanor }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Concept</div>
+        <div class="col-sm">{{ form.concept }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Tribe</div>
+        <div class="col-sm">{{ form.tribe }}</div>
+        <div class="col-sm">Path</div>
+        <div class="col-sm">{{ form.path }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Seeming</div>
+        <div class="col-sm">{{ form.nunnehi_seeming }}</div>
+    </div>
+    {% if form.spirit_medicine %}
+        <div class="row">
+            <div class="col-sm">Spirit Medicine</div>
+            <div class="col-sm">{{ form.spirit_medicine }}</div>
+        </div>
+    {% endif %}
+    {% if form.sacred_place %}
+        <div class="row">
+            <div class="col-sm">Sacred Place</div>
+            <div class="col-sm">{{ form.sacred_place }}</div>
+        </div>
+    {% endif %}
+    {% if form.spirit_guide %}
+        <div class="row">
+            <div class="col-sm">Spirit Guide</div>
+            <div class="col-sm">{{ form.spirit_guide }}</div>
+        </div>
+    {% endif %}
+    {% if form.tribal_duty %}
+        <div class="row">
+            <div class="col-sm">Tribal Duty</div>
+            <div class="col-sm">{{ form.tribal_duty }}</div>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm">Image</div>
+        <div class="col-sm">{{ form.image }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">NPC</div>
+        <div class="col-sm">{{ form.npc }}</div>
+    </div>
+{% endblock contents %}
