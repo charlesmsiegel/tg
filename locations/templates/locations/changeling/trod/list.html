@@ -1,0 +1,74 @@
+{% extends "core/base.html" %}
+{% load dots %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Trods</h1>
+            </div>
+        </div>
+
+        {% if object_list %}
+            <div class="row">
+                {% for trod in object_list %}
+                    <div class="col-md-6 mb-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <h5 class="tg-card-title">
+                                    <a href="{{ trod.get_absolute_url }}">{{ trod.name }}</a>
+                                </h5>
+                                <h6 class="tg-card-subtitle mb-2" style="color: var(--theme-text-secondary);">
+                                    {{ trod.get_trod_type_display }}
+                                </h6>
+                                {% if trod.origin_name and trod.destination_name %}
+                                    <p class="mb-2" style="font-style: italic; color: var(--theme-text-secondary);">
+                                        {{ trod.origin_name }} &rarr; {{ trod.destination_name }}
+                                    </p>
+                                {% endif %}
+                                {% if trod.description %}
+                                    <p class="mb-2">{{ trod.description|truncatewords:25 }}</p>
+                                {% endif %}
+                                <div style="margin-top: 12px;">
+                                    {% if trod.strength > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Strength <span class="dots colored-dots">{{ trod.strength|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                    <span class="tg-badge badge-pill">
+                                        Difficulty {{ trod.difficulty }}
+                                    </span>
+                                    {% if trod.glamour_cost > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Glamour {{ trod.glamour_cost }}
+                                        </span>
+                                    {% endif %}
+                                    {% if not trod.is_two_way %}
+                                        <span class="tg-badge badge-pill">
+                                            One-Way
+                                        </span>
+                                    {% endif %}
+                                    {% if not trod.is_stable %}
+                                        <span class="tg-badge badge-pill">
+                                            Unstable
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 40px;">
+                    <p class="mb-0">No trods have been created yet.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'locations:changeling:create:trod' %}" class="btn btn-primary">Create New Trod</a>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">
+                    {% if object %}Edit{% else %}Create{% endif %} Holding
+                </h1>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body" style="padding: 24px;">
+                <form method="post" id="holdingForm">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Update{% else %}Create{% endif %} Holding
+                        </button>
+                        <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'locations:changeling:list:holding' %}{% endif %}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

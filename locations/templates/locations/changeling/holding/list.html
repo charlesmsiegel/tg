@@ -1,0 +1,66 @@
+{% extends "core/base.html" %}
+{% load dots %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="tg-card header-card mb-4" data-gameline="ctd">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title ctd_heading">Holdings</h1>
+            </div>
+        </div>
+
+        {% if object_list %}
+            <div class="row">
+                {% for holding in object_list %}
+                    <div class="col-md-6 mb-4">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-body" style="padding: 20px;">
+                                <h5 class="tg-card-title">
+                                    <a href="{{ holding.get_absolute_url }}">{{ holding.name }}</a>
+                                </h5>
+                                <h6 class="tg-card-subtitle mb-2" style="color: var(--theme-text-secondary);">
+                                    {{ holding.get_rank_display }} - {{ holding.get_court_display }}
+                                </h6>
+                                {% if holding.ruler_name %}
+                                    <p class="mb-2" style="font-style: italic; color: var(--theme-text-secondary);">
+                                        Ruled by {{ holding.ruler_name }}
+                                    </p>
+                                {% endif %}
+                                {% if holding.description %}
+                                    <p class="mb-2">{{ holding.description|truncatewords:25 }}</p>
+                                {% endif %}
+                                <div style="margin-top: 12px;">
+                                    {% if holding.military_strength > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Military <span class="dots colored-dots">{{ holding.military_strength|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                    {% if holding.wealth > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Wealth <span class="dots colored-dots">{{ holding.wealth|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                    {% if holding.stability > 0 %}
+                                        <span class="tg-badge badge-pill">
+                                            Stability <span class="dots colored-dots">{{ holding.stability|dots }}</span>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tg-card">
+                <div class="tg-card-body text-center" style="padding: 40px;">
+                    <p class="mb-0">No holdings have been created yet.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'locations:changeling:create:holding' %}" class="btn btn-primary">Create New Holding</a>
+        </div>
+    </div>
+{% endblock content %}

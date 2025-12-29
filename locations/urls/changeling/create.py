@@ -15,4 +15,19 @@ urls = [
         views.changeling.FreeholdCreateView.as_view(),
         name="freehold_direct",
     ),
+    path(
+        "holding/",
+        views.changeling.HoldingCreateView.as_view(),
+        name="holding",
+    ),
+    path(
+        "trod/",
+        views.changeling.TrodCreateView.as_view(),
+        name="trod",
+    ),
+    path(
+        "dream_realm/",
+        views.changeling.DreamRealmCreateView.as_view(),
+        name="dream_realm",
+    ),
 ]

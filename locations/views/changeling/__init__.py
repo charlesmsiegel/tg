@@ -5,12 +5,17 @@ from .creation import (
     FreeholdFeaturesView,
     FreeholdPowersView,
 )
-from .dream_realm import DreamRealmDetailView, DreamRealmUpdateView
+from .dream_realm import (
+    DreamRealmCreateView,
+    DreamRealmDetailView,
+    DreamRealmListView,
+    DreamRealmUpdateView,
+)
 from .freehold import (
     FreeholdCreateView,
     FreeholdDetailView,
     FreeholdListView,
     FreeholdUpdateView,
 )
-from .holding import HoldingDetailView, HoldingUpdateView
-from .trod import TrodDetailView, TrodUpdateView
+from .holding import HoldingCreateView, HoldingDetailView, HoldingListView, HoldingUpdateView
+from .trod import TrodCreateView, TrodDetailView, TrodListView, TrodUpdateView
