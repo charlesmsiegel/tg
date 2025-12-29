@@ -19,9 +19,9 @@ class NunnehiCreateView(MessageMixin, CreateView):
         "chronicle",
         "image",
         "npc",
-        "family",
+        "tribe",
         "nunnehi_seeming",
-        "camp",
+        "path",
     ]
     template_name = "characters/changeling/nunnehi/form.html"
     success_message = "Nunnehi '{name}' created successfully!"
@@ -38,11 +38,12 @@ class NunnehiUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         "chronicle",
         "image",
         "npc",
-        "family",
+        "tribe",
         "nunnehi_seeming",
-        "camp",
+        "path",
         "spirit_medicine",
         "sacred_place",
+        "spirit_guide",
         "tribal_duty",
     ]
     template_name = "characters/changeling/nunnehi/form.html"

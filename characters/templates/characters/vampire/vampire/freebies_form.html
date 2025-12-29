@@ -74,12 +74,44 @@
         <h3 class="col-sm {{ object.get_heading }}">{{ object.freebies }}</h3>
     </div>
 {% endif %}
+{% if form.non_field_errors %}
+    <div class="row mb-2">
+        <div class="col-sm">
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.non_field_errors }}</div>
+        </div>
+    </div>
+{% endif %}
 <div class="row">
-    <div class="col-sm">{{ form.category }}</div>
-    <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
-    <div class="col-sm d-none" id="value_wrap">{{ form.value }}</div>
-    <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
-    <div class="col-sm d-none" id="pooled_wrap">Pooled? {{ form.pooled }}</div>
+    <div class="col-sm">
+        {{ form.category }}
+        {% if form.category.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.category.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="example_wrap">
+        {{ form.example }}
+        {% if form.example.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.example.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="value_wrap">
+        {{ form.value }}
+        {% if form.value.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.value.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="note_wrap">
+        {{ form.note }}
+        {% if form.note.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.note.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="pooled_wrap">
+        Pooled? {{ form.pooled }}
+        {% if form.pooled.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.pooled.errors }}</div>
+        {% endif %}
+    </div>
 </div>
 {% for item in object.spent_freebies %}
     <div class="row">

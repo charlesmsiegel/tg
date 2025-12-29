@@ -155,10 +155,15 @@ class NodeForm(forms.ModelForm):
         return valid
 
     def save(self, commit=True):
+        # Ensure clean() was called to calculate tass/quintessence values
+        if not hasattr(self, "tass_per_week"):
+            self.full_clean()
+
         node = super(NodeForm, self).save(commit=False)
         node.rank = self.cleaned_data.get("rank")
-        node.tass_per_week = self.tass_per_week
-        node.quintessence_per_week = self.quintessence_per_week
+        # Use calculated values from clean(), or defaults if validation failed
+        node.tass_per_week = getattr(self, "tass_per_week", 0)
+        node.quintessence_per_week = getattr(self, "quintessence_per_week", 0)
         if commit:
             node.save()
 

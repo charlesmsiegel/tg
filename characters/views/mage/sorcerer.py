@@ -10,6 +10,7 @@ from characters.forms.mage.numina import (
     NuminaRitualForm,
     PsychicPathRatingFormSet,
 )
+from characters.forms.mage.sorcerer import SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
@@ -142,16 +143,12 @@ class LoadAffinitiesView(DropdownOptionsView):
         return sf.favored_paths.all()
 
 
-class SorcererUpdateView(EditPermissionMixin, UpdateView):
+class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Sorcerer
-    fields = "__all__"
+    form_class = SorcererForm
     template_name = "characters/mage/sorcerer/form.html"
-    success_message = "Sorcerer updated successfully."
+    success_message = "Sorcerer '{name}' updated successfully."
     error_message = "Error updating sorcerer."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class SorcererDetailView(HumanDetailView):
@@ -866,7 +863,7 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["object"] = Human.objects.get(id=self.kwargs["pk"])
+        context["object"] = get_object_or_404(Human, id=self.kwargs["pk"])
         context["current_artifact"] = (
             context["object"]
             .backgrounds.filter(bg__property_name="artifact", complete=False)

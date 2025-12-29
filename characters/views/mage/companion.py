@@ -217,9 +217,9 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
         elif self.object.companion_type in ["familiar"]:
             if self.object.npc == False:
                 self.object.freebies = 25
-            thaumivore = MeritFlaw.objects.get(name="Thaumivore")
-            bond_sharing = Advantage.objects.get(name="Bond-Sharing")
-            paradox_nullification = Advantage.objects.get(name="Paradox Nullification")
+            thaumivore = get_object_or_404(MeritFlaw, name="Thaumivore")
+            bond_sharing = get_object_or_404(Advantage, name="Bond-Sharing")
+            paradox_nullification = get_object_or_404(Advantage, name="Paradox Nullification")
             self.object.add_mf(thaumivore, -5)
             self.object.spent_freebies.append(
                 self.object.freebie_spend_record(thaumivore.name, "meritflaw", -5, cost=-5)
@@ -234,7 +234,7 @@ class CompanionExtrasView(SpecialUserMixin, UpdateView):
                 self.object.freebie_spend_record(paradox_nullification.name, "advantage", 2, cost=2)
             )
 
-            self.object.add_charm(SpiritCharm.objects.get(name="Airt Sense"))
+            self.object.add_charm(get_object_or_404(SpiritCharm, name="Airt Sense"))
 
             self.object.freebies -= 1
 

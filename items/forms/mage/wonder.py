@@ -97,6 +97,10 @@ class WonderForm(forms.Form):
         return valid
 
     def save(self, commit=True):
+        # Ensure clean() was called to populate cleaned_data
+        if not hasattr(self, "cleaned_data"):
+            self.full_clean()
+
         wonder_type = self.cleaned_data.get("wonder_type")
         # If self.instance exists, use it; otherwise, create a new one
         if self.instance:

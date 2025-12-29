@@ -1,0 +1,79 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Freebie Spending Records
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card mb-4">
+            <div class="tg-card-header text-center">
+                <h3 class="tg-card-title wod_heading">Freebie Spending Records</h3>
+            </div>
+            <div class="tg-card-body" style="padding: 24px;">
+                {% if object_list %}
+                    <div class="tg-table-responsive">
+                        <table class="tg-table">
+                            <thead>
+                                <tr>
+                                    <th>Character</th>
+                                    {% if is_st %}
+                                        <th>Player</th>
+                                    {% endif %}
+                                    <th>Trait</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Cost</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in object_list %}
+                                    <tr>
+                                        <td><a href="{{ record.character.get_absolute_url }}">{{ record.character.name }}</a></td>
+                                        {% if is_st %}
+                                            <td>{{ record.character.owner.username }}</td>
+                                        {% endif %}
+                                        <td>{{ record.trait_name }}</td>
+                                        <td>{{ record.trait_type }}</td>
+                                        <td>{{ record.trait_value }}</td>
+                                        <td>{{ record.cost }} freebies</td>
+                                        <td>{{ record.created_at|date:"M d, Y" }}</td>
+                                        <td><a href="{% url 'game:freebie_spending_record:detail' record.pk %}" class="btn btn-sm btn-primary">View</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if is_paginated %}
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item active">
+                                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <p class="text-center text-muted">No freebie spending records found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

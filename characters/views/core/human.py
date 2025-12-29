@@ -332,7 +332,7 @@ class HumanFreebieFormPopulationView(View):
         from core.ajax import dropdown_options_response
 
         category_choice = request.GET.get("category")
-        self.character = self.primary_class.objects.get(pk=request.GET.get("object"))
+        self.character = get_object_or_404(self.primary_class, pk=request.GET.get("object"))
         examples = []
         if category_choice in self.category_method_map().keys():
             examples = self.category_method_map()[category_choice]()
@@ -477,7 +477,8 @@ class HumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         human_pk = self.kwargs.get("pk")
-        num_languages = Human.objects.get(pk=human_pk).num_languages()
+        human = get_object_or_404(Human, pk=human_pk)
+        num_languages = human.num_languages()
         kwargs.update({"pk": human_pk, "num_languages": int(num_languages)})
         return kwargs
 
@@ -511,7 +512,7 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     def get_object(self):
         """Return the Human object for permission checking."""
         if not hasattr(self, "object") or self.object is None:
-            self.object = Human.objects.get(id=self.kwargs["pk"])
+            self.object = get_object_or_404(Human, id=self.kwargs["pk"])
         return self.object
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:

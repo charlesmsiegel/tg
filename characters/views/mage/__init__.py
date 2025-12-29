@@ -44,7 +44,16 @@ from .focus import (
     TenetListView,
     TenetUpdateView,
 )
-from .hedge_magic import PathDetailView, RitualDetailView
+from .hedge_magic import (
+    PathCreateView,
+    PathDetailView,
+    PathListView,
+    PathUpdateView,
+    RitualCreateView,
+    RitualDetailView,
+    RitualListView,
+    RitualUpdateView,
+)
 from .mage import (
     GetAbilitiesView,
     LoadFactionsView,
@@ -82,3 +91,9 @@ from .sorcerer import (
     SorcererUpdateView,
 )
 from .companion import LoadCompanionValuesView
+from .sphere import (
+    SphereCreateView,
+    SphereDetailView,
+    SphereListView,
+    SphereUpdateView,
+)

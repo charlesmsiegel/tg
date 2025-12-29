@@ -1,0 +1,14 @@
+{% extends "core/object.html" %}
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title mta_heading">Sphere Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Property Name:</strong></div>
+            <div class="col-md-8">{{ object.property_name }}</div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

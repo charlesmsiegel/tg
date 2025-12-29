@@ -1,10 +1,12 @@
 from characters import views as characters
 from characters.views.changeling.autumn_person import AutumnPersonDetailView
+from characters.views.changeling.changeling import ChangelingDetailView
 from characters.views.changeling.house import HouseDetailView
 from characters.views.changeling.house_faction import HouseFactionDetailView
 from characters.views.changeling.inanimae import InanimaeDetailView
 from characters.views.changeling.kith import KithDetailView
 from characters.views.changeling.legacy import LegacyDetailView
+from characters.views.changeling.motley import MotleyDetailView
 from characters.views.changeling.nunnehi import NunnehiDetailView
 from django.urls import path
 
@@ -53,5 +55,15 @@ urls = [
         "ctdhuman/<int:pk>/creation/",
         characters.changeling.CtDHumanCharacterCreationView.as_view(),
         name="ctdhuman_creation",
+    ),
+    path(
+        "changeling/<pk>/",
+        ChangelingDetailView.as_view(),
+        name="changeling",
+    ),
+    path(
+        "motley/<pk>/",
+        MotleyDetailView.as_view(),
+        name="motley",
     ),
 ]

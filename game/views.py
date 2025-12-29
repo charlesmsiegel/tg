@@ -32,17 +32,24 @@ from django.views.generic import (
 from game.forms import (
     AddCharForm,
     ChronicleCharacterCreationForm,
+    ChronicleForm,
     ChronicleItemCreationForm,
     ChronicleLocationCreationForm,
+    FreebieSpendingRecordForm,
     JournalEntryForm,
     PostForm,
     SceneCreationForm,
+    SceneForm,
     StoryForm,
+    StoryXPRequestForm,
     STResponseForm,
     WeeklyXPRequestForm,
+    XPSpendingRequestApprovalForm,
+    XPSpendingRequestForm,
 )
 from game.models import (
     Chronicle,
+    FreebieSpendingRecord,
     Journal,
     JournalEntry,
     ObjectType,
@@ -53,6 +60,7 @@ from game.models import (
     StoryXPRequest,
     Week,
     WeeklyXPRequest,
+    XPSpendingRequest,
 )
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
@@ -1116,3 +1124,321 @@ class SettingElementUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateVie
 
     def get_success_url(self):
         return reverse("game:setting_element:detail", kwargs={"pk": self.object.pk})
+
+
+# XPSpendingRequest Views
+class XPSpendingRequestListView(LoginRequiredMixin, ListView):
+    model = XPSpendingRequest
+    template_name = "game/xp_spending_request/list.html"
+    ordering = ["-created_at"]
+    paginate_by = 50
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("character", "character__owner", "approved_by")
+        # If not ST, only show own character requests
+        if not self.request.user.profile.is_st():
+            qs = qs.filter(character__owner=self.request.user)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_st"] = self.request.user.profile.is_st()
+        if context["is_st"]:
+            context["pending_count"] = XPSpendingRequest.objects.filter(
+                approved="Pending"
+            ).count()
+        return context
+
+
+class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
+    model = XPSpendingRequest
+    template_name = "game/xp_spending_request/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("character", "character__owner", "approved_by")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_st"] = self.request.user.profile.is_st()
+        context["is_owner"] = self.object.character.owner == self.request.user
+
+        # Add approval form for STs
+        if context["is_st"] and self.object.approved == "Pending":
+            context["approval_form"] = XPSpendingRequestApprovalForm(instance=self.object)
+
+        return context
+
+
+class XPSpendingRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    model = XPSpendingRequest
+    form_class = XPSpendingRequestForm
+    template_name = "game/xp_spending_request/form.html"
+    success_message = "XP spending request submitted successfully!"
+    error_message = "Failed to submit XP spending request. Please correct the errors below."
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check that user owns the character before allowing access."""
+        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
+
+        # Allow admins and staff
+        if request.user.is_superuser or request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check that user owns the character
+        if character.owner != request.user:
+            messages.error(request, "You can only submit requests for your own characters.")
+            raise PermissionDenied("You can only submit requests for your own characters")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("game:xp_spending_request:list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return context
+
+
+class XPSpendingRequestUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateView):
+    model = XPSpendingRequest
+    form_class = XPSpendingRequestForm
+    template_name = "game/xp_spending_request/form.html"
+    success_message = "XP spending request updated successfully!"
+    error_message = "Failed to update XP spending request. Please correct the errors below."
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("character")
+        # Only allow editing pending requests
+        return qs.filter(approved="Pending")
+
+    def get_success_url(self):
+        return reverse("game:xp_spending_request:detail", kwargs={"pk": self.object.pk})
+
+
+class XPSpendingRequestApproveView(StorytellerRequiredMixin, View):
+    """View for STs to approve/deny XP spending requests."""
+
+    def post(self, request, *args, **kwargs):
+        from django.utils import timezone
+
+        xp_request = get_object_or_404(XPSpendingRequest, pk=kwargs["pk"])
+
+        if xp_request.approved != "Pending":
+            messages.warning(request, "This XP request has already been processed.")
+            return redirect("game:xp_spending_request:detail", pk=xp_request.pk)
+
+        form = XPSpendingRequestApprovalForm(request.POST, instance=xp_request)
+
+        if form.is_valid():
+            xp_request = form.save(commit=False)
+            xp_request.approved_at = timezone.now()
+            xp_request.approved_by = request.user
+            xp_request.save()
+
+            if xp_request.approved == "Approved":
+                messages.success(
+                    request,
+                    f"XP spending request for {xp_request.character.name} approved!",
+                )
+            else:
+                messages.info(
+                    request,
+                    f"XP spending request for {xp_request.character.name} denied.",
+                )
+            return redirect("game:xp_spending_request:list")
+        else:
+            messages.error(request, "Failed to process XP request.")
+            return redirect("game:xp_spending_request:detail", pk=xp_request.pk)
+
+
+# FreebieSpendingRecord Views
+class FreebieSpendingRecordListView(LoginRequiredMixin, ListView):
+    model = FreebieSpendingRecord
+    template_name = "game/freebie_spending_record/list.html"
+    ordering = ["-created_at"]
+    paginate_by = 50
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("character", "character__owner")
+        # If not ST, only show own character records
+        if not self.request.user.profile.is_st():
+            qs = qs.filter(character__owner=self.request.user)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_st"] = self.request.user.profile.is_st()
+        return context
+
+
+class FreebieSpendingRecordDetailView(CharacterOwnerOrSTMixin, DetailView):
+    model = FreebieSpendingRecord
+    template_name = "game/freebie_spending_record/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("character", "character__owner")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_st"] = self.request.user.profile.is_st()
+        context["is_owner"] = self.object.character.owner == self.request.user
+        return context
+
+
+class FreebieSpendingRecordCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    model = FreebieSpendingRecord
+    form_class = FreebieSpendingRecordForm
+    template_name = "game/freebie_spending_record/form.html"
+    success_message = "Freebie spending record created successfully!"
+    error_message = "Failed to create freebie spending record. Please correct the errors below."
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check that user owns the character before allowing access."""
+        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
+
+        # Allow admins and staff
+        if request.user.is_superuser or request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Check that user owns the character
+        if character.owner != request.user:
+            messages.error(request, "You can only create records for your own characters.")
+            raise PermissionDenied("You can only create records for your own characters")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("game:freebie_spending_record:list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return context
+
+
+class FreebieSpendingRecordUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateView):
+    model = FreebieSpendingRecord
+    form_class = FreebieSpendingRecordForm
+    template_name = "game/freebie_spending_record/form.html"
+    success_message = "Freebie spending record updated successfully!"
+    error_message = "Failed to update freebie spending record. Please correct the errors below."
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("character")
+
+    def get_success_url(self):
+        return reverse("game:freebie_spending_record:detail", kwargs={"pk": self.object.pk})
+
+
+# StoryXPRequest Create/Update Views
+class StoryXPRequestCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
+    model = StoryXPRequest
+    form_class = StoryXPRequestForm
+    template_name = "game/story_xp_request/form.html"
+    success_message = "Story XP request created successfully!"
+    error_message = "Failed to create story XP request. Please correct the errors below."
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("game:story_xp_request:detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        return context
+
+
+class StoryXPRequestUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
+    model = StoryXPRequest
+    form_class = StoryXPRequestForm
+    template_name = "game/story_xp_request/form.html"
+    success_message = "Story XP request updated successfully!"
+    error_message = "Failed to update story XP request. Please correct the errors below."
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("character", "story")
+
+    def get_success_url(self):
+        return reverse("game:story_xp_request:detail", kwargs={"pk": self.object.pk})
+
+
+# Chronicle Create/Update Views
+class ChronicleCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
+    model = Chronicle
+    form_class = ChronicleForm
+    template_name = "game/chronicle/form.html"
+    success_message = "Chronicle '{name}' created successfully!"
+    error_message = "Failed to create chronicle. Please correct the errors below."
+
+    def get_success_url(self):
+        return reverse("game:chronicle", kwargs={"pk": self.object.pk})
+
+
+class ChronicleUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
+    model = Chronicle
+    form_class = ChronicleForm
+    template_name = "game/chronicle/form.html"
+    success_message = "Chronicle '{name}' updated successfully!"
+    error_message = "Failed to update chronicle. Please correct the errors below."
+
+    def get_success_url(self):
+        return reverse("game:chronicle", kwargs={"pk": self.object.pk})
+
+
+# Scene Create/Update Views
+class SceneCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
+    model = Scene
+    form_class = SceneForm
+    template_name = "game/scene/form.html"
+    success_message = "Scene created successfully!"
+    error_message = "Failed to create scene. Please correct the errors below."
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if "chronicle_pk" in self.kwargs:
+            kwargs["chronicle"] = get_object_or_404(Chronicle, pk=self.kwargs["chronicle_pk"])
+        return kwargs
+
+    def form_valid(self, form):
+        # Set chronicle from URL if provided
+        if "chronicle_pk" in self.kwargs:
+            form.instance.chronicle = get_object_or_404(Chronicle, pk=self.kwargs["chronicle_pk"])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("game:scene", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if "chronicle_pk" in self.kwargs:
+            context["chronicle"] = get_object_or_404(Chronicle, pk=self.kwargs["chronicle_pk"])
+        return context
+
+
+class SceneUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
+    model = Scene
+    form_class = SceneForm
+    template_name = "game/scene/form.html"
+    success_message = "Scene updated successfully!"
+    error_message = "Failed to update scene. Please correct the errors below."
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("chronicle", "location")
+
+    def get_success_url(self):
+        return reverse("game:scene", kwargs={"pk": self.object.pk})
