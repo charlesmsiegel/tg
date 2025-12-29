@@ -23,17 +23,27 @@ from django.views.generic import (
 
 
 class STRequiredMixin(UserPassesTestMixin):
-    """Mixin to restrict access to Storytellers only"""
+    """Mixin to restrict access to Storytellers only (or superusers/staff)"""
 
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.profile.is_st()
+        user = self.request.user
+        if not user.is_authenticated:
+            return False
+        # Allow superusers and staff
+        if user.is_superuser or user.is_staff:
+            return True
+        return user.profile.is_st()
 
     def handle_no_permission(self):
+        # If user is not authenticated, let LoginRequiredMixin handle it
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        # User is authenticated but not an ST
         messages.error(
             self.request,
             "You must be a Storyteller to access template management features.",
         )
-        return redirect("core:index")
+        return redirect("home")
 
 
 class CharacterTemplateListView(LoginRequiredMixin, STRequiredMixin, ListView):
@@ -101,7 +111,7 @@ class CharacterTemplateCreateView(LoginRequiredMixin, STRequiredMixin, MessageMi
         return kwargs
 
     def get_success_url(self):
-        return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
+        return reverse("character_template_detail", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateUpdateView(LoginRequiredMixin, STRequiredMixin, MessageMixin, UpdateView):
@@ -124,7 +134,7 @@ class CharacterTemplateUpdateView(LoginRequiredMixin, STRequiredMixin, MessageMi
         return kwargs
 
     def get_success_url(self):
-        return reverse("core:character_template_detail", kwargs={"pk": self.object.pk})
+        return reverse("character_template_detail", kwargs={"pk": self.object.pk})
 
 
 class CharacterTemplateDeleteView(LoginRequiredMixin, STRequiredMixin, MessageMixin, DeleteView):
@@ -132,7 +142,7 @@ class CharacterTemplateDeleteView(LoginRequiredMixin, STRequiredMixin, MessageMi
 
     model = CharacterTemplate
     template_name = "core/character_template/delete.html"
-    success_url = reverse_lazy("core:character_template_list")
+    success_url = reverse_lazy("character_template_list")
     success_message = "Template deleted successfully!"
 
     def get_queryset(self):
@@ -186,7 +196,7 @@ class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMi
 
     form_class = CharacterTemplateImportForm
     template_name = "core/character_template/import.html"
-    success_url = reverse_lazy("core:character_template_list")
+    success_url = reverse_lazy("character_template_list")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -237,7 +247,7 @@ class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMi
                 f"Successfully imported template '{template.name}'. You can now edit it or use it for character creation.",
             )
 
-            return redirect("core:character_template_detail", pk=template.pk)
+            return redirect("character_template_detail", pk=template.pk)
 
         except json.JSONDecodeError:
             messages.error(self.request, "Invalid JSON file. Please check the format.")
@@ -262,7 +272,7 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
                     request,
                     f"Character type '{template.character_type}' not supported for quick NPC creation.",
                 )
-                return redirect("core:character_template_detail", pk=template.pk)
+                return redirect("character_template_detail", pk=template.pk)
 
             # Create NPC character with basic info
             npc_name = f"{template.concept} (NPC)"
@@ -290,7 +300,7 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Error creating NPC from template: {str(e)}")
-            return redirect("core:character_template_detail", pk=template.pk)
+            return redirect("character_template_detail", pk=template.pk)
 
     def get_character_model(self, template):
         """Get the appropriate character model based on template character_type"""
