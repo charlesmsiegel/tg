@@ -1,7 +1,10 @@
 """Tests for Demon model."""
 
 from characters.models.demon import Demon
-from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
+from characters.models.demon.apocalyptic_form import (
+    ApocalypticForm,
+    ApocalypticFormTrait,
+)
 from characters.models.demon.demon import LoreRating
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse

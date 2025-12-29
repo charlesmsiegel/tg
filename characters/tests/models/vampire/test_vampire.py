@@ -428,11 +428,14 @@ class TestVampireVirtues(VampireModelTestCase):
             courage=4,
         )
         virtues = vampire.get_active_virtues()
-        self.assertEqual(virtues, {
-            "Conscience": 3,
-            "Self-Control": 2,
-            "Courage": 4,
-        })
+        self.assertEqual(
+            virtues,
+            {
+                "Conscience": 3,
+                "Self-Control": 2,
+                "Courage": 4,
+            },
+        )
 
     def test_get_active_virtues_path(self):
         """Test get_active_virtues for Path follower."""
@@ -446,11 +449,14 @@ class TestVampireVirtues(VampireModelTestCase):
             courage=2,
         )
         virtues = vampire.get_active_virtues()
-        self.assertEqual(virtues, {
-            "Conviction": 4,
-            "Instinct": 3,
-            "Courage": 2,
-        })
+        self.assertEqual(
+            virtues,
+            {
+                "Conviction": 4,
+                "Instinct": 3,
+                "Courage": 2,
+            },
+        )
 
     def test_set_virtue_by_name_valid(self):
         """Test set_virtue_by_name with valid virtue names."""

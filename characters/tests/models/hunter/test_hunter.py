@@ -203,8 +203,13 @@ class TestHunter(TestCase):
         """Test freebie spending works for all edge types."""
         # Test conviction edges
         conviction_edges = [
-            "discern", "burden", "balance", "expose",
-            "investigate", "witness", "prosecute"
+            "discern",
+            "burden",
+            "balance",
+            "expose",
+            "investigate",
+            "witness",
+            "prosecute",
         ]
         for edge in conviction_edges:
             result = self.hunter.spend_freebies(edge)
@@ -212,20 +217,14 @@ class TestHunter(TestCase):
             self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")
 
         # Test vision edges
-        vision_edges = [
-            "illuminate", "ward", "cleave", "hide",
-            "blaze", "radiate", "vengeance"
-        ]
+        vision_edges = ["illuminate", "ward", "cleave", "hide", "blaze", "radiate", "vengeance"]
         for edge in vision_edges:
             result = self.hunter.spend_freebies(edge)
             self.assertTrue(result["success"], f"Failed for edge: {edge}")
             self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")
 
         # Test zeal edges
-        zeal_edges = [
-            "demand", "confront", "donate", "becalm",
-            "respire", "rejuvenate", "redeem"
-        ]
+        zeal_edges = ["demand", "confront", "donate", "becalm", "respire", "rejuvenate", "redeem"]
         for edge in zeal_edges:
             result = self.hunter.spend_freebies(edge)
             self.assertTrue(result["success"], f"Failed for edge: {edge}")
@@ -289,34 +288,62 @@ class TestHtRHuman(TestCase):
     def test_htrhuman_talents(self):
         """Test HtRHuman has correct talents."""
         expected_talents = [
-            "alertness", "athletics", "brawl", "dodge", "empathy",
-            "expression", "intimidation", "streetwise", "subterfuge",
-            "awareness", "leadership"
+            "alertness",
+            "athletics",
+            "brawl",
+            "dodge",
+            "empathy",
+            "expression",
+            "intimidation",
+            "streetwise",
+            "subterfuge",
+            "awareness",
+            "leadership",
         ]
         self.assertEqual(self.human.talents, expected_talents)
 
     def test_htrhuman_skills(self):
         """Test HtRHuman has correct skills."""
         expected_skills = [
-            "crafts", "drive", "etiquette", "firearms", "melee",
-            "stealth", "animal_ken", "larceny", "performance",
-            "repair", "survival"
+            "crafts",
+            "drive",
+            "etiquette",
+            "firearms",
+            "melee",
+            "stealth",
+            "animal_ken",
+            "larceny",
+            "performance",
+            "repair",
+            "survival",
         ]
         self.assertEqual(self.human.skills, expected_skills)
 
     def test_htrhuman_knowledges(self):
         """Test HtRHuman has correct knowledges."""
         expected_knowledges = [
-            "academics", "computer", "investigation", "medicine", "science",
-            "finance", "law", "occult", "politics", "technology"
+            "academics",
+            "computer",
+            "investigation",
+            "medicine",
+            "science",
+            "finance",
+            "law",
+            "occult",
+            "politics",
+            "technology",
         ]
         self.assertEqual(self.human.knowledges, expected_knowledges)
 
     def test_htrhuman_allowed_backgrounds(self):
         """Test HtRHuman has correct allowed backgrounds."""
         expected_backgrounds = [
-            "allies", "contacts", "influence", "mentor",
-            "resources", "status_background"
+            "allies",
+            "contacts",
+            "influence",
+            "mentor",
+            "resources",
+            "status_background",
         ]
         self.assertEqual(self.human.allowed_backgrounds, expected_backgrounds)
 

@@ -493,17 +493,9 @@ class LinkedNPCFormHumanVariantsTestCase(TestCase):
         self.assertIsInstance(npc, DtFHuman)
 
     def test_creates_thrall(self):
-        """Test form creates Thrall NPC.
-
-        Note: Thrall requires 'enhancements' field (blank=False) which the form
-        currently doesn't handle. This test verifies the form validates but
-        documents that creating a Thrall NPC via LinkedNPCForm requires updating
-        the model or form to handle this requirement.
-        """
+        """Test form creates Thrall NPC."""
         data = {"npc_type": "thrall", "name": "Test Thrall", "rank": 2}
         form = LinkedNPCForm(data=data)
         self.assertTrue(form.is_valid())
-        # Thrall.enhancements has blank=False but default=list, causing
-        # validation to fail on save. This is a known limitation.
-        with self.assertRaises(Exception):
-            form.save()
+        npc = form.save()
+        self.assertIsInstance(npc, Thrall)

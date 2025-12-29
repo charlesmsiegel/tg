@@ -1,6 +1,9 @@
 """Tests for Earthbound model."""
 
-from characters.models.demon.apocalyptic_form import ApocalypticForm, ApocalypticFormTrait
+from characters.models.demon.apocalyptic_form import (
+    ApocalypticForm,
+    ApocalypticFormTrait,
+)
 from characters.models.demon.earthbound import Earthbound
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage

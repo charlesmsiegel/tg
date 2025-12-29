@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
+from characters.models.core.ability_block import Ability
+from characters.models.core.attribute_block import Attribute
 from characters.models.mage import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Instrument, Practice
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
 from core.models import Language, Noun
 from django.test import TestCase
 from items.models.core.material import Material
@@ -450,9 +450,7 @@ class TestGrimoireRandomMethods(TestCase):
         cls.inner_material = Material.objects.create(name="Vellum", is_hard=False)
 
         cls.medium = Medium.objects.create(
-            name="Codex",
-            length_modifier=1,
-            length_modifier_type="*"
+            name="Codex", length_modifier=1, length_modifier_type="*"
         )
         cls.faction.media.add(cls.medium)
 
@@ -546,9 +544,7 @@ class TestGrimoireRandomMethods(TestCase):
 
     def test_random_length_with_division_modifier(self):
         div_medium = Medium.objects.create(
-            name="Scroll",
-            length_modifier=2,
-            length_modifier_type="/"
+            name="Scroll", length_modifier=2, length_modifier_type="/"
         )
         self.grimoire.medium = div_medium
         self.grimoire.random_length()
@@ -556,9 +552,7 @@ class TestGrimoireRandomMethods(TestCase):
 
     def test_random_length_with_addition_modifier(self):
         add_medium = Medium.objects.create(
-            name="Stone Tablet",
-            length_modifier=50,
-            length_modifier_type="+"
+            name="Stone Tablet", length_modifier=50, length_modifier_type="+"
         )
         self.grimoire.medium = add_medium
         self.grimoire.random_length()
@@ -566,9 +560,7 @@ class TestGrimoireRandomMethods(TestCase):
 
     def test_random_length_with_subtraction_modifier(self):
         sub_medium = Medium.objects.create(
-            name="Compact",
-            length_modifier=10,
-            length_modifier_type="-"
+            name="Compact", length_modifier=10, length_modifier_type="-"
         )
         self.grimoire.medium = sub_medium
         self.grimoire.random_length()
@@ -603,10 +595,7 @@ class TestGrimoireRandomMethods(TestCase):
     def test_random_focus_with_specific_values(self):
         self.grimoire.faction = self.faction
         self.grimoire.save()
-        self.grimoire.random_focus(
-            practices=[self.practice],
-            instruments=[self.instrument]
-        )
+        self.grimoire.random_focus(practices=[self.practice], instruments=[self.instrument])
         self.assertIn(self.practice, self.grimoire.practices.all())
         self.assertIn(self.instrument, self.grimoire.instruments.all())
 
@@ -725,10 +714,7 @@ class TestGrimoireRandomMaterial(TestCase):
         self.grimoire = Grimoire.objects.create(name="Material Test")
 
     def test_random_material_with_specific_values(self):
-        self.grimoire.random_material(
-            cover_material=self.cover,
-            inner_material=self.inner
-        )
+        self.grimoire.random_material(cover_material=self.cover, inner_material=self.inner)
         self.assertEqual(self.grimoire.cover_material, self.cover)
         self.assertEqual(self.grimoire.inner_material, self.inner)
 

@@ -99,9 +99,7 @@ class RitualWithSecondaryLoreTests(TestCase):
             house=self.house,
             primary_lore=self.primary_lore,
             primary_lore_rating=3,
-            secondary_lore_requirements=[
-                {"lore_id": self.secondary_lore.pk, "rating": 2}
-            ],
+            secondary_lore_requirements=[{"lore_id": self.secondary_lore.pk, "rating": 2}],
         )
 
     def test_secondary_lore_requirements(self):
@@ -265,9 +263,7 @@ class RitualDisplayMethodsTests(TestCase):
             house=self.house,
             primary_lore=self.primary_lore,
             primary_lore_rating=3,
-            secondary_lore_requirements=[
-                {"lore_id": self.secondary_lore.pk, "rating": 2}
-            ],
+            secondary_lore_requirements=[{"lore_id": self.secondary_lore.pk, "rating": 2}],
         )
 
     def test_get_primary_lore_display(self):

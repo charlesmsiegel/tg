@@ -783,8 +783,16 @@ class TestMtRHumanAbilityLists(TestCase):
     def test_talents_list(self):
         """Verify talents list is complete."""
         expected_talents = [
-            "alertness", "athletics", "brawl", "empathy", "expression",
-            "intimidation", "streetwise", "subterfuge", "awareness", "leadership",
+            "alertness",
+            "athletics",
+            "brawl",
+            "empathy",
+            "expression",
+            "intimidation",
+            "streetwise",
+            "subterfuge",
+            "awareness",
+            "leadership",
         ]
         for talent in expected_talents:
             self.assertIn(talent, self.human.talents)
@@ -793,8 +801,17 @@ class TestMtRHumanAbilityLists(TestCase):
     def test_skills_list(self):
         """Verify skills list is complete."""
         expected_skills = [
-            "crafts", "drive", "etiquette", "firearms", "melee", "stealth",
-            "animal_ken", "larceny", "meditation", "performance", "survival",
+            "crafts",
+            "drive",
+            "etiquette",
+            "firearms",
+            "melee",
+            "stealth",
+            "animal_ken",
+            "larceny",
+            "meditation",
+            "performance",
+            "survival",
         ]
         for skill in expected_skills:
             self.assertIn(skill, self.human.skills)
@@ -803,8 +820,17 @@ class TestMtRHumanAbilityLists(TestCase):
     def test_knowledges_list(self):
         """Verify knowledges list is complete."""
         expected_knowledges = [
-            "academics", "computer", "investigation", "medicine", "science",
-            "enigmas", "law", "occult", "politics", "technology", "theology",
+            "academics",
+            "computer",
+            "investigation",
+            "medicine",
+            "science",
+            "enigmas",
+            "law",
+            "occult",
+            "politics",
+            "technology",
+            "theology",
         ]
         for knowledge in expected_knowledges:
             self.assertIn(knowledge, self.human.knowledges)
@@ -813,9 +839,19 @@ class TestMtRHumanAbilityLists(TestCase):
     def test_allowed_backgrounds_list(self):
         """Verify allowed backgrounds list is complete."""
         expected_backgrounds = [
-            "contacts", "mentor", "allies", "resources", "retainers",
-            "cult", "tomb", "rank", "remembrance", "vessel", "artifact",
-            "ka", "amenti_companion",
+            "contacts",
+            "mentor",
+            "allies",
+            "resources",
+            "retainers",
+            "cult",
+            "tomb",
+            "rank",
+            "remembrance",
+            "vessel",
+            "artifact",
+            "ka",
+            "amenti_companion",
         ]
         for background in expected_backgrounds:
             self.assertIn(background, self.human.allowed_backgrounds)

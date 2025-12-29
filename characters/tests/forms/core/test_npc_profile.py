@@ -514,13 +514,9 @@ class NPCProfileFormHumanVariantsTestCase(TestCase):
         self.assertIsInstance(npc, Companion)
 
     def test_creates_thrall(self):
-        """Test form creates Thrall NPC.
-
-        Note: Similar to LinkedNPCForm, Thrall requires 'enhancements' field.
-        """
+        """Test form creates Thrall NPC."""
         data = {"npc_type": "thrall", "name": "Demon Servant", "concept": "Pact-bound mortal"}
         form = NPCProfileForm(data=data, user=self.user)
         self.assertTrue(form.is_valid())
-        # Thrall.enhancements has blank=False, causing validation to fail.
-        with self.assertRaises(Exception):
-            form.save()
+        npc = form.save()
+        self.assertIsInstance(npc, Thrall)

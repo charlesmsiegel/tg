@@ -49,16 +49,13 @@ class ApocalypticFormTraitModelTests(TestCase):
         )
         self.assertEqual(str(trait), "Terrifying Visage (3 pts) (High Torment Only)")
 
-
     def test_get_heading(self):
         """Test get_heading returns DTF heading."""
         self.assertEqual(self.trait.get_heading(), "dtf_heading")
 
     def test_house_relationship(self):
         """Test trait can be associated with a house."""
-        house = DemonHouse.objects.create(
-            name="Devils", celestial_name="Namaru", owner=self.user
-        )
+        house = DemonHouse.objects.create(name="Devils", celestial_name="Namaru", owner=self.user)
         trait = ApocalypticFormTrait.objects.create(
             name="Devilish Charm",
             cost=2,
@@ -120,7 +117,6 @@ class ApocalypticFormModelTests(TestCase):
     def test_str_representation(self):
         """Test string representation of form."""
         self.assertEqual(str(self.form), "Test Form")
-
 
     def test_get_heading(self):
         """Test get_heading returns DTF heading."""
@@ -257,9 +253,7 @@ class ApocalypticFormValidationTests(TestCase):
         # Create 8 cost-1 traits for a valid form
         self.traits = []
         for i in range(8):
-            trait = ApocalypticFormTrait.objects.create(
-                name=f"Trait {i}", cost=1, owner=self.user
-            )
+            trait = ApocalypticFormTrait.objects.create(name=f"Trait {i}", cost=1, owner=self.user)
             self.traits.append(trait)
 
     def test_is_valid_empty_form(self):
@@ -340,9 +334,7 @@ class ApocalypticFormCanAddTraitTests(TestCase):
     def test_cannot_add_low_torment_when_full(self):
         """Cannot add to low torment when already has 4 traits."""
         for i in range(4):
-            trait = ApocalypticFormTrait.objects.create(
-                name=f"Filler {i}", cost=1, owner=self.user
-            )
+            trait = ApocalypticFormTrait.objects.create(name=f"Filler {i}", cost=1, owner=self.user)
             self.form.low_torment_traits.add(trait)
 
         self.assertFalse(self.form.can_add_low_torment_trait(self.normal_trait))
@@ -350,9 +342,7 @@ class ApocalypticFormCanAddTraitTests(TestCase):
     def test_cannot_add_high_torment_when_full(self):
         """Cannot add to high torment when already has 4 traits."""
         for i in range(4):
-            trait = ApocalypticFormTrait.objects.create(
-                name=f"Filler {i}", cost=1, owner=self.user
-            )
+            trait = ApocalypticFormTrait.objects.create(name=f"Filler {i}", cost=1, owner=self.user)
             self.form.high_torment_traits.add(trait)
 
         self.assertFalse(self.form.can_add_high_torment_trait(self.normal_trait))
@@ -380,23 +370,19 @@ class ApocalypticFormCanAddTraitTests(TestCase):
     def test_cannot_exceed_point_limit_low_torment(self):
         """Cannot add trait if it would exceed 16 point limit."""
         # Add 15 points worth of traits
-        expensive = ApocalypticFormTrait.objects.create(
-            name="Expensive", cost=5, owner=self.user
-        )
+        expensive = ApocalypticFormTrait.objects.create(name="Expensive", cost=5, owner=self.user)
         self.form.low_torment_traits.add(expensive)
 
         for i in range(3):
-            trait = ApocalypticFormTrait.objects.create(
-                name=f"Cost3 {i}", cost=3, owner=self.user
-            )
+            trait = ApocalypticFormTrait.objects.create(name=f"Cost3 {i}", cost=3, owner=self.user)
             self.form.high_torment_traits.add(trait)
         # Total: 5 + 9 = 14 points
 
         # Try to add a 3-point trait (would be 17)
-        self.assertFalse(self.form.can_add_low_torment_trait(self.high_torment_only_trait))  # Wait, this is high_torment_only
-        three_cost = ApocalypticFormTrait.objects.create(
-            name="Three Cost", cost=3, owner=self.user
-        )
+        self.assertFalse(
+            self.form.can_add_low_torment_trait(self.high_torment_only_trait)
+        )  # Wait, this is high_torment_only
+        three_cost = ApocalypticFormTrait.objects.create(name="Three Cost", cost=3, owner=self.user)
         self.assertFalse(self.form.can_add_low_torment_trait(three_cost))
 
 
@@ -408,9 +394,7 @@ class ApocalypticFormAddTraitTests(TestCase):
         self.user = User.objects.create_user(username="testuser", password="testpass")
         self.form = ApocalypticForm.objects.create(name="Test Form", owner=self.user)
 
-        self.trait = ApocalypticFormTrait.objects.create(
-            name="Power", cost=2, owner=self.user
-        )
+        self.trait = ApocalypticFormTrait.objects.create(name="Power", cost=2, owner=self.user)
         self.high_only = ApocalypticFormTrait.objects.create(
             name="Terror", cost=2, high_torment_only=True, owner=self.user
         )
@@ -448,9 +432,7 @@ class ApocalypticFormRemoveTraitTests(TestCase):
         self.user = User.objects.create_user(username="testuser", password="testpass")
         self.form = ApocalypticForm.objects.create(name="Test Form", owner=self.user)
 
-        self.trait = ApocalypticFormTrait.objects.create(
-            name="Power", cost=2, owner=self.user
-        )
+        self.trait = ApocalypticFormTrait.objects.create(name="Power", cost=2, owner=self.user)
         self.other_trait = ApocalypticFormTrait.objects.create(
             name="Other", cost=1, owner=self.user
         )
@@ -493,12 +475,8 @@ class ApocalypticFormCopyTests(TestCase):
         self.low_traits = []
         self.high_traits = []
         for i in range(4):
-            low = ApocalypticFormTrait.objects.create(
-                name=f"Low {i}", cost=1, owner=self.user
-            )
-            high = ApocalypticFormTrait.objects.create(
-                name=f"High {i}", cost=1, owner=self.user
-            )
+            low = ApocalypticFormTrait.objects.create(name=f"Low {i}", cost=1, owner=self.user)
+            high = ApocalypticFormTrait.objects.create(name=f"High {i}", cost=1, owner=self.user)
             self.low_traits.append(low)
             self.high_traits.append(high)
 
@@ -525,9 +503,7 @@ class ApocalypticFormCopyTests(TestCase):
     def test_copy_from_overwrites_existing(self):
         """copy_from should overwrite existing traits in target."""
         # Add some traits to target first
-        other_trait = ApocalypticFormTrait.objects.create(
-            name="Other", cost=1, owner=self.user
-        )
+        other_trait = ApocalypticFormTrait.objects.create(name="Other", cost=1, owner=self.user)
         self.target.low_torment_traits.add(other_trait)
 
         self.target.copy_from(self.source)
