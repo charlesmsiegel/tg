@@ -8,10 +8,10 @@ class Pact(models.Model):
     demon = models.ForeignKey("Demon", on_delete=models.CASCADE, null=True)
     thrall = models.ForeignKey("Thrall", on_delete=models.CASCADE, null=True)
 
-    terms = models.TextField(default="")
+    terms = models.TextField(default="", blank=True)
     faith_payment = models.IntegerField(default=0)  # How much Faith thrall provides per interval
     enhancements = models.JSONField(
-        default=list
+        default=list, blank=True
     )  # List of enhancements granted (list is callable - safe)
 
     active = models.BooleanField(default=True)
