@@ -103,4 +103,9 @@ urls = [
         views.mage.CabalUpdateView.as_view(),
         name="cabal",
     ),
+    path(
+        "sphere/<pk>/",
+        views.mage.SphereUpdateView.as_view(),
+        name="sphere",
+    ),
 ]

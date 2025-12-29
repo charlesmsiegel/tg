@@ -62,4 +62,5 @@ urls = [
     path("paths/<pk>/", views.mage.PathDetailView.as_view(), name="path"),
     path("rituals/<pk>/", views.mage.RitualDetailView.as_view(), name="ritual"),
     path("advantages/<pk>/", views.mage.AdvantageDetailView.as_view(), name="advantage"),
+    path("sphere/<pk>/", views.mage.SphereDetailView.as_view(), name="sphere"),
 ]

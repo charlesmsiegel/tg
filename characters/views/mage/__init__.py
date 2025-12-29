@@ -86,3 +86,9 @@ from .sorcerer import (
     SorcererDetailView,
     SorcererUpdateView,
 )
+from .sphere import (
+    SphereCreateView,
+    SphereDetailView,
+    SphereListView,
+    SphereUpdateView,
+)

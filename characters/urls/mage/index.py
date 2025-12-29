@@ -47,4 +47,5 @@ urls = [
     path("paths/", views.mage.PathListView.as_view(), name="path"),
     path("rituals/", views.mage.RitualListView.as_view(), name="ritual"),
     path("cabal/", views.mage.CabalListView.as_view(), name="cabal"),
+    path("spheres/", views.mage.SphereListView.as_view(), name="sphere"),
 ]
