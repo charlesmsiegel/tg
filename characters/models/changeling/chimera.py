@@ -96,8 +96,11 @@ class Chimera(Model):
         verbose_name = "Chimera"
         verbose_name_plural = "Chimera"
 
+    def get_absolute_url(self):
+        return reverse("characters:changeling:chimera", kwargs={"pk": self.pk})
+
     def get_update_url(self):
-        return reverse("characters:changeling:update:chimera", args=[str(self.id)])
+        return reverse("characters:changeling:update:chimera", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
@@ -107,6 +110,6 @@ class Chimera(Model):
         return "ctd_heading"
 
     def __str__(self):
-        if self.name:
+        if self.name and self.chimera_type:
             return f"{self.name} ({self.get_chimera_type_display()})"
-        return super().__str__()
+        return self.name if self.name else super().__str__()

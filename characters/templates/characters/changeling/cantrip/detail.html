@@ -1,0 +1,56 @@
+{% extends "core/object.html" %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header ctd_heading">
+            <h4>{{ object.name }}</h4>
+        </div>
+        <div class="tg-card-body">
+            <div class="row">
+                <div class="col-4"><strong>Art:</strong></div>
+                <div class="col-8">{{ object.get_art_display|default:"-" }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Primary Realm:</strong></div>
+                <div class="col-8">{{ object.get_primary_realm_display|default:"-" }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Level:</strong></div>
+                <div class="col-8">{{ object.level }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Difficulty:</strong></div>
+                <div class="col-8">{{ object.difficulty }}</div>
+            </div>
+            {% if object.glamour_cost %}
+            <div class="row">
+                <div class="col-4"><strong>Glamour Cost:</strong></div>
+                <div class="col-8">{{ object.glamour_cost }}</div>
+            </div>
+            {% endif %}
+            {% if object.duration %}
+            <div class="row">
+                <div class="col-4"><strong>Duration:</strong></div>
+                <div class="col-8">{{ object.duration }}</div>
+            </div>
+            {% endif %}
+            {% if object.range %}
+            <div class="row">
+                <div class="col-4"><strong>Range:</strong></div>
+                <div class="col-8">{{ object.range }}</div>
+            </div>
+            {% endif %}
+            {% if object.type_of_effect %}
+            <div class="row">
+                <div class="col-4"><strong>Type:</strong></div>
+                <div class="col-8">{{ object.get_type_of_effect_display }}</div>
+            </div>
+            {% endif %}
+            {% if object.effect %}
+            <div class="row">
+                <div class="col-4"><strong>Effect:</strong></div>
+                <div class="col-8">{{ object.effect }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock contents %}
