@@ -56,6 +56,34 @@ class TestLibrary(TestCase):
         self.library.books.add(self.grimoire_3)
         self.assertEqual(self.library.num_books(), 3)
 
+    def test_library_type(self):
+        """Test library type is correctly set."""
+        self.assertEqual(self.library.type, "library")
+
+    def test_library_gameline(self):
+        """Test library gameline is mta."""
+        self.assertEqual(self.library.gameline, "mta")
+
+    def test_get_heading(self):
+        """Test get_heading returns mta_heading."""
+        self.assertEqual(self.library.get_heading(), "mta_heading")
+
+
+class TestLibraryIncreaseRank(TestCase):
+    """Test Library increase_rank method."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.library = Library.objects.create(name="Test Library", rank=1, owner=self.user)
+
+    def test_increase_rank_with_new_book(self):
+        """Test increase_rank with a new book adds that book."""
+        new_grimoire = Grimoire.objects.create(name="New Book", rank=1)
+        initial_rank = self.library.rank
+        self.library.increase_rank(book=new_grimoire)
+        self.assertEqual(self.library.rank, initial_rank + 1)
+        self.assertIn(new_grimoire, self.library.books.all())
+
 
 class TestLibraryDetailView(TestCase):
     def setUp(self):
