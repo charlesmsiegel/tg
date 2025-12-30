@@ -529,12 +529,21 @@ class Mage(MtAHuman):
         }
 
     @transaction.atomic
-    def spend_xp(self, trait):
+    def spend_xp(self, trait=None, *, trait_name=None, trait_display=None, cost=None, category=None, trait_value=0):
         """
         Spend XP on a trait atomically.
 
+        Supports two calling conventions:
+        1. Legacy: spend_xp(trait) - auto-calculates cost and applies change immediately
+        2. New: spend_xp(trait_name=..., trait_display=..., cost=..., category=..., trait_value=...)
+           Creates an XPSpendingRequest for approval
+
         All XP spending is wrapped in a transaction to prevent race conditions.
         """
+        # If called with new keyword-argument style, delegate to parent
+        if trait_name is not None or trait_display is not None or cost is not None or category is not None:
+            return super().spend_xp(trait_name=trait_name, trait_display=trait_display, cost=cost, category=category, trait_value=trait_value)
+
         output = super().spend_xp(trait)
         if output in [True, False]:
             return output
@@ -543,20 +552,19 @@ class Mage(MtAHuman):
         mage = Mage.objects.select_for_update().get(pk=self.pk)
 
         if trait == "arete":
-            cost = mage.xp_cost("arete") * getattr(mage, trait)
+            cost = mage.xp_cost("arete", getattr(mage, trait))
             if cost <= mage.xp:
                 if mage.add_arete():
                     mage.xp -= cost
-                    mage.add_to_spend(trait, getattr(mage, trait), cost)
                     mage.save()
                     return True
                 return False
             return False
         if trait in mage.get_spheres():
             if mage.affinity_sphere == trait:
-                cost = mage.xp_cost("affinity sphere") * getattr(mage, trait)
+                cost = mage.xp_cost("affinity_sphere", getattr(mage, trait))
             else:
-                cost = mage.xp_cost("sphere") * getattr(mage, trait)
+                cost = mage.xp_cost("sphere", getattr(mage, trait))
             if cost == 0:
                 cost = 10
             if mage.merits_and_flaws.filter(name=f"Sphere Natural - {trait.title()}").exists():
@@ -572,37 +580,19 @@ class Mage(MtAHuman):
             if cost <= mage.xp:
                 if mage.add_sphere(trait):
                     mage.xp -= cost
-                    mage.add_to_spend(trait, getattr(mage, trait), cost)
                     mage.save()
                     return True
                 return False
             return False
         if trait == "rote points":
-            cost = mage.xp_cost("rote points")
+            cost = mage.xp_cost("rotes", 1)
             if cost <= mage.xp:
                 mage.rote_points += 3
                 mage.xp -= cost
-                mage.add_to_spend(trait, getattr(mage, trait.replace(" ", "_")), cost)
                 mage.save()
                 return True
             return False
         return trait
-
-    def xp_cost(self, trait):
-        cost = super().xp_cost(trait)
-        if cost != 10000:
-            return cost
-        costs = defaultdict(
-            lambda: 10000,
-            {
-                "affinity sphere": 7,
-                "new sphere": 10,
-                "sphere": 8,
-                "arete": 8,
-                "rote points": 1,
-            },
-        )
-        return costs[trait]
 
     def freebie_frequencies(self):
         return {
