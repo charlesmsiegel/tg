@@ -8,6 +8,7 @@ from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
+from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
@@ -545,7 +546,15 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
 
 
 class HumanCharacterCreationView(DictView):
-    view_mapping = {1: HumanAttributeView, 2: HumanBiographicalInformation}
+    view_mapping = {
+        1: HumanAttributeView,
+        2: HumanAbilityView,
+        3: HumanBackgroundsView,
+        4: HumanBiographicalInformation,
+        5: HumanFreebiesView,
+        6: HumanLanguagesView,
+        7: HumanSpecialtiesView,
+    }
     model_class = Human
     key_property = "creation_status"
     default_redirect = HumanDetailView
