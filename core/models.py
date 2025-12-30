@@ -632,6 +632,43 @@ class BaseMeritFlawRating(models.Model):
         return f"{self.mf}: {self.rating}"
 
 
+class BaseBackgroundRating(models.Model):
+    """
+    Abstract base class for Background rating through-models.
+
+    Provides common fields for all Background ratings:
+    - bg: Foreign key to Background
+    - rating: Integer 0-10
+    - note: Optional note about this rating
+    - url: Optional URL for more info
+    - complete: Whether the background is complete
+
+    Concrete subclasses must define:
+    - A parent FK (e.g., `char`, `group`, `chantry`)
+    - Any additional fields (e.g., `pooled`, `display_alt_name`)
+    - Their own Meta class with constraints and ordering as needed
+    """
+
+    bg = models.ForeignKey(
+        "characters.Background",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )
+    note = models.CharField(max_length=100, default="", blank=True)
+    url = models.CharField(max_length=500, default="", blank=True)
+    complete = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.bg} ({self.note})"
+
+
 class Noun(models.Model):
     name = models.TextField(default="")
 

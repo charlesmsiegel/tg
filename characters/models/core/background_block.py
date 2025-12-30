@@ -1,5 +1,5 @@
 from characters.models.core.statistic import Statistic
-from django.core.validators import MaxValueValidator, MinValueValidator
+from core.models import BaseBackgroundRating
 from django.db import models
 from django.db.models import CheckConstraint, Q, Sum
 
@@ -15,8 +15,9 @@ class Background(Statistic):
         ordering = ["name"]
 
 
-class BackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True, db_index=True)
+class BackgroundRating(BaseBackgroundRating):
+    """Background rating for a character."""
+
     char = models.ForeignKey(
         "characters.Human",
         on_delete=models.SET_NULL,
@@ -24,12 +25,6 @@ class BackgroundRating(models.Model):
         related_name="backgrounds",
         db_index=True,
     )
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
-    note = models.CharField(default="", max_length=100)
-    url = models.CharField(default="", max_length=500)
-    complete = models.BooleanField(default=False)
     pooled = models.BooleanField(default=False)
     display_alt_name = models.BooleanField(default=False)
 
@@ -46,9 +41,6 @@ class BackgroundRating(models.Model):
             ),
         ]
 
-    def __str__(self):
-        return f"{self.bg} ({self.note})"
-
     def display_name(self):
         if self.bg.alternate_name == "":
             return self.bg.name
@@ -57,24 +49,18 @@ class BackgroundRating(models.Model):
         return self.bg.name
 
 
-class PooledBackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
+class PooledBackgroundRating(BaseBackgroundRating):
+    """Background rating for a group (pooled backgrounds)."""
+
     group = models.ForeignKey(
         "characters.Group",
         on_delete=models.SET_NULL,
         null=True,
         related_name="pooled_backgrounds",
     )
-    rating = models.IntegerField(default=0)
-    note = models.CharField(default="", max_length=100)
-    url = models.CharField(default="", max_length=500)
-    complete = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["bg__name"]
-
-    def __str__(self):
-        return f"{self.bg} ({self.note})"
 
 
 class BackgroundBlock(models.Model):
