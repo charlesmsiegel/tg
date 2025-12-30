@@ -752,8 +752,8 @@ class JournalListView(LoginRequiredMixin, ListView):
         journals_with_stats = {}
         for journal in context["object_list"]:
             journals_with_stats[journal.pk] = {
-                "entry_count": journal.journalentry_set.count(),
-                "latest_entry": journal.journalentry_set.aggregate(Max("date"))["date__max"],
+                "entry_count": journal.entries.count(),
+                "latest_entry": journal.entries.aggregate(Max("date"))["date__max"],
             }
         context["journal_stats"] = journals_with_stats
         return context

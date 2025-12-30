@@ -1617,6 +1617,118 @@ class TestGetNextSunday(TestCase):
         self.assertEqual(result, date(2024, 1, 14))
 
 
+class TestRelatedNames(TestCase):
+    """Test explicit related_name attributes on ForeignKey fields."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Vampire")
+        self.location = LocationModel.objects.create(
+            name="Test Location", chronicle=self.chronicle
+        )
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.scene = Scene.objects.create(
+            name="Test Scene",
+            chronicle=self.chronicle,
+            location=self.location,
+        )
+        self.journal, _ = Journal.objects.get_or_create(character=self.character)
+
+    def test_strelationship_user_related_name(self):
+        """Test STRelationship.user has related_name='st_relationships'."""
+        from game.models import STRelationship
+
+        STRelationship.objects.create(
+            user=self.user,
+            chronicle=self.chronicle,
+            gameline=self.gameline,
+        )
+
+        # Access via the new explicit related_name
+        relationships = self.user.st_relationships.all()
+        self.assertEqual(relationships.count(), 1)
+        self.assertEqual(relationships.first().chronicle, self.chronicle)
+
+    def test_strelationship_chronicle_related_name(self):
+        """Test STRelationship.chronicle has related_name='st_relationships'."""
+        from game.models import STRelationship
+
+        STRelationship.objects.create(
+            user=self.user,
+            chronicle=self.chronicle,
+            gameline=self.gameline,
+        )
+
+        # Access via the new explicit related_name
+        relationships = self.chronicle.st_relationships.all()
+        self.assertEqual(relationships.count(), 1)
+        self.assertEqual(relationships.first().user, self.user)
+
+    def test_strelationship_gameline_related_name(self):
+        """Test STRelationship.gameline has related_name='st_relationships'."""
+        from game.models import STRelationship
+
+        STRelationship.objects.create(
+            user=self.user,
+            chronicle=self.chronicle,
+            gameline=self.gameline,
+        )
+
+        # Access via the new explicit related_name
+        relationships = self.gameline.st_relationships.all()
+        self.assertEqual(relationships.count(), 1)
+        self.assertEqual(relationships.first().chronicle, self.chronicle)
+
+    def test_userscenereadstatus_user_related_name(self):
+        """Test UserSceneReadStatus.user has related_name='scene_read_statuses'."""
+        from game.models import UserSceneReadStatus
+
+        UserSceneReadStatus.objects.create(
+            user=self.user,
+            scene=self.scene,
+            read=True,
+        )
+
+        # Access via the new explicit related_name
+        statuses = self.user.scene_read_statuses.all()
+        self.assertEqual(statuses.count(), 1)
+        self.assertEqual(statuses.first().scene, self.scene)
+
+    def test_userscenereadstatus_scene_related_name(self):
+        """Test UserSceneReadStatus.scene has related_name='user_read_statuses'."""
+        from game.models import UserSceneReadStatus
+
+        UserSceneReadStatus.objects.create(
+            user=self.user,
+            scene=self.scene,
+            read=True,
+        )
+
+        # Access via the new explicit related_name
+        statuses = self.scene.user_read_statuses.all()
+        self.assertEqual(statuses.count(), 1)
+        self.assertEqual(statuses.first().user, self.user)
+
+    def test_journalentry_journal_related_name(self):
+        """Test JournalEntry.journal has related_name='entries'."""
+        JournalEntry.objects.create(
+            journal=self.journal,
+            message="Test entry",
+            date=now(),
+        )
+
+        # Access via the new explicit related_name
+        entries = self.journal.entries.all()
+        self.assertEqual(entries.count(), 1)
+        self.assertEqual(entries.first().message, "Test entry")
+
 class STRelationshipIndexTests(TestCase):
     """Tests for STRelationship database indexes."""
 

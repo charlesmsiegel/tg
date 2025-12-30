@@ -260,9 +260,27 @@ class STRelationshipManager(models.Manager):
 
 
 class STRelationship(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)
-    chronicle = models.ForeignKey(Chronicle, on_delete=models.SET_NULL, null=True, db_index=True)
-    gameline = models.ForeignKey(Gameline, on_delete=models.SET_NULL, null=True, db_index=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="st_relationships",
+        db_index=True,
+    )
+    chronicle = models.ForeignKey(
+        Chronicle,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="st_relationships",
+        db_index=True,
+    )
+    gameline = models.ForeignKey(
+        Gameline,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="st_relationships",
+        db_index=True,
+    )
 
     objects = STRelationshipManager()
 
@@ -645,8 +663,20 @@ class Scene(models.Model):
 
 
 class UserSceneReadStatus(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)
-    scene = models.ForeignKey(Scene, on_delete=models.SET_NULL, null=True, db_index=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="scene_read_statuses",
+        db_index=True,
+    )
+    scene = models.ForeignKey(
+        Scene,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="user_read_statuses",
+        db_index=True,
+    )
     read = models.BooleanField(default=True)
 
     class Meta:
@@ -697,7 +727,13 @@ class Post(models.Model):
 
 
 class JournalEntry(models.Model):
-    journal = models.ForeignKey("Journal", on_delete=models.SET_NULL, null=True)
+    journal = models.ForeignKey(
+        "Journal",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="entries",
+        db_index=True,
+    )
     message = models.TextField(default="")
     st_message = models.TextField(default="")
     date = models.DateTimeField(db_index=True)
