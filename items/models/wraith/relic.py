@@ -27,6 +27,9 @@ class WraithRelic(ItemModel):
         verbose_name = "Relic"
         verbose_name_plural = "Relics"
 
+    def get_absolute_url(self):
+        return reverse("items:wraith:relic", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("items:wraith:update:relic", args=[str(self.id)])
 
