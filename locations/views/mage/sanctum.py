@@ -32,7 +32,7 @@ class SanctumCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
 class SanctumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Sanctum
-    fields = ["name", "description", "parent"]
+    fields = ["name", "description", "contained_within"]
     template_name = "locations/mage/sanctum/form.html"
     success_message = "Sanctum '{name}' updated successfully!"
     error_message = "Failed to update sanctum. Please correct the errors below."
@@ -41,5 +41,5 @@ class SanctumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

@@ -26,7 +26,7 @@
                     {% for chantry in object_list %}
                     <tr>
                         <td><a href="{{ chantry.get_absolute_url }}">{{ chantry.name }}</a></td>
-                        <td>{% if chantry.parent %}<a href="{{ chantry.parent.get_absolute_url }}">{{ chantry.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{% if chantry.contained_within.exists %}{% for container in chantry.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                         <td>{{ chantry.regent_name|default:"-" }}</td>
                         <td>{{ chantry.size|dots }}</td>
                         <td>{{ chantry.security_level|dots }}</td>

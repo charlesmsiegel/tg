@@ -108,7 +108,7 @@ class NodeForm(forms.ModelForm):
             "size",
             "quintessence_form",
             "tass_form",
-            "parent",
+            "contained_within",
             "gauntlet",
             "shroud",
             "dimension_barrier",
@@ -122,7 +122,7 @@ class NodeForm(forms.ModelForm):
         )
         self.fields["tass_form"].widget.attrs.update({"placeholder": "Enter Tass Form here"})
         self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
 
         self.resonance_formset = NodeResonanceRatingFormSet(
             instance=self.instance,

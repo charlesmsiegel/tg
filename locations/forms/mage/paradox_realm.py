@@ -65,7 +65,7 @@ class ParadoxRealmForm(forms.ModelForm):
             "num_random_obstacles",
             "final_obstacle_type",
             "final_obstacle_details",
-            "parent",
+            "contained_within",
             "gauntlet",
             "shroud",
             "dimension_barrier",
@@ -86,7 +86,7 @@ class ParadoxRealmForm(forms.ModelForm):
         self.fields["description"].widget.attrs.update(
             {"placeholder": "Enter description of the realm", "rows": 4}
         )
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
         self.fields["secondary_sphere"].required = False
         self.fields["secondary_paradigm"].required = False
 

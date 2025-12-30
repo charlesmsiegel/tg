@@ -125,7 +125,7 @@ class TestParadoxRealmFormBasics(TestCase):
         form = ParadoxRealmForm()
         self.assertFalse(form.fields["secondary_sphere"].required)
         self.assertFalse(form.fields["secondary_paradigm"].required)
-        self.assertFalse(form.fields["parent"].required)
+        self.assertFalse(form.fields["contained_within"].required)
 
     def test_form_has_formsets(self):
         """Test form has obstacle and atmosphere formsets."""

@@ -11,8 +11,8 @@ class LocationQuerySet(ModelQuerySet):
     """Custom queryset for LocationModel with chainable query patterns."""
 
     def top_level(self):
-        """Top-level locations (no parent)"""
-        return self.filter(parent=None)
+        """Top-level locations (not contained within any other location)"""
+        return self.filter(contained_within__isnull=True)
 
 
 # Create LocationModelManager from ModelManager to inherit polymorphic_ctype optimization
@@ -28,6 +28,11 @@ class LocationModel(Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name="children",
+    )
+    contained_within = models.ManyToManyField(
+        "LocationModel",
+        blank=True,
+        related_name="contains",
     )
     owned_by = models.ForeignKey(CharacterModel, blank=True, null=True, on_delete=models.SET_NULL)
 

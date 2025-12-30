@@ -60,7 +60,7 @@ class TestNodeFormBasics(TestCase):
         self.assertIn("size", form.fields)
         self.assertIn("quintessence_form", form.fields)
         self.assertIn("tass_form", form.fields)
-        self.assertIn("parent", form.fields)
+        self.assertIn("contained_within", form.fields)
         self.assertIn("gauntlet", form.fields)
         self.assertIn("shroud", form.fields)
         self.assertIn("dimension_barrier", form.fields)

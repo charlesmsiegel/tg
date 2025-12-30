@@ -55,7 +55,7 @@ class ChantryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Chantry
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "faction",
         "leadership_type",
@@ -87,7 +87,7 @@ class ChantryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Chantry
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "faction",
         "leadership_type",

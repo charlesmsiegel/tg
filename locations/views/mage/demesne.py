@@ -32,7 +32,7 @@ class DemesneCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
 class DemesneUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Demesne
-    fields = ["name", "description", "parent", "size", "accessibility"]
+    fields = ["name", "description", "contained_within", "size", "accessibility"]
     template_name = "locations/mage/demesne/form.html"
     success_message = "Demesne '{name}' updated successfully!"
     error_message = "Failed to update demesne. Please correct the errors below."
@@ -41,5 +41,5 @@ class DemesneUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
