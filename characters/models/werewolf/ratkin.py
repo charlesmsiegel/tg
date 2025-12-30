@@ -32,7 +32,7 @@ class Ratkin(Fera):
         ("twitchers", "Twitchers"),  # Psychics
     ]
 
-    aspect = models.CharField(default="", max_length=100, choices=ASPECTS)
+    aspect = models.CharField(default="", max_length=100, choices=ASPECTS, blank=True)
 
     # Ratkin renown
     infamy = models.IntegerField(default=0)  # Like Glory

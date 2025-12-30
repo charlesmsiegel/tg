@@ -28,7 +28,7 @@ class Gurahl(Fera):
         ("kieh", "Kieh"),  # Spring - Healers
     ]
 
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Gurahl renown
     honor = models.IntegerField(default=0)
