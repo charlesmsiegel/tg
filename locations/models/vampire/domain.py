@@ -56,6 +56,9 @@ class Domain(LocationModel):
         verbose_name = "Domain"
         verbose_name_plural = "Domains"
 
+    def get_absolute_url(self):
+        return reverse("locations:vampire:domain", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("locations:vampire:update:domain", args=[str(self.id)])
 

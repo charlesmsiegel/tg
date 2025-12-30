@@ -168,7 +168,7 @@ class TestDomainViews(TestCase):
         """Test domain list view."""
         Domain.objects.create(name="Domain 1")
         Domain.objects.create(name="Domain 2")
-        response = self.client.get("/locations/vampire/domain/")
+        response = self.client.get("/locations/vampire/list/domains/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Domain 1")
         self.assertContains(response, "Domain 2")
