@@ -1,3 +1,4 @@
+from core.models import BaseResonanceRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -196,9 +197,10 @@ class MummyRelic(ItemModel):
 
 
 # Through model for Resonance
-class RelicResonanceRating(models.Model):
+class RelicResonanceRating(BaseResonanceRating):
     relic = models.ForeignKey(MummyRelic, on_delete=models.CASCADE)
     resonance = models.ForeignKey("characters.Resonance", on_delete=models.CASCADE)
+    # Override default to 1 for RelicResonanceRating
     rating = models.IntegerField(
         default=1, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )

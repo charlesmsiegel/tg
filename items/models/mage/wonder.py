@@ -1,4 +1,4 @@
-from characters.models.mage.resonance import Resonance
+from core.models import BaseResonanceRating
 from core.utils import fast_selector
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -7,7 +7,10 @@ from django.urls import reverse
 from items.models.core import ItemModel
 
 
-class WonderResonanceRating(models.Model):
+class WonderResonanceRating(BaseResonanceRating):
+    wonder = models.ForeignKey("Wonder", on_delete=models.SET_NULL, null=True)
+    resonance = models.ForeignKey("characters.Resonance", on_delete=models.SET_NULL, null=True)
+
     class Meta:
         verbose_name = "Wonder Resonance Rating"
         verbose_name_plural = "Wonder Resonance Ratings"
@@ -18,15 +21,6 @@ class WonderResonanceRating(models.Model):
                 violation_error_message="Wonder resonance rating must be between 0 and 10",
             ),
         ]
-
-    wonder = models.ForeignKey("Wonder", on_delete=models.SET_NULL, null=True)
-    resonance = models.ForeignKey("characters.Resonance", on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
-
-    def __str__(self):
-        return f"{self.resonance}: {self.rating}"
 
 
 class Wonder(ItemModel):

@@ -949,3 +949,31 @@ class TemplateApplication(models.Model):
         """Ensure validation runs on save."""
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class BaseResonanceRating(models.Model):
+    """
+    Abstract base class for all Resonance rating models.
+
+    Provides shared structure for rating Resonance across different contexts:
+    - Mages (ResRating)
+    - Wonders (WonderResonanceRating)
+    - Nodes (NodeResonanceRating)
+    - Mummy Relics (RelicResonanceRating)
+
+    Subclasses must define:
+    - A ForeignKey named 'resonance' to characters.Resonance
+    - A ForeignKey to their parent model (mage, wonder, node, relic, etc.)
+    - Meta constraints with unique constraint names
+    """
+
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.resonance}: {self.rating}"
