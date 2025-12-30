@@ -25,7 +25,7 @@
                     {% for haven in object_list %}
                     <tr>
                         <td><a href="{{ haven.get_absolute_url }}">{{ haven.name }}</a></td>
-                        <td>{% if haven.parent %}<a href="{{ haven.parent.get_absolute_url }}">{{ haven.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{% if haven.contained_within.exists %}{% for container in haven.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                         <td>{{ haven.get_size_display }}</td>
                         <td>{{ haven.security|dots }}</td>
                         <td>{{ haven.location|dots }}</td>

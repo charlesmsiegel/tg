@@ -32,7 +32,7 @@ class LibraryCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
 class LibraryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Library
-    fields = ["name", "description", "parent", "rank", "faction", "books"]
+    fields = ["name", "description", "contained_within", "rank", "faction", "books"]
     template_name = "locations/mage/library/form.html"
     success_message = "Library '{name}' updated successfully!"
     error_message = "Failed to update library. Please correct the errors below."

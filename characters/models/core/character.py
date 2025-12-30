@@ -286,14 +286,22 @@ class Character(CharacterModel):
         """
         return self.xp_spendings.filter(approved="Pending").exists()
 
+    @transaction.atomic
     def add_xp(self, amount):
-        """Add XP to the character.
+        """Add XP to the character atomically.
+
+        Uses select_for_update to prevent race conditions when multiple
+        requests try to add XP simultaneously.
 
         Args:
             amount: Integer amount of XP to add.
         """
-        self.xp += amount
-        self.save()
+        # Use select_for_update to lock the row and prevent race conditions
+        char = Character.objects.select_for_update().get(pk=self.pk)
+        char.xp += amount
+        char.save(update_fields=["xp"])
+        # Update self to reflect the change
+        self.xp = char.xp
 
     @transaction.atomic
     def spend_xp(self, trait_name, trait_display, cost, category, trait_value=0):

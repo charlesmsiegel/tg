@@ -114,7 +114,7 @@ class ChantryCreateForm(forms.ModelForm):
         fields = [
             "name",
             "chronicle",
-            "parent",
+            "contained_within",
             "description",
             "faction",
             "leadership_type",

@@ -14,7 +14,7 @@ class WraithFreeholdCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "population",
         "government_type",
         "leader",
@@ -38,7 +38,7 @@ class WraithFreeholdUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "population",
         "government_type",
         "leader",

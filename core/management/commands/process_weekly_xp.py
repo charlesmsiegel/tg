@@ -8,6 +8,7 @@ who participated in finished scenes during the week.
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from django.utils.timezone import now
 from game.models import Week, WeeklyXPRequest, get_next_sunday
 
@@ -150,26 +151,28 @@ class Command(BaseCommand):
                 )
                 created_count += 1
             else:
-                request = WeeklyXPRequest.objects.create(
-                    week=week,
-                    character=character,
-                    finishing=True,  # Default to just finishing XP
-                    approved=self.auto_approve,
-                )
-                created_count += 1
-
-                if self.auto_approve:
-                    approved_count += 1
-                    # Award XP to character
-                    character.add_xp(request.total_xp())
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f"  ✓ {character.name}: Created and approved "
-                            f"(+{request.total_xp()} XP)"
-                        )
+                # Use atomic transaction for request creation and auto-approval
+                with transaction.atomic():
+                    request = WeeklyXPRequest.objects.create(
+                        week=week,
+                        character=character,
+                        finishing=True,  # Default to just finishing XP
+                        approved=self.auto_approve,
                     )
-                else:
-                    self.stdout.write(f"  ✓ {character.name}: Created request (ID: {request.id})")
+                    created_count += 1
+
+                    if self.auto_approve:
+                        approved_count += 1
+                        # Award XP to character
+                        character.add_xp(request.total_xp())
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"  ✓ {character.name}: Created and approved "
+                                f"(+{request.total_xp()} XP)"
+                            )
+                        )
+                    else:
+                        self.stdout.write(f"  ✓ {character.name}: Created request (ID: {request.id})")
 
         # Summary
         self.stdout.write("\n" + "=" * 70)

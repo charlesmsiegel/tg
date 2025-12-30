@@ -143,7 +143,7 @@ class WonderForm(forms.Form):
             raise forms.ValidationError("Charms and Talismans must have Arete ratings")
 
         if not self.resonance_formset.is_valid():
-            return cleaned_data
+            raise forms.ValidationError("Please correct the resonance errors below")
 
         if (
             cleaned_data.get("arete", 0) < cleaned_data.get("rank")
@@ -168,7 +168,7 @@ class WonderForm(forms.Form):
             max_cost = 2 * cleaned_data.get("rank")
 
         if not self.effect_formset.is_valid():
-            raise forms.ValidationError("Effects invalid!")
+            raise forms.ValidationError("Please correct the effect errors below")
         num_powers = len([form.cleaned_data for form in self.effect_formset if form.cleaned_data])
         if cleaned_data.get("wonder_type") == "talisman" and num_powers > cleaned_data.get("rank"):
             raise forms.ValidationError("Talismans may up to their rank in powers")

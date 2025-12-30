@@ -26,7 +26,7 @@ class FreeholdForm(forms.ModelForm):
             "resource_description",
             "passage_description",
             "balefire_description",
-            "parent",
+            "contained_within",
             "owned_by",
             "gauntlet",
             "shroud",
@@ -79,8 +79,8 @@ class FreeholdForm(forms.ModelForm):
             {"placeholder": "If dual nature second archetype is Academy"}
         )
 
-        # Make parent and owned_by not required
-        self.fields["parent"].required = False
+        # Make contained_within and owned_by not required
+        self.fields["contained_within"].required = False
         self.fields["owned_by"].required = False
 
         # Set help text

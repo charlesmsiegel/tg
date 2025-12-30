@@ -7,9 +7,12 @@
                 {{ object.name }}
                 {% if object.rank %}<small><span class="dots colored-dots">{{ object.rank|dots }}</span></small>{% endif %}
             </h1>
-            {% if object.parent %}
+            {% if object.contained_within.exists %}
                 <p class="tg-card-subtitle mb-0">
-                    Located in: <a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a>
+                    Located in:
+                    {% for container in object.contained_within.all %}
+                        <a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 </p>
             {% endif %}
         </div>

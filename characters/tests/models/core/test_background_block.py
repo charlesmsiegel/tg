@@ -201,3 +201,21 @@ class BackgroundPoolableTests(TestCase):
         # Verify counts make sense (at least 2 of each type exist)
         self.assertGreaterEqual(poolable.count(), 2)
         self.assertGreaterEqual(non_poolable.count(), 2)
+class BackgroundRatingIndexTests(TestCase):
+    """Tests for BackgroundRating database indexes."""
+
+    def test_background_rating_has_char_bg_composite_index(self):
+        """Test that BackgroundRating has a composite index on (char, bg)."""
+        indexes = BackgroundRating._meta.indexes
+        index_field_sets = [tuple(idx.fields) for idx in indexes]
+        self.assertIn(("char", "bg"), index_field_sets)
+
+    def test_background_rating_char_field_has_db_index(self):
+        """Test that BackgroundRating.char ForeignKey has db_index=True."""
+        char_field = BackgroundRating._meta.get_field("char")
+        self.assertTrue(char_field.db_index)
+
+    def test_background_rating_bg_field_has_db_index(self):
+        """Test that BackgroundRating.bg ForeignKey has db_index=True."""
+        bg_field = BackgroundRating._meta.get_field("bg")
+        self.assertTrue(bg_field.db_index)

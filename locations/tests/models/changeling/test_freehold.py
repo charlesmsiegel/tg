@@ -115,7 +115,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "resource_description": "Generates mundane revenue",
             "passage_description": "One trod to the Near Dreaming",
             "quirks": "The grass whispers encouragement",
-            "parent": "",
+            "contained_within": [],
             "owned_by": self.character.pk,
         }
 
@@ -184,7 +184,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "resource_description": "",
             "passage_description": "",
             "quirks": "",
-            "parent": "",
+            "contained_within": [],
             "owned_by": self.character.pk,
         }
 
@@ -221,7 +221,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "resource_description": "",
             "passage_description": "",
             "quirks": "",
-            "parent": "",
+            "contained_within": [],
             "owned_by": self.character.pk,
         }
 
@@ -314,7 +314,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             "resource_description": "Ancient texts",
             "passage_description": "Portal to the Deep Dreaming",
             "quirks": "Books rearrange themselves",
-            "parent": "",
+            "contained_within": [],
             "owned_by": self.character.pk,
         }
         response = self.client.post(url, data, follow=True)

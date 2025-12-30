@@ -2,7 +2,7 @@ from characters.models.core import MeritFlaw
 from characters.models.core.merit_flaw_block import MeritFlawBlock
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
-from core.models import BaseMeritFlawRating
+from core.models import BaseMeritFlawRating, BaseResonanceRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
@@ -237,12 +237,9 @@ class NodeMeritFlawRating(BaseMeritFlawRating):
         ]
 
 
-class NodeResonanceRating(models.Model):
+class NodeResonanceRating(BaseResonanceRating):
     node = models.ForeignKey(Node, on_delete=models.SET_NULL, null=True)
     resonance = models.ForeignKey(Resonance, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
 
     class Meta:
         verbose_name = "Node Resonance Rating"

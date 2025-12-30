@@ -26,7 +26,7 @@
                     {% for domain in object_list %}
                     <tr>
                         <td><a href="{{ domain.get_absolute_url }}">{{ domain.name }}</a></td>
-                        <td>{% if domain.parent %}<a href="{{ domain.parent.get_absolute_url }}">{{ domain.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{% if domain.contained_within.exists %}{% for container in domain.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                         <td>{{ domain.size|dots }}</td>
                         <td>{{ domain.population|dots }}</td>
                         <td>{{ domain.control|dots }}</td>

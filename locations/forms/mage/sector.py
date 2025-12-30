@@ -8,7 +8,7 @@ class SectorForm(forms.ModelForm):
         fields = [
             "name",
             "description",
-            "parent",
+            "contained_within",
             # Classification
             "sector_class",
             "access_level",
@@ -91,9 +91,8 @@ class SectorForm(forms.ModelForm):
             {"placeholder": "Landmarks, AROs, unique properties, special locations..."}
         )
 
-        # Set parent as not required
-        self.fields["parent"].required = False
-        self.fields["parent"].empty_label = "Parent Location (Optional)"
+        # Set contained_within as not required
+        self.fields["contained_within"].required = False
 
         # Optional fields
         for field in ["password_hint", "genre_theme", "data_flow_rate", "reality_zone"]:
