@@ -97,3 +97,42 @@ class TestMeritFlawUpdateView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.mf.refresh_from_db()
         self.assertEqual(self.mf.name, "Test MeritFlaw 2")
+
+
+class TestMeritFlawRatingRelatedNames(TestCase):
+    """Test explicit related_name attributes on MeritFlawRating ForeignKey fields."""
+
+    def setUp(self):
+        from characters.models.core import Human
+        from characters.models.core.merit_flaw_block import MeritFlawRating
+
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.human = ObjectType.objects.get_or_create(name="Human", type="char", gameline="wod")[0]
+        self.merit_flaw = MeritFlaw.objects.create(name="Test Merit")
+        self.merit_flaw.add_ratings([1, 2, 3])
+        self.merit_flaw.allowed_types.add(self.human)
+
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.user,
+        )
+        # Add the merit/flaw to the character
+        self.character.add_mf(self.merit_flaw, 2)
+
+    def test_meritflawrating_character_related_name(self):
+        """Test MeritFlawRating.character has related_name='merit_flaw_ratings'."""
+        # Access via the new explicit related_name
+        ratings = self.character.merit_flaw_ratings.all()
+        self.assertEqual(ratings.count(), 1)
+        self.assertEqual(ratings.first().mf, self.merit_flaw)
+        self.assertEqual(ratings.first().rating, 2)
+
+    def test_meritflawrating_mf_related_name(self):
+        """Test MeritFlawRating.mf has related_name='character_ratings'."""
+        # Access via the new explicit related_name
+        ratings = self.merit_flaw.character_ratings.all()
+        self.assertEqual(ratings.count(), 1)
+        self.assertEqual(ratings.first().character.pk, self.character.pk)
+        self.assertEqual(ratings.first().rating, 2)

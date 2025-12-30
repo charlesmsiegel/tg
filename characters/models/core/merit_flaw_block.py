@@ -73,8 +73,20 @@ class MeritFlaw(Model):
 class MeritFlawRating(BaseMeritFlawRating):
     """Through model for Character merit/flaw ratings."""
 
-    character = models.ForeignKey("Human", on_delete=models.SET_NULL, null=True)
-    mf = models.ForeignKey(MeritFlaw, on_delete=models.SET_NULL, null=True)
+    character = models.ForeignKey(
+        "Human",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="merit_flaw_ratings",
+        db_index=True,
+    )
+    mf = models.ForeignKey(
+        MeritFlaw,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="character_ratings",
+        db_index=True,
+    )
 
     class Meta:
         verbose_name = "Merit or Flaw Rating"
