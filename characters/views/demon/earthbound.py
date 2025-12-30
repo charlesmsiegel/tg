@@ -7,6 +7,7 @@ from core.mixins import (
     VisibilityFilterMixin,
 )
 from core.permissions import Permission, PermissionManager
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -19,7 +20,7 @@ class EarthboundDetailView(ViewPermissionMixin, DetailView):
         return context
 
 
-class EarthboundCreateView(MessageMixin, CreateView):
+class EarthboundCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Earthbound
     fields = [
         "name",
@@ -101,9 +102,6 @@ class EarthboundCreateView(MessageMixin, CreateView):
         "reliquary_max_health",
         "reliquary_current_health",
         "reliquary_soak",
-        "visage_features",
-        "visage_grotesqueries",
-        "total_form_points",
         "can_manifest",
         "manifestation_range",
         "cult_size",
@@ -206,9 +204,6 @@ class EarthboundUpdateView(EditPermissionMixin, UpdateView):
         "reliquary_max_health",
         "reliquary_current_health",
         "reliquary_soak",
-        "visage_features",
-        "visage_grotesqueries",
-        "total_form_points",
         "can_manifest",
         "manifestation_range",
         "cult_size",
