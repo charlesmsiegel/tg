@@ -19,7 +19,7 @@ class BastionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Bastion
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "ritual_strength",
         "warding_level",
@@ -33,7 +33,7 @@ class BastionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
 
 
@@ -42,7 +42,7 @@ class BastionUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "ritual_strength",
         "warding_level",
         "consecration_date",
@@ -55,5 +55,5 @@ class BastionUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

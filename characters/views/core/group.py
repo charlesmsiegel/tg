@@ -1,9 +1,10 @@
 from characters.models.core import Group
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
 
 
-class GroupDetailView(DetailView):
+class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
     template_name = "characters/core/group/detail.html"
 

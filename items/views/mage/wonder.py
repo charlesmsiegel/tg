@@ -32,6 +32,9 @@ class WonderCreateView(MessageMixin, CreateView):
     success_message = "Wonder '{name}' created successfully!"
     error_message = "Failed to create wonder. Please correct the errors below."
 
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
 
 class WonderUpdateView(MessageMixin, UpdateView):
     model = Wonder
@@ -39,3 +42,6 @@ class WonderUpdateView(MessageMixin, UpdateView):
     template_name = "items/mage/wonder/form.html"
     success_message = "Wonder '{name}' updated successfully!"
     error_message = "Failed to update wonder. Please correct the errors below."
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()

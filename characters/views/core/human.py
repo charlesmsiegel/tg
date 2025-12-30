@@ -338,7 +338,13 @@ class HumanFreebieFormPopulationView(View):
             examples = self.category_method_map()[category_choice]()
         else:
             examples = []
-        return dropdown_options_response(examples, label_attr="__str__")
+
+        # Include poolable attribute for new backgrounds so UI can hide pooled checkbox
+        extra_attrs = None
+        if category_choice == "New Background":
+            extra_attrs = ["poolable"]
+
+        return dropdown_options_response(examples, label_attr="__str__", extra_attrs=extra_attrs)
 
     def category_method_map(self):
         return {

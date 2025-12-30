@@ -178,3 +178,21 @@ class TestNewsItemStr(TestCase):
 
         # __str__ should still work and return empty string
         self.assertEqual(str(news), "")
+
+
+class ModelIndexTests(TestCase):
+    """Tests for core Model database indexes."""
+
+    def test_model_owner_field_has_db_index(self):
+        """Test that Model.owner ForeignKey has db_index=True."""
+        from core.models import Model
+
+        owner_field = Model._meta.get_field("owner")
+        self.assertTrue(owner_field.db_index)
+
+    def test_model_chronicle_field_has_db_index(self):
+        """Test that Model.chronicle ForeignKey has db_index=True."""
+        from core.models import Model
+
+        chronicle_field = Model._meta.get_field("chronicle")
+        self.assertTrue(chronicle_field.db_index)

@@ -55,11 +55,11 @@ class TestFreeholdFormBasics(TestFreeholdFormSetup):
 
         self.assertEqual(form.fields["description"].widget.attrs.get("rows"), 4)
 
-    def test_parent_not_required(self):
-        """Test that parent field is not required."""
+    def test_contained_within_not_required(self):
+        """Test that contained_within field is not required."""
         form = FreeholdForm()
 
-        self.assertFalse(form.fields["parent"].required)
+        self.assertFalse(form.fields["contained_within"].required)
 
     def test_owned_by_not_required(self):
         """Test that owned_by field is not required."""

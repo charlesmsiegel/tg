@@ -7,7 +7,7 @@ from locations.models.mage.reality_zone import RealityZone
 class DemesneForm(forms.ModelForm):
     class Meta:
         model = Demesne
-        fields = ("name", "parent", "description", "rank", "size", "accessibility")
+        fields = ("name", "contained_within", "description", "rank", "size", "accessibility")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,7 +16,7 @@ class DemesneForm(forms.ModelForm):
         self.fields["size"].widget.attrs.update(
             {"placeholder": "e.g., Small chamber, Expansive realm"}
         )
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
         if self.instance.pk and self.instance.reality_zone:
             self.reality_zone = self.instance.reality_zone
         else:

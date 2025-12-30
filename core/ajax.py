@@ -13,7 +13,7 @@ Using JSON responses with client-side DOM manipulation:
 from django.http import JsonResponse
 
 
-def dropdown_options_response(queryset, value_attr="pk", label_attr="name"):
+def dropdown_options_response(queryset, value_attr="pk", label_attr="name", extra_attrs=None):
     """
     Return a JSON response suitable for populating a dropdown/select element.
 
@@ -22,9 +22,10 @@ def dropdown_options_response(queryset, value_attr="pk", label_attr="name"):
         value_attr: Attribute name to use for option value (default: 'pk')
         label_attr: Attribute name to use for option label (default: 'name')
                    Can also be '__str__' to use the object's string representation
+        extra_attrs: Optional list of additional attribute names to include in each option
 
     Returns:
-        JsonResponse with list of {value, label} objects
+        JsonResponse with list of {value, label, ...} objects
 
     Example:
         # In view:
@@ -51,7 +52,14 @@ def dropdown_options_response(queryset, value_attr="pk", label_attr="name"):
         else:
             label = getattr(obj, label_attr)
 
-        options.append({"value": value, "label": label})
+        option = {"value": value, "label": label}
+
+        # Include extra attributes if specified
+        if extra_attrs:
+            for attr in extra_attrs:
+                option[attr] = getattr(obj, attr, None)
+
+        options.append(option)
 
     return JsonResponse({"options": options})
 

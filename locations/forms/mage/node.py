@@ -108,7 +108,7 @@ class NodeForm(forms.ModelForm):
             "size",
             "quintessence_form",
             "tass_form",
-            "parent",
+            "contained_within",
             "gauntlet",
             "shroud",
             "dimension_barrier",
@@ -122,7 +122,7 @@ class NodeForm(forms.ModelForm):
         )
         self.fields["tass_form"].widget.attrs.update({"placeholder": "Enter Tass Form here"})
         self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
 
         self.resonance_formset = NodeResonanceRatingFormSet(
             instance=self.instance,
@@ -200,13 +200,13 @@ class NodeForm(forms.ModelForm):
         self.reality_zone_formset.full_clean()
 
         if not self.resonance_formset.is_valid():
-            return cleaned_data
+            raise forms.ValidationError("Please correct the resonance errors below")
 
         if not self.merit_flaw_formset.is_valid():
-            return cleaned_data
+            raise forms.ValidationError("Please correct the merit/flaw errors below")
 
         if not self.reality_zone_formset.is_valid():
-            return cleaned_data
+            raise forms.ValidationError("Please correct the reality zone errors below")
 
         # get rank either from kwargs or form
         # determine if owner from kwargs

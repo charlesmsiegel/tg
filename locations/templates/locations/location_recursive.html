@@ -4,12 +4,12 @@
 <!-- Parent item -->
 <div class="list-group-item">
     <div class="d-flex align-items-center" style="padding-left: {{ indent_level }}px">
-        {% if location.children.exists %}
-            <a href="#loc-{{ location.id }}-children" 
-               class="btn btn-link btn-sm p-0 mr-2" 
-               data-toggle="collapse" 
-               role="button" 
-               aria-expanded="true" 
+        {% if location.contains.exists %}
+            <a href="#loc-{{ location.id }}-children"
+               class="btn btn-link btn-sm p-0 mr-2"
+               data-toggle="collapse"
+               role="button"
+               aria-expanded="true"
                aria-controls="loc-{{ location.id }}-children">
                 <i class="fas fa-chevron-down"></i>
             </a>
@@ -31,9 +31,9 @@
 </div>
 
 <!-- Child items (if any) -->
-{% if location.children.exists %}
+{% if location.contains.exists %}
     <div id="loc-{{ location.id }}-children" class="collapse show">
-        {% for child in location.children.all %}
+        {% for child in location.contains.all %}
             {% include "locations/location_recursive.html" with location=child indent_level=indent_level|add:"30" %}
         {% endfor %}
     </div>

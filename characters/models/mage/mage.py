@@ -15,6 +15,7 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import BasePracticeRating
+from core.models import BaseResonanceRating
 from core.utils import add_dot, weighted_choice
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -828,12 +829,9 @@ class Mage(MtAHuman):
         return trait, value, cost
 
 
-class ResRating(models.Model):
+class ResRating(BaseResonanceRating):
     mage = models.ForeignKey("Mage", on_delete=models.SET_NULL, null=True)
     resonance = models.ForeignKey(Resonance, on_delete=models.SET_NULL, null=True)
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
 
     class Meta:
         verbose_name = "Mage Resonance Rating"

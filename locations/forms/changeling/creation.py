@@ -141,7 +141,7 @@ class FreeholdDetailsForm(forms.ModelForm):
             "resource_description",
             "passage_description",
             "quirks",
-            "parent",
+            "contained_within",
             "owned_by",
         )
         widgets = {
@@ -169,7 +169,7 @@ class FreeholdDetailsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["academy_ability"].required = False
         self.fields["hearth_ability"].required = False
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
         self.fields["owned_by"].required = False
 
         # Show/hide based on archetype

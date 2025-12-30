@@ -46,6 +46,9 @@ class ArtifactCreateView(MessageMixin, CreateView):
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
 
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
 
 class ArtifactUpdateView(MessageMixin, UpdateView):
     model = Artifact
@@ -66,3 +69,6 @@ class ArtifactUpdateView(MessageMixin, UpdateView):
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
         return form
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()

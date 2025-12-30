@@ -19,7 +19,7 @@ class CityCreateView(MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "gauntlet",
         "shroud",
         "dimension_barrier",
@@ -43,7 +43,7 @@ class CityCreateView(MessageMixin, CreateView):
         form.fields["media"].widget.attrs.update({"placeholder": "Enter media here"})
         form.fields["politicians"].widget.attrs.update({"placeholder": "Enter politicians here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
 
 
@@ -52,7 +52,7 @@ class CityUpdateView(MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "gauntlet",
         "shroud",
         "dimension_barrier",
@@ -76,5 +76,5 @@ class CityUpdateView(MessageMixin, UpdateView):
         form.fields["media"].widget.attrs.update({"placeholder": "Enter media here"})
         form.fields["politicians"].widget.attrs.update({"placeholder": "Enter politicians here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

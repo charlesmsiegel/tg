@@ -260,9 +260,9 @@ class STRelationshipManager(models.Manager):
 
 
 class STRelationship(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    chronicle = models.ForeignKey(Chronicle, on_delete=models.SET_NULL, null=True)
-    gameline = models.ForeignKey(Gameline, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)
+    chronicle = models.ForeignKey(Chronicle, on_delete=models.SET_NULL, null=True, db_index=True)
+    gameline = models.ForeignKey(Gameline, on_delete=models.SET_NULL, null=True, db_index=True)
 
     objects = STRelationshipManager()
 
@@ -645,9 +645,14 @@ class Scene(models.Model):
 
 
 class UserSceneReadStatus(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    scene = models.ForeignKey(Scene, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_index=True)
+    scene = models.ForeignKey(Scene, on_delete=models.SET_NULL, null=True, db_index=True)
     read = models.BooleanField(default=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "scene"]),
+        ]
 
     def __str__(self):
         return f"{self.user}-{self.scene}: {self.read}"

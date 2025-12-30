@@ -283,8 +283,7 @@ class Chantry(BackgroundBlock, LocationModel):
 
     def set_library(self, library):
         self.chantry_library = library
-        library.parent = self
-        library.save()
+        library.contained_within.add(self)
         return True
 
     def set_rank(self, rank):
