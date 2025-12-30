@@ -1,6 +1,8 @@
 from characters import views as characters
 from characters.views.changeling.autumn_person import AutumnPersonDetailView
+from characters.views.changeling.cantrip import CantripDetailView
 from characters.views.changeling.changeling import ChangelingDetailView
+from characters.views.changeling.chimera import ChimeraDetailView
 from characters.views.changeling.house import HouseDetailView
 from characters.views.changeling.house_faction import HouseFactionDetailView
 from characters.views.changeling.inanimae import InanimaeDetailView
@@ -65,5 +67,15 @@ urls = [
         "motley/<pk>/",
         MotleyDetailView.as_view(),
         name="motley",
+    ),
+    path(
+        "cantrip/<pk>/",
+        CantripDetailView.as_view(),
+        name="cantrip",
+    ),
+    path(
+        "chimera/<pk>/",
+        ChimeraDetailView.as_view(),
+        name="chimera",
     ),
 ]

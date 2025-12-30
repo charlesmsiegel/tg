@@ -1,0 +1,47 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Cantrip
+{% endblock creation_title %}
+{% block contents %}
+    {% load dots %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Art</div>
+        <div class="col-sm">{{ form.art }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Primary Realm</div>
+        <div class="col-sm">{{ form.primary_realm }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Level</div>
+        <div class="col-sm">{{ form.level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Difficulty</div>
+        <div class="col-sm">{{ form.difficulty }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Glamour Cost</div>
+        <div class="col-sm">{{ form.glamour_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Duration</div>
+        <div class="col-sm">{{ form.duration }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Range</div>
+        <div class="col-sm">{{ form.range }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Type of Effect</div>
+        <div class="col-sm">{{ form.type_of_effect }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Effect</div>
+        <div class="col-sm">{{ form.effect }}</div>
+    </div>
+{% endblock contents %}

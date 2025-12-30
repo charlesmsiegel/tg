@@ -78,15 +78,18 @@ class Cantrip(Model):
         default="",
     )
     bunk_examples = models.JSONField(
-        default=list, help_text="List of example bunks for this cantrip"
+        default=list, blank=True, help_text="List of example bunks for this cantrip"
     )
 
     class Meta:
         verbose_name = "Cantrip"
         verbose_name_plural = "Cantrips"
 
+    def get_absolute_url(self):
+        return reverse("characters:changeling:cantrip", kwargs={"pk": self.pk})
+
     def get_update_url(self):
-        return reverse("characters:changeling:update:cantrip", args=[str(self.id)])
+        return reverse("characters:changeling:update:cantrip", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
