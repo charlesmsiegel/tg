@@ -360,9 +360,17 @@
                     }
                 });
             }
+            // Hide pooled checkbox for non-poolable backgrounds
+            if(categorySelectMenu.value == "New Background" && isGroupMember){
+                if (isSelectedOptionPoolable('#id_example')) {
+                    pooled_wrap.classList.remove("d-none");
+                } else {
+                    pooled_wrap.classList.add("d-none");
+                }
+            }
         });
     });
-    
+
 </script>
 <script type="text/javascript">
     $(document).ready(function(){
