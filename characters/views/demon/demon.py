@@ -106,6 +106,9 @@ class DemonCreateView(MessageMixin, CreateView):
     success_message = "Demon '{name}' created successfully!"
     error_message = "Failed to create demon. Please correct the errors below."
 
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
 
 class DemonUpdateView(EditPermissionMixin, UpdateView):
     model = Demon

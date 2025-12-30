@@ -32,7 +32,7 @@ class HavenCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security",
         "location",
@@ -52,7 +52,7 @@ class HavenUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security",
         "location",
@@ -84,7 +84,7 @@ class DomainCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "population",
         "control",
@@ -103,7 +103,7 @@ class DomainUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "population",
         "control",
@@ -134,7 +134,7 @@ class ElysiumCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "prestige",
         "keeper_name",
         "elysium_type",
@@ -155,7 +155,7 @@ class ElysiumUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "prestige",
         "keeper_name",
         "elysium_type",
@@ -188,7 +188,7 @@ class RackCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "quality",
         "population_density",
         "risk_level",
@@ -209,7 +209,7 @@ class RackUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "quality",
         "population_density",
         "risk_level",
@@ -242,7 +242,7 @@ class TremereChantryCreateView(CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security_level",
         "library_rating",
@@ -267,7 +267,7 @@ class TremereChantryUpdateView(UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security_level",
         "library_rating",
@@ -304,7 +304,7 @@ class BarrensCreateView(CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "danger_level",
         "population_density",
@@ -332,7 +332,7 @@ class BarrensUpdateView(UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "danger_level",
         "population_density",

@@ -32,6 +32,7 @@ from core.models import Language
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
@@ -52,16 +53,18 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         return context
 
     def form_valid(self, form):
-        self.object = form.save()
-        # Set initial willpower
-        self.object.willpower = self.object.courage
-        # The save() method will handle setting virtue booleans based on path
-        # and will set humanity/path_rating to 0 initially
-        if self.object.path:
-            self.object.humanity = 0
-        else:
-            self.object.path_rating = 0
-        self.object.save()
+        # Use atomic transaction for character creation with initial values
+        with transaction.atomic():
+            self.object = form.save()
+            # Set initial willpower
+            self.object.willpower = self.object.courage
+            # The save() method will handle setting virtue booleans based on path
+            # and will set humanity/path_rating to 0 initially
+            if self.object.path:
+                self.object.humanity = 0
+            else:
+                self.object.path_rating = 0
+            self.object.save()
         messages.success(
             self.request,
             f"Vampire '{self.object.name}' created successfully! Continue with character creation.",

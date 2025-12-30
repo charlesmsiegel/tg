@@ -16,7 +16,7 @@ class TombCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security",
         "sanctity",
@@ -43,7 +43,7 @@ class TombUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "size",
         "security",
         "sanctity",
@@ -82,7 +82,7 @@ class CultTempleCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "cult_size",
         "public_cover",
         "cult_leader_name",
@@ -100,7 +100,7 @@ class CultTempleUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "cult_size",
         "public_cover",
         "cult_leader_name",
@@ -129,7 +129,7 @@ class UndergroundSanctuaryCreateView(LoginRequiredMixin, MessageMixin, CreateVie
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "sanctuary_type",
         "concealment_rating",
     ]
@@ -143,7 +143,7 @@ class UndergroundSanctuaryUpdateView(EditPermissionMixin, MessageMixin, UpdateVi
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "sanctuary_type",
         "concealment_rating",
     ]

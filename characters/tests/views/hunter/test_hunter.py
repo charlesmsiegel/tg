@@ -71,6 +71,21 @@ class TestHunterCreateView(TestCase):
         """Create view URL should resolve correctly."""
         self.assertEqual(self.url, "/characters/hunter/create/hunter/")
 
+    def test_create_view_has_get_success_url_method(self):
+        """Test that HunterCreateView has explicit get_success_url method."""
+        from characters.views.hunter.hunter import HunterCreateView
+
+        self.assertTrue(
+            hasattr(HunterCreateView, "get_success_url"),
+            "HunterCreateView should have get_success_url method",
+        )
+        # Verify it's defined on the class itself, not inherited
+        self.assertIn(
+            "get_success_url",
+            HunterCreateView.__dict__,
+            "get_success_url should be explicitly defined on HunterCreateView",
+        )
+
 
 class TestHunterUpdateView(TestCase):
     """Test the Hunter update view with permission checks."""

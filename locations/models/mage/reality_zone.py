@@ -1,13 +1,15 @@
 from characters.models.mage.focus import Practice
+from core.models import BasePracticeRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 
-class ZoneRating(models.Model):
+class ZoneRating(BasePracticeRating):
+    """Practice rating for a Reality Zone (rating range: -10 to 10)."""
+
     zone = models.ForeignKey("RealityZone", on_delete=models.SET_NULL, null=True)
-    practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(-10), MaxValueValidator(10)]
     )

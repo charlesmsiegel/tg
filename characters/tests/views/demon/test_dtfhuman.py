@@ -83,6 +83,21 @@ class TestDtFHumanCreateView(TestCase):
         response = self.client.get(url)
         self.assertIn(response.status_code, [302, 403])
 
+    def test_create_view_has_get_success_url_method(self):
+        """Test that DtFHumanCreateView has explicit get_success_url method."""
+        from characters.views.demon.dtfhuman import DtFHumanCreateView
+
+        self.assertTrue(
+            hasattr(DtFHumanCreateView, "get_success_url"),
+            "DtFHumanCreateView should have get_success_url method",
+        )
+        # Verify it's defined on the class itself, not inherited
+        self.assertIn(
+            "get_success_url",
+            DtFHumanCreateView.__dict__,
+            "get_success_url should be explicitly defined on DtFHumanCreateView",
+        )
+
 
 class TestDtFHumanUpdateView(TestCase):
     """Test DtFHumanUpdateView permissions and functionality."""

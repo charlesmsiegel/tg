@@ -60,7 +60,7 @@ class TestNodeFormBasics(TestCase):
         self.assertIn("size", form.fields)
         self.assertIn("quintessence_form", form.fields)
         self.assertIn("tass_form", form.fields)
-        self.assertIn("parent", form.fields)
+        self.assertIn("contained_within", form.fields)
         self.assertIn("gauntlet", form.fields)
         self.assertIn("shroud", form.fields)
         self.assertIn("dimension_barrier", form.fields)
@@ -334,3 +334,96 @@ class TestNodeFormIsValid(TestCase):
         form = NodeForm(data=data)
 
         self.assertFalse(form.is_valid())
+
+
+class TestNodeFormFormsetErrorPropagation(TestCase):
+    """Test that formset errors are properly propagated to form errors.
+
+    Issue #1067: When nested formsets have validation errors, those errors
+    should be clearly communicated to the user through the parent form's
+    error system.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """Create resonance and practices for testing."""
+        cls.resonance = Resonance.objects.create(name="Dynamic", entropy=True)
+        cls.practice1 = Practice.objects.create(name="High Ritual Magick")
+        cls.practice2 = Practice.objects.create(name="Chaos Magick")
+
+    def _get_valid_form_data(self, rank=1):
+        """Helper to create valid form data."""
+        return {
+            "name": "Test Node",
+            "description": "A test node",
+            "rank": rank,
+            "ratio": 0,
+            "size": 0,
+            "quintessence_form": "Golden light",
+            "tass_form": "Crystals",
+            "gauntlet": 5,
+            "shroud": 5,
+            "dimension_barrier": 5,
+            # Resonance formset - management form
+            "resonance-TOTAL_FORMS": "1",
+            "resonance-INITIAL_FORMS": "0",
+            "resonance-MIN_NUM_FORMS": "0",
+            "resonance-MAX_NUM_FORMS": "1000",
+            # Resonance form
+            "resonance-0-resonance": "Dynamic",
+            "resonance-0-rating": str(rank),
+            # Merit/Flaw formset - management form
+            "merit_flaw-TOTAL_FORMS": "0",
+            "merit_flaw-INITIAL_FORMS": "0",
+            "merit_flaw-MIN_NUM_FORMS": "0",
+            "merit_flaw-MAX_NUM_FORMS": "1000",
+            # Reality Zone formset - with practices and ratings that sum to 0
+            "reality_zone-TOTAL_FORMS": "2",
+            "reality_zone-INITIAL_FORMS": "0",
+            "reality_zone-MIN_NUM_FORMS": "0",
+            "reality_zone-MAX_NUM_FORMS": "1000",
+            "reality_zone-0-practice": str(self.practice1.pk),
+            "reality_zone-0-rating": str(rank),
+            "reality_zone-1-practice": str(self.practice2.pk),
+            "reality_zone-1-rating": str(-rank),
+        }
+
+    def test_invalid_resonance_formset_propagates_error(self):
+        """Test that invalid resonance formset adds an error to the form.
+
+        When the resonance formset is invalid, the form should have a
+        clear error message about resonance errors.
+        """
+        data = self._get_valid_form_data()
+        # Make resonance formset invalid with bad rating
+        data["resonance-0-rating"] = "999"  # Invalid: max is 5
+
+        form = NodeForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        # Check that there's an error message about resonance
+        all_errors = str(form.errors) + str(form.non_field_errors())
+        self.assertTrue(
+            "resonance" in all_errors.lower(),
+            f"Expected resonance error in form.errors, got: {form.errors}, non_field_errors: {form.non_field_errors()}",
+        )
+
+    def test_invalid_reality_zone_formset_propagates_error(self):
+        """Test that invalid reality zone formset adds an error to the form.
+
+        When the reality zone formset is invalid, the form should have a
+        clear error message about reality zone errors.
+        """
+        data = self._get_valid_form_data()
+        # Make reality zone formset invalid by removing management form
+        del data["reality_zone-TOTAL_FORMS"]
+
+        form = NodeForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        # Check that there's an error message about reality zone
+        all_errors = str(form.errors) + str(form.non_field_errors())
+        self.assertTrue(
+            "reality" in all_errors.lower() or "zone" in all_errors.lower(),
+            f"Expected reality zone error in form.errors, got: {form.errors}, non_field_errors: {form.non_field_errors()}",
+        )

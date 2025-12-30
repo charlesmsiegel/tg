@@ -1,9 +1,10 @@
 from characters.models.vampire.path import Path
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class PathDetailView(DetailView):
+class PathDetailView(LoginRequiredMixin, DetailView):
     model = Path
     template_name = "characters/vampire/path/detail.html"
 

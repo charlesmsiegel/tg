@@ -9,6 +9,7 @@ class Background(Statistic):
 
     multiplier = models.IntegerField(default=1)
     alternate_name = models.CharField(default="", max_length=100)
+    poolable = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]
@@ -22,12 +23,16 @@ class BackgroundRating(BaseBackgroundRating):
         on_delete=models.SET_NULL,
         null=True,
         related_name="backgrounds",
+        db_index=True,
     )
     pooled = models.BooleanField(default=False)
     display_alt_name = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["bg__name"]
+        indexes = [
+            models.Index(fields=["char", "bg"]),
+        ]
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
@@ -139,7 +144,8 @@ class BackgroundBlock(models.Model):
         cost = trait.multiplier
         value = 1
         trait = Background.objects.get(pk=form.data["example"])
-        if "pooled" in form.data.keys():
+        # Only allow pooling if the background is poolable
+        if "pooled" in form.data.keys() and trait.poolable:
             pbgr = PooledBackgroundRating.objects.get_or_create(
                 bg=trait, group=self.get_group(), note=form.data["note"]
             )[0]

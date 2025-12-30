@@ -8,11 +8,11 @@
             <h2 class="col-sm">{{ form.name }}</h2>
         </div>
     {% endblock name %}
-    {% block parent %}
+    {% block contained_within %}
         <div class="row">
-            <div class="col-sm">{{ form.parent }}</div>
+            <div class="col-sm">{{ form.contained_within }}</div>
         </div>
-    {% endblock parent %}
+    {% endblock contained_within %}
     {% block gauntlets %}
         <div class="row">
             <div class="col-sm">Gauntlet</div>

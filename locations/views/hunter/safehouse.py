@@ -19,7 +19,7 @@ class SafehouseCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Safehouse
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "size",
         "capacity",
@@ -45,7 +45,7 @@ class SafehouseUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Safehouse
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "size",
         "capacity",

@@ -264,7 +264,7 @@ class TestChantryCreateFormBasics(TestChantryCreateFormSetup):
 
         self.assertIn("name", form.fields)
         self.assertIn("chronicle", form.fields)
-        self.assertIn("parent", form.fields)
+        self.assertIn("contained_within", form.fields)
         self.assertIn("description", form.fields)
         self.assertIn("faction", form.fields)
         self.assertIn("leadership_type", form.fields)

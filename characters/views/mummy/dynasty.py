@@ -1,10 +1,11 @@
 from characters.forms.mummy.dynasty import DynastyForm
 from characters.models.mummy.dynasty import Dynasty
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DynastyDetailView(DetailView):
+class DynastyDetailView(LoginRequiredMixin, DetailView):
     model = Dynasty
     template_name = "characters/mummy/dynasty/detail.html"
 
