@@ -25,7 +25,7 @@ class Rokea(Fera):
         ("darkwater", "Darkwater"),  # Born at night - mystics
     ]
 
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Rokea renown
     valor = models.IntegerField(default=0)  # Courage and ferocity

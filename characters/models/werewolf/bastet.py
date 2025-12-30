@@ -40,8 +40,8 @@ class Bastet(Fera):
         ("midnight", "Midnight"),  # Mystics and seers
     ]
 
-    tribe = models.CharField(default="", max_length=100, choices=TRIBES)
-    pryio = models.CharField(default="", max_length=100, choices=PRYIO)
+    tribe = models.CharField(default="", max_length=100, choices=TRIBES, blank=True)
+    pryio = models.CharField(default="", max_length=100, choices=PRYIO, blank=True)
 
     # Bastet use a simplified renown system
     ferocity = models.IntegerField(default=0)  # Like Glory
