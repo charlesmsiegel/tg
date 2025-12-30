@@ -25,7 +25,7 @@
                     {% for elysium in object_list %}
                     <tr>
                         <td><a href="{{ elysium.get_absolute_url }}">{{ elysium.name }}</a></td>
-                        <td>{% if elysium.parent %}<a href="{{ elysium.parent.get_absolute_url }}">{{ elysium.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{% if elysium.contained_within.exists %}{% for container in elysium.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                         <td>{{ elysium.prestige|dots }}</td>
                         <td>{{ elysium.elysium_type|default:"-" }}</td>
                         <td>{{ elysium.keeper_name|default:"-" }}</td>

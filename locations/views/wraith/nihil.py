@@ -14,7 +14,7 @@ class NihilCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "void_type",
         "stability",
         "hazard_level",
@@ -41,7 +41,7 @@ class NihilUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "void_type",
         "stability",
         "hazard_level",

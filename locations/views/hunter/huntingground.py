@@ -19,7 +19,7 @@ class HuntingGroundCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = HuntingGround
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "size",
         "population",
@@ -43,7 +43,7 @@ class HuntingGroundUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = HuntingGround
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "size",
         "population",

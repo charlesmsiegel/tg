@@ -15,7 +15,7 @@ class LocationCreateView(LoginRequiredMixin, CreateView):
     model = LocationModel
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "gauntlet",
         "shroud",
         "dimension_barrier",
@@ -29,7 +29,7 @@ class LocationCreateView(LoginRequiredMixin, CreateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
 
     def form_valid(self, form):
@@ -43,7 +43,7 @@ class LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = LocationModel
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "gauntlet",
         "shroud",
         "dimension_barrier",
@@ -80,6 +80,6 @@ class LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
             form.fields["description"].widget.attrs.update(
                 {"placeholder": "Enter description here"}
             )
-        if "parent" in form.fields:
-            form.fields["parent"].empty_label = "Parent Location"
+        if "contained_within" in form.fields:
+            form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

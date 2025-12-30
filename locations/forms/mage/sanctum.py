@@ -7,13 +7,13 @@ from locations.models.mage.sanctum import Sanctum
 class SanctumForm(forms.ModelForm):
     class Meta:
         model = Sanctum
-        fields = ("name", "parent", "description", "rank")
+        fields = ("name", "contained_within", "description", "rank")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         self.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        self.fields["parent"].required = False
+        self.fields["contained_within"].required = False
         if self.instance.pk and self.instance.reality_zone:
             self.reality_zone = self.instance.reality_zone
         else:

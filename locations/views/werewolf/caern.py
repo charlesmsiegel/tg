@@ -19,7 +19,7 @@ class CaernCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Caern
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "rank",
         "caern_type",
@@ -32,7 +32,7 @@ class CaernCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
 
 
@@ -41,7 +41,7 @@ class CaernUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "rank",
         "caern_type",
     ]
@@ -53,5 +53,5 @@ class CaernUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

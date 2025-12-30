@@ -14,7 +14,7 @@ class CitadelCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "purpose",
         "defense_rating",
         "garrison_size",
@@ -34,7 +34,7 @@ class CitadelUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "purpose",
         "defense_rating",
         "garrison_size",
