@@ -15,12 +15,13 @@ class Background(Statistic):
 
 
 class BackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
+    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True, db_index=True)
     char = models.ForeignKey(
         "characters.Human",
         on_delete=models.SET_NULL,
         null=True,
         related_name="backgrounds",
+        db_index=True,
     )
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
@@ -33,6 +34,9 @@ class BackgroundRating(models.Model):
 
     class Meta:
         ordering = ["bg__name"]
+        indexes = [
+            models.Index(fields=["char", "bg"]),
+        ]
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
