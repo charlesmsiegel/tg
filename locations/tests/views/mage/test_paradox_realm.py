@@ -117,8 +117,8 @@ class TestParadoxRealmCreateView(TestCase):
     def test_create_view_requires_login(self):
         """Test create view requires authentication."""
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("login", response.url)
+        # Project uses AuthErrorHandlerMiddleware which returns 401 for unauthenticated users
+        self.assertEqual(response.status_code, 401)
 
     def test_create_view_status_code(self):
         """Test create view returns 200 for logged-in user."""
