@@ -1,6 +1,7 @@
 """Tests for MummyTitle views."""
 
 from characters.models.mummy.mummy_title import MummyTitle
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
@@ -15,14 +16,25 @@ class TestMummyTitleDetailView(TestCase):
             description="A test title",
         )
         self.url = self.title.get_absolute_url()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="testpass123"
+        )
+
+    def test_detail_view_requires_auth(self):
+        """MummyTitle detail view requires authentication."""
+        response = self.client.get(self.url)
+        # Should redirect to login or return unauthorized
+        self.assertIn(response.status_code, [302, 401, 403])
 
     def test_detail_view_status_code(self):
-        """MummyTitle detail view is publicly accessible."""
+        """MummyTitle detail view is accessible when authenticated."""
+        self.client.login(username="testuser", password="testpass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_template(self):
         """Detail view uses correct template."""
+        self.client.login(username="testuser", password="testpass123")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mummy/title/detail.html")
 
@@ -32,6 +44,9 @@ class TestMummyTitleCreateView(TestCase):
 
     def setUp(self):
         self.url = reverse("characters:mummy:create:title")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="testpass123"
+        )
 
     def test_create_view_status_code(self):
         """Create view is accessible."""
@@ -49,6 +64,7 @@ class TestMummyTitleCreateView(TestCase):
 
     def test_create_view_success_url(self):
         """Create view redirects to title detail after successful creation."""
+        self.client.login(username="testuser", password="testpass123")
         response = self.client.post(
             self.url,
             data={

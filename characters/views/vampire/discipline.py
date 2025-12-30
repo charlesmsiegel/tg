@@ -1,12 +1,13 @@
 from characters.models.vampire.discipline import Discipline
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 @method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
-class DisciplineDetailView(DetailView):
+class DisciplineDetailView(LoginRequiredMixin, DetailView):
     model = Discipline
     template_name = "characters/vampire/discipline/detail.html"
 
