@@ -14,6 +14,7 @@ from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
+from core.models import BasePracticeRating
 from core.models import BaseResonanceRating
 from core.utils import add_dot, weighted_choice
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -844,9 +845,10 @@ class ResRating(BaseResonanceRating):
         ]
 
 
-class PracticeRating(models.Model):
+class PracticeRating(BasePracticeRating):
+    """Practice rating for a Mage character (rating range: 0-10)."""
+
     mage = models.ForeignKey(Mage, on_delete=models.SET_NULL, null=True)
-    practice = models.ForeignKey(Practice, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )

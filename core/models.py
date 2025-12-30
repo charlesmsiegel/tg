@@ -951,6 +951,22 @@ class TemplateApplication(models.Model):
         super().save(*args, **kwargs)
 
 
+class BasePracticeRating(models.Model):
+    """
+    Abstract base class for all Practice rating models.
+
+    This provides a shared foundation for models that link a Practice
+    to another entity (Mage, RealityZone) with a numeric rating.
+    Concrete models must define their own:
+    - Parent foreign key (mage, zone, etc.)
+    - Rating validators and constraints (different models may use different ranges)
+    """
+
+    practice = models.ForeignKey(
+        "characters.Practice",
+        on_delete=models.SET_NULL,
+        null=True,
+
 class BaseResonanceRating(models.Model):
     """
     Abstract base class for all Resonance rating models.
