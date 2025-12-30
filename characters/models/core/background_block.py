@@ -1,5 +1,5 @@
 from characters.models.core.statistic import Statistic
-from django.core.validators import MaxValueValidator, MinValueValidator
+from core.models import BaseBackgroundRating
 from django.db import models
 from django.db.models import CheckConstraint, Q, Sum
 
@@ -9,30 +9,30 @@ class Background(Statistic):
 
     multiplier = models.IntegerField(default=1)
     alternate_name = models.CharField(default="", max_length=100)
+    poolable = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]
 
 
-class BackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
+class BackgroundRating(BaseBackgroundRating):
+    """Background rating for a character."""
+
     char = models.ForeignKey(
         "characters.Human",
         on_delete=models.SET_NULL,
         null=True,
         related_name="backgrounds",
+        db_index=True,
     )
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
-    note = models.CharField(default="", max_length=100)
-    url = models.CharField(default="", max_length=500)
-    complete = models.BooleanField(default=False)
     pooled = models.BooleanField(default=False)
     display_alt_name = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["bg__name"]
+        indexes = [
+            models.Index(fields=["char", "bg"]),
+        ]
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=0, rating__lte=10),
@@ -40,9 +40,6 @@ class BackgroundRating(models.Model):
                 violation_error_message="Background rating must be between 0 and 10",
             ),
         ]
-
-    def __str__(self):
-        return f"{self.bg} ({self.note})"
 
     def display_name(self):
         if self.bg.alternate_name == "":
@@ -52,24 +49,18 @@ class BackgroundRating(models.Model):
         return self.bg.name
 
 
-class PooledBackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
+class PooledBackgroundRating(BaseBackgroundRating):
+    """Background rating for a group (pooled backgrounds)."""
+
     group = models.ForeignKey(
         "characters.Group",
         on_delete=models.SET_NULL,
         null=True,
         related_name="pooled_backgrounds",
     )
-    rating = models.IntegerField(default=0)
-    note = models.CharField(default="", max_length=100)
-    url = models.CharField(default="", max_length=500)
-    complete = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["bg__name"]
-
-    def __str__(self):
-        return f"{self.bg} ({self.note})"
 
 
 class BackgroundBlock(models.Model):
@@ -153,7 +144,8 @@ class BackgroundBlock(models.Model):
         cost = trait.multiplier
         value = 1
         trait = Background.objects.get(pk=form.data["example"])
-        if "pooled" in form.data.keys():
+        # Only allow pooling if the background is poolable
+        if "pooled" in form.data.keys() and trait.poolable:
             pbgr = PooledBackgroundRating.objects.get_or_create(
                 bg=trait, group=self.get_group(), note=form.data["note"]
             )[0]

@@ -19,7 +19,7 @@ class NecropolisCreateView(LoginRequiredMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "region",
         "population",
         "deathlord",
@@ -34,7 +34,7 @@ class NecropolisUpdateView(EditPermissionMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "region",
         "population",
         "deathlord",

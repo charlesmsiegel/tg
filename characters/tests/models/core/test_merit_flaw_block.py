@@ -1,4 +1,5 @@
 from characters.models.core import MeritFlaw
+from characters.models.core.merit_flaw_block import MeritFlawRating
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
@@ -136,3 +137,22 @@ class TestMeritFlawRatingRelatedNames(TestCase):
         self.assertEqual(ratings.count(), 1)
         self.assertEqual(ratings.first().character.pk, self.character.pk)
         self.assertEqual(ratings.first().rating, 2)
+
+class MeritFlawRatingIndexTests(TestCase):
+    """Tests for MeritFlawRating database indexes."""
+
+    def test_merit_flaw_rating_has_character_mf_composite_index(self):
+        """Test that MeritFlawRating has a composite index on (character, mf)."""
+        indexes = MeritFlawRating._meta.indexes
+        index_field_sets = [tuple(idx.fields) for idx in indexes]
+        self.assertIn(("character", "mf"), index_field_sets)
+
+    def test_merit_flaw_rating_character_field_has_db_index(self):
+        """Test that MeritFlawRating.character ForeignKey has db_index=True."""
+        character_field = MeritFlawRating._meta.get_field("character")
+        self.assertTrue(character_field.db_index)
+
+    def test_merit_flaw_rating_mf_field_has_db_index(self):
+        """Test that MeritFlawRating.mf ForeignKey has db_index=True."""
+        mf_field = MeritFlawRating._meta.get_field("mf")
+        self.assertTrue(mf_field.db_index)

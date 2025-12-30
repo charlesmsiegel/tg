@@ -8,6 +8,7 @@ from core.mixins import MessageMixin
 from core.models import CharacterTemplate
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -274,21 +275,23 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
                 )
                 return redirect("character_template_detail", pk=template.pk)
 
-            # Create NPC character with basic info
-            npc_name = f"{template.concept} (NPC)"
-            character = character_model.objects.create(
-                name=npc_name,
-                owner=request.user,
-                chronicle=template.chronicle,
-                status="App",  # Auto-approve NPCs
-                npc=True,  # Mark as NPC
-            )
+            # Use atomic transaction for NPC creation and template application
+            with transaction.atomic():
+                # Create NPC character with basic info
+                npc_name = f"{template.concept} (NPC)"
+                character = character_model.objects.create(
+                    name=npc_name,
+                    owner=request.user,
+                    chronicle=template.chronicle,
+                    status="App",  # Auto-approve NPCs
+                    npc=True,  # Mark as NPC
+                )
 
-            # Apply template to character
-            template.apply_to_character(character)
+                # Apply template to character
+                template.apply_to_character(character)
 
-            # Save character
-            character.save()
+                # Save character
+                character.save()
 
             messages.success(
                 request,

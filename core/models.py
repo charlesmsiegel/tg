@@ -318,9 +318,11 @@ class Model(PermissionMixin, PolymorphicModel):
     gameline = "wod"  # Default gameline; override in subclasses
 
     name = models.CharField(max_length=200)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
 
-    chronicle = models.ForeignKey(Chronicle, blank=True, null=True, on_delete=models.SET_NULL)
+    chronicle = models.ForeignKey(
+        Chronicle, blank=True, null=True, on_delete=models.SET_NULL, db_index=True
+    )
 
     objects = ModelManager()
 
@@ -628,6 +630,43 @@ class BaseMeritFlawRating(models.Model):
 
     def __str__(self):
         return f"{self.mf}: {self.rating}"
+
+
+class BaseBackgroundRating(models.Model):
+    """
+    Abstract base class for Background rating through-models.
+
+    Provides common fields for all Background ratings:
+    - bg: Foreign key to Background
+    - rating: Integer 0-10
+    - note: Optional note about this rating
+    - url: Optional URL for more info
+    - complete: Whether the background is complete
+
+    Concrete subclasses must define:
+    - A parent FK (e.g., `char`, `group`, `chantry`)
+    - Any additional fields (e.g., `pooled`, `display_alt_name`)
+    - Their own Meta class with constraints and ordering as needed
+    """
+
+    bg = models.ForeignKey(
+        "characters.Background",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )
+    note = models.CharField(max_length=100, default="", blank=True)
+    url = models.CharField(max_length=500, default="", blank=True)
+    complete = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.bg} ({self.note})"
 
 
 class Noun(models.Model):
@@ -947,3 +986,47 @@ class TemplateApplication(models.Model):
         """Ensure validation runs on save."""
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class BasePracticeRating(models.Model):
+    """
+    Abstract base class for all Practice rating models.
+
+    This provides a shared foundation for models that link a Practice
+    to another entity (Mage, RealityZone) with a numeric rating.
+    Concrete models must define their own:
+    - Parent foreign key (mage, zone, etc.)
+    - Rating validators and constraints (different models may use different ranges)
+    """
+
+    practice = models.ForeignKey(
+        "characters.Practice",
+        on_delete=models.SET_NULL,
+        null=True,
+
+class BaseResonanceRating(models.Model):
+    """
+    Abstract base class for all Resonance rating models.
+
+    Provides shared structure for rating Resonance across different contexts:
+    - Mages (ResRating)
+    - Wonders (WonderResonanceRating)
+    - Nodes (NodeResonanceRating)
+    - Mummy Relics (RelicResonanceRating)
+
+    Subclasses must define:
+    - A ForeignKey named 'resonance' to characters.Resonance
+    - A ForeignKey to their parent model (mage, wonder, node, relic, etc.)
+    - Meta constraints with unique constraint names
+    """
+
+    rating = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.resonance}: {self.rating}"

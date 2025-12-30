@@ -91,6 +91,9 @@ class MeritFlawRating(BaseMeritFlawRating):
     class Meta:
         verbose_name = "Merit or Flaw Rating"
         verbose_name_plural = "Merit and Flaw Ratings"
+        indexes = [
+            models.Index(fields=["character", "mf"]),
+        ]
         constraints = [
             CheckConstraint(
                 check=Q(rating__gte=-10, rating__lte=10),

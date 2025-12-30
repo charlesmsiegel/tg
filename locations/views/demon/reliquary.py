@@ -19,7 +19,7 @@ class ReliquaryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Reliquary
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "description",
         "reliquary_type",
         "location_size",
@@ -38,7 +38,7 @@ class ReliquaryCreateView(LoginRequiredMixin, MessageMixin, CreateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form
 
 
@@ -47,7 +47,7 @@ class ReliquaryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "reliquary_type",
         "location_size",
         "max_health_levels",
@@ -65,5 +65,5 @@ class ReliquaryUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        form.fields["parent"].empty_label = "Parent Location"
+        form.fields["contained_within"].help_text = "Select one or more parent locations"
         return form

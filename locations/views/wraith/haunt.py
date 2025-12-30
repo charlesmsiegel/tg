@@ -20,7 +20,7 @@ class HauntCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "rank",
         "shroud_rating",
         "haunt_type",
@@ -38,7 +38,7 @@ class HauntUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "rank",
         "shroud_rating",
         "haunt_type",

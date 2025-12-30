@@ -14,7 +14,7 @@ class BywayCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "danger_level",
         "stability",
         "origin",
@@ -36,7 +36,7 @@ class BywayUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "description",
-        "parent",
+        "contained_within",
         "danger_level",
         "stability",
         "origin",

@@ -679,6 +679,11 @@ class UserSceneReadStatus(models.Model):
     )
     read = models.BooleanField(default=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "scene"]),
+        ]
+
     def __str__(self):
         return f"{self.user}-{self.scene}: {self.read}"
 

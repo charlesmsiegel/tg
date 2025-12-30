@@ -1,5 +1,6 @@
-# your_app_name/signals.py
+# game/signals.py
 from characters.models.core.character import CharacterModel
+from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from game.models import Journal
@@ -7,6 +8,16 @@ from game.models import Journal
 
 @receiver(post_save)
 def create_journal_for_character(sender, instance, created, **kwargs):
-    # 'created' is True if this is a newly created object, not just an update
+    """Create a Journal for a newly created Character.
+
+    Uses get_or_create to prevent race conditions. This runs within the same
+    database transaction as the Character save, ensuring consistency.
+    If a race condition occurs (duplicate key), we handle it gracefully.
+    """
     if created and isinstance(instance, CharacterModel):
-        Journal.objects.get_or_create(character=instance)
+        try:
+            Journal.objects.get_or_create(character=instance)
+        except IntegrityError:
+            # Race condition: another process already created the Journal.
+            # This is fine - the Journal exists, which is what we want.
+            pass

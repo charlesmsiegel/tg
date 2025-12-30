@@ -4,7 +4,7 @@
     {% if parent_id %}id="loc-{{ parent_id }}-children"{% endif %}
     style="transition: var(--transition-fast);">
     <td data-label="Location" style="padding-left: {{ level|default:0|add:12 }}px;">
-        {% if location.children.exists %}
+        {% if location.contains.exists %}
             <a href="#loc-{{ location.id }}-children"
                class="btn btn-link btn-sm p-0 mr-2"
                data-toggle="collapse"
@@ -47,8 +47,8 @@
 </tr>
 
 <!-- Child Locations (Recursive) -->
-{% if location.children.exists %}
-    {% for child in location.children.all %}
+{% if location.contains.exists %}
+    {% for child in location.contains.all %}
         {% include "locations/location_table_row.html" with location=child level=level|default:0|add:24 parent_id=location.id %}
     {% endfor %}
 {% endif %}

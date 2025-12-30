@@ -11,6 +11,7 @@ Allows STs to bulk approve:
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 
 class Command(BaseCommand):
@@ -179,9 +180,11 @@ class Command(BaseCommand):
 
             if not self.list_only:
                 if not self.dry_run:
-                    for obj in all_models:
-                        obj.image_status = "app"
-                        obj.save()
+                    # Use atomic transaction for bulk image approval
+                    with transaction.atomic():
+                        for obj in all_models:
+                            obj.image_status = "app"
+                            obj.save()
                     self.approved["images"] = count
                     self.stdout.write(self.style.SUCCESS(f"  ✓ Approved {count} image(s)"))
                 else:
@@ -275,11 +278,13 @@ class Command(BaseCommand):
 
             if not self.list_only:
                 if not self.dry_run:
-                    for char, spends in characters_with_pending:
-                        for spend in char.spent_xp:
-                            if spend.get("approved") == "Pending":
-                                spend["approved"] = "Approved"
-                        char.save()
+                    # Use atomic transaction for bulk XP spend approval
+                    with transaction.atomic():
+                        for char, spends in characters_with_pending:
+                            for spend in char.spent_xp:
+                                if spend.get("approved") == "Pending":
+                                    spend["approved"] = "Approved"
+                            char.save()
                     self.approved["xp_spends"] = total_pending
                     self.stdout.write(
                         self.style.SUCCESS(f"  ✓ Approved {total_pending} XP spend(s)")
@@ -336,12 +341,13 @@ class Command(BaseCommand):
 
             if not self.list_only:
                 if not self.dry_run:
-                    # Approve and award XP
-                    for req in weekly_requests:
-                        req.approved = True
-                        req.save()
-                        if req.character:
-                            req.character.add_xp(req.total_xp())
+                    # Approve and award XP atomically
+                    with transaction.atomic():
+                        for req in weekly_requests:
+                            req.approved = True
+                            req.save()
+                            if req.character:
+                                req.character.add_xp(req.total_xp())
 
                     self.approved["weekly_xp"] = weekly_count
                     self.stdout.write(

@@ -1728,3 +1728,53 @@ class TestRelatedNames(TestCase):
         entries = self.journal.entries.all()
         self.assertEqual(entries.count(), 1)
         self.assertEqual(entries.first().message, "Test entry")
+
+class STRelationshipIndexTests(TestCase):
+    """Tests for STRelationship database indexes."""
+
+    def test_st_relationship_user_field_has_db_index(self):
+        """Test that STRelationship.user ForeignKey has db_index=True."""
+        from game.models import STRelationship
+
+        user_field = STRelationship._meta.get_field("user")
+        self.assertTrue(user_field.db_index)
+
+    def test_st_relationship_chronicle_field_has_db_index(self):
+        """Test that STRelationship.chronicle ForeignKey has db_index=True."""
+        from game.models import STRelationship
+
+        chronicle_field = STRelationship._meta.get_field("chronicle")
+        self.assertTrue(chronicle_field.db_index)
+
+    def test_st_relationship_gameline_field_has_db_index(self):
+        """Test that STRelationship.gameline ForeignKey has db_index=True."""
+        from game.models import STRelationship
+
+        gameline_field = STRelationship._meta.get_field("gameline")
+        self.assertTrue(gameline_field.db_index)
+
+
+class UserSceneReadStatusIndexTests(TestCase):
+    """Tests for UserSceneReadStatus database indexes."""
+
+    def test_user_scene_read_status_user_field_has_db_index(self):
+        """Test that UserSceneReadStatus.user ForeignKey has db_index=True."""
+        from game.models import UserSceneReadStatus
+
+        user_field = UserSceneReadStatus._meta.get_field("user")
+        self.assertTrue(user_field.db_index)
+
+    def test_user_scene_read_status_scene_field_has_db_index(self):
+        """Test that UserSceneReadStatus.scene ForeignKey has db_index=True."""
+        from game.models import UserSceneReadStatus
+
+        scene_field = UserSceneReadStatus._meta.get_field("scene")
+        self.assertTrue(scene_field.db_index)
+
+    def test_user_scene_read_status_has_user_scene_composite_index(self):
+        """Test that UserSceneReadStatus has a composite index on (user, scene)."""
+        from game.models import UserSceneReadStatus
+
+        indexes = UserSceneReadStatus._meta.indexes
+        index_field_sets = [tuple(idx.fields) for idx in indexes]
+        self.assertIn(("user", "scene"), index_field_sets)

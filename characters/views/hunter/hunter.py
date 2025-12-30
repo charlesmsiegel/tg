@@ -115,6 +115,9 @@ class HunterCreateView(MessageMixin, CreateView):
     success_message = "Hunter '{name}' created successfully!"
     error_message = "Failed to create hunter. Please correct the errors below."
 
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
 
 class HunterUpdateView(EditPermissionMixin, UpdateView):
     model = Hunter

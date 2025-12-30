@@ -51,7 +51,7 @@ class NodeUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Node
     fields = [
         "name",
-        "parent",
+        "contained_within",
         "reality_zone",
         "description",
         "rank",

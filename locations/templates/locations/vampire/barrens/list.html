@@ -25,7 +25,7 @@
                     {% for barrens in object_list %}
                     <tr>
                         <td><a href="{{ barrens.get_absolute_url }}">{{ barrens.name }}</a></td>
-                        <td>{% if barrens.parent %}<a href="{{ barrens.parent.get_absolute_url }}">{{ barrens.parent.name }}</a>{% else %}-{% endif %}</td>
+                        <td>{% if barrens.contained_within.exists %}{% for container in barrens.contained_within.all %}<a href="{{ container.get_absolute_url }}">{{ container.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
                         <td>{{ barrens.get_control_status }}</td>
                         <td>{{ barrens.size|dots }}</td>
                         <td>{{ barrens.danger_level|dots }}</td>

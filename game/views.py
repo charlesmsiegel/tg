@@ -16,7 +16,7 @@ from core.mixins import (
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.db import models
+from django.db import models, transaction
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -1026,19 +1026,21 @@ class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
         total_xp = 0
         week_pk = None
 
-        for xp_request in pending_requests:
-            # Approve the request as-is (using submitted XP categories)
-            xp_request.approved = True
+        # Use atomic transaction to ensure all approvals succeed or all fail
+        with transaction.atomic():
+            for xp_request in pending_requests:
+                # Approve the request as-is (using submitted XP categories)
+                xp_request.approved = True
 
-            # Calculate and award XP
-            xp_increase = xp_request.total_xp()
-            xp_request.character.xp += xp_increase
-            xp_request.character.save()
-            xp_request.save()
+                # Calculate and award XP
+                xp_increase = xp_request.total_xp()
+                xp_request.character.xp += xp_increase
+                xp_request.character.save()
+                xp_request.save()
 
-            approved_count += 1
-            total_xp += xp_increase
-            week_pk = xp_request.week.pk
+                approved_count += 1
+                total_xp += xp_increase
+                week_pk = xp_request.week.pk
 
         if approved_count > 0:
             messages.success(
