@@ -392,3 +392,89 @@ class TestWonderFormIsValid(TestCase):
         form = WonderForm(data=data)
 
         self.assertFalse(form.is_valid())
+
+
+class TestWonderFormFormsetErrorPropagation(TestCase):
+    """Test that formset errors are properly propagated to form errors.
+
+    Issue #1067: When nested formsets have validation errors, those errors
+    should be clearly communicated to the user through the parent form's
+    error system.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        """Create resonance for testing."""
+        cls.resonance = Resonance.objects.create(name="Dynamic", entropy=True)
+
+    def setUp(self):
+        """Create an effect for testing."""
+        self.effect = Effect.objects.create(name="Test Effect", entropy=1)
+
+    def _get_valid_form_data(self, wonder_type="charm"):
+        """Helper to create valid form data."""
+        data = {
+            "wonder_type": wonder_type,
+            "name": "Test Wonder",
+            "description": "A test wonder",
+            "rank": 1,
+            "arete": 1,
+            # Resonance formset - management form
+            "resonance-TOTAL_FORMS": "1",
+            "resonance-INITIAL_FORMS": "0",
+            "resonance-MIN_NUM_FORMS": "0",
+            "resonance-MAX_NUM_FORMS": "1000",
+            # Resonance form
+            "resonance-0-resonance": str(self.resonance.pk),
+            "resonance-0-rating": "1",
+            # Effect formset - select existing effect
+            "effects-TOTAL_FORMS": "1",
+            "effects-INITIAL_FORMS": "0",
+            "effects-MIN_NUM_FORMS": "0",
+            "effects-MAX_NUM_FORMS": "1000",
+            "effects-0-select": str(self.effect.pk),
+            "effects-0-name": "dummy",
+        }
+        return data
+
+    def test_invalid_resonance_formset_propagates_error(self):
+        """Test that invalid resonance formset adds an error to the form.
+
+        When the resonance formset is invalid, the form should have a
+        clear error message about resonance errors.
+        """
+        data = self._get_valid_form_data()
+        # Make resonance formset invalid with bad rating
+        data["resonance-0-rating"] = "999"  # Invalid: max is 5
+
+        form = WonderForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        # Check that there's an error message about resonance
+        all_errors = str(form.errors) + str(form.non_field_errors())
+        self.assertTrue(
+            "resonance" in all_errors.lower(),
+            f"Expected resonance error in form.errors, got: {form.errors}, non_field_errors: {form.non_field_errors()}",
+        )
+
+    def test_invalid_effect_formset_propagates_error(self):
+        """Test that invalid effect formset adds an error to the form.
+
+        When the effect formset is invalid, the form should have a
+        clear error message about effect errors.
+        """
+        data = self._get_valid_form_data()
+        # Make effect formset invalid by using create mode with invalid data
+        data["effects-0-select_or_create"] = "on"
+        data["effects-0-select"] = ""
+        data["effects-0-name"] = ""  # Required field when creating
+
+        form = WonderForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        # Check that there's an error message about effect
+        all_errors = str(form.errors) + str(form.non_field_errors())
+        self.assertTrue(
+            "effect" in all_errors.lower(),
+            f"Expected effect error in form.errors, got: {form.errors}, non_field_errors: {form.non_field_errors()}",
+        )
