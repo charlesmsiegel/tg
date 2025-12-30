@@ -318,9 +318,11 @@ class Model(PermissionMixin, PolymorphicModel):
     gameline = "wod"  # Default gameline; override in subclasses
 
     name = models.CharField(max_length=200)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
 
-    chronicle = models.ForeignKey(Chronicle, blank=True, null=True, on_delete=models.SET_NULL)
+    chronicle = models.ForeignKey(
+        Chronicle, blank=True, null=True, on_delete=models.SET_NULL, db_index=True
+    )
 
     objects = ModelManager()
 
