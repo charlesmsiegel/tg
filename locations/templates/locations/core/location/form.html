@@ -13,6 +13,17 @@
             <div class="col-sm">{{ form.parent }}</div>
         </div>
     {% endblock parent %}
+    {% block physical_place %}
+        {% if form.physical_place %}
+        <div class="row">
+            <div class="col-sm">
+                <label for="id_physical_place">Physical Place</label>
+                {{ form.physical_place }}
+                <small class="text-muted">Link this to a real-world physical location for cross-gameline integration</small>
+            </div>
+        </div>
+        {% endif %}
+    {% endblock physical_place %}
     {% block gauntlets %}
         <div class="row">
             <div class="col-sm">Gauntlet</div>

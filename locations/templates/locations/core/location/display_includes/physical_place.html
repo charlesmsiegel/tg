@@ -1,0 +1,32 @@
+{% if object.physical_place %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h3 class="tg-card-title">Physical Location</h3>
+    </div>
+    <div class="tg-card-body">
+        <p class="mb-2">
+            <strong>Located at:</strong>
+            <a href="{{ object.physical_place.get_absolute_url }}">{{ object.physical_place.name }}</a>
+            {% if object.physical_place.city %}<span class="text-muted">- {{ object.physical_place.city }}</span>{% endif %}
+        </p>
+
+        {% with siblings=object.get_sibling_locations %}
+        {% if siblings %}
+        <hr>
+        <h5>Other Supernatural Aspects at This Location</h5>
+        <div class="row">
+            {% for sibling in siblings %}
+            <div class="col-sm-6 col-md-4 mb-2">
+                <div class="d-flex align-items-center">
+                    <span class="tg-badge {{ sibling.get_badge_class }} me-2">{{ sibling.get_gameline|upper }}</span>
+                    <a href="{{ sibling.get_absolute_url }}">{{ sibling.name }}</a>
+                </div>
+                <small class="text-muted">{{ sibling.get_type }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endif %}

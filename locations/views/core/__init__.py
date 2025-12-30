@@ -62,6 +62,12 @@ from locations.views import mage, werewolf
 
 from .city import CityCreateView, CityDetailView, CityListView, CityUpdateView
 from .location import LocationCreateView, LocationDetailView, LocationUpdateView
+from .physical_place import (
+    PhysicalPlaceCreateView,
+    PhysicalPlaceDetailView,
+    PhysicalPlaceListView,
+    PhysicalPlaceUpdateView,
+)
 
 
 class GenericLocationDetailView(DictView):

@@ -13,4 +13,9 @@ urls = [
         views.core.CityUpdateView.as_view(),
         name="city",
     ),
+    path(
+        "physical-place/<pk>/",
+        views.core.PhysicalPlaceUpdateView.as_view(),
+        name="physical_place",
+    ),
 ]

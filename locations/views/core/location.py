@@ -16,6 +16,7 @@ class LocationCreateView(LoginRequiredMixin, CreateView):
     fields = [
         "name",
         "parent",
+        "physical_place",
         "gauntlet",
         "shroud",
         "dimension_barrier",
@@ -44,6 +45,7 @@ class LocationUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     fields = [
         "name",
         "parent",
+        "physical_place",
         "gauntlet",
         "shroud",
         "dimension_barrier",

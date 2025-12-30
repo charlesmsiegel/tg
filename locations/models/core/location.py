@@ -31,6 +31,16 @@ class LocationModel(Model):
     )
     owned_by = models.ForeignKey(CharacterModel, blank=True, null=True, on_delete=models.SET_NULL)
 
+    # Link to physical place for cross-gameline location tracking
+    physical_place = models.ForeignKey(
+        "locations.PhysicalPlace",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="locations",
+        help_text="The physical real-world location this supernatural place exists at",
+    )
+
     gauntlet = models.IntegerField(default=7)
     shroud = models.IntegerField(default=7)
     dimension_barrier = models.IntegerField(default=6)
@@ -63,6 +73,18 @@ class LocationModel(Model):
             return [self.owned_by]
         else:
             return []
+
+    def get_sibling_locations(self):
+        """
+        Get other supernatural locations at the same physical place.
+
+        Returns a queryset of LocationModel instances that share the same
+        PhysicalPlace as this location, excluding this location itself.
+        Returns an empty queryset if no physical_place is set.
+        """
+        if self.physical_place is None:
+            return LocationModel.objects.none()
+        return self.physical_place.locations.exclude(pk=self.pk)
 
     def clean(self):
         """Validate location data before saving."""

@@ -1,0 +1,114 @@
+{% extends "core/base.html" %}
+{% load sanitize_text %}
+{% block title %}{{ object.name }}{% endblock title %}
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="tg-card header-card mb-4">
+        <div class="tg-card-header">
+            <h1 class="tg-card-title wod_heading">{{ object.name }}</h1>
+            <p class="tg-card-subtitle mb-0">
+                <span class="tg-badge badge-secondary">{{ object.get_place_type_display }}</span>
+                {% if object.city %}{{ object.city }}{% endif %}
+                {% if object.state %}, {{ object.state }}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Location Details -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="tg-card mb-4">
+                <div class="tg-card-header">
+                    <h3 class="tg-card-title">Location Details</h3>
+                </div>
+                <div class="tg-card-body">
+                    {% if object.description %}
+                        <div class="mb-3">
+                            <strong>Description:</strong>
+                            <p>{{ object.description|sanitize_html }}</p>
+                        </div>
+                    {% endif %}
+                    {% if object.get_full_address %}
+                        <div class="mb-2">
+                            <strong>Address:</strong> {{ object.get_full_address }}
+                        </div>
+                    {% endif %}
+                    {% if object.has_coordinates %}
+                        <div class="mb-2">
+                            <strong>Coordinates:</strong>
+                            {{ object.latitude }}, {{ object.longitude }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="tg-card mb-4">
+                <div class="tg-card-header">
+                    <h3 class="tg-card-title">Quick Stats</h3>
+                </div>
+                <div class="tg-card-body">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h2>{{ total_locations }}</h2>
+                            <small class="text-muted">Supernatural Locations</small>
+                        </div>
+                        <div class="col">
+                            <h2>{{ gameline_locations|length }}</h2>
+                            <small class="text-muted">Gamelines</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supernatural Locations by Gameline -->
+    {% if gameline_locations %}
+    <div class="tg-card mb-4">
+        <div class="tg-card-header">
+            <h3 class="tg-card-title">Supernatural Locations</h3>
+            <p class="tg-card-subtitle">All supernatural aspects of this physical location, grouped by game line</p>
+        </div>
+        <div class="tg-card-body">
+            {% for gameline in gameline_locations %}
+            <div class="mb-4">
+                <h4 class="{{ gameline.code }}_heading mb-3">{{ gameline.name }}</h4>
+                <div class="row">
+                    {% for loc in gameline.locations %}
+                    <div class="col-sm-6 col-md-4 mb-3">
+                        <div class="tg-card h-100">
+                            <div class="tg-card-body" style="padding: 16px;">
+                                <a href="{{ loc.get_absolute_url }}" style="font-weight: 600; color: var(--theme-text-primary);">
+                                    {{ loc.name }}
+                                </a>
+                                <br>
+                                <small class="text-muted">{{ loc.get_type }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="tg-card mb-4">
+        <div class="tg-card-body text-center">
+            <p class="text-muted mb-0">No supernatural locations are linked to this physical place yet.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="tg-card mb-4">
+        <div class="tg-card-body">
+            <a href="{{ object.get_update_url }}" class="tg-btn tg-btn-primary">Edit Physical Place</a>
+            <a href="{% url 'locations:list:physical_place' %}" class="tg-btn tg-btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
