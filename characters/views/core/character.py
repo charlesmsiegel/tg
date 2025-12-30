@@ -7,6 +7,7 @@ from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
 from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -56,22 +57,24 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
             request.user, self.object, Permission.EDIT_FULL
         )
 
-        if not can_change_status:
-            # Only owners can retire their own characters
-            if "retire" in request.POST and self.object.owner == request.user:
-                self.object.status = "Ret"
-                self.object.save()
-            # STs/Admins can mark as deceased
-            elif "decease" in request.POST:
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-        else:
-            # Handle retirement and death status changes
-            if "retire" in request.POST:
-                self.object.status = "Ret"
-                self.object.save()
-            if "decease" in request.POST:
-                self.object.status = "Dec"
-                self.object.save()
+        # Use atomic transaction for status changes
+        with transaction.atomic():
+            if not can_change_status:
+                # Only owners can retire their own characters
+                if "retire" in request.POST and self.object.owner == request.user:
+                    self.object.status = "Ret"
+                    self.object.save()
+                # STs/Admins can mark as deceased
+                elif "decease" in request.POST:
+                    return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+            else:
+                # Handle retirement and death status changes
+                if "retire" in request.POST:
+                    self.object.status = "Ret"
+                    self.object.save()
+                if "decease" in request.POST:
+                    self.object.status = "Dec"
+                    self.object.save()
 
         return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 

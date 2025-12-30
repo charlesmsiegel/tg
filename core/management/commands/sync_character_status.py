@@ -10,6 +10,7 @@ Ensures that Retired/Deceased characters are properly removed from:
 
 from characters.models.core.character import CharacterModel
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 
 class Command(BaseCommand):
@@ -70,8 +71,16 @@ class Command(BaseCommand):
         characters_changed = 0
 
         for character in queryset:
-            if self.process_character(character):
-                characters_changed += 1
+            # Use atomic transaction for each character's changes
+            if self.dry_run:
+                # Dry run - no transaction needed
+                if self.process_character(character):
+                    characters_changed += 1
+            else:
+                # Real run - wrap in transaction for atomicity
+                with transaction.atomic():
+                    if self.process_character(character):
+                        characters_changed += 1
             characters_processed += 1
 
         # Display summary
