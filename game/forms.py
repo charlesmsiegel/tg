@@ -3,6 +3,7 @@ import json
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
 from django import forms
+from django.db import transaction
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,
@@ -507,7 +508,9 @@ class WeeklyXPRequestForm(forms.ModelForm):
             self.instance.save()
         return self.instance
 
+    @transaction.atomic
     def st_save(self, commit=True):
+        """Approve the XP request and award XP to the character atomically."""
         # Directly modify the instance bound to the form
         self.instance.approved = True
         self.instance.finishing = self.cleaned_data["finishing"]
