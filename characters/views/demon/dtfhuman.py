@@ -91,6 +91,9 @@ class DtFHumanCreateView(MessageMixin, CreateView):
     ]
     template_name = "characters/demon/dtfhuman/form.html"
 
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
 
 class DtFHumanUpdateView(EditPermissionMixin, UpdateView):
     model = DtFHuman

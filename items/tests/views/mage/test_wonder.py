@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
 from items.models.mage import Wonder, WonderResonanceRating
 
 
@@ -48,3 +49,41 @@ class TestWonderDetailViewQueryOptimization(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("resonance", response.context)
         self.assertEqual(response.context["resonance"].count(), 5)
+
+
+class TestWonderCreateView(TestCase):
+    """Test WonderCreateView functionality."""
+
+    def test_create_view_has_get_success_url_method(self):
+        """Test that WonderCreateView has explicit get_success_url method."""
+        from items.views.mage.wonder import WonderCreateView
+
+        self.assertTrue(
+            hasattr(WonderCreateView, "get_success_url"),
+            "WonderCreateView should have get_success_url method",
+        )
+        # Verify it's defined on the class itself, not inherited
+        self.assertIn(
+            "get_success_url",
+            WonderCreateView.__dict__,
+            "get_success_url should be explicitly defined on WonderCreateView",
+        )
+
+
+class TestWonderUpdateView(TestCase):
+    """Test WonderUpdateView functionality."""
+
+    def test_update_view_has_get_success_url_method(self):
+        """Test that WonderUpdateView has explicit get_success_url method."""
+        from items.views.mage.wonder import WonderUpdateView
+
+        self.assertTrue(
+            hasattr(WonderUpdateView, "get_success_url"),
+            "WonderUpdateView should have get_success_url method",
+        )
+        # Verify it's defined on the class itself, not inherited
+        self.assertIn(
+            "get_success_url",
+            WonderUpdateView.__dict__,
+            "get_success_url should be explicitly defined on WonderUpdateView",
+        )
