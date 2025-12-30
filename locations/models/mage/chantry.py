@@ -1,8 +1,8 @@
 from characters.models.core.background_block import Background, BackgroundBlock
 from characters.models.core.human import Human
 from characters.models.mage.effect import Effect
+from core.models import BaseBackgroundRating
 from core.utils import CharacterOrganizationRegistry
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
@@ -361,20 +361,15 @@ class Chantry(BackgroundBlock, LocationModel):
             chantry.teacher.remove(character)
 
 
-class ChantryBackgroundRating(models.Model):
-    bg = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True)
+class ChantryBackgroundRating(BaseBackgroundRating):
+    """Background rating for a chantry."""
+
     chantry = models.ForeignKey(
         Chantry,
         on_delete=models.SET_NULL,
         null=True,
         related_name="backgrounds",
     )
-    rating = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
-    note = models.CharField(default="", max_length=100, blank=True)
-    url = models.CharField(default="", max_length=500, blank=True)
-    complete = models.BooleanField(default=False)
     display_alt_name = models.BooleanField(default=False)
 
     class Meta:
@@ -386,9 +381,6 @@ class ChantryBackgroundRating(models.Model):
                 violation_error_message="Chantry background rating must be between 0 and 10",
             ),
         ]
-
-    def __str__(self):
-        return f"{self.bg} ({self.note})"
 
     def display_name(self):
         if self.bg.alternate_name == "":
