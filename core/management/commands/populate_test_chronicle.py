@@ -132,30 +132,17 @@ class Command(BaseCommand):
             concept = choice(concepts)
             status = choice(statuses)
 
-            # Import appropriate model based on gameline
-            if gameline == "vtm":
-                from characters.models.vampire.human import Human
+            # Create character using Human model from core
+            from characters.models.core.human import Human
 
-                char = Human.objects.create(
-                    name=name,
-                    owner=user,
-                    chronicle=chronicle,
-                    concept=concept,
-                    status=status,
-                    xp=randint(0, 50),
-                )
-            else:
-                # For other gamelines, create basic human
-                from characters.models.core.human import Human
-
-                char = Human.objects.create(
-                    name=name,
-                    owner=user,
-                    chronicle=chronicle,
-                    concept=concept,
-                    status=status,
-                    xp=randint(0, 50),
-                )
+            char = Human.objects.create(
+                name=name,
+                owner=user,
+                chronicle=chronicle,
+                concept=concept,
+                status=status,
+                xp=randint(0, 50),
+            )
 
             characters.append(char)
 

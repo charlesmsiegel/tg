@@ -167,7 +167,7 @@ class Command(BaseCommand):
 
     def export_journals(self, chronicle):
         """Export all journals in the chronicle."""
-        journals = Journal.objects.filter(chronicle=chronicle)
+        journals = Journal.objects.filter(character__chronicle=chronicle)
         self.stdout.write(f"Exporting {journals.count()} journals...")
 
         return json.loads(serialize("json", journals))

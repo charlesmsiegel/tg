@@ -157,27 +157,13 @@ class Command(BaseCommand):
 
     def check_xp_activity(self, since):
         """Check XP spending activity and patterns."""
-        # Characters that spent XP recently (based on spent_xp JSONField)
-        chars_with_recent_spending = Character.objects.filter(spent_xp__isnull=False).exclude(
-            spent_xp=[]
-        )
+        from game.models import XPSpendingRequest
 
-        # Count spending records
-        total_spends = 0
-        pending_spends = 0
-        approved_spends = 0
-        denied_spends = 0
-
-        for char in chars_with_recent_spending:
-            for spend in char.spent_xp:
-                total_spends += 1
-                status = spend.get("approved", "Pending")
-                if status == "Pending":
-                    pending_spends += 1
-                elif status == "Approved":
-                    approved_spends += 1
-                elif status == "Denied":
-                    denied_spends += 1
+        # Count spending records using XPSpendingRequest model
+        total_spends = XPSpendingRequest.objects.count()
+        pending_spends = XPSpendingRequest.objects.filter(approved="Pending").count()
+        approved_spends = XPSpendingRequest.objects.filter(approved="Approved").count()
+        denied_spends = XPSpendingRequest.objects.filter(approved="Denied").count()
 
         return {
             "total_spending_records": total_spends,

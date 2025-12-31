@@ -76,19 +76,27 @@ class Command(BaseCommand):
 
     def audit_character(self, char):
         """Audit a single character's XP."""
-        if not hasattr(char, "xp") or not hasattr(char, "spent_xp"):
+        if not hasattr(char, "xp"):
             return None
 
         issues = []
         warnings = []
 
-        # Calculate XP totals
+        # Calculate XP totals using XPSpendingRequest model
         total_earned = char.xp
-        approved_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Approved"]
-        pending_spends = [spend for spend in char.spent_xp if spend.get("approved") == "Pending"]
 
-        total_approved = sum(spend.get("cost", 0) for spend in approved_spends)
-        total_pending = sum(spend.get("cost", 0) for spend in pending_spends)
+        # Get spending data from xp_spendings relation
+        from django.db.models import Sum
+
+        approved_count = char.xp_spendings.filter(approved="Approved").count()
+        pending_count = char.xp_spendings.filter(approved="Pending").count()
+
+        total_approved = (
+            char.xp_spendings.filter(approved="Approved").aggregate(total=Sum("cost"))["total"] or 0
+        )
+        total_pending = (
+            char.xp_spendings.filter(approved="Pending").aggregate(total=Sum("cost"))["total"] or 0
+        )
 
         remaining = total_earned - total_approved
         after_pending = remaining - total_pending
@@ -105,14 +113,13 @@ class Command(BaseCommand):
             warnings.append(f"Pending spends ({total_pending}) exceed remaining XP ({remaining})")
 
         # Check for excessive pending spends
-        if len(pending_spends) > 15:
-            warnings.append(f"Large number of pending spends: {len(pending_spends)}")
+        if pending_count > 15:
+            warnings.append(f"Large number of pending spends: {pending_count}")
 
         # Check for orphaned approved spends (just flag high counts as suspicious)
-        if len(approved_spends) > 100:
+        if approved_count > 100:
             warnings.append(
-                f"Unusually high approved spend count: {len(approved_spends)} "
-                f"(possible duplicates)"
+                f"Unusually high approved spend count: {approved_count} " f"(possible duplicates)"
             )
 
         # Only return result if there are issues, warnings, or show_all is set
@@ -123,8 +130,8 @@ class Command(BaseCommand):
                 "approved": total_approved,
                 "pending": total_pending,
                 "remaining": remaining,
-                "approved_count": len(approved_spends),
-                "pending_count": len(pending_spends),
+                "approved_count": approved_count,
+                "pending_count": pending_count,
                 "issues": issues,
                 "warnings": warnings,
             }
