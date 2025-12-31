@@ -45,9 +45,7 @@ class TestAutumnPersonDetailView(TestCase):
                 kwargs={"pk": self.autumn_person.pk},
             )
         )
-        self.assertTemplateUsed(
-            response, "characters/changeling/autumn_person/detail.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/autumn_person/detail.html")
 
 
 class TestAutumnPersonCreateView(TestCase):
@@ -70,9 +68,7 @@ class TestAutumnPersonCreateView(TestCase):
         """Test that create view uses the correct template."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(reverse("characters:changeling:create:autumn_person"))
-        self.assertTemplateUsed(
-            response, "characters/changeling/autumn_person/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/autumn_person/form.html")
 
     def test_create_view_post_creates_object(self):
         """Test that posting to create view creates an AutumnPerson."""
@@ -134,9 +130,7 @@ class TestAutumnPersonUpdateView(TestCase):
                 kwargs={"pk": self.autumn_person.pk},
             )
         )
-        self.assertTemplateUsed(
-            response, "characters/changeling/autumn_person/form.html"
-        )
+        self.assertTemplateUsed(response, "characters/changeling/autumn_person/form.html")
 
     def test_update_view_denies_regular_user(self):
         """Test that update view denies access to regular users (requires EDIT_FULL)."""

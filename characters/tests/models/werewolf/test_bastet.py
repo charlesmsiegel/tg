@@ -62,7 +62,17 @@ class TestBastet(TestCase):
 
     def test_set_tribe_all_tribes(self):
         """Test setting each Bastet tribe."""
-        tribes = ["bagheera", "balam", "bubasti", "ceilican", "khan", "pumonca", "qualmi", "simba", "swara"]
+        tribes = [
+            "bagheera",
+            "balam",
+            "bubasti",
+            "ceilican",
+            "khan",
+            "pumonca",
+            "qualmi",
+            "simba",
+            "swara",
+        ]
         for tribe in tribes:
             bastet = Bastet.objects.create(name=f"Test {tribe}", owner=self.player)
             self.assertTrue(bastet.set_tribe(tribe))

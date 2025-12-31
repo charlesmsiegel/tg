@@ -1,14 +1,13 @@
 """Comprehensive tests for mage forms."""
 
-from django.contrib.auth.models import User
-from django.test import TestCase
-
 from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.models.core.archetype import Archetype
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
+from django.contrib.auth.models import User
+from django.test import TestCase
 
 
 class TestMageCreationForm(TestCase):
@@ -20,6 +19,7 @@ class TestMageCreationForm(TestCase):
         self.st = User.objects.create_user(username="ST", password="password")
         # Set up ST profile
         from game.models import Chronicle
+
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -66,7 +66,7 @@ class TestMageCreationForm(TestCase):
                 "affiliation": self.affiliation.id,
                 "faction": self.faction.id,
                 "essence": "Dynamic",
-            }
+            },
         )
         self.assertTrue(form.is_valid())
 
@@ -82,7 +82,7 @@ class TestMageCreationForm(TestCase):
                 "affiliation": self.affiliation.id,
                 "faction": self.faction.id,
                 "essence": "Dynamic",
-            }
+            },
         )
         if form.is_valid():
             mage = form.save()
@@ -100,7 +100,7 @@ class TestMageCreationForm(TestCase):
                 "affiliation": self.affiliation.id,
                 "faction": self.faction.id,
                 "essence": "Dynamic",
-            }
+            },
         )
         # When bound, faction queryset should include all factions
         self.assertIsNotNone(form.fields["faction"].queryset)
@@ -141,7 +141,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertTrue(form.is_valid())
 
@@ -164,7 +164,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertFalse(form.is_valid())
         self.assertIn("arete", form.errors)
@@ -188,7 +188,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertFalse(form.is_valid())
         self.assertIn("affinity_sphere", form.errors)
@@ -212,7 +212,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertFalse(form.is_valid())
         # Should have an error about sphere total
@@ -236,7 +236,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertFalse(form.is_valid())
 
@@ -259,6 +259,6 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
-            }
+            },
         )
         self.assertTrue(form.is_valid())

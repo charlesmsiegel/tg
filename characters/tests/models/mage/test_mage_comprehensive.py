@@ -1,8 +1,5 @@
 """Comprehensive tests for mage model - additional methods not covered in test_mage.py."""
 
-from django.contrib.auth.models import User
-from django.test import TestCase
-
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.specialty import Specialty
@@ -14,6 +11,8 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
+from django.contrib.auth.models import User
+from django.test import TestCase
 
 
 class TestMageAffinitySphereName(TestCase):
@@ -116,7 +115,9 @@ class TestMageResonanceMethods(TestCase):
     def test_add_resonance_by_string(self):
         """Test adding resonance by name string."""
         self.assertTrue(self.mage.add_resonance("Test Resonance New"))
-        self.assertEqual(self.mage.resonance_rating(Resonance.objects.get(name="Test Resonance New")), 1)
+        self.assertEqual(
+            self.mage.resonance_rating(Resonance.objects.get(name="Test Resonance New")), 1
+        )
 
     def test_subtract_resonance(self):
         """Test subtracting resonance."""

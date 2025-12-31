@@ -22,9 +22,7 @@ class SignalTransactionTests(TransactionTestCase):
         """Test that profile is created atomically with user."""
         # Create a user - should automatically create a Profile
         user = User.objects.create_user(
-            username="test_signal_user",
-            email="test@example.com",
-            password="testpass123"
+            username="test_signal_user", email="test@example.com", password="testpass123"
         )
 
         # Profile should exist
@@ -34,12 +32,11 @@ class SignalTransactionTests(TransactionTestCase):
     def test_profile_creation_idempotent(self):
         """Test that creating a user twice doesn't cause issues."""
         user1 = User.objects.create_user(
-            username="test_user1",
-            email="test1@example.com",
-            password="testpass123"
+            username="test_user1", email="test1@example.com", password="testpass123"
         )
         # Verify profile count is exactly 1
         from accounts.models import Profile
+
         self.assertEqual(Profile.objects.filter(user=user1).count(), 1)
 
 
@@ -49,9 +46,7 @@ class XPOperationTransactionTests(TransactionTestCase):
     def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user(
-            username="xp_test_user",
-            email="xp@example.com",
-            password="testpass123"
+            username="xp_test_user", email="xp@example.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
@@ -112,9 +107,7 @@ class CharacterStatusTransactionTests(TransactionTestCase):
     def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user(
-            username="status_test_user",
-            email="status@example.com",
-            password="testpass123"
+            username="status_test_user", email="status@example.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
@@ -142,9 +135,7 @@ class BulkOperationTransactionTests(TransactionTestCase):
     def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user(
-            username="bulk_test_user",
-            email="bulk@example.com",
-            password="testpass123"
+            username="bulk_test_user", email="bulk@example.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
@@ -226,9 +217,7 @@ class M2MOperationTransactionTests(TransactionTestCase):
     def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user(
-            username="m2m_test_user",
-            email="m2m@example.com",
-            password="testpass123"
+            username="m2m_test_user", email="m2m@example.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
@@ -269,9 +258,7 @@ class JournalCreationTransactionTests(TransactionTestCase):
     def setUp(self):
         """Set up test data."""
         self.user = User.objects.create_user(
-            username="journal_test_user",
-            email="journal@example.com",
-            password="testpass123"
+            username="journal_test_user", email="journal@example.com", password="testpass123"
         )
         self.chronicle = Chronicle.objects.create(
             name="Test Chronicle",
@@ -305,7 +292,4 @@ class JournalCreationTransactionTests(TransactionTestCase):
         character.name = "Updated Name"
         character.save()
 
-        self.assertEqual(
-            Journal.objects.filter(character=character).count(),
-            initial_count
-        )
+        self.assertEqual(Journal.objects.filter(character=character).count(), initial_count)

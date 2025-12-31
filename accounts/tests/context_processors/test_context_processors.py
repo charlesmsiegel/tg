@@ -341,7 +341,11 @@ class TestNotificationCountContextProcessor(TestCase):
         request.user = self.user
 
         # Patch the profile to raise an exception
-        with patch.object(type(self.user), "profile", property(lambda _: (_ for _ in ()).throw(Exception("Test error")))):
+        with patch.object(
+            type(self.user),
+            "profile",
+            property(lambda _: (_ for _ in ()).throw(Exception("Test error"))),
+        ):
             context = notification_count(request)
             self.assertEqual(context["notification_count"], 0)
             self.assertEqual(context["notification_breakdown"], {})

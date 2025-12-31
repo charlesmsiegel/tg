@@ -123,13 +123,28 @@ class DtFHumanAbilitiesTests(TestCase):
 
     def test_demon_specific_skills_included(self):
         """Test that Demon-specific skills are in the list."""
-        demon_skills = ["performance", "security", "survival", "technology", "animal_ken", "demolitions"]
+        demon_skills = [
+            "performance",
+            "security",
+            "survival",
+            "technology",
+            "animal_ken",
+            "demolitions",
+        ]
         for skill in demon_skills:
             self.assertIn(skill, DtFHuman.skills)
 
     def test_demon_specific_knowledges_included(self):
         """Test that Demon-specific knowledges are in the list."""
-        demon_knowledges = ["finance", "law", "enigmas", "occult", "politics", "religion", "research"]
+        demon_knowledges = [
+            "finance",
+            "law",
+            "enigmas",
+            "occult",
+            "politics",
+            "religion",
+            "research",
+        ]
         for knowledge in demon_knowledges:
             self.assertIn(knowledge, DtFHuman.knowledges)
 

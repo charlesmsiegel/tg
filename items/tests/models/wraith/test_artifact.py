@@ -1,4 +1,5 @@
 """Tests for WraithArtifact model."""
+
 from django.test import TestCase
 from items.models.wraith.artifact import WraithArtifact
 
@@ -81,7 +82,13 @@ class TestWraithArtifactMaterial(TestCase):
 
     def test_material_choices(self):
         """Test material can be set to valid choices."""
-        valid_materials = ["soulsteel", "stygian_steel", "necropolis_steel", "ash_iron", "labyrinthine_adamas"]
+        valid_materials = [
+            "soulsteel",
+            "stygian_steel",
+            "necropolis_steel",
+            "ash_iron",
+            "labyrinthine_adamas",
+        ]
         for material in valid_materials:
             artifact = WraithArtifact.objects.create(name=f"{material} artifact", material=material)
             self.assertEqual(artifact.material, material)

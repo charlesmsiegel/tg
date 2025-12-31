@@ -1,11 +1,10 @@
 """Tests for cache_middleware module."""
 
+from core.middleware.cache_middleware import PerUserCacheMiddleware
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 from django.utils.cache import patch_response_headers
-
-from core.middleware.cache_middleware import PerUserCacheMiddleware
 
 
 class PerUserCacheMiddlewareTest(TestCase):

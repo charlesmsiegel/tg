@@ -18,9 +18,7 @@ class TestEarthboundDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -95,9 +93,7 @@ class TestEarthboundUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -107,7 +103,6 @@ class TestEarthboundUpdateView(TestCase):
             chronicle=self.chronicle,
             status="App",
         )
-
 
 
 class TestEarthboundListView(TestCase):
@@ -129,9 +124,7 @@ class TestEarthboundListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        earthbound = Earthbound.objects.create(
-            name="My Earthbound", owner=self.user, status="App"
-        )
+        earthbound = Earthbound.objects.create(name="My Earthbound", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:earthbound")
         response = self.client.get(url)
@@ -152,9 +145,7 @@ class TestEarthbound404Handling(TestCase):
     def test_earthbound_detail_returns_404_for_invalid_pk(self):
         """Test that earthbound detail returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:demon:earthbound", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:earthbound", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_earthbound_update_returns_404_for_invalid_pk(self):

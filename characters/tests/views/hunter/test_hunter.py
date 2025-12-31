@@ -157,12 +157,8 @@ class TestHunterListView(TestCase):
 
     def test_list_view_queryset_ordering(self):
         """List view orders by name and includes related objects."""
-        Hunter.objects.create(
-            name="Zebra Hunter", owner=self.player, creed=self.creed
-        )
-        Hunter.objects.create(
-            name="Alpha Hunter", owner=self.player, creed=self.creed
-        )
+        Hunter.objects.create(name="Zebra Hunter", owner=self.player, creed=self.creed)
+        Hunter.objects.create(name="Alpha Hunter", owner=self.player, creed=self.creed)
 
         self.client.login(username="Player", password="password")
         response = self.client.get(self.url)

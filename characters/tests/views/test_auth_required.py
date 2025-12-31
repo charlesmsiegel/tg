@@ -22,9 +22,7 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
 
         # Create test objects for each affected model
         cls.dynasty = Dynasty.objects.create(name="Test Dynasty")
-        cls.mummy_title = MummyTitle.objects.create(
-            name="Test Title", rank_level=3
-        )
+        cls.mummy_title = MummyTitle.objects.create(name="Test Title", rank_level=3)
         cls.discipline = Discipline.objects.create(
             name="Test Discipline", property_name="test_discipline"
         )

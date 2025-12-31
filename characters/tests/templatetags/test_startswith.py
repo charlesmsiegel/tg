@@ -66,7 +66,9 @@ class StartsWithTemplateTest(TestCase):
 
     def test_filter_in_template_false_case(self):
         """Test filter returns correctly when prefix doesn't match in template."""
-        template = Template('{% load startswith %}{% if name|startswith:"Dr" %}Doctor{% else %}No title{% endif %}')
+        template = Template(
+            '{% load startswith %}{% if name|startswith:"Dr" %}Doctor{% else %}No title{% endif %}'
+        )
         context = Context({"name": "Mr. Smith"})
         result = template.render(context)
         self.assertEqual(result.strip(), "No title")

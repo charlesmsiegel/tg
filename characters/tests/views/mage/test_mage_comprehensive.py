@@ -1,9 +1,5 @@
 """Comprehensive tests for mage views module - XP spending, rote creation, and creation workflow."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
@@ -17,6 +13,9 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle, ObjectType
 
 
@@ -29,9 +28,7 @@ class TestMageDetailViewPost(TestCase):
         self.owner = User.objects.create_user(
             username="owner", email="owner@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -410,9 +407,7 @@ class TestMageCharacterCreationWorkflow(TestCase):
             owner=self.owner,
             creation_status=1,
         )
-        response = self.client.get(
-            reverse("characters:mage:update:mage", kwargs={"pk": mage.pk})
-        )
+        response = self.client.get(reverse("characters:mage:update:mage", kwargs={"pk": mage.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_mage_ability_view_accessible(self):
@@ -423,9 +418,7 @@ class TestMageCharacterCreationWorkflow(TestCase):
             owner=self.owner,
             creation_status=2,
         )
-        response = self.client.get(
-            reverse("characters:mage:update:mage", kwargs={"pk": mage.pk})
-        )
+        response = self.client.get(reverse("characters:mage:update:mage", kwargs={"pk": mage.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_mage_backgrounds_view_accessible(self):
@@ -436,9 +429,7 @@ class TestMageCharacterCreationWorkflow(TestCase):
             owner=self.owner,
             creation_status=3,
         )
-        response = self.client.get(
-            reverse("characters:mage:update:mage", kwargs={"pk": mage.pk})
-        )
+        response = self.client.get(reverse("characters:mage:update:mage", kwargs={"pk": mage.pk}))
         self.assertEqual(response.status_code, 200)
 
 

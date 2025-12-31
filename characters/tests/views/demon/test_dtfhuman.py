@@ -18,9 +18,7 @@ class TestDtFHumanDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -110,9 +108,7 @@ class TestDtFHumanUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -122,7 +118,6 @@ class TestDtFHumanUpdateView(TestCase):
             chronicle=self.chronicle,
             status="App",
         )
-
 
 
 class TestDtFHumanListView(TestCase):
@@ -144,9 +139,7 @@ class TestDtFHumanListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        human = DtFHuman.objects.create(
-            name="My Human", owner=self.user, status="App"
-        )
+        human = DtFHuman.objects.create(name="My Human", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:dtfhuman")
         response = self.client.get(url)
@@ -167,9 +160,7 @@ class TestDtFHuman404Handling(TestCase):
     def test_dtfhuman_detail_returns_404_for_invalid_pk(self):
         """Test that dtfhuman detail returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:demon:dtfhuman", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:dtfhuman", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_dtfhuman_update_returns_404_for_invalid_pk(self):

@@ -5,10 +5,10 @@ from unittest.mock import patch
 from django.test import TestCase
 from locations.models.mage.paradox_realm import (
     FinalObstacleTypeChoices,
+    ParadigmChoices,
     ParadoxAtmosphere,
     ParadoxObstacle,
     ParadoxRealm,
-    ParadigmChoices,
     SphereChoices,
 )
 
@@ -545,9 +545,7 @@ class TestParadoxAtmosphere(TestCase):
     def test_atmosphere_random_save(self):
         """Test random atmosphere generation with save."""
         realm = ParadoxRealm.objects.create(name="Test Realm")
-        atmosphere = ParadoxAtmosphere.random(
-            realm=realm, paradigm=ParadigmChoices.TECH, save=True
-        )
+        atmosphere = ParadoxAtmosphere.random(realm=realm, paradigm=ParadigmChoices.TECH, save=True)
         self.assertIsNotNone(atmosphere.pk)
 
 

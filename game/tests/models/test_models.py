@@ -1626,9 +1626,7 @@ class TestRelatedNames(TestCase):
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.gameline = Gameline.objects.create(name="Vampire")
-        self.location = LocationModel.objects.create(
-            name="Test Location", chronicle=self.chronicle
-        )
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.character = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -1728,6 +1726,7 @@ class TestRelatedNames(TestCase):
         entries = self.journal.entries.all()
         self.assertEqual(entries.count(), 1)
         self.assertEqual(entries.first().message, "Test entry")
+
 
 class STRelationshipIndexTests(TestCase):
     """Tests for STRelationship database indexes."""

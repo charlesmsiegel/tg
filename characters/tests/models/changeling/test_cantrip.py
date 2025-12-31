@@ -45,10 +45,24 @@ class TestCantripModel(TestCase):
     def test_cantrip_art_choices(self):
         """Test that art field has correct choices."""
         arts = [
-            "autumn", "chicanery", "chronos", "contract", "dragons_ire",
-            "legerdemain", "metamorphosis", "naming", "oneiromancy", "primal",
-            "pyretics", "skycraft", "soothsay", "sovereign", "spring",
-            "summer", "wayfare", "winter",
+            "autumn",
+            "chicanery",
+            "chronos",
+            "contract",
+            "dragons_ire",
+            "legerdemain",
+            "metamorphosis",
+            "naming",
+            "oneiromancy",
+            "primal",
+            "pyretics",
+            "skycraft",
+            "soothsay",
+            "sovereign",
+            "spring",
+            "summer",
+            "wayfare",
+            "winter",
         ]
         valid_choices = [choice[0] for choice in Cantrip._meta.get_field("art").choices]
         for art in arts:

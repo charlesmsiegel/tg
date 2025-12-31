@@ -1,9 +1,8 @@
 """Tests for locations URL routing configuration."""
 
+from core.constants import GameLine
 from django.test import SimpleTestCase, TestCase
 from django.urls import NoReverseMatch, resolve, reverse
-
-from core.constants import GameLine
 from locations import urls as locations_urls
 
 

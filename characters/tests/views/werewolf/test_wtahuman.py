@@ -197,7 +197,9 @@ class TestWtAHumanCharacterCreationView(WtAHumanViewTestCase):
         """Routes to attribute view at stage 1."""
         self.client.login(username="testuser", password="testpassword")
         response = self.client.get(
-            reverse("characters:werewolf:wtahuman_creation", kwargs={"pk": self.wtahuman_stage_1.pk})
+            reverse(
+                "characters:werewolf:wtahuman_creation", kwargs={"pk": self.wtahuman_stage_1.pk}
+            )
         )
         self.assertEqual(response.status_code, 200)
 
@@ -205,7 +207,9 @@ class TestWtAHumanCharacterCreationView(WtAHumanViewTestCase):
         """Routes correctly when creation is complete."""
         self.client.login(username="testuser", password="testpassword")
         response = self.client.get(
-            reverse("characters:werewolf:wtahuman_creation", kwargs={"pk": self.wtahuman_complete.pk})
+            reverse(
+                "characters:werewolf:wtahuman_creation", kwargs={"pk": self.wtahuman_complete.pk}
+            )
         )
         # May redirect to detail view or show final form
         self.assertIn(response.status_code, [200, 302])

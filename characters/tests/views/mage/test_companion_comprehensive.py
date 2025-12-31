@@ -1,9 +1,5 @@
 """Comprehensive tests for companion views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
@@ -12,6 +8,9 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle, ObjectType
 
 
@@ -275,6 +274,7 @@ class TestCompanionValuesView(TestCase):
         self.advantage = Advantage.objects.create(name="Test Advantage", min_rating=1)
         # Create ratings for the advantage
         from characters.models.mage.companion import AdvantageRating
+
         AdvantageRating.objects.create(advantage=self.advantage, value=1)
         AdvantageRating.objects.create(advantage=self.advantage, value=2)
         AdvantageRating.objects.create(advantage=self.advantage, value=3)
@@ -393,9 +393,7 @@ class TestCompanionDetailViewWithOwnership(TestCase):
         self.other = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 

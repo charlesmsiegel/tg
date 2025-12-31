@@ -1,14 +1,13 @@
 """Tests for auth_error_handler middleware module."""
 
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
+from core.middleware.auth_error_handler import AuthErrorHandlerMiddleware
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
-
-from core.middleware.auth_error_handler import AuthErrorHandlerMiddleware
 
 
 class AuthErrorHandlerMiddlewareTest(TestCase):

@@ -1,4 +1,5 @@
 """Tests for Vessel model."""
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from items.models.mummy.vessel import Vessel
@@ -37,7 +38,9 @@ class TestVesselStoreBa(TestCase):
 
     def test_store_ba_basic(self):
         """Test storing Ba in vessel."""
-        vessel = Vessel.objects.create(name="Test", rank=3, current_ba=10, transfer_rate=5, efficiency=100)
+        vessel = Vessel.objects.create(
+            name="Test", rank=3, current_ba=10, transfer_rate=5, efficiency=100
+        )
         stored = vessel.store_ba(3)
         self.assertEqual(stored, 3)
         vessel.refresh_from_db()
@@ -45,7 +48,9 @@ class TestVesselStoreBa(TestCase):
 
     def test_store_ba_limited_by_transfer_rate(self):
         """Test store_ba is limited by transfer_rate."""
-        vessel = Vessel.objects.create(name="Test", rank=5, current_ba=0, transfer_rate=2, efficiency=100)
+        vessel = Vessel.objects.create(
+            name="Test", rank=5, current_ba=0, transfer_rate=2, efficiency=100
+        )
         stored = vessel.store_ba(10)
         self.assertEqual(stored, 2)  # Limited by transfer_rate
         vessel.refresh_from_db()
@@ -53,7 +58,9 @@ class TestVesselStoreBa(TestCase):
 
     def test_store_ba_limited_by_space(self):
         """Test store_ba is limited by available space."""
-        vessel = Vessel.objects.create(name="Test", rank=2, current_ba=18, transfer_rate=5, efficiency=100)
+        vessel = Vessel.objects.create(
+            name="Test", rank=2, current_ba=18, transfer_rate=5, efficiency=100
+        )
         # max_ba = 20, current = 18, space = 2
         stored = vessel.store_ba(5)
         self.assertEqual(stored, 2)
@@ -62,7 +69,9 @@ class TestVesselStoreBa(TestCase):
 
     def test_store_ba_applies_efficiency(self):
         """Test store_ba applies efficiency percentage."""
-        vessel = Vessel.objects.create(name="Test", rank=5, current_ba=0, transfer_rate=10, efficiency=50)
+        vessel = Vessel.objects.create(
+            name="Test", rank=5, current_ba=0, transfer_rate=10, efficiency=50
+        )
         stored = vessel.store_ba(10)
         self.assertEqual(stored, 5)  # 50% efficiency
         vessel.refresh_from_db()
@@ -127,16 +136,20 @@ class TestVesselCanUse(TestCase):
     def test_can_use_not_attuned(self):
         """Test any mummy can use non-attuned vessel."""
         vessel = Vessel.objects.create(name="Test", rank=2, is_attuned=False)
+
         # Mock mummy object
         class MockMummy:
             pass
+
         self.assertTrue(vessel.can_use(MockMummy()))
 
     def test_can_use_attuned_to_correct_mummy(self):
         """Test attuned vessel can be used by attuned mummy."""
         vessel = Vessel.objects.create(name="Test", rank=2, is_attuned=True, attuned_to=None)
+
         class MockMummy:
             pass
+
         mock = MockMummy()
         vessel.attuned_to = None  # Would be a real Mummy FK in practice
         # Since attuned_to is None and is_attuned is True, can_use checks attuned_to != mummy
@@ -154,7 +167,16 @@ class TestVesselTypes(TestCase):
 
     def test_vessel_type_choices(self):
         """Test vessel type can be set to valid choices."""
-        valid_types = ["canopic", "scarab", "ankh", "crystal", "urn", "statue", "cartouche", "other"]
+        valid_types = [
+            "canopic",
+            "scarab",
+            "ankh",
+            "crystal",
+            "urn",
+            "statue",
+            "cartouche",
+            "other",
+        ]
         for vtype in valid_types:
             vessel = Vessel.objects.create(name=f"{vtype} vessel", vessel_type=vtype)
             self.assertEqual(vessel.vessel_type, vtype)

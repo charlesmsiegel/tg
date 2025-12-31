@@ -138,6 +138,7 @@ class TestMeritFlawRatingRelatedNames(TestCase):
         self.assertEqual(ratings.first().character.pk, self.character.pk)
         self.assertEqual(ratings.first().rating, 2)
 
+
 class MeritFlawRatingIndexTests(TestCase):
     """Tests for MeritFlawRating database indexes."""
 

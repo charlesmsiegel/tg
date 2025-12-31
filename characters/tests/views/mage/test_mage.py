@@ -416,17 +416,13 @@ class TestMageView404Handling(TestCase):
         """Test that mage detail returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
         # Uses the generic character detail view which maps to specific views
-        response = self.client.get(
-            reverse("characters:character", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:character", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_mage_update_returns_404_for_invalid_pk(self):
         """Test that mage update returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:update:mage", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:mage:update:mage", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_mage_full_update_returns_404_for_invalid_pk(self):

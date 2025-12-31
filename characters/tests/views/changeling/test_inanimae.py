@@ -74,9 +74,7 @@ class TestInanimaeCreateView(TestCase):
             "season": "spring",
             "npc": False,
         }
-        response = self.client.post(
-            reverse("characters:changeling:create:inanimae"), data=data
-        )
+        response = self.client.post(reverse("characters:changeling:create:inanimae"), data=data)
         self.assertTrue(Inanimae.objects.filter(name="New Inanimae").exists())
 
 
@@ -108,9 +106,7 @@ class TestInanimaeUpdateView(TestCase):
         """Test that update view returns 200 for admin user."""
         self.client.login(username="adminuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk}
-            )
+            reverse("characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -118,9 +114,7 @@ class TestInanimaeUpdateView(TestCase):
         """Test that update view uses the correct template."""
         self.client.login(username="adminuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk}
-            )
+            reverse("characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk})
         )
         self.assertTemplateUsed(response, "characters/changeling/inanimae/form.html")
 
@@ -128,9 +122,7 @@ class TestInanimaeUpdateView(TestCase):
         """Test that update view denies access to regular users (requires EDIT_FULL)."""
         self.client.login(username="otheruser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk}
-            )
+            reverse("characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk})
         )
         self.assertEqual(response.status_code, 403)
 
@@ -138,9 +130,7 @@ class TestInanimaeUpdateView(TestCase):
         """Test that update view denies access to owner (requires EDIT_FULL which owners don't have)."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk}
-            )
+            reverse("characters:changeling:update:inanimae", kwargs={"pk": self.inanimae.pk})
         )
         self.assertEqual(response.status_code, 403)
 
@@ -164,9 +154,7 @@ class TestInanimaeURLs(TestCase):
 
     def test_get_absolute_url(self):
         """Test that Inanimae.get_absolute_url() returns the correct URL."""
-        expected_url = reverse(
-            "characters:changeling:inanimae", kwargs={"pk": self.inanimae.pk}
-        )
+        expected_url = reverse("characters:changeling:inanimae", kwargs={"pk": self.inanimae.pk})
         self.assertEqual(self.inanimae.get_absolute_url(), expected_url)
 
     def test_get_update_url(self):

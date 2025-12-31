@@ -14,8 +14,7 @@ from characters.models.mage.mtahuman import MtAHuman
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
-from core.models import BasePracticeRating
-from core.models import BaseResonanceRating
+from core.models import BasePracticeRating, BaseResonanceRating
 from core.utils import add_dot, weighted_choice
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -529,7 +528,16 @@ class Mage(MtAHuman):
         }
 
     @transaction.atomic
-    def spend_xp(self, trait=None, *, trait_name=None, trait_display=None, cost=None, category=None, trait_value=0):
+    def spend_xp(
+        self,
+        trait=None,
+        *,
+        trait_name=None,
+        trait_display=None,
+        cost=None,
+        category=None,
+        trait_value=0,
+    ):
         """
         Spend XP on a trait atomically.
 
@@ -541,8 +549,19 @@ class Mage(MtAHuman):
         All XP spending is wrapped in a transaction to prevent race conditions.
         """
         # If called with new keyword-argument style, delegate to parent
-        if trait_name is not None or trait_display is not None or cost is not None or category is not None:
-            return super().spend_xp(trait_name=trait_name, trait_display=trait_display, cost=cost, category=category, trait_value=trait_value)
+        if (
+            trait_name is not None
+            or trait_display is not None
+            or cost is not None
+            or category is not None
+        ):
+            return super().spend_xp(
+                trait_name=trait_name,
+                trait_display=trait_display,
+                cost=cost,
+                category=category,
+                trait_value=trait_value,
+            )
 
         output = super().spend_xp(trait)
         if output in [True, False]:

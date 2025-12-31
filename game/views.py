@@ -1146,9 +1146,7 @@ class XPSpendingRequestListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["is_st"] = self.request.user.profile.is_st()
         if context["is_st"]:
-            context["pending_count"] = XPSpendingRequest.objects.filter(
-                approved="Pending"
-            ).count()
+            context["pending_count"] = XPSpendingRequest.objects.filter(approved="Pending").count()
         return context
 
 

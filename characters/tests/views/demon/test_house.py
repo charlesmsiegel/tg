@@ -52,9 +52,7 @@ class TestHouseListView(TestCase):
 
     def test_list_view_shows_houses(self):
         """Test that list view shows houses."""
-        house = DemonHouse.objects.create(
-            name="Devils", celestial_name="Namaru", owner=self.user
-        )
+        house = DemonHouse.objects.create(name="Devils", celestial_name="Namaru", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:house")
         response = self.client.get(url)
@@ -110,15 +108,11 @@ class TestHouse404Handling(TestCase):
     def test_house_detail_returns_404_for_invalid_pk(self):
         """Test that house detail returns 404 for non-existent house."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:house", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:house", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_house_update_returns_404_for_invalid_pk(self):
         """Test that house update returns 404 for non-existent house."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:update:house", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:update:house", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)

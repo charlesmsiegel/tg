@@ -104,15 +104,11 @@ class TestVisage404Handling(TestCase):
     def test_visage_detail_returns_404_for_invalid_pk(self):
         """Test that visage detail returns 404 for non-existent visage."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:visage", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:visage", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_visage_update_returns_404_for_invalid_pk(self):
         """Test that visage update returns 404 for non-existent visage."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:update:visage", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:update:visage", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)

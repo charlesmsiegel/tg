@@ -1,10 +1,6 @@
 """Tests for cache utilities in core/cache.py."""
 
-from unittest.mock import Mock, patch, MagicMock
-
-from django.core.cache import cache
-from django.db.models import Model
-from django.test import TestCase, override_settings
+from unittest.mock import MagicMock, Mock, patch
 
 from core.cache import (
     CACHE_TIMEOUT_DAY,
@@ -19,6 +15,9 @@ from core.cache import (
     get_cached_queryset,
     invalidate_cache_on_save,
 )
+from django.core.cache import cache
+from django.db.models import Model
+from django.test import TestCase, override_settings
 
 
 class CacheKeyGeneratorTest(TestCase):
@@ -214,6 +213,7 @@ class CacheQuerysetDecoratorTest(TestCase):
 
     def test_cache_queryset_with_key_prefix(self):
         """Test cache_queryset with custom key prefix."""
+
         @cache_queryset(timeout=60, key_prefix="characters")
         def get_characters():
             return ["char1", "char2"]

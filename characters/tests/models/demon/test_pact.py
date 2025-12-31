@@ -151,17 +151,13 @@ class PactEnhancementsTests(TestCase):
     def test_enhancements_can_store_list(self):
         """Enhancements field can store a list of strings."""
         enhancements = ["Enhanced Strength", "Quick Healing", "Dark Vision"]
-        pact = Pact.objects.create(
-            demon=self.demon, thrall=self.thrall, enhancements=enhancements
-        )
+        pact = Pact.objects.create(demon=self.demon, thrall=self.thrall, enhancements=enhancements)
         pact.refresh_from_db()
         self.assertEqual(pact.enhancements, enhancements)
 
     def test_enhancements_can_be_modified(self):
         """Enhancements list can be modified and saved."""
-        pact = Pact.objects.create(
-            demon=self.demon, thrall=self.thrall, enhancements=["Strength"]
-        )
+        pact = Pact.objects.create(demon=self.demon, thrall=self.thrall, enhancements=["Strength"])
         pact.enhancements.append("Speed")
         pact.save()
         pact.refresh_from_db()
@@ -169,9 +165,7 @@ class PactEnhancementsTests(TestCase):
 
     def test_enhancements_empty_list(self):
         """Enhancements can be an empty list."""
-        pact = Pact.objects.create(
-            demon=self.demon, thrall=self.thrall, enhancements=[]
-        )
+        pact = Pact.objects.create(demon=self.demon, thrall=self.thrall, enhancements=[])
         self.assertEqual(pact.enhancements, [])
 
 
@@ -194,13 +188,9 @@ class PactActiveStatusTests(TestCase):
 
     def test_filter_active_pacts(self):
         """Can filter for only active pacts."""
-        active_pact = Pact.objects.create(
-            demon=self.demon, thrall=self.thrall, active=True
-        )
+        active_pact = Pact.objects.create(demon=self.demon, thrall=self.thrall, active=True)
         thrall2 = Thrall.objects.create(name="Another Thrall", owner=self.user)
-        inactive_pact = Pact.objects.create(
-            demon=self.demon, thrall=thrall2, active=False
-        )
+        inactive_pact = Pact.objects.create(demon=self.demon, thrall=thrall2, active=False)
 
         active_pacts = Pact.objects.filter(demon=self.demon, active=True)
         self.assertEqual(active_pacts.count(), 1)

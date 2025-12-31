@@ -191,12 +191,8 @@ class TestHumanFreebieFormPopulationViewPoolable(TestCase):
         self.human = MtAHuman.objects.create(name="Test MtA Human", owner=self.user)
 
         # Create backgrounds with different poolable values
-        Background.objects.create(
-            name="Test Contacts", property_name="contacts", poolable=True
-        )
-        Background.objects.create(
-            name="Test Avatar", property_name="avatar", poolable=False
-        )
+        Background.objects.create(name="Test Contacts", property_name="contacts", poolable=True)
+        Background.objects.create(name="Test Avatar", property_name="avatar", poolable=False)
 
     def test_new_background_options_include_poolable_attribute(self):
         """Test that New Background category returns poolable attribute in AJAX response."""

@@ -17,5 +17,10 @@ from .freehold import (
     FreeholdListView,
     FreeholdUpdateView,
 )
-from .holding import HoldingCreateView, HoldingDetailView, HoldingListView, HoldingUpdateView
+from .holding import (
+    HoldingCreateView,
+    HoldingDetailView,
+    HoldingListView,
+    HoldingUpdateView,
+)
 from .trod import TrodCreateView, TrodDetailView, TrodListView, TrodUpdateView

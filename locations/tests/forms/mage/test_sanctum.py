@@ -21,9 +21,7 @@ class TestSanctumForm(TestCase):
     def test_form_name_placeholder(self):
         """Test name field has placeholder."""
         form = SanctumForm()
-        self.assertEqual(
-            form.fields["name"].widget.attrs.get("placeholder"), "Enter name here"
-        )
+        self.assertEqual(form.fields["name"].widget.attrs.get("placeholder"), "Enter name here")
 
     def test_form_description_placeholder(self):
         """Test description field has placeholder."""

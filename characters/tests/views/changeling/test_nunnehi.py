@@ -104,9 +104,7 @@ class TestNunnehiCreateView(TestCase):
             "path": "healer",
             "npc": False,
         }
-        response = self.client.post(
-            reverse("characters:changeling:create:nunnehi"), data=data
-        )
+        response = self.client.post(reverse("characters:changeling:create:nunnehi"), data=data)
         self.assertTrue(Nunnehi.objects.filter(name="New Nunnehi").exists())
 
 
@@ -138,9 +136,7 @@ class TestNunnehiUpdateView(TestCase):
         """Test that update view returns 200 for admin user."""
         self.client.login(username="adminuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk}
-            )
+            reverse("characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -148,9 +144,7 @@ class TestNunnehiUpdateView(TestCase):
         """Test that update view uses the correct template."""
         self.client.login(username="adminuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk}
-            )
+            reverse("characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk})
         )
         self.assertTemplateUsed(response, "characters/changeling/nunnehi/form.html")
 
@@ -158,9 +152,7 @@ class TestNunnehiUpdateView(TestCase):
         """Test that update view denies access to regular users (requires EDIT_FULL)."""
         self.client.login(username="otheruser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk}
-            )
+            reverse("characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk})
         )
         self.assertEqual(response.status_code, 403)
 
@@ -168,9 +160,7 @@ class TestNunnehiUpdateView(TestCase):
         """Test that update view has spirit_guide field."""
         self.client.login(username="adminuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk}
-            )
+            reverse("characters:changeling:update:nunnehi", kwargs={"pk": self.nunnehi.pk})
         )
         self.assertContains(response, 'name="spirit_guide"')
 
@@ -194,9 +184,7 @@ class TestNunnehiURLs(TestCase):
 
     def test_get_absolute_url(self):
         """Test that Nunnehi.get_absolute_url() returns the correct URL."""
-        expected_url = reverse(
-            "characters:changeling:nunnehi", kwargs={"pk": self.nunnehi.pk}
-        )
+        expected_url = reverse("characters:changeling:nunnehi", kwargs={"pk": self.nunnehi.pk})
         self.assertEqual(self.nunnehi.get_absolute_url(), expected_url)
 
     def test_get_update_url(self):

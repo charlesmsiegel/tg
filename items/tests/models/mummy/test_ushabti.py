@@ -1,4 +1,5 @@
 """Tests for Ushabti model."""
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from items.models.mummy.ushabti import Ushabti
@@ -55,7 +56,15 @@ class TestUshabtiPurpose(TestCase):
 
     def test_purpose_choices(self):
         """Test purpose can be set to valid choices."""
-        valid_purposes = ["guardian", "servant", "laborer", "spy", "messenger", "craftsman", "scribe"]
+        valid_purposes = [
+            "guardian",
+            "servant",
+            "laborer",
+            "spy",
+            "messenger",
+            "craftsman",
+            "scribe",
+        ]
         for purpose in valid_purposes:
             ushabti = Ushabti.objects.create(name=f"{purpose} ushabti", purpose=purpose)
             self.assertEqual(ushabti.purpose, purpose)

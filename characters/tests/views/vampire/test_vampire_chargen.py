@@ -540,9 +540,7 @@ class TestVampireVirtuesView(VampireChargenTestCase):
     def test_path_vampire_uses_path_rating(self):
         """Test that path vampires get path_rating instead of humanity."""
         self.client.login(username="testuser", password="testpassword")
-        url = reverse(
-            "characters:vampire:vampire_chargen", kwargs={"pk": self.path_vampire.pk}
-        )
+        url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.path_vampire.pk})
         data = {
             "conscience": 0,
             "self_control": 0,
@@ -561,9 +559,7 @@ class TestVampireVirtuesView(VampireChargenTestCase):
     def test_virtues_view_context_has_uses_path(self):
         """Test that context includes uses_path flag."""
         self.client.login(username="testuser", password="testpassword")
-        url = reverse(
-            "characters:vampire:vampire_chargen", kwargs={"pk": self.path_vampire.pk}
-        )
+        url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.path_vampire.pk})
         response = self.client.get(url)
         self.assertTrue(response.context["uses_path"])
 

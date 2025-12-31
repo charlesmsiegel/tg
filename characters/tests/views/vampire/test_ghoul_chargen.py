@@ -276,9 +276,7 @@ class TestGhoulDisciplinesView(GhoulChargenTestCase):
     def test_independent_ghoul_has_no_domitor(self):
         """Test that independent ghoul has no domitor in context."""
         self.client.login(username="testuser", password="testpassword")
-        url = reverse(
-            "characters:vampire:ghoul_chargen", kwargs={"pk": self.independent_ghoul.pk}
-        )
+        url = reverse("characters:vampire:ghoul_chargen", kwargs={"pk": self.independent_ghoul.pk})
         response = self.client.get(url)
         self.assertFalse(response.context["has_domitor"])
 

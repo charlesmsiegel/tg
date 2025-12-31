@@ -105,15 +105,11 @@ class TestFaction404Handling(TestCase):
     def test_faction_detail_returns_404_for_invalid_pk(self):
         """Test that faction detail returns 404 for non-existent faction."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:faction", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:faction", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_faction_update_returns_404_for_invalid_pk(self):
         """Test that faction update returns 404 for non-existent faction."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:update:faction", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:update:faction", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)

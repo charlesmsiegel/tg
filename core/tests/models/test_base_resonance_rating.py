@@ -136,9 +136,7 @@ class TestResonanceRatingValidation(TestCase):
         """Test all implementations enforce 0-10 range."""
         # Test WonderResonanceRating
         wonder = Wonder.objects.create(name="Test Wonder")
-        wonder_rating = WonderResonanceRating(
-            wonder=wonder, resonance=self.resonance, rating=11
-        )
+        wonder_rating = WonderResonanceRating(wonder=wonder, resonance=self.resonance, rating=11)
         with self.assertRaises(ValidationError):
             wonder_rating.full_clean()
 
@@ -150,9 +148,7 @@ class TestResonanceRatingValidation(TestCase):
 
         # Test RelicResonanceRating
         relic = MummyRelic.objects.create(name="Test Relic")
-        relic_rating = RelicResonanceRating(
-            relic=relic, resonance=self.resonance, rating=11
-        )
+        relic_rating = RelicResonanceRating(relic=relic, resonance=self.resonance, rating=11)
         with self.assertRaises(ValidationError):
             relic_rating.full_clean()
 
@@ -192,9 +188,7 @@ class TestResonanceRatingForeignKeyBehavior(TestCase):
     def test_cascade_delete_for_relic(self):
         """Test that deleting Relic cascades to RelicResonanceRating."""
         relic = MummyRelic.objects.create(name="Test Relic")
-        RelicResonanceRating.objects.create(
-            relic=relic, resonance=self.resonance, rating=3
-        )
+        RelicResonanceRating.objects.create(relic=relic, resonance=self.resonance, rating=3)
 
         self.assertEqual(RelicResonanceRating.objects.count(), 1)
         relic.delete()

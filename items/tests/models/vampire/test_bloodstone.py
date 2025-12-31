@@ -1,4 +1,5 @@
 """Tests for Bloodstone model."""
+
 from django.test import TestCase
 from items.models.vampire.bloodstone import Bloodstone
 

@@ -38,9 +38,7 @@ class TestBasePracticeRatingSharedFields(TestCase):
     def test_practice_fk_on_practicerating(self):
         """Test PracticeRating has practice FK from base class."""
         mage = Mage.objects.create(name="Test Mage")
-        rating = PracticeRating.objects.create(
-            mage=mage, practice=self.practice, rating=3
-        )
+        rating = PracticeRating.objects.create(mage=mage, practice=self.practice, rating=3)
         self.assertEqual(rating.practice, self.practice)
 
     def test_practice_fk_on_zonerating(self):
@@ -129,16 +127,12 @@ class TestZoneRatingValidation(TestCase):
 
     def test_rating_positive_in_range(self):
         """Test positive ratings in range work."""
-        rating = ZoneRating.objects.create(
-            zone=self.zone, practice=self.practice, rating=5
-        )
+        rating = ZoneRating.objects.create(zone=self.zone, practice=self.practice, rating=5)
         self.assertEqual(rating.rating, 5)
 
     def test_rating_negative_in_range(self):
         """Test negative ratings in range work."""
-        rating = ZoneRating.objects.create(
-            zone=self.zone, practice=self.practice, rating=-5
-        )
+        rating = ZoneRating.objects.create(zone=self.zone, practice=self.practice, rating=-5)
         self.assertEqual(rating.rating, -5)
 
     def test_rating_below_min_fails_validation(self):
@@ -164,25 +158,19 @@ class TestPracticeRatingStrMethod(TestCase):
 
     def test_str_with_mage_and_practice(self):
         """Test __str__ with both mage and practice set."""
-        rating = PracticeRating.objects.create(
-            mage=self.mage, practice=self.practice, rating=3
-        )
+        rating = PracticeRating.objects.create(mage=self.mage, practice=self.practice, rating=3)
         expected = f"{self.mage.name}: {self.practice}: 3"
         self.assertEqual(str(rating), expected)
 
     def test_str_without_mage(self):
         """Test __str__ when mage is None."""
-        rating = PracticeRating.objects.create(
-            mage=None, practice=self.practice, rating=5
-        )
+        rating = PracticeRating.objects.create(mage=None, practice=self.practice, rating=5)
         expected = f"No Mage: {self.practice}: 5"
         self.assertEqual(str(rating), expected)
 
     def test_str_without_practice(self):
         """Test __str__ when practice is None."""
-        rating = PracticeRating.objects.create(
-            mage=self.mage, practice=None, rating=2
-        )
+        rating = PracticeRating.objects.create(mage=self.mage, practice=None, rating=2)
         expected = f"{self.mage.name}: No Practice: 2"
         self.assertEqual(str(rating), expected)
 

@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock
 
 from django.test import TestCase
-
 from locations.templatetags.location_tags import show_location
 
 
@@ -56,10 +55,7 @@ class ShowLocationTagTest(TestCase):
 
         self.assertEqual(result["location"].id, 42)
         self.assertEqual(result["location"].name, "Haunted House")
-        self.assertEqual(
-            result["location"].get_absolute_url(),
-            "/locations/42/"
-        )
+        self.assertEqual(result["location"].get_absolute_url(), "/locations/42/")
 
     def test_context_keys(self):
         """Test tag returns exactly the expected context keys."""

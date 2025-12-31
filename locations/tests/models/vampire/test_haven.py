@@ -71,37 +71,27 @@ class TestHavenTotalRating(TestCase):
 
     def test_rating_with_guardian(self):
         """Test rating increases with guardian."""
-        haven = Haven.objects.create(
-            name="Test", size=3, security=2, location=1, has_guardian=True
-        )
+        haven = Haven.objects.create(name="Test", size=3, security=2, location=1, has_guardian=True)
         self.assertEqual(haven.total_rating, 7)
 
     def test_rating_with_luxury(self):
         """Test rating increases with luxury."""
-        haven = Haven.objects.create(
-            name="Test", size=3, security=2, location=1, has_luxury=True
-        )
+        haven = Haven.objects.create(name="Test", size=3, security=2, location=1, has_luxury=True)
         self.assertEqual(haven.total_rating, 7)
 
     def test_rating_with_hidden(self):
         """Test rating increases when hidden."""
-        haven = Haven.objects.create(
-            name="Test", size=3, security=2, location=1, is_hidden=True
-        )
+        haven = Haven.objects.create(name="Test", size=3, security=2, location=1, is_hidden=True)
         self.assertEqual(haven.total_rating, 7)
 
     def test_rating_with_library(self):
         """Test rating increases with library."""
-        haven = Haven.objects.create(
-            name="Test", size=3, security=2, location=1, has_library=True
-        )
+        haven = Haven.objects.create(name="Test", size=3, security=2, location=1, has_library=True)
         self.assertEqual(haven.total_rating, 7)
 
     def test_rating_with_workshop(self):
         """Test rating increases with workshop."""
-        haven = Haven.objects.create(
-            name="Test", size=3, security=2, location=1, has_workshop=True
-        )
+        haven = Haven.objects.create(name="Test", size=3, security=2, location=1, has_workshop=True)
         self.assertEqual(haven.total_rating, 7)
 
     def test_rating_with_all_features(self):

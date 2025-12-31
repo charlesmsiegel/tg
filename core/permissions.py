@@ -433,9 +433,11 @@ class PermissionManager:
 
         # User has an approved character in the same chronicle
         # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        player_chronicles = Character.objects.filter(
-            owner=user, status="App"
-        ).exclude(chronicle__isnull=True).values("chronicle")
+        player_chronicles = (
+            Character.objects.filter(owner=user, status="App")
+            .exclude(chronicle__isnull=True)
+            .values("chronicle")
+        )
         return Q(chronicle__in=player_chronicles, status="App")
 
     @staticmethod
@@ -456,9 +458,7 @@ class PermissionManager:
 
         ct = ContentType.objects.get_for_model(model)
         # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        observed_ids = Observer.objects.filter(
-            content_type=ct, user=user
-        ).values("object_id")
+        observed_ids = Observer.objects.filter(content_type=ct, user=user).values("object_id")
         return Q(pk__in=observed_ids)
 
     @staticmethod
@@ -508,9 +508,7 @@ class PermissionManager:
         if player_chronicle_exists is not None:
             annotations["_is_player_chronicle"] = player_chronicle_exists
 
-        observer_exists = PermissionManager._get_observer_exists_subquery(
-            user, queryset.model
-        )
+        observer_exists = PermissionManager._get_observer_exists_subquery(user, queryset.model)
         annotations["_is_observer"] = observer_exists
 
         # Apply annotations

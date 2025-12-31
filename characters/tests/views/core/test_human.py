@@ -26,9 +26,7 @@ class TestHumanDetailView(TestCase):
     def test_detail_view_returns_404_for_invalid_pk(self):
         """Test that detail view returns 404 for non-existent character."""
         self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:character", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:character", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
 
@@ -95,7 +93,5 @@ class TestHumanChargenView(TestCase):
     def test_chargen_view_returns_404_for_invalid_pk(self):
         """Test that chargen view returns 404 for non-existent character."""
         self.client.login(username="owner", password="password")
-        response = self.client.get(
-            reverse("characters:update:human", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:update:human", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)

@@ -298,7 +298,9 @@ class LoadXPExamplesView(View):
                 x
                 for x in examples
                 if (
-                    sum([getattr(self.character, abb.property_name, 0) for abb in x.abilities.all()])
+                    sum(
+                        [getattr(self.character, abb.property_name, 0) for abb in x.abilities.all()]
+                    )
                     / 2
                     > self.character.practice_rating(x) + 1
                 )

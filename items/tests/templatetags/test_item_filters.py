@@ -2,7 +2,6 @@
 
 from django.template import Context, Template
 from django.test import TestCase
-
 from items.templatetags.item_filters import replace_underscore
 
 
@@ -71,27 +70,21 @@ class ReplaceUnderscoreTemplateTest(TestCase):
 
     def test_filter_in_template(self):
         """Test filter can be used in Django templates."""
-        template = Template(
-            "{% load item_filters %}{{ item_type|replace_underscore }}"
-        )
+        template = Template("{% load item_filters %}{{ item_type|replace_underscore }}")
         context = Context({"item_type": "long_sword"})
         result = template.render(context)
         self.assertEqual(result.strip(), "long sword")
 
     def test_filter_in_template_with_title_case(self):
         """Test filter combined with title case in template."""
-        template = Template(
-            "{% load item_filters %}{{ item_type|replace_underscore|title }}"
-        )
+        template = Template("{% load item_filters %}{{ item_type|replace_underscore|title }}")
         context = Context({"item_type": "battle_axe"})
         result = template.render(context)
         self.assertEqual(result.strip(), "Battle Axe")
 
     def test_filter_with_empty_context(self):
         """Test filter handles empty string in template context."""
-        template = Template(
-            "{% load item_filters %}[{{ item_type|replace_underscore }}]"
-        )
+        template = Template("{% load item_filters %}[{{ item_type|replace_underscore }}]")
         context = Context({"item_type": ""})
         result = template.render(context)
         self.assertEqual(result.strip(), "[]")

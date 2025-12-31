@@ -5,6 +5,7 @@ from .companion import (
     CompanionCreateView,
     CompanionUpdateView,
     CopanionCharacterCreationView,
+    LoadCompanionValuesView,
 )
 from .effect import EffectCreateView, EffectDetailView, EffectListView, EffectUpdateView
 from .faction import (
@@ -92,10 +93,4 @@ from .sorcerer import (
     SorcererDetailView,
     SorcererUpdateView,
 )
-from .companion import LoadCompanionValuesView
-from .sphere import (
-    SphereCreateView,
-    SphereDetailView,
-    SphereListView,
-    SphereUpdateView,
-)
+from .sphere import SphereCreateView, SphereDetailView, SphereListView, SphereUpdateView

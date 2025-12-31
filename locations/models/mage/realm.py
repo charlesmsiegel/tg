@@ -113,12 +113,8 @@ class HorizonRealm(MeritFlawBlock, LocationModel):
     )
 
     # Magick Traits
-    resonance = models.ManyToManyField(
-        Resonance, blank=True, through="HorizonRealmResonanceRating"
-    )
-    reality_zone = models.ForeignKey(
-        RealityZone, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    resonance = models.ManyToManyField(Resonance, blank=True, through="HorizonRealmResonanceRating")
+    reality_zone = models.ForeignKey(RealityZone, blank=True, null=True, on_delete=models.SET_NULL)
 
     # Security Traits
     guardians = models.IntegerField(
@@ -284,9 +280,7 @@ class HorizonRealm(MeritFlawBlock, LocationModel):
 
     def total_resonance(self):
         """Get the sum of all resonance ratings."""
-        return sum(
-            x.rating for x in HorizonRealmResonanceRating.objects.filter(horizon_realm=self)
-        )
+        return sum(x.rating for x in HorizonRealmResonanceRating.objects.filter(horizon_realm=self))
 
     def has_resonance(self):
         """Check if the Realm has sufficient resonance (at least rank dots)."""

@@ -1,4 +1,5 @@
 """Tests for MummyRelic model."""
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from items.models.mummy.relic import MummyRelic, RelicResonanceRating
@@ -31,7 +32,17 @@ class TestMummyRelicType(TestCase):
 
     def test_relic_type_choices(self):
         """Test relic_type can be set to valid choices."""
-        valid_types = ["weapon", "jewelry", "scroll", "canopic", "statue", "crown", "tool", "clothing", "other"]
+        valid_types = [
+            "weapon",
+            "jewelry",
+            "scroll",
+            "canopic",
+            "statue",
+            "crown",
+            "tool",
+            "clothing",
+            "other",
+        ]
         for rtype in valid_types:
             relic = MummyRelic.objects.create(name=f"{rtype} relic", relic_type=rtype)
             self.assertEqual(relic.relic_type, rtype)
@@ -47,7 +58,15 @@ class TestMummyRelicEra(TestCase):
 
     def test_era_choices(self):
         """Test era can be set to valid choices."""
-        valid_eras = ["predynastic", "old_kingdom", "middle_kingdom", "new_kingdom", "late_period", "ptolemaic", "unknown"]
+        valid_eras = [
+            "predynastic",
+            "old_kingdom",
+            "middle_kingdom",
+            "new_kingdom",
+            "late_period",
+            "ptolemaic",
+            "unknown",
+        ]
         for era in valid_eras:
             relic = MummyRelic.objects.create(name=f"{era} relic", era=era)
             self.assertEqual(relic.era, era)

@@ -197,7 +197,9 @@ class TestHorizonRealmRankBuildPoints(TestCase):
         }
         for rank, points in expected.items():
             self.realm.set_rank(rank)
-            self.assertEqual(self.realm.build_points, points, f"Rank {rank} should have {points} points")
+            self.assertEqual(
+                self.realm.build_points, points, f"Rank {rank} should have {points} points"
+            )
 
     def test_rank_maintenance_mapping(self):
         """Test all rank to maintenance mappings."""
@@ -216,7 +218,9 @@ class TestHorizonRealmRankBuildPoints(TestCase):
         for rank, maintenance in expected.items():
             self.realm.set_rank(rank)
             self.assertEqual(
-                self.realm.base_maintenance, maintenance, f"Rank {rank} should have {maintenance} maintenance"
+                self.realm.base_maintenance,
+                maintenance,
+                f"Rank {rank} should have {maintenance} maintenance",
             )
 
 

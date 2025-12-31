@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from game.models import Chronicle
 from locations.models.mage.paradox_realm import (
+    ParadigmChoices,
     ParadoxAtmosphere,
     ParadoxObstacle,
     ParadoxRealm,
-    ParadigmChoices,
     SphereChoices,
 )
 

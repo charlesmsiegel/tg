@@ -51,9 +51,7 @@ class TestSectorEffectiveDifficulty(TestCase):
     def test_difficulty_with_reality_zone(self):
         """Test difficulty modified by reality zone."""
         rz = RealityZone.objects.create(name="Test RZ")
-        sector = Sector.objects.create(
-            name="Test", reality_zone=rz, difficulty_modifier=2
-        )
+        sector = Sector.objects.create(name="Test", reality_zone=rz, difficulty_modifier=2)
         difficulty = sector.get_effective_difficulty()
         self.assertEqual(difficulty, 8)
 

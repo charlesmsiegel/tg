@@ -36,13 +36,22 @@ class DreamRealmForm(forms.ModelForm):
                 attrs={"rows": 3, "placeholder": "What this realm looks like - dream logic applies"}
             ),
             "laws_of_reality": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "How reality works here (gravity, time, causality)"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "How reality works here (gravity, time, causality)",
+                }
             ),
             "inhabitants": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "Who or what lives in this realm (chimera, dreamers)"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Who or what lives in this realm (chimera, dreamers)",
+                }
             ),
             "entry_requirements": forms.Textarea(
-                attrs={"rows": 2, "placeholder": "What's needed to enter (trod, ritual, state of mind)"}
+                attrs={
+                    "rows": 2,
+                    "placeholder": "What's needed to enter (trod, ritual, state of mind)",
+                }
             ),
             "mundane_connection": forms.Textarea(
                 attrs={"rows": 2, "placeholder": "What in the Autumn World this realm connects to"}

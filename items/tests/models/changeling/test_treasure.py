@@ -1,4 +1,5 @@
 """Tests for Treasure model."""
+
 from django.test import TestCase
 from items.models.changeling.treasure import Treasure
 
@@ -165,9 +166,7 @@ class TestTreasureGlamour(TestCase):
 
     def test_glamour_storage_can_be_set(self):
         """Test glamour_storage can be set."""
-        treasure = Treasure.objects.create(
-            name="Glamour Storage", glamour_storage=25, effects=[]
-        )
+        treasure = Treasure.objects.create(name="Glamour Storage", glamour_storage=25, effects=[])
         self.assertEqual(treasure.glamour_storage, 25)
 
     def test_glamour_affinity_default(self):
@@ -177,7 +176,5 @@ class TestTreasureGlamour(TestCase):
 
     def test_glamour_affinity_can_be_set(self):
         """Test glamour_affinity can be set."""
-        treasure = Treasure.objects.create(
-            name="With Affinity", glamour_affinity="Joy", effects=[]
-        )
+        treasure = Treasure.objects.create(name="With Affinity", glamour_affinity="Joy", effects=[])
         self.assertEqual(treasure.glamour_affinity, "Joy")

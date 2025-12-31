@@ -284,8 +284,13 @@ class TestHunter(TestCase):
         """Test XP spending works for all edge types."""
         # Test conviction edges
         conviction_edges = [
-            "discern", "burden", "balance", "expose",
-            "investigate", "witness", "prosecute",
+            "discern",
+            "burden",
+            "balance",
+            "expose",
+            "investigate",
+            "witness",
+            "prosecute",
         ]
         for edge in conviction_edges:
             setattr(self.hunter, edge, 1)
@@ -296,8 +301,13 @@ class TestHunter(TestCase):
 
         # Test vision edges
         vision_edges = [
-            "illuminate", "ward", "cleave", "hide",
-            "blaze", "radiate", "vengeance",
+            "illuminate",
+            "ward",
+            "cleave",
+            "hide",
+            "blaze",
+            "radiate",
+            "vengeance",
         ]
         for edge in vision_edges:
             setattr(self.hunter, edge, 2)
@@ -308,8 +318,13 @@ class TestHunter(TestCase):
 
         # Test zeal edges
         zeal_edges = [
-            "demand", "confront", "donate", "becalm",
-            "respire", "rejuvenate", "redeem",
+            "demand",
+            "confront",
+            "donate",
+            "becalm",
+            "respire",
+            "rejuvenate",
+            "redeem",
         ]
         for edge in zeal_edges:
             setattr(self.hunter, edge, 0)

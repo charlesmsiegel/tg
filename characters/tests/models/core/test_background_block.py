@@ -152,9 +152,7 @@ class BackgroundPoolableTests(TestCase):
         self.group.update_pooled_backgrounds()
 
         # There should be a PooledBackgroundRating
-        pool_entries = PooledBackgroundRating.objects.filter(
-            bg=self.poolable_bg, group=self.group
-        )
+        pool_entries = PooledBackgroundRating.objects.filter(bg=self.poolable_bg, group=self.group)
         self.assertEqual(pool_entries.count(), 1)
         self.assertEqual(pool_entries.first().rating, 2)
 
@@ -187,9 +185,7 @@ class BackgroundPoolableTests(TestCase):
         """Test filtering backgrounds by poolable status."""
         # Create additional backgrounds
         Background.objects.create(name="Mentor", property_name="mentor", poolable=True)
-        Background.objects.create(
-            name="Generation", property_name="generation", poolable=False
-        )
+        Background.objects.create(name="Generation", property_name="generation", poolable=False)
 
         poolable = Background.objects.filter(poolable=True)
         non_poolable = Background.objects.filter(poolable=False)
@@ -201,6 +197,8 @@ class BackgroundPoolableTests(TestCase):
         # Verify counts make sense (at least 2 of each type exist)
         self.assertGreaterEqual(poolable.count(), 2)
         self.assertGreaterEqual(non_poolable.count(), 2)
+
+
 class BackgroundRatingIndexTests(TestCase):
     """Tests for BackgroundRating database indexes."""
 

@@ -57,9 +57,7 @@ class GetSpecialtyTemplateTest(TestCase):
         mock_character = MagicMock()
         mock_character.get_specialty.return_value = "Shotguns"
 
-        template = Template(
-            "{% load get_specialty %}{{ character|get_specialty:'firearms' }}"
-        )
+        template = Template("{% load get_specialty %}{{ character|get_specialty:'firearms' }}")
         context = Context({"character": mock_character})
         result = template.render(context)
 

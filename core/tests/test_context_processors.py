@@ -2,11 +2,10 @@
 
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase
-
 from core.context_processors import add_special_user_flag, all_chronicles, permissions
 from core.permissions import Permission, Role, VisibilityTier
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
 from game.models import Chronicle
 
 

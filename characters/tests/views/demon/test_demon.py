@@ -21,9 +21,7 @@ class TestDemonDetailView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -149,9 +147,7 @@ class TestDemonUpdateView(TestCase):
         self.other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        self.st = User.objects.create_user(
-            username="st", email="st@test.com", password="password"
-        )
+        self.st = User.objects.create_user(username="st", email="st@test.com", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
 
@@ -161,7 +157,6 @@ class TestDemonUpdateView(TestCase):
             chronicle=self.chronicle,
             status="App",
         )
-
 
 
 class TestDemonListView(TestCase):
@@ -183,9 +178,7 @@ class TestDemonListView(TestCase):
 
     def test_list_view_shows_own_characters(self):
         """Test that list view shows user's own characters."""
-        demon = Demon.objects.create(
-            name="My Demon", owner=self.user, status="App"
-        )
+        demon = Demon.objects.create(name="My Demon", owner=self.user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:demon")
         response = self.client.get(url)
@@ -196,9 +189,7 @@ class TestDemonListView(TestCase):
         other_user = User.objects.create_user(
             username="other", email="other@test.com", password="password"
         )
-        demon = Demon.objects.create(
-            name="Other Demon", owner=other_user, status="App"
-        )
+        demon = Demon.objects.create(name="Other Demon", owner=other_user, status="App")
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:demon")
         response = self.client.get(url)
@@ -219,16 +210,11 @@ class TestDemon404Handling(TestCase):
     def test_demon_detail_returns_404_for_invalid_pk(self):
         """Test that demon detail returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:demon:demon", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:demon", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_demon_update_returns_404_for_invalid_pk(self):
         """Test that demon update returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:demon:update:demon", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:update:demon", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
-

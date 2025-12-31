@@ -1,9 +1,5 @@
 """Comprehensive tests for sorcerer views module."""
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
@@ -13,6 +9,9 @@ from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
 from characters.tests.utils import mage_setup
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
 from game.models import Chronicle, ObjectType
 
 
@@ -241,6 +240,7 @@ class TestSorcererRitualView(TestCase):
         )
         # Add path rating
         from characters.models.mage.sorcerer import PathRating
+
         PathRating.objects.create(
             character=self.sorcerer,
             path=self.path,

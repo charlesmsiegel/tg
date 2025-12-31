@@ -210,9 +210,7 @@ class TestBackgroundRatingFormSetFactory(TestCase):
             "backgrounds-1-display_alt_name": "",
             "backgrounds-1-pooled": "",
         }
-        formset = BackgroundRatingFormSet(
-            data=data, instance=self.human, character=self.human
-        )
+        formset = BackgroundRatingFormSet(data=data, instance=self.human, character=self.human)
         self.assertTrue(formset.is_valid(), formset.errors)
         formset.save()
         self.assertEqual(BackgroundRating.objects.filter(char=self.human).count(), 2)
@@ -235,9 +233,7 @@ class TestBackgroundRatingFormSetFactory(TestCase):
             "backgrounds-1-display_alt_name": "",
             "backgrounds-1-pooled": "",
         }
-        formset = BackgroundRatingFormSet(
-            data=data, instance=self.human, character=self.human
-        )
+        formset = BackgroundRatingFormSet(data=data, instance=self.human, character=self.human)
         self.assertTrue(formset.is_valid())
         formset.save()
         # Only the first form with valid data should be saved

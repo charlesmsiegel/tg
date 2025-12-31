@@ -58,7 +58,9 @@ class DemonFactionModelTests(TestCase):
         faction_a = DemonFaction.objects.create(name="Faustians", owner=self.user)
         faction_b = DemonFaction.objects.create(name="Luciferans", owner=self.user)
 
-        factions = list(DemonFaction.objects.filter(pk__in=[faction_a.pk, faction_b.pk, faction_c.pk]))
+        factions = list(
+            DemonFaction.objects.filter(pk__in=[faction_a.pk, faction_b.pk, faction_c.pk])
+        )
 
         self.assertEqual(factions[0], faction_a)  # Faustians
         self.assertEqual(factions[1], faction_b)  # Luciferans

@@ -38,7 +38,10 @@ class TrodForm(forms.ModelForm):
                 attrs={"rows": 2, "placeholder": "Description of the destination"}
             ),
             "access_requirements": forms.Textarea(
-                attrs={"rows": 2, "placeholder": "What's needed to access this trod (key, ritual, knowledge)"}
+                attrs={
+                    "rows": 2,
+                    "placeholder": "What's needed to access this trod (key, ritual, knowledge)",
+                }
             ),
             "guardians": forms.Textarea(
                 attrs={"rows": 2, "placeholder": "Creatures or beings that guard this trod"}
@@ -47,7 +50,10 @@ class TrodForm(forms.ModelForm):
                 attrs={"rows": 2, "placeholder": "When or how this trod can be accessed"}
             ),
             "journey_description": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "What traveling this trod is like - sights, sounds, sensations"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "What traveling this trod is like - sights, sounds, sensations",
+                }
             ),
             "known_to": forms.Textarea(
                 attrs={"rows": 2, "placeholder": "Which changelings or groups know about this trod"}
@@ -71,5 +77,7 @@ class TrodForm(forms.ModelForm):
 
         # Set help text
         self.fields["strength"].help_text = "0-5 dots. How strong/stable this trod is"
-        self.fields["difficulty"].help_text = "0-10. Difficulty to traverse (0=easy, 10=nearly impossible)"
+        self.fields["difficulty"].help_text = (
+            "0-10. Difficulty to traverse (0=easy, 10=nearly impossible)"
+        )
         self.fields["glamour_cost"].help_text = "0-10. Glamour required to activate/traverse"

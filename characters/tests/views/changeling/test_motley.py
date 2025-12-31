@@ -141,9 +141,7 @@ class TestMotleyUpdateView(TestCase):
         """Test that update view returns 200 for authenticated user."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:motley", kwargs={"pk": self.motley.pk}
-            )
+            reverse("characters:changeling:update:motley", kwargs={"pk": self.motley.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -151,8 +149,6 @@ class TestMotleyUpdateView(TestCase):
         """Test that update view uses the correct template."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(
-            reverse(
-                "characters:changeling:update:motley", kwargs={"pk": self.motley.pk}
-            )
+            reverse("characters:changeling:update:motley", kwargs={"pk": self.motley.pk})
         )
         self.assertTemplateUsed(response, "characters/changeling/motley/form.html")

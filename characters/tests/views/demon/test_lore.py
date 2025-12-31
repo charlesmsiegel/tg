@@ -52,9 +52,7 @@ class TestLoreListView(TestCase):
 
     def test_list_view_shows_lores(self):
         """Test that list view shows lores."""
-        lore = Lore.objects.create(
-            name="Lore of Flame", property_name="flame", owner=self.user
-        )
+        lore = Lore.objects.create(name="Lore of Flame", property_name="flame", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:lore")
         response = self.client.get(url)
@@ -110,15 +108,11 @@ class TestLore404Handling(TestCase):
     def test_lore_detail_returns_404_for_invalid_pk(self):
         """Test that lore detail returns 404 for non-existent lore."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:lore", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:lore", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_lore_update_returns_404_for_invalid_pk(self):
         """Test that lore update returns 404 for non-existent lore."""
         self.client.login(username="user", password="password")
-        response = self.client.get(
-            reverse("characters:demon:update:lore", kwargs={"pk": 99999})
-        )
+        response = self.client.get(reverse("characters:demon:update:lore", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)

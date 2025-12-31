@@ -172,7 +172,9 @@ class Command(BaseCommand):
                             )
                         )
                     else:
-                        self.stdout.write(f"  ✓ {character.name}: Created request (ID: {request.id})")
+                        self.stdout.write(
+                            f"  ✓ {character.name}: Created request (ID: {request.id})"
+                        )
 
         # Summary
         self.stdout.write("\n" + "=" * 70)

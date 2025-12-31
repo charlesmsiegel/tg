@@ -9,10 +9,10 @@ from locations.forms.mage.paradox_realm import (
     ParadoxRealmForm,
 )
 from locations.models.mage.paradox_realm import (
+    ParadigmChoices,
     ParadoxAtmosphere,
     ParadoxObstacle,
     ParadoxRealm,
-    ParadigmChoices,
     SphereChoices,
 )
 

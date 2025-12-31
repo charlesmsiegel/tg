@@ -105,9 +105,7 @@ class DemonCreationFormTests(TestCase):
 
     def test_house_queryset_contains_all_houses(self):
         """Test that house field queryset contains all houses."""
-        DemonHouse.objects.create(
-            name="Scourges", celestial_name="Asharu", owner=self.user
-        )
+        DemonHouse.objects.create(name="Scourges", celestial_name="Asharu", owner=self.user)
         form = DemonCreationForm(user=self.user)
         self.assertEqual(form.fields["house"].queryset.count(), 2)
 
@@ -126,9 +124,7 @@ class DemonCreationFormTests(TestCase):
     def test_name_placeholder(self):
         """Test that name field has placeholder."""
         form = DemonCreationForm(user=self.user)
-        self.assertEqual(
-            form.fields["name"].widget.attrs.get("placeholder"), "Enter name here"
-        )
+        self.assertEqual(form.fields["name"].widget.attrs.get("placeholder"), "Enter name here")
 
     def test_concept_placeholder(self):
         """Test that concept field has placeholder."""

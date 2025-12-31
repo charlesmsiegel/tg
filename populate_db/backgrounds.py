@@ -120,7 +120,9 @@ pure_breed.save()
 Background.objects.get_or_create(name="Rites", property_name="rites")[0]
 
 # Spirit Heritage is werewolf spiritual lineage - intrinsic
-spirit_heritage = Background.objects.get_or_create(name="Spirit Heritage", property_name="spirit_heritage")[0]
+spirit_heritage = Background.objects.get_or_create(
+    name="Spirit Heritage", property_name="spirit_heritage"
+)[0]
 spirit_heritage.poolable = False
 spirit_heritage.save()
 

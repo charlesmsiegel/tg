@@ -42,7 +42,13 @@ class TestChimeraModel(TestCase):
 
     def test_chimera_type_choices(self):
         """Test that chimera_type field has correct choices."""
-        types = ["facsimile", "simple_crafted", "advanced_crafted", "complex_crafted", "master_crafted"]
+        types = [
+            "facsimile",
+            "simple_crafted",
+            "advanced_crafted",
+            "complex_crafted",
+            "master_crafted",
+        ]
         valid_choices = [choice[0] for choice in Chimera._meta.get_field("chimera_type").choices]
         for t in types:
             self.assertIn(t, valid_choices)

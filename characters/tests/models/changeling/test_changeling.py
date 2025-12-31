@@ -1240,7 +1240,10 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "time": 0,
         }
         from django.urls import reverse
-        url = reverse("characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk})
+
+        url = reverse(
+            "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}
+        )
         response = self.client.post(url, data=data)
         # Should return form with errors (stay on page)
         self.assertEqual(response.status_code, 200)
@@ -1276,7 +1279,10 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "time": 0,
         }
         from django.urls import reverse
-        url = reverse("characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk})
+
+        url = reverse(
+            "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}
+        )
         response = self.client.post(url, data=data)
         # Should return form with errors (stay on page)
         self.assertEqual(response.status_code, 200)
@@ -1312,7 +1318,10 @@ class TestChangelingArtsRealmsValidation(TestCase):
             "time": 0,
         }
         from django.urls import reverse
-        url = reverse("characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk})
+
+        url = reverse(
+            "characters:changeling:changeling_arts_realms", kwargs={"pk": self.changeling.pk}
+        )
         response = self.client.post(url, data=data)
         # Should redirect on success
         self.assertEqual(response.status_code, 302)
@@ -1395,18 +1404,14 @@ class TestChangelingHouseMechanics(TestCase):
     def test_sidhe_automatic_house_eligibility(self):
         """Test that Sidhe kiths are automatically eligible for houses."""
         arcadian_sidhe = Kith.objects.create(name="Arcadian Sidhe")
-        char = Changeling.objects.create(
-            owner=self.player, name="Sidhe Test", kith=arcadian_sidhe
-        )
+        char = Changeling.objects.create(owner=self.player, name="Sidhe Test", kith=arcadian_sidhe)
         # Sidhe should be eligible even without title
         self.assertTrue(char.eligible_for_house())
 
     def test_non_sidhe_needs_title_for_house(self):
         """Test that non-Sidhe kiths need title for house eligibility."""
         regular_kith = Kith.objects.get(name="Kith 0")
-        char = Changeling.objects.create(
-            owner=self.player, name="Regular Test", kith=regular_kith
-        )
+        char = Changeling.objects.create(owner=self.player, name="Regular Test", kith=regular_kith)
         # Should not be eligible without title
         self.assertFalse(char.eligible_for_house())
         # Should be eligible with title

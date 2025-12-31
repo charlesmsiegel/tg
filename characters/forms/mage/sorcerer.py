@@ -155,13 +155,9 @@ class SorcererForm(forms.ModelForm):
             "description": forms.Textarea(
                 attrs={"rows": 4, "placeholder": "Physical description..."}
             ),
-            "history": forms.Textarea(
-                attrs={"rows": 6, "placeholder": "Character history..."}
-            ),
+            "history": forms.Textarea(attrs={"rows": 6, "placeholder": "Character history..."}),
             "goals": forms.Textarea(attrs={"rows": 4, "placeholder": "Character goals..."}),
-            "notes": forms.Textarea(
-                attrs={"rows": 4, "placeholder": "Private notes (ST only)..."}
-            ),
+            "notes": forms.Textarea(attrs={"rows": 4, "placeholder": "Private notes (ST only)..."}),
             "public_info": forms.Textarea(
                 attrs={"rows": 4, "placeholder": "Publicly visible information..."}
             ),
@@ -172,9 +168,7 @@ class SorcererForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Filter fellowship based on sorcerer type if instance exists
         if self.instance and self.instance.pk:
-            self.fields["fellowship"].queryset = SorcererFellowship.objects.all().order_by(
-                "name"
-            )
+            self.fields["fellowship"].queryset = SorcererFellowship.objects.all().order_by("name")
             if self.instance.sorcerer_type == "hedge_mage":
                 self.fields["affinity_path"].queryset = LinearMagicPath.objects.filter(
                     numina_type="hedge_magic"
@@ -184,9 +178,5 @@ class SorcererForm(forms.ModelForm):
                     numina_type="psychic"
                 ).order_by("name")
         else:
-            self.fields["fellowship"].queryset = SorcererFellowship.objects.all().order_by(
-                "name"
-            )
-            self.fields["affinity_path"].queryset = LinearMagicPath.objects.all().order_by(
-                "name"
-            )
+            self.fields["fellowship"].queryset = SorcererFellowship.objects.all().order_by("name")
+            self.fields["affinity_path"].queryset = LinearMagicPath.objects.all().order_by("name")

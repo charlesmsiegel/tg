@@ -32,9 +32,7 @@ class TestHumanBackgroundsViewBasics(TestCase):
 
     def test_view_uses_correct_template(self):
         """View uses the correct template."""
-        self.assertEqual(
-            HumanBackgroundsView.template_name, "characters/core/human/chargen.html"
-        )
+        self.assertEqual(HumanBackgroundsView.template_name, "characters/core/human/chargen.html")
 
     def test_get_object_returns_human(self):
         """get_object() returns the correct Human instance."""
@@ -65,9 +63,7 @@ class TestHumanBackgroundsViewPermissions(TestCase):
     def setUp(self):
         human_setup()
         self.owner = User.objects.create_user(username="owner", password="password")
-        self.other_user = User.objects.create_user(
-            username="other", password="password"
-        )
+        self.other_user = User.objects.create_user(username="other", password="password")
         self.human = Human.objects.create(
             name="Test Human",
             owner=self.owner,

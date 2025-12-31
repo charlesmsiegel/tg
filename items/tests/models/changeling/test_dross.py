@@ -1,4 +1,5 @@
 """Tests for Dross model."""
+
 from django.test import TestCase
 from items.models.changeling.dross import Dross
 

@@ -58,9 +58,7 @@ class TestBarrensControlStatus(TestCase):
 
     def test_unclaimed_territory(self):
         """Test unclaimed territory returns 'Unclaimed'."""
-        barrens = Barrens.objects.create(
-            name="Test", is_unclaimed=True, is_contested=False
-        )
+        barrens = Barrens.objects.create(name="Test", is_unclaimed=True, is_contested=False)
         self.assertEqual(barrens.get_control_status(), "Unclaimed")
 
     def test_anarch_territory(self):

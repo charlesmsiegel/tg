@@ -53,15 +53,9 @@ class LoreModelTests(TestCase):
 
     def test_ordering_by_name(self):
         """Lores should be ordered by name by default."""
-        lore_c = Lore.objects.create(
-            name="Lore of the Wild", property_name="wild", owner=self.user
-        )
-        lore_a = Lore.objects.create(
-            name="Lore of Death", property_name="death", owner=self.user
-        )
-        lore_b = Lore.objects.create(
-            name="Lore of Light", property_name="light", owner=self.user
-        )
+        lore_c = Lore.objects.create(name="Lore of the Wild", property_name="wild", owner=self.user)
+        lore_a = Lore.objects.create(name="Lore of Death", property_name="death", owner=self.user)
+        lore_b = Lore.objects.create(name="Lore of Light", property_name="light", owner=self.user)
 
         lores = list(Lore.objects.filter(pk__in=[lore_a.pk, lore_b.pk, lore_c.pk]))
 

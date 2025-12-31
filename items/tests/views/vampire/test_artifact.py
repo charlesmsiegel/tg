@@ -92,9 +92,7 @@ class VampireArtifactUpdateViewTest(TestCase):
             power_level=3,
             background_cost=2,
         )
-        self.update_url = reverse(
-            "items:vampire:update:artifact", kwargs={"pk": self.artifact.pk}
-        )
+        self.update_url = reverse("items:vampire:update:artifact", kwargs={"pk": self.artifact.pk})
 
     def test_update_empty_name_shows_error(self):
         """Submitting empty name on update shows field error in template."""

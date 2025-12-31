@@ -40,7 +40,10 @@ class HoldingForm(forms.ModelForm):
                 attrs={"rows": 2, "placeholder": "Real-world location this holding encompasses"}
             ),
             "vassals": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "Lesser nobles who owe fealty to this holding's ruler"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Lesser nobles who owe fealty to this holding's ruler",
+                }
             ),
             "major_freeholds": forms.Textarea(
                 attrs={"rows": 3, "placeholder": "Names and descriptions of major freeholds"}
@@ -49,10 +52,16 @@ class HoldingForm(forms.ModelForm):
                 attrs={"rows": 3, "placeholder": "Current political climate, tensions, alliances"}
             ),
             "notable_laws": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "Important laws or customs specific to this holding"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Important laws or customs specific to this holding",
+                }
             ),
             "rival_holdings": forms.Textarea(
-                attrs={"rows": 3, "placeholder": "Neighboring or rival holdings and their relations"}
+                attrs={
+                    "rows": 3,
+                    "placeholder": "Neighboring or rival holdings and their relations",
+                }
             ),
             "history": forms.Textarea(
                 attrs={"rows": 4, "placeholder": "History of this holding, major events"}
@@ -80,5 +89,7 @@ class HoldingForm(forms.ModelForm):
         # Set help text
         self.fields["military_strength"].help_text = "0-5 dots. Military/defensive capability"
         self.fields["wealth"].help_text = "0-5 dots. Economic resources"
-        self.fields["stability"].help_text = "0-5 dots. Political stability (0=chaos, 5=very stable)"
+        self.fields["stability"].help_text = (
+            "0-5 dots. Political stability (0=chaos, 5=very stable)"
+        )
         self.fields["freehold_count"].help_text = "Number of freeholds within this holding (0-50)"

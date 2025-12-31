@@ -1,4 +1,5 @@
 """Tests for Periapt model."""
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from game.models import Chronicle

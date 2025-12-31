@@ -26,12 +26,8 @@ class TestSorcererFormInit(TestCase):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.fellowship = SorcererFellowship.objects.create(name="Test Fellowship")
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
         self.attribute = Attribute.objects.create(name="Intelligence", property_name="intelligence")
 
     def test_form_has_expected_basic_fields(self):
@@ -148,12 +144,8 @@ class TestSorcererFormWithInstance(TestCase):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.fellowship = SorcererFellowship.objects.create(name="Test Fellowship")
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
-        self.psychic_path = LinearMagicPath.objects.create(
-            name="Telepathy", numina_type="psychic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
+        self.psychic_path = LinearMagicPath.objects.create(name="Telepathy", numina_type="psychic")
 
     def test_hedge_mage_gets_hedge_magic_paths(self):
         """Test that hedge mage instance shows hedge magic paths."""
@@ -210,9 +202,7 @@ class TestSorcererFormSave(TestCase):
         self.user = User.objects.create_user(username="testuser", password="password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.fellowship = SorcererFellowship.objects.create(name="Test Fellowship")
-        self.hedge_path = LinearMagicPath.objects.create(
-            name="Alchemy", numina_type="hedge_magic"
-        )
+        self.hedge_path = LinearMagicPath.objects.create(name="Alchemy", numina_type="hedge_magic")
 
     def test_form_updates_existing_sorcerer(self):
         """Test that form can update an existing sorcerer."""
@@ -380,24 +370,106 @@ class TestSorcererFormSave(TestCase):
 
         # Add all ability fields with 0 values
         ability_fields = [
-            "alertness", "athletics", "brawl", "empathy", "expression", "intimidation",
-            "streetwise", "subterfuge", "awareness", "art", "leadership", "crafts",
-            "drive", "etiquette", "firearms", "melee", "stealth", "larceny", "meditation",
-            "research", "survival", "technology", "academics", "computer", "investigation",
-            "medicine", "science", "cosmology", "enigmas", "finance", "law", "occult",
-            "politics", "animal_kinship", "blatancy", "carousing", "flying", "high_ritual",
-            "lucid_dreaming", "search", "seduction", "cooking", "diplomacy", "instruction",
-            "intrigue", "intuition", "mimicry", "negotiation", "newspeak", "scan",
-            "scrounging", "style", "acrobatics", "archery", "biotech", "energy_weapons",
-            "jetpack", "riding", "torture", "blind_fighting", "climbing", "disguise",
-            "elusion", "escapology", "fast_draw", "fast_talk", "fencing", "fortune_telling",
-            "gambling", "gunsmith", "heavy_weapons", "hunting", "hypnotism", "jury_rigging",
-            "microgravity_operations", "misdirection", "networking", "pilot", "psychology",
-            "security", "speed_reading", "swimming", "area_knowledge", "belief_systems",
-            "cryptography", "demolitions", "lore", "media", "pharmacopeia",
-            "conspiracy_theory", "chantry_politics", "covert_culture", "cultural_savvy",
-            "helmsman", "history_knowledge", "power_brokering", "propaganda", "theology",
-            "unconventional_warface", "vice",
+            "alertness",
+            "athletics",
+            "brawl",
+            "empathy",
+            "expression",
+            "intimidation",
+            "streetwise",
+            "subterfuge",
+            "awareness",
+            "art",
+            "leadership",
+            "crafts",
+            "drive",
+            "etiquette",
+            "firearms",
+            "melee",
+            "stealth",
+            "larceny",
+            "meditation",
+            "research",
+            "survival",
+            "technology",
+            "academics",
+            "computer",
+            "investigation",
+            "medicine",
+            "science",
+            "cosmology",
+            "enigmas",
+            "finance",
+            "law",
+            "occult",
+            "politics",
+            "animal_kinship",
+            "blatancy",
+            "carousing",
+            "flying",
+            "high_ritual",
+            "lucid_dreaming",
+            "search",
+            "seduction",
+            "cooking",
+            "diplomacy",
+            "instruction",
+            "intrigue",
+            "intuition",
+            "mimicry",
+            "negotiation",
+            "newspeak",
+            "scan",
+            "scrounging",
+            "style",
+            "acrobatics",
+            "archery",
+            "biotech",
+            "energy_weapons",
+            "jetpack",
+            "riding",
+            "torture",
+            "blind_fighting",
+            "climbing",
+            "disguise",
+            "elusion",
+            "escapology",
+            "fast_draw",
+            "fast_talk",
+            "fencing",
+            "fortune_telling",
+            "gambling",
+            "gunsmith",
+            "heavy_weapons",
+            "hunting",
+            "hypnotism",
+            "jury_rigging",
+            "microgravity_operations",
+            "misdirection",
+            "networking",
+            "pilot",
+            "psychology",
+            "security",
+            "speed_reading",
+            "swimming",
+            "area_knowledge",
+            "belief_systems",
+            "cryptography",
+            "demolitions",
+            "lore",
+            "media",
+            "pharmacopeia",
+            "conspiracy_theory",
+            "chantry_politics",
+            "covert_culture",
+            "cultural_savvy",
+            "helmsman",
+            "history_knowledge",
+            "power_brokering",
+            "propaganda",
+            "theology",
+            "unconventional_warface",
+            "vice",
         ]
         for field in ability_fields:
             form_data[field] = 0

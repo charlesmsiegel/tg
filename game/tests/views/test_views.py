@@ -1551,7 +1551,7 @@ class TestSceneDetailViewPost(TestCase):
         # Test the static method directly
         input_text = "\u201cHello\u201d \u2018World\u2019"
         result = SceneDetailView.straighten_quotes(input_text)
-        self.assertEqual(result, '"Hello" \'World\'')
+        self.assertEqual(result, "\"Hello\" 'World'")
 
 
 class TestChronicleListView(TestCase):

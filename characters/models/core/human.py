@@ -667,7 +667,16 @@ class Human(
     # XP and Freebie Spending Methods
     # ========================================================================
 
-    def spend_xp(self, trait=None, *, trait_name=None, trait_display=None, cost=None, category=None, trait_value=0):
+    def spend_xp(
+        self,
+        trait=None,
+        *,
+        trait_name=None,
+        trait_display=None,
+        cost=None,
+        category=None,
+        trait_value=0,
+    ):
         """Spend XP on traits.
 
         Supports two calling conventions:
@@ -680,9 +689,17 @@ class Human(
             For new calls: XPSpendingRequest instance
         """
         # If called with new keyword-argument style, delegate to Character.spend_xp
-        if trait_name is not None or trait_display is not None or cost is not None or category is not None:
+        if (
+            trait_name is not None
+            or trait_display is not None
+            or cost is not None
+            or category is not None
+        ):
             from characters.models.core.character import Character
-            return Character.spend_xp(self, trait_name or "", trait_display or "", cost or 0, category or "", trait_value)
+
+            return Character.spend_xp(
+                self, trait_name or "", trait_display or "", cost or 0, category or "", trait_value
+            )
         # Check if trait is an attribute
         if hasattr(Attribute.objects, "filter"):
             try:

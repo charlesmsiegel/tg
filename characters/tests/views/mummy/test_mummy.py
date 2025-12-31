@@ -14,9 +14,7 @@ class TestMummyDetailView(TestCase):
 
     def setUp(self):
         self.player = User.objects.create_user(username="Player", password="password")
-        self.dynasty = Dynasty.objects.create(
-            name="Test Dynasty", era="Middle Kingdom"
-        )
+        self.dynasty = Dynasty.objects.create(name="Test Dynasty", era="Middle Kingdom")
         self.mummy = Mummy.objects.create(
             name="Test Mummy",
             owner=self.player,
@@ -169,12 +167,8 @@ class TestMummyListView(TestCase):
 
     def test_list_view_queryset_ordering(self):
         """List view orders by name and includes related objects."""
-        Mummy.objects.create(
-            name="Zebra Mummy", owner=self.player, dynasty=self.dynasty
-        )
-        Mummy.objects.create(
-            name="Alpha Mummy", owner=self.player, dynasty=self.dynasty
-        )
+        Mummy.objects.create(name="Zebra Mummy", owner=self.player, dynasty=self.dynasty)
+        Mummy.objects.create(name="Alpha Mummy", owner=self.player, dynasty=self.dynasty)
 
         self.client.login(username="Player", password="password")
         response = self.client.get(self.url)
