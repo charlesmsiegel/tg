@@ -1,5 +1,6 @@
 from characters.models.core.human import Human
 from django.db import models
+from django.urls import reverse
 
 
 class HtRHuman(Human):
@@ -123,3 +124,9 @@ class HtRHuman(Human):
     class Meta:
         verbose_name = "Human (Hunter)"
         verbose_name_plural = "Humans (Hunter)"
+
+    def get_absolute_url(self):
+        return reverse("characters:hunter:htrhuman", kwargs={"pk": self.pk})
+
+    def get_heading(self):
+        return "htr_heading"

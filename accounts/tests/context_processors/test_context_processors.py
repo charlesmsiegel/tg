@@ -318,8 +318,10 @@ class TestNotificationCountContextProcessor(TestCase):
         )
         XPSpendingRequest.objects.create(
             character=char,
-            trait="strength",
-            xp_cost=5,
+            trait_name="Strength",
+            trait_type="attribute",
+            trait_value=3,
+            cost=5,
             approved="Pending",
         )
         request = self.factory.get("/")

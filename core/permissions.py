@@ -11,7 +11,7 @@ from typing import Set
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Q
 
 
 class Role(Enum):
@@ -432,18 +432,18 @@ class PermissionManager:
         from characters.models import Character
 
         # User has an approved character in the same chronicle
-        return Exists(
-            Character.objects.filter(
-                owner=user, chronicle=OuterRef("chronicle"), status="App"
-            )
-        )
+        # Use pk__in with subquery instead of Exists for polymorphic compatibility
+        player_chronicles = Character.objects.filter(
+            owner=user, status="App"
+        ).exclude(chronicle__isnull=True).values("chronicle")
+        return Q(chronicle__in=player_chronicles, status="App")
 
     @staticmethod
     def _get_observer_exists_subquery(user: User, model):
         """
         Get Exists subquery for objects user is observing.
 
-        Uses a subquery for better performance instead of fetching IDs.
+        Uses pk__in with subquery instead of Exists for polymorphic compatibility.
 
         Args:
             user: Django User instance
@@ -455,11 +455,11 @@ class PermissionManager:
         from core.models import Observer
 
         ct = ContentType.objects.get_for_model(model)
-        return Exists(
-            Observer.objects.filter(
-                content_type=ct, user=user, object_id=OuterRef("id")
-            )
-        )
+        # Use pk__in with subquery instead of Exists for polymorphic compatibility
+        observed_ids = Observer.objects.filter(
+            content_type=ct, user=user
+        ).values("object_id")
+        return Q(pk__in=observed_ids)
 
     @staticmethod
     def filter_queryset_for_user(user: User, queryset):

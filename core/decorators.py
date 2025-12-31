@@ -33,9 +33,9 @@ def require_permission(permission: Permission, lookup="pk", raise_404=True):
             obj_id = kwargs.get(lookup)
 
             # Try to get model class from view's attributes or module
-            # This is a simplified approach - in practice you might want
-            # to pass the model class as a parameter
-            model_class = getattr(view_func, "model", None)
+            # Check both the wrapper (for when .model is set after decoration)
+            # and the original view_func
+            model_class = getattr(wrapper, "model", None) or getattr(view_func, "model", None)
 
             if model_class is None:
                 # Try to infer from URL pattern or raise error

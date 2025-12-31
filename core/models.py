@@ -1003,6 +1003,11 @@ class BasePracticeRating(models.Model):
         "characters.Practice",
         on_delete=models.SET_NULL,
         null=True,
+    )
+
+    class Meta:
+        abstract = True
+
 
 class BaseResonanceRating(models.Model):
     """

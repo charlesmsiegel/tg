@@ -1,0 +1,70 @@
+{% extends "core/object.html" %}
+{% block contents %}
+    <div class="tg-card">
+        <div class="tg-card-header ctd_heading">
+            <h4>{{ object.name }}</h4>
+        </div>
+        <div class="tg-card-body">
+            {% if object.chimera_type %}
+            <div class="row">
+                <div class="col-4"><strong>Type:</strong></div>
+                <div class="col-8">{{ object.get_chimera_type_display }}</div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-4"><strong>Chimera Points:</strong></div>
+                <div class="col-8">{{ object.chimera_points }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Sentience:</strong></div>
+                <div class="col-8">{{ object.get_sentience_level_display }}</div>
+            </div>
+            {% if object.behavior %}
+            <div class="row">
+                <div class="col-4"><strong>Behavior:</strong></div>
+                <div class="col-8">{{ object.behavior }}</div>
+            </div>
+            {% endif %}
+            {% if object.appearance %}
+            <div class="row">
+                <div class="col-4"><strong>Appearance:</strong></div>
+                <div class="col-8">{{ object.appearance }}</div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-4"><strong>Durability:</strong></div>
+                <div class="col-8">{{ object.durability }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Physical Interaction:</strong></div>
+                <div class="col-8">{{ object.can_interact_with_physical|yesno:"Yes,No" }}</div>
+            </div>
+            <div class="row">
+                <div class="col-4"><strong>Loyalty:</strong></div>
+                <div class="col-8">{{ object.loyalty }}</div>
+            </div>
+            {% if object.creator %}
+            <div class="row">
+                <div class="col-4"><strong>Creator:</strong></div>
+                <div class="col-8">{{ object.creator }}</div>
+            </div>
+            {% endif %}
+            {% if object.origin %}
+            <div class="row">
+                <div class="col-4"><strong>Origin:</strong></div>
+                <div class="col-8">{{ object.get_origin_display }}</div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-4"><strong>Permanent:</strong></div>
+                <div class="col-8">{{ object.is_permanent|yesno:"Yes,No" }}</div>
+            </div>
+            {% if object.dream_source %}
+            <div class="row">
+                <div class="col-4"><strong>Dream Source:</strong></div>
+                <div class="col-8">{{ object.dream_source }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock contents %}

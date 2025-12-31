@@ -56,15 +56,15 @@ class VampireBasicsView(LoginRequiredMixin, FormView):
         # Use atomic transaction for character creation with initial values
         with transaction.atomic():
             self.object = form.save()
-            # Set initial willpower
-            self.object.willpower = self.object.courage
             # The save() method will handle setting virtue booleans based on path
             # and will set humanity/path_rating to 0 initially
             if self.object.path:
                 self.object.humanity = 0
             else:
                 self.object.path_rating = 0
-            self.object.save()
+            # Set initial willpower using set_willpower() to properly adjust
+            # temporary_willpower and avoid constraint violations
+            self.object.set_willpower(self.object.courage)
         messages.success(
             self.request,
             f"Vampire '{self.object.name}' created successfully! Continue with character creation.",
@@ -252,7 +252,8 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
             return self.form_invalid(form)
 
         # Update dependent values
-        self.object.willpower = courage
+        # Use set_willpower() to properly adjust temporary_willpower and avoid constraint violations
+        self.object.set_willpower(courage)
 
         if self.object.path:
             # Following a path: Path Rating = virtue_1 + virtue_2, Humanity = 0

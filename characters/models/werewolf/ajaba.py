@@ -29,7 +29,7 @@ class Ajaba(Fera):
         ("full_moon", "Full Moon"),  # Warriors
     ]
 
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Ajaba renown
     ferocity = models.IntegerField(default=0)  # Savage strength
