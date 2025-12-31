@@ -96,6 +96,8 @@ class Wonder(ItemModel):
         return 0
 
     def filter_resonance(self, minimum=0, maximum=5):
+        from characters.models.mage.resonance import Resonance
+
         all_res = Resonance.objects.all()
 
         maxed_resonance = [

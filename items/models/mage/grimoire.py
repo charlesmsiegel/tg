@@ -382,9 +382,10 @@ class Grimoire(Wonder):
                     sphere_dict[sphere] += 5
             spheres.append(weighted_choice(sphere_dict))
             while random.random() < 0.1:
-                spheres.append(
-                    weighted_choice({k: v for k, v in sphere_dict.items() if k not in spheres})
-                )
+                remaining = {k: v for k, v in sphere_dict.items() if k not in spheres}
+                if not remaining:
+                    break
+                spheres.append(weighted_choice(remaining))
         self.set_spheres(spheres)
 
     def random_is_primer(self, is_primer=None):

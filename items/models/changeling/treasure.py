@@ -44,7 +44,7 @@ class Treasure(ItemModel):
 
     # Abilities and effects
     effects = models.JSONField(
-        default=list, help_text="List of special abilities/effects"
+        default=list, blank=True, help_text="List of special abilities/effects"
     )  # list is callable - safe
     special_abilities = models.TextField(
         blank=True, default="", help_text="Description of special abilities"
