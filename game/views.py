@@ -1034,8 +1034,10 @@ class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
 
                 # Calculate and award XP
                 xp_increase = xp_request.total_xp()
-                xp_request.character.xp += xp_increase
-                xp_request.character.save()
+                # Get the real Character instance (xp is on Character, not CharacterModel)
+                character = xp_request.character.get_real_instance()
+                character.xp += xp_increase
+                character.save()
                 xp_request.save()
 
                 approved_count += 1

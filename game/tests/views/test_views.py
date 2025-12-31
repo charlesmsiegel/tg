@@ -1120,27 +1120,27 @@ class TestJournalListView(TestCase):
 
     def test_list_view_requires_login(self):
         """Test that journal list requires authentication."""
-        response = self.client.get("/game/journal/list/")
+        response = self.client.get(reverse("game:journals"))
         self.assertEqual(response.status_code, 401)
 
     def test_list_view_accessible(self):
         """Test that journal list is accessible to logged-in users."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get("/game/journal/list/")
+        response = self.client.get(reverse("game:journals"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "game/journal/list.html")
 
     def test_filter_by_mine(self):
         """Test filtering journals by own characters."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get("/game/journal/list/?filter=mine")
+        response = self.client.get(reverse("game:journals") + "?filter=mine")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["current_filter"], "mine")
 
     def test_filter_by_st(self):
         """Test filtering journals by ST chronicles."""
         self.client.login(username="stuser", password="password")
-        response = self.client.get("/game/journal/list/?filter=st")
+        response = self.client.get(reverse("game:journals") + "?filter=st")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["current_filter"], "st")
 
@@ -1169,7 +1169,7 @@ class TestJournalDetailView(TestCase):
         """Test that character owner can add journal entries."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/journal/{self.journal.pk}/",
+            reverse("game:journal", kwargs={"pk": self.journal.pk}),
             {
                 "submit_entry": "true",
                 "date": "2024-01-15",
@@ -1179,18 +1179,21 @@ class TestJournalDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_non_owner_cannot_add_entry(self):
-        """Test that non-owners cannot add entries."""
+        """Test that non-owners cannot add entries.
+
+        ViewPermissionMixin returns 404 (not 403) to hide object existence from unauthorized users.
+        """
         other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.client.login(username="otheruser", password="password")
         response = self.client.post(
-            f"/game/journal/{self.journal.pk}/",
+            reverse("game:journal", kwargs={"pk": self.journal.pk}),
             {
                 "submit_entry": "true",
                 "date": "2024-01-15",
                 "message": "Malicious entry",
             },
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
 
 class TestSettingElementViews(TestCase):
@@ -1564,13 +1567,13 @@ class TestChronicleListView(TestCase):
 
     def test_list_view_requires_login(self):
         """Test that list view requires authentication."""
-        response = self.client.get(reverse("game:chronicle_list"))
+        response = self.client.get(reverse("game:chronicles"))
         self.assertEqual(response.status_code, 401)
 
     def test_list_view_accessible(self):
         """Test that list view is accessible to logged-in users."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(reverse("game:chronicle_list"))
+        response = self.client.get(reverse("game:chronicles"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "game/chronicle/list.html")
         self.assertContains(response, "Chronicle A")

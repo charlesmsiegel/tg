@@ -754,6 +754,16 @@ class JournalEntry(models.Model):
 class Journal(models.Model):
     character = models.OneToOneField("characters.CharacterModel", on_delete=models.CASCADE)
 
+    @property
+    def owner(self):
+        """Return the character's owner for permission checks."""
+        return self.character.owner if self.character else None
+
+    @property
+    def chronicle(self):
+        """Return the character's chronicle for permission checks."""
+        return self.character.chronicle if self.character else None
+
     def add_post(self, date, message):
         try:
             message = message_processing(self.character, message)
