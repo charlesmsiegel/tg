@@ -54,8 +54,8 @@ class GhoulBasicsView(LoginRequiredMixin, FormView):
         self.object = form.save()
         # Ghouls start with Potence 1 (already set as default in model)
         # Set initial willpower to courage (default 1)
-        self.object.willpower = self.object.courage
-        self.object.save()
+        # Use set_willpower() to properly adjust temporary_willpower and avoid constraint violations
+        self.object.set_willpower(self.object.courage)
         return super().form_valid(form)
 
     def get_success_url(self):

@@ -125,7 +125,8 @@ class CacheInvalidatorTest(TestCase):
         cache.set("tg:queryset:FakeModel:status=App", "value1")
         cache.set("tg:queryset:FakeModel:status=Un", "value2")
 
-        with patch.object(cache, "delete_pattern") as mock_delete_pattern:
+        # Use create=True to allow patching non-existent attribute
+        with patch.object(cache, "delete_pattern", create=True) as mock_delete_pattern:
             CacheInvalidator.invalidate_model_cache(FakeModel)
             mock_delete_pattern.assert_called_once_with("tg:queryset:FakeModel:*")
 
@@ -140,8 +141,8 @@ class CacheInvalidatorTest(TestCase):
         cache_key = CacheKeyGenerator.make_model_key(FakeModel)
         cache.set(cache_key, "test_value")
 
-        # Mock delete_pattern to raise AttributeError
-        with patch.object(cache, "delete_pattern", side_effect=AttributeError):
+        # Mock delete_pattern to raise AttributeError (create=True for non-existent attribute)
+        with patch.object(cache, "delete_pattern", side_effect=AttributeError, create=True):
             with patch.object(cache, "delete") as mock_delete:
                 CacheInvalidator.invalidate_model_cache(FakeModel)
                 mock_delete.assert_called_once_with(cache_key)

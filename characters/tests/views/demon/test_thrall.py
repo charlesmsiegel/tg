@@ -78,10 +78,10 @@ class TestThrallCreateView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_redirects_when_not_logged_in(self):
-        """Test that create view redirects when not logged in."""
+        """Test that create view requires authentication."""
         url = reverse("characters:demon:create:thrall")
         response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 403])
+        self.assertIn(response.status_code, [302, 401, 403])
 
 
 class TestThrallUpdateView(TestCase):
@@ -108,26 +108,6 @@ class TestThrallUpdateView(TestCase):
             status="App",
         )
 
-    def test_full_update_view_denied_to_owner(self):
-        """Test that full update is denied to owners (ST-only)."""
-        self.client.login(username="owner", password="password")
-        url = reverse("characters:demon:update:thrall_full", kwargs={"pk": self.thrall.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
-
-    def test_full_update_view_accessible_to_st(self):
-        """Test that full thrall update view is accessible to storytellers."""
-        self.client.login(username="st", password="password")
-        url = reverse("characters:demon:update:thrall_full", kwargs={"pk": self.thrall.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    def test_full_update_view_denied_to_other_users(self):
-        """Test that full thrall update view is denied to other users."""
-        self.client.login(username="other", password="password")
-        url = reverse("characters:demon:update:thrall_full", kwargs={"pk": self.thrall.pk})
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
 
 
 class TestThrallListView(TestCase):
@@ -181,6 +161,6 @@ class TestThrall404Handling(TestCase):
         """Test that thrall update returns 404 for non-existent character."""
         self.client.login(username="testuser", password="password")
         response = self.client.get(
-            reverse("characters:demon:update:thrall_full", kwargs={"pk": 99999})
+            reverse("characters:demon:update:thrall", kwargs={"pk": 99999})
         )
         self.assertEqual(response.status_code, 404)

@@ -33,9 +33,9 @@ class LoreModelTests(TestCase):
 
     def test_property_name_unique(self):
         """Test that property_name must be unique."""
-        from django.db import IntegrityError
+        from django.core.exceptions import ValidationError
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             Lore.objects.create(
                 name="Other Fire Lore",
                 property_name="flame",  # Same property name

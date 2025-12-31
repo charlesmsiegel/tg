@@ -667,18 +667,22 @@ class Human(
     # XP and Freebie Spending Methods
     # ========================================================================
 
-    def spend_xp(self, trait):
-        """Spend XP on common human traits (attributes, abilities, backgrounds, willpower).
+    def spend_xp(self, trait=None, *, trait_name=None, trait_display=None, cost=None, category=None, trait_value=0):
+        """Spend XP on traits.
 
-        This is the base implementation that handles traits common to all character types.
-        Subclasses should call super().spend_xp(trait) first, and if it returns a string
-        (the trait name), then handle their own specific traits.
+        Supports two calling conventions:
+        1. Legacy: spend_xp(trait) - auto-calculates cost and applies change immediately
+        2. New: spend_xp(trait_name=..., trait_display=..., cost=..., category=..., trait_value=...)
+           Creates an XPSpendingRequest for approval
 
         Returns:
-            True if spending was successful
-            False if spending failed (insufficient XP, at maximum, etc.)
-            trait (string) if this method doesn't handle this trait (pass to subclass)
+            For legacy calls: True/False for success/failure, or trait string if unhandled
+            For new calls: XPSpendingRequest instance
         """
+        # If called with new keyword-argument style, delegate to Character.spend_xp
+        if trait_name is not None or trait_display is not None or cost is not None or category is not None:
+            from characters.models.core.character import Character
+            return Character.spend_xp(self, trait_name or "", trait_display or "", cost or 0, category or "", trait_value)
         # Check if trait is an attribute
         if hasattr(Attribute.objects, "filter"):
             try:

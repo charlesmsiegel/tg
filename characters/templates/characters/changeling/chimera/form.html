@@ -1,0 +1,59 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Update{% else %}Create{% endif %} Chimera
+{% endblock creation_title %}
+{% block contents %}
+    {% load dots %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Type</div>
+        <div class="col-sm">{{ form.chimera_type }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Chimera Points</div>
+        <div class="col-sm">{{ form.chimera_points }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Sentience Level</div>
+        <div class="col-sm">{{ form.sentience_level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Behavior</div>
+        <div class="col-sm">{{ form.behavior }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Appearance</div>
+        <div class="col-sm">{{ form.appearance }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Durability</div>
+        <div class="col-sm">{{ form.durability }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Can Interact with Physical</div>
+        <div class="col-sm">{{ form.can_interact_with_physical }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Loyalty</div>
+        <div class="col-sm">{{ form.loyalty }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Creator</div>
+        <div class="col-sm">{{ form.creator }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Origin</div>
+        <div class="col-sm">{{ form.origin }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Is Permanent</div>
+        <div class="col-sm">{{ form.is_permanent }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Dream Source</div>
+        <div class="col-sm">{{ form.dream_source }}</div>
+    </div>
+{% endblock contents %}

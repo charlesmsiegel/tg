@@ -226,7 +226,7 @@ class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/wraith/wtohuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(WtOHuman, pk=kwargs["pk"], owner=request.user)
+        self.object = get_object_or_404(WtOHuman, pk=kwargs["pk"], owner_id=request.user.pk)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:wraith:wtohuman_creation", pk=self.object.pk)
@@ -392,6 +392,12 @@ class WtOHumanLanguagesView(EditPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 
+    def get_object(self):
+        """Return the Human object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = get_object_or_404(Human, pk=self.kwargs.get("pk"))
+        return self.object
+
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
@@ -448,9 +454,15 @@ class WtOHumanSpecialtiesView(EditPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 
+    def get_object(self):
+        """Return the WtOHuman object for permission checking."""
+        if not hasattr(self, "object") or self.object is None:
+            self.object = WtOHuman.objects.get(id=self.kwargs["pk"])
+        return self.object
+
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["object"] = WtOHuman.objects.get(id=self.kwargs["pk"])
+        context["object"] = self.get_object()
         context["is_approved_user"] = self.check_if_special_user(
             context["object"], self.request.user
         )

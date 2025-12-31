@@ -228,7 +228,7 @@ class Profile(models.Model):
         return reverse("profile", kwargs={"pk": self.pk})
 
     def get_updated_journals(self):
-        return Journal.objects.filter(journalentry__st_message="").distinct()
+        return Journal.objects.filter(entries__st_message="").distinct()
 
     def get_unfulfilled_weekly_xp_requests(self):
         """Get character/week pairs that need XP requests created.
@@ -305,5 +305,5 @@ class Profile(models.Model):
 
     def unread_scenes(self):
         return Scene.objects.filter(
-            userscenereadstatus__user=self.user, userscenereadstatus__read=False
+            user_read_statuses__user=self.user, user_read_statuses__read=False
         ).distinct()

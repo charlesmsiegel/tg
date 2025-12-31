@@ -27,7 +27,7 @@ class Ananasi(Fera):
         ("hatar", "Hatar"),  # Web-weavers and mystics
     ]
 
-    aspect = models.CharField(default="", max_length=100, choices=ASPECTS)
+    aspect = models.CharField(default="", max_length=100, choices=ASPECTS, blank=True)
 
     # Ananasi renown
     cunning = models.IntegerField(default=0)  # Cleverness and deceit

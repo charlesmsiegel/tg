@@ -298,7 +298,7 @@ class LoadXPExamplesView(View):
                 x
                 for x in examples
                 if (
-                    sum([getattr(self.character, abb.property_name) for abb in x.abilities.all()])
+                    sum([getattr(self.character, abb.property_name, 0) for abb in x.abilities.all()])
                     / 2
                     > self.character.practice_rating(x) + 1
                 )
@@ -315,7 +315,7 @@ class GetAbilitiesView(JsonListView):
         practice_id = self.request.GET.get("practice_id")
         prac = get_object_or_404(Practice, id=practice_id)
         abilities = prac.abilities.all().order_by("name")
-        abilities = [x for x in abilities if getattr(obj, x.property_name) > 0]
+        abilities = [x for x in abilities if getattr(obj, x.property_name, 0) > 0]
         return [{"id": ability.id, "name": ability.name} for ability in abilities]
 
 

@@ -40,6 +40,9 @@ class WraithArtifact(ItemModel):
         verbose_name = "Artifact"
         verbose_name_plural = "Artifacts"
 
+    def get_absolute_url(self):
+        return reverse("items:wraith:artifact", kwargs={"pk": self.pk})
+
     def get_update_url(self):
         return reverse("items:wraith:update:artifact", args=[str(self.id)])
 

@@ -1,6 +1,7 @@
 """Tests for Demon creation form."""
 
 from characters.forms.demon.demon import DemonCreationForm
+from characters.models.core.archetype import Archetype
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
@@ -21,6 +22,9 @@ class DemonCreationFormTests(TestCase):
         )
         self.faction = DemonFaction.objects.create(name="Cryptics", owner=self.user)
         self.visage = Visage.objects.create(name="Bel", owner=self.user)
+        # Create archetypes for nature and demeanor
+        self.nature = Archetype.objects.create(name="Survivor")
+        self.demeanor = Archetype.objects.create(name="Director")
 
     def test_form_has_expected_fields(self):
         """Test that form has all expected fields."""
@@ -49,8 +53,8 @@ class DemonCreationFormTests(TestCase):
         """Test that form is valid with minimal required data."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "npc": False,
         }
@@ -61,8 +65,8 @@ class DemonCreationFormTests(TestCase):
         """Test that form is valid with all data provided."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "house": self.house.pk,
             "faction": self.faction.pk,
@@ -77,8 +81,8 @@ class DemonCreationFormTests(TestCase):
         """Test that save sets owner from user parameter."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "npc": False,
         }
@@ -166,13 +170,16 @@ class DemonCreationFormSaveTests(TestCase):
             name="Devils", celestial_name="Namaru", owner=self.user
         )
         self.faction = DemonFaction.objects.create(name="Cryptics", owner=self.user)
+        # Create archetypes for nature and demeanor
+        self.nature = Archetype.objects.create(name="Survivor")
+        self.demeanor = Archetype.objects.create(name="Director")
 
     def test_save_commit_true(self):
         """Test save with commit=True saves to database."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "npc": False,
         }
@@ -185,8 +192,8 @@ class DemonCreationFormSaveTests(TestCase):
         """Test save with commit=False doesn't save to database."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "npc": False,
         }
@@ -199,8 +206,8 @@ class DemonCreationFormSaveTests(TestCase):
         """Test save with chronicle sets chronicle."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "chronicle": self.chronicle.pk,
             "npc": False,
@@ -214,8 +221,8 @@ class DemonCreationFormSaveTests(TestCase):
         """Test save with house and faction sets relationships."""
         form_data = {
             "name": "Test Demon",
-            "nature": "Survivor",
-            "demeanor": "Director",
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
             "concept": "Former angel of fire",
             "house": self.house.pk,
             "faction": self.faction.pk,

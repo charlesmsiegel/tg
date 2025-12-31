@@ -1,4 +1,5 @@
 """Tests for Ushabti model."""
+from django.contrib.auth.models import User
 from django.test import TestCase
 from items.models.mummy.ushabti import Ushabti
 
@@ -122,16 +123,19 @@ class TestUshabtiDetailView(TestCase):
     """Test Ushabti detail view."""
 
     def setUp(self):
-        self.ushabti = Ushabti.objects.create(name="Test Ushabti")
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.ushabti = Ushabti.objects.create(name="Test Ushabti", owner=self.user)
         self.url = self.ushabti.get_absolute_url()
 
     def test_detail_view_status_code(self):
         """Test detail view returns 200."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_template(self):
         """Test detail view uses correct template."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/ushabti/detail.html")
 
@@ -140,15 +144,18 @@ class TestUshabtiCreateView(TestCase):
     """Test Ushabti create view."""
 
     def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="testpass")
         self.url = Ushabti.get_creation_url()
 
     def test_create_view_status_code(self):
         """Test create view returns 200."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Test create view uses correct template."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/ushabti/form.html")
 
@@ -157,16 +164,21 @@ class TestUshabtiUpdateView(TestCase):
     """Test Ushabti update view."""
 
     def setUp(self):
+        self.user = User.objects.create_superuser(
+            username="admin", password="adminpass", email="admin@test.com"
+        )
         self.ushabti = Ushabti.objects.create(name="Test Ushabti", description="Test")
         self.url = self.ushabti.get_update_url()
 
     def test_update_view_status_code(self):
         """Test update view returns 200."""
+        self.client.login(username="admin", password="adminpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Test update view uses correct template."""
+        self.client.login(username="admin", password="adminpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/ushabti/form.html")
 
