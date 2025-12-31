@@ -11,6 +11,7 @@ class TestTreasure(TestCase):
             name="Test Treasure",
             rating=3,
             treasure_type="talisman",
+            effects=[],
         )
 
     def test_str_with_name_and_rating(self):
@@ -20,12 +21,12 @@ class TestTreasure(TestCase):
 
     def test_str_rating_1(self):
         """Test __str__ with rating 1."""
-        treasure = Treasure.objects.create(name="One Star", rating=1)
+        treasure = Treasure.objects.create(name="One Star", rating=1, effects=[])
         self.assertEqual(str(treasure), "One Star (★)")
 
     def test_str_rating_5(self):
         """Test __str__ with rating 5."""
-        treasure = Treasure.objects.create(name="Five Star", rating=5)
+        treasure = Treasure.objects.create(name="Five Star", rating=5, effects=[])
         self.assertEqual(str(treasure), "Five Star (★★★★★)")
 
 
@@ -34,22 +35,22 @@ class TestTreasureDefaults(TestCase):
 
     def test_rating_default(self):
         """Test rating defaults to 1."""
-        treasure = Treasure.objects.create(name="Default Rating")
+        treasure = Treasure.objects.create(name="Default Rating", effects=[])
         self.assertEqual(treasure.rating, 1)
 
     def test_treasure_type_default(self):
         """Test treasure_type defaults to empty string."""
-        treasure = Treasure.objects.create(name="Default Type")
+        treasure = Treasure.objects.create(name="Default Type", effects=[])
         self.assertEqual(treasure.treasure_type, "")
 
     def test_permanence_default(self):
         """Test permanence defaults to True."""
-        treasure = Treasure.objects.create(name="Default Permanence")
+        treasure = Treasure.objects.create(name="Default Permanence", effects=[])
         self.assertTrue(treasure.permanence)
 
     def test_glamour_storage_default(self):
         """Test glamour_storage defaults to 0."""
-        treasure = Treasure.objects.create(name="Default Glamour")
+        treasure = Treasure.objects.create(name="Default Glamour", effects=[])
         self.assertEqual(treasure.glamour_storage, 0)
 
 
@@ -60,7 +61,9 @@ class TestTreasureType(TestCase):
         """Test treasure_type can be set to valid choices."""
         valid_types = ["weapon", "armor", "talisman", "wonder", "other"]
         for ttype in valid_types:
-            treasure = Treasure.objects.create(name=f"{ttype} treasure", treasure_type=ttype)
+            treasure = Treasure.objects.create(
+                name=f"{ttype} treasure", treasure_type=ttype, effects=[]
+            )
             self.assertEqual(treasure.treasure_type, ttype)
 
 
@@ -68,7 +71,7 @@ class TestTreasureUrls(TestCase):
     """Test URL methods for Treasure."""
 
     def setUp(self):
-        self.treasure = Treasure.objects.create(name="URL Test Treasure")
+        self.treasure = Treasure.objects.create(name="URL Test Treasure", effects=[])
 
     def test_get_update_url(self):
         """Test get_update_url generates correct URL."""
@@ -91,7 +94,7 @@ class TestTreasureDetailView(TestCase):
     """Test Treasure detail view."""
 
     def setUp(self):
-        self.treasure = Treasure.objects.create(name="Test Treasure")
+        self.treasure = Treasure.objects.create(name="Test Treasure", effects=[])
         self.url = self.treasure.get_absolute_url()
 
     def test_detail_view_status_code(self):
@@ -126,7 +129,9 @@ class TestTreasureUpdateView(TestCase):
     """Test Treasure update view."""
 
     def setUp(self):
-        self.treasure = Treasure.objects.create(name="Test Treasure", description="Test")
+        self.treasure = Treasure.objects.create(
+            name="Test Treasure", description="Test", effects=[]
+        )
         self.url = self.treasure.get_update_url()
 
     def test_update_view_status_code(self):
@@ -160,15 +165,19 @@ class TestTreasureGlamour(TestCase):
 
     def test_glamour_storage_can_be_set(self):
         """Test glamour_storage can be set."""
-        treasure = Treasure.objects.create(name="Glamour Storage", glamour_storage=25)
+        treasure = Treasure.objects.create(
+            name="Glamour Storage", glamour_storage=25, effects=[]
+        )
         self.assertEqual(treasure.glamour_storage, 25)
 
     def test_glamour_affinity_default(self):
         """Test glamour_affinity defaults to empty string."""
-        treasure = Treasure.objects.create(name="Default Affinity")
+        treasure = Treasure.objects.create(name="Default Affinity", effects=[])
         self.assertEqual(treasure.glamour_affinity, "")
 
     def test_glamour_affinity_can_be_set(self):
         """Test glamour_affinity can be set."""
-        treasure = Treasure.objects.create(name="With Affinity", glamour_affinity="Joy")
+        treasure = Treasure.objects.create(
+            name="With Affinity", glamour_affinity="Joy", effects=[]
+        )
         self.assertEqual(treasure.glamour_affinity, "Joy")

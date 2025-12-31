@@ -29,7 +29,7 @@ class Grondr(Fera):
         ("winter", "Winter"),  # Mystics and seers
     ]
 
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Grondr renown
     glory = models.IntegerField(default=0)  # Martial prowess

@@ -51,9 +51,9 @@ class DemonHouseModelTests(TestCase):
 
     def test_celestial_name_unique(self):
         """Test that celestial_name must be unique."""
-        from django.db import IntegrityError
+        from django.core.exceptions import ValidationError
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             DemonHouse.objects.create(
                 name="Other Devils",
                 celestial_name="Namaru",  # Same celestial name

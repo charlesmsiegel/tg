@@ -40,8 +40,8 @@ class Mokole(Fera):
         ("solar_eclipse", "Solar Eclipse"),  # Rare - Chosen
     ]
 
-    stream = models.CharField(default="", max_length=100, choices=STREAMS)
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    stream = models.CharField(default="", max_length=100, choices=STREAMS, blank=True)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Mokole renown
     valor = models.IntegerField(default=0)  # Courage

@@ -221,7 +221,7 @@ class WtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/werewolf/wtahuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(WtAHuman, pk=kwargs["pk"], owner=request.user)
+        self.object = get_object_or_404(WtAHuman, pk=kwargs["pk"], owner_id=request.user.pk)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:werewolf:wtahuman_creation", pk=self.object.pk)

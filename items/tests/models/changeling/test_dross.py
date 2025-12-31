@@ -21,7 +21,7 @@ class TestDross(TestCase):
 
     def test_str_without_name(self):
         """Test __str__ without name shows quality."""
-        dross = Dross.objects.create(quality="common", glamour_value=3)
+        dross = Dross.objects.create(name="Temp Dross", quality="common", glamour_value=3)
         # Need to clear the name to test fallback
         Dross.objects.filter(pk=dross.pk).update(name="")
         dross.refresh_from_db()

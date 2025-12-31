@@ -84,7 +84,7 @@ class DtFHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/demon/dtfhuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(DtFHuman, pk=kwargs["pk"], owner=request.user)
+        self.object = get_object_or_404(DtFHuman, pk=kwargs["pk"], owner_id=request.user.pk)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:demon:dtfhuman_creation", pk=self.object.pk)

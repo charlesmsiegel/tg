@@ -14,8 +14,8 @@ class Drone(WtAHuman):
     type = "drone"
 
     # Bane name/type
-    bane_name = models.CharField(default="", max_length=100)
-    bane_type = models.CharField(default="", max_length=100)
+    bane_name = models.CharField(default="", max_length=100, blank=True)
+    bane_type = models.CharField(default="", max_length=100, blank=True)
 
     # Spiritual stats
     rage = models.IntegerField(default=0)

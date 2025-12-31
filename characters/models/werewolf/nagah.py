@@ -28,7 +28,7 @@ class Nagah(Fera):
         ("kali", "Kali"),  # Assassins
     ]
 
-    auspice = models.CharField(default="", max_length=100, choices=AUSPICES)
+    auspice = models.CharField(default="", max_length=100, choices=AUSPICES, blank=True)
 
     # Nagah renown
     obligation = models.IntegerField(default=0)  # Duty to Gaia

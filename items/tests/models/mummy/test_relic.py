@@ -1,4 +1,5 @@
 """Tests for MummyRelic model."""
+from django.contrib.auth.models import User
 from django.test import TestCase
 from items.models.mummy.relic import MummyRelic, RelicResonanceRating
 
@@ -108,16 +109,19 @@ class TestMummyRelicDetailView(TestCase):
     """Test MummyRelic detail view."""
 
     def setUp(self):
-        self.relic = MummyRelic.objects.create(name="Test Relic")
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.relic = MummyRelic.objects.create(name="Test Relic", owner=self.user)
         self.url = self.relic.get_absolute_url()
 
     def test_detail_view_status_code(self):
         """Test detail view returns 200."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_template(self):
         """Test detail view uses correct template."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/relic/detail.html")
 
@@ -126,15 +130,18 @@ class TestMummyRelicCreateView(TestCase):
     """Test MummyRelic create view."""
 
     def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="testpass")
         self.url = MummyRelic.get_creation_url()
 
     def test_create_view_status_code(self):
         """Test create view returns 200."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Test create view uses correct template."""
+        self.client.login(username="testuser", password="testpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/relic/form.html")
 
@@ -143,16 +150,21 @@ class TestMummyRelicUpdateView(TestCase):
     """Test MummyRelic update view."""
 
     def setUp(self):
+        self.user = User.objects.create_superuser(
+            username="admin", password="adminpass", email="admin@test.com"
+        )
         self.relic = MummyRelic.objects.create(name="Test Relic", description="Test")
         self.url = self.relic.get_update_url()
 
     def test_update_view_status_code(self):
         """Test update view returns 200."""
+        self.client.login(username="admin", password="adminpass")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Test update view uses correct template."""
+        self.client.login(username="admin", password="adminpass")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/mummy/relic/form.html")
 

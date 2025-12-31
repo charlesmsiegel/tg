@@ -1,58 +1,51 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from locations import views
 from django.urls import path
+from locations import views
 
 app_name = "mage:create"
-
-# For example, updating ChantryBasicsView to enforce login
-class ChantryBasicsView(LoginRequiredMixin, views.mage.ChantryBasicsView):
-    login_url = "/accounts/login/"
-    redirect_field_name = "next"
-
-urlpatterns = [
+urls = [
     path(
         "node/",
-        LoginRequiredMixin.as_view(view_class=views.mage.NodeCreateView, login_url="/accounts/login/"),
+        views.mage.NodeCreateView.as_view(),
         name="node",
     ),
     path(
         "sector/",
-        LoginRequiredMixin.as_view(view_class=views.mage.SectorCreateView, login_url="/accounts/login/"),
+        views.mage.SectorCreateView.as_view(),
         name="sector",
     ),
     path(
         "realm/",
-        LoginRequiredMixin.as_view(view_class=views.mage.RealmCreateView, login_url="/accounts/login/"),
+        views.mage.RealmCreateView.as_view(),
         name="horizon_realm",
     ),
     path(
         "paradox_realm/",
-        LoginRequiredMixin.as_view(view_class=views.mage.ParadoxRealmCreateView, login_url="/accounts/login/"),
+        views.mage.ParadoxRealmCreateView.as_view(),
         name="paradox_realm",
     ),
     path(
         "sanctum/",
-        LoginRequiredMixin.as_view(view_class=views.mage.SanctumCreateView, login_url="/accounts/login/"),
+        views.mage.SanctumCreateView.as_view(),
         name="sanctum",
     ),
     path(
         "demesne/",
-        LoginRequiredMixin.as_view(view_class=views.mage.DemesneCreateView, login_url="/accounts/login/"),
+        views.mage.DemesneCreateView.as_view(),
         name="demesne",
     ),
     path(
         "library/",
-        LoginRequiredMixin.as_view(view_class=views.mage.LibraryCreateView, login_url="/accounts/login/"),
+        views.mage.LibraryCreateView.as_view(),
         name="library",
     ),
     path(
         "chantry/",
-        ChantryBasicsView.as_view(),
+        views.mage.ChantryCreateView.as_view(),
         name="chantry",
     ),
     path(
         "reality_zone/",
-        LoginRequiredMixin.as_view(view_class=views.mage.RealityZoneCreateView, login_url="/accounts/login/"),
+        views.mage.RealityZoneCreateView.as_view(),
         name="reality_zone",
     ),
 ]

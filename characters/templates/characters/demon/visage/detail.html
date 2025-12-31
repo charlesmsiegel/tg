@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            {% if object.low_torment_traits.all %}
+            {% if object.default_apocalyptic_form and object.default_apocalyptic_form.low_torment_traits.all %}
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="tg-card">
@@ -39,7 +39,7 @@
                                 <h5 class="tg-card-title dtf_heading">Low Torment Traits</h5>
                             </div>
                             <div class="tg-card-body">
-                                {% for trait in object.low_torment_traits.all %}
+                                {% for trait in object.default_apocalyptic_form.low_torment_traits.all %}
                                     <div class="row mb-1">
                                         <div class="col-sm-4">{{ trait.name }}</div>
                                         <div class="col-sm-8">{{ trait.description }}</div>
@@ -50,7 +50,7 @@
                     </div>
                 </div>
             {% endif %}
-            {% if object.high_torment_traits.all %}
+            {% if object.default_apocalyptic_form and object.default_apocalyptic_form.high_torment_traits.all %}
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="tg-card">
@@ -58,7 +58,7 @@
                                 <h5 class="tg-card-title dtf_heading">High Torment Traits</h5>
                             </div>
                             <div class="tg-card-body">
-                                {% for trait in object.high_torment_traits.all %}
+                                {% for trait in object.default_apocalyptic_form.high_torment_traits.all %}
                                     <div class="row mb-1">
                                         <div class="col-sm-4">{{ trait.name }}</div>
                                         <div class="col-sm-8">{{ trait.description }}</div>

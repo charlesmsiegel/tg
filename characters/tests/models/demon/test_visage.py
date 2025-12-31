@@ -113,16 +113,18 @@ class VisageHouseRelationshipTests(TestCase):
 
         self.assertEqual(self.house.visages.count(), 2)
 
-    def test_visage_house_set_null_on_delete(self):
-        """Deleting house sets visage.house to NULL."""
+    def test_visage_cascade_on_house_delete(self):
+        """Deleting house cascades to delete visages with that house."""
+        from characters.models.demon.visage import Visage
+
         self.visage.house = self.house
         self.visage.save()
+        visage_id = self.visage.id
 
-        house_id = self.house.id
         self.house.delete()
 
-        self.visage.refresh_from_db()
-        self.assertIsNone(self.visage.house)
+        # Visage should be deleted due to CASCADE
+        self.assertFalse(Visage.objects.filter(id=visage_id).exists())
 
 
 class VisageDefaultApocalypticFormTests(TestCase):
