@@ -1009,7 +1009,7 @@ class BasePracticeRating(models.Model):
         abstract = True
 
     def __str__(self):
-        return f"{self.practice}: {self.rating}"
+        return f"{self.practice}: {getattr(self, 'rating', 0)}"
 
 
 class BaseResonanceRating(models.Model):
