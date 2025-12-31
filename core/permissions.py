@@ -412,22 +412,22 @@ class PermissionManager:
         return filters
 
     @staticmethod
-    def _build_player_chronicle_filter(user: User, model) -> Q:
+    def _get_player_chronicle_exists_subquery(user: User, model):
         """
-        Build Q filter for objects in chronicles where user is a player.
+        Get Exists subquery for objects in chronicles where user is a player.
 
         Args:
             user: Django User instance
             model: Model class being filtered
 
         Returns:
-            Q object for player access or empty Q()
+            Exists subquery or None if not applicable
         """
         if not PermissionManager._model_has_field(model, "chronicle"):
-            return Q()
+            return None
 
         if not PermissionManager._model_has_field(model, "status"):
-            return Q()
+            return None
 
         from characters.models import Character
 
@@ -439,9 +439,9 @@ class PermissionManager:
         return Q(chronicle__in=player_chronicles, status="App")
 
     @staticmethod
-    def _build_observer_filter(user: User, model) -> Q:
+    def _get_observer_exists_subquery(user: User, model):
         """
-        Build Q filter for objects user is observing.
+        Get Exists subquery for objects user is observing.
 
         Uses pk__in with subquery instead of Exists for polymorphic compatibility.
 
@@ -450,7 +450,7 @@ class PermissionManager:
             model: Model class being filtered
 
         Returns:
-            Q object for observer access
+            Exists subquery for observer access
         """
         from core.models import Observer
 
@@ -467,6 +467,8 @@ class PermissionManager:
         Filter queryset to only objects user can view.
 
         Refactored to use proper field checking and helper methods for maintainability.
+        Uses annotations for Exists-based filters to avoid issues with polymorphic
+        querysets (Exists objects cannot be wrapped in Q objects).
 
         Args:
             user: Django User instance
@@ -485,7 +487,7 @@ class PermissionManager:
         if user.is_superuser or user.is_staff:
             return queryset
 
-        # Build filters using helper methods
+        # Build Q-based filters (these work correctly with polymorphic querysets)
         filters = Q()
 
         # 1. Objects user owns
@@ -496,10 +498,32 @@ class PermissionManager:
         if chronicle_model:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
-        # 3. Objects in chronicles where user is a player
-        filters |= PermissionManager._build_player_chronicle_filter(user, queryset.model)
+        # 3. Annotate with Exists subqueries for player chronicle and observer access
+        # (Exists cannot be wrapped in Q objects - causes AttributeError with polymorphic)
+        annotations = {}
 
-        # 4. Objects user is explicitly observing
-        filters |= PermissionManager._build_observer_filter(user, queryset.model)
+        player_chronicle_exists = PermissionManager._get_player_chronicle_exists_subquery(
+            user, queryset.model
+        )
+        if player_chronicle_exists is not None:
+            annotations["_is_player_chronicle"] = player_chronicle_exists
+
+        observer_exists = PermissionManager._get_observer_exists_subquery(
+            user, queryset.model
+        )
+        annotations["_is_observer"] = observer_exists
+
+        # Apply annotations
+        if annotations:
+            queryset = queryset.annotate(**annotations)
+
+        # Add Exists-based filters using the annotated fields
+        if player_chronicle_exists is not None:
+            # Player chronicle access: user has approved character in same chronicle
+            # and the object is also approved
+            filters |= Q(_is_player_chronicle=True, status="App")
+
+        # Observer access
+        filters |= Q(_is_observer=True)
 
         return queryset.filter(filters).distinct()
