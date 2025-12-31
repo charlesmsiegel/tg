@@ -14,7 +14,7 @@ class TestSanctumForm(TestCase):
         """Test form has correct fields."""
         form = SanctumForm()
         self.assertIn("name", form.fields)
-        self.assertIn("parent", form.fields)
+        self.assertIn("contained_within", form.fields)
         self.assertIn("description", form.fields)
         self.assertIn("rank", form.fields)
 
@@ -31,10 +31,10 @@ class TestSanctumForm(TestCase):
             "Enter description here",
         )
 
-    def test_parent_not_required(self):
-        """Test parent field is not required."""
+    def test_contained_within_not_required(self):
+        """Test contained_within field is not required."""
         form = SanctumForm()
-        self.assertFalse(form.fields["parent"].required)
+        self.assertFalse(form.fields["contained_within"].required)
 
     def test_form_initializes_reality_zone_formset(self):
         """Test form initializes reality zone formset."""

@@ -213,7 +213,7 @@ class TestHauntViews(TestCase):
         """Test haunt list view."""
         Haunt.objects.create(name="Haunt 1")
         Haunt.objects.create(name="Haunt 2")
-        response = self.client.get("/locations/wraith/haunt/")
+        response = self.client.get("/locations/wraith/list/haunt/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Haunt 1")
         self.assertContains(response, "Haunt 2")

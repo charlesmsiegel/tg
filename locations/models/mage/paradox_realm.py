@@ -274,6 +274,8 @@ class ParadoxRealm(HorizonRealm):
         if primary is None:
             # Two spheres
             primary = cls.random_sphere()
+            while primary is None:
+                primary = cls.random_sphere()
             secondary = cls.random_sphere()
             while secondary == primary or secondary is None:
                 secondary = cls.random_sphere()

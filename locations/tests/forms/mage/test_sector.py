@@ -14,7 +14,7 @@ class TestSectorFormFields(TestCase):
         expected_fields = [
             "name",
             "description",
-            "parent",
+            "contained_within",
             "sector_class",
             "access_level",
             "power_rating",
@@ -99,10 +99,10 @@ class TestSectorFormFields(TestCase):
         placeholder = form.fields["notable_features"].widget.attrs.get("placeholder")
         self.assertIn("Landmarks", placeholder)
 
-    def test_parent_not_required(self):
-        """Test parent field is not required."""
+    def test_contained_within_not_required(self):
+        """Test contained_within field is not required."""
         form = SectorForm()
-        self.assertFalse(form.fields["parent"].required)
+        self.assertFalse(form.fields["contained_within"].required)
 
     def test_optional_fields_not_required(self):
         """Test optional fields are not required."""
