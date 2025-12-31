@@ -231,7 +231,10 @@ class TestImportChronicleCommand(ManagementCommandTestBase):
             output_file = f.name
 
         try:
-            call_command("export_chronicle", str(self.chronicle.id), "--output", output_file)
+            # Capture export output to suppress it during tests
+            self.call_command_capture_output(
+                "export_chronicle", str(self.chronicle.id), "--output", output_file
+            )
 
             # Now try dry-run import
             out, err = self.call_command_capture_output(
