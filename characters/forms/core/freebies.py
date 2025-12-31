@@ -44,15 +44,16 @@ class HumanFreebiesForm(forms.Form):
             x for x in self.fields["category"].choices if self.validator(x[0])
         ]
         if self.is_bound:
-            if self.data["category"] == "Attribute":
+            category = self.data.get("category")
+            if category == "Attribute":
                 self.fields["example"].queryset = Attribute.objects.all()
-            if self.data["category"] == "Ability":
+            if category == "Ability":
                 self.fields["example"].queryset = Ability.objects.all()
-            if self.data["category"] == "New Background":
+            if category == "New Background":
                 self.fields["example"].queryset = Background.objects.all()
-            if self.data["category"] == "Existing Background":
+            if category == "Existing Background":
                 self.fields["example"].queryset = self.instance.backgrounds.all()
-            if self.data["category"] == "MeritFlaw":
+            if category == "MeritFlaw":
                 self.fields["example"].queryset = MeritFlaw.objects.all()
                 self.fields["value"].choices = [(x, x) for x in range(-100, 101)]
 
@@ -71,7 +72,9 @@ class HumanFreebiesForm(forms.Form):
         category = self.data.get("category")
         if category == "-----":
             raise forms.ValidationError("Must Choose Freebie Expenditure Type")
-        elif category == "MeritFlaw" and (self.data["example"] == "" or self.data["value"] == ""):
+        elif category == "MeritFlaw" and (
+            self.data.get("example", "") == "" or self.data.get("value", "") == ""
+        ):
             raise forms.ValidationError("Must Choose Merit/Flaw and rating")
         elif (
             category
@@ -84,9 +87,9 @@ class HumanFreebiesForm(forms.Form):
                 "Tenet",
                 "Practice",
             ]
-            and self.data["example"] == ""
+            and self.data.get("example", "") == ""
         ):
             raise forms.ValidationError("Must Choose Trait")
-        elif category == "Resonance" and self.data["resonance"] == "":
+        elif category == "Resonance" and self.data.get("resonance", "") == "":
             raise forms.ValidationError("Must Choose Resonance")
         return cleaned_data

@@ -14,8 +14,7 @@ class VisageCreateView(MessageMixin, CreateView):
         "name",
         "description",
         "house",
-        "low_torment_traits",
-        "high_torment_traits",
+        "default_apocalyptic_form",
     ]
     template_name = "characters/demon/visage/form.html"
     success_message = "Visage created successfully."
@@ -28,8 +27,7 @@ class VisageUpdateView(MessageMixin, UpdateView):
         "name",
         "description",
         "house",
-        "low_torment_traits",
-        "high_torment_traits",
+        "default_apocalyptic_form",
     ]
     template_name = "characters/demon/visage/form.html"
     success_message = "Visage updated successfully."

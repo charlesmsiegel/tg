@@ -38,7 +38,7 @@ class Haunt(LocationModel):
     haunt_size = models.CharField(max_length=20, choices=HAUNT_SIZE_CHOICES, default="single_room")
 
     # Faith resonance
-    faith_resonance = models.TextField(default="")
+    faith_resonance = models.TextField(default="", blank=True)
 
     # Whether ghosts are attracted
     attracts_ghosts = models.BooleanField(default=True)

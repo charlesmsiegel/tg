@@ -169,9 +169,8 @@ class MummyRelic(ItemModel):
         return True
 
     def save(self, *args, **kwargs):
-        """Auto-set background_cost to rank if not specified"""
-        if not self.background_cost:
-            self.background_cost = self.rank
+        """Auto-set background_cost to rank"""
+        self.background_cost = self.rank
         super().save(*args, **kwargs)
 
     # ========================================

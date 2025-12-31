@@ -512,7 +512,7 @@ class MtAHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/mage/mtahuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = get_object_or_404(MtAHuman, pk=kwargs["pk"], owner=request.user)
+        self.object = get_object_or_404(MtAHuman, pk=kwargs["pk"], owner_id=request.user.pk)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
             return redirect("characters:mage:mtahuman_creation", pk=self.object.pk)

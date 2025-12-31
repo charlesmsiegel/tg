@@ -53,6 +53,11 @@ class Ghoul(VtMHuman):
     # Years as ghoul (affects aging)
     years_as_ghoul = models.IntegerField(default=0)
 
+    # Virtues (ghouls have standard mortal virtues)
+    conscience = models.IntegerField(default=1)
+    self_control = models.IntegerField(default=1)
+    courage = models.IntegerField(default=1)
+
     class Meta:
         verbose_name = "Ghoul"
         verbose_name_plural = "Ghouls"

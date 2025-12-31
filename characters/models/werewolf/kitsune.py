@@ -27,7 +27,7 @@ class Kitsune(Fera):
         ("gukutsushi", "Gukutsushi"),  # Trickster puppeteers
     ]
 
-    path = models.CharField(default="", max_length=100, choices=PATHS)
+    path = models.CharField(default="", max_length=100, choices=PATHS, blank=True)
 
     # Kitsune renown (Japanese-themed)
     chie = models.IntegerField(default=0)  # Wisdom
