@@ -30,14 +30,11 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         cls.specialty = Specialty.objects.create(name="Test Specialty", stat="dexterity")
         cls.group = Group.objects.create(name="Test Group")
 
-    def test_dynasty_detail_requires_auth(self):
-        """DynastyDetailView should require authentication."""
+    def test_dynasty_detail_publicly_accessible(self):
+        """DynastyDetailView should be publicly accessible."""
         url = reverse("characters:mummy:dynasty", args=[self.dynasty.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_dynasty_detail_accessible_when_authenticated(self):
         """DynastyDetailView should be accessible when authenticated."""
@@ -46,14 +43,11 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_mummy_title_detail_requires_auth(self):
-        """MummyTitleDetailView should require authentication."""
+    def test_mummy_title_detail_publicly_accessible(self):
+        """MummyTitleDetailView should be publicly accessible."""
         url = reverse("characters:mummy:title", args=[self.mummy_title.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_mummy_title_detail_accessible_when_authenticated(self):
         """MummyTitleDetailView should be accessible when authenticated."""

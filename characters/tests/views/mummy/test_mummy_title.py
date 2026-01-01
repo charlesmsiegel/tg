@@ -20,11 +20,10 @@ class TestMummyTitleDetailView(TestCase):
             username="testuser", email="test@test.com", password="testpass123"
         )
 
-    def test_detail_view_requires_auth(self):
-        """MummyTitle detail view requires authentication."""
+    def test_detail_view_publicly_accessible(self):
+        """MummyTitle detail view is publicly accessible."""
         response = self.client.get(self.url)
-        # Should redirect to login or return unauthorized
-        self.assertIn(response.status_code, [302, 401, 403])
+        self.assertEqual(response.status_code, 200)
 
     def test_detail_view_status_code(self):
         """MummyTitle detail view is accessible when authenticated."""
