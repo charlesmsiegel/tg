@@ -1,11 +1,10 @@
 from characters.forms.mummy.mummy_title import MummyTitleForm
 from characters.models.mummy.mummy_title import MummyTitle
 from core.mixins import MessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class MummyTitleDetailView(LoginRequiredMixin, DetailView):
+class MummyTitleDetailView(DetailView):
     model = MummyTitle
     template_name = "characters/mummy/title/detail.html"
 
