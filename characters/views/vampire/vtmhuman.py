@@ -293,7 +293,7 @@ class VtMHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = VtMHuman
 
 
-class VtMHumanLanguagesView(EditPermissionMixin, FormView):
+class VtMHumanLanguagesView(SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
@@ -351,7 +351,7 @@ class VtMHumanAlliesView(GenericBackgroundView):
     template_name = "characters/vampire/vtmhuman/chargen.html"
 
 
-class VtMHumanSpecialtiesView(EditPermissionMixin, FormView):
+class VtMHumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
 

@@ -23,9 +23,8 @@ class TestWtOHumanBasicsView(TestCase):
         """Test that basics view requires login."""
         url = reverse("characters:wraith:create:wto_human")
         response = self.client.get(url)
-        # Should redirect to login
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("/accounts/login/", response.url)
+        # App returns 401 for unauthenticated users instead of redirect
+        self.assertEqual(response.status_code, 401)
 
     def test_basics_view_accessible_when_logged_in(self):
         """Test that WtOHuman basics view is accessible when logged in."""
@@ -78,7 +77,8 @@ class TestWtOHumanTemplateSelectView(TestCase):
         """Test that template select view requires login."""
         url = reverse("characters:wraith:wtohuman_template", kwargs={"pk": self.wtohuman.pk})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        # AuthErrorHandlerMiddleware converts login redirects to 401
+        self.assertEqual(response.status_code, 401)
 
     def test_template_select_view_accessible_to_owner(self):
         """Test that template select view is accessible to owner."""

@@ -115,9 +115,8 @@ class TestVampireBasicsView(VampireChargenTestCase):
         """Test that basics view requires authentication."""
         url = reverse("characters:vampire:create:vampire")
         response = self.client.get(url)
-        # Should redirect to login
-        self.assertEqual(response.status_code, 302)
-        self.assertIn("login", response.url)
+        # App returns 401 for unauthenticated users instead of redirect
+        self.assertEqual(response.status_code, 401)
 
     def test_basics_view_accessible_when_logged_in(self):
         """Test that basics view is accessible when logged in."""

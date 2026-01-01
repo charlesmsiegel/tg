@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
-class GenericBackgroundView(EditPermissionMixin, FormView):
+class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
     primary_object_class = Human
     background_name = ""
     multiple_ownership = False

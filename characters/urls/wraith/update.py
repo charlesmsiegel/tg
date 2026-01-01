@@ -22,4 +22,14 @@ urls = [
         views.wraith.WtOHumanUpdateView.as_view(),
         name="wto_human_full",
     ),
+    path(
+        "wraith/<pk>/",
+        views.wraith.WraithCharacterCreationView.as_view(),
+        name="wraith",
+    ),
+    path(
+        "wraith/full/<pk>/",
+        views.wraith.WraithUpdateView.as_view(),
+        name="wraith_full",
+    ),
 ]

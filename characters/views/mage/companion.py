@@ -424,7 +424,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
         return self.form_valid(form)
 
 
-class CompanionLanguagesView(EditPermissionMixin, FormView):
+class CompanionLanguagesView(SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/companion/chargen.html"
 
@@ -465,7 +465,7 @@ class CompanionLanguagesView(EditPermissionMixin, FormView):
         return context
 
 
-class CompanionSpecialtiesView(EditPermissionMixin, FormView):
+class CompanionSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/companion/chargen.html"
 

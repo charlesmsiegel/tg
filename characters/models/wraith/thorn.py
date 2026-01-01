@@ -14,14 +14,14 @@ class Thorn(Model):
 
     thorn_type = models.CharField(max_length=20, choices=THORN_TYPE_CHOICES, default="individual")
     point_cost = models.IntegerField(default=1)
-    activation_cost = models.CharField(max_length=100, default="")  # e.g., "1 Angst"
-    activation_trigger = models.TextField(default="")
-    mechanical_description = models.TextField(default="")
-    resistance_system = models.TextField(default="")
+    activation_cost = models.CharField(max_length=100, default="", blank=True)  # e.g., "1 Angst"
+    activation_trigger = models.TextField(default="", blank=True)
+    mechanical_description = models.TextField(default="", blank=True)
+    resistance_system = models.TextField(default="", blank=True)
     resistance_difficulty = models.IntegerField(default=6, null=True, blank=True)
-    duration = models.CharField(max_length=200, default="")
-    frequency_limitation = models.CharField(max_length=200, default="")
-    limitations = models.TextField(default="")
+    duration = models.CharField(max_length=200, default="", blank=True)
+    frequency_limitation = models.CharField(max_length=200, default="", blank=True)
+    limitations = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Thorn"

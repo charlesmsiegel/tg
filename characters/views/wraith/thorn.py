@@ -1,5 +1,6 @@
 from characters.models.wraith.thorn import Thorn
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -8,7 +9,7 @@ class ThornDetailView(DetailView):
     template_name = "characters/wraith/thorn/detail.html"
 
 
-class ThornCreateView(MessageMixin, CreateView):
+class ThornCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Thorn
     fields = [
         "name",

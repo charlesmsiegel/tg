@@ -4,6 +4,7 @@ from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.models.core.archetype import Archetype
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
+from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
@@ -114,6 +115,7 @@ class TestMageSpheresForm(TestCase):
         self.player = User.objects.create_user(username="Test")
         self.mage = Mage.objects.create(name="Test Mage", owner=self.player)
         self.forces = Sphere.objects.get(property_name="forces")
+        self.resonance = Resonance.objects.create(name="Dynamic", forces=True)
 
     def test_form_initialization(self):
         """Test form initializes correctly."""
@@ -131,16 +133,17 @@ class TestMageSpheresForm(TestCase):
                 "correspondence": 0,
                 "time": 0,
                 "spirit": 0,
-                "forces": 3,
-                "matter": 0,
+                "forces": 2,  # Spheres must be <= arete
+                "matter": 2,
                 "life": 0,
                 "entropy": 0,
                 "mind": 0,
-                "prime": 3,
+                "prime": 2,
                 "affinity_sphere": self.forces.id,
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertTrue(form.is_valid())
@@ -164,6 +167,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertFalse(form.is_valid())
@@ -188,6 +192,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertFalse(form.is_valid())
@@ -212,6 +217,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertFalse(form.is_valid())
@@ -236,6 +242,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertFalse(form.is_valid())
@@ -259,6 +266,7 @@ class TestMageSpheresForm(TestCase):
                 "corr_name": "correspondence",
                 "prime_name": "prime",
                 "spirit_name": "spirit",
+                "resonance": [self.resonance.id],
             },
         )
         self.assertTrue(form.is_valid())

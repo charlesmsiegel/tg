@@ -19,6 +19,7 @@ from characters.views.core.human import (
     HumanFreebieFormPopulationView,
     HumanFreebiesView,
 )
+from characters.views.wraith.wraith import WraithDetailView
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
@@ -177,7 +178,7 @@ class WraithShadowView(SpecialUserMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class WraithPassionsView(EditPermissionMixin, FormView):
+class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = PassionForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -256,7 +257,7 @@ class WraithPassionsView(EditPermissionMixin, FormView):
         return super().form_invalid(form)
 
 
-class WraithFettersView(EditPermissionMixin, FormView):
+class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = FetterForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -463,7 +464,7 @@ class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):
         return []
 
 
-class WraithLanguagesView(EditPermissionMixin, FormView):
+class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -536,7 +537,7 @@ class WraithContactsView(GenericBackgroundView):
     template_name = "characters/wraith/wraith/chargen.html"
 
 
-class WraithSpecialtiesView(EditPermissionMixin, FormView):
+class WraithSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wraith/chargen.html"
 
@@ -592,6 +593,4 @@ class WraithCharacterCreationView(HumanCharacterCreationView):
     }
     model_class = Wraith
     key_property = "creation_status"
-    default_redirect = lambda self, pk: HttpResponseRedirect(
-        Wraith.objects.get(pk=pk).get_absolute_url()
-    )
+    default_redirect = WraithDetailView

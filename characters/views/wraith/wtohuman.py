@@ -226,6 +226,9 @@ class WtOHumanTemplateSelectView(LoginRequiredMixin, FormView):
     template_name = "characters/wraith/wtohuman/template_select.html"
 
     def dispatch(self, request, *args, **kwargs):
+        # Check login first via parent dispatch
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         self.object = get_object_or_404(WtOHuman, pk=kwargs["pk"], owner_id=request.user.pk)
         # Only allow template selection if character creation hasn't started yet
         if self.object.creation_status > 0:
@@ -388,7 +391,7 @@ class WtOHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
     primary_class = WtOHuman
 
 
-class WtOHumanLanguagesView(EditPermissionMixin, FormView):
+class WtOHumanLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 
@@ -450,7 +453,7 @@ class WtOHumanAlliesView(GenericBackgroundView):
     template_name = "characters/wraith/wtohuman/chargen.html"
 
 
-class WtOHumanSpecialtiesView(EditPermissionMixin, FormView):
+class WtOHumanSpecialtiesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/wraith/wtohuman/chargen.html"
 

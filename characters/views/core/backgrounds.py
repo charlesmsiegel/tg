@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
 
-class HumanBackgroundsView(EditPermissionMixin, FormView):
+class HumanBackgroundsView(SpendFreebiesPermissionMixin, FormView):
     form_class = BackgroundRatingFormSet
     template_name = "characters/core/human/chargen.html"
 

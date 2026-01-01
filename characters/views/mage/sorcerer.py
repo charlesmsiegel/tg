@@ -365,7 +365,7 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         return super().form_valid(form)
 
 
-class SorcererRitualView(EditPermissionMixin, FormView):
+class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
     form_class = NuminaRitualForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -691,7 +691,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
         return self.form_valid(form)
 
 
-class SorcererLanguagesView(EditPermissionMixin, FormView):
+class SorcererLanguagesView(SpendFreebiesPermissionMixin, FormView):
     form_class = HumanLanguageForm
     template_name = "characters/mage/sorcerer/chargen.html"
 
@@ -732,7 +732,7 @@ class SorcererLanguagesView(EditPermissionMixin, FormView):
         return context
 
 
-class SorcererSpecialtiesView(EditPermissionMixin, FormView):
+class SorcererSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
     form_class = SpecialtiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
 

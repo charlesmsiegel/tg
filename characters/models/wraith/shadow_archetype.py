@@ -8,12 +8,12 @@ class ShadowArchetype(Model):
     gameline = "wto"
 
     point_cost = models.IntegerField(default=1)
-    core_function = models.TextField(default="")
-    modus_operandi = models.TextField(default="")
-    dominance_behavior = models.TextField(default="")
-    effect_on_psyche = models.TextField(default="")
-    strengths = models.TextField(default="")
-    weaknesses = models.TextField(default="")
+    core_function = models.TextField(default="", blank=True)
+    modus_operandi = models.TextField(default="", blank=True)
+    dominance_behavior = models.TextField(default="", blank=True)
+    effect_on_psyche = models.TextField(default="", blank=True)
+    strengths = models.TextField(default="", blank=True)
+    weaknesses = models.TextField(default="", blank=True)
 
     class Meta:
         verbose_name = "Shadow Archetype"
