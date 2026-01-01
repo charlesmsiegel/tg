@@ -13,10 +13,12 @@ class TestGroupDetailView(TestCase):
         self.url = self.group.get_absolute_url()
 
     def test_group_detail_view_status_code(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_group_detail_view_templates(self):
+        self.client.login(username="User1", password="12345")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/group/detail.html")
 
@@ -68,10 +70,11 @@ class TestGroupUpdateView(TestCase):
 
 class TestGenericGroupDetailView(TestCase):
     def setUp(self) -> None:
-        self.player = User.objects.create_user(username="Test")
+        self.player = User.objects.create_user(username="Test", password="12345")
         self.group = Group.objects.create(name="Group Test")
 
     def test_generic_group_detail_view_templates(self):
+        self.client.login(username="Test", password="12345")
         response = self.client.get(self.group.get_absolute_url())
         self.assertTemplateUsed(response, "characters/core/group/detail.html")
 

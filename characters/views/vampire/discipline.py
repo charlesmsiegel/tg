@@ -3,10 +3,11 @@ from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
+@method_decorator([vary_on_cookie, cache_page(60 * 15)], name="dispatch")
 class DisciplineDetailView(LoginRequiredMixin, DetailView):
     model = Discipline
     template_name = "characters/vampire/discipline/detail.html"

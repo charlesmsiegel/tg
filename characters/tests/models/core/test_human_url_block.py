@@ -113,12 +113,13 @@ class TestHumanUrlBlockOnHuman(TestCase):
         response = self.client.get(Human.get_full_creation_url())
         self.assertIn(response.status_code, [200, 302])
 
-        # Test update URLs
+        # Test update URLs - 403 is acceptable as it means URL resolved
+        # (owner doesn't have EDIT_FULL permission, only STs can use update views)
         response = self.client.get(self.human.get_update_url())
-        self.assertIn(response.status_code, [200, 302])
+        self.assertIn(response.status_code, [200, 302, 403])
 
         response = self.client.get(self.human.get_full_update_url())
-        self.assertIn(response.status_code, [200, 302])
+        self.assertIn(response.status_code, [200, 302, 403])
 
 
 class TestHumanUrlBlockWithMultipleCharacters(TestCase):

@@ -440,22 +440,21 @@ class Human(
             ]
         ]
 
-        # Combine all stats that require specialties
-        required_stats = high_attributes + high_abilities + specialty_required_abilities
+        # Combine all stats that require specialties (these are stat name strings)
+        # Use set to deduplicate - e.g., occult at 4+ appears in both high_abilities
+        # and specialty_required_abilities
+        required_stats = set(high_attributes + high_abilities + specialty_required_abilities)
 
         if not required_stats:
             return True
 
-        # Get all stat IDs that require specialties
-        stat_ids = [stat.id for stat in required_stats]
-
-        # Single query to get all specialty stat IDs
-        specialty_stat_ids = set(
-            self.specialties.filter(stat__id__in=stat_ids).values_list("stat_id", flat=True)
+        # Single query to get all specialty stat names
+        specialty_stats = set(
+            self.specialties.filter(stat__in=required_stats).values_list("stat", flat=True)
         )
 
         # Check if all required stats have specialties
-        return len(specialty_stat_ids) == len(stat_ids)
+        return specialty_stats == required_stats
 
     def freebie_costs(self):
         return {
@@ -666,6 +665,46 @@ class Human(
     # ========================================================================
     # XP and Freebie Spending Methods
     # ========================================================================
+
+    def add_to_spend(self, trait, value, cost):
+        """Record XP spending for a trait.
+
+        This method bridges the legacy XP spending interface with the new
+        XPSpendingRequest model-based system.
+
+        Args:
+            trait: The property name of the trait (e.g., 'alertness', 'strength')
+            value: The new value after spending
+            cost: The XP cost spent
+
+        Returns:
+            XPSpendingRequest instance
+        """
+        # Infer trait type from the trait name
+        trait_type = "other"
+
+        # Check if it's an attribute
+        if hasattr(Attribute.objects, "filter"):
+            if Attribute.objects.filter(property_name=trait).exists():
+                trait_type = "attribute"
+
+        # Check if it's an ability
+        if trait_type == "other" and hasattr(Ability.objects, "filter"):
+            if Ability.objects.filter(property_name=trait).exists():
+                trait_type = "ability"
+
+        # Check if it's a background
+        if trait_type == "other" and trait in self.allowed_backgrounds:
+            trait_type = "background"
+
+        # Check if it's willpower
+        if trait == "willpower":
+            trait_type = "willpower"
+
+        # Get display name (capitalize the trait)
+        trait_display = trait.replace("_", " ").title()
+
+        return self.create_xp_spending_request(trait_display, trait_type, value, cost)
 
     def spend_xp(
         self,

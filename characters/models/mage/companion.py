@@ -96,6 +96,7 @@ class Companion(MtAHuman):
         max_length=20,
         choices=[
             ("companion", "Companion"),
+            ("consor", "Consor"),
             ("familiar", "Familiar"),
         ],
         default="companion",

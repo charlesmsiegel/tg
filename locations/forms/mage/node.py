@@ -115,6 +115,9 @@ class NodeForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
+        # Pop kwargs from GenericBackgroundView that this form doesn't use
+        kwargs.pop("obj", None)
+        kwargs.pop("npc_role", None)
         super(NodeForm, self).__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         self.fields["quintessence_form"].widget.attrs.update(

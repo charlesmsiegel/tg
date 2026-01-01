@@ -1,0 +1,21 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title vtm_heading">Path Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Required Virtues:</strong></div>
+            <div class="col-md-8">{{ object.get_virtues_display }}</div>
+        </div>
+        {% if object.ethics %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Ethics:</strong></div>
+            <div class="col-md-8">{{ object.ethics|sanitize_html|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock contents %}

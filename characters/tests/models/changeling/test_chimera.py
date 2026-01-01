@@ -253,6 +253,7 @@ class TestChimeraUpdateView(TestCase):
             "chimera_points": 25,
             "sentience_level": "fully_sentient",
             "durability": 5,
+            "loyalty": 3,
         }
         response = self.client.post(self.url, data=data)
         self.assertEqual(response.status_code, 302)

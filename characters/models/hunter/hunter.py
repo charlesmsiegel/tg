@@ -167,7 +167,9 @@ class Hunter(HtRHuman):
             "edge": 3,  # All Edges cost 3 freebies per dot
             "willpower": 1,
         }
-        return costs.get(trait_type, super().freebie_cost(trait_type))
+        if trait_type in costs:
+            return costs[trait_type]
+        return super().freebie_cost(trait_type)
 
     def xp_cost(self, trait_type, value):
         """Override for Hunter-specific XP costs"""
@@ -180,7 +182,9 @@ class Hunter(HtRHuman):
             "edge": value * 3,  # Edges cost current rating x3
             "willpower": value,
         }
-        return costs.get(trait_type, super().xp_cost(trait_type, value))
+        if trait_type in costs:
+            return costs[trait_type]
+        return super().xp_cost(trait_type, value)
 
     def spend_xp(self, trait):
         """Handle Hunter-specific XP spending"""
