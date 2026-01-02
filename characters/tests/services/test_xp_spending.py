@@ -8,10 +8,7 @@ from characters.models.mage.focus import Practice, Tenet
 from characters.models.mage.mage import Mage, PracticeRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
-from characters.services.xp_spending import (
-    MageXPSpendingService,
-    XPSpendResult,
-)
+from characters.services.xp_spending import MageXPSpendingService, XPSpendResult
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -65,9 +62,7 @@ class TestMageXPSpendingServiceAttributes(TestCase):
             xp=50,
             strength=2,
         )
-        self.strength = Attribute.objects.create(
-            name="Strength", property_name="strength"
-        )
+        self.strength = Attribute.objects.create(name="Strength", property_name="strength")
 
     def test_spend_on_attribute(self):
         """Test spending XP on an attribute."""
@@ -112,9 +107,7 @@ class TestMageXPSpendingServiceAbilities(TestCase):
             xp=50,
             alertness=2,
         )
-        self.alertness = Ability.objects.create(
-            name="Alertness", property_name="alertness"
-        )
+        self.alertness = Ability.objects.create(name="Alertness", property_name="alertness")
 
     def test_spend_on_ability(self):
         """Test spending XP on an ability."""
@@ -142,9 +135,7 @@ class TestMageXPSpendingServiceBackgrounds(TestCase):
             arete=1,
             xp=50,
         )
-        self.resources = Background.objects.create(
-            name="Resources", property_name="resources"
-        )
+        self.resources = Background.objects.create(name="Resources", property_name="resources")
         # Create existing background rating
         self.bg_rating = BackgroundRating.objects.create(
             char=self.mage,
@@ -155,9 +146,7 @@ class TestMageXPSpendingServiceBackgrounds(TestCase):
 
     def test_spend_on_new_background(self):
         """Test spending XP on a new background."""
-        contacts = Background.objects.create(
-            name="Contacts", property_name="contacts"
-        )
+        contacts = Background.objects.create(name="Contacts", property_name="contacts")
         service = MageXPSpendingService(self.mage)
         result = service.spend("New Background", contacts, note="Street informants")
 
@@ -293,18 +282,12 @@ class TestMageXPSpendingServiceTenets(TestCase):
             username="testuser", email="test@test.com", password="password"
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.metaphysical = Tenet.objects.create(
-            name="Everything is Data", tenet_type="met"
-        )
-        self.personal = Tenet.objects.create(
-            name="Self-Empowerment", tenet_type="per"
-        )
+        self.metaphysical = Tenet.objects.create(name="Everything is Data", tenet_type="met")
+        self.personal = Tenet.objects.create(name="Self-Empowerment", tenet_type="per")
         self.ascension = Tenet.objects.create(
             name="Enlightenment Through Technology", tenet_type="asc"
         )
-        self.other_tenet = Tenet.objects.create(
-            name="All Is One", tenet_type="oth"
-        )
+        self.other_tenet = Tenet.objects.create(name="All Is One", tenet_type="oth")
         self.mage = Mage.objects.create(
             name="Test Mage",
             owner=self.user,
@@ -354,9 +337,7 @@ class TestMageXPSpendingServicePractices(TestCase):
             arete=1,
             xp=50,
         )
-        self.high_ritual = Practice.objects.create(
-            name="High Ritual"
-        )
+        self.high_ritual = Practice.objects.create(name="High Ritual")
         # Create a practice rating
         PracticeRating.objects.create(
             mage=self.mage,
