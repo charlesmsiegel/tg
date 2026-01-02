@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.forms.core.linked_npc import LinkedNPCForm
+from characters.services.xp_spending import MageXPSpendingService
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
@@ -360,193 +361,20 @@ class MageDetailView(HumanDetailView):
                     self.object.image = image_field
                     self.object.save()
                 if category not in ["Image", "Rote"]:
-                    # UPDATED: Removed xp_spend_record() calls, now using spend_xp() directly
-                    try:
-                        if category == "Attribute":
-                            trait = example.name
-                            trait_type = "attribute"
-                            current_value = getattr(self.object, example.property_name)
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("attribute", current_value)
-                            self.object.spend_xp(
-                                trait_name=example.property_name,
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Ability":
-                            trait = example.name
-                            trait_type = "ability"
-                            current_value = getattr(self.object, example.property_name)
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("ability", current_value)
-                            self.object.spend_xp(
-                                trait_name=example.property_name,
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "New Background":
-                            if note:
-                                trait = example.name + f" ({note})"
-                            else:
-                                trait = example.name
-                            trait_type = "new-background"
-                            new_value = 1
-                            cost = self.object.xp_cost("new background", new_value)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on new background {trait}")
-                        elif category == "Existing Background":
-                            trait = example.bg.name + f" ({example.note})"
-                            trait_type = "background"
-                            current_value = example.rating
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("background", current_value)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Willpower":
-                            trait = "Willpower"
-                            trait_type = "willpower"
-                            current_value = self.object.willpower
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("willpower", current_value)
-                            self.object.spend_xp(
-                                trait_name="willpower",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on Willpower")
-                        elif category == "MeritFlaw":
-                            current_rating = self.object.mf_rating(example)
-                            trait = example.name
-                            trait_type = "meritflaw"
-                            cost = self.object.xp_cost("meritflaw", value - current_rating)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Sphere":
-                            trait = example.name
-                            trait_type = "sphere"
-                            current_value = getattr(self.object, example.property_name)
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost(
-                                self.object.sphere_to_trait_type(example.property_name),
-                                current_value,
-                            )
-                            self.object.spend_xp(
-                                trait_name=example.property_name,
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Rote Points":
-                            trait = "Rote Points"
-                            trait_type = "rotes"
-                            cost = self.object.xp_cost("rotes", 1)
-                            new_value = self.object.total_effects() + self.object.rote_points + 3
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on Rote Points")
-                        elif category == "Resonance":
-                            trait = f"Resonance ({resonance})"
-                            r = Resonance.objects.get_or_create(name=resonance)[0]
-                            trait_type = "resonance"
-                            current_value = self.object.resonance_rating(r)
-                            cost = self.object.xp_cost("resonance", current_value)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=current_value + 1,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Tenet":
-                            trait = example.name
-                            trait_type = "tenet"
-                            cost = self.object.xp_cost("tenet", 1)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=0,
-                            )
-                            messages.success(request, f"Spent {cost} XP on tenet {trait}")
-                        elif category == "Remove Tenet":
-                            trait = "Remove " + example.name
-                            trait_type = "remove tenet"
-                            cost = self.object.xp_cost(
-                                "remove tenet", self.object.other_tenets.count() + 3
-                            )
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=0,
-                            )
-                            messages.success(request, f"Spent {cost} XP on removing tenet")
-                        elif category == "Practice":
-                            trait = example.name
-                            trait_type = "practice"
-                            current_value = self.object.practice_rating(example)
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("practice", current_value)
-                            self.object.spend_xp(
-                                trait_name="",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on {trait}")
-                        elif category == "Arete":
-                            trait = "Arete"
-                            trait_type = "arete"
-                            current_value = self.object.arete
-                            new_value = current_value + 1
-                            cost = self.object.xp_cost("arete", current_value)
-                            self.object.spend_xp(
-                                trait_name="arete",
-                                trait_display=trait,
-                                cost=cost,
-                                category=trait_type,
-                                trait_value=new_value,
-                            )
-                            messages.success(request, f"Spent {cost} XP on Arete")
-                    except ValidationError as e:
-                        messages.error(request, str(e))
+                    # Use XP spending service for cleaner handling
+                    service = MageXPSpendingService(self.object)
+                    result = service.spend(
+                        category=category,
+                        example=example,
+                        value=value,
+                        note=note,
+                        pooled=pooled,
+                        resonance=resonance,
+                    )
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error)
                         context["form"] = form
                         form_errors = True
                 elif category == "Rote":
