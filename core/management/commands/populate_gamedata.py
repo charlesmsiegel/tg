@@ -5,12 +5,15 @@ This command recursively searches populate_db/ and all subdirectories for .py sc
 and provides more control over data loading.
 """
 
+import logging
 import os
 import sys
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -120,6 +123,7 @@ class Command(BaseCommand):
                 error_count += 1
                 relative_path = file.relative_to(populate_dir)
                 self.stdout.write(self.style.ERROR(f"✗ {relative_path}: {str(e)}"))
+                logger.error(f"Failed to load game data file {relative_path}: {e}", exc_info=True)
                 if options["verbose"]:
                     import traceback
 

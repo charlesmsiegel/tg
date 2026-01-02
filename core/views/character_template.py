@@ -1,4 +1,5 @@
 import json
+import logging
 
 from core.forms.character_template import (
     CharacterTemplateForm,
@@ -21,6 +22,8 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class STRequiredMixin(UserPassesTestMixin):
@@ -254,6 +257,10 @@ class CharacterTemplateImportView(LoginRequiredMixin, STRequiredMixin, MessageMi
             messages.error(self.request, "Invalid JSON file. Please check the format.")
             return self.form_invalid(form)
         except Exception as e:
+            logger.error(
+                f"Error importing template for user {self.request.user.id}: {e}",
+                exc_info=True,
+            )
             messages.error(self.request, f"Error importing template: {str(e)}")
             return self.form_invalid(form)
 
@@ -302,6 +309,10 @@ class CharacterTemplateQuickNPCView(LoginRequiredMixin, STRequiredMixin, View):
             return redirect(character.get_absolute_url())
 
         except Exception as e:
+            logger.error(
+                f"Error creating NPC from template {template.pk} for user {request.user.id}: {e}",
+                exc_info=True,
+            )
             messages.error(request, f"Error creating NPC from template: {str(e)}")
             return redirect("character_template_detail", pk=template.pk)
 

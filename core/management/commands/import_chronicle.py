@@ -5,11 +5,14 @@ Imports all data exported by export_chronicle command.
 """
 
 import json
+import logging
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from django.core.serializers import deserialize
 from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -81,6 +84,7 @@ class Command(BaseCommand):
             with transaction.atomic():
                 self.import_data(import_data, options, user_map)
         except Exception as e:
+            logger.error(f"Chronicle import failed: {e}", exc_info=True)
             raise CommandError(f"Import failed: {e}")
 
         self.stdout.write(self.style.SUCCESS("\n✓ Import complete!\n"))

@@ -7,12 +7,15 @@ A chronicle is considered inactive if it has:
 - All characters Retired/Deceased
 """
 
+import logging
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.db.models import Max, Q
 from django.utils.timezone import now
 from game.models import Chronicle, Scene
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -186,6 +189,7 @@ class Command(BaseCommand):
                     self.style.SUCCESS(f"  ✓ Exported {chronicle.name} to {filename}")
                 )
             except Exception as e:
+                logger.error(f"Failed to export chronicle {chronicle.id}: {e}", exc_info=True)
                 self.stdout.write(self.style.ERROR(f"  ✗ Failed to export {chronicle.name}: {e}"))
 
     def mark_as_archived(self, inactive_chronicles):
