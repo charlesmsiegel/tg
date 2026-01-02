@@ -78,7 +78,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             logger.error("Invalid JSON received")
             await self.send_error("Invalid message format")
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
+            logger.error(f"Error processing WebSocket message: {e}", exc_info=True)
             await self.send_error(str(e))
 
     async def handle_chat_message(self, data):

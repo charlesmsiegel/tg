@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def theme_context(request):
     """
     Add theme-related context variables to all templates.
@@ -114,8 +119,12 @@ def notification_count(request):
 
             context["notification_count"] = count
             context["notification_breakdown"] = breakdown
-        except Exception:
-            # If there's any error, just return 0 notifications
+        except Exception as e:
+            # Log the error for debugging, but return 0 notifications to avoid breaking the page
+            logger.warning(
+                f"Error calculating notification count for user {request.user.id}: {e}",
+                exc_info=True,
+            )
             context["notification_count"] = 0
             context["notification_breakdown"] = {}
 

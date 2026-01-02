@@ -1,4 +1,7 @@
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.services.xp_spending import MageXPSpendingService
@@ -599,6 +602,10 @@ class MageDetailView(HumanDetailView):
             except ValidationError as e:
                 messages.error(request, str(e))
             except Exception as e:
+                logger.error(
+                    f"Error approving XP spend for character {self.object.id}: {e}",
+                    exc_info=True,
+                )
                 messages.error(request, f"Error approving XP spend: {str(e)}")
         if "Reject" in form.data.values():
             # UPDATED: Parse new format xp_request_<id>_reject instead of old index format

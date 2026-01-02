@@ -1,4 +1,8 @@
+import logging
+
 from core.constants import CharacterStatus, GameLine, ImageStatus
+
+logger = logging.getLogger(__name__)
 from core.utils import filepath
 from django.apps import apps
 from django.conf import settings
@@ -224,8 +228,15 @@ class Observer(models.Model):
                     errors["object_id"] = (
                         f"No {model_class.__name__} with ID {self.object_id} exists"
                     )
-            except Exception:
-                pass  # If content_type isn't loaded yet, skip this check
+            except AttributeError:
+                # model_class() can return None if the model isn't loaded yet
+                pass
+            except Exception as e:
+                # Log unexpected errors during validation
+                logger.debug(
+                    f"Could not validate content object for Observer "
+                    f"(content_type_id={self.content_type_id}, object_id={self.object_id}): {e}"
+                )
 
         if errors:
             raise ValidationError(errors)

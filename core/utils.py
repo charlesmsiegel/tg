@@ -1,4 +1,7 @@
+import logging
 import random
+
+logger = logging.getLogger(__name__)
 
 
 def add_dot(character, trait, maximum):
@@ -154,10 +157,8 @@ class CharacterOrganizationRegistry:
                 handler(character)
             except Exception as e:
                 # Log but don't fail if one handler has an issue
-                import logging
-
-                logger = logging.getLogger(__name__)
                 logger.error(
                     f"Error in organization cleanup handler {handler.__name__} "
-                    f"for character {character.id}: {e}"
+                    f"for character {character.id}: {e}",
+                    exc_info=True,
                 )
