@@ -7,8 +7,8 @@ from accounts.forms import (
 )
 from accounts.models import Profile
 from characters.models.core import Character
-from characters.models.mage.rote import Rote
 from core.mixins import MessageMixin
+from core.services import ApprovalService
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -19,8 +19,6 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 from game.forms import WeeklyXPRequestForm
 from game.models import Scene, UserSceneReadStatus, Week, WeeklyXPRequest
-from items.models.core import ItemModel
-from locations.models.core.location import LocationModel
 
 
 class SignUp(MessageMixin, CreateView):
@@ -125,49 +123,34 @@ class ProfileView(LoginRequiredMixin, DetailView):
                 messages.success(request, f"XP awarded for scene '{scene.name}'!")
             else:
                 messages.error(request, "Failed to award XP. Please check your input.")
+
+        # Object approvals using ApprovalService
         if approve_character_id is not None:
-            with transaction.atomic():
-                char = get_object_or_404(Character, pk=approve_character_id)
-                char.status = "App"
-                char.save()
-                if hasattr(char, "group_set"):
-                    groups = char.group_set.select_related().all()
-                    for g in groups:
-                        g.update_pooled_backgrounds()
-            messages.success(request, f"Character '{char.name}' approved successfully!")
+            _, msg = ApprovalService.approve_object("character", approve_character_id)
+            messages.success(request, msg)
         if approve_location_id is not None:
-            loc = get_object_or_404(LocationModel, pk=approve_location_id)
-            loc.status = "App"
-            loc.save()
-            messages.success(request, f"Location '{loc.name}' approved successfully!")
+            _, msg = ApprovalService.approve_object("location", approve_location_id)
+            messages.success(request, msg)
         if approve_item_id is not None:
-            item = get_object_or_404(ItemModel, pk=approve_item_id)
-            item.status = "App"
-            item.save()
-            messages.success(request, f"Item '{item.name}' approved successfully!")
+            _, msg = ApprovalService.approve_object("item", approve_item_id)
+            messages.success(request, msg)
         if approve_rote_id is not None:
-            rote = get_object_or_404(Rote, pk=approve_rote_id)
-            rote.status = "App"
-            rote.save()
-            messages.success(request, f"Rote '{rote.name}' approved successfully!")
+            _, msg = ApprovalService.approve_object("rote", approve_rote_id)
+            messages.success(request, msg)
+
+        # Image approvals using ApprovalService
         if approve_character_image_id is not None:
-            approve_character_image_id = approve_character_image_id.split("-")[-1]
-            char = get_object_or_404(Character, pk=approve_character_image_id)
-            char.image_status = "app"
-            char.save()
-            messages.success(request, f"Image for '{char.name}' approved successfully!")
+            parsed_id = ApprovalService.parse_image_id(approve_character_image_id)
+            _, msg = ApprovalService.approve_image("character", parsed_id)
+            messages.success(request, msg)
         if approve_location_image_id is not None:
-            approve_location_image_id = approve_location_image_id.split("-")[-1]
-            loc = get_object_or_404(LocationModel, pk=approve_location_image_id)
-            loc.image_status = "app"
-            loc.save()
-            messages.success(request, f"Image for '{loc.name}' approved successfully!")
+            parsed_id = ApprovalService.parse_image_id(approve_location_image_id)
+            _, msg = ApprovalService.approve_image("location", parsed_id)
+            messages.success(request, msg)
         if approve_item_image_id is not None:
-            approve_item_image_id = approve_item_image_id.split("-")[-1]
-            item = get_object_or_404(ItemModel, pk=approve_item_image_id)
-            item.image_status = "app"
-            item.save()
-            messages.success(request, f"Image for '{item.name}' approved successfully!")
+            parsed_id = ApprovalService.parse_image_id(approve_item_image_id)
+            _, msg = ApprovalService.approve_image("item", parsed_id)
+            messages.success(request, msg)
         if submitted_freebies_id is not None:
             char = get_object_or_404(Character, pk=submitted_freebies_id)
             form = FreebieAwardForm(request.POST, character=char)
