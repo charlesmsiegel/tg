@@ -1,13 +1,12 @@
 """Tests for ApprovalService."""
 
-from django.contrib.auth.models import User
-from django.http import Http404
-from django.test import TestCase
-
 from characters.models.core import Ability, Attribute, Human
 from characters.models.mage.effect import Effect
 from characters.models.mage.rote import Rote
 from core.services import ApprovalService
+from django.contrib.auth.models import User
+from django.http import Http404
+from django.test import TestCase
 from game.models import Chronicle
 from items.models.core import ItemModel
 from locations.models.core.location import LocationModel

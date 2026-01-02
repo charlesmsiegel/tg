@@ -4,13 +4,12 @@ from collections import OrderedDict
 from datetime import date
 from unittest.mock import MagicMock
 
+from characters.models.core import Human
+from characters.models.mage import Mage
+from characters.models.vampire import Vampire
+from core.services import ChronicleDataService
 from django.contrib.auth.models import User
 from django.test import TestCase
-
-from characters.models.core import Human
-from characters.models.vampire import Vampire
-from characters.models.mage import Mage
-from core.services import ChronicleDataService
 from game.models import Chronicle, Scene
 from items.models.core import ItemModel
 from items.models.mage import Wonder

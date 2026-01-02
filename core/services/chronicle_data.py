@@ -264,9 +264,7 @@ class ChronicleDataService:
             for (year, month), scenes_in_month in itertools.groupby(
                 scenes_list,
                 key=lambda x: (
-                    (x.date_of_scene.year, x.date_of_scene.month)
-                    if x.date_of_scene
-                    else (1900, 1)
+                    (x.date_of_scene.year, x.date_of_scene.month) if x.date_of_scene else (1900, 1)
                 ),
             )
         ]

@@ -375,9 +375,7 @@ class MageXPSpendingService(XPSpendingService):
         """Handle tenet removal XP spending."""
         trait = "Remove " + example.name
         trait_type = "remove tenet"
-        cost = self.character.xp_cost(
-            "remove tenet", self.character.other_tenets.count() + 3
-        )
+        cost = self.character.xp_cost("remove tenet", self.character.other_tenets.count() + 3)
 
         self.character.spend_xp(
             trait_name="",

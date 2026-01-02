@@ -395,7 +395,9 @@ class DeploymentMixinExistenceTest(TestCase):
 
     def test_spend_freebies_mixin_exists(self):
         """SpendFreebiesPermissionMixin exists and has correct permission."""
-        self.assertEqual(SpendFreebiesPermissionMixin.required_permission, Permission.SPEND_FREEBIES)
+        self.assertEqual(
+            SpendFreebiesPermissionMixin.required_permission, Permission.SPEND_FREEBIES
+        )
 
     def test_visibility_filter_mixin_exists(self):
         """VisibilityFilterMixin exists."""

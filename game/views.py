@@ -139,7 +139,9 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                 "deceased_by_gameline": ChronicleDataService.group_characters_by_gameline(
                     deceased_characters
                 ),
-                "npc_by_gameline": ChronicleDataService.group_characters_by_gameline(npc_characters),
+                "npc_by_gameline": ChronicleDataService.group_characters_by_gameline(
+                    npc_characters
+                ),
                 # Locations
                 "top_locations": top_locations,
                 "locations_by_gameline": locations_by_gameline,

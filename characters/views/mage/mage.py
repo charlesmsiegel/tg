@@ -4,7 +4,6 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.services.xp_spending import MageXPSpendingService
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
 from characters.forms.mage.freebies import MageFreebiesForm
@@ -24,6 +23,7 @@ from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
+from characters.services.xp_spending import MageXPSpendingService
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
