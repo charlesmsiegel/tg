@@ -99,7 +99,7 @@ tg/secrets.py
 *.pdf
 pytest.ini
 .vscode/*
-static/*
+collected_static/
 */migrations/*
 pyproject.toml
 media/*
