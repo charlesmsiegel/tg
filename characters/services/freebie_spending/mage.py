@@ -485,7 +485,13 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
 
     @handler("Path")
     def _handle_path(self, example, **kwargs) -> FreebieSpendResult:
-        """Handle sorcerer path freebie spending."""
+        """Handle sorcerer path freebie spending.
+
+        Requires practice and ability kwargs for new paths.
+        """
+        practice = kwargs.get("practice")
+        ability = kwargs.get("ability")
+
         trait = example.name
         cost = self.character.freebie_cost("path")
         current_value = self.character.path_rating(example)
@@ -500,9 +506,13 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
                 error="Not enough freebies",
             )
 
-        # Apply the change
-        self.character.add_path(example)
+        # Apply the change - add_path requires practice and ability
+        self.character.add_path(example, practice, ability)
         self.character.save()
+
+        # Build trait name with practice/ability info
+        if practice and ability:
+            trait = f"{trait}({practice.name}, {ability.name})"
 
         # Record and deduct
         self._record_spending(trait, "path", new_value, cost)
@@ -515,9 +525,9 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
             message=f"Spent {cost} freebies on {trait}",
         )
 
-    @handler("Ritual")
-    def _handle_ritual(self, example, **kwargs) -> FreebieSpendResult:
-        """Handle sorcerer ritual freebie spending."""
+    @handler("Select Ritual")
+    def _handle_select_ritual(self, example, **kwargs) -> FreebieSpendResult:
+        """Handle selecting an existing sorcerer ritual."""
         trait = example.name
         cost = self.character.freebie_cost("ritual")
 
@@ -531,7 +541,7 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
             )
 
         # Apply the change
-        self.character.rituals.add(example)
+        self.character.add_ritual(example)
         self.character.save()
 
         # Record and deduct
@@ -544,6 +554,64 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
             cost=cost,
             message=f"Spent {cost} freebies on ritual {trait}",
         )
+
+    @handler("Create Ritual")
+    def _handle_create_ritual(self, example=None, **kwargs) -> FreebieSpendResult:
+        """Handle creating a new sorcerer ritual.
+
+        Requires name, path, level, description kwargs.
+        """
+        from characters.models.mage.sorcerer import LinearMagicRitual
+
+        name = kwargs.get("ritual_name", "")
+        path = kwargs.get("ritual_path")
+        level = kwargs.get("ritual_level", 1)
+        description = kwargs.get("ritual_description", "")
+
+        if not name or not path:
+            return FreebieSpendResult(
+                success=False,
+                trait="",
+                cost=0,
+                message="",
+                error="Ritual name and path are required",
+            )
+
+        cost = self.character.freebie_cost("ritual")
+
+        if cost > self.character.freebies:
+            return FreebieSpendResult(
+                success=False,
+                trait=name,
+                cost=cost,
+                message="",
+                error="Not enough freebies",
+            )
+
+        # Create the ritual
+        ritual = LinearMagicRitual.objects.create(
+            name=name, path=path, level=level, description=description
+        )
+
+        # Apply the change
+        self.character.add_ritual(ritual)
+        self.character.save()
+
+        # Record and deduct
+        self._record_spending(name, "ritual", cost, cost)
+        self._deduct_freebies(cost)
+
+        return FreebieSpendResult(
+            success=True,
+            trait=name,
+            cost=cost,
+            message=f"Spent {cost} freebies creating ritual {name}",
+        )
+
+    @handler("Ritual")
+    def _handle_ritual(self, example, **kwargs) -> FreebieSpendResult:
+        """Handle sorcerer ritual freebie spending (alias for Select Ritual)."""
+        return self._handle_select_ritual(example, **kwargs)
 
     # =========================================================================
     # APPLIERS - Apply/deny freebie spending requests

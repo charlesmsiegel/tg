@@ -396,6 +396,13 @@ class WerewolfFreebieFormPopulationView(HumanFreebieFormPopulationView):
 
 
 class WerewolfFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Werewolf characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    GarouFreebieSpendingService with Werewolf-specific handlers.
+    """
+
     model = Werewolf
     form_class = HumanFreebiesForm
     template_name = "characters/werewolf/garou/chargen.html"

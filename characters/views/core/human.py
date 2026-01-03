@@ -8,6 +8,7 @@ from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
+from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
@@ -414,36 +415,50 @@ class HumanFreebieFormPopulationView(View):
 
 
 class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
+    """View for spending freebie points during character creation.
+
+    Uses FreebieSpendingServiceFactory to get the appropriate service
+    for the character type and delegates all spending logic to the service.
+    """
+
     model = Human
     form_class = HumanFreebiesForm
     template_name = "characters/human/human/chargen.html"
 
-    def get_category_functions(self):
-        return {
-            "attribute": self.object.attribute_freebies,
-            "ability": self.object.ability_freebies,
-            "new background": self.object.new_background_freebies,
-            "existing background": self.object.existing_background_freebies,
-            "meritflaw": self.object.meritflaw_freebies,
-            "willpower": self.object.willpower_freebies,
-        }
-
     def form_valid(self, form):
         if form.is_valid():
-            trait_type = form.data["category"].lower()
-            cost = self.object.freebie_cost(trait_type)
-            if cost == "rating":
-                cost = int(form.data["value"])
-            if cost > self.object.freebies:
-                form.add_error(None, "Not Enough Freebies!")
+            # Get the spending service for this character type
+            service = FreebieSpendingServiceFactory.get_service(self.object)
+
+            # Extract form data
+            category = form.data["category"]
+            example = form.cleaned_data.get("example")
+            value = form.cleaned_data.get("value")
+            note = form.cleaned_data.get("note", "")
+            pooled = form.cleaned_data.get("pooled", False)
+
+            # Convert value to int if present (for MeritFlaw ratings)
+            if value and value != "":
+                try:
+                    value = int(value)
+                except (ValueError, TypeError):
+                    pass
+
+            # Use the service to handle the spending
+            result = service.spend(
+                category=category,
+                example=example,
+                value=value,
+                note=note,
+                pooled=pooled,
+            )
+
+            if result.success:
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                form.add_error(None, result.error)
                 return super().form_invalid(form)
-            trait, value, cost = self.get_category_functions()[trait_type](form)
-            if "background" in trait_type:
-                trait_type = "background"
-            d = self.object.freebie_spend_record(trait, trait_type, value, cost=cost)
-            self.object.spent_freebies.append(d)
-            self.object.save()
-            return HttpResponseRedirect(self.get_success_url())
+
         return super().form_invalid(form)
 
     def form_invalid(self, form):

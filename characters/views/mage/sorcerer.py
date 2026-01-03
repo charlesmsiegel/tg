@@ -27,6 +27,7 @@ from characters.models.mage.sorcerer import (
     PathRating,
     Sorcerer,
 )
+from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
@@ -508,6 +509,12 @@ class SorcererExtrasView(SpecialUserMixin, UpdateView):
 
 
 class SorcererFreebiesView(SpecialUserMixin, UpdateView):
+    """Freebie spending view for Sorcerer characters.
+
+    Uses FreebieSpendingServiceFactory to get the SorcererFreebieSpendingService
+    which handles all spending logic including Paths and Rituals.
+    """
+
     model = Sorcerer
     form_class = SorcererFreebiesForm
     template_name = "characters/mage/sorcerer/chargen.html"
@@ -518,6 +525,7 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        # Validation
         if form.data["category"] == "-----":
             form.add_error(None, "Must Choose Freebie Expenditure Type")
             return super().form_invalid(form)
@@ -534,111 +542,62 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
                 "New Background",
                 "Existing Background",
                 "Path",
-                "Ritual",
+                "Select Ritual",
             ]
             and form.data["example"] == ""
         ):
             form.add_error(None, "Must Choose Trait")
             return super().form_invalid(form)
-        trait_type = form.data["category"].lower()
-        if "background" in trait_type:
-            trait_type = "background"
-        if "path" in trait_type:
-            trait_type = "path"
-        if "ritual" in trait_type:
-            trait_type = "ritual"
-        cost = self.object.freebie_cost(trait_type)
-        if cost == "rating":
-            cost = int(form.data["value"])
-        if cost > self.object.freebies:
-            form.add_error(None, f"Not Enough Freebies! {trait_type} costs {cost}")
+
+        # Get the spending service
+        service = FreebieSpendingServiceFactory.get_service(self.object)
+
+        # Extract form data
+        category = form.data["category"]
+        example = form.cleaned_data.get("example")
+        value = form.cleaned_data.get("value")
+        note = form.data.get("note", "")
+
+        # Convert value to int if present
+        if value and value != "":
+            try:
+                value = int(value)
+            except (ValueError, TypeError):
+                pass
+
+        # Build kwargs based on category
+        kwargs = {"note": note}
+
+        # Path requires practice and ability
+        if category == "Path":
+            prac_pk = form.data.get("practice", "")
+            ability_pk = form.data.get("ability", "")
+            kwargs["practice"] = get_object_or_404(Practice, pk=prac_pk) if prac_pk else None
+            kwargs["ability"] = get_object_or_404(Ability, pk=ability_pk) if ability_pk else None
+
+        # Create Ritual requires special kwargs
+        if category == "Create Ritual":
+            kwargs["ritual_name"] = form.data.get("name", "")
+            path_pk = form.data.get("path", "")
+            kwargs["ritual_path"] = (
+                get_object_or_404(LinearMagicPath, pk=int(path_pk)) if path_pk else None
+            )
+            kwargs["ritual_level"] = int(form.data.get("level", 1))
+            kwargs["ritual_description"] = form.data.get("description", "")
+
+        # Use the service to handle the spending
+        result = service.spend(
+            category=category,
+            example=example,
+            value=value,
+            **kwargs,
+        )
+
+        if not result.success:
+            form.add_error(None, result.error)
             return super().form_invalid(form)
-        if form.data["category"] == "Attribute":
-            trait = get_object_or_404(Attribute, pk=form.data["example"])
-            value = getattr(self.object, trait.property_name) + 1
-            self.object.add_attribute(trait.property_name)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "Ability":
-            trait = get_object_or_404(Ability, pk=form.data["example"])
-            value = getattr(self.object, trait.property_name) + 1
-            self.object.add_ability(trait.property_name)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "New Background":
-            trait = get_object_or_404(Background, pk=form.data["example"])
-            cost *= trait.multiplier
-            value = 1
-            BackgroundRating.objects.create(
-                bg=trait, rating=1, char=self.object, note=form.data["note"]
-            )
-            self.object.freebies -= cost
-            trait = str(trait)
-            if form.data["note"]:
-                trait += f" ({form.data['note']})"
-        elif form.data["category"] == "Existing Background":
-            trait = get_object_or_404(BackgroundRating, pk=form.data["example"])
-            cost *= trait.bg.multiplier
-            value = trait.rating + 1
-            trait.rating += 1
-            trait.save()
-            self.object.freebies -= cost
-            trait = str(trait)
-        elif form.data["category"] == "Willpower":
-            trait = "Willpower"
-            value = self.object.willpower + 1
-            self.object.add_willpower()
-            self.object.freebies -= cost
-        elif form.data["category"] == "MeritFlaw":
-            trait = get_object_or_404(MeritFlaw, pk=form.data["example"])
-            value = int(form.data["value"])
-            self.object.add_mf(trait, value)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif "Path" in form.data["category"]:
-            trait = get_object_or_404(LinearMagicPath, pk=form.data["example"])
-            value = self.object.path_rating(trait) + 1
-            prac = form.data.get("practice", None)
-            if prac != "":
-                prac = get_object_or_404(Practice, pk=prac)
-            else:
-                prac = None
-            ability = form.data.get("ability", None)
-            if ability != "":
-                ability = get_object_or_404(Ability, pk=ability)
-            else:
-                ability = None
-            self.object.add_path(trait, prac, ability)
-            self.object.freebies -= cost
-            trait = trait.name
-            if prac is not None:
-                trait += f"({prac.name}, {ability.name})"
-        elif form.data["category"] == "Create Ritual":
-            name = form.data["name"]
-            path = get_object_or_404(LinearMagicPath, pk=int(form.data["path"]))
-            level = int(form.data["level"])
-            description = form.data["description"]
-            trait = LinearMagicRitual.objects.create(
-                name=name, path=path, level=level, description=description
-            )
-            value = cost
-            self.object.add_ritual(trait)
-            self.object.freebies -= cost
-            trait = trait.name
-        elif form.data["category"] == "Select Ritual":
-            trait = get_object_or_404(LinearMagicRitual, pk=form.data["example"])
-            value = cost
-            self.object.add_ritual(trait)
-            self.object.freebies -= cost
-            trait = trait.name
-        if form.data["category"] != "MeritFlaw":
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(trait, trait_type, value, cost=cost)
-            )
-        else:
-            self.object.spent_freebies.append(
-                self.object.freebie_spend_record(trait, trait_type, value, cost=cost)
-            )
+
+        # Post-spending logic: advance creation status when freebies exhausted
         if self.object.freebies == 0:
             self.object.creation_status += 1
             if "Language" not in self.object.merits_and_flaws.values_list("name", flat=True):
@@ -671,7 +630,8 @@ class SorcererFreebiesView(SpecialUserMixin, UpdateView):
                         self.object.save()
                         break
                     self.object.save()
-        self.object.save()
+            self.object.save()
+
         return super().form_valid(form)
 
     def form_invalid(self, form):

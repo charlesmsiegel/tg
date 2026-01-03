@@ -306,21 +306,16 @@ class VampireExtrasView(SpecialUserMixin, UpdateView):
 
 
 class VampireFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Vampire characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    VampireFreebieSpendingService with Vampire-specific handlers.
+    """
+
     model = Vampire
     form_class = VampireFreebiesForm
     template_name = "characters/vampire/vampire/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "discipline": self.object.discipline_freebies,
-                "virtue": self.object.virtue_freebies,
-                "humanity": self.object.humanity_freebies,
-                "path_rating": self.object.path_rating_freebies,
-            }
-        )
-        return d
 
 
 class VampireLanguagesView(HumanLanguagesView):
