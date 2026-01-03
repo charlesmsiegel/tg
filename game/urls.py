@@ -92,7 +92,7 @@ scene_urls = [
 
 urlpatterns = [
     path("chronicles/", views.ChronicleListView.as_view(), name="chronicles"),
-    path("chronicle/<int:pk>", views.ChronicleDetailView.as_view(), name="chronicle"),
+    path("chronicle/<int:pk>/", views.ChronicleDetailView.as_view(), name="chronicle"),
     path(
         "chronicle/<int:pk>/retired/",
         char_views.core.RetiredCharacterIndex.as_view(),
@@ -105,10 +105,10 @@ urlpatterns = [
     ),
     path("chronicle/<int:pk>/npc/", char_views.core.NPCCharacterIndex.as_view(), name="npc"),
     path("scenes/", views.SceneListView.as_view(), name="scenes"),
-    path("scene/<int:pk>", views.SceneDetailView.as_view(), name="scene"),
+    path("scene/<int:pk>/", views.SceneDetailView.as_view(), name="scene"),
     path("commands/", views.CommandsView.as_view(), name="commands"),
     path("journals/", views.JournalListView.as_view(), name="journals"),
-    path("journal/<int:pk>", views.JournalDetailView.as_view(), name="journal"),
+    path("journal/<int:pk>/", views.JournalDetailView.as_view(), name="journal"),
     path("story/", include((story_urls, "story"))),
     path("week/", include((week_urls, "week"))),
     path("weekly-xp-request/", include((weekly_xp_request_urls, "weekly_xp_request"))),
