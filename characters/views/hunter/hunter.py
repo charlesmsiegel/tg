@@ -5,12 +5,13 @@ from core.mixins import (
     MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
+    XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class HunterDetailView(ViewPermissionMixin, DetailView):
+class HunterDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Hunter
     template_name = "characters/hunter/hunter/detail.html"
 

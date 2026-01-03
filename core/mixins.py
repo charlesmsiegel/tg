@@ -533,3 +533,185 @@ class JsonListView(AjaxLoginRequiredMixin, View):
         if self.include_empty_option:
             items = [{"id": "", "name": self.empty_option_label}] + list(items)
         return JsonResponse(items, safe=False)
+
+
+class XPApprovalMixin:
+    """
+    Mixin for handling XP spending request approval and denial in character detail views.
+
+    Provides post() method that handles 'Approve' and 'Reject' actions for
+    XP spending requests. Uses the XPSpendingServiceFactory to get the
+    appropriate service for the character type.
+
+    Usage:
+        class VampireDetailView(XPApprovalMixin, HumanDetailView):
+            model = Vampire
+            template_name = "characters/vampire/vampire/detail.html"
+
+    The mixin expects:
+    - self.object to be a character with xp_spendings related manager
+    - Request POST data with 'Approve' or 'Reject' button values
+    - Button names in format 'xp_request_<id>_approve' or 'xp_request_<id>_reject'
+    """
+
+    def post(self, request, *args, **kwargs):
+        import logging
+
+        from characters.services.xp_spending import XPSpendingServiceFactory
+        from django.contrib import messages
+        from django.db import transaction
+        from django.shortcuts import redirect
+        from django.urls import reverse
+        from game.models import XPSpendingRequest
+
+        logger = logging.getLogger(__name__)
+
+        self.object = self.get_object()
+
+        if "Approve" in request.POST.values():
+            # Parse xp_request_<id>_approve format
+            request_key = [x for x in request.POST.keys() if request.POST[x] == "Approve"][0]
+            request_id = int(request_key.split("_")[2])
+
+            try:
+                xp_request = self.object.xp_spendings.get(id=request_id, approved="Pending")
+            except XPSpendingRequest.DoesNotExist:
+                messages.error(request, "XP spending request not found or already processed")
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+            try:
+                with transaction.atomic():
+                    service = XPSpendingServiceFactory.get_service(self.object)
+                    result = service.apply(xp_request, request.user)
+
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error or "Failed to apply XP spend")
+            except Exception as e:
+                logger.error(
+                    f"Error approving XP spend for character {self.object.id}: {e}",
+                    exc_info=True,
+                )
+                messages.error(request, f"Error approving XP spend: {str(e)}")
+
+            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+        if "Reject" in request.POST.values():
+            # Parse xp_request_<id>_reject format
+            request_key = [x for x in request.POST.keys() if request.POST[x] == "Reject"][0]
+            request_id = int(request_key.split("_")[2])
+
+            try:
+                with transaction.atomic():
+                    xp_request = self.object.xp_spendings.select_for_update().get(
+                        id=request_id, approved="Pending"
+                    )
+
+                    service = XPSpendingServiceFactory.get_service(self.object)
+                    result = service.deny(xp_request, request.user)
+
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error or "Failed to deny XP spend")
+            except XPSpendingRequest.DoesNotExist:
+                messages.error(request, "XP spending request not found or already processed")
+
+            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+        # Call parent post() for other actions (retire, decease, etc.)
+        return super().post(request, *args, **kwargs)
+
+
+class FreebieApprovalMixin:
+    """
+    Mixin for handling freebie spending request approval and denial in character detail views.
+
+    Provides post() method that handles 'Approve' and 'Reject' actions for
+    freebie spending requests. Uses the FreebieSpendingServiceFactory to get the
+    appropriate service for the character type.
+
+    Usage:
+        class VampireDetailView(FreebieApprovalMixin, HumanDetailView):
+            model = Vampire
+            template_name = "characters/vampire/vampire/detail.html"
+
+    The mixin expects:
+    - self.object to be a character with freebie_spendings related manager
+    - Request POST data with 'Approve' or 'Reject' button values
+    - Button names in format 'freebie_request_<id>_approve' or 'freebie_request_<id>_reject'
+    """
+
+    def post(self, request, *args, **kwargs):
+        import logging
+
+        from characters.services.freebie_spending import FreebieSpendingServiceFactory
+        from django.contrib import messages
+        from django.db import transaction
+        from django.shortcuts import redirect
+        from django.urls import reverse
+        from game.models import FreebieSpendingRecord
+
+        logger = logging.getLogger(__name__)
+
+        self.object = self.get_object()
+
+        if "Approve Freebie" in request.POST.values():
+            # Parse freebie_request_<id>_approve format
+            request_key = [x for x in request.POST.keys() if request.POST[x] == "Approve Freebie"][
+                0
+            ]
+            request_id = int(request_key.split("_")[2])
+
+            try:
+                freebie_request = self.object.freebie_spendings.get(
+                    id=request_id, approved="Pending"
+                )
+            except FreebieSpendingRecord.DoesNotExist:
+                messages.error(request, "Freebie spending request not found or already processed")
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+            try:
+                with transaction.atomic():
+                    service = FreebieSpendingServiceFactory.get_service(self.object)
+                    result = service.apply(freebie_request, request.user)
+
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error or "Failed to apply freebie spend")
+            except Exception as e:
+                logger.error(
+                    f"Error approving freebie spend for character {self.object.id}: {e}",
+                    exc_info=True,
+                )
+                messages.error(request, f"Error approving freebie spend: {str(e)}")
+
+            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+        if "Reject Freebie" in request.POST.values():
+            # Parse freebie_request_<id>_reject format
+            request_key = [x for x in request.POST.keys() if request.POST[x] == "Reject Freebie"][0]
+            request_id = int(request_key.split("_")[2])
+
+            try:
+                with transaction.atomic():
+                    freebie_request = self.object.freebie_spendings.select_for_update().get(
+                        id=request_id, approved="Pending"
+                    )
+
+                    service = FreebieSpendingServiceFactory.get_service(self.object)
+                    result = service.deny(freebie_request, request.user)
+
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error or "Failed to deny freebie spend")
+            except FreebieSpendingRecord.DoesNotExist:
+                messages.error(request, "Freebie spending request not found or already processed")
+
+            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+
+        # Call parent post() for other actions (retire, decease, etc.)
+        return super().post(request, *args, **kwargs)

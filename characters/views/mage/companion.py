@@ -30,6 +30,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import Language
 from django import forms
@@ -46,7 +47,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class CompanionDetailView(HumanDetailView):
+class CompanionDetailView(XPApprovalMixin, HumanDetailView):
     model = Companion
     template_name = "characters/mage/companion/detail.html"
 

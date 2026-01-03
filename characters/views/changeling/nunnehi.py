@@ -1,10 +1,10 @@
 from characters.models.changeling.nunnehi import Nunnehi
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
 from django.views.generic import CreateView, UpdateView
 
 
-class NunnehiDetailView(HumanDetailView):
+class NunnehiDetailView(XPApprovalMixin, HumanDetailView):
     model = Nunnehi
     template_name = "characters/changeling/nunnehi/detail.html"
 

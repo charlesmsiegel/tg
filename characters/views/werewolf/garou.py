@@ -32,6 +32,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import Language
 from django import forms
@@ -43,7 +44,7 @@ from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class WerewolfDetailView(ViewPermissionMixin, DetailView):
+class WerewolfDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Werewolf
     template_name = "characters/werewolf/garou/detail.html"
 

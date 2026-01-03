@@ -4,18 +4,19 @@ from characters.forms.core.limited_edit import LimitedMtRHumanEditForm
 from characters.forms.mummy.mtr_human import MtRHumanCreationForm
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, VisibilityFilterMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    VisibilityFilterMixin,
+    XPApprovalMixin,
+)
 from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, ListView, UpdateView
 
 
-class MtRHumanDetailView(HumanDetailView):
+class MtRHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = MtRHuman
     template_name = "characters/mummy/mtrhuman/detail.html"
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class MtRHumanCreateView(MessageMixin, CreateView):

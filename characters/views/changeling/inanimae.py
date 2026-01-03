@@ -1,10 +1,10 @@
 from characters.models.changeling.inanimae import Inanimae
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
 from django.views.generic import CreateView, UpdateView
 
 
-class InanimaeDetailView(HumanDetailView):
+class InanimaeDetailView(XPApprovalMixin, HumanDetailView):
     model = Inanimae
     template_name = "characters/changeling/inanimae/detail.html"
 

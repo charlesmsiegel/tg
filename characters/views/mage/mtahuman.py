@@ -34,6 +34,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import CharacterTemplate, Language
 from django import forms
@@ -50,7 +51,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class MtAHumanDetailView(HumanDetailView):
+class MtAHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = MtAHuman
     template_name = "characters/mage/mtahuman/detail.html"
 
