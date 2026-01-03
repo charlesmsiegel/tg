@@ -8,6 +8,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Collect static files
+rm -rf collected_static/
 yes yes | python manage.py collectstatic
 
 # Populate game data

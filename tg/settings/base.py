@@ -123,8 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "static/"
-STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
+STATIC_ROOT = BASE_DIR / "collected_static"
+STATICFILES_DIRS = [BASE_DIR / "source_static"]
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "user"
