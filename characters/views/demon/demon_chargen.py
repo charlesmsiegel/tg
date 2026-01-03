@@ -394,21 +394,16 @@ class DemonExtrasView(SpecialUserMixin, UpdateView):
 
 
 class DemonFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Demon characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    DemonFreebieSpendingService with Demon-specific handlers.
+    """
+
     model = Demon
     form_class = DemonFreebiesForm
     template_name = "characters/demon/demon/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "lore": self.object.lore_freebies,
-                "faith": self.object.faith_freebies,
-                "virtue": self.object.virtue_freebies,
-                "temporary_faith": self.object.temporary_faith_freebies,
-            }
-        )
-        return d
 
 
 class DemonLanguagesView(HumanLanguagesView):

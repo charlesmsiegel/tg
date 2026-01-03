@@ -491,20 +491,16 @@ class ChangelingExtrasView(SpecialUserMixin, UpdateView):
 
 
 class ChangelingFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Changeling characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    ChangelingFreebieSpendingService with Changeling-specific handlers.
+    """
+
     model = Changeling
     form_class = HumanFreebiesForm
     template_name = "characters/changeling/changeling/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "art": self.object.art_freebies,
-                "realm": self.object.realm_freebies,
-                "glamour": self.object.glamour_freebies,
-            }
-        )
-        return d
 
 
 class ChangelingFreebieFormPopulationView(HumanFreebieFormPopulationView):

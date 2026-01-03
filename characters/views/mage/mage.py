@@ -916,24 +916,16 @@ class MageExtrasView(SpecialUserMixin, UpdateView):
 
 
 class MageFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Mage characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    MageFreebieSpendingService with Mage-specific handlers.
+    """
+
     model = Mage
     form_class = MageFreebiesForm
     template_name = "characters/mage/mage/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "sphere": self.object.sphere_freebies,
-                "arete": self.object.arete_freebies,
-                "rotes": self.object.rotes_freebies,
-                "resonance": self.object.resonance_freebies,
-                "tenet": self.object.tenet_freebies,
-                "practice": self.object.practice_freebies,
-                "quintessence": self.object.quintessence_freebies,
-            }
-        )
-        return d
 
 
 class MageLanguagesView(HumanLanguagesView):

@@ -203,18 +203,16 @@ class GhoulExtrasView(SpecialUserMixin, UpdateView):
 
 
 class GhoulFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Ghoul characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    GhoulFreebieSpendingService with Ghoul-specific handlers.
+    """
+
     model = Ghoul
     form_class = GhoulFreebiesForm
     template_name = "characters/vampire/ghoul/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "discipline": self.object.discipline_freebies,
-            }
-        )
-        return d
 
 
 class GhoulLanguagesView(HumanLanguagesView):

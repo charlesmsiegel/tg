@@ -402,22 +402,16 @@ class WraithExtrasView(SpecialUserMixin, UpdateView):
 
 
 class WraithFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Wraith characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    WraithFreebieSpendingService with Wraith-specific handlers.
+    """
+
     model = Wraith
     form_class = WraithFreebiesForm
     template_name = "characters/wraith/wraith/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "arcanos": self.object.arcanos_freebies,
-                "pathos": self.object.pathos_freebies,
-                "passion": self.object.passion_freebies,
-                "fetter": self.object.fetter_freebies,
-                "corpus": self.object.corpus_freebies,
-            }
-        )
-        return d
 
 
 class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):

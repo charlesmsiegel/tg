@@ -173,19 +173,16 @@ class ThrallExtrasView(SpecialUserMixin, UpdateView):
 
 
 class ThrallFreebiesView(HumanFreebiesView):
+    """Freebie spending view for Thrall characters.
+
+    Inherits form_valid() from HumanFreebiesView which uses the
+    FreebieSpendingServiceFactory to automatically select the correct
+    ThrallFreebieSpendingService with Thrall-specific handlers.
+    """
+
     model = Thrall
     form_class = ThrallFreebiesForm
     template_name = "characters/demon/thrall/chargen.html"
-
-    def get_category_functions(self):
-        d = super().get_category_functions()
-        d.update(
-            {
-                "faith_potential": self.object.faith_potential_freebies,
-                "virtue": self.object.virtue_freebies,
-            }
-        )
-        return d
 
 
 class ThrallLanguagesView(HumanLanguagesView):
