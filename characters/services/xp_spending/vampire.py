@@ -8,6 +8,7 @@ This module provides XP spending services for Vampire: The Masquerade characters
 - RevenantXPSpendingService - Born ghouls with family Disciplines
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -35,7 +36,9 @@ class VtMHumanXPSpendingService(HumanXPSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("virtue", current_value)
+
+        # Calculate cost: 2 × current value
+        cost = get_xp_cost("virtue") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -89,15 +92,16 @@ class VampireXPSpendingService(VtMHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Determine if this is a clan discipline, out-of-clan, or new
+        # Determine if this is a clan discipline
         is_clan = self.character.is_clan_discipline(example)
 
+        # Calculate cost: new=10, clan=5×current, out-of-clan=7×current
         if current_value == 0:
-            cost = self.character.xp_cost("new_discipline", new_value)
+            cost = 10  # New discipline
         elif is_clan:
-            cost = self.character.xp_cost("clan_discipline", new_value)
+            cost = get_xp_cost("discipline") * current_value  # 5×current (clan)
         else:
-            cost = self.character.xp_cost("out_of_clan_discipline", new_value)
+            cost = 7 * current_value  # 7×current (out-of-clan)
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -129,7 +133,9 @@ class VampireXPSpendingService(VtMHumanXPSpendingService):
 
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost(cost_type, current_value)
+
+        # Calculate cost: 1 × current value
+        cost = get_xp_cost(cost_type) * current_value
 
         self.character.spend_xp(
             trait_name=property_name,

@@ -6,6 +6,7 @@ This module provides XP spending services for Wraith: The Oblivion characters:
 - WraithXPSpendingService - Wraiths with Arcanoi, Pathos, etc.
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -45,19 +46,11 @@ class WraithXPSpendingService(WtOHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Determine if this is a guild Arcanos or common
-        is_guild = (
-            self.character.is_guild_arcanos(example)
-            if hasattr(self.character, "is_guild_arcanos")
-            else False
-        )
-
+        # Calculate cost: 10 × current (new = 10)
         if current_value == 0:
-            cost = self.character.xp_cost("new_arcanos", new_value)
-        elif is_guild:
-            cost = self.character.xp_cost("guild_arcanos", new_value)
+            cost = 10  # New arcanos
         else:
-            cost = self.character.xp_cost("arcanos", new_value)
+            cost = get_xp_cost("arcanos") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -80,7 +73,9 @@ class WraithXPSpendingService(WtOHumanXPSpendingService):
         trait = "Pathos"
         current_value = self.character.pathos
         new_value = current_value + 1
-        cost = self.character.xp_cost("pathos", current_value)
+
+        # Calculate cost: 2 × current value
+        cost = get_xp_cost("pathos") * current_value
 
         self.character.spend_xp(
             trait_name="pathos",
@@ -103,7 +98,9 @@ class WraithXPSpendingService(WtOHumanXPSpendingService):
         trait = "Corpus"
         current_value = self.character.corpus
         new_value = current_value + 1
-        cost = self.character.xp_cost("corpus", current_value)
+
+        # Calculate cost: 1 × current value
+        cost = get_xp_cost("corpus") * current_value
 
         self.character.spend_xp(
             trait_name="corpus",

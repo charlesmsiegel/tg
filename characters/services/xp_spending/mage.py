@@ -8,6 +8,7 @@ This module provides XP spending services for Mage: The Ascension characters:
 - CompanionXPSpendingService - Consors (unawakened helpers)
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -45,10 +46,20 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
         trait = example.name
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost(
-            self.character.sphere_to_trait_type(example.property_name),
-            current_value,
+
+        # Determine if affinity sphere (costs 7 instead of 8)
+        is_affinity = (
+            self.character.affinity_sphere
+            and example.property_name == self.character.affinity_sphere.property_name
         )
+
+        # Calculate cost: new=10, affinity=7×current, regular=8×current
+        if current_value == 0:
+            cost = 10  # New sphere
+        elif is_affinity:
+            cost = 7 * current_value  # Affinity sphere
+        else:
+            cost = get_xp_cost("sphere") * current_value  # Regular sphere (8×)
 
         self.character.spend_xp(
             trait_name=example.property_name,
@@ -71,7 +82,9 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
         trait = "Arete"
         current_value = self.character.arete
         new_value = current_value + 1
-        cost = self.character.xp_cost("arete", current_value)
+
+        # Calculate cost: multiplier × current value
+        cost = get_xp_cost("arete") * current_value
 
         self.character.spend_xp(
             trait_name="arete",
@@ -94,7 +107,12 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
         trait = example.name
         current_value = self.character.practice_rating(example)
         new_value = current_value + 1
-        cost = self.character.xp_cost("practice", current_value)
+
+        # Calculate cost: new=3, existing=1×current
+        if current_value == 0:
+            cost = 3  # New practice
+        else:
+            cost = get_xp_cost("practice") * current_value
 
         self.character.spend_xp(
             trait_name="",
@@ -115,7 +133,7 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     def _handle_tenet(self, example, **kwargs) -> XPSpendResult:
         """Handle tenet XP spending."""
         trait = example.name
-        cost = self.character.xp_cost("tenet", 1)
+        cost = get_xp_cost("tenet")  # Free (0)
 
         self.character.spend_xp(
             trait_name="",
@@ -136,7 +154,8 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     def _handle_remove_tenet(self, example, **kwargs) -> XPSpendResult:
         """Handle tenet removal XP spending."""
         trait = "Remove " + example.name
-        cost = self.character.xp_cost("remove tenet", self.character.other_tenets.count() + 3)
+        # Cost is 1 XP × (number of other tenets + 3)
+        cost = 1 * (self.character.other_tenets.count() + 3)
 
         self.character.spend_xp(
             trait_name="",
@@ -161,7 +180,12 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
         trait = f"Resonance ({resonance})"
         r = Resonance.objects.get_or_create(name=resonance)[0]
         current_value = self.character.resonance_rating(r)
-        cost = self.character.xp_cost("resonance", current_value)
+
+        # Calculate cost: new=5, existing=3×current
+        if current_value == 0:
+            cost = 5  # New resonance
+        else:
+            cost = get_xp_cost("resonance") * current_value
 
         self.character.spend_xp(
             trait_name="",
@@ -182,7 +206,7 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     def _handle_rote_points(self, **kwargs) -> XPSpendResult:
         """Handle rote points XP spending."""
         trait = "Rote Points"
-        cost = self.character.xp_cost("rotes", 1)
+        cost = get_xp_cost("rotes")  # 1 per point, buying 3 at a time
         new_value = self.character.total_effects() + self.character.rote_points + 3
 
         self.character.spend_xp(
@@ -369,11 +393,11 @@ class SorcererXPSpendingService(MtAHumanXPSpendingService):
         current_value = self.character.path_rating(example)
         new_value = current_value + 1
 
-        # Sorcerers have different costs for paths
+        # Calculate cost: new=10, existing=7×current
         if current_value == 0:
-            cost = self.character.xp_cost("new_path", new_value)
+            cost = 10  # New path
         else:
-            cost = self.character.xp_cost("path", current_value)
+            cost = get_xp_cost("path") * current_value
 
         self.character.spend_xp(
             trait_name="",
@@ -394,7 +418,8 @@ class SorcererXPSpendingService(MtAHumanXPSpendingService):
     def _handle_ritual(self, example, **kwargs) -> XPSpendResult:
         """Handle sorcerer ritual XP spending."""
         trait = example.name
-        cost = self.character.xp_cost("ritual", example.level)
+        # Cost is 2 × ritual level
+        cost = get_xp_cost("ritual") * example.level
 
         self.character.spend_xp(
             trait_name="",
@@ -477,8 +502,8 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
         current_value = self.character.advantage_rating(example)
         new_value = value if value is not None else current_value + 1
 
-        # Advantage cost: difference in ratings * 3 (similar to merit/flaw)
-        cost = self.character.xp_cost("advantage", abs(new_value - current_value))
+        # Advantage cost: 3 per rating difference
+        cost = 3 * abs(new_value - current_value)
 
         self.character.spend_xp(
             trait_name="",
@@ -499,7 +524,7 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
     def _handle_charm(self, example, **kwargs) -> XPSpendResult:
         """Handle Spirit Charm XP spending."""
         trait = example.name
-        cost = self.character.xp_cost("charm", 1)
+        cost = 5  # 5 XP per charm
 
         self.character.spend_xp(
             trait_name="",

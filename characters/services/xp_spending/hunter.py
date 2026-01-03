@@ -6,6 +6,7 @@ This module provides XP spending services for Hunter: The Reckoning characters:
 - HunterXPSpendingService - Imbued hunters with Edges
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -33,7 +34,9 @@ class HtRHumanXPSpendingService(HumanXPSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("virtue", current_value)
+
+        # Calculate cost: 2 × current value
+        cost = get_xp_cost("virtue") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -82,9 +85,9 @@ class HunterXPSpendingService(HtRHumanXPSpendingService):
     def _handle_edge(self, example, **kwargs) -> XPSpendResult:
         """Handle Edge XP spending."""
         trait = example.name
-        # Edge cost is based on the edge's level
+        # Edge cost is 3 × edge level
         edge_level = example.level if hasattr(example, "level") else 1
-        cost = self.character.xp_cost("edge", edge_level)
+        cost = get_xp_cost("edge") * edge_level
 
         self.character.spend_xp(
             trait_name="",

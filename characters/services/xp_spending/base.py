@@ -12,6 +12,7 @@ XP spending requests.
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from characters.costs import get_meritflaw_xp_cost, get_xp_cost
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
@@ -350,7 +351,12 @@ class HumanXPSpendingService(XPSpendingService):
         trait = example.name
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("attribute", current_value)
+
+        # Calculate cost: multiplier × current value (new attribute = 10)
+        if current_value == 0:
+            cost = 10  # New attribute
+        else:
+            cost = get_xp_cost("attribute") * current_value
 
         self.character.spend_xp(
             trait_name=example.property_name,
@@ -373,7 +379,12 @@ class HumanXPSpendingService(XPSpendingService):
         trait = example.name
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("ability", current_value)
+
+        # Calculate cost: multiplier × current value (new ability = 3)
+        if current_value == 0:
+            cost = 3  # New ability
+        else:
+            cost = get_xp_cost("ability") * current_value
 
         self.character.spend_xp(
             trait_name=example.property_name,
@@ -398,7 +409,10 @@ class HumanXPSpendingService(XPSpendingService):
         else:
             trait = example.name
         new_value = 1
-        cost = self.character.xp_cost("new background", new_value)
+
+        # New background base cost = 5, apply background multiplier
+        multiplier = example.multiplier if hasattr(example, "multiplier") else 1
+        cost = 5 * multiplier
 
         self.character.spend_xp(
             trait_name="",
@@ -421,7 +435,10 @@ class HumanXPSpendingService(XPSpendingService):
         trait = example.bg.name + f" ({example.note})"
         current_value = example.rating
         new_value = current_value + 1
-        cost = self.character.xp_cost("background", current_value)
+
+        # Calculate cost: multiplier × current value, apply background multiplier
+        bg_multiplier = example.bg.multiplier if hasattr(example.bg, "multiplier") else 1
+        cost = get_xp_cost("background") * current_value * bg_multiplier
 
         self.character.spend_xp(
             trait_name="",
@@ -444,7 +461,9 @@ class HumanXPSpendingService(XPSpendingService):
         trait = "Willpower"
         current_value = self.character.willpower
         new_value = current_value + 1
-        cost = self.character.xp_cost("willpower", current_value)
+
+        # Calculate cost: multiplier × current value
+        cost = get_xp_cost("willpower") * current_value
 
         self.character.spend_xp(
             trait_name="willpower",
@@ -466,7 +485,9 @@ class HumanXPSpendingService(XPSpendingService):
         """Handle merit/flaw XP spending."""
         current_rating = self.character.mf_rating(example)
         trait = example.name
-        cost = self.character.xp_cost("meritflaw", value - current_rating)
+
+        # Calculate cost: 3 × |new_rating - current_rating|
+        cost = get_meritflaw_xp_cost(current_rating, value)
 
         self.character.spend_xp(
             trait_name="",
