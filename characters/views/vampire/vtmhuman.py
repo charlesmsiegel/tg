@@ -25,6 +25,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import CharacterTemplate, Language
 from django import forms
@@ -36,7 +37,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, FormView, UpdateView
 
 
-class VtMHumanDetailView(HumanDetailView):
+class VtMHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = VtMHuman
     template_name = "characters/vampire/vtmhuman/detail.html"
 

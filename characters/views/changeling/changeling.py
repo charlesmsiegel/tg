@@ -27,6 +27,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import Language
 from django import forms
@@ -37,7 +38,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, FormView, UpdateView, View
 
 
-class ChangelingDetailView(ViewPermissionMixin, DetailView):
+class ChangelingDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Changeling
     template_name = "characters/changeling/changeling/detail.html"
 

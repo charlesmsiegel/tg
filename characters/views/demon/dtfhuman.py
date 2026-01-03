@@ -7,19 +7,16 @@ from core.mixins import (
     SpendXPPermissionMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
+    XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DtFHumanDetailView(ViewPermissionMixin, DetailView):
+class DtFHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = DtFHuman
     template_name = "characters/demon/dtfhuman/detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class DtFHumanCreateView(MessageMixin, CreateView):

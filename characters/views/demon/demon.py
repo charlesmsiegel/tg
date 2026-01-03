@@ -7,13 +7,14 @@ from core.mixins import (
     SpendXPPermissionMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
+    XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class DemonDetailView(ViewPermissionMixin, DetailView):
+class DemonDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Demon
     template_name = "characters/demon/demon/detail.html"
 

@@ -5,13 +5,14 @@ from core.mixins import (
     MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
+    XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class EarthboundDetailView(ViewPermissionMixin, DetailView):
+class EarthboundDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Earthbound
     template_name = "characters/demon/earthbound/detail.html"
 

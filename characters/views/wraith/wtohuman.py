@@ -26,6 +26,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import CharacterTemplate, Language
 from django import forms
@@ -37,7 +38,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
-class WtOHumanDetailView(HumanDetailView):
+class WtOHumanDetailView(XPApprovalMixin, HumanDetailView):
     model = WtOHuman
     template_name = "characters/wraith/wtohuman/detail.html"
 

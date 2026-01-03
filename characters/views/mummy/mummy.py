@@ -4,12 +4,17 @@ from characters.forms.core.limited_edit import LimitedMummyEditForm
 from characters.forms.mummy.mummy import MummyCreationForm
 from characters.models.mummy.mummy import Mummy
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin, VisibilityFilterMixin
+from core.mixins import (
+    EditPermissionMixin,
+    MessageMixin,
+    VisibilityFilterMixin,
+    XPApprovalMixin,
+)
 from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, ListView, UpdateView
 
 
-class MummyDetailView(HumanDetailView):
+class MummyDetailView(XPApprovalMixin, HumanDetailView):
     model = Mummy
     template_name = "characters/mummy/mummy/detail.html"
 

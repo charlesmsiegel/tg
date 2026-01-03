@@ -46,6 +46,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from core.models import Language
 from core.views.generic import MultipleFormsetsMixin
@@ -151,7 +152,7 @@ class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     error_message = "Error updating sorcerer."
 
 
-class SorcererDetailView(HumanDetailView):
+class SorcererDetailView(XPApprovalMixin, HumanDetailView):
     model = Sorcerer
     template_name = "characters/mage/sorcerer/detail.html"
 

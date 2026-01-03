@@ -35,6 +35,7 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -42,7 +43,7 @@ from django.views.generic import DetailView, FormView, UpdateView
 from items.models.werewolf.fetish import Fetish
 
 
-class FeraDetailView(ViewPermissionMixin, DetailView):
+class FeraDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Fera
     template_name = "characters/werewolf/fera/detail.html"
 

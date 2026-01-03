@@ -2,11 +2,11 @@ from typing import Any
 
 from characters.models.wraith.wraith import Wraith
 from characters.views.core.human import HumanDetailView
-from core.mixins import EditPermissionMixin, MessageMixin
+from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
 from django.views.generic import CreateView, UpdateView
 
 
-class WraithDetailView(HumanDetailView):
+class WraithDetailView(XPApprovalMixin, HumanDetailView):
     model = Wraith
     template_name = "characters/wraith/wraith/detail.html"
 

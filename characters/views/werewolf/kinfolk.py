@@ -24,13 +24,14 @@ from core.mixins import (
     SpendFreebiesPermissionMixin,
     SpendXPPermissionMixin,
     ViewPermissionMixin,
+    XPApprovalMixin,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
 
 
-class KinfolkDetailView(ViewPermissionMixin, DetailView):
+class KinfolkDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/detail.html"
 

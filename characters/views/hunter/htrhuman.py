@@ -5,12 +5,13 @@ from core.mixins import (
     MessageMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
+    XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
-class HtRHumanDetailView(ViewPermissionMixin, DetailView):
+class HtRHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
     model = HtRHuman
     template_name = "characters/hunter/htrhuman/detail.html"
 
