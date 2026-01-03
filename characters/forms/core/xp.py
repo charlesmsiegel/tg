@@ -10,8 +10,7 @@ CATEGORY_CHOICES = [
     ("Image", "Image"),
     ("Attribute", "Attribute"),
     ("Ability", "Ability"),
-    ("New Background", "New Background"),
-    ("Existing Background", "Existing Background"),
+    ("Background", "Background"),
     ("Willpower", "Willpower"),
     ("MeritFlaw", "MeritFlaw"),
 ]
@@ -41,13 +40,9 @@ class XPForm(forms.Form):
             self.fields["category"].choices = [
                 x for x in self.fields["category"].choices if x[0] != "Ability"
             ]
-        if not self.new_bg_valid():
+        if not self.background_valid():
             self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "New Background"
-            ]
-        if not self.existing_bg_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Existing Background"
+                x for x in self.fields["category"].choices if x[0] != "Background"
             ]
         if not self.willpower_valid():
             self.fields["category"].choices = [
@@ -67,12 +62,10 @@ class XPForm(forms.Form):
             self.fields["example"].choices = [
                 (ability.id, ability.name) for ability in Ability.objects.all()
             ]
-        elif category == "New Background":
-            self.fields["example"].choices = [(bg.id, bg.name) for bg in Background.objects.all()]
-        elif category == "Existing Background":
-            self.fields["example"].choices = [
-                (bg.id, bg.bg.name + f" ({bg.note})") for bg in self.character.backgrounds.all()
-            ]
+        elif category == "Background":
+            # Background uses prefixed values - populated by AJAX
+            # Example values will be "bg_123" for new, "br_456" for existing
+            pass
         elif category == "MeritFlaw":
             # Filter merit/flaws by character type and affordability
             from game.models import ObjectType
@@ -147,10 +140,12 @@ class XPForm(forms.Form):
         ]
         return len(filtered_for_xp_cost) > 0
 
-    def new_bg_valid(self):
-        return self.character.xp >= 5
-
-    def existing_bg_valid(self):
+    def background_valid(self):
+        """Check if any background (new or existing) is affordable."""
+        # Check if new background is affordable (minimum 5 XP)
+        if self.character.xp >= 5:
+            return True
+        # Check if any existing background can be increased
         bgs = self.character.backgrounds.filter(rating__lt=5)
         filtered_for_xp_cost = [
             x
@@ -201,6 +196,8 @@ class XPForm(forms.Form):
         return category
 
     def clean_example(self):
+        from characters.models.core.background_block import BackgroundRating
+
         category = self.cleaned_data.get("category")
         example = self.cleaned_data.get("example")
 
@@ -208,10 +205,16 @@ class XPForm(forms.Form):
             example = Attribute.objects.get(pk=example)
         elif category == "Ability":
             example = Ability.objects.get(pk=example)
-        elif category == "New Background":
-            example = Background.objects.get(pk=example)
-        elif category == "Existing Background":
-            example = self.character.backgrounds.get(pk=example)
+        elif category == "Background":
+            # Parse prefixed value: "bg_123" for Background, "br_456" for BackgroundRating
+            if example.startswith("bg_"):
+                bg_pk = example[3:]
+                example = Background.objects.get(pk=bg_pk)
+            elif example.startswith("br_"):
+                br_pk = example[3:]
+                example = BackgroundRating.objects.get(pk=br_pk)
+            else:
+                raise forms.ValidationError("Invalid background selection")
         elif category == "MeritFlaw":
             example = MeritFlaw.objects.get(pk=example)
 

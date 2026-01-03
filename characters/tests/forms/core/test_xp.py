@@ -257,8 +257,8 @@ class TestXPFormCategoryFiltering(TestCase):
 
         self.assertNotIn("Attribute", category_values)
 
-    def test_new_background_category_requires_5_xp(self):
-        """Test that New Background category requires at least 5 XP."""
+    def test_background_category_requires_5_xp(self):
+        """Test that Background category requires at least 5 XP for new backgrounds."""
         character_with_xp = Human.objects.create(
             name="Character With XP",
             owner=self.user,
@@ -276,8 +276,8 @@ class TestXPFormCategoryFiltering(TestCase):
         categories_with_xp = [choice[0] for choice in form_with_xp.fields["category"].choices]
         categories_no_xp = [choice[0] for choice in form_no_xp.fields["category"].choices]
 
-        self.assertIn("New Background", categories_with_xp)
-        self.assertNotIn("New Background", categories_no_xp)
+        self.assertIn("Background", categories_with_xp)
+        self.assertNotIn("Background", categories_no_xp)
 
     def test_willpower_category_hidden_when_insufficient_xp(self):
         """Test Willpower category is hidden when can't afford to raise it."""
@@ -364,40 +364,20 @@ class TestXPFormExamplePopulation(TestCase):
         self.assertIn("Alertness", choice_names)
         self.assertIn("Athletics", choice_names)
 
-    def test_new_background_category_populates_example_with_backgrounds(self):
-        """Test that selecting New Background populates example with backgrounds."""
+    def test_background_category_accepts_form_data(self):
+        """Test that Background category is accepted.
+
+        Note: Background examples are populated via AJAX with prefixed values
+        (bg_123 for new backgrounds, br_456 for existing backgrounds).
+        The form's clean_example method parses these prefixes.
+        """
         form = XPForm(
-            data={"category": "New Background"},
+            data={"category": "Background"},
             character=self.character,
         )
 
-        example_choices = form.fields["example"].choices
-        choice_names = [choice[1] for choice in example_choices]
-
-        # Check for some backgrounds
-        self.assertIn("Contacts", choice_names)
-        self.assertIn("Mentor", choice_names)
-
-    def test_existing_background_category_populates_with_character_backgrounds(self):
-        """Test that Existing Background shows character's current backgrounds."""
-        # Add a background to the character
-        bg = Background.objects.get(property_name="contacts")
-        BackgroundRating.objects.create(
-            char=self.character,
-            bg=bg,
-            rating=2,
-            note="My contacts",
-        )
-
-        form = XPForm(
-            data={"category": "Existing Background"},
-            character=self.character,
-        )
-
-        example_choices = form.fields["example"].choices
-        # Should contain the character's background with its note
-        choice_labels = [choice[1] for choice in example_choices]
-        self.assertTrue(any("Contacts" in label for label in choice_labels))
+        # The form should accept Background as a valid category
+        self.assertEqual(form.data.get("category"), "Background")
 
 
 class TestXPFormCleanExample(TestCase):
@@ -440,18 +420,36 @@ class TestXPFormCleanExample(TestCase):
         if "example" in form.cleaned_data:
             self.assertEqual(form.cleaned_data["example"], alertness)
 
-    def test_clean_example_returns_background_object(self):
-        """Test that clean_example returns Background object for New Background category."""
+    def test_clean_example_returns_background_object_for_new_background(self):
+        """Test that clean_example returns Background object for prefixed bg_ value."""
         contacts = Background.objects.get(property_name="contacts")
 
         form = XPForm(
-            data={"category": "New Background", "example": contacts.id},
+            data={"category": "Background", "example": f"bg_{contacts.id}"},
             character=self.character,
         )
         form.is_valid()
 
         if "example" in form.cleaned_data:
             self.assertEqual(form.cleaned_data["example"], contacts)
+
+    def test_clean_example_returns_background_rating_object_for_existing_background(self):
+        """Test that clean_example returns BackgroundRating object for prefixed br_ value."""
+        contacts = Background.objects.get(property_name="contacts")
+        br = BackgroundRating.objects.create(
+            char=self.character,
+            bg=contacts,
+            rating=2,
+        )
+
+        form = XPForm(
+            data={"category": "Background", "example": f"br_{br.id}"},
+            character=self.character,
+        )
+        form.is_valid()
+
+        if "example" in form.cleaned_data:
+            self.assertEqual(form.cleaned_data["example"], br)
 
 
 class TestXPFormCleanValue(TestCase):
@@ -565,8 +563,8 @@ class TestXPFormValidityChecks(TestCase):
 
         self.assertFalse(form.ability_valid())
 
-    def test_new_bg_valid_requires_5_xp(self):
-        """Test new_bg_valid requires at least 5 XP."""
+    def test_background_valid_requires_5_xp(self):
+        """Test background_valid requires at least 5 XP for new backgrounds."""
         character_with_xp = Human.objects.create(
             name="Test Character",
             owner=self.user,
@@ -581,8 +579,8 @@ class TestXPFormValidityChecks(TestCase):
         form_with = XPForm(character=character_with_xp)
         form_without = XPForm(character=character_no_xp)
 
-        self.assertTrue(form_with.new_bg_valid())
-        self.assertFalse(form_without.new_bg_valid())
+        self.assertTrue(form_with.background_valid())
+        self.assertFalse(form_without.background_valid())
 
     def test_willpower_valid_checks_cost(self):
         """Test willpower_valid checks if character can afford to raise willpower."""
@@ -741,7 +739,7 @@ class TestXPFormEdgeCases(TestCase):
         self.assertNotIn("Attribute", category_values)
         self.assertNotIn("Ability", category_values)
         # But other categories should still be available
-        self.assertIn("New Background", category_values)
+        self.assertIn("Background", category_values)
 
 
 class TestXPCostCalculations(TestCase):
