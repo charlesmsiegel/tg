@@ -177,6 +177,19 @@ class Sorcerer(MtAHuman):
     def get_quintessence_wheel(self):
         return list(range(10))
 
+    def xp_cost(self, trait_type, trait_value):
+        """XP costs for Sorcerer-specific traits."""
+        sorcerer_costs = {
+            "path": 7,  # 7 XP per existing path level
+            "new_path": 10,  # 10 XP for new path at rating 1
+            "ritual": 2,  # 2 XP per ritual level
+        }
+        if trait_type == "path" and trait_value == 0:
+            return sorcerer_costs["new_path"]
+        if trait_type in sorcerer_costs:
+            return sorcerer_costs[trait_type] * trait_value
+        return super().xp_cost(trait_type, trait_value)
+
 
 class PathRating(models.Model):
     character = models.ForeignKey(Sorcerer, on_delete=models.SET_NULL, null=True)

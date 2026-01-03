@@ -23,7 +23,7 @@ from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
-from characters.services.xp_spending import MageXPSpendingService
+from characters.services.xp_spending import XPSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
@@ -365,7 +365,7 @@ class MageDetailView(HumanDetailView):
                     self.object.save()
                 if category not in ["Image", "Rote"]:
                     # Use XP spending service for cleaner handling
-                    service = MageXPSpendingService(self.object)
+                    service = XPSpendingServiceFactory.get_service(self.object)
                     result = service.spend(
                         category=category,
                         example=example,
@@ -445,9 +445,8 @@ class MageDetailView(HumanDetailView):
             else:
                 print("errors", form.errors)
         if "Approve" in form.data.values():
-            # UPDATED: Parse new format xp_request_<id>_approve instead of old index format
+            # Parse xp_request_<id>_approve format
             request_key = [x for x in form.data.keys() if form.data[x] == "Approve"][0]
-            # Extract request ID from "xp_request_<id>_approve"
             request_id = int(request_key.split("_")[2])
 
             from game.models import XPSpendingRequest
@@ -458,186 +457,45 @@ class MageDetailView(HumanDetailView):
                 messages.error(request, "XP spending request not found or already processed")
                 return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
-            trait_type = xp_request.trait_type
-            trait_name = xp_request.trait_name
-            value = xp_request.trait_value
-
-            # Handle approval based on trait type
             try:
                 with transaction.atomic():
-                    if trait_type == "attribute":
-                        att = get_object_or_404(Attribute, name=trait_name)
-                        self.object.approve_xp_spend(
-                            request_id, att.property_name, value, request.user
-                        )
-                        messages.success(request, f"Approved {att.name} increase to {value}")
-                    elif trait_type == "ability":
-                        abb = get_object_or_404(Ability, name=trait_name)
-                        self.object.approve_xp_spend(
-                            request_id, abb.property_name, value, request.user
-                        )
-                        messages.success(request, f"Approved {abb.name} increase to {value}")
-                    elif trait_type == "background":
-                        # Parse background name and note
-                        if " (" in trait_name:
-                            bg_name, note = trait_name.split(" (")
-                            note = note.rstrip(")")
-                        else:
-                            bg_name = trait_name
-                            note = ""
-                        bgr = self.object.backgrounds.filter(bg__name=bg_name, note=note).first()
-                        if bgr:
-                            bgr.rating += 1
-                            bgr.save()
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved {trait_name} increase")
-                    elif trait_type == "new-background":
-                        # Parse background name and note
-                        if "(" in trait_name:
-                            bg_name, note = trait_name.split("(")
-                            note = note.rstrip(")").strip()
-                            bg_name = bg_name.strip()
-                        else:
-                            bg_name = trait_name.strip()
-                            note = ""
-                        BackgroundRating.objects.create(
-                            bg=get_object_or_404(Background, name=bg_name),
-                            rating=1,
-                            char=self.object,
-                            note=note,
-                        )
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved new background {trait_name}")
-                    elif trait_type == "willpower":
-                        self.object.approve_xp_spend(request_id, "willpower", value, request.user)
-                        messages.success(request, f"Approved Willpower increase to {value}")
-                    elif trait_type == "meritflaw":
-                        mf = get_object_or_404(MeritFlaw, name=trait_name)
-                        self.object.add_mf(mf, value)
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved merit/flaw {trait_name}")
-                    elif trait_type == "sphere":
-                        s = get_object_or_404(Sphere, name=trait_name)
-                        setattr(self.object, s.property_name, value)
-                        self.object.save()
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved {trait_name} increase to {value}")
-                    elif trait_type == "arete":
-                        self.object.approve_xp_spend(request_id, "arete", value, request.user)
-                        messages.success(request, f"Approved Arete increase to {value}")
-                    elif trait_type == "tenet":
-                        t = get_object_or_404(Tenet, name=trait_name)
-                        self.object.other_tenets.add(t)
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved tenet {trait_name}")
-                    elif trait_type == "remove tenet" or trait_type == "remove-tenet":
-                        # Remove "Remove " prefix if present
-                        tenet_name = trait_name.replace("Remove ", "")
-                        tenet = get_object_or_404(Tenet, name=tenet_name)
-                        if tenet in self.object.other_tenets.all():
-                            self.object.other_tenets.remove(tenet)
-                        else:
-                            replacement = self.object.other_tenets.filter(
-                                tenet_type=tenet.tenet_type
-                            ).first()
-                            if replacement:
-                                if tenet.tenet_type == "met":
-                                    self.object.metaphysical_tenet = replacement
-                                elif tenet.tenet_type == "per":
-                                    self.object.personal_tenet = replacement
-                                elif tenet.tenet_type == "asc":
-                                    self.object.ascension_tenet = replacement
-                                self.object.other_tenets.remove(replacement)
-                        self.object.save()
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved removal of tenet {tenet_name}")
-                    elif trait_type == "practice":
-                        practice = get_object_or_404(Practice, name=trait_name)
-                        self.object.add_practice(practice)
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved practice {trait_name}")
-                    elif trait_type == "rotes":
-                        self.object.rote_points += 3
-                        self.object.save()
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, "Approved 3 rote points")
-                    elif trait_type == "resonance":
-                        # Parse resonance detail from trait_name like "Resonance (Dynamic)"
-                        if "(" in trait_name:
-                            resonance_detail = trait_name.split("(")[1].rstrip(")")
-                        else:
-                            resonance_detail = trait_name
-                        self.object.add_resonance(resonance_detail)
-                        xp_request.approved = "Approved"
-                        xp_request.approved_by = request.user
-                        xp_request.approved_at = timezone.now()
-                        xp_request.save()
-                        messages.success(request, f"Approved resonance {resonance_detail}")
+                    service = XPSpendingServiceFactory.get_service(self.object)
+                    result = service.apply(xp_request, request.user)
+
+                    if result.success:
+                        messages.success(request, result.message)
                     else:
-                        messages.error(request, f"Unknown trait type: {trait_type}")
-            except ValidationError as e:
-                messages.error(request, str(e))
+                        messages.error(request, result.error or "Failed to apply XP spend")
             except Exception as e:
                 logger.error(
                     f"Error approving XP spend for character {self.object.id}: {e}",
                     exc_info=True,
                 )
                 messages.error(request, f"Error approving XP spend: {str(e)}")
+
         if "Reject" in form.data.values():
-            # UPDATED: Parse new format xp_request_<id>_reject instead of old index format
-            with transaction.atomic():
-                request_key = [x for x in form.data.keys() if form.data[x] == "Reject"][0]
-                # Extract request ID from "xp_request_<id>_reject"
-                request_id = int(request_key.split("_")[2])
+            # Parse xp_request_<id>_reject format
+            request_key = [x for x in form.data.keys() if form.data[x] == "Reject"][0]
+            request_id = int(request_key.split("_")[2])
 
-                from game.models import XPSpendingRequest
+            from game.models import XPSpendingRequest
 
-                try:
+            try:
+                with transaction.atomic():
                     xp_request = self.object.xp_spendings.select_for_update().get(
                         id=request_id, approved="Pending"
                     )
-                except XPSpendingRequest.DoesNotExist:
-                    messages.error(request, "XP spending request not found or already processed")
-                    return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
-                # Refund XP
-                self.object.xp += xp_request.cost
-                self.object.save()
+                    service = XPSpendingServiceFactory.get_service(self.object)
+                    result = service.deny(xp_request, request.user)
 
-                # Mark as denied
-                xp_request.approved = "Denied"
-                xp_request.approved_by = request.user
-                xp_request.approved_at = timezone.now()
-                xp_request.save()
-
-                messages.success(
-                    request,
-                    f"Rejected XP spend and refunded {xp_request.cost} XP",
-                )
+                    if result.success:
+                        messages.success(request, result.message)
+                    else:
+                        messages.error(request, result.error or "Failed to deny XP spend")
+            except XPSpendingRequest.DoesNotExist:
+                messages.error(request, "XP spending request not found or already processed")
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
         if "specialties" in form.data.keys():
             specs = {
                 k: v
