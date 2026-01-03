@@ -1208,6 +1208,7 @@ class FreebieSpendingRecord(models.Model):
     Model for tracking freebie point spending during character creation.
 
     Replaces the spent_freebies JSONField with proper database relations.
+    Includes approval workflow fields for ST review of freebie spending choices.
     """
 
     character = models.ForeignKey(
@@ -1222,7 +1223,21 @@ class FreebieSpendingRecord(models.Model):
     )
     trait_value = models.IntegerField(help_text="Value gained")
     cost = models.IntegerField(help_text="Freebie point cost")
+    approved = models.CharField(
+        max_length=20,
+        choices=XPApprovalStatus.CHOICES,
+        default=XPApprovalStatus.PENDING,
+        help_text="Approval status for ST review",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_freebie_spendings",
+    )
 
     class Meta:
         verbose_name = "Freebie Spending Record"
@@ -1230,6 +1245,7 @@ class FreebieSpendingRecord(models.Model):
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["character", "-created_at"]),
+            models.Index(fields=["character", "approved"]),
         ]
 
     def __str__(self):
