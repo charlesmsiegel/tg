@@ -94,7 +94,7 @@
                 noteElement.classList.add("d-none");
                 pooled_wrap.classList.add("d-none");
             }
-            if(this.value == "New Background"){
+            if(this.value == "Background"){
                 exampleElement.classList.remove("d-none");
                 noteElement.classList.remove("d-none");
                 valueElement.classList.add("d-none");
@@ -133,7 +133,7 @@
                 });
             }
             // Hide pooled checkbox for non-poolable backgrounds
-            if(categorySelectMenu.value == "New Background" && isGroupMember){
+            if(categorySelectMenu.value == "Background" && isGroupMember){
                 if (isSelectedOptionPoolable('#id_example')) {
                     pooled_wrap.classList.remove("d-none");
                 } else {

@@ -331,29 +331,65 @@ class HumanFreebieFormPopulationView(View):
     primary_class = Human
 
     def get(self, request, *args, **kwargs):
-        from core.ajax import dropdown_options_response
+        from django.http import JsonResponse
 
         category_choice = request.GET.get("category")
         self.character = get_object_or_404(self.primary_class, pk=request.GET.get("object"))
+
+        if category_choice == "Background":
+            # Return combined Background and BackgroundRating objects with prefixed values
+            return self._get_combined_backgrounds()
+
+        from core.ajax import dropdown_options_response
+
         examples = []
         if category_choice in self.category_method_map().keys():
             examples = self.category_method_map()[category_choice]()
         else:
             examples = []
 
-        # Include poolable attribute for new backgrounds so UI can hide pooled checkbox
-        extra_attrs = None
-        if category_choice == "New Background":
-            extra_attrs = ["poolable"]
+        return dropdown_options_response(examples, label_attr="__str__")
 
-        return dropdown_options_response(examples, label_attr="__str__", extra_attrs=extra_attrs)
+    def _get_combined_backgrounds(self):
+        """Return combined new and existing backgrounds with prefixed values."""
+        from django.http import JsonResponse
+
+        options = []
+
+        # New backgrounds (Background objects) - prefixed with "bg_"
+        new_backgrounds = Background.objects.filter(
+            property_name__in=self.character.allowed_backgrounds
+        ).order_by("name")
+        for bg in new_backgrounds:
+            options.append(
+                {
+                    "value": f"bg_{bg.pk}",
+                    "label": f"{bg.name} (new)",
+                    "poolable": bg.poolable if hasattr(bg, "poolable") else False,
+                    "is_new": True,
+                }
+            )
+
+        # Existing backgrounds (BackgroundRating objects) - prefixed with "br_"
+        existing_backgrounds = BackgroundRating.objects.filter(char=self.character, rating__lt=5)
+        for br in existing_backgrounds:
+            label = str(br)
+            options.append(
+                {
+                    "value": f"br_{br.pk}",
+                    "label": label,
+                    "poolable": False,  # Existing backgrounds don't change poolable status
+                    "is_new": False,
+                }
+            )
+
+        return JsonResponse({"options": options})
 
     def category_method_map(self):
         return {
             "Attribute": self.attribute_options,
             "Ability": self.ability_options,
-            "New Background": self.new_background_options,
-            "Existing Background": self.existing_background_options,
+            "Background": self.background_options,
             "MeritFlaw": self.meritflaw_options,
         }
 
@@ -370,13 +406,11 @@ class HumanFreebieFormPopulationView(View):
             and hasattr(self.character, x.property_name)
         ]
 
-    def new_background_options(self):
-        return Background.objects.filter(
-            property_name__in=self.character.allowed_backgrounds
-        ).order_by("name")
-
-    def existing_background_options(self):
-        return [x for x in BackgroundRating.objects.filter(char=self.character, rating__lt=5)]
+    def background_options(self):
+        """Return combined backgrounds - handled specially in get() method."""
+        # This is handled by _get_combined_backgrounds() but we need the method
+        # to exist for the category_method_map
+        return []
 
     def meritflaw_options(self):
         char_type = self.primary_class.type
@@ -436,6 +470,21 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
             value = form.cleaned_data.get("value")
             note = form.cleaned_data.get("note", "")
             pooled = form.cleaned_data.get("pooled", False)
+
+            # Handle Background with prefixed values (bg_123 or br_456)
+            if category == "Background":
+                example_value = form.data.get("example", "")
+                if example_value.startswith("bg_"):
+                    # New background - load Background object
+                    bg_pk = example_value[3:]  # Remove "bg_" prefix
+                    example = get_object_or_404(Background, pk=bg_pk)
+                elif example_value.startswith("br_"):
+                    # Existing background - load BackgroundRating object
+                    br_pk = example_value[3:]  # Remove "br_" prefix
+                    example = get_object_or_404(BackgroundRating, pk=br_pk)
+                else:
+                    form.add_error(None, "Invalid background selection")
+                    return super().form_invalid(form)
 
             # Convert value to int if present (for MeritFlaw ratings)
             if value and value != "":

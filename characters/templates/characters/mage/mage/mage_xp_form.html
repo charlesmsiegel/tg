@@ -43,13 +43,13 @@
     </div>
     <div class="row centertext">
         <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">New Background</div>
+        <div class="col-sm-3 border">Background (new)</div>
         <div class="col-sm-3 border">5</div>
         <div class="col-sm-3"></div>
     </div>
     <div class="row centertext">
         <div class="col-sm-3"></div>
-        <div class="col-sm-3 border">Background</div>
+        <div class="col-sm-3 border">Background (existing)</div>
         <div class="col-sm-3 border">3 x Current Rating</div>
         <div class="col-sm-3"></div>
     </div>
@@ -299,7 +299,7 @@
                 image_field_wrap.classList.add("d-none")
                 rote_wrap.classList.add("d-none")
             }
-            if(this.value == "New Background"){
+            if(this.value == "Background"){
                 resElement.classList.add("d-none");
                 exampleElement.classList.remove("d-none");
                 noteElement.classList.remove("d-none");
@@ -361,7 +361,7 @@
                 });
             }
             // Hide pooled checkbox for non-poolable backgrounds
-            if(categorySelectMenu.value == "New Background" && isGroupMember){
+            if(categorySelectMenu.value == "Background" && isGroupMember){
                 if (isSelectedOptionPoolable('#id_example')) {
                     pooled_wrap.classList.remove("d-none");
                 } else {

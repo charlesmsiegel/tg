@@ -9,8 +9,7 @@ CATEGORY_CHOICES = [
     ("-----", "-----"),
     ("Attribute", "Attribute"),
     ("Ability", "Ability"),
-    ("New Background", "New Background"),
-    ("Existing Background", "Existing Background"),
+    ("Background", "Background"),
     ("Willpower", "Willpower"),
     ("MeritFlaw", "MeritFlaw"),
 ]
@@ -30,8 +29,7 @@ class HumanFreebiesForm(forms.Form):
             ("-----", "-----"),
             ("Attribute", "Attribute"),
             ("Ability", "Ability"),
-            ("New Background", "New Background"),
-            ("Existing Background", "Existing Background"),
+            ("Background", "Background"),
             ("Willpower", "Willpower"),
             ("MeritFlaw", "MeritFlaw"),
         ]
@@ -49,10 +47,10 @@ class HumanFreebiesForm(forms.Form):
                 self.fields["example"].queryset = Attribute.objects.all()
             if category == "Ability":
                 self.fields["example"].queryset = Ability.objects.all()
-            if category == "New Background":
-                self.fields["example"].queryset = Background.objects.all()
-            if category == "Existing Background":
-                self.fields["example"].queryset = self.instance.backgrounds.all()
+            if category == "Background":
+                # Background uses prefixed values - queryset not used for validation
+                # The view will parse the prefix and load the appropriate object
+                pass
             if category == "MeritFlaw":
                 self.fields["example"].queryset = MeritFlaw.objects.all()
                 self.fields["value"].choices = [(x, x) for x in range(-100, 101)]
@@ -81,8 +79,7 @@ class HumanFreebiesForm(forms.Form):
             in [
                 "Attribute",
                 "Ability",
-                "New Background",
-                "Existing Background",
+                "Background",
                 "Sphere",
                 "Tenet",
                 "Practice",

@@ -401,59 +401,79 @@ class HumanXPSpendingService(XPSpendingService):
             message=f"Spent {cost} XP on {trait}",
         )
 
+    @handler("Background")
+    def _handle_background(self, example, note="", **kwargs) -> XPSpendResult:
+        """Handle background XP spending.
+
+        Automatically detects new vs existing background based on example type:
+        - Background model = new background (will create BackgroundRating)
+        - BackgroundRating model = existing background (increase rating)
+        """
+        from characters.models.core.background_block import Background, BackgroundRating
+
+        is_new = isinstance(example, Background)
+
+        if is_new:
+            # New background - example is a Background model
+            if note:
+                trait = example.name + f" ({note})"
+            else:
+                trait = example.name
+            new_value = 1
+
+            # New background base cost = 5, apply background multiplier
+            multiplier = example.multiplier if hasattr(example, "multiplier") else 1
+            cost = 5 * multiplier
+
+            self.character.spend_xp(
+                trait_name="",
+                trait_display=trait,
+                cost=cost,
+                category="new-background",
+                trait_value=new_value,
+            )
+
+            return XPSpendResult(
+                success=True,
+                trait=trait,
+                cost=cost,
+                message=f"Spent {cost} XP on new background {trait}",
+            )
+        else:
+            # Existing background - example is a BackgroundRating model
+            trait = example.bg.name + (f" ({example.note})" if example.note else "")
+            current_value = example.rating
+            new_value = current_value + 1
+
+            # Calculate cost: multiplier × current value, apply background multiplier
+            bg_multiplier = example.bg.multiplier if hasattr(example.bg, "multiplier") else 1
+            cost = get_xp_cost("background") * current_value * bg_multiplier
+
+            self.character.spend_xp(
+                trait_name="",
+                trait_display=trait,
+                cost=cost,
+                category="background",
+                trait_value=new_value,
+            )
+
+            return XPSpendResult(
+                success=True,
+                trait=trait,
+                cost=cost,
+                message=f"Spent {cost} XP on {trait}",
+            )
+
+    # Legacy handlers for backward compatibility
     @handler("New Background")
     def _handle_new_background(self, example, note="", **kwargs) -> XPSpendResult:
-        """Handle new background XP spending."""
-        if note:
-            trait = example.name + f" ({note})"
-        else:
-            trait = example.name
-        new_value = 1
-
-        # New background base cost = 5, apply background multiplier
-        multiplier = example.multiplier if hasattr(example, "multiplier") else 1
-        cost = 5 * multiplier
-
-        self.character.spend_xp(
-            trait_name="",
-            trait_display=trait,
-            cost=cost,
-            category="new-background",
-            trait_value=new_value,
-        )
-
-        return XPSpendResult(
-            success=True,
-            trait=trait,
-            cost=cost,
-            message=f"Spent {cost} XP on new background {trait}",
-        )
+        """Legacy handler - redirects to unified Background handler."""
+        return self._handle_background(example, note=note, **kwargs)
 
     @handler("Existing Background")
     def _handle_existing_background(self, example, **kwargs) -> XPSpendResult:
-        """Handle existing background XP spending."""
-        trait = example.bg.name + f" ({example.note})"
-        current_value = example.rating
-        new_value = current_value + 1
-
-        # Calculate cost: multiplier × current value, apply background multiplier
-        bg_multiplier = example.bg.multiplier if hasattr(example.bg, "multiplier") else 1
-        cost = get_xp_cost("background") * current_value * bg_multiplier
-
-        self.character.spend_xp(
-            trait_name="",
-            trait_display=trait,
-            cost=cost,
-            category="background",
-            trait_value=new_value,
-        )
-
-        return XPSpendResult(
-            success=True,
-            trait=trait,
-            cost=cost,
-            message=f"Spent {cost} XP on {trait}",
-        )
+        """Legacy handler - redirects to unified Background handler."""
+        return self._handle_background(example, **kwargs)
 
     @handler("Willpower")
     def _handle_willpower(self, **kwargs) -> XPSpendResult:
