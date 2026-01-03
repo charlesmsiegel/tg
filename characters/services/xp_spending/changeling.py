@@ -8,6 +8,7 @@ This module provides XP spending services for Changeling: The Dreaming character
 - NunnehiXPSpendingService - Nunnehi (Native American fae)
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -47,19 +48,11 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Determine if this is an affinity Art
-        is_affinity = (
-            self.character.is_affinity_art(example)
-            if hasattr(self.character, "is_affinity_art")
-            else False
-        )
-
+        # Calculate cost: 8 × current value (new art = 8)
         if current_value == 0:
-            cost = self.character.xp_cost("new_art", new_value)
-        elif is_affinity:
-            cost = self.character.xp_cost("affinity_art", new_value)
+            cost = 8  # New art
         else:
-            cost = self.character.xp_cost("art", new_value)
+            cost = get_xp_cost("art") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -83,7 +76,12 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("realm", current_value)
+
+        # Calculate cost: 5 × current value (new realm = 5)
+        if current_value == 0:
+            cost = 5  # New realm
+        else:
+            cost = get_xp_cost("realm") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -106,7 +104,9 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         trait = "Glamour"
         current_value = self.character.glamour
         new_value = current_value + 1
-        cost = self.character.xp_cost("glamour", current_value)
+
+        # Calculate cost: 3 × current value
+        cost = get_xp_cost("glamour") * current_value
 
         self.character.spend_xp(
             trait_name="glamour",
@@ -129,7 +129,9 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         trait = "Banality Reduction"
         current_value = self.character.banality
         new_value = current_value - 1
-        cost = self.character.xp_cost("banality_reduction", current_value)
+
+        # Cost is 2 × current banality
+        cost = get_xp_cost("banality") * current_value
 
         self.character.spend_xp(
             trait_name="banality",

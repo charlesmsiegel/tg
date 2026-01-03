@@ -6,6 +6,7 @@ This module provides XP spending services for Mummy: The Resurrection characters
 - MummyXPSpendingService - Reborn mummies with Hekau, Sekhem, Balance
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -45,10 +46,11 @@ class MummyXPSpendingService(MtRHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
+        # Calculate cost: new=10, existing=5×current (web-favored)
         if current_value == 0:
-            cost = self.character.xp_cost("new_hekau", new_value)
+            cost = 10  # New hekau
         else:
-            cost = self.character.xp_cost("hekau", current_value)
+            cost = get_xp_cost("hekau") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -71,7 +73,9 @@ class MummyXPSpendingService(MtRHumanXPSpendingService):
         trait = "Sekhem"
         current_value = self.character.sekhem
         new_value = current_value + 1
-        cost = self.character.xp_cost("sekhem", current_value)
+
+        # Calculate cost: 10 × current value
+        cost = get_xp_cost("sekhem") * current_value
 
         self.character.spend_xp(
             trait_name="sekhem",
@@ -94,7 +98,9 @@ class MummyXPSpendingService(MtRHumanXPSpendingService):
         trait = "Balance"
         current_value = self.character.balance
         new_value = current_value + 1
-        cost = self.character.xp_cost("balance", current_value)
+
+        # Calculate cost: 2 × current value
+        cost = get_xp_cost("balance") * current_value
 
         self.character.spend_xp(
             trait_name="balance",

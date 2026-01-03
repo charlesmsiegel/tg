@@ -9,6 +9,7 @@ This module provides XP spending services for Werewolf: The Apocalypse character
 - Per-breed services for each Fera type
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -47,9 +48,9 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
     def _handle_gift(self, example, **kwargs) -> XPSpendResult:
         """Handle gift XP spending."""
         trait = example.name
-        # Gift cost is based on the gift's level
+        # Gift cost is 3 × gift level (for breed/auspice/tribe gifts)
         gift_level = example.rank if hasattr(example, "rank") else 1
-        cost = self.character.xp_cost("gift", gift_level)
+        cost = get_xp_cost("gift") * gift_level
 
         self.character.spend_xp(
             trait_name="",
@@ -70,9 +71,9 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
     def _handle_rite(self, example, **kwargs) -> XPSpendResult:
         """Handle rite XP spending."""
         trait = example.name
-        # Rite cost is based on the rite's level
+        # Rite cost is 1 × rite level
         rite_level = example.level if hasattr(example, "level") else 1
-        cost = self.character.xp_cost("rite", rite_level)
+        cost = get_xp_cost("rite") * rite_level
 
         self.character.spend_xp(
             trait_name="",
@@ -95,7 +96,9 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
         trait = "Rage"
         current_value = self.character.rage
         new_value = current_value + 1
-        cost = self.character.xp_cost("rage", current_value)
+
+        # Cost is 1 × current value
+        cost = get_xp_cost("rage") * current_value
 
         self.character.spend_xp(
             trait_name="rage",
@@ -118,7 +121,9 @@ class GarouXPSpendingService(WtAHumanXPSpendingService):
         trait = "Gnosis"
         current_value = self.character.gnosis
         new_value = current_value + 1
-        cost = self.character.xp_cost("gnosis", current_value)
+
+        # Cost is 2 × current value
+        cost = get_xp_cost("gnosis") * current_value
 
         self.character.spend_xp(
             trait_name="gnosis",

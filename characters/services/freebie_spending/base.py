@@ -12,6 +12,7 @@ during character creation.
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from characters.costs import get_freebie_cost, get_meritflaw_freebie_cost
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
@@ -403,7 +404,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("attribute")
+        cost = get_freebie_cost("attribute")
 
         # Validate
         if cost > self.character.freebies:
@@ -445,7 +446,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("ability")
+        cost = get_freebie_cost("ability")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -479,85 +480,110 @@ class HumanFreebieSpendingService(FreebieSpendingService):
             message=f"Spent {cost} freebies on {trait}",
         )
 
+    @handler("Background")
+    def _handle_background(self, example, note="", pooled=False, **kwargs) -> FreebieSpendResult:
+        """Handle background freebie spending.
+
+        Automatically detects new vs existing background based on example type:
+        - Background model = new background (create BackgroundRating)
+        - BackgroundRating model = existing background (increase rating)
+        """
+        from characters.models.core.background_block import Background, BackgroundRating
+
+        # Detect new vs existing based on example type
+        is_new = isinstance(example, Background)
+
+        if is_new:
+            # New background - example is a Background model
+            bg = example
+            trait = bg.name + (f" ({note})" if note else "")
+            new_value = 1
+            base_cost = get_freebie_cost("background")
+            multiplier = bg.multiplier if hasattr(bg, "multiplier") else 1
+            cost = base_cost * multiplier
+
+            if cost > self.character.freebies:
+                return FreebieSpendResult(
+                    success=False,
+                    trait=trait,
+                    cost=cost,
+                    message="",
+                    error="Not enough freebies",
+                )
+
+            # Create the background rating
+            BackgroundRating.objects.create(
+                char=self.character,
+                bg=bg,
+                rating=new_value,
+                note=note,
+                pooled=pooled,
+            )
+
+            # Record and deduct
+            self._record_spending(trait, "background", new_value, cost)
+            self._deduct_freebies(cost)
+
+            return FreebieSpendResult(
+                success=True,
+                trait=trait,
+                cost=cost,
+                message=f"Spent {cost} freebies on new background {trait}",
+            )
+        else:
+            # Existing background - example is a BackgroundRating model
+            bg_rating = example
+            trait = bg_rating.bg.name + (f" ({bg_rating.note})" if bg_rating.note else "")
+            current_value = bg_rating.rating
+            new_value = current_value + 1
+            base_cost = get_freebie_cost("background")
+            multiplier = bg_rating.bg.multiplier if hasattr(bg_rating.bg, "multiplier") else 1
+            cost = base_cost * multiplier
+
+            if cost > self.character.freebies:
+                return FreebieSpendResult(
+                    success=False,
+                    trait=trait,
+                    cost=cost,
+                    message="",
+                    error="Not enough freebies",
+                )
+            if new_value > 5:
+                return FreebieSpendResult(
+                    success=False,
+                    trait=trait,
+                    cost=cost,
+                    message="",
+                    error="Background at maximum",
+                )
+
+            # Apply the change
+            bg_rating.rating = new_value
+            bg_rating.save()
+
+            # Record and deduct
+            self._record_spending(trait, "background", new_value, cost)
+            self._deduct_freebies(cost)
+
+            return FreebieSpendResult(
+                success=True,
+                trait=trait,
+                cost=cost,
+                message=f"Spent {cost} freebies on {trait}",
+            )
+
+    # Keep legacy handlers for backward compatibility during transition
     @handler("New Background")
     def _handle_new_background(
         self, example, note="", pooled=False, **kwargs
     ) -> FreebieSpendResult:
-        """Handle new background freebie spending."""
-        from characters.models.core.background_block import BackgroundRating
-
-        trait = example.name + (f" ({note})" if note else "")
-        new_value = 1
-        cost = example.multiplier if hasattr(example, "multiplier") else 1
-
-        if cost > self.character.freebies:
-            return FreebieSpendResult(
-                success=False,
-                trait=trait,
-                cost=cost,
-                message="",
-                error="Not enough freebies",
-            )
-
-        # Create the background rating
-        BackgroundRating.objects.create(
-            char=self.character,
-            bg=example,
-            rating=new_value,
-            note=note,
-            pooled=pooled,
-        )
-
-        # Record and deduct
-        self._record_spending(trait, "new-background", new_value, cost)
-        self._deduct_freebies(cost)
-
-        return FreebieSpendResult(
-            success=True,
-            trait=trait,
-            cost=cost,
-            message=f"Spent {cost} freebies on new background {trait}",
-        )
+        """Legacy handler - redirects to unified Background handler."""
+        return self._handle_background(example, note=note, pooled=pooled, **kwargs)
 
     @handler("Existing Background")
     def _handle_existing_background(self, example, **kwargs) -> FreebieSpendResult:
-        """Handle existing background freebie spending."""
-        trait = example.bg.name + (f" ({example.note})" if example.note else "")
-        current_value = example.rating
-        new_value = current_value + 1
-        cost = example.bg.multiplier if hasattr(example.bg, "multiplier") else 1
-
-        if cost > self.character.freebies:
-            return FreebieSpendResult(
-                success=False,
-                trait=trait,
-                cost=cost,
-                message="",
-                error="Not enough freebies",
-            )
-        if new_value > 5:
-            return FreebieSpendResult(
-                success=False,
-                trait=trait,
-                cost=cost,
-                message="",
-                error="Background at maximum",
-            )
-
-        # Apply the change
-        example.rating = new_value
-        example.save()
-
-        # Record and deduct
-        self._record_spending(trait, "background", new_value, cost)
-        self._deduct_freebies(cost)
-
-        return FreebieSpendResult(
-            success=True,
-            trait=trait,
-            cost=cost,
-            message=f"Spent {cost} freebies on {trait}",
-        )
+        """Legacy handler - redirects to unified Background handler."""
+        return self._handle_background(example, **kwargs)
 
     @handler("Willpower")
     def _handle_willpower(self, **kwargs) -> FreebieSpendResult:
@@ -565,7 +591,7 @@ class HumanFreebieSpendingService(FreebieSpendingService):
         trait = "Willpower"
         current_value = self.character.willpower
         new_value = current_value + 1
-        cost = self.character.freebie_cost("willpower")
+        cost = get_freebie_cost("willpower")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -602,14 +628,20 @@ class HumanFreebieSpendingService(FreebieSpendingService):
 
     @handler("MeritFlaw")
     def _handle_merit_flaw(self, example, value=None, **kwargs) -> FreebieSpendResult:
-        """Handle merit/flaw freebie spending."""
-        trait = example.name
-        cost = value if value is not None else example.max_rating
+        """Handle merit/flaw freebie spending.
 
-        # Validate flaw limit
-        if cost < 0:
+        Merit/flaw costs equal their rating. Flaws (negative ratings) grant
+        freebies instead of costing them.
+        """
+        trait = example.name
+        rating = value if value is not None else example.max_rating
+        cost = get_meritflaw_freebie_cost(rating)  # abs(rating)
+
+        # For flaws, cost is negative (grants freebies)
+        if rating < 0:
+            cost = rating  # Negative = gain freebies
             current_flaws = self.character.total_flaws()
-            if current_flaws + cost < -7:
+            if current_flaws + rating < -7:
                 return FreebieSpendResult(
                     success=False,
                     trait=trait,
@@ -617,7 +649,6 @@ class HumanFreebieSpendingService(FreebieSpendingService):
                     message="",
                     error="Would exceed maximum flaw limit of 7",
                 )
-            # Flaws give freebies (negative cost means gain)
         elif cost > self.character.freebies:
             return FreebieSpendResult(
                 success=False,
@@ -628,10 +659,10 @@ class HumanFreebieSpendingService(FreebieSpendingService):
             )
 
         # Add the merit/flaw
-        self.character.add_mf(example, cost)
+        self.character.add_mf(example, rating)
 
-        # Record and deduct
-        self._record_spending(trait, "meritflaw", cost, cost)
+        # Record and deduct (for flaws, this adds freebies)
+        self._record_spending(trait, "meritflaw", rating, cost)
         self._deduct_freebies(cost)
 
         return FreebieSpendResult(

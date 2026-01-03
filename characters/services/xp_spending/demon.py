@@ -8,6 +8,7 @@ This module provides XP spending services for Demon: The Fallen characters:
 - EarthboundXPSpendingService - Ancient demons bound to relics
 """
 
+from characters.costs import get_xp_cost
 from django.utils import timezone
 
 from .base import (
@@ -35,7 +36,9 @@ class DtFHumanXPSpendingService(HumanXPSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.xp_cost("virtue", current_value)
+
+        # Calculate cost: 2 × current value
+        cost = get_xp_cost("virtue") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -88,19 +91,20 @@ class DemonXPSpendingService(DtFHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Determine if this is a House lore or common lore
+        # Determine if this is a House lore
         is_house = (
             self.character.is_house_lore(example)
             if hasattr(self.character, "is_house_lore")
             else False
         )
 
+        # Calculate cost: new=10, house=5×current, other=7×current
         if current_value == 0:
-            cost = self.character.xp_cost("new_lore", new_value)
+            cost = 10  # New lore
         elif is_house:
-            cost = self.character.xp_cost("house_lore", new_value)
+            cost = get_xp_cost("lore") * current_value  # 5×current (house)
         else:
-            cost = self.character.xp_cost("lore", new_value)
+            cost = 7 * current_value  # 7×current (other lore)
 
         self.character.spend_xp(
             trait_name=property_name,
@@ -123,7 +127,9 @@ class DemonXPSpendingService(DtFHumanXPSpendingService):
         trait = "Faith"
         current_value = self.character.faith
         new_value = current_value + 1
-        cost = self.character.xp_cost("faith", current_value)
+
+        # Calculate cost: 10 × current value
+        cost = get_xp_cost("faith") * current_value
 
         self.character.spend_xp(
             trait_name="faith",
@@ -146,7 +152,9 @@ class DemonXPSpendingService(DtFHumanXPSpendingService):
         trait = "Torment Reduction"
         current_value = self.character.torment
         new_value = current_value - 1
-        cost = self.character.xp_cost("torment_reduction", current_value)
+
+        # Cost is 10 per point of torment reduction
+        cost = get_xp_cost("reduce_torment")
 
         self.character.spend_xp(
             trait_name="torment",
@@ -219,7 +227,9 @@ class ThrallXPSpendingService(DtFHumanXPSpendingService):
             self.character.faith_potential if hasattr(self.character, "faith_potential") else 0
         )
         new_value = current_value + 1
-        cost = self.character.xp_cost("faith_potential", current_value)
+
+        # Calculate cost: 10 × current value
+        cost = get_xp_cost("faith_potential") * current_value
 
         self.character.spend_xp(
             trait_name="faith_potential",
