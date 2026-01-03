@@ -1,6 +1,7 @@
 from django.urls import path
 from items import views
 
+app_name = "items:list"
 urls = [
     path("material/", views.core.MaterialListView.as_view(), name="material"),
     path("medium/", views.core.MediumListView.as_view(), name="medium"),

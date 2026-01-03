@@ -4,7 +4,7 @@ from characters.views.core.meritflaw import MeritFlawListView
 from characters.views.core.specialty import SpecialtyListView
 from django.urls import path
 
-app_name = "characters:detail"
+app_name = "characters:list"
 urls = [
     path(
         "archetypes/",
