@@ -81,6 +81,11 @@
         </div>
     </div>
 {% endif %}
+<div id="freebies-form"
+     data-load-examples-url="{% url 'characters:vampire:ajax:load_vampire_examples' %}"
+     data-load-values-url="{% url 'characters:ajax:load_values' %}"
+     data-object-id="{{ object.id }}"
+     data-is-group-member="{{ object.is_group_member|yesno:'true,false' }}">
 <div class="row">
     <div class="col-sm">
         {{ form.category }}
@@ -119,85 +124,6 @@
         <div class="col-sm">{{ item.cost }} freebies</div>
     </div>
 {% endfor %}
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const categorySelectMenu = document.getElementById("id_category");
-        const exampleSelectMenu = document.getElementById("id_example")
-        const exampleElement = document.getElementById("example_wrap");
-        const valueElement = document.getElementById("value_wrap");
-        const noteElement = document.getElementById("note_wrap");
-        const pooled_wrap = document.getElementById("pooled_wrap");
-
-        var isGroupMember = {{ object.is_group_member|lower }};
-
-        categorySelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-
-            // Update the class of the element
-            if(["Willpower", "-----", "Humanity", "Path Rating"].includes(this.value)){
-                exampleElement.classList.add("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
-            } else {
-                exampleElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
-            }
-            if(this.value == "MeritFlaw"){
-                valueElement.classList.remove("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
-            }
-            if(this.value == "Background"){
-                exampleElement.classList.remove("d-none");
-                noteElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
-                if (isGroupMember) {
-                    pooled_wrap.classList.remove("d-none");
-                } else {
-                    pooled_wrap.classList.add("d-none");
-                }
-            }
-
-            // Make the AJAX call
-            $.ajax({
-                url: '{% url 'characters:vampire:ajax:load_vampire_examples' %}',
-                data: {
-                    'category': this.value,
-                    'object': {{object.id}}
-                },
-                success: function (data) {
-                    populateDropdown('#id_example', data.options);
-                    populateDropdownFromValues('#id_value', []);
-                }
-            });
-        });
-
-        exampleSelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            if(categorySelectMenu.value == "MeritFlaw"){
-                $.ajax({
-                    url: '{% url 'characters:ajax:load_values' %}',
-                    data: {
-                        'example': this.value,
-                        'object': {{object.id}}
-                    },
-                    success: function (data) {
-                        populateDropdownFromValues('#id_value', data.values);
-                    }
-                });
-            }
-            // Hide pooled checkbox for non-poolable backgrounds
-            if(categorySelectMenu.value == "Background" && isGroupMember){
-                if (isSelectedOptionPoolable('#id_example')) {
-                    pooled_wrap.classList.remove("d-none");
-                } else {
-                    pooled_wrap.classList.add("d-none");
-                }
-            }
-        });
-    });
-
-</script>
+</div>
+{% load static %}
+<script src="{% static 'js/vampire-freebies-form.js' %}"></script>

@@ -794,3 +794,43 @@ class TestVampireClanSpecificDisciplines(VampireChargenTestCase):
         self.assertEqual(vampire.animalism, 1)
         self.assertEqual(vampire.fortitude, 1)
         self.assertEqual(vampire.protean, 1)
+
+
+class TestVampireFreebiesFormTemplateStaticJS(TestCase):
+    """Test that vampire freebies form template includes static JavaScript file."""
+
+    def test_freebies_form_loads_static_vampire_freebies_js(self):
+        """Vampire freebies_form.html loads vampire-freebies-form.js from static files."""
+        from django.template import loader
+
+        template = loader.get_template("characters/vampire/vampire/freebies_form.html")
+
+        # Verify the template source contains the static file reference
+        template_source = template.template.source
+        self.assertIn("js/vampire-freebies-form.js", template_source)
+        self.assertIn("{% static", template_source)
+
+    def test_freebies_form_has_data_attributes(self):
+        """Vampire freebies_form.html has data attributes for JavaScript configuration."""
+        from django.template import loader
+
+        template = loader.get_template("characters/vampire/vampire/freebies_form.html")
+        template_source = template.template.source
+
+        # The template should use data attributes for URLs
+        self.assertIn("data-load-examples-url", template_source)
+        self.assertIn("data-load-values-url", template_source)
+        self.assertIn("data-object-id", template_source)
+        self.assertIn("data-is-group-member", template_source)
+
+    def test_freebies_form_does_not_contain_inline_script(self):
+        """Vampire freebies_form.html does not contain inline AJAX URLs."""
+        from django.template import loader
+
+        template = loader.get_template("characters/vampire/vampire/freebies_form.html")
+        template_source = template.template.source
+
+        # The template should not have AJAX URLs embedded in JavaScript
+        # This pattern was the problematic code we extracted
+        self.assertNotIn("$.ajax({", template_source)
+        self.assertNotIn("url: '{% url", template_source)
