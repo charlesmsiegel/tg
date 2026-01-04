@@ -139,7 +139,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         if submitted_scene_id is not None:
             scene = get_object_or_404(Scene, pk=submitted_scene_id)
-            form = SceneXP(request.POST, scene=scene)
+            form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
             if form.is_valid():
                 form.save()
                 messages.success(request, f"XP awarded for scene '{scene.name}'!")

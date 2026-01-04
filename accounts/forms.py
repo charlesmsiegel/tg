@@ -133,29 +133,17 @@ class StoryXP(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        tmp = {}
+        result = {}
         for char in self.char_list:
-            relevant_data = {k: v for k, v in self.data.items() if char.name in k}
-            char_dict = {
-                "success": False,
-                "danger": False,
-                "growth": False,
-                "drama": False,
-                "duration": 0,
+            # Use cleaned_data with proper field names instead of raw self.data
+            result[char] = {
+                "success": cleaned_data.get(f"{char.name}-success", False),
+                "danger": cleaned_data.get(f"{char.name}-danger", False),
+                "growth": cleaned_data.get(f"{char.name}-growth", False),
+                "drama": cleaned_data.get(f"{char.name}-drama", False),
+                "duration": cleaned_data.get(f"{char.name}-duration") or 0,
             }
-            for item in relevant_data.keys():
-                keyname = item.split("-")[-1]
-                if keyname != "duration":
-                    char_dict[keyname] = (
-                        relevant_data[f"story_{self.story.pk}-{char.name}-{keyname}"] == "on"
-                    )
-                else:
-                    char_dict[keyname] = int(
-                        relevant_data[f"story_{self.story.pk}-{char.name}-{keyname}"]
-                    )
-
-            tmp[char] = char_dict
-        return tmp
+        return result
 
 
 class FreebieAwardForm(forms.Form):
