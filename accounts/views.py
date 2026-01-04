@@ -38,6 +38,14 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = "accounts/detail.html"
 
     def get_context_data(self, **kwargs):
+        """Build context for the profile detail page.
+
+        Adds forms for XP requests, freebie approvals, and weekly XP management.
+        Only storytellers see the scenes_waiting list.
+
+        Returns:
+            dict: Context with profile data, XP forms, and approval queues.
+        """
         context = super().get_context_data(**kwargs)
         context["scenes_waiting"] = []
         if self.object.is_st():
@@ -69,6 +77,20 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
+        """Handle profile page form submissions.
+
+        Processes various approval and XP-related actions including:
+        - Scene XP awards
+        - Character/location/item/rote approvals
+        - Image approvals
+        - Weekly XP request submissions and approvals
+        - Marking scenes as read
+
+        Only storytellers can perform approval actions.
+
+        Returns:
+            HttpResponse: Redirect to profile on success, or re-render on error.
+        """
         self.object = self.get_object()
         context = self.get_context_data()
         form_errors = False
@@ -223,9 +245,23 @@ class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
 
     def get_success_url(self):
+        """Get URL to redirect to after successful login.
+
+        Adds a welcome message and redirects to the user's profile page.
+
+        Returns:
+            str: URL to the user's profile page.
+        """
         messages.success(self.request, f"Welcome back, {self.request.user.username}!")
         return self.request.user.profile.get_absolute_url()
 
     def form_invalid(self, form):
+        """Handle invalid login form submission.
+
+        Displays an error message when login credentials are incorrect.
+
+        Returns:
+            HttpResponse: Rendered login form with error message.
+        """
         messages.error(self.request, "Invalid username or password.")
         return super().form_invalid(form)

@@ -17,6 +17,7 @@ class Command(BaseCommand):
     help = "Process weekly XP for characters who participated in scenes"
 
     def add_arguments(self, parser):
+        """Define command-line arguments for the process_weekly_xp command."""
         parser.add_argument(
             "--week-ending",
             type=str,
@@ -39,6 +40,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Execute the process_weekly_xp command.
+
+        Creates a Week object and generates WeeklyXPRequest objects for
+        characters who participated in finished scenes during the week.
+        """
         self.dry_run = options["dry_run"]
         self.auto_approve = options["auto_approve"]
 

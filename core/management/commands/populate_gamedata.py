@@ -20,6 +20,7 @@ class Command(BaseCommand):
     help = "Populate database with World of Darkness game data from populate_db/ scripts (searches recursively)"
 
     def add_arguments(self, parser):
+        """Define command-line arguments for the populate_gamedata command."""
         parser.add_argument(
             "--gameline",
             type=str,
@@ -78,6 +79,11 @@ class Command(BaseCommand):
         return (priority, subdir, str(relative_path))
 
     def handle(self, *args, **options):
+        """Execute the populate_gamedata command.
+
+        Discovers and executes Python scripts in populate_db/ directory,
+        respecting filters and loading order.
+        """
         populate_dir = Path("populate_db")
 
         if not populate_dir.exists():

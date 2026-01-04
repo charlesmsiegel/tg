@@ -109,30 +109,78 @@ class Profile(models.Model):
         return d
 
     def my_characters(self):
+        """Get all characters owned by this user.
+
+        Returns:
+            QuerySet[Character]: Characters owned by this user, ordered by name.
+        """
         return Character.objects.owned_by(self.user)
 
     def my_locations(self):
+        """Get all locations owned by this user.
+
+        Returns:
+            QuerySet[LocationModel]: Locations owned by this user, ordered by name.
+        """
         return LocationModel.objects.owned_by(self.user)
 
     def my_items(self):
+        """Get all items owned by this user.
+
+        Returns:
+            QuerySet[ItemModel]: Items owned by this user, ordered by name.
+        """
         return ItemModel.objects.owned_by(self.user)
 
     def xp_requests(self):
+        """Get scenes awaiting XP awards for this user's chronicles.
+
+        Returns:
+            QuerySet[Scene]: Finished scenes that haven't had XP awarded yet.
+        """
         return Scene.objects.awaiting_xp().for_user_chronicles(self.user)
 
     def xp_story(self):
+        """Get stories that haven't had XP awarded yet.
+
+        Returns:
+            QuerySet[Story]: Stories where xp_given is False.
+        """
         return Story.objects.filter(xp_given=False)
 
     def xp_weekly(self):
+        """Get weeks that haven't had XP awarded yet.
+
+        Returns:
+            QuerySet[Week]: Weeks where xp_given is False.
+        """
         return Week.objects.filter(xp_given=False)
 
     def characters_to_approve(self):
+        """Get characters pending approval for this user's chronicles.
+
+        Returns:
+            QuerySet[Character]: Characters awaiting ST approval in chronicles
+            where this user is a storyteller.
+        """
         return Character.objects.pending_approval_for_user(self.user)
 
     def items_to_approve(self):
+        """Get items pending approval for this user's chronicles.
+
+        Returns:
+            QuerySet[ItemModel]: Items awaiting ST approval in chronicles
+            where this user is a storyteller.
+        """
         return ItemModel.objects.pending_approval_for_user(self.user)
 
     def locations_to_approve(self):
+        """Get locations pending approval for this user's chronicles.
+
+        Returns:
+            QuerySet[LocationModel]: Locations awaiting ST approval in chronicles
+            where this user is a storyteller.
+        """
         return LocationModel.objects.pending_approval_for_user(self.user)
 
     def rotes_to_approve(self):
@@ -166,17 +214,38 @@ class Profile(models.Model):
         return to_approve
 
     def freebies_to_approve(self):
+        """Get characters with unapproved freebie point allocations.
+
+        Returns:
+            QuerySet[Character]: Characters at the freebie spending step
+            that haven't been approved yet.
+        """
         return Character.objects.filter(
             chronicle__in=self.user.chronicle_set.all(), freebies_approved=False
         ).at_freebie_step()
 
     def character_images_to_approve(self):
+        """Get characters with pending image uploads for this user's chronicles.
+
+        Returns:
+            QuerySet[Character]: Characters with images awaiting ST approval.
+        """
         return Character.objects.with_pending_images().for_user_chronicles(self.user)
 
     def location_images_to_approve(self):
+        """Get locations with pending image uploads for this user's chronicles.
+
+        Returns:
+            QuerySet[LocationModel]: Locations with images awaiting ST approval.
+        """
         return LocationModel.objects.with_pending_images().for_user_chronicles(self.user)
 
     def item_images_to_approve(self):
+        """Get items with pending image uploads for this user's chronicles.
+
+        Returns:
+            QuerySet[ItemModel]: Items with images awaiting ST approval.
+        """
         return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
 
     @property
@@ -228,6 +297,12 @@ class Profile(models.Model):
         return reverse("profile", kwargs={"pk": self.pk})
 
     def get_updated_journals(self):
+        """Get journals with entries awaiting ST response.
+
+        Returns:
+            QuerySet[Journal]: Journals containing entries where the ST hasn't
+            yet provided a message/response.
+        """
         return Journal.objects.filter(entries__st_message="").distinct()
 
     def get_unfulfilled_weekly_xp_requests(self):
@@ -304,6 +379,11 @@ class Profile(models.Model):
         return Character.objects.filter(xp_spendings__approved="Pending").distinct()
 
     def unread_scenes(self):
+        """Get scenes that the user has not marked as read.
+
+        Returns:
+            QuerySet[Scene]: Scenes where the user's read status is False.
+        """
         return Scene.objects.filter(
             user_read_statuses__user=self.user, user_read_statuses__read=False
         ).distinct()

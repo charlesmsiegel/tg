@@ -21,6 +21,7 @@ class Command(BaseCommand):
     help = "Validate data integrity for validation system deployment"
 
     def add_arguments(self, parser):
+        """Define command-line arguments for the validate_data_integrity command."""
         parser.add_argument(
             "--fix",
             action="store_true",
@@ -33,6 +34,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Execute the validate_data_integrity command.
+
+        Runs all data integrity checks and optionally fixes issues found.
+        """
         fix = options["fix"]
         verbose = options["verbose"]
 
@@ -109,7 +114,11 @@ class Command(BaseCommand):
         return count
 
     def check_invalid_status(self, fix, verbose):
-        """Check for characters with invalid status values."""
+        """Check for characters with invalid status values.
+
+        Valid statuses are: Un (Unfinished), Sub (Submitted), App (Approved),
+        Ret (Retired), Dec (Deceased).
+        """
         self.stdout.write(self.style.HTTP_INFO("\n2. Checking for invalid status values..."))
 
         valid_statuses = ["Un", "Sub", "App", "Ret", "Dec"]

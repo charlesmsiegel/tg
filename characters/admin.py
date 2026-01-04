@@ -241,30 +241,39 @@ class RoteAdmin(admin.ModelAdmin):
     )
 
     def correspondence(self, obj):
+        """Get the Correspondence sphere rating from the rote's effect."""
         return obj.effect.correspondence
 
     def time(self, obj):
+        """Get the Time sphere rating from the rote's effect."""
         return obj.effect.time
 
     def spirit(self, obj):
+        """Get the Spirit sphere rating from the rote's effect."""
         return obj.effect.spirit
 
     def matter(self, obj):
+        """Get the Matter sphere rating from the rote's effect."""
         return obj.effect.matter
 
     def life(self, obj):
+        """Get the Life sphere rating from the rote's effect."""
         return obj.effect.life
 
     def forces(self, obj):
+        """Get the Forces sphere rating from the rote's effect."""
         return obj.effect.forces
 
     def entropy(self, obj):
+        """Get the Entropy sphere rating from the rote's effect."""
         return obj.effect.entropy
 
     def mind(self, obj):
+        """Get the Mind sphere rating from the rote's effect."""
         return obj.effect.mind
 
     def prime(self, obj):
+        """Get the Prime sphere rating from the rote's effect."""
         return obj.effect.prime
 
 
