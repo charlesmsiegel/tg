@@ -63,8 +63,8 @@
         <!-- Post Form -->
         {% if not object.finished %}
             {% if request.user.is_authenticated %}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
+                <div class="tg-card mb-4">
+                    <div class="tg-card-body">
                         <form method="post" action="" id="post-form">
                             {% csrf_token %}
                             <div class="mb-3">
