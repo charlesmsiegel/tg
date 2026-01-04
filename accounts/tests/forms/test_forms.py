@@ -311,11 +311,11 @@ class TestStoryXPForm(TestCase):
         """Test that form clean method processes data into character dict."""
         form = StoryXP(
             data={
-                f"story_{self.story.pk}-Character One-success": "on",
-                f"story_{self.story.pk}-Character One-danger": "on",
-                f"story_{self.story.pk}-Character One-growth": "",
-                f"story_{self.story.pk}-Character One-drama": "",
-                f"story_{self.story.pk}-Character One-duration": "2",
+                "Character One-success": "on",
+                "Character One-danger": "on",
+                "Character One-growth": "",
+                "Character One-drama": "",
+                "Character One-duration": "2",
             },
             story=self.story,
         )
@@ -327,6 +327,52 @@ class TestStoryXPForm(TestCase):
         self.assertFalse(cleaned[self.char1]["growth"])
         self.assertFalse(cleaned[self.char1]["drama"])
         self.assertEqual(cleaned[self.char1]["duration"], 2)
+
+    def test_form_uses_cleaned_data_not_raw_post(self):
+        """Test that form clean() uses cleaned_data instead of self.data."""
+        # Submit using proper field names (matching form field definitions)
+        form = StoryXP(
+            data={
+                "Character One-success": "on",
+                "Character One-danger": "",
+                "Character One-growth": "",
+                "Character One-drama": "",
+                "Character One-duration": "3",
+                "Character Two-success": "",
+                "Character Two-danger": "on",
+                "Character Two-growth": "",
+                "Character Two-drama": "",
+                "Character Two-duration": "1",
+            },
+            story=self.story,
+        )
+        self.assertTrue(form.is_valid())
+        cleaned = form.cleaned_data
+        # Verify Character One data
+        self.assertIn(self.char1, cleaned)
+        self.assertTrue(cleaned[self.char1]["success"])
+        self.assertFalse(cleaned[self.char1]["danger"])
+        self.assertEqual(cleaned[self.char1]["duration"], 3)
+        # Verify Character Two data
+        self.assertIn(self.char2, cleaned)
+        self.assertFalse(cleaned[self.char2]["success"])
+        self.assertTrue(cleaned[self.char2]["danger"])
+        self.assertEqual(cleaned[self.char2]["duration"], 1)
+
+    def test_form_validates_duration_is_integer(self):
+        """Test that duration field validates as integer."""
+        form = StoryXP(
+            data={
+                "Character One-success": "",
+                "Character One-danger": "",
+                "Character One-growth": "",
+                "Character One-drama": "",
+                "Character One-duration": "not_an_integer",
+            },
+            story=self.story,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("Character One-duration", form.errors)
 
 
 class TestCustomAuthenticationForm(TestCase):
