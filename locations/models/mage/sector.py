@@ -163,9 +163,6 @@ class Sector(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mage:create:sector")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def get_effective_difficulty(self, paradigm_match=True):
         """
         Calculate the effective difficulty for Arete/Enlightenment rolls in this sector.

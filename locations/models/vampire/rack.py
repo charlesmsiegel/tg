@@ -77,9 +77,6 @@ class Rack(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:vampire:create:rack")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def get_total_value(self):
         """Calculate the overall value of this rack."""
         value = self.quality + self.population_density

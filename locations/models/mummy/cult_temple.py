@@ -67,9 +67,6 @@ class CultTemple(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mummy:create:cult_temple")
 
-    def get_heading(self):
-        return "mtr_heading"
-
     class Meta:
         verbose_name = "Cult Temple"
         verbose_name_plural = "Cult Temples"

@@ -122,9 +122,6 @@ class Barrens(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:vampire:create:barrens")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def get_control_status(self):
         """Return a description of who controls this territory."""
         if self.is_unclaimed:

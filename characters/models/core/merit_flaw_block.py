@@ -36,9 +36,6 @@ class MeritFlaw(Model):
     def get_creation_url(cls):
         return reverse("characters:create:meritflaw")
 
-    def get_heading(self):
-        return "wod_heading"
-
     def update_max_rating(self):
         ratings = list(self.ratings.values_list("value", flat=True))
         self.max_rating = max(ratings) if ratings else 0

@@ -13,9 +13,6 @@ class Cabal(Group):
         verbose_name = "Cabal"
         verbose_name_plural = "Cabals"
 
-    def get_heading(self):
-        return "mta_heading"
-
     def get_display_type(self):
         if self.leader is None:
             return "Cabal"

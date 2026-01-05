@@ -50,9 +50,6 @@ class Effect(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:effect")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def save(self, *args, **kwargs):
         self.rote_cost = self.cost()
         self.max_sphere = max(

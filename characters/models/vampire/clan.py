@@ -50,9 +50,6 @@ class VampireClan(Model):
     def get_creation_url(cls):
         return reverse("characters:vampire:create:clan")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def get_all_disciplines(self):
         """Get all disciplines including parent clan disciplines for bloodlines."""
         if self.parent_clan:

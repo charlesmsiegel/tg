@@ -87,9 +87,6 @@ class Node(MeritFlawBlock, LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mage:create:node")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def set_rank(self, rank):
         self.rank = rank
         self.points = 3 * self.rank

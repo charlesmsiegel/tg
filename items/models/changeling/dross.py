@@ -162,9 +162,6 @@ class Dross(ItemModel):
     def get_creation_url(cls):
         return reverse("items:changeling:create:dross")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.name:
             return f"{self.name} ({self.glamour_value} Glamour)"

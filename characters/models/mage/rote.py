@@ -31,9 +31,6 @@ class Rote(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:rote")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def random_name(self):
         self.name = f"{self.effect.name} Rote {Rote.objects.filter(effect=self.effect).count()}"
         self.save()

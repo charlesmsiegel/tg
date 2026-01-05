@@ -95,6 +95,3 @@ class HunterGear(ItemModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("items:hunter:create:gear")
-
-    def get_heading(self):
-        return "htr_heading"

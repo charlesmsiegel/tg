@@ -182,9 +182,6 @@ class Ushabti(ItemModel):
     def get_creation_url(cls):
         return reverse("items:mummy:create:ushabti")
 
-    def get_heading(self):
-        return "mtr_heading"
-
     class Meta:
         verbose_name = "Ushabti"
         verbose_name_plural = "Ushabti"

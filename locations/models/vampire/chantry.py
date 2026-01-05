@@ -111,9 +111,6 @@ class TremereChantry(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:vampire:create:chantry")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def calculate_total_rating(self):
         """Calculate total Chantry value."""
         total = self.size + self.security_level + self.library_rating

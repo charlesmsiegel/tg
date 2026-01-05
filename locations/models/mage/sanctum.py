@@ -21,6 +21,3 @@ class Sanctum(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:mage:create:sanctum")
-
-    def get_heading(self):
-        return "mta_heading"

@@ -190,9 +190,6 @@ class Freehold(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:changeling:create:freehold")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def get_archetype_display_with_benefit(self):
         """Returns archetype with its mechanical benefit"""
         benefits = {

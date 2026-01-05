@@ -145,6 +145,3 @@ class DtFHuman(Human):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:dtfhuman")
-
-    def get_heading(self):
-        return "dtf_heading"

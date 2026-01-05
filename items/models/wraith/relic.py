@@ -37,9 +37,6 @@ class WraithRelic(ItemModel):
     def get_creation_url(cls):
         return reverse("items:wraith:create:relic")
 
-    def get_heading(self):
-        return "wto_heading"
-
     def set_level(self, level):
         self.level = level
         self.background_cost = level

@@ -251,9 +251,6 @@ class Character(CharacterModel):
             return "Spirit"
         return self.type.replace("_", " ").title()
 
-    def get_heading(self):
-        return "wod_heading"
-
     def next_stage(self):
         self.creation_status += 1
         self.save()

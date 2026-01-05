@@ -27,6 +27,3 @@ class Legacy(Model):
 
     def get_update_url(self):
         return reverse("characters:changeling:update:legacy", kwargs={"pk": self.pk})
-
-    def get_heading(self):
-        return "ctd_heading"

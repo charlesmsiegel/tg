@@ -38,9 +38,6 @@ class Path(Model):
     def get_creation_url(cls):
         return reverse("characters:vampire:create:path")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def check_character_virtues(self, character):
         """
         Check if a character has the correct virtues for this path.

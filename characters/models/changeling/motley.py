@@ -10,9 +10,6 @@ class Motley(Group):
         verbose_name = "Motley"
         verbose_name_plural = "Motleys"
 
-    def get_heading(self):
-        return "ctd_heading"
-
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:changeling:create:motley")

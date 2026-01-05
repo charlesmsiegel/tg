@@ -89,6 +89,3 @@ class Relic(ItemModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("items:demon:create:relic")
-
-    def get_heading(self):
-        return "dtf_heading"

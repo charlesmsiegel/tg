@@ -29,6 +29,3 @@ class Guild(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:wraith:create:guild")
-
-    def get_heading(self):
-        return "wto_heading"

@@ -196,9 +196,6 @@ class HorizonRealm(MeritFlawBlock, LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mage:create:horizon_realm")
 
-    def get_heading(self):
-        return "mta_heading"
-
     # Rank and Build Points
     RANK_BUILD_POINTS = {
         1: 11,

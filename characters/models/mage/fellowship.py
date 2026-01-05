@@ -25,6 +25,3 @@ class SorcererFellowship(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:mage:create:sorcerer_fellowship")
-
-    def get_heading(self):
-        return "mta_heading"

@@ -31,6 +31,3 @@ class DemonFaction(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:faction")
-
-    def get_heading(self):
-        return "dtf_heading"

@@ -357,9 +357,6 @@ class Mummy(MtRHuman):
     def get_creation_url(cls):
         return reverse("characters:mummy:create:mummy")
 
-    def get_heading(self):
-        return "mtr_heading"
-
     class Meta:
         verbose_name = "Mummy"
         verbose_name_plural = "Mummies"

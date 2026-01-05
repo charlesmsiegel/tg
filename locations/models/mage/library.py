@@ -26,9 +26,6 @@ class Library(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mage:create:library")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def add_book(self, grimoire):
         self.books.add(grimoire)
         self.save()

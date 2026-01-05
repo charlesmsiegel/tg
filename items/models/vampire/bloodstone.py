@@ -53,9 +53,6 @@ class Bloodstone(ItemModel):
     def get_creation_url(cls):
         return reverse("items:vampire:create:bloodstone")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def add_blood(self, amount):
         """Add blood to the bloodstone, respecting max capacity."""
         if not self.is_active:

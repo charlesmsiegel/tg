@@ -106,9 +106,6 @@ class Chimera(Model):
     def get_creation_url(cls):
         return reverse("characters:changeling:create:chimera")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.name and self.chimera_type:
             return f"{self.name} ({self.get_chimera_type_display()})"

@@ -43,9 +43,6 @@ class UndergroundSanctuary(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mummy:create:sanctuary")
 
-    def get_heading(self):
-        return "mtr_heading"
-
     class Meta:
         verbose_name = "Underground Sanctuary"
         verbose_name_plural = "Underground Sanctuaries"

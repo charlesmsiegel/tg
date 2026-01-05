@@ -52,9 +52,6 @@ class Thrall(DtFHuman):
     def get_creation_url(cls):
         return reverse("characters:demon:create:thrall")
 
-    def get_heading(self):
-        return "dtf_heading"
-
     def add_faith_potential(self):
         """Add a dot of Faith Potential."""
         return add_dot(self, "faith_potential", 5)

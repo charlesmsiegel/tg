@@ -105,9 +105,6 @@ class Safehouse(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:hunter:create:safehouse")
 
-    def get_heading(self):
-        return "htr_heading"
-
     def calculate_total_rating(self):
         """Calculate total safehouse value."""
         total = (

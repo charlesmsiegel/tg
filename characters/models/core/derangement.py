@@ -19,6 +19,3 @@ class Derangement(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:create:derangement")
-
-    def get_heading(self):
-        return "wod_heading"

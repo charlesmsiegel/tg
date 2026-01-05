@@ -71,8 +71,5 @@ class RealityZone(models.Model):
         applied_to.extend(list(Sector.objects.filter(reality_zone=self)))
         return applied_to
 
-    def get_heading(self):
-        return "mta_heading"
-
     def __str__(self):
         return self.name

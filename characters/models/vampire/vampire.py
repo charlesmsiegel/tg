@@ -152,9 +152,6 @@ class Vampire(VtMHuman):
     def get_creation_url(cls):
         return reverse("characters:vampire:create:vampire")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def update_generation_values(self):
         """Update max blood pool and blood per turn based on generation."""
         generation_table = {

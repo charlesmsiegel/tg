@@ -57,9 +57,6 @@ class LocationModel(Model):
     def get_creation_url(cls):
         return reverse("locations:create:location")
 
-    def get_heading(self):
-        return "wod_heading"
-
     def get_scenes(self):
         return Scene.objects.filter(location=self)
 

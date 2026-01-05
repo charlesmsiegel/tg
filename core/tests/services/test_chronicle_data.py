@@ -21,15 +21,19 @@ class TestChronicleDataServiceConstants(TestCase):
     """Test ChronicleDataService class constants."""
 
     def test_gameline_order(self):
-        """Test that GAMELINE_ORDER contains all expected gamelines."""
-        expected = ["wod", "vtm", "wta", "mta", "wto", "ctd", "htr", "mtr", "dtf"]
-        self.assertEqual(ChronicleDataService.GAMELINE_ORDER, expected)
+        """Test that GAMELINE_ORDER is derived from settings and excludes 'orp'."""
+        # Should contain all gamelines from settings except 'orp'
+        self.assertIn("wod", ChronicleDataService.GAMELINE_ORDER)
+        self.assertIn("vtm", ChronicleDataService.GAMELINE_ORDER)
+        self.assertIn("mta", ChronicleDataService.GAMELINE_ORDER)
+        self.assertNotIn("orp", ChronicleDataService.GAMELINE_ORDER)
 
-    def test_gameline_short_names(self):
-        """Test that GAMELINE_SHORT_NAMES has proper mappings."""
-        self.assertEqual(ChronicleDataService.GAMELINE_SHORT_NAMES["wod"], "All")
-        self.assertEqual(ChronicleDataService.GAMELINE_SHORT_NAMES["vtm"], "Vampire")
-        self.assertEqual(ChronicleDataService.GAMELINE_SHORT_NAMES["mta"], "Mage")
+    def test_get_display_name(self):
+        """Test that get_display_name returns proper tab labels."""
+        self.assertEqual(ChronicleDataService.get_display_name("wod"), "All")
+        self.assertEqual(ChronicleDataService.get_display_name("vtm"), "Vampire")
+        self.assertEqual(ChronicleDataService.get_display_name("mta"), "Mage")
+        self.assertEqual(ChronicleDataService.get_display_name("wta"), "Werewolf")
 
 
 class TestChronicleDataServiceGroupByGameline(TestCase):

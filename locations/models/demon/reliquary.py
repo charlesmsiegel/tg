@@ -70,9 +70,6 @@ class Reliquary(LocationModel):
     def get_absolute_url(self):
         return reverse("locations:demon:reliquary", kwargs={"pk": self.pk})
 
-    def get_heading(self):
-        return "dtf_heading"
-
     def get_update_url(self):
         return reverse("locations:demon:update:reliquary", args=[str(self.id)])
 

@@ -62,6 +62,3 @@ class VampireArtifact(ItemModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("items:vampire:create:artifact")
-
-    def get_heading(self):
-        return "vtm_heading"

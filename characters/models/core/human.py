@@ -349,9 +349,6 @@ class Human(
 
         return Group.objects.filter(members=self).first()
 
-    def get_heading(self):
-        return f"{self.gameline}_heading"
-
     def add_willpower(self):
         add_dot(self, "willpower", 10)
         return add_dot(self, "temporary_willpower", 10)
