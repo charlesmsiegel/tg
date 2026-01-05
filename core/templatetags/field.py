@@ -8,7 +8,7 @@ register = template.Library()
 def field(form, field_name):
     try:
         return form[field_name]
-    except:
+    except KeyError:
         return ""
 
 

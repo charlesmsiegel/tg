@@ -431,7 +431,7 @@ class Vampire(VtMHuman):
                         return True
                     return False
                 return False
-            except:
+            except Discipline.DoesNotExist:
                 return False
 
         # Handle virtues
@@ -555,7 +555,7 @@ class Vampire(VtMHuman):
                         return True
                     return False
                 return False
-            except:
+            except Discipline.DoesNotExist:
                 return False
 
         # Handle virtues
