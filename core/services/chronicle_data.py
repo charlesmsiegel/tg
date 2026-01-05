@@ -13,6 +13,9 @@ class ChronicleDataService:
 
     Consolidates gameline grouping logic from ChronicleDetailView into
     a reusable, testable service class.
+
+    Groups polymorphic models by their `gameline` class attribute rather than
+    hardcoded model name lists. Models with gameline='wod' appear in all tabs.
     """
 
     # Gameline ordering from settings (excluding orpheus which isn't fully implemented)
@@ -32,63 +35,6 @@ class ChronicleDataService:
         # Extract first word from name (e.g., "Vampire: the Masquerade" -> "Vampire")
         name = gl.get("name", gameline_code)
         return name.split(":")[0] if ":" in name else name
-
-    # Character model to gameline mapping
-    CHAR_GAMELINE_MAP = {
-        "vtm": ["vtmhuman", "ghoul", "vampire", "revenant"],
-        "wta": [
-            "wtahuman",
-            "kinfolk",
-            "werewolf",
-            "spiritcharacter",
-            "fera",
-            "fomor",
-            "drone",
-        ],
-        "mta": ["mtahuman", "companion", "sorcerer", "mage"],
-        "wto": ["wtohuman", "wraith"],
-        "ctd": ["ctdhuman", "changeling", "nunnehi", "inanimae", "autumnperson"],
-        "htr": ["htrhuman", "hunter"],
-        "mtr": ["mtrhuman", "mummy"],
-        "dtf": ["dtfhuman", "demon", "thrall", "earthbound"],
-    }
-
-    # Location model to gameline mapping (gameline-specific types only)
-    LOC_GAMELINE_MAP = {
-        "vtm": ["haven", "domain", "elysium", "rack", "tremerechantry", "barrens"],
-        "wta": ["caern"],
-        "mta": [
-            "node",
-            "sector",
-            "library",
-            "horizonrealm",
-            "paradoxrealm",
-            "chantry",
-            "sanctum",
-            "realityzone",
-            "demesne",
-        ],
-        "wto": ["haunt", "necropolis", "citadel", "nihil", "byway", "wraithfreehold"],
-        "ctd": ["freehold", "dreamrealm", "trod", "holding"],
-        "dtf": ["bastion", "reliquary"],
-        "htr": ["huntingground", "safehouse"],
-        "mtr": ["tomb", "culttemple", "undergroundsanctuary"],
-    }
-
-    # Generic location types that appear in ALL gameline tabs
-    GENERIC_LOC_TYPES = ["locationmodel", "city"]
-
-    # Item model to gameline mapping
-    ITEM_GAMELINE_MAP = {
-        "vtm": ["bloodstone", "artifact"],
-        "wta": ["fetish", "talen"],
-        "mta": ["wonder", "grimoire", "device", "sorcererartifact"],
-        "wto": ["relic", "wraithartifact", "memoriam"],
-        "ctd": ["treasure", "dross"],
-        "dtf": ["demonrelic"],
-        "htr": ["hunterrelic", "gear"],
-        "mtr": ["ushabti", "mummyrelic", "vessel"],
-    }
 
     @classmethod
     def group_by_gameline(cls, queryset, gameline_attr="gameline"):
@@ -130,9 +76,10 @@ class ChronicleDataService:
     @classmethod
     def group_characters_by_gameline(cls, queryset):
         """
-        Group characters by gameline based on polymorphic content type.
+        Group characters by gameline using the model's gameline attribute.
 
-        Characters don't have a direct gameline field, so we filter by model type.
+        Fetches all characters once and filters in Python by gameline.
+        Models with gameline='wod' appear in all gameline tabs.
 
         Args:
             queryset: Character queryset to group
@@ -141,36 +88,39 @@ class ChronicleDataService:
             OrderedDict with gameline codes as keys
         """
         result = OrderedDict()
+        all_characters = list(queryset)
 
-        # All shows everything if there's any content
-        if queryset.exists():
-            result["wod"] = {
-                "name": cls.get_display_name("wod"),
-                "characters": queryset,
-            }
+        if not all_characters:
+            return result
 
-        # Add specific gamelines that have content
+        # All shows everything
+        result["wod"] = {
+            "name": cls.get_display_name("wod"),
+            "characters": all_characters,
+        }
+
+        # Add specific gamelines - include generic (wod) models in each tab
         for gl_code in cls.GAMELINE_ORDER:
             if gl_code == "wod":
                 continue
-            model_names = cls.CHAR_GAMELINE_MAP.get(gl_code, [])
-            if model_names:
-                filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
-                if filtered.exists():
-                    result[gl_code] = {
-                        "name": cls.get_display_name(gl_code),
-                        "characters": filtered,
-                    }
+            filtered = [c for c in all_characters if c.gameline in (gl_code, "wod")]
+            if filtered:
+                result[gl_code] = {
+                    "name": cls.get_display_name(gl_code),
+                    "characters": filtered,
+                }
 
         return result
 
     @classmethod
     def group_locations_by_gameline(cls, queryset):
         """
-        Group locations by gameline based on polymorphic content type.
+        Group locations by gameline using the model's gameline attribute.
 
-        Each gameline tab shows generic locations (Location, City) plus
-        that gameline's specific locations, excluding other gamelines' locations.
+        Fetches all locations once and filters in Python by gameline.
+        Models with gameline='wod' (generic locations) appear in all tabs.
+        Only root locations (parent=None) are returned; children are handled
+        by recursive templates.
 
         Args:
             queryset: Location queryset to group
@@ -179,36 +129,32 @@ class ChronicleDataService:
             OrderedDict with gameline codes as keys
         """
         result = OrderedDict()
+        all_locations = list(queryset)
 
-        # Collect all gameline-specific types for the "All" tab filter
-        all_specific_types = []
-        for types in cls.LOC_GAMELINE_MAP.values():
-            all_specific_types.extend(types)
-        all_allowed_types = cls.GENERIC_LOC_TYPES + all_specific_types
+        if not all_locations:
+            return result
 
-        # All shows everything if there's any content
-        # Only show root locations (parent=None) - children handled by recursive template
-        if queryset.exists():
-            result["wod"] = {
-                "name": cls.get_display_name("wod"),
-                "locations": queryset.filter(parent=None),
-                "allowed_types": all_allowed_types,
-            }
+        # All shows everything - only root locations
+        root_locations = [loc for loc in all_locations if loc.parent is None]
+        result["wod"] = {
+            "name": cls.get_display_name("wod"),
+            "locations": root_locations,
+        }
 
-        # Add specific gamelines - include generic types + that gameline's types
+        # Add specific gamelines - include generic (wod) models in each tab
         for gl_code in cls.GAMELINE_ORDER:
             if gl_code == "wod":
                 continue
-            gameline_specific_types = cls.LOC_GAMELINE_MAP.get(gl_code, [])
-            # Include generic types + this gameline's specific types
-            allowed_types = cls.GENERIC_LOC_TYPES + gameline_specific_types
-            filtered = queryset.filter(polymorphic_ctype__model__in=allowed_types)
-            if filtered.exists():
-                # Only show root locations - children handled by recursive template
+            # Filter by gameline, include generic locations, only roots
+            filtered = [
+                loc
+                for loc in all_locations
+                if loc.gameline in (gl_code, "wod") and loc.parent is None
+            ]
+            if filtered:
                 result[gl_code] = {
                     "name": cls.get_display_name(gl_code),
-                    "locations": filtered.filter(parent=None),
-                    "allowed_types": allowed_types,
+                    "locations": filtered,
                 }
 
         return result
@@ -216,7 +162,10 @@ class ChronicleDataService:
     @classmethod
     def group_items_by_gameline(cls, queryset):
         """
-        Group items by gameline based on polymorphic content type.
+        Group items by gameline using the model's gameline attribute.
+
+        Fetches all items once and filters in Python by gameline.
+        Models with gameline='wod' appear in all gameline tabs.
 
         Args:
             queryset: Item queryset to group
@@ -225,26 +174,27 @@ class ChronicleDataService:
             OrderedDict with gameline codes as keys
         """
         result = OrderedDict()
+        all_items = list(queryset)
 
-        # All shows everything if there's any content
-        if queryset.exists():
-            result["wod"] = {
-                "name": cls.get_display_name("wod"),
-                "items": queryset,
-            }
+        if not all_items:
+            return result
 
-        # Add specific gamelines that have content
+        # All shows everything
+        result["wod"] = {
+            "name": cls.get_display_name("wod"),
+            "items": all_items,
+        }
+
+        # Add specific gamelines - include generic (wod) models in each tab
         for gl_code in cls.GAMELINE_ORDER:
             if gl_code == "wod":
                 continue
-            model_names = cls.ITEM_GAMELINE_MAP.get(gl_code, [])
-            if model_names:
-                filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
-                if filtered.exists():
-                    result[gl_code] = {
-                        "name": cls.get_display_name(gl_code),
-                        "items": filtered,
-                    }
+            filtered = [item for item in all_items if item.gameline in (gl_code, "wod")]
+            if filtered:
+                result[gl_code] = {
+                    "name": cls.get_display_name(gl_code),
+                    "items": filtered,
+                }
 
         return result
 
