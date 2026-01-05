@@ -37,6 +37,20 @@ class ProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = "accounts/detail.html"
 
+    # POST actions that require storyteller privileges
+    ST_ONLY_ACTIONS = frozenset([
+        "submit_scene",
+        "submit_freebies",
+        "approve_character",
+        "approve_location",
+        "approve_item",
+        "approve_rote",
+        "approve_character_image",
+        "approve_location_image",
+        "approve_item_image",
+        "submit_weekly_approval",
+    ])
+
     def get_context_data(self, **kwargs):
         """Build context for the profile detail page.
 
@@ -76,16 +90,91 @@ class ProfileView(LoginRequiredMixin, DetailView):
         # story_xp_request_forms_to_approve
         return context
 
+    def _check_st_permission(self, request):
+        """Check if a storyteller-only action is being attempted by a non-ST."""
+        attempted_st_action = any(request.POST.get(action) for action in self.ST_ONLY_ACTIONS)
+        if attempted_st_action and not request.user.profile.is_st():
+            messages.error(request, "Only storytellers can perform approval actions.")
+            raise PermissionDenied("Only storytellers can perform approval actions")
+
+    def _handle_scene_xp(self, request, scene_id):
+        """Handle scene XP award submission."""
+        scene = get_object_or_404(Scene, pk=scene_id)
+        form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"XP awarded for scene '{scene.name}'!")
+        else:
+            messages.error(request, "Failed to award XP. Please check your input.")
+
+    def _handle_object_approval(self, request, object_type, object_id):
+        """Handle object (character/location/item/rote) approval."""
+        _, msg = ApprovalService.approve_object(object_type, object_id)
+        messages.success(request, msg)
+
+    def _handle_image_approval(self, request, object_type, image_id):
+        """Handle image approval for an object type."""
+        parsed_id = ApprovalService.parse_image_id(image_id)
+        _, msg = ApprovalService.approve_image(object_type, parsed_id)
+        messages.success(request, msg)
+
+    def _handle_freebies(self, request, char_id):
+        """Handle freebie award submission."""
+        char = get_object_or_404(Character, pk=char_id)
+        form = FreebieAwardForm(request.POST, character=char)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Freebies awarded to '{char.name}'!")
+        else:
+            messages.error(request, "Failed to award freebies. Please check your input.")
+
+    def _handle_weekly_request(self, request, request_id, context):
+        """Handle weekly XP request submission. Returns True if form has errors."""
+        _, week_pk, _, char_pk = request_id.split("-")
+        week = get_object_or_404(Week, pk=week_pk)
+        char = get_object_or_404(Character, pk=char_pk)
+        if char.owner != request.user:
+            messages.error(request, "You can only submit requests for your own characters.")
+            raise PermissionDenied("You can only submit requests for your own characters")
+        form = WeeklyXPRequestForm(request.POST, week=week, character=char)
+        if form.is_valid():
+            form.player_save()
+            messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
+            return False
+        context["weekly_xp_request_forms"] = [form]
+        messages.error(request, "Failed to submit XP request. Please check your input.")
+        return True
+
+    def _handle_weekly_approval(self, request, approval_id):
+        """Handle weekly XP request approval."""
+        _, week_pk, _, char_pk = approval_id.split("-")
+        week = get_object_or_404(Week, pk=week_pk)
+        char = get_object_or_404(Character, pk=char_pk)
+        xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
+        form = WeeklyXPRequestForm(
+            request.POST, week=week, character=char, instance=xp_request
+        )
+        if form.is_valid():
+            form.st_save()
+            messages.success(request, f"Weekly XP request approved for '{char.name}'!")
+        else:
+            messages.error(request, "Failed to approve XP request. Please check your input.")
+
+    def _handle_mark_scene_read(self, request, scene_id):
+        """Handle marking a scene as read."""
+        with transaction.atomic():
+            scene = get_object_or_404(Scene, pk=scene_id)
+            status, _ = UserSceneReadStatus.objects.get_or_create(
+                scene=scene, user=self.object.user
+            )
+            status.read = True
+            status.save()
+        messages.success(request, f"Scene '{scene.name}' marked as read!")
+
     def post(self, request, *args, **kwargs):
         """Handle profile page form submissions.
 
-        Processes various approval and XP-related actions including:
-        - Scene XP awards
-        - Character/location/item/rote approvals
-        - Image approvals
-        - Weekly XP request submissions and approvals
-        - Marking scenes as read
-
+        Dispatches to handler methods based on POST parameters.
         Only storytellers can perform approval actions.
 
         Returns:
@@ -93,139 +182,39 @@ class ProfileView(LoginRequiredMixin, DetailView):
         """
         self.object = self.get_object()
         context = self.get_context_data()
+        self._check_st_permission(request)
         form_errors = False
-        submitted_scene_id = request.POST.get("submit_scene")
+
+        # Scene XP
+        if scene_id := request.POST.get("submit_scene"):
+            self._handle_scene_xp(request, scene_id)
+
+        # Object approvals
+        for obj_type in ("character", "location", "item", "rote"):
+            if obj_id := request.POST.get(f"approve_{obj_type}"):
+                self._handle_object_approval(request, obj_type, obj_id)
+
+        # Image approvals
+        for obj_type in ("character", "location", "item"):
+            if img_id := request.POST.get(f"approve_{obj_type}_image"):
+                self._handle_image_approval(request, obj_type, img_id)
+
         # Freebies
-        submitted_freebies_id = request.POST.get("submit_freebies")
-
-        # Object Approval
-        approve_character_id = request.POST.get("approve_character")
-        approve_location_id = request.POST.get("approve_location")
-        approve_item_id = request.POST.get("approve_item")
-        approve_rote_id = request.POST.get("approve_rote")
-
-        # Image Approval
-        approve_character_image_id = request.POST.get("approve_character_image")
-        approve_location_image_id = request.POST.get("approve_location_image")
-        approve_item_image_id = request.POST.get("approve_item_image")
+        if char_id := request.POST.get("submit_freebies"):
+            self._handle_freebies(request, char_id)
 
         # Weekly XP
-        submit_weekly_request_id = request.POST.get("submit_weekly_request")
-        submit_weekly_approval_id = request.POST.get("submit_weekly_approval")
+        if request_id := request.POST.get("submit_weekly_request"):
+            form_errors = self._handle_weekly_request(request, request_id, context)
+        if approval_id := request.POST.get("submit_weekly_approval"):
+            self._handle_weekly_approval(request, approval_id)
 
-        # Story XP
-        submit_story_request_id = request.POST.get("submit_story_request")
-        submit_story_approval_id = request.POST.get("submit_story_approval")
-
-        # Mark Scene Read
-        mark_scene_id_read = request.POST.get("mark_scene_read")
-
-        # Authorization: Only storytellers can approve things
-        approval_actions = [
-            approve_character_id,
-            approve_location_id,
-            approve_item_id,
-            approve_rote_id,
-            approve_character_image_id,
-            approve_location_image_id,
-            approve_item_image_id,
-            submitted_scene_id,
-            submitted_freebies_id,
-            submit_weekly_approval_id,
-        ]
-        if any(approval_actions) and not request.user.profile.is_st():
-            messages.error(request, "Only storytellers can perform approval actions.")
-            raise PermissionDenied("Only storytellers can perform approval actions")
-
-        if submitted_scene_id is not None:
-            scene = get_object_or_404(Scene, pk=submitted_scene_id)
-            form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
-            if form.is_valid():
-                form.save()
-                messages.success(request, f"XP awarded for scene '{scene.name}'!")
-            else:
-                messages.error(request, "Failed to award XP. Please check your input.")
-
-        # Object approvals using ApprovalService
-        if approve_character_id is not None:
-            _, msg = ApprovalService.approve_object("character", approve_character_id)
-            messages.success(request, msg)
-        if approve_location_id is not None:
-            _, msg = ApprovalService.approve_object("location", approve_location_id)
-            messages.success(request, msg)
-        if approve_item_id is not None:
-            _, msg = ApprovalService.approve_object("item", approve_item_id)
-            messages.success(request, msg)
-        if approve_rote_id is not None:
-            _, msg = ApprovalService.approve_object("rote", approve_rote_id)
-            messages.success(request, msg)
-
-        # Image approvals using ApprovalService
-        if approve_character_image_id is not None:
-            parsed_id = ApprovalService.parse_image_id(approve_character_image_id)
-            _, msg = ApprovalService.approve_image("character", parsed_id)
-            messages.success(request, msg)
-        if approve_location_image_id is not None:
-            parsed_id = ApprovalService.parse_image_id(approve_location_image_id)
-            _, msg = ApprovalService.approve_image("location", parsed_id)
-            messages.success(request, msg)
-        if approve_item_image_id is not None:
-            parsed_id = ApprovalService.parse_image_id(approve_item_image_id)
-            _, msg = ApprovalService.approve_image("item", parsed_id)
-            messages.success(request, msg)
-        if submitted_freebies_id is not None:
-            char = get_object_or_404(Character, pk=submitted_freebies_id)
-            form = FreebieAwardForm(request.POST, character=char)
-            if form.is_valid():
-                form.save()
-                messages.success(request, f"Freebies awarded to '{char.name}'!")
-            else:
-                messages.error(request, "Failed to award freebies. Please check your input.")
-        if submit_weekly_request_id is not None:
-            _, week_pk, _, char_pk = submit_weekly_request_id.split("-")
-            week = get_object_or_404(Week, pk=week_pk)
-            char = get_object_or_404(Character, pk=char_pk)
-            # Check user owns this character
-            if char.owner != request.user:
-                messages.error(request, "You can only submit requests for your own characters.")
-                raise PermissionDenied("You can only submit requests for your own characters")
-            form = WeeklyXPRequestForm(request.POST, week=week, character=char)
-            if form.is_valid():
-                form.player_save()
-                messages.success(request, f"Weekly XP request submitted for '{char.name}'!")
-            else:
-                context["weekly_xp_request_forms"] = [
-                    form
-                ]  # Replace the list with the invalid form
-                form_errors = True
-                messages.error(request, "Failed to submit XP request. Please check your input.")
-        if submit_weekly_approval_id is not None:
-            _, week_pk, _, char_pk = submit_weekly_approval_id.split("-")
-            week = get_object_or_404(Week, pk=week_pk)
-            char = get_object_or_404(Character, pk=char_pk)
-            xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
-            form = WeeklyXPRequestForm(
-                request.POST,
-                week=week,
-                character=char,
-                instance=xp_request,
-            )
-            if form.is_valid():
-                form.st_save()
-                messages.success(request, f"Weekly XP request approved for '{char.name}'!")
-            else:
-                messages.error(request, "Failed to approve XP request. Please check your input.")
-        if mark_scene_id_read is not None:
-            with transaction.atomic():
-                scene = get_object_or_404(Scene, pk=mark_scene_id_read)
-                status, created = UserSceneReadStatus.objects.get_or_create(
-                    scene=scene, user=self.object.user
-                )
-                status.read = True
-                status.save()
-            messages.success(request, f"Scene '{scene.name}' marked as read!")
+        # Mark scene read
+        if scene_id := request.POST.get("mark_scene_read"):
+            self._handle_mark_scene_read(request, scene_id)
         elif "Edit Preferences" in request.POST.keys():
             return redirect("profile_update", pk=self.object.pk)
+
         if form_errors:
             return self.render_to_response(context)
         return redirect(reverse("profile", kwargs={"pk": context["object"].pk}))
