@@ -751,7 +751,7 @@ class Human(
                             return True
                         return False
                     return False
-            except:
+            except Exception:
                 pass
 
         # Check if trait is an ability
@@ -773,7 +773,7 @@ class Human(
                             return True
                         return False
                     return False
-            except:
+            except Exception:
                 pass
 
         # Check if trait is a background
@@ -831,7 +831,7 @@ class Human(
                             return True
                         return False
                     return False
-            except:
+            except Exception:
                 pass
 
         # Check if trait is an ability
@@ -846,7 +846,7 @@ class Human(
                             return True
                         return False
                     return False
-            except:
+            except Exception:
                 pass
 
         # Check if trait is a background
