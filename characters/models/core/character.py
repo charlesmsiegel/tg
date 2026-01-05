@@ -181,9 +181,10 @@ class Character(CharacterModel):
         - Django field choices (soft validation)
         - Database constraint (hard validation via migration)
 
-        This method focuses on:
-        - Status transition validation (state machine logic)
-        - XP balance validation
+        XP balance validation is handled by database constraint
+        (characters_character_xp_non_negative).
+
+        This method focuses on status transition validation (state machine logic).
         """
         super().clean()
 
@@ -195,10 +196,6 @@ class Character(CharacterModel):
                     self._validate_status_transition(old_instance.status, self.status)
             except Character.DoesNotExist:
                 pass
-
-        # Validate XP balance (redundant with DB constraint, but provides clearer error)
-        if self.xp < 0:
-            raise ValidationError({"xp": "XP cannot be negative"})
 
     def _validate_status_transition(self, old_status, new_status):
         """Enforce valid status transitions."""

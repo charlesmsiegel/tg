@@ -39,14 +39,6 @@ class TestCharacterConstraints(TestCase):
         with self.assertRaisesMessage(IntegrityError, "xp_non_negative"):
             character.save(skip_validation=True)  # Bypass model validation to test DB constraint
 
-    def test_xp_cannot_be_negative_model_validation(self):
-        """Model validation prevents negative XP"""
-        character = Character.objects.create(name="Test", xp=0)
-        character.xp = -100
-
-        with self.assertRaisesMessage(ValidationError, "XP cannot be negative"):
-            character.full_clean()
-
     def test_valid_status_values_db_constraint(self):
         """Only valid status values allowed"""
         character = Character.objects.create(name="Test", status="Un")
@@ -527,22 +519,10 @@ class TestAgeConstraints(TestCase):
 class TestModelValidationIntegration(TestCase):
     """Integration tests for complete validation flow."""
 
-    def test_character_creation_with_invalid_data(self):
-        """Creating character with invalid data raises appropriate errors"""
-        # Invalid XP - model validation raises ValidationError
-        with self.assertRaises(ValidationError):
-            Character.objects.create(name="Test", xp=-10)
-
-        # Invalid status - model validation raises ValidationError
+    def test_character_creation_with_invalid_status(self):
+        """Creating character with invalid status raises ValidationError"""
         with self.assertRaises(ValidationError):
             Character.objects.create(name="Test", status="BadStatus")
-
-    def test_xp_validation_at_model_level(self):
-        """Model validation catches negative XP"""
-        human = Human.objects.create(name="Test", xp=20)
-        human.xp = -5
-        with self.assertRaises(ValidationError):
-            human.full_clean()
 
     def test_xp_spending_validation(self):
         """XP spending validates insufficient XP"""
