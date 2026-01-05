@@ -123,8 +123,8 @@ class TestChronicleDataServiceGroupLocations(TestCase):
         self.assertIsInstance(result, OrderedDict)
         self.assertEqual(len(result), 0)
 
-    def test_locations_include_allowed_types(self):
-        """Test that location grouping includes allowed_types."""
+    def test_generic_locations_in_all_tabs(self):
+        """Test that generic locations (gameline='wod') appear in all tabs."""
         loc = LocationModel.objects.create(
             name="Test Location",
             chronicle=self.chronicle,
@@ -133,9 +133,12 @@ class TestChronicleDataServiceGroupLocations(TestCase):
         all_locs = LocationModel.objects.filter(pk=loc.pk)
         result = ChronicleDataService.group_locations_by_gameline(all_locs)
 
+        # Generic location should appear in "wod" (All) tab
         self.assertIn("wod", result)
-        self.assertIn("allowed_types", result["wod"])
-        self.assertIn("locationmodel", result["wod"]["allowed_types"])
+        self.assertEqual(len(result["wod"]["locations"]), 1)
+        # Generic locations also appear in gameline-specific tabs
+        self.assertIn("vtm", result)
+        self.assertIn(loc, result["vtm"]["locations"])
 
     def test_gameline_specific_locations(self):
         """Test that gameline-specific locations are grouped correctly."""
