@@ -54,6 +54,3 @@ class Citadel(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:wraith:create:citadel")
-
-    def get_heading(self):
-        return "wto_heading"

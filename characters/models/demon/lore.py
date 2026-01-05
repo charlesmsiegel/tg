@@ -35,6 +35,3 @@ class Lore(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:lore")
-
-    def get_heading(self):
-        return "dtf_heading"

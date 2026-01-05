@@ -198,9 +198,6 @@ class Holding(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:changeling:create:holding")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.ruler_name:
             return f"{self.name} ({self.get_rank_display()}, ruled by {self.ruler_name})"

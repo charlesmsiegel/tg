@@ -4,6 +4,8 @@ import itertools
 from collections import OrderedDict
 from datetime import datetime
 
+from django.conf import settings
+
 
 class ChronicleDataService:
     """
@@ -13,21 +15,23 @@ class ChronicleDataService:
     a reusable, testable service class.
     """
 
-    # Gameline ordering for consistent tab display
-    GAMELINE_ORDER = ["wod", "vtm", "wta", "mta", "wto", "ctd", "htr", "mtr", "dtf"]
+    # Gameline ordering from settings (excluding orpheus which isn't fully implemented)
+    GAMELINE_ORDER = [k for k in settings.GAMELINES.keys() if k != "orp"]
 
-    # Short display names for gamelines (used in tabs)
-    GAMELINE_SHORT_NAMES = {
-        "wod": "All",
-        "vtm": "Vampire",
-        "wta": "Werewolf",
-        "mta": "Mage",
-        "wto": "Wraith",
-        "ctd": "Changeling",
-        "htr": "Hunter",
-        "mtr": "Mummy",
-        "dtf": "Demon",
-    }
+    @classmethod
+    def get_display_name(cls, gameline_code):
+        """
+        Get display name for gameline tab.
+
+        Derives tab labels from settings.GAMELINES rather than hardcoding.
+        Special case: 'wod' returns 'All' for the combined view.
+        """
+        if gameline_code == "wod":
+            return "All"
+        gl = settings.GAMELINES.get(gameline_code, {})
+        # Extract first word from name (e.g., "Vampire: the Masquerade" -> "Vampire")
+        name = gl.get("name", gameline_code)
+        return name.split(":")[0] if ":" in name else name
 
     # Character model to gameline mapping
     CHAR_GAMELINE_MAP = {
@@ -106,7 +110,7 @@ class ChronicleDataService:
         # 'wod' (All) shows everything if there's any content
         if queryset.exists():
             result["wod"] = {
-                "name": cls.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "name": cls.get_display_name("wod"),
                 "items": queryset,
             }
 
@@ -117,7 +121,7 @@ class ChronicleDataService:
             filtered = queryset.filter(**{gameline_attr: gl_code})
             if filtered.exists():
                 result[gl_code] = {
-                    "name": cls.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "name": cls.get_display_name(gl_code),
                     "items": filtered,
                 }
 
@@ -141,7 +145,7 @@ class ChronicleDataService:
         # All shows everything if there's any content
         if queryset.exists():
             result["wod"] = {
-                "name": cls.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "name": cls.get_display_name("wod"),
                 "characters": queryset,
             }
 
@@ -154,7 +158,7 @@ class ChronicleDataService:
                 filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
                 if filtered.exists():
                     result[gl_code] = {
-                        "name": cls.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                        "name": cls.get_display_name(gl_code),
                         "characters": filtered,
                     }
 
@@ -186,7 +190,7 @@ class ChronicleDataService:
         # Only show root locations (parent=None) - children handled by recursive template
         if queryset.exists():
             result["wod"] = {
-                "name": cls.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "name": cls.get_display_name("wod"),
                 "locations": queryset.filter(parent=None),
                 "allowed_types": all_allowed_types,
             }
@@ -202,7 +206,7 @@ class ChronicleDataService:
             if filtered.exists():
                 # Only show root locations - children handled by recursive template
                 result[gl_code] = {
-                    "name": cls.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "name": cls.get_display_name(gl_code),
                     "locations": filtered.filter(parent=None),
                     "allowed_types": allowed_types,
                 }
@@ -225,7 +229,7 @@ class ChronicleDataService:
         # All shows everything if there's any content
         if queryset.exists():
             result["wod"] = {
-                "name": cls.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "name": cls.get_display_name("wod"),
                 "items": queryset,
             }
 
@@ -238,7 +242,7 @@ class ChronicleDataService:
                 filtered = queryset.filter(polymorphic_ctype__model__in=model_names)
                 if filtered.exists():
                     result[gl_code] = {
-                        "name": cls.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                        "name": cls.get_display_name(gl_code),
                         "items": filtered,
                     }
 
@@ -288,7 +292,7 @@ class ChronicleDataService:
         # All shows everything if there's any content
         if queryset.exists():
             result["wod"] = {
-                "name": cls.GAMELINE_SHORT_NAMES.get("wod", "All"),
+                "name": cls.get_display_name("wod"),
                 "scenes": queryset,
                 "scenes_by_month": cls.group_scenes_by_month(queryset),
             }
@@ -300,7 +304,7 @@ class ChronicleDataService:
             filtered = queryset.filter(gameline=gl_code)
             if filtered.exists():
                 result[gl_code] = {
-                    "name": cls.GAMELINE_SHORT_NAMES.get(gl_code, gl_code),
+                    "name": cls.get_display_name(gl_code),
                     "scenes": filtered,
                     "scenes_by_month": cls.group_scenes_by_month(filtered),
                 }

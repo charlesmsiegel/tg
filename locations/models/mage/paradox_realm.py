@@ -125,9 +125,6 @@ class ParadoxRealm(HorizonRealm):
     def get_creation_url(cls):
         return reverse("locations:mage:create:paradox_realm")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def get_obstacles(self):
         """Get all obstacles for this realm"""
         return ParadoxObstacle.objects.filter(realm=self).order_by("order")

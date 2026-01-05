@@ -141,6 +141,3 @@ class MtRHuman(Human):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:mummy:create:mtrhuman")
-
-    def get_heading(self):
-        return "mtr_heading"

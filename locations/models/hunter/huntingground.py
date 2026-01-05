@@ -116,9 +116,6 @@ class HuntingGround(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:hunter:create:hunting_ground")
 
-    def get_heading(self):
-        return "htr_heading"
-
     def calculate_total_rating(self):
         """Calculate total hunting ground value/danger."""
         total = (

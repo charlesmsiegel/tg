@@ -33,6 +33,3 @@ class Camp(Model):
 
     def get_update_url(self):
         return reverse("characters:werewolf:update:camp", kwargs={"pk": self.pk})
-
-    def get_heading(self):
-        return "wta_heading"

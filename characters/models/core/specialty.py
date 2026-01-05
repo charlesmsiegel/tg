@@ -28,6 +28,3 @@ class Specialty(Model):
 
     def __str__(self):
         return f"{self.name} ({self.display_stat()})"
-
-    def get_heading(self):
-        return "wod_heading"

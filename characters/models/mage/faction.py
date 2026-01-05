@@ -49,9 +49,6 @@ class MageFaction(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:mage_faction")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def get_all_paradigms(self):
         factions = [self]
         while factions[-1].parent is not None:

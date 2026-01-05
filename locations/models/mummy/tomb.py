@@ -189,9 +189,6 @@ class Tomb(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mummy:create:tomb")
 
-    def get_heading(self):
-        return "mtr_heading"
-
     class Meta:
         verbose_name = "Tomb"
         verbose_name_plural = "Tombs"

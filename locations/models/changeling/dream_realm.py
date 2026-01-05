@@ -210,9 +210,6 @@ class DreamRealm(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:changeling:create:dream_realm")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         return f"{self.name} ({self.get_depth_display()})"
 

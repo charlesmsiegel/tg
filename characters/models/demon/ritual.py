@@ -109,9 +109,6 @@ class Ritual(Model):
     def get_creation_url(cls):
         return reverse("characters:demon:create:ritual")
 
-    def get_heading(self):
-        return "dtf_heading"
-
     def get_secondary_lores(self):
         """Get list of secondary lore objects with ratings."""
         from characters.models.demon.lore import Lore

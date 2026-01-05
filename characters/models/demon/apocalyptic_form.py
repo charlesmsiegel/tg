@@ -49,9 +49,6 @@ class ApocalypticFormTrait(Model):
     def get_creation_url(cls):
         return reverse("characters:demon:create:apocalyptic_trait")
 
-    def get_heading(self):
-        return "dtf_heading"
-
 
 class ApocalypticForm(Model):
     """
@@ -95,9 +92,6 @@ class ApocalypticForm(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:apocalyptic_form")
-
-    def get_heading(self):
-        return "dtf_heading"
 
     def low_torment_count(self):
         """Count of low torment traits."""

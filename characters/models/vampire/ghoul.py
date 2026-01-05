@@ -72,9 +72,6 @@ class Ghoul(VtMHuman):
     def get_creation_url(cls):
         return reverse("characters:vampire:create:ghoul")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def get_disciplines(self):
         """Return a dictionary of all disciplines with their ratings."""
         disciplines = {

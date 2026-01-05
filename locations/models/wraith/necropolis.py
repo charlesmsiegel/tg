@@ -32,6 +32,3 @@ class Necropolis(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:wraith:create:necropolis")
-
-    def get_heading(self):
-        return "wto_heading"

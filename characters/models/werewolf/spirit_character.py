@@ -26,6 +26,3 @@ class SpiritCharacter(Character):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:spirit")
-
-    def get_heading(self):
-        return "wta_heading"

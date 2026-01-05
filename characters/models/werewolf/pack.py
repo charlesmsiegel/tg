@@ -22,9 +22,6 @@ class Pack(Group):
     def get_update_url(self):
         return reverse("characters:werewolf:update:pack", kwargs={"pk": self.pk})
 
-    def get_heading(self):
-        return "wta_heading"
-
     def set_totem(self, totem):
         self.totem = totem
         self.save()

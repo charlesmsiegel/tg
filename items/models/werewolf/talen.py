@@ -26,9 +26,6 @@ class Talen(Wonder):
     def get_creation_url(cls):
         return reverse("items:werewolf:create:talen")
 
-    def get_heading(self):
-        return "wta_heading"
-
     def save(self, *args, **kwargs):
         # Talens typically cost Background points equal to their rank
         self.background_cost = self.rank

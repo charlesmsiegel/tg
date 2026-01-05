@@ -24,9 +24,6 @@ class Tribe(Model):
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:tribe")
 
-    def get_heading(self):
-        return "wta_heading"
-
     def get_camps(self):
         from characters.models.werewolf.camp import Camp
 

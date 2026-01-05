@@ -100,6 +100,3 @@ class Nihil(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:wraith:create:nihil")
-
-    def get_heading(self):
-        return "wto_heading"

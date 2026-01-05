@@ -120,9 +120,6 @@ class Demon(LoreBlock, DtFHuman):
     def get_creation_url(cls):
         return reverse("characters:demon:create:demon")
 
-    def get_heading(self):
-        return "dtf_heading"
-
     # Lore methods (get_lores, total_lores, add_lore, filter_lores) inherited from LoreBlock
 
     def has_lores(self):

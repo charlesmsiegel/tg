@@ -13,9 +13,6 @@ class Archetype(Model):
     def get_absolute_url(self):
         return reverse("characters:archetype", kwargs={"pk": self.pk})
 
-    def get_heading(self):
-        return "wod_heading"
-
     def get_update_url(self):
         return reverse("characters:update:archetype", kwargs={"pk": self.pk})
 

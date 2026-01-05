@@ -95,9 +95,6 @@ class Cantrip(Model):
     def get_creation_url(cls):
         return reverse("characters:changeling:create:cantrip")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.art and self.name:
             return f"{self.name} ({self.art.title()} {self.level})"

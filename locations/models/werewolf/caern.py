@@ -37,9 +37,6 @@ class Caern(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:werewolf:create:caern")
 
-    def get_heading(self):
-        return "wta_heading"
-
     def save(self, *args, **kwargs):
         if "gauntlet" not in kwargs:
             if self.rank < 3:

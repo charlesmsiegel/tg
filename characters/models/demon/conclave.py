@@ -10,9 +10,6 @@ class Conclave(Group):
         verbose_name = "Conclave"
         verbose_name_plural = "Conclaves"
 
-    def get_heading(self):
-        return "dtf_heading"
-
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:conclave")

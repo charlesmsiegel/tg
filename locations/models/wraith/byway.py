@@ -77,6 +77,3 @@ class Byway(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:wraith:create:byway")
-
-    def get_heading(self):
-        return "wto_heading"

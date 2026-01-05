@@ -39,6 +39,3 @@ class Arcanos(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:wraith:create:arcanos")
-
-    def get_heading(self):
-        return "wto_heading"

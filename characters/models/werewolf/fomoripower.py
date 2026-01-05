@@ -19,6 +19,3 @@ class FomoriPower(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:fomoripower")
-
-    def get_heading(self):
-        return "wta_heading"

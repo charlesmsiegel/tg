@@ -31,9 +31,6 @@ class Resonance(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:resonance")
 
-    def get_heading(self):
-        return "mta_heading"
-
     def __str__(self):
         return self.name.title()
 

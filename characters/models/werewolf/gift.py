@@ -31,6 +31,3 @@ class Gift(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:gift")
-
-    def get_heading(self):
-        return "wta_heading"

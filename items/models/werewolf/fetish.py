@@ -21,9 +21,6 @@ class Fetish(Wonder):
     def get_creation_url(cls):
         return reverse("items:werewolf:create:fetish")
 
-    def get_heading(self):
-        return "wta_heading"
-
     def save(self, *args, **kwargs):
         self.background_cost = self.rank
         return super().save(*args, **kwargs)

@@ -86,9 +86,6 @@ class Treasure(ItemModel):
     def get_creation_url(cls):
         return reverse("items:changeling:create:treasure")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.name and self.rating:
             return f"{self.name} (★{'★' * (self.rating - 1)})"

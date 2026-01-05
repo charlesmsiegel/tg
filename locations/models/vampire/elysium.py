@@ -75,6 +75,3 @@ class Elysium(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:vampire:create:elysium")
-
-    def get_heading(self):
-        return "vtm_heading"

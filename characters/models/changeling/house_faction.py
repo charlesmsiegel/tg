@@ -19,6 +19,3 @@ class HouseFaction(Model):
 
     def get_update_url(self):
         return reverse("characters:changeling:update:house_faction", kwargs={"pk": self.pk})
-
-    def get_heading(self):
-        return "ctd_heading"

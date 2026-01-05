@@ -33,6 +33,3 @@ class Totem(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:werewolf:create:totem")
-
-    def get_heading(self):
-        return "wta_heading"

@@ -48,6 +48,3 @@ class VampireTitle(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:vampire:create:title")
-
-    def get_heading(self):
-        return "vtm_heading"

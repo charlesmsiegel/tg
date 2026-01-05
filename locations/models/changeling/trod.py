@@ -164,9 +164,6 @@ class Trod(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:changeling:create:trod")
 
-    def get_heading(self):
-        return "ctd_heading"
-
     def __str__(self):
         if self.origin_name and self.destination_name:
             return f"{self.name} ({self.origin_name} → {self.destination_name})"

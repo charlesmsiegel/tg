@@ -170,9 +170,6 @@ class Chantry(BackgroundBlock, LocationModel):
     def get_creation_url(cls):
         return reverse("locations:mage:create:chantry")
 
-    def get_heading(self):
-        return "mta_heading"
-
     @property
     def points(self):
         return self.total_points - self.total_cost()

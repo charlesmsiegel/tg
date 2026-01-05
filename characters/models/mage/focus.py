@@ -23,9 +23,6 @@ class Instrument(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:instrument")
 
-    def get_heading(self):
-        return "mta_heading"
-
 
 class Practice(Model):
     type = "practice"
@@ -51,9 +48,6 @@ class Practice(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:mage:create:practice")
-
-    def get_heading(self):
-        return "mta_heading"
 
     def add_ability(self, ability):
         self.abilities.add(ability)
@@ -182,9 +176,6 @@ class Tenet(Model):
     def get_creation_url(cls):
         return reverse("characters:mage:create:tenet")
 
-    def get_heading(self):
-        return "mta_heading"
-
 
 class Paradigm(Model):
     type = "paradigm"
@@ -205,9 +196,6 @@ class Paradigm(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:mage:create:paradigm")
-
-    def get_heading(self):
-        return "mta_heading"
 
     def get_associated_practices(self):
         associated_practices = Practice.objects.none()

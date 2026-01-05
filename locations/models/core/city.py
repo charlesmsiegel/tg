@@ -30,6 +30,3 @@ class City(LocationModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("locations:create:city")
-
-    def get_heading(self):
-        return "wod_heading"

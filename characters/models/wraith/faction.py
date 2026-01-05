@@ -37,6 +37,3 @@ class WraithFaction(Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:wraith:create:faction")
-
-    def get_heading(self):
-        return "wto_heading"

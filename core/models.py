@@ -429,6 +429,15 @@ class Model(PermissionMixin, PolymorphicModel):
 
         return get_gameline_name(self.get_gameline())
 
+    def get_heading(self):
+        """
+        Get the CSS heading class for this model based on its gameline.
+
+        Returns:
+            str: CSS class name for the heading (e.g., 'vtm_heading', 'mta_heading')
+        """
+        return f"{self.get_gameline()}_heading"
+
     def get_type(self):
         """
         Get a human-readable display version of the type.

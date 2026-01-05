@@ -34,9 +34,6 @@ class Bastion(LocationModel):
     def get_absolute_url(self):
         return reverse("locations:demon:bastion", kwargs={"pk": self.pk})
 
-    def get_heading(self):
-        return "dtf_heading"
-
     def get_update_url(self):
         return reverse("locations:demon:update:bastion", args=[str(self.id)])
 

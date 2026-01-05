@@ -80,6 +80,3 @@ class HunterRelic(ItemModel):
     @classmethod
     def get_creation_url(cls):
         return reverse("items:hunter:create:relic")
-
-    def get_heading(self):
-        return "htr_heading"

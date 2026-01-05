@@ -66,9 +66,6 @@ class Domain(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:vampire:create:domain")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def calculate_total_rating(self):
         """Calculate total Domain Background rating."""
         total = self.size + self.population + self.control

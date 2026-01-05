@@ -57,9 +57,6 @@ class Haven(LocationModel):
     def get_creation_url(cls):
         return reverse("locations:vampire:create:haven")
 
-    def get_heading(self):
-        return "vtm_heading"
-
     def calculate_total_rating(self):
         """Calculate total Haven Background rating."""
         total = self.size + self.security + self.location
