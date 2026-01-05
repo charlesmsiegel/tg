@@ -96,8 +96,7 @@ class MyReferenceModel(Model):
     def get_creation_url(cls):
         return reverse("characters:mygameline:create:my_reference")
 
-    def get_heading(self):
-        return "mygameline_heading"
+    # get_heading() is inherited from Model - returns f"{gameline}_heading"
 ```
 
 ## Through Model (M2M with extra data)

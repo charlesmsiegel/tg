@@ -52,10 +52,9 @@ def get_absolute_url(self):
 
 def get_update_url(self):
     return reverse("app:gameline:update:model_type", kwargs={"pk": self.pk})
-
-def get_heading(self):
-    return f"{self.gameline}_heading"
 ```
+
+**Note:** `get_heading()` is inherited from `core.models.Model` and returns `f"{gameline}_heading"` automatically. Do NOT override it unless the model needs special behavior.
 
 ### Gameline Heading Classes
 
@@ -108,7 +107,7 @@ Do NOT redefine fields inherited from `core.models.Model`:
 ### Model Layer
 - [ ] Proper base class inheritance (Character/Human, ItemModel, LocationModel, or Model)
 - [ ] `type` and `gameline` attributes set
-- [ ] `__str__`, `get_absolute_url`, `get_update_url`, `get_heading` methods
+- [ ] `__str__`, `get_absolute_url`, `get_update_url` methods (get_heading is inherited)
 - [ ] Meta class with `verbose_name`, `verbose_name_plural`, `ordering`
 - [ ] Migration created and applied
 
