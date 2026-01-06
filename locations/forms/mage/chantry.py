@@ -7,12 +7,13 @@ from locations.models.mage.chantry import ChantryBackgroundRating
 from widgets import (
     ChainedChoiceField,
     ChainedSelectMixin,
+    ConditionalFieldsMixin,
     CreateOrSelectField,
     CreateOrSelectMixin,
 )
 
 
-class ChantryPointForm(ChainedSelectMixin, forms.Form):
+class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
     INTEGRATED_EFFECTS_NUMBERS = {
         0: 0,
         1: 4,
@@ -31,6 +32,15 @@ class ChantryPointForm(ChainedSelectMixin, forms.Form):
     example = ChainedChoiceField(parent_field="category", choices_map={}, required=False)
     note = forms.CharField(max_length=300, required=False)
     display_alt_name = forms.BooleanField(required=False)
+
+    # Conditional field visibility rules
+    conditional_fields = {
+        "category": {
+            "example": {"exclude": ["-----", "Integrated Effects"]},
+            "note": {"values": ["New Background"]},
+            "display_alt_name": {"values": ["New Background"]},
+        }
+    }
 
     def __init__(self, *args, **kwargs):
         pk = kwargs.pop("pk")

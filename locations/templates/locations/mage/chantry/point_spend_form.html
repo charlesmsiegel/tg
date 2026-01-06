@@ -26,37 +26,6 @@
     <div class="col-sm">{{ form.category }}</div>
     <div class="col-sm d-none" id="example_wrap">{{ form.example }}</div>
     <div class="col-sm d-none" id="note_wrap">{{ form.note }}</div>
-    <div class="col-sm d-none" id="alt_name_wrap">Alternate Name? {{ form.display_alt_name }}</div>
+    <div class="col-sm d-none" id="display_alt_name_wrap">Alternate Name? {{ form.display_alt_name }}</div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const categorySelectMenu = document.getElementById("id_category");
-        const exampleElement = document.getElementById("example_wrap");
-        const noteElement = document.getElementById("note_wrap");
-        const altNameElement = document.getElementById("alt_name_wrap");
-
-        function updateVisibility() {
-            const value = categorySelectMenu.value;
-
-            // Reset all to hidden
-            exampleElement.classList.add("d-none");
-            noteElement.classList.add("d-none");
-            altNameElement.classList.add("d-none");
-
-            // Show fields based on category
-            if (!["-----", "Integrated Effects"].includes(value)) {
-                exampleElement.classList.remove("d-none");
-            }
-
-            if (value === "New Background") {
-                noteElement.classList.remove("d-none");
-                altNameElement.classList.remove("d-none");
-            }
-        }
-
-        categorySelectMenu.addEventListener("change", updateVisibility);
-
-        // Initial visibility on page load
-        updateVisibility();
-    });
-</script>
+{{ form.conditional_fields_script }}
