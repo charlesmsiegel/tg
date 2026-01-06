@@ -7,13 +7,13 @@
 <div class="row">
     <div class="col-sm">Create New? {{ form.create_new }}</div>
 </div>
-<div id="existing_chantry">
+<div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="select">
     <div class="row">
         <div class="col-sm">Add {{ current_background.rating }} points to existing Chantry:</div>
         <div class="col-sm">{{ form.existing_chantry }}</div>
     </div>
 </div>
-<div id="new_chantry">
+<div data-create-or-select-container="{{ form.create_new.name }}" data-create-or-select-mode="create" class="d-none">
     <div class="row">
         <h3 class="col-sm">{{ form.chantry_creation_form.name }}</h3>
     </div>
@@ -52,30 +52,3 @@
         <div class="col-sm">{{ form.chantry_creation_form.description }}</div>
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const createNewCheckbox = document.getElementById("id_create_new");
-      const existingChantryDiv = document.getElementById("existing_chantry");
-      const newChantryDiv = document.getElementById("new_chantry");
-  
-      function toggleChantrySections() {
-        if (createNewCheckbox.checked) {
-          // Hide the existing-chantry div
-          existingChantryDiv.classList.add("d-none");
-          // Show the new-chantry div
-          newChantryDiv.classList.remove("d-none");
-        } else {
-          // Show the existing-chantry div
-          existingChantryDiv.classList.remove("d-none");
-          // Hide the new-chantry div
-          newChantryDiv.classList.add("d-none");
-        }
-      }
-  
-      // Trigger on page load
-      toggleChantrySections();
-  
-      // Trigger each time the checkbox changes
-      createNewCheckbox.addEventListener("change", toggleChantrySections);
-    });
-</script>
