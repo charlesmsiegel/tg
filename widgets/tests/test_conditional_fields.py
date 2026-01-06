@@ -1,340 +1,379 @@
 """
-Tests for the widgets app conditional fields functionality.
+Tests for the ConditionalFieldsMixin.
 """
+
+import json
 
 from django import forms
 from django.test import TestCase
-from widgets import ConditionalFieldsMixin
-from widgets.mixins.conditional import CONDITIONAL_FIELDS_JS, ConditionalFieldsMixin
+
+from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
 
 class TestConditionalFieldsMixin(TestCase):
-    """Tests for ConditionalFieldsMixin form mixin."""
+    """Tests for ConditionalFieldsMixin."""
 
-    def test_mixin_provides_script_property(self):
-        """Test mixin provides conditional_fields_script property."""
+    def test_basic_form_with_rules(self):
+        """Test form with conditional visibility rules."""
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
-            example = forms.CharField()
+            category = forms.ChoiceField(choices=[('a', 'A'), ('b', 'B')])
+            detail = forms.CharField(required=False)
 
             conditional_fields = {
-                "category": {
-                    "example": {"values": ["a"]},
-                }
+                'detail': {
+                    'visible_when': {'category': {'value_is': 'a'}},
+                },
             }
 
         form = TestForm()
-        self.assertTrue(hasattr(form, "conditional_fields_script"))
+        rules = form.get_conditional_rules()
 
-    def test_script_includes_javascript(self):
-        """Test script output includes JavaScript library."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
+        self.assertIn('detail', rules)
+        self.assertEqual(
+            rules['detail']['visible_when']['category']['value_is'], 'a'
+        )
+
+    def test_conditional_js_output(self):
+        """Test conditional_js() generates correct JavaScript."""
+        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
+            category = forms.ChoiceField(choices=[('a', 'A'), ('b', 'B')])
+            detail = forms.CharField(required=False)
 
             conditional_fields = {
-                "category": {
-                    "example": {"values": ["a"]},
-                }
+                'detail': {
+                    'visible_when': {'category': {'value_is': 'a'}},
+                },
             }
 
         form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn("ConditionalFieldsManager", script)
-        self.assertIn("data-conditional-fields-js", script)
+        js = form.conditional_js()
 
-    def test_script_includes_rules_json(self):
-        """Test script output includes rules as JSON."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
+        # Should include JavaScript manager
+        self.assertIn('ConditionalFieldsManager', js)
+        self.assertIn('data-conditional-fields-js', js)
 
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
+        # Should include rules as JSON
+        self.assertIn('data-conditional-rules', js)
+        self.assertIn('"detail"', js)
 
-            conditional_fields = {
-                "category": {
-                    "example": {"values": ["a", "b"]},
-                }
-            }
-
-        form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn("data-conditional-rules", script)
-        self.assertIn('"category"', script)
-        self.assertIn('"example"', script)
-        self.assertIn('"values"', script)
-
-    def test_script_js_rendered_once(self):
-        """Test JavaScript library is only rendered once."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
+    def test_conditional_js_rendered_once(self):
+        """Test JavaScript is only rendered once per request."""
+        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
-
-            conditional_fields = {
-                "category": {
-                    "example": {"values": ["a"]},
-                }
-            }
+            field1 = forms.CharField()
+            conditional_fields = {'field1': {'visible_when': {}}}
 
         form1 = TestForm()
         form2 = TestForm()
 
-        script1 = form1.conditional_fields_script
-        script2 = form2.conditional_fields_script
+        js1 = form1.conditional_js()
+        js2 = form2.conditional_js()
 
-        # JS library should be in first render only
-        self.assertIn("data-conditional-fields-js", script1)
-        self.assertNotIn("data-conditional-fields-js", script2)
-
+        # First should have JS manager
+        self.assertIn('data-conditional-fields-js', js1)
+        # Second should not (already rendered)
+        self.assertNotIn('data-conditional-fields-js', js2)
         # But both should have rules
-        self.assertIn("data-conditional-rules", script1)
-        self.assertIn("data-conditional-rules", script2)
+        self.assertIn('data-conditional-rules', js1)
+        self.assertIn('data-conditional-rules', js2)
 
-    def test_empty_rules_returns_empty_string(self):
-        """Test empty conditional_fields returns empty script."""
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
-
-            conditional_fields = {}
-
-        form = TestForm()
-        self.assertEqual(form.conditional_fields_script, "")
-
-    def test_get_conditional_fields_override(self):
-        """Test get_conditional_fields can be overridden for dynamic rules."""
+    def test_conditional_context(self):
+        """Test conditional context variables are included."""
+        ConditionalFieldsMixin.reset_js_rendered()
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
-            note = forms.CharField()
-
-            def __init__(self, *args, show_note=False, **kwargs):
-                self.show_note = show_note
-                super().__init__(*args, **kwargs)
-
-            def get_conditional_fields(self):
-                rules = {
-                    "category": {
-                        "example": {"values": ["a"]},
-                    }
-                }
-                if self.show_note:
-                    rules["category"]["note"] = {"values": ["a"]}
-                return rules
-
-        ConditionalFieldsMixin._conditional_js_rendered = False
-        form_without_note = TestForm(show_note=False)
-        script1 = form_without_note.conditional_fields_script
-        self.assertIn('"example"', script1)
-        self.assertNotIn('"note"', script1)
-
-        ConditionalFieldsMixin._conditional_js_rendered = False
-        form_with_note = TestForm(show_note=True)
-        script2 = form_with_note.conditional_fields_script
-        self.assertIn('"example"', script2)
-        self.assertIn('"note"', script2)
-
-    def test_formset_prefix_included(self):
-        """Test form prefix is included in data attributes."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            example = forms.CharField()
+            pooled = forms.BooleanField(required=False)
 
             conditional_fields = {
-                "category": {
-                    "example": {"values": ["a"]},
-                }
+                'pooled': {
+                    'visible_when': {
+                        '_context': {'is_group_member': True},
+                    },
+                },
             }
 
-        form = TestForm(prefix="items-0")
-        script = form.conditional_fields_script
-        self.assertIn('data-form-prefix="items-0"', script)
+        form = TestForm(conditional_context={'is_group_member': True})
+        js = form.conditional_js()
 
-    def test_render_conditional_wrapper(self):
-        """Test render_conditional_wrapper helper method."""
+        # Context should be in the JSON
+        self.assertIn('is_group_member', js)
+        self.assertIn('true', js.lower())
+
+    def test_get_conditional_context_override(self):
+        """Test overriding get_conditional_context."""
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            example = forms.CharField()
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'pooled': {
+                    'visible_when': {'_context': {'custom_var': True}},
+                },
+            }
+
+            def get_conditional_context(self):
+                return {'custom_var': True, 'another_var': False}
 
         form = TestForm()
-        wrapper = form.render_conditional_wrapper("example", "<input>", "extra-class")
+        context = form.get_conditional_context()
 
-        self.assertIn('id="example_wrap"', wrapper)
-        self.assertIn('class="d-none extra-class"', wrapper)
-        self.assertIn('data-conditional-field="example"', wrapper)
-        self.assertIn("<input>", wrapper)
+        self.assertEqual(context['custom_var'], True)
+        self.assertEqual(context['another_var'], False)
+
+    def test_wrap_field(self):
+        """Test wrap_field method generates correct HTML."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            detail = forms.CharField(required=False)
+
+            conditional_fields = {
+                'detail': {
+                    'initially_hidden': True,
+                },
+            }
+
+        form = TestForm()
+        html = form.wrap_field('detail')
+
+        self.assertIn('id="detail_wrap"', html)
+        self.assertIn('d-none', html)  # Initially hidden
+
+    def test_wrap_field_with_label(self):
+        """Test wrap_field with label prefix."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'pooled': {'initially_hidden': True},
+            }
+
+        form = TestForm()
+        html = form.wrap_field('pooled', 'Pooled?')
+
+        self.assertIn('Pooled?', html)
+        self.assertIn('id="pooled_wrap"', html)
+
+    def test_wrap_field_initially_visible(self):
+        """Test wrap_field when initially_hidden is False."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            detail = forms.CharField(required=False)
+
+            conditional_fields = {
+                'detail': {
+                    'initially_hidden': False,
+                },
+            }
+
+        form = TestForm()
+        html = form.wrap_field('detail')
+
+        self.assertIn('id="detail_wrap"', html)
+        self.assertNotIn('d-none', html)  # Not hidden
+
+    def test_empty_rules(self):
+        """Test form with no conditional rules."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            field1 = forms.CharField()
+
+        form = TestForm()
+        js = form.conditional_js()
+
+        # Should return empty string
+        self.assertEqual(js, '')
+
+
+class TestConditionalFieldsWithChainedSelect(TestCase):
+    """Tests for ConditionalFieldsMixin combined with ChainedSelectMixin."""
+
+    def test_combined_mixins(self):
+        """Test ConditionalFieldsMixin works with ChainedSelectMixin."""
+
+        class TestForm(ConditionalFieldsMixin, ChainedSelectMixin, forms.Form):
+            category = ChainedChoiceField(
+                choices=[('bg', 'Background'), ('mf', 'Merit/Flaw')]
+            )
+            example = ChainedChoiceField(
+                parent_field='category',
+                choices_map={
+                    'bg': [('bg1', 'Allies', {'poolable': 'true'})],
+                    'mf': [('mf1', 'Acute Sense')],
+                },
+            )
+            value = forms.ChoiceField(required=False, choices=[])
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'value': {
+                    'visible_when': {'category': {'value_is': 'mf'}},
+                },
+                'pooled': {
+                    'visible_when': {
+                        'category': {'value_is': 'bg'},
+                        'example': {'metadata_is': {'poolable': 'true'}},
+                    },
+                },
+            }
+
+        form = TestForm()
+
+        # ChainedSelectMixin should configure chains
+        self.assertIsNotNone(form.fields['category']._chain_name)
+
+        # ConditionalFieldsMixin should have rules
+        rules = form.get_conditional_rules()
+        self.assertIn('pooled', rules)
+        self.assertEqual(
+            rules['pooled']['visible_when']['example']['metadata_is'],
+            {'poolable': 'true'}
+        )
+
+    def test_combined_js_output(self):
+        """Test combined form generates all necessary JavaScript."""
+        ConditionalFieldsMixin.reset_js_rendered()
+
+        class TestForm(ConditionalFieldsMixin, ChainedSelectMixin, forms.Form):
+            category = ChainedChoiceField(
+                choices=[('bg', 'Background'), ('mf', 'Merit/Flaw')]
+            )
+            example = ChainedChoiceField(
+                parent_field='category',
+                choices_map={
+                    'bg': [('bg1', 'Allies')],
+                    'mf': [('mf1', 'Acute Sense')],
+                },
+            )
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'pooled': {
+                    'visible_when': {'category': {'value_is': 'bg'}},
+                },
+            }
+
+        form = TestForm()
+
+        # Should have conditional JS
+        conditional_js = form.conditional_js()
+        self.assertIn('ConditionalFieldsManager', conditional_js)
+
+        # ChainedSelect widget should render its JS (reset it first)
+        from widgets.widgets.chained import ChainedSelect
+        ChainedSelect.reset_js_rendered()
+
+        category_html = str(form['category'])
+        self.assertIn('ChainedSelectManager', category_html)
 
 
 class TestConditionalFieldsRuleTypes(TestCase):
     """Tests for different rule types in conditional fields."""
 
-    def test_values_rule(self):
-        """Test 'values' rule for exact match."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
+    def test_value_in_rule(self):
+        """Test value_in rule type."""
 
         class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
-            example = forms.CharField()
+            category = forms.ChoiceField(choices=[('a', 'A'), ('b', 'B'), ('c', 'C')])
+            detail = forms.CharField(required=False)
 
             conditional_fields = {
-                "category": {
-                    "example": {"values": ["a"]},
-                }
-            }
-
-        form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn('"values":["a"]', script.replace(" ", "").replace("'", '"'))
-
-    def test_exclude_rule(self):
-        """Test 'exclude' rule for negative match."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
-            example = forms.CharField()
-
-            conditional_fields = {
-                "category": {
-                    "example": {"exclude": ["-----", "none"]},
-                }
-            }
-
-        form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn("exclude", script)
-        self.assertIn("-----", script)
-
-    def test_checked_rule(self):
-        """Test 'checked' rule for checkbox fields."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            create_new = forms.BooleanField(required=False)
-            new_name = forms.CharField()
-
-            conditional_fields = {
-                "create_new": {
-                    "new_name": {"checked": True},
-                }
-            }
-
-        form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn('"checked":true', script.replace(" ", "").replace("'", '"'))
-
-    def test_multiple_targets(self):
-        """Test multiple target fields for one controller."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A"), ("b", "B")])
-            example = forms.CharField()
-            note = forms.CharField()
-            value = forms.IntegerField()
-
-            conditional_fields = {
-                "category": {
-                    "example": {"exclude": ["-----"]},
-                    "note": {"values": ["b"]},
-                    "value": {"values": ["a"]},
-                }
-            }
-
-        form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn('"example"', script)
-        self.assertIn('"note"', script)
-        self.assertIn('"value"', script)
-
-    def test_multiple_controllers(self):
-        """Test form with multiple controller fields."""
-        ConditionalFieldsMixin._conditional_js_rendered = False
-
-        class TestForm(ConditionalFieldsMixin, forms.Form):
-            category = forms.ChoiceField(choices=[("a", "A")])
-            type = forms.ChoiceField(choices=[("x", "X")])
-            for_category = forms.CharField()
-            for_type = forms.CharField()
-
-            conditional_fields = {
-                "category": {
-                    "for_category": {"values": ["a"]},
-                },
-                "type": {
-                    "for_type": {"values": ["x"]},
+                'detail': {
+                    'hidden_when': {'category': {'value_in': ['a', 'b']}},
                 },
             }
 
         form = TestForm()
-        script = form.conditional_fields_script
-        self.assertIn('"category"', script)
-        self.assertIn('"type"', script)
-        self.assertIn('"for_category"', script)
-        self.assertIn('"for_type"', script)
+        rules = form.get_conditional_rules()
+
+        self.assertEqual(
+            rules['detail']['hidden_when']['category']['value_in'],
+            ['a', 'b']
+        )
+
+    def test_value_not_in_rule(self):
+        """Test value_not_in rule type."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            category = forms.ChoiceField(choices=[('a', 'A'), ('b', 'B'), ('c', 'C')])
+            detail = forms.CharField(required=False)
+
+            conditional_fields = {
+                'detail': {
+                    'visible_when': {'category': {'value_not_in': ['a']}},
+                },
+            }
+
+        form = TestForm()
+        rules = form.get_conditional_rules()
+
+        self.assertEqual(
+            rules['detail']['visible_when']['category']['value_not_in'],
+            ['a']
+        )
+
+    def test_metadata_truthy_rule(self):
+        """Test metadata_truthy rule type."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            example = forms.ChoiceField(choices=[])
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'pooled': {
+                    'visible_when': {'example': {'metadata_truthy': 'poolable'}},
+                },
+            }
+
+        form = TestForm()
+        rules = form.get_conditional_rules()
+
+        self.assertEqual(
+            rules['pooled']['visible_when']['example']['metadata_truthy'],
+            'poolable'
+        )
+
+    def test_multiple_conditions(self):
+        """Test multiple conditions in visible_when."""
+
+        class TestForm(ConditionalFieldsMixin, forms.Form):
+            category = forms.ChoiceField(choices=[])
+            example = forms.ChoiceField(choices=[])
+            pooled = forms.BooleanField(required=False)
+
+            conditional_fields = {
+                'pooled': {
+                    'visible_when': {
+                        'category': {'value_is': 'bg'},
+                        'example': {'metadata_is': {'poolable': 'true'}},
+                        '_context': {'is_group_member': True},
+                    },
+                },
+            }
+
+        form = TestForm(conditional_context={'is_group_member': True})
+        rules = form.get_conditional_rules()
+        context = form.get_conditional_context()
+
+        # Should have all three conditions
+        visible_when = rules['pooled']['visible_when']
+        self.assertIn('category', visible_when)
+        self.assertIn('example', visible_when)
+        self.assertIn('_context', visible_when)
+
+        # Context should be passed through
+        self.assertTrue(context['is_group_member'])
 
 
-class TestConditionalFieldsJavaScript(TestCase):
-    """Tests for the embedded JavaScript."""
+class TestImports(TestCase):
+    """Tests for module exports."""
 
-    def test_js_contains_manager_class(self):
-        """Test JavaScript contains the manager class."""
-        self.assertIn("class ConditionalFieldsManager", CONDITIONAL_FIELDS_JS)
-
-    def test_js_contains_init_function(self):
-        """Test JavaScript contains init function."""
-        self.assertIn("init()", CONDITIONAL_FIELDS_JS)
-
-    def test_js_handles_htmx(self):
-        """Test JavaScript handles htmx:afterSwap event."""
-        self.assertIn("htmx:afterSwap", CONDITIONAL_FIELDS_JS)
-
-    def test_js_handles_turbo(self):
-        """Test JavaScript handles Turbo events."""
-        self.assertIn("turbo:render", CONDITIONAL_FIELDS_JS)
-        self.assertIn("turbo:frame-load", CONDITIONAL_FIELDS_JS)
-
-    def test_js_uses_d_none_class(self):
-        """Test JavaScript uses Bootstrap d-none class."""
-        self.assertIn("d-none", CONDITIONAL_FIELDS_JS)
-
-    def test_js_handles_checkbox(self):
-        """Test JavaScript handles checkbox type."""
-        self.assertIn("checkbox", CONDITIONAL_FIELDS_JS)
-
-    def test_js_evaluates_values_rule(self):
-        """Test JavaScript evaluates 'values' rule."""
-        self.assertIn("rule.values", CONDITIONAL_FIELDS_JS)
-
-    def test_js_evaluates_exclude_rule(self):
-        """Test JavaScript evaluates 'exclude' rule."""
-        self.assertIn("rule.exclude", CONDITIONAL_FIELDS_JS)
-
-    def test_js_evaluates_checked_rule(self):
-        """Test JavaScript evaluates 'checked' rule."""
-        self.assertIn("rule.checked", CONDITIONAL_FIELDS_JS)
-
-
-class TestWidgetsConditionalImports(TestCase):
-    """Tests that conditional fields are exported correctly."""
-
-    def test_conditional_fields_mixin_importable(self):
-        """Test ConditionalFieldsMixin is importable from widgets package."""
+    def test_conditional_fields_mixin_export(self):
+        """Test ConditionalFieldsMixin is exported from widgets package."""
         from widgets import ConditionalFieldsMixin
 
         self.assertIsNotNone(ConditionalFieldsMixin)
-
-    def test_conditional_fields_mixin_in_all(self):
-        """Test ConditionalFieldsMixin is in __all__."""
-        import widgets
-
-        self.assertIn("ConditionalFieldsMixin", widgets.__all__)
