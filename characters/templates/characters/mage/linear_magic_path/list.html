@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load filterable_list %}
 {% block title %}
     Linear Magic Paths
 {% endblock title %}
@@ -23,13 +24,13 @@
                     <!-- Search Filter -->
                     <div class="mb-3">
                         <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
-                        <input type="text" class="form-control" id="nameFilter" placeholder="Type to filter by name...">
+                        <input type="text" class="form-control" id="nameFilter" data-filter-input="name" placeholder="Type to filter by name...">
                     </div>
 
                     <!-- Type Filter -->
                     <div class="mb-3">
                         <label for="typeFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Filter by Type</label>
-                        <select class="form-control" id="typeFilter">
+                        <select class="form-control" id="typeFilter" data-filter-select="type">
                             <option value="">All Types</option>
                             <option value="hedge_magic">Hedge Magic</option>
                             <option value="psychic">Psychic Phenomenon</option>
@@ -38,17 +39,18 @@
 
                     <!-- Clear Filters -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear All Filters</button>
-                        <span id="resultCount" style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
+                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Path List -->
-        <div class="row" id="pathList">
+        <div class="row" data-filterable-list="paths">
             {% for obj in object_list %}
-                <div class="col-md-4 col-sm-6 mb-3 path-item"
+                <div class="col-md-4 col-sm-6 mb-3"
+                     data-filterable-item
                      data-name="{{ obj.name|lower }}"
                      data-type="{{ obj.numina_type }}">
                     <div class="tg-card h-100">
@@ -74,7 +76,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div id="noResults" class="tg-card" style="display: none;">
+        <div data-filter-no-results class="tg-card" style="display: none;">
             <div class="tg-card-body text-center" style="padding: 20px;">
                 <p style="color: var(--theme-text-secondary); margin: 0;">No paths match the current filters.</p>
             </div>
@@ -83,70 +85,5 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const nameFilter = document.getElementById('nameFilter');
-    const typeFilter = document.getElementById('typeFilter');
-    const pathItems = document.querySelectorAll('.path-item');
-    const clearButton = document.getElementById('clearFilters');
-    const resultCount = document.getElementById('resultCount');
-    const noResults = document.getElementById('noResults');
-
-    function updateFilters() {
-        const nameQuery = nameFilter.value.toLowerCase().trim();
-        const selectedType = typeFilter.value;
-
-        let visibleCount = 0;
-
-        pathItems.forEach(item => {
-            let show = true;
-
-            // Name filter
-            if (nameQuery && !item.dataset.name.includes(nameQuery)) {
-                show = false;
-            }
-
-            // Type filter
-            if (selectedType && item.dataset.type !== selectedType) {
-                show = false;
-            }
-
-            if (show) {
-                item.style.display = '';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        // Update result count
-        const totalCount = pathItems.length;
-        if (nameQuery || selectedType) {
-            resultCount.textContent = `Showing ${visibleCount} of ${totalCount} paths`;
-        } else {
-            resultCount.textContent = `${totalCount} paths`;
-        }
-
-        // Show/hide no results message
-        if (visibleCount === 0 && totalCount > 0) {
-            noResults.style.display = '';
-        } else {
-            noResults.style.display = 'none';
-        }
-    }
-
-    // Event listeners
-    nameFilter.addEventListener('input', updateFilters);
-    typeFilter.addEventListener('change', updateFilters);
-
-    clearButton.addEventListener('click', function() {
-        nameFilter.value = '';
-        typeFilter.value = '';
-        updateFilters();
-    });
-
-    // Initial count
-    updateFilters();
-});
-</script>
+{% filterable_list_script %}
 {% endblock extra_js %}
