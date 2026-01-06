@@ -1,32 +1,39 @@
 """
-Django Chained Select - Self-Contained Cascading Dropdowns
+Django Chained Select - Backward Compatibility Layer
 
-Works like native Django form fields. Just render the field in your template.
-No {{ form.media }}, no URL configuration, no JavaScript setup.
+DEPRECATED: This module is deprecated and will be removed in a future version.
+Please update your imports to use the widgets app:
 
-Example:
-    from django import forms
+    # Old (deprecated):
     from chained_select import ChainedChoiceField, ChainedSelectMixin
 
-    class MyForm(ChainedSelectMixin, forms.Form):
-        parent = ChainedChoiceField(choices=[('a', 'A'), ('b', 'B')])
-        child = ChainedChoiceField(
-            parent_field='parent',
-            choices_map={'a': [('a1', 'A1')], 'b': [('b1', 'B1')]}
-        )
+    # New:
+    from widgets import ChainedChoiceField, ChainedSelectMixin
 
-Template:
-    {{ form.as_p }}
-
-That's it!
+All functionality has been migrated to the widgets app for better organization.
 """
 
-from .fields import ChainedChoiceField, ChainedModelChoiceField, ChainedSelectMixin
-from .views import ChainedSelectAjaxView, make_ajax_view
-from .widgets import ChainedSelect, ChainedSelectMultiple
+import warnings
 
-# Auto-register URL via AppConfig
-default_app_config = "chained_select.apps.ChainedSelectConfig"
+# Re-export everything from widgets for backward compatibility
+from widgets import (
+    ChainedChoiceField,
+    ChainedModelChoiceField,
+    ChainedSelect,
+    ChainedSelectAjaxView,
+    ChainedSelectMixin,
+    ChainedSelectMultiple,
+    make_ajax_view,
+)
+
+# Emit deprecation warning on import
+warnings.warn(
+    "The 'chained_select' module is deprecated. "
+    "Please update your imports to use 'widgets' instead. "
+    "Example: from widgets import ChainedChoiceField, ChainedSelectMixin",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 __all__ = [
     "ChainedSelect",

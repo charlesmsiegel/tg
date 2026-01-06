@@ -6,7 +6,7 @@ without manual AJAX. Choices are computed at form initialization
 and embedded in the page JavaScript.
 """
 
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating

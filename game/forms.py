@@ -1,4 +1,4 @@
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
 from django import forms

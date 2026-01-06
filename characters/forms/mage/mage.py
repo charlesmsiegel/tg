@@ -1,4 +1,4 @@
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from django import forms
