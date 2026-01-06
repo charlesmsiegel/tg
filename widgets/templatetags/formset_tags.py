@@ -1,22 +1,21 @@
 """
 Template tags for FormsetManager widget.
 
-Usage:
+Simplified Usage:
     {% load formset_tags %}
 
-    {# Render the FormsetManager JavaScript (once per page) #}
-    {% formset_script %}
+    {% formset my_formset prefix="items" add_label="Add Item" %}
+        <div class="col-sm">{{ subform.name }}</div>
+        <div class="col-sm">{{ subform.quantity }}</div>
+    {% endformset %}
 
-    {# Mark a container for formset management #}
-    <div {% formset_container "my_formset" %}>
-        ...
-    </div>
-
-    {# Render an add button #}
-    {% formset_add_btn "my_formset" "Add Item" class="tg-btn btn-primary" %}
-
-    {# Include in your form row template #}
-    <button {% formset_remove_btn "my_formset" %} class="tg-btn btn-danger btn-sm">Remove</button>
+That's it! The tag handles:
+- Management form
+- Container with data attributes
+- Looping through existing forms
+- Hidden empty form template
+- Add button
+- JavaScript injection (once per page)
 """
 
 from django import template
@@ -27,133 +26,218 @@ from ..widgets.formset_manager import render_formset_manager_script_once
 register = template.Library()
 
 
-@register.simple_tag
-def formset_script():
+class FormsetNode(template.Node):
     """
-    Render the FormsetManager JavaScript.
-    Only renders once per page, subsequent calls return empty string.
+    Template node for the {% formset %} block tag.
+
+    Renders a complete dynamic formset with add/remove functionality.
+    """
+
+    def __init__(self, formset_var, nodelist, prefix=None, add_label=None,
+                 add_class=None, remove_label=None, remove_class=None,
+                 wrapper_class=None, show_remove=True, animate=False):
+        self.formset_var = formset_var
+        self.nodelist = nodelist
+        self.prefix = prefix
+        self.add_label = add_label
+        self.add_class = add_class
+        self.remove_label = remove_label
+        self.remove_class = remove_class
+        self.wrapper_class = wrapper_class
+        self.show_remove = show_remove
+        self.animate = animate
+
+    def render(self, context):
+        # Resolve the formset variable
+        formset = self.formset_var.resolve(context)
+
+        # Resolve other variables
+        prefix = self.prefix.resolve(context) if self.prefix else formset.prefix
+        add_label = self.add_label.resolve(context) if self.add_label else "Add"
+        add_class = self.add_class.resolve(context) if self.add_class else ""
+        remove_label = self.remove_label.resolve(context) if self.remove_label else "Remove"
+        remove_class = self.remove_class.resolve(context) if self.remove_class else "tg-btn btn-danger btn-sm"
+        wrapper_class = self.wrapper_class.resolve(context) if self.wrapper_class else "form-row"
+        show_remove = self.show_remove.resolve(context) if hasattr(self.show_remove, 'resolve') else self.show_remove
+        animate = self.animate.resolve(context) if hasattr(self.animate, 'resolve') else self.animate
+
+        parts = []
+
+        # Management form
+        parts.append(str(formset.management_form))
+
+        # Container opening
+        animate_attr = ' data-formset-animate="true"' if animate else ''
+        parts.append(
+            f'<div id="{prefix}_formset" data-formset-container="" '
+            f'data-formset-prefix="{prefix}"{animate_attr}>'
+        )
+
+        # Render existing forms
+        for form in formset:
+            parts.append(self._render_form_row(
+                context, form, prefix, wrapper_class,
+                remove_label, remove_class, show_remove, is_empty=False
+            ))
+
+        # Container closing
+        parts.append('</div>')
+
+        # Empty form template (hidden)
+        parts.append(f'<div id="empty_{prefix}_form" class="d-none">')
+        parts.append(self._render_form_row(
+            context, formset.empty_form, prefix, wrapper_class,
+            remove_label, remove_class, show_remove, is_empty=True
+        ))
+        parts.append('</div>')
+
+        # Add button
+        parts.append(
+            f'<button type="button" data-formset-add="{prefix}" '
+            f'class="{add_class}">{add_label}</button>'
+        )
+
+        # JavaScript (once per page)
+        parts.append(render_formset_manager_script_once())
+
+        return mark_safe('\n'.join(parts))
+
+    def _render_form_row(self, context, form, prefix, wrapper_class,
+                         remove_label, remove_class, show_remove, is_empty):
+        """Render a single form row with the user-provided content."""
+        # Push subform into context
+        with context.push():
+            context['subform'] = form
+            context['form'] = form  # Alias for convenience
+
+            # Render the user's nodelist content
+            content = self.nodelist.render(context)
+
+        # Build remove button if enabled
+        remove_btn = ''
+        if show_remove:
+            remove_btn = (
+                f'<button type="button" data-formset-remove="{prefix}" '
+                f'class="{remove_class}">{remove_label}</button>'
+            )
+
+        # Wrap in form row div
+        return (
+            f'<div class="{wrapper_class}" data-formset-form="">'
+            f'{content}{remove_btn}</div>'
+        )
+
+
+@register.tag('formset')
+def do_formset(parser, token):
+    """
+    Render a complete dynamic formset.
 
     Usage:
-        {% formset_script %}
+        {% formset formset_var prefix="prefix" add_label="Add" %}
+            {{ subform.field1 }}
+            {{ subform.field2 }}
+        {% endformset %}
+
+    Arguments:
+        formset_var: The Django formset object (required)
+        prefix: The formset prefix (optional, defaults to formset.prefix)
+        add_label: Text for the add button (default: "Add")
+        add_class: CSS class for add button (default: "")
+        remove_label: Text for remove buttons (default: "Remove")
+        remove_class: CSS class for remove button (default: "tg-btn btn-danger btn-sm")
+        wrapper_class: CSS class for form row wrapper (default: "form-row")
+        show_remove: Whether to show remove buttons (default: True)
+        animate: Whether to animate add/remove (default: False)
+
+    Inside the block, use {{ subform.fieldname }} to render fields.
     """
+    bits = token.split_contents()
+    tag_name = bits[0]
+
+    if len(bits) < 2:
+        raise template.TemplateSyntaxError(
+            f"'{tag_name}' tag requires at least one argument (the formset)"
+        )
+
+    formset_var = parser.compile_filter(bits[1])
+
+    # Parse keyword arguments
+    kwargs = {}
+    for bit in bits[2:]:
+        if '=' in bit:
+            key, value = bit.split('=', 1)
+            # Remove quotes if present
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
+            elif value.startswith("'") and value.endswith("'"):
+                value = value[1:-1]
+            kwargs[key] = parser.compile_filter(value) if not value.startswith('"') else template.Variable(f'"{value}"')
+            # Handle string literals vs variables
+            if value in ('True', 'False'):
+                kwargs[key] = value == 'True'
+            else:
+                kwargs[key] = parser.compile_filter(f'"{value}"') if '"' not in value and "'" not in value else parser.compile_filter(value)
+        else:
+            raise template.TemplateSyntaxError(
+                f"'{tag_name}' tag arguments must be in key=value format"
+            )
+
+    # Parse the nodelist until {% endformset %}
+    nodelist = parser.parse(('endformset',))
+    parser.delete_first_token()
+
+    return FormsetNode(
+        formset_var=formset_var,
+        nodelist=nodelist,
+        prefix=kwargs.get('prefix'),
+        add_label=kwargs.get('add_label'),
+        add_class=kwargs.get('add_class'),
+        remove_label=kwargs.get('remove_label'),
+        remove_class=kwargs.get('remove_class'),
+        wrapper_class=kwargs.get('wrapper_class'),
+        show_remove=kwargs.get('show_remove', True),
+        animate=kwargs.get('animate', False),
+    )
+
+
+# Keep the simple tags for advanced/custom use cases
+@register.simple_tag
+def formset_script():
+    """Render FormsetManager JS. Only renders once per page."""
     return render_formset_manager_script_once()
 
 
 @register.simple_tag
 def formset_container(prefix, empty_form_id=None, animate=False):
-    """
-    Return data attributes for a formset container.
-
-    Args:
-        prefix: The Django formset prefix (e.g., 'backgrounds', 'resonance')
-        empty_form_id: Optional custom ID for the empty form template.
-                       Defaults to 'empty_{prefix}_form'
-        animate: Whether to animate form additions/removals
-
-    Usage:
-        <div {% formset_container "backgrounds" %}>
-            {% for form in formset %}
-                ...
-            {% endfor %}
-        </div>
-
-    Returns:
-        HTML data attributes string
-    """
+    """Return data attributes for a formset container (advanced use)."""
     attrs = [
-        f'data-formset-container=""',
+        'data-formset-container=""',
         f'data-formset-prefix="{prefix}"',
     ]
-
     if empty_form_id:
         attrs.append(f'data-formset-empty-form="{empty_form_id}"')
-
     if animate:
         attrs.append('data-formset-animate="true"')
-
     return mark_safe(' '.join(attrs))
 
 
 @register.simple_tag
 def formset_add_btn(prefix, label="Add", **kwargs):
-    """
-    Render a complete add button for a formset.
-
-    Args:
-        prefix: The Django formset prefix
-        label: Button text
-        **kwargs: Additional HTML attributes (e.g., class="btn btn-primary")
-
-    Usage:
-        {% formset_add_btn "resonance" "Add Resonance" class="tg-btn btn-primary" %}
-
-    Returns:
-        Complete button HTML element
-    """
+    """Render an add button (advanced use)."""
     attrs = [f'data-formset-add="{prefix}"', 'type="button"']
-
     for key, value in kwargs.items():
-        # Convert underscores to hyphens for HTML attributes
-        html_key = key.replace('_', '-')
-        attrs.append(f'{html_key}="{value}"')
-
-    attrs_str = ' '.join(attrs)
-    return mark_safe(f'<button {attrs_str}>{label}</button>')
+        attrs.append(f'{key.replace("_", "-")}="{value}"')
+    return mark_safe(f'<button {" ".join(attrs)}>{label}</button>')
 
 
 @register.simple_tag
 def formset_remove_btn(prefix):
-    """
-    Return data attributes for a remove button.
-
-    Args:
-        prefix: The Django formset prefix
-
-    Usage:
-        <button {% formset_remove_btn "resonance" %} type="button" class="btn btn-danger">
-            Remove
-        </button>
-
-    Returns:
-        HTML data attribute string
-    """
+    """Return data attributes for a remove button (advanced use)."""
     return mark_safe(f'data-formset-remove="{prefix}"')
 
 
 @register.simple_tag
 def formset_form_wrapper():
-    """
-    Return data attribute to mark a form row/wrapper for proper removal.
-
-    Usage:
-        <div {% formset_form_wrapper %} class="form-row">
-            ...
-        </div>
-
-    Returns:
-        HTML data attribute string
-    """
+    """Return data attribute to mark a form row (advanced use)."""
     return mark_safe('data-formset-form=""')
-
-
-@register.inclusion_tag('widgets/formset_empty_form.html')
-def formset_empty_form(formset, prefix, template_name=None):
-    """
-    Render a hidden empty form template for JavaScript cloning.
-
-    Args:
-        formset: The Django formset object
-        prefix: The formset prefix
-        template_name: Optional custom template for the empty form
-
-    Usage:
-        {% formset_empty_form formset "backgrounds" %}
-
-    Note: You need to create the template at widgets/formset_empty_form.html
-          or use the template_name parameter.
-    """
-    return {
-        'empty_form': formset.empty_form,
-        'prefix': prefix,
-        'template_name': template_name,
-    }
