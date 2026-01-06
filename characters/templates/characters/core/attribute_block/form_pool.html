@@ -1,0 +1,75 @@
+{% load dots %}
+{#
+    Attribute block form using PointPoolWidget.
+
+    This template replaces ~230 lines of custom JavaScript with the reusable
+    PointPoolWidget component. The widget automatically handles:
+    - Real-time point tracking across physical/social/mental categories
+    - Distribution validation (primary/secondary/tertiary can be any category)
+    - Live status updates with color coding
+    - Dynamic input constraints to prevent invalid states
+
+    Requirements:
+    - Form must use DistributionPoolMixin or AttributeForm
+    - View must set pool_name='attributes' in the form config
+#}
+
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Attributes</h2>
+</div>
+<div class="row">
+    <div class="col-sm">
+        Prioritize primary, secondary, and tertiary Attribute categories and add {{ primary }}/{{ secondary }}/{{ tertiary }} dots
+        {# Total points remaining - auto-updated by PointPoolManager #}
+        <div data-pool-total="attributes" style="font-weight: 600; color: var(--theme-text-secondary); margin-top: 8px;"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Physical</h3>
+        {# Physical group status - auto-updated by PointPoolManager #}
+        <div data-pool-group-status="attributes:physical" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
+    </div>
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Social</h3>
+        {# Social group status - auto-updated by PointPoolManager #}
+        <div data-pool-group-status="attributes:social" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
+    </div>
+    <div class="col-sm">
+        <h3 class="{{ object.get_heading }}">Mental</h3>
+        {# Mental group status - auto-updated by PointPoolManager #}
+        <div data-pool-group-status="attributes:mental" style="font-weight: 600; font-size: 0.9rem; color: var(--theme-text-secondary);"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm">Strength</div>
+    <div class="col-sm dots">{{ form.strength }}</div>
+    <div class="col-sm">Charisma</div>
+    <div class="col-sm dots">{{ form.charisma }}</div>
+    <div class="col-sm">Perception</div>
+    <div class="col-sm dots">{{ form.perception }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Dexterity</div>
+    <div class="col-sm dots">{{ form.dexterity }}</div>
+    <div class="col-sm">Manipulation</div>
+    <div class="col-sm dots">{{ form.manipulation }}</div>
+    <div class="col-sm">Intelligence</div>
+    <div class="col-sm dots">{{ form.intelligence }}</div>
+</div>
+<div class="row">
+    <div class="col-sm">Stamina</div>
+    <div class="col-sm dots">{{ form.stamina }}</div>
+    <div class="col-sm">Appearance</div>
+    <div class="col-sm dots">{{ form.appearance }}</div>
+    <div class="col-sm">Wits</div>
+    <div class="col-sm dots">{{ form.wits }}</div>
+</div>
+{#
+    Note: No JavaScript needed here! The PointPoolWidget automatically injects
+    the PointPoolManager JavaScript when rendering the form fields. The JS:
+    - Reads configuration from data-pool-config embedded in the first field
+    - Registers all fields with data-point-pool and data-pool-group attributes
+    - Updates all data-pool-total and data-pool-group-status elements
+    - Enforces constraints by disabling invalid options or setting max values
+#}
