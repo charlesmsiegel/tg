@@ -1,4 +1,4 @@
-from characters.forms.core.limited_edit import LimitedEarthboundEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Earthbound
 from core.mixins import (
     EditPermissionMixin,
@@ -240,7 +240,7 @@ class EarthboundUpdateView(EditPermissionMixin, UpdateView):
             return super().get_form_class()
         else:
             # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedEarthboundEditForm
+            return LimitedHumanEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

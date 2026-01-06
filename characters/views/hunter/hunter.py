@@ -1,4 +1,4 @@
-from characters.forms.core.limited_edit import LimitedHunterEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import Hunter
 from core.mixins import (
     EditPermissionMixin,
@@ -223,7 +223,7 @@ class HunterUpdateView(EditPermissionMixin, UpdateView):
         if has_full_edit:
             return super().get_form_class()
         else:
-            return LimitedHunterEditForm
+            return LimitedHumanEditForm
 
 
 class HunterListView(VisibilityFilterMixin, ListView):

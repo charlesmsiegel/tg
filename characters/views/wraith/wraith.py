@@ -1,8 +1,10 @@
 from typing import Any
 
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.wraith.wraith import Wraith
 from characters.views.core.human import HumanDetailView
 from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
+from core.permissions import Permission, PermissionManager
 from django.views.generic import CreateView, UpdateView
 
 
@@ -61,3 +63,17 @@ class WraithUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     template_name = "characters/wraith/wraith/form.html"
     success_message = "Wraith '{name}' updated successfully!"
     error_message = "Failed to update wraith. Please correct the errors below."
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm

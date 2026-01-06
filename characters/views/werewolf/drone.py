@@ -1,3 +1,4 @@
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.werewolf.drone import DroneCreationForm
 from characters.models.werewolf.drone import Drone
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -12,6 +13,7 @@ from characters.views.werewolf.wtahuman import (
     WtAHumanSpecialtiesView,
 )
 from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 
@@ -88,6 +90,20 @@ class DroneUpdateView(EditPermissionMixin, UpdateView):
         "willpower_per_turn",
     ]
     template_name = "characters/werewolf/drone/form.html"
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
 
 class DroneBasicsView(LoginRequiredMixin, FormView):

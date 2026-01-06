@@ -3,6 +3,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.familiar import FamiliarForm
@@ -50,6 +51,7 @@ from core.mixins import (
     ViewPermissionMixin,
 )
 from core.models import Language
+from core.permissions import Permission, PermissionManager
 from core.widgets import AutocompleteTextInput
 from django import forms
 from django.contrib import messages
@@ -671,6 +673,20 @@ class MageUpdateView(EditPermissionMixin, UpdateView):
     template_name = "characters/mage/mage/form.html"
     success_message = "Mage '{name}' updated successfully!"
     error_message = "Failed to update mage. Please correct the errors below."
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
 
 class MageBasicsView(LoginRequiredMixin, FormView):

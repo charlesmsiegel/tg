@@ -6,28 +6,16 @@ and prevent them from directly modifying mechanical fields (stats, attributes, a
 
 Owners must use the XP/freebie spending system to modify stats.
 Only Chronicle Head STs and Admins can directly edit mechanical fields.
+
+Usage:
+    - LimitedCharacterEditForm: For base Character instances
+    - LimitedHumanEditForm: For Human and ALL Human subclasses (Mage, Vampire, etc.)
+      Django ModelForms work with subclass instances, so LimitedHumanEditForm can be
+      used directly with any Human subclass (e.g., form = LimitedHumanEditForm(instance=mage))
 """
 
-from characters.models.changeling.changeling import Changeling
-from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from characters.models.demon.demon import Demon
-from characters.models.demon.dtf_human import DtFHuman
-from characters.models.demon.earthbound import Earthbound
-from characters.models.demon.thrall import Thrall
-from characters.models.hunter.htrhuman import HtRHuman
-from characters.models.hunter.hunter import Hunter
-from characters.models.mage.mage import Mage
-from characters.models.mage.mtahuman import MtAHuman
-from characters.models.mummy.mtr_human import MtRHuman
-from characters.models.mummy.mummy import Mummy
-from characters.models.vampire.vampire import Vampire
-from characters.models.vampire.vtmhuman import VtMHuman
-from characters.models.werewolf.garou import Werewolf as Garou
-from characters.models.werewolf.wtahuman import WtAHuman
-from characters.models.wraith.wraith import Wraith
-from characters.models.wraith.wtohuman import WtOHuman
 from django import forms
 
 
@@ -137,48 +125,3 @@ class LimitedHumanEditForm(forms.ModelForm):
         }
 
 
-def create_limited_edit_form(model_class):
-    """
-    Factory function to create a limited edit form for a specific character model.
-
-    Args:
-        model_class: The character model class (e.g., Mage, Vampire, Garou)
-
-    Returns:
-        A LimitedHumanEditForm subclass configured for the specified model
-
-    Example:
-        >>> LimitedMageEditForm = create_limited_edit_form(Mage)
-        >>> form = LimitedMageEditForm(instance=mage_instance)
-    """
-
-    class GeneratedLimitedEditForm(LimitedHumanEditForm):
-        class Meta(LimitedHumanEditForm.Meta):
-            model = model_class
-
-    # Set a meaningful name for the generated class
-    GeneratedLimitedEditForm.__name__ = f"Limited{model_class.__name__}EditForm"
-    GeneratedLimitedEditForm.__qualname__ = f"Limited{model_class.__name__}EditForm"
-
-    return GeneratedLimitedEditForm
-
-
-# Generate limited edit forms for all gameline-specific character types
-LimitedMageEditForm = create_limited_edit_form(Mage)
-LimitedMtAHumanEditForm = create_limited_edit_form(MtAHuman)
-LimitedVampireEditForm = create_limited_edit_form(Vampire)
-LimitedVtMHumanEditForm = create_limited_edit_form(VtMHuman)
-LimitedGarouEditForm = create_limited_edit_form(Garou)
-LimitedWtAHumanEditForm = create_limited_edit_form(WtAHuman)
-LimitedChangelingEditForm = create_limited_edit_form(Changeling)
-LimitedCtDHumanEditForm = create_limited_edit_form(CtDHuman)
-LimitedWraithEditForm = create_limited_edit_form(Wraith)
-LimitedWtOHumanEditForm = create_limited_edit_form(WtOHuman)
-LimitedDemonEditForm = create_limited_edit_form(Demon)
-LimitedDtFHumanEditForm = create_limited_edit_form(DtFHuman)
-LimitedThrallEditForm = create_limited_edit_form(Thrall)
-LimitedEarthboundEditForm = create_limited_edit_form(Earthbound)
-LimitedHunterEditForm = create_limited_edit_form(Hunter)
-LimitedHtRHumanEditForm = create_limited_edit_form(HtRHuman)
-LimitedMummyEditForm = create_limited_edit_form(Mummy)
-LimitedMtRHumanEditForm = create_limited_edit_form(MtRHuman)

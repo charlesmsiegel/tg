@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.limited_edit import LimitedMtRHumanEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.mummy.mtr_human import MtRHumanCreationForm
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.views.core.human import HumanDetailView
@@ -56,7 +56,7 @@ class MtRHumanUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         )
         if has_full_edit:
             return super().get_form_class()
-        return LimitedMtRHumanEditForm
+        return LimitedHumanEditForm
 
 
 class MtRHumanListView(VisibilityFilterMixin, ListView):

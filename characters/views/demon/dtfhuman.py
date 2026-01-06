@@ -1,4 +1,4 @@
-from characters.forms.core.limited_edit import LimitedDtFHumanEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import DtFHuman
 from core.mixins import (
     EditPermissionMixin,
@@ -177,7 +177,7 @@ class DtFHumanUpdateView(EditPermissionMixin, UpdateView):
             return super().get_form_class()
         else:
             # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedDtFHumanEditForm
+            return LimitedHumanEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

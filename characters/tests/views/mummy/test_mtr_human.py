@@ -2,7 +2,7 @@
 
 import unittest
 
-from characters.forms.core.limited_edit import LimitedMtRHumanEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.mummy.mtr_human import MtRHuman
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -92,7 +92,7 @@ class TestMtRHumanUpdateView(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         # Limited form should be used
-        self.assertIsInstance(response.context["form"], LimitedMtRHumanEditForm)
+        self.assertIsInstance(response.context["form"], LimitedHumanEditForm)
 
     def test_other_user_cannot_access(self):
         """Non-owner/non-ST should not be able to access update view."""

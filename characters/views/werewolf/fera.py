@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -37,6 +38,7 @@ from core.mixins import (
     ViewPermissionMixin,
     XPApprovalMixin,
 )
+from core.permissions import Permission, PermissionManager
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
@@ -121,6 +123,20 @@ class FeraUpdateView(EditPermissionMixin, UpdateView):
         "age_of_first_change",
     ]
     template_name = "characters/werewolf/fera/form.html"
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
 
 class FeraBasicsView(LoginRequiredMixin, FormView):

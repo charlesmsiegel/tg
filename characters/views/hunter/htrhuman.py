@@ -1,4 +1,4 @@
-from characters.forms.core.limited_edit import LimitedHtRHumanEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import HtRHuman
 from core.mixins import (
     EditPermissionMixin,
@@ -164,7 +164,7 @@ class HtRHumanUpdateView(EditPermissionMixin, UpdateView):
         if has_full_edit:
             return super().get_form_class()
         else:
-            return LimitedHtRHumanEditForm
+            return LimitedHumanEditForm
 
 
 class HtRHumanListView(VisibilityFilterMixin, ListView):

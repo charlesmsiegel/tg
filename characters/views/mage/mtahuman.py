@@ -1,6 +1,7 @@
 from typing import Any
 
 from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.mtahuman import MtAHumanCreationForm
@@ -37,6 +38,7 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.models import CharacterTemplate, Language
+from core.permissions import Permission, PermissionManager
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -286,6 +288,20 @@ class MtAHumanUpdateView(EditPermissionMixin, UpdateView):
         "vice",
     ]
     template_name = "characters/mage/mtahuman/form.html"
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
