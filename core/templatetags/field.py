@@ -6,11 +6,11 @@ register = template.Library()
 
 @register.filter(name="field")
 def field(form, field_name):
-    if form is None:
+    if form is None or not hasattr(form, "__getitem__"):
         return ""
     try:
         return form[field_name]
-    except KeyError:
+    except (KeyError, TypeError):
         return ""
 
 

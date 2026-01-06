@@ -1374,7 +1374,7 @@ class TestChronicleDetailViewPost(TestCase):
         """Test that non-storytellers cannot create stories."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.pk}",
+            f"/game/chronicle/{self.chronicle.pk}/",
             {"create_story": "true", "name": "New Story"},
         )
         self.assertEqual(response.status_code, 403)
@@ -1386,7 +1386,7 @@ class TestChronicleDetailViewPost(TestCase):
         self.client.login(username="stuser", password="password")
         initial_count = Story.objects.count()
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.pk}",
+            f"/game/chronicle/{self.chronicle.pk}/",
             {"create_story": "true", "name": "Epic Quest"},
         )
         self.assertEqual(response.status_code, 200)
@@ -1538,7 +1538,7 @@ class TestSceneDetailViewPost(TestCase):
         """Test that posting with invalid form shows error message."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/scene/{self.scene.pk}",
+            f"/game/scene/{self.scene.pk}/",
             {
                 "character": self.char.pk,
                 "display_name": "",
