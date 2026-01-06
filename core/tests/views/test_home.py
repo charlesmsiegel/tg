@@ -182,37 +182,12 @@ class TestModel(TestCase):
         self.assertTrue(self.model.set_name("Test"))
         self.assertTrue(self.model.has_name())
 
-    def test_has_description(self):
-        self.assertFalse(self.model.has_description())
-        self.model.set_description("Test")
-        self.assertTrue(self.model.has_description())
-
-    def test_set_description(self):
-        self.assertFalse(self.model.has_description())
-        self.assertTrue(self.model.set_description("Test"))
-        self.assertTrue(self.model.has_description())
-
-    def test_has_owner(self):
-        self.assertFalse(self.model.has_owner())
-        self.model.set_owner(self.user)
-        self.assertTrue(self.model.has_owner())
-
-    def test_set_owner(self):
-        self.assertFalse(self.model.has_owner())
-        self.assertTrue(self.model.set_owner(self.user))
-        self.assertTrue(self.model.has_owner())
-
     def test_update_status(self):
         self.assertEqual(self.model.status, "Un")
         self.assertEqual(self.model.get_status_display(), "Unapproved")
         self.assertTrue(self.model.update_status("App"))
         self.assertEqual(self.model.status, "App")
         self.assertEqual(self.model.get_status_display(), "Approved")
-
-    def test_toggle_display(self):
-        self.assertTrue(self.model.display)
-        self.assertTrue(self.model.toggle_display())
-        self.assertFalse(self.model.display)
 
     def test_has_source(self):
         self.assertFalse(self.model.has_source())

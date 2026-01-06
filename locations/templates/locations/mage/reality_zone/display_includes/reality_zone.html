@@ -1,5 +1,4 @@
 {% load dots %}
-{% load reverse %}
 {% if object %}
     <div class="row mb-4">
         <div class="col-12">
@@ -37,7 +36,6 @@
                             <div class="table-responsive">
                                 <table class="tg-table node-table mb-0">
                                     <tbody>
-                                        {% load reverse %}
                                         {% for pr in object.get_negative_practices %}
                                             <tr>
                                                 <td>

@@ -336,29 +336,11 @@ class Model(PermissionMixin, PolymorphicModel):
         self.name = name
         return True
 
-    def has_description(self):
-        return self.description != ""
-
-    def set_description(self, description):
-        self.description = description
-        return True
-
-    def has_owner(self):
-        return self.owner is not None
-
-    def set_owner(self, owner):
-        self.owner = owner
-        return True
-
     def owned_by_list(self):
         return []
 
     def update_status(self, status):
         self.status = status
-        return True
-
-    def toggle_display(self):
-        self.display = not self.display
         return True
 
     def has_source(self):
