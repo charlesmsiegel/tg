@@ -6,6 +6,8 @@ register = template.Library()
 
 @register.filter(name="field")
 def field(form, field_name):
+    if form is None:
+        return ""
     try:
         return form[field_name]
     except KeyError:

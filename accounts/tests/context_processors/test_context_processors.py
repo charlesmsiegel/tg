@@ -346,9 +346,14 @@ class TestNotificationCountContextProcessor(TestCase):
             "profile",
             property(lambda _: (_ for _ in ()).throw(Exception("Test error"))),
         ):
-            context = notification_count(request)
-            self.assertEqual(context["notification_count"], 0)
-            self.assertEqual(context["notification_breakdown"], {})
+            # Use assertLogs to capture and suppress the expected warning output
+            with self.assertLogs("accounts.context_processors", level="WARNING") as log:
+                context = notification_count(request)
+                self.assertEqual(context["notification_count"], 0)
+                self.assertEqual(context["notification_breakdown"], {})
+            # Verify the warning was logged
+            self.assertEqual(len(log.output), 1)
+            self.assertIn("Error calculating notification count", log.output[0])
 
 
 class TestThemeContextHighlightVariations(TestCase):

@@ -20,3 +20,7 @@ class Sphere(Statistic):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:mage:create:sphere")
+
+    def get_heading(self):
+        """Get the CSS heading class for Mage: The Ascension."""
+        return "mta_heading"
