@@ -1,6 +1,8 @@
 """Tests for permissions template tags."""
 
-from core.permissions import Permission, VisibilityTier
+from unittest.mock import Mock, patch
+
+from core.permissions import Permission, Role, VisibilityTier
 from core.templatetags.permissions import (
     is_full,
     is_game_st,
@@ -88,29 +90,31 @@ class UserCanViewTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_true_when_user_can_view(self):
-        """Test tag returns True when object allows viewing."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_view")
+    def test_returns_true_when_user_can_view(self, mock_perm):
+        """Test tag returns True when PermissionManager allows viewing."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_view = True
-
+        obj = Mock()
         result = user_can_view(context, obj)
         self.assertTrue(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_false_when_user_cannot_view(self):
-        """Test tag returns False when object denies viewing."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_view")
+    def test_returns_false_when_user_cannot_view(self, mock_perm):
+        """Test tag returns False when PermissionManager denies viewing."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_view = False
-
+        obj = Mock()
         result = user_can_view(context, obj)
         self.assertFalse(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class UserCanEditTagTest(TestCase):
@@ -122,29 +126,31 @@ class UserCanEditTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_true_when_user_can_edit(self):
-        """Test tag returns True when object allows editing."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_edit")
+    def test_returns_true_when_user_can_edit(self, mock_perm):
+        """Test tag returns True when PermissionManager allows editing."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_edit = True
-
+        obj = Mock()
         result = user_can_edit(context, obj)
         self.assertTrue(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_false_when_user_cannot_edit(self):
-        """Test tag returns False when object denies editing."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_edit")
+    def test_returns_false_when_user_cannot_edit(self, mock_perm):
+        """Test tag returns False when PermissionManager denies editing."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_edit = False
-
+        obj = Mock()
         result = user_can_edit(context, obj)
         self.assertFalse(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class UserCanSpendXPTagTest(TestCase):
@@ -156,29 +162,31 @@ class UserCanSpendXPTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_true_when_user_can_spend_xp(self):
-        """Test tag returns True when object allows XP spending."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_spend_xp")
+    def test_returns_true_when_user_can_spend_xp(self, mock_perm):
+        """Test tag returns True when PermissionManager allows XP spending."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_spend_xp = True
-
+        obj = Mock()
         result = user_can_spend_xp(context, obj)
         self.assertTrue(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_false_when_user_cannot_spend_xp(self):
-        """Test tag returns False when object denies XP spending."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_spend_xp")
+    def test_returns_false_when_user_cannot_spend_xp(self, mock_perm):
+        """Test tag returns False when PermissionManager denies XP spending."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_spend_xp = False
-
+        obj = Mock()
         result = user_can_spend_xp(context, obj)
         self.assertFalse(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class UserCanSpendFreebiesTagTest(TestCase):
@@ -190,29 +198,31 @@ class UserCanSpendFreebiesTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_true_when_user_can_spend_freebies(self):
-        """Test tag returns True when object allows freebie spending."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_spend_freebies")
+    def test_returns_true_when_user_can_spend_freebies(self, mock_perm):
+        """Test tag returns True when PermissionManager allows freebie spending."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_spend_freebies = True
-
+        obj = Mock()
         result = user_can_spend_freebies(context, obj)
         self.assertTrue(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_false_when_user_cannot_spend_freebies(self):
-        """Test tag returns False when object denies freebie spending."""
+    @patch("core.templatetags.permissions.PermissionManager.user_can_spend_freebies")
+    def test_returns_false_when_user_cannot_spend_freebies(self, mock_perm):
+        """Test tag returns False when PermissionManager denies freebie spending."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._can_spend_freebies = False
-
+        obj = Mock()
         result = user_can_spend_freebies(context, obj)
         self.assertFalse(result)
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class UserHasPermissionTagTest(TestCase):
@@ -284,41 +294,44 @@ class VisibilityTierTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_full_visibility_tier(self):
+    @patch("core.templatetags.permissions.PermissionManager.get_visibility_tier")
+    def test_returns_full_visibility_tier(self, mock_perm):
         """Test tag returns FULL visibility tier."""
+        mock_perm.return_value = VisibilityTier.FULL
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._visibility_tier = VisibilityTier.FULL
-
+        obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.FULL)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_partial_visibility_tier(self):
+    @patch("core.templatetags.permissions.PermissionManager.get_visibility_tier")
+    def test_returns_partial_visibility_tier(self, mock_perm):
         """Test tag returns PARTIAL visibility tier."""
+        mock_perm.return_value = VisibilityTier.PARTIAL
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._visibility_tier = VisibilityTier.PARTIAL
-
+        obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.PARTIAL)
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_none_visibility_tier(self):
+    @patch("core.templatetags.permissions.PermissionManager.get_visibility_tier")
+    def test_returns_none_visibility_tier(self, mock_perm):
         """Test tag returns NONE visibility tier."""
+        mock_perm.return_value = VisibilityTier.NONE
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._visibility_tier = VisibilityTier.NONE
-
+        obj = Mock()
         result = visibility_tier(context, obj)
         self.assertEqual(result, VisibilityTier.NONE)
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class UserRolesTagTest(TestCase):
@@ -330,31 +343,31 @@ class UserRolesTagTest(TestCase):
             username="testuser", email="test@example.com", password="password"
         )
 
-    def test_returns_user_roles(self):
+    @patch("core.templatetags.permissions.PermissionManager.get_user_roles")
+    def test_returns_user_roles(self, mock_perm):
         """Test tag returns set of user roles."""
-        from core.permissions import Role
-
+        mock_perm.return_value = {Role.OWNER, Role.AUTHENTICATED}
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._roles = {Role.OWNER, Role.AUTHENTICATED}
-
+        obj = Mock()
         result = user_roles(context, obj)
         self.assertEqual(result, {Role.OWNER, Role.AUTHENTICATED})
+        mock_perm.assert_called_once_with(self.user, obj)
 
-    def test_returns_empty_set_when_no_roles(self):
+    @patch("core.templatetags.permissions.PermissionManager.get_user_roles")
+    def test_returns_empty_set_when_no_roles(self, mock_perm):
         """Test tag returns empty set when user has no roles."""
+        mock_perm.return_value = set()
         request = self.factory.get("/")
         request.user = self.user
         context = {"request": request}
 
-        obj = MockObject()
-        obj._roles = set()
-
+        obj = Mock()
         result = user_roles(context, obj)
         self.assertEqual(result, set())
+        mock_perm.assert_called_once_with(self.user, obj)
 
 
 class IsFullFilterTest(TestCase):

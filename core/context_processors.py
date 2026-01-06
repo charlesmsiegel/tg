@@ -1,4 +1,4 @@
-from core.permissions import Permission, Role, VisibilityTier
+from core.permissions import Permission, PermissionManager, Role, VisibilityTier
 from game.models import Chronicle
 
 
@@ -32,10 +32,6 @@ def permissions(request):
         "VisibilityTier": VisibilityTier,
         "Permission": Permission,
         "Role": Role,
-        "user_can_view": lambda obj: (
-            obj.user_can_view(request.user) if hasattr(obj, "user_can_view") else False
-        ),
-        "user_can_edit": lambda obj: (
-            obj.user_can_edit(request.user) if hasattr(obj, "user_can_edit") else False
-        ),
+        "user_can_view": lambda obj: PermissionManager.user_can_view(request.user, obj),
+        "user_can_edit": lambda obj: PermissionManager.user_can_edit(request.user, obj),
     }

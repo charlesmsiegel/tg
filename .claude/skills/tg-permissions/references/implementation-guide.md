@@ -113,7 +113,7 @@ class PermissionManager:
 ```python
 # BAD - N+1 queries
 for character in Character.objects.all():
-    if character.user_can_view(request.user):  # Queries each time
+    if PermissionManager.user_can_view(request.user, character):  # Queries each time
         print(character.name)
 
 # GOOD - Prefetch related data
@@ -235,7 +235,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def visibility_tier(context, obj):
     user = context['request'].user
-    return obj.get_visibility_tier(user)
+    return PermissionManager.get_visibility_tier(user, obj)
 
 @register.filter
 def is_full(tier):
