@@ -178,8 +178,19 @@ CHAINED_SELECT_JS = """
                 const option = document.createElement('option');
                 option.value = choice.value;
                 option.textContent = choice.label;
+                // Add metadata as data attributes if present
+                if (choice.metadata) {
+                    for (const key in choice.metadata) {
+                        option.dataset[key] = choice.metadata[key];
+                    }
+                }
                 select.appendChild(option);
             });
+
+            // Fire metadata:change event if OptionMetadata is available
+            if (window.OptionMetadata && select.value) {
+                window.OptionMetadata.fireMetadataChange(select);
+            }
         }
 
         setValue(chainName, fieldName, value) {

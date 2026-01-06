@@ -122,7 +122,7 @@ class ChainedHumanFreebiesForm(ChainedSelectMixin, forms.Form):
         self.fields["example"].choices_map = example_map
 
     def _get_background_choices(self):
-        """Get combined new and existing background choices."""
+        """Get combined new and existing background choices with metadata."""
         options = []
 
         # New backgrounds - prefixed with "bg_"
@@ -131,6 +131,7 @@ class ChainedHumanFreebiesForm(ChainedSelectMixin, forms.Form):
         ).order_by("name")
         for bg in new_backgrounds:
             poolable = bg.poolable if hasattr(bg, "poolable") else False
+            # Use 3-tuple format: (value, label, metadata_dict)
             options.append((f"bg_{bg.pk}", f"{bg.name} (new)", {"poolable": str(poolable).lower()}))
 
         # Existing backgrounds - prefixed with "br_"
@@ -138,8 +139,7 @@ class ChainedHumanFreebiesForm(ChainedSelectMixin, forms.Form):
         for br in existing_backgrounds:
             options.append((f"br_{br.pk}", str(br), {"poolable": "false"}))
 
-        # Convert to (value, label) tuples for choices_map
-        return [(o[0], o[1]) for o in options]
+        return options
 
     def _get_meritflaw_choices(self):
         """Get affordable merit/flaw choices for this character type."""
