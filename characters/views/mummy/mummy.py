@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.limited_edit import LimitedMummyEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.mummy.mummy import MummyCreationForm
 from characters.models.mummy.mummy import Mummy
 from characters.views.core.human import HumanDetailView
@@ -89,7 +89,7 @@ class MummyUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         )
         if has_full_edit:
             return super().get_form_class()
-        return LimitedMummyEditForm
+        return LimitedHumanEditForm
 
 
 class MummyListView(VisibilityFilterMixin, ListView):

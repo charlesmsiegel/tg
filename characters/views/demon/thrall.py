@@ -1,4 +1,4 @@
-from characters.forms.core.limited_edit import LimitedThrallEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Thrall
 from core.mixins import (
     EditPermissionMixin,
@@ -188,7 +188,7 @@ class ThrallUpdateView(EditPermissionMixin, UpdateView):
             return super().get_form_class()
         else:
             # Owners get limited fields (notes, description, public_info, image, history, goals)
-            return LimitedThrallEditForm
+            return LimitedHumanEditForm
 
 
 class ThrallListView(VisibilityFilterMixin, ListView):

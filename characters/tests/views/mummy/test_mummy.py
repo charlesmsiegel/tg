@@ -2,7 +2,7 @@
 
 import unittest
 
-from characters.forms.core.limited_edit import LimitedMummyEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mummy import Mummy
 from django.contrib.auth.models import User
@@ -130,7 +130,7 @@ class TestMummyUpdateView(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         # Limited form should be used
-        self.assertIsInstance(response.context["form"], LimitedMummyEditForm)
+        self.assertIsInstance(response.context["form"], LimitedHumanEditForm)
 
     def test_other_user_cannot_access(self):
         """Non-owner/non-ST should not be able to access update view."""

@@ -1,3 +1,4 @@
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.freebies import CompanionFreebiesForm
@@ -33,6 +34,7 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.models import Language
+from core.permissions import Permission, PermissionManager
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -73,6 +75,20 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
     template_name = "characters/mage/companion/form.html"
     success_message = "Companion updated successfully."
     error_message = "There was an error updating the Companion."
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
 
 class LoadExamplesView(LoginRequiredMixin, View):

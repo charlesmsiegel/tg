@@ -1,3 +1,4 @@
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
 from characters.models.core.merit_flaw_block import MeritFlawRating
@@ -26,6 +27,7 @@ from core.mixins import (
     ViewPermissionMixin,
     XPApprovalMixin,
 )
+from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 from game.models import ObjectType
@@ -209,6 +211,20 @@ class KinfolkUpdateView(EditPermissionMixin, UpdateView):
         "temporary_honor",
     ]
     template_name = "characters/werewolf/kinfolk/form.html"
+
+    def get_form_class(self):
+        """
+        Return different form based on user permissions.
+        Owners get limited fields via LimitedHumanEditForm.
+        STs and admins get full access via the default form.
+        """
+        has_full_edit = PermissionManager.user_has_permission(
+            self.request.user, self.get_object(), Permission.EDIT_FULL
+        )
+        if has_full_edit:
+            return super().get_form_class()
+        else:
+            return LimitedHumanEditForm
 
 
 class KinfolkBasicsView(LoginRequiredMixin, FormView):

@@ -2,7 +2,7 @@
 
 import unittest
 
-from characters.forms.core.limited_edit import LimitedHunterEditForm
+from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import Hunter
 from characters.models.hunter.creed import Creed
 from django.contrib.auth.models import User
@@ -120,7 +120,7 @@ class TestHunterUpdateView(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         # Limited form should be used
-        self.assertIsInstance(response.context["form"], LimitedHunterEditForm)
+        self.assertIsInstance(response.context["form"], LimitedHumanEditForm)
 
     def test_other_user_cannot_access(self):
         """Non-owner/non-ST should not be able to access update view."""
