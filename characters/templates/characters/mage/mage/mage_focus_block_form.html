@@ -29,23 +29,7 @@
 <div class="row">
     <h3 class="col-sm {{ object.get_heading }}">Practices</h3>
 </div>
-<!-- Container for the dynamic formset -->
-<div id="practicerating_set_formset" {% formset_container "practicerating_set" empty_form_id="empty_practicerating_set_form" %}>
-    <!-- This is the management form for the formset -->
-    {{ practice_formset.management_form }}
-    {% for f in practice_formset %}
-        <div class="row form-row" {% formset_form_wrapper %}>
-            <div class="col-sm">{{ f.practice }}</div>
-            <div class="col-sm">{{ f.rating }}</div>
-        </div>
-    {% endfor %}
-</div>
-<!-- Hidden template for new forms -->
-<div id="empty_practicerating_set_form" class="d-none">
-    <div class="row form-row" {% formset_form_wrapper %}>
-        <div class="col-sm">{{ practice_formset.empty_form.practice }}</div>
-        <div class="col-sm">{{ practice_formset.empty_form.rating }}</div>
-    </div>
-</div>
-{% formset_add_btn "practicerating_set" "Add Practice" %}
-{% formset_script %}
+{% formset practice_formset prefix="practicerating_set" add_label="Add Practice" wrapper_class="row form-row" show_remove=False %}
+    <div class="col-sm">{{ subform.practice }}</div>
+    <div class="col-sm">{{ subform.rating }}</div>
+{% endformset %}

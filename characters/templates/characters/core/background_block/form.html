@@ -7,32 +7,15 @@
         Distribute {{ object.background_points }} background dots. Keep in mind that Enhancements, Sanctum, and Totem cost 2 points per dot. Pooled backgrounds must have the exact same note field to be pooled properly, and should only be used for shared backgrounds across a group.
     </div>
 </div>
-<div id="backgrounds_formset" {% formset_container "backgrounds" empty_form_id="bg_form_empty_form" %}>
-    {{ form.management_form }}
-    {% for f in form %}
-        <div class="row form-row" {% formset_form_wrapper %}>
-            <div class="col-sm">{{ f.bg }}</div>
-            <div class="col-sm">{{ f.rating }}</div>
-            <div class="col-sm">{{ f.note }}</div>
-            <div class="col-sm">Alternate Name? {{ f.display_alt_name }}</div>
-            {% if object.is_group_member %}<div class="col-sm">Pooled? {{ f.pooled }}</div>{% endif %}
-        </div>
-    {% endfor %}
-</div>
-<!-- Hidden empty form to clone -->
-<div id="bg_form_empty_form" class="d-none">
-    <div class="row form-row" {% formset_form_wrapper %}>
-        <div class="col-sm">{{ empty_form.bg }}</div>
-        <div class="col-sm">{{ empty_form.rating }}</div>
-        <div class="col-sm">{{ empty_form.note }}</div>
-        <div class="col-sm">Alternate Name? {{ empty_form.display_alt_name }}</div>
-        {% if object.is_group_member %}<div class="col-sm">Pooled? {{ empty_form.pooled }}</div>{% endif %}
-    </div>
-</div>
+{% formset form prefix="backgrounds" add_label="Add Background" wrapper_class="row form-row" %}
+    <div class="col-sm">{{ subform.bg }}</div>
+    <div class="col-sm">{{ subform.rating }}</div>
+    <div class="col-sm">{{ subform.note }}</div>
+    <div class="col-sm">Alternate Name? {{ subform.display_alt_name }}</div>
+    {% if object.is_group_member %}<div class="col-sm">Pooled? {{ subform.pooled }}</div>{% endif %}
+{% endformset %}
 {% for f in form %}
     {% if f.non_field_errors and forloop.first %}
         {% for error in f.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
     {% endif %}
 {% endfor %}
-{% formset_add_btn "backgrounds" "Add Background" %}
-{% formset_script %}
