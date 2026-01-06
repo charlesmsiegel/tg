@@ -135,27 +135,27 @@ class CharacterTemplateListViewTest(TestCase):
 
     def test_requires_login(self):
         """Test that view requires authentication."""
-        response = self.client.get(reverse("character_template_list"))
+        response = self.client.get(reverse("core:character_template_list"))
         # Should redirect to login or return 401/403 for unauthenticated users
         self.assertIn(response.status_code, [302, 401, 403])
 
     def test_requires_st(self):
         """Test that view requires ST status."""
         self.client.login(username="regular", password="testpass123")
-        response = self.client.get(reverse("character_template_list"))
+        response = self.client.get(reverse("core:character_template_list"))
         self.assertEqual(response.status_code, 302)
 
     def test_st_can_access(self):
         """Test that ST can access the list view."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list"))
+        response = self.client.get(reverse("core:character_template_list"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "core/character_template/list.html")
 
     def test_filter_by_gameline(self):
         """Test filtering templates by gameline."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list") + "?gameline=mta")
+        response = self.client.get(reverse("core:character_template_list") + "?gameline=mta")
         self.assertEqual(response.status_code, 200)
         templates = response.context["templates"]
         self.assertEqual(len(templates), 1)
@@ -164,7 +164,9 @@ class CharacterTemplateListViewTest(TestCase):
     def test_filter_by_character_type(self):
         """Test filtering templates by character type."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list") + "?character_type=vampire")
+        response = self.client.get(
+            reverse("core:character_template_list") + "?character_type=vampire"
+        )
         self.assertEqual(response.status_code, 200)
         templates = response.context["templates"]
         self.assertEqual(len(templates), 1)
@@ -173,7 +175,7 @@ class CharacterTemplateListViewTest(TestCase):
     def test_filter_by_mine(self):
         """Test filtering templates by ownership (mine)."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list") + "?filter=mine")
+        response = self.client.get(reverse("core:character_template_list") + "?filter=mine")
         self.assertEqual(response.status_code, 200)
         templates = response.context["templates"]
         # Both templates belong to st_user
@@ -182,7 +184,7 @@ class CharacterTemplateListViewTest(TestCase):
     def test_filter_by_official(self):
         """Test filtering templates by official status."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list") + "?filter=official")
+        response = self.client.get(reverse("core:character_template_list") + "?filter=official")
         self.assertEqual(response.status_code, 200)
         templates = response.context["templates"]
         self.assertEqual(len(templates), 1)
@@ -191,7 +193,7 @@ class CharacterTemplateListViewTest(TestCase):
     def test_filter_by_community(self):
         """Test filtering templates by community (non-official, public)."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_list") + "?filter=community")
+        response = self.client.get(reverse("core:character_template_list") + "?filter=community")
         self.assertEqual(response.status_code, 200)
         templates = response.context["templates"]
         self.assertEqual(len(templates), 1)
@@ -202,7 +204,8 @@ class CharacterTemplateListViewTest(TestCase):
         """Test that context includes filter parameters."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_list") + "?filter=mine&gameline=mta&character_type=mage"
+            reverse("core:character_template_list")
+            + "?filter=mine&gameline=mta&character_type=mage"
         )
         self.assertEqual(response.context["filter"], "mine")
         self.assertEqual(response.context["gameline"], "mta")
@@ -234,7 +237,7 @@ class CharacterTemplateDetailViewTest(TestCase):
     def test_requires_login(self):
         """Test that view requires authentication."""
         response = self.client.get(
-            reverse("character_template_detail", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_detail", kwargs={"pk": self.template.pk})
         )
         # Should redirect to login or return 401/403 for unauthenticated users
         self.assertIn(response.status_code, [302, 401, 403])
@@ -243,7 +246,7 @@ class CharacterTemplateDetailViewTest(TestCase):
         """Test that ST can view template details."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_detail", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_detail", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["template"], self.template)
@@ -265,21 +268,21 @@ class CharacterTemplateCreateViewTest(TestCase):
 
     def test_requires_login(self):
         """Test that view requires authentication."""
-        response = self.client.get(reverse("character_template_create"))
+        response = self.client.get(reverse("core:character_template_create"))
         # Should redirect to login or return 401/403 for unauthenticated users
         self.assertIn(response.status_code, [302, 401, 403])
 
     def test_st_can_access_create_form(self):
         """Test that ST can access the create form."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_create"))
+        response = self.client.get(reverse("core:character_template_create"))
         self.assertEqual(response.status_code, 200)
 
     def test_create_template_sets_owner(self):
         """Test that creating a template sets the owner to current user."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.post(
-            reverse("character_template_create"),
+            reverse("core:character_template_create"),
             data={
                 "name": "New Template",
                 "gameline": "mta",
@@ -340,7 +343,7 @@ class CharacterTemplateUpdateViewTest(TestCase):
         """Test that owner can update their template."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_update", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_update", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -348,7 +351,7 @@ class CharacterTemplateUpdateViewTest(TestCase):
         """Test that non-owner ST cannot update template."""
         self.client.login(username="other_st", password="testpass123")
         response = self.client.get(
-            reverse("character_template_update", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_update", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 404)
 
@@ -356,7 +359,7 @@ class CharacterTemplateUpdateViewTest(TestCase):
         """Test that superuser can update any template."""
         self.client.login(username="admin", password="testpass123")
         response = self.client.get(
-            reverse("character_template_update", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_update", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 200)
 
@@ -402,7 +405,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         """Test that owner can delete their non-official template."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.post(
-            reverse("character_template_delete", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_delete", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 302)
         self.assertFalse(CharacterTemplate.objects.filter(pk=self.template.pk).exists())
@@ -411,7 +414,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         """Test that owner cannot delete official template."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_delete", kwargs={"pk": self.official_template.pk})
+            reverse("core:character_template_delete", kwargs={"pk": self.official_template.pk})
         )
         self.assertEqual(response.status_code, 404)
 
@@ -419,7 +422,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         """Test that non-owner cannot delete template."""
         self.client.login(username="other_st", password="testpass123")
         response = self.client.get(
-            reverse("character_template_delete", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_delete", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 404)
 
@@ -427,7 +430,7 @@ class CharacterTemplateDeleteViewTest(TestCase):
         """Test that superuser can delete any template."""
         self.client.login(username="admin", password="testpass123")
         response = self.client.post(
-            reverse("character_template_delete", kwargs={"pk": self.official_template.pk})
+            reverse("core:character_template_delete", kwargs={"pk": self.official_template.pk})
         )
         self.assertEqual(response.status_code, 302)
         self.assertFalse(CharacterTemplate.objects.filter(pk=self.official_template.pk).exists())
@@ -462,7 +465,7 @@ class CharacterTemplateExportViewTest(TestCase):
         """Test that export returns JSON content."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_export", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_export", kwargs={"pk": self.template.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
@@ -471,7 +474,7 @@ class CharacterTemplateExportViewTest(TestCase):
         """Test that export includes all template data."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_export", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_export", kwargs={"pk": self.template.pk})
         )
         data = json.loads(response.content)
         self.assertEqual(data["name"], "Test Template")
@@ -485,7 +488,7 @@ class CharacterTemplateExportViewTest(TestCase):
         """Test that export sets Content-Disposition header."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_export", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_export", kwargs={"pk": self.template.pk})
         )
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertIn(".json", response["Content-Disposition"])
@@ -508,7 +511,7 @@ class CharacterTemplateImportViewTest(TestCase):
     def test_import_form_displayed(self):
         """Test that import form is displayed."""
         self.client.login(username="st_user", password="testpass123")
-        response = self.client.get(reverse("character_template_import"))
+        response = self.client.get(reverse("core:character_template_import"))
         self.assertEqual(response.status_code, 200)
 
     def test_import_valid_json(self):
@@ -527,7 +530,7 @@ class CharacterTemplateImportViewTest(TestCase):
             content_type="application/json",
         )
         response = self.client.post(
-            reverse("character_template_import"),
+            reverse("core:character_template_import"),
             data={
                 "json_file": json_file,
                 "is_public": True,
@@ -552,7 +555,7 @@ class CharacterTemplateImportViewTest(TestCase):
             content_type="application/json",
         )
         response = self.client.post(
-            reverse("character_template_import"),
+            reverse("core:character_template_import"),
             data={
                 "json_file": json_file,
                 "is_public": True,
@@ -571,7 +574,7 @@ class CharacterTemplateImportViewTest(TestCase):
             content_type="application/json",
         )
         response = self.client.post(
-            reverse("character_template_import"),
+            reverse("core:character_template_import"),
             data={
                 "json_file": json_file,
                 "is_public": True,
@@ -616,7 +619,7 @@ class CharacterTemplateQuickNPCViewTest(TestCase):
         """Test that GET request is not allowed."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.get(
-            reverse("character_template_create_npc", kwargs={"pk": self.template.pk})
+            reverse("core:character_template_create_npc", kwargs={"pk": self.template.pk})
         )
         # Should get 405 Method Not Allowed
         self.assertEqual(response.status_code, 405)
@@ -625,7 +628,9 @@ class CharacterTemplateQuickNPCViewTest(TestCase):
         """Test that unsupported character types show error message."""
         self.client.login(username="st_user", password="testpass123")
         response = self.client.post(
-            reverse("character_template_create_npc", kwargs={"pk": self.unsupported_template.pk})
+            reverse(
+                "core:character_template_create_npc", kwargs={"pk": self.unsupported_template.pk}
+            )
         )
         # Should redirect to template detail with error
         self.assertEqual(response.status_code, 302)

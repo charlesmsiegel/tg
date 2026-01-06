@@ -195,7 +195,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> {% if object %}Update Template{% else %}Create Template{% endif %}
                 </button>
-                <a href="{% if object %}{% url 'character_template_detail' object.pk %}{% else %}{% url 'character_template_list' %}{% endif %}" class="btn btn-secondary">
+                <a href="{% if object %}{% url 'core:character_template_detail' object.pk %}{% else %}{% url 'core:character_template_list' %}{% endif %}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel
                 </a>
             </div>

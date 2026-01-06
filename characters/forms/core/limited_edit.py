@@ -123,5 +123,3 @@ class LimitedHumanEditForm(forms.ModelForm):
             "goals": "What your character wants to achieve",
             "image": "Character portrait (will require ST approval)",
         }
-
-

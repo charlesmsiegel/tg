@@ -88,7 +88,7 @@ class DictViewTest(TestCase):
             model_class = Character
             view_mapping = {}
             key_property = "status"
-            default_redirect = "home"
+            default_redirect = "core:home"
 
         view = TestDictView()
         request = self.factory.get("/")
@@ -146,7 +146,7 @@ class DictViewTest(TestCase):
             model_class = Character
             view_mapping = {"App": MappedView}
             key_property = "status"
-            default_redirect = "home"
+            default_redirect = "core:home"
 
         view = TestDictView()
         request = self.factory.get("/")
@@ -163,7 +163,7 @@ class DictViewTest(TestCase):
             model_class = Character
             view_mapping = {}  # No mappings
             key_property = "status"
-            default_redirect = "home"
+            default_redirect = "core:home"
 
         view = TestDictView()
         request = self.factory.get("/")
@@ -185,7 +185,7 @@ class DictViewTest(TestCase):
             model_class = Character
             view_mapping = {"App": MappedView}
             key_property = "status"
-            default_redirect = "home"
+            default_redirect = "core:home"
 
         request = self.factory.get("/")
         request.user = self.user
@@ -208,7 +208,7 @@ class DictViewTest(TestCase):
             model_class = Character
             view_mapping = {"App": MappedView}
             key_property = "status"
-            default_redirect = "home"
+            default_redirect = "core:home"
 
         request = self.factory.post("/")
         request.user = self.user

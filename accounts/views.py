@@ -25,7 +25,7 @@ class SignUp(MessageMixin, CreateView):
     """View for the Sign Up Page"""
 
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("core:home")
     template_name = "accounts/signup.html"
     success_message = "Account created successfully! Welcome to Tellurium Games."
     error_message = "Failed to create account. Please correct the errors below."
@@ -38,18 +38,20 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = "accounts/detail.html"
 
     # POST actions that require storyteller privileges
-    ST_ONLY_ACTIONS = frozenset([
-        "submit_scene",
-        "submit_freebies",
-        "approve_character",
-        "approve_location",
-        "approve_item",
-        "approve_rote",
-        "approve_character_image",
-        "approve_location_image",
-        "approve_item_image",
-        "submit_weekly_approval",
-    ])
+    ST_ONLY_ACTIONS = frozenset(
+        [
+            "submit_scene",
+            "submit_freebies",
+            "approve_character",
+            "approve_location",
+            "approve_item",
+            "approve_rote",
+            "approve_character_image",
+            "approve_location_image",
+            "approve_item_image",
+            "submit_weekly_approval",
+        ]
+    )
 
     def get_context_data(self, **kwargs):
         """Build context for the profile detail page.
@@ -151,9 +153,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=char_pk)
         xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
-        form = WeeklyXPRequestForm(
-            request.POST, week=week, character=char, instance=xp_request
-        )
+        form = WeeklyXPRequestForm(request.POST, week=week, character=char, instance=xp_request)
         if form.is_valid():
             form.st_save()
             messages.success(request, f"Weekly XP request approved for '{char.name}'!")
@@ -213,11 +213,11 @@ class ProfileView(LoginRequiredMixin, DetailView):
         if scene_id := request.POST.get("mark_scene_read"):
             self._handle_mark_scene_read(request, scene_id)
         elif "Edit Preferences" in request.POST.keys():
-            return redirect("profile_update", pk=self.object.pk)
+            return redirect("accounts:profile_update", pk=self.object.pk)
 
         if form_errors:
             return self.render_to_response(context)
-        return redirect(reverse("profile", kwargs={"pk": context["object"].pk}))
+        return redirect(reverse("accounts:profile", kwargs={"pk": context["object"].pk}))
 
 
 class ProfileUpdateView(MessageMixin, LoginRequiredMixin, UpdateView):

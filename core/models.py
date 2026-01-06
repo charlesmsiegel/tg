@@ -108,7 +108,7 @@ class Book(models.Model):
         verbose_name_plural = "Books"
 
     def get_absolute_url(self):
-        return reverse("book", kwargs={"pk": self.pk})
+        return reverse("core:book", kwargs={"pk": self.pk})
 
     def __str__(self):
         return self.name
@@ -489,14 +489,14 @@ class NewsItem(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("newsitem", kwargs={"pk": self.pk})
+        return reverse("core:newsitem", kwargs={"pk": self.pk})
 
     def get_update_url(self):
-        return reverse("update_newsitem", kwargs={"pk": self.pk})
+        return reverse("core:update_newsitem", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
-        return reverse("create_newsitem")
+        return reverse("core:create_newsitem")
 
     def clean(self):
         """Validate news item data before saving."""
@@ -531,14 +531,14 @@ class Language(models.Model):
         verbose_name_plural = "Languages"
 
     def get_absolute_url(self):
-        return reverse("language", kwargs={"pk": self.pk})
+        return reverse("core:language", kwargs={"pk": self.pk})
 
     def get_update_url(self):
-        return reverse("update_language", kwargs={"pk": self.pk})
+        return reverse("core:update_language", kwargs={"pk": self.pk})
 
     @classmethod
     def get_creation_url(cls):
-        return reverse("create_language")
+        return reverse("core:create_language")
 
     def __str__(self):
         return f"{self.name}"

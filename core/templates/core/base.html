@@ -166,7 +166,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'home' %}">
+                <a class="navbar-brand" href="{% url 'core:home' %}">
                     <i class="fas fa-dice-d20"></i> Tellurium Games
                 </a>
                 <button class="navbar-toggler"
@@ -229,7 +229,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'houserules' %}">
+                            <a class="nav-link" href="{% url 'core:houserules' %}">
                                 <i class="fas fa-gavel"></i> House Rules
                             </a>
                         </li>
@@ -305,7 +305,7 @@
                                     <a class="dropdown-item" href="{% url 'login' %}">
                                         <i class="fas fa-sign-in-alt"></i> Log In
                                     </a>
-                                    <a class="dropdown-item" href="{% url 'signup' %}">
+                                    <a class="dropdown-item" href="{% url 'accounts:signup' %}">
                                         <i class="fas fa-user-plus"></i> Sign Up
                                     </a>
                                 {% endif %}

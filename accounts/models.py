@@ -294,7 +294,7 @@ class Profile(models.Model):
         return self.user.username
 
     def get_absolute_url(self):
-        return reverse("profile", kwargs={"pk": self.pk})
+        return reverse("accounts:profile", kwargs={"pk": self.pk})
 
     def get_updated_journals(self):
         """Get journals with entries awaiting ST response.

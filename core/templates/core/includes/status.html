@@ -8,7 +8,7 @@
             {% if object.owner %}
                 <div class="mb-0">
                     <span style="font-weight: 600; font-size: 0.875rem; color: var(--theme-text-secondary);">Owner:</span>
-                    <a href="{% url 'profile' object.owner.id %}">{{ object.owner.username }}</a>
+                    <a href="{% url 'accounts:profile' object.owner.id %}">{{ object.owner.username }}</a>
                 </div>
             {% endif %}
             {% if object.owned_by_list %}

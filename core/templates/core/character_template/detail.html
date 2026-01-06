@@ -12,21 +12,21 @@
     <div class="tg-card-body" style="padding: 24px;">
         <!-- Action buttons -->
         <div class="mb-4" style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <a href="{% url 'character_template_list' %}" class="btn btn-outline-secondary">
+            <a href="{% url 'core:character_template_list' %}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Back to List
             </a>
             {% if template.owner == user or user.is_superuser %}
-                <a href="{% url 'character_template_update' template.pk %}" class="btn btn-primary">
+                <a href="{% url 'core:character_template_update' template.pk %}" class="btn btn-primary">
                     <i class="fas fa-edit"></i> Edit Template
                 </a>
-                <a href="{% url 'character_template_delete' template.pk %}" class="btn btn-danger">
+                <a href="{% url 'core:character_template_delete' template.pk %}" class="btn btn-danger">
                     <i class="fas fa-trash"></i> Delete
                 </a>
             {% endif %}
-            <a href="{% url 'character_template_export' template.pk %}" class="btn btn-success">
+            <a href="{% url 'core:character_template_export' template.pk %}" class="btn btn-success">
                 <i class="fas fa-file-download"></i> Export JSON
             </a>
-            <form method="post" action="{% url 'character_template_create_npc' template.pk %}" style="display: inline;">
+            <form method="post" action="{% url 'core:character_template_create_npc' template.pk %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-info" onclick="return confirm('Create a quick NPC from this template?');">
                     <i class="fas fa-user-plus"></i> Quick NPC

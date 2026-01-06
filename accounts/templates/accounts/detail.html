@@ -17,7 +17,7 @@
                 <h1 class="tg-card-title {{ object.preferred_heading }}">{{ object.user.username }}</h1>
                 {% if user == object.user %}
                     <div class="tg-card-actions">
-                        <a href="{% url 'profile_update' object.pk %}" class="tg-btn btn-primary btn-sm">
+                        <a href="{% url 'accounts:profile_update' object.pk %}" class="tg-btn btn-primary btn-sm">
                             <i class="fas fa-edit"></i> Edit Profile
                         </a>
                     </div>

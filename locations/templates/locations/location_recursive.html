@@ -21,7 +21,7 @@
         </div>
         <div class="ml-3">
             {% if location.owner %}
-                <a href="{% url 'profile' location.owner.id %}" class="text-muted">{{ location.owner.username }}</a>
+                <a href="{% url 'accounts:profile' location.owner.id %}" class="text-muted">{{ location.owner.username }}</a>
             {% endif %}
         </div>
         <div class="ml-3">

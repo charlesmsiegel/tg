@@ -117,7 +117,7 @@ class TestPermissionDenied(TestCase):
         # Try to access a view that requires ST privileges
         # (user is not an ST, so should get 403)
         # Using a known endpoint that checks for ST status
-        response = client.post(reverse("user"))
+        response = client.post(reverse("accounts:user"))
 
         # The response might vary depending on the view implementation
         # but PermissionDenied should result in 403
