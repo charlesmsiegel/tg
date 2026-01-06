@@ -538,33 +538,6 @@
                                     <i class="fas fa-plus-circle mr-2"></i>Create Character
                                 </button>
                             </form>
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    const gamelineSelect = document.getElementById('id_gameline');
-                                    const charTypeSelect = document.getElementById('id_char_type');
-                                    const typesByGameline = JSON.parse(charTypeSelect.dataset.typesByGameline || '{}');
-
-                                    function updateCharTypes() {
-                                        const selectedGameline = gamelineSelect.value;
-                                        const types = typesByGameline[selectedGameline] || [];
-
-                                        // Clear existing options
-                                        charTypeSelect.innerHTML = '';
-
-                                        // Add new options
-                                        types.forEach(function(type) {
-                                            const option = document.createElement('option');
-                                            option.value = type.value;
-                                            option.textContent = type.label;
-                                            charTypeSelect.appendChild(option);
-                                        });
-                                    }
-
-                                    gamelineSelect.addEventListener('change', updateCharTypes);
-                                    // Initialize on page load
-                                    updateCharTypes();
-                                });
-                            </script>
                         </div>
                     </div>
                 </div>

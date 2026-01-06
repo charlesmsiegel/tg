@@ -1,7 +1,7 @@
 from typing import Any
 
+from characters.forms.changeling.chained_freebies import ChainedChangelingFreebiesForm
 from characters.forms.changeling.changeling import ChangelingCreationForm
-from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -9,14 +9,12 @@ from characters.models.changeling.changeling import Changeling
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.core.specialty import Specialty
-from characters.models.core.statistic import Statistic
 from characters.views.changeling.ctdhuman import CtDHumanAbilityView
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
 )
 from characters.views.mage.mtahuman import MtAHumanAbilityView
@@ -515,64 +513,8 @@ class ChangelingFreebiesView(HumanFreebiesView):
     """
 
     model = Changeling
-    form_class = HumanFreebiesForm
+    form_class = ChainedChangelingFreebiesForm
     template_name = "characters/changeling/changeling/chargen.html"
-
-
-class ChangelingFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Changeling
-
-    def category_method_map(self):
-        base_map = super().category_method_map()
-        base_map.update(
-            {
-                "Art": self.art_options,
-                "Realm": self.realm_options,
-                "Glamour": self.glamour_options,
-            }
-        )
-        return base_map
-
-    def art_options(self):
-        """Return all arts that are below 5 dots"""
-        arts = [
-            "autumn",
-            "chicanery",
-            "chronos",
-            "contract",
-            "dragons_ire",
-            "legerdemain",
-            "metamorphosis",
-            "naming",
-            "oneiromancy",
-            "primal",
-            "pyretics",
-            "skycraft",
-            "soothsay",
-            "sovereign",
-            "spring",
-            "summer",
-            "wayfare",
-            "winter",
-        ]
-        return [
-            Statistic.objects.get(property_name=art)
-            for art in arts
-            if getattr(self.character, art, 0) < 5
-        ]
-
-    def realm_options(self):
-        """Return all realms that are below 5 dots"""
-        realms = ["actor", "fae", "nature_realm", "prop", "scene", "time"]
-        return [
-            Statistic.objects.get(property_name=realm)
-            for realm in realms
-            if getattr(self.character, realm, 0) < 5
-        ]
-
-    def glamour_options(self):
-        """Glamour doesn't use options"""
-        return []
 
 
 class ChangelingLanguagesView(EditPermissionMixin, FormView):

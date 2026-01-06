@@ -1,5 +1,6 @@
 from typing import Any
 
+from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
@@ -15,7 +16,6 @@ from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
@@ -302,12 +302,8 @@ class VtMHumanExtrasView(SpecialUserMixin, UpdateView):
 
 class VtMHumanFreebiesView(HumanFreebiesView):
     model = VtMHuman
-    form_class = HumanFreebiesForm
+    form_class = ChainedHumanFreebiesForm
     template_name = "characters/vampire/vtmhuman/chargen.html"
-
-
-class VtMHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = VtMHuman
 
 
 class VtMHumanLanguagesView(SpendFreebiesPermissionMixin, FormView):

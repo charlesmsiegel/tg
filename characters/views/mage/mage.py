@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.mage.chained_freebies import ChainedMageFreebiesForm
 from characters.forms.mage.familiar import FamiliarForm
-from characters.forms.mage.freebies import MageFreebiesForm
 from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.forms.mage.practiceform import PracticeRatingFormSet
 from characters.forms.mage.rote import RoteCreationForm
@@ -31,7 +31,6 @@ from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
     HumanDetailView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -80,72 +79,6 @@ class LoadMFRatingsView(SimpleValuesView):
         mf_id = self.request.GET.get("mf")
         mf = get_object_or_404(MeritFlaw, pk=mf_id)
         return mf.ratings.values_list("value", flat=True)
-
-
-class MageFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Mage
-
-    def category_method_map(self):
-        d = super().category_method_map()
-        d.update(
-            {
-                "Sphere": self.sphere_options,
-                "Resonance": self.resonance_options,
-                "Tenet": self.tenet_options,
-                "Practice": self.practice_options,
-                "Arete": self.practice_options,
-            }
-        )
-        return d
-
-    def sphere_options(self):
-        return [
-            x
-            for x in Sphere.objects.all().order_by("name")
-            if getattr(self.character, x.property_name, 0) < self.character.arete
-            and hasattr(self.character, x.property_name)
-        ]
-
-    def resonance_options(self):
-        return Resonance.objects.all()
-
-    def tenet_options(self):
-        metaphysical_tenet_q = (
-            Q(id=self.character.metaphysical_tenet.id) if self.character.metaphysical_tenet else Q()
-        )
-        personal_tenet_q = (
-            Q(id=self.character.personal_tenet.id) if self.character.personal_tenet else Q()
-        )
-        ascension_tenet_q = (
-            Q(id=self.character.ascension_tenet.id) if self.character.ascension_tenet else Q()
-        )
-        other_tenets_q = Q(id__in=self.character.other_tenets.all().values_list("id", flat=True))
-        related_tenets_q = (
-            metaphysical_tenet_q | personal_tenet_q | ascension_tenet_q | other_tenets_q
-        )
-        return Tenet.objects.exclude(related_tenets_q)
-
-    def practice_options(self):
-        examples = Practice.objects.exclude(polymorphic_ctype__model="specializedpractice").exclude(
-            polymorphic_ctype__model="corruptedpractice"
-        )
-        spec = SpecializedPractice.objects.filter(faction=self.character.faction)
-        if spec.count() > 0:
-            examples = examples.exclude(
-                id__in=[x.parent_practice.id for x in spec]
-            ) | Practice.objects.filter(id__in=[x.id for x in spec])
-        ids = PracticeRating.objects.filter(mage=self.character, rating=5).values_list(
-            "practice__id", flat=True
-        )
-        examples = examples.exclude(pk__in=ids).order_by("name")
-        return [
-            x
-            for x in examples
-            if (
-                sum([getattr(self.character, abb.property_name) for abb in x.abilities.all()]) / 2
-                >= self.character.practice_rating(x) + 1
-            )
-        ]
 
 
 class LoadXPExamplesView(View):
@@ -923,7 +856,7 @@ class MageFreebiesView(HumanFreebiesView):
     """
 
     model = Mage
-    form_class = MageFreebiesForm
+    form_class = ChainedMageFreebiesForm
     template_name = "characters/mage/mage/chargen.html"
 
 

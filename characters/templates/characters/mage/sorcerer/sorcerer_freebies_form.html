@@ -91,127 +91,50 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const categorySelectMenu = document.getElementById("id_category");
-        const exampleSelectMenu = document.getElementById("id_example")
         const exampleElement = document.getElementById("example_wrap");
         const valueElement = document.getElementById("value_wrap");
         const noteElement = document.getElementById("note_wrap");
         const practiceElement = document.getElementById("practice_wrap");
         const abilityElement = document.getElementById("ability_wrap");
         const createritualformElement = document.getElementById("id_create_ritual_form");
-        
-    
-        categorySelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            
-            // Update the class of the element
-            if(["Willpower", "-----",].includes(this.value)){
-                exampleElement.classList.add("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-            } else {
+
+        function updateVisibility() {
+            const value = categorySelectMenu.value;
+
+            // Reset all to hidden
+            exampleElement.classList.add("d-none");
+            valueElement.classList.add("d-none");
+            noteElement.classList.add("d-none");
+            practiceElement.classList.add("d-none");
+            abilityElement.classList.add("d-none");
+            createritualformElement.classList.add("d-none");
+
+            // Show fields based on category
+            if (!["Willpower", "-----", "Create Ritual"].includes(value)) {
                 exampleElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
             }
-            if(this.value == "MeritFlaw"){
+
+            if (value === "MeritFlaw" || value === "Advantage") {
                 valueElement.classList.remove("d-none");
-                noteElement.classList.add("d-none");
             }
-            if(this.value == "Background"){
-                exampleElement.classList.remove("d-none");;
+
+            if (value === "Background") {
                 noteElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
             }
-            if(this.value == "Advantage"){
-                valueElement.classList.remove("d-none");
-                noteElement.classList.add("d-none");
-            }
-            if(this.value == "New Path"){
-                exampleElement.classList.remove("d-none")
-                if("{{object.sorcerer_type}}" == "hedge_mage"){
-                    practiceElement.classList.remove("d-none")
-                    abilityElement.classList.remove("d-none")    
-                }
-                valueElement.classList.add("d-none")
-                noteElement.classList.add("d-none")
-            } else {
-                practiceElement.classList.add("d-none")
-                abilityElement.classList.add("d-none")
-            }
-            if(this.value == "Create Ritual"){
-                exampleElement.classList.add("d-none")
-                valueElement.classList.add("d-none")
-                noteElement.classList.add("d-none")
-                practiceElement.classList.add("d-none")
-                abilityElement.classList.add("d-none")
-                createritualformElement.classList.remove("d-none")
-            } else {
-                createritualformElement.classList.add("d-none")
-            }
-            
-            // Make the AJAX call
-            $.ajax({
-                url: '{% url 'characters:mage:ajax:load_sorcerer_examples' %}',
-                data: {
-                    'category': this.value,
-                    'object': {{object.id}}
-                },
-                success: function (data) {
-                    populateDropdown('#id_example', data.options);
-                    populateDropdownFromValues('#id_value', []);
-                }
-            });
-        });
 
-        exampleSelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            if(categorySelectMenu.value == "MeritFlaw"){
-                $.ajax({
-                    url: '{% url 'characters:ajax:load_values' %}',
-                    data: {
-                        'example': this.value,
-                        'object': {{object.id}}
-                    },
-                    success: function (data) {
-                        populateDropdownFromValues('#id_value', data.values);
-                    }
-                });
+            if (value === "New Path" && "{{object.sorcerer_type}}" === "hedge_mage") {
+                practiceElement.classList.remove("d-none");
+                abilityElement.classList.remove("d-none");
             }
-            // Hide pooled checkbox for non-poolable backgrounds
-            if(categorySelectMenu.value == "Background" && isGroupMember){
-                if (isSelectedOptionPoolable('#id_example')) {
-                    pooled_wrap.classList.remove("d-none");
-                } else {
-                    pooled_wrap.classList.add("d-none");
-                }
-            }
-        });
 
+            if (value === "Create Ritual") {
+                createritualformElement.classList.remove("d-none");
+            }
+        }
+
+        categorySelectMenu.addEventListener("change", updateVisibility);
+
+        // Initial visibility on page load
+        updateVisibility();
     });
-    
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const pathSelectMenu = document.getElementById("id_practice");
-        
-        pathSelectMenu.addEventListener("change", function() {
-            $.ajax({
-                url: '{% url 'characters:mage:ajax:get_practice_abilities' %}',
-                data: {
-                    'practice_id': this.value,
-                    'object': {{ object.id }} // add the object id to the GET parameters
-                    },
-                    success: function(data) {
-                        var $abilitySelect = $(`#id_ability`);
-                        $abilitySelect.empty(); // Clear the existing options
-                        $.each(data, function(index, item) {
-                            $abilitySelect.append($('<option>', {
-                                value: item.id,
-                                text: item.name
-                            }));
-                        });
-                    }
-                });
-            });
-        });
 </script>

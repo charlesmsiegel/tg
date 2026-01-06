@@ -7,7 +7,6 @@ from characters.views.core.human import HumanAttributeView, HumanCharacterCreati
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
     WtAHumanExtrasView,
-    WtAHumanFreebieFormPopulationView,
     WtAHumanFreebiesView,
     WtAHumanLanguagesView,
     WtAHumanSpecialtiesView,
@@ -156,10 +155,6 @@ class DroneExtrasView(WtAHumanExtrasView):
 class DroneFreebiesView(WtAHumanFreebiesView):
     model = Drone
     template_name = "characters/werewolf/drone/chargen.html"
-
-
-class DroneFreebieFormPopulationView(WtAHumanFreebieFormPopulationView):
-    primary_class = Drone
 
 
 class DroneLanguagesView(WtAHumanLanguagesView):

@@ -254,6 +254,11 @@
         const formHtml = $(`#empty_${formsetPrefix}_form`).html().replace(/__prefix__/g, currentFormCount);
         totalForms.val(currentFormCount + 1);
         $(`#${formsetPrefix}_formset`).append(formHtml);
+
+        // Reinitialize chained selects for new form rows
+        if (window.ChainedSelect) {
+            window.ChainedSelect.init();
+        }
     }
 
     $('#add-resonance').click(function() {
@@ -266,35 +271,5 @@
 
     $('#add-reality-zone').click(function() {
         addForm('add-reality-zone', 'reality_zone');
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Listen for changes in any dropdowns of the formset
-        $(document).on('change', '[id^=id_merit_flaw-][id$=-mf]', function() {
-            const id = this.id;  // get the id of the changed field
-            const match = id.match(/id_merit_flaw-(\d+)-mf/);  // extract the integer from the id
-
-            if (match) {
-                const formIndex = match[1];  // get the extracted integer
-
-                // Build the ID of the corresponding analogue field
-                const ratingFieldId = `#id_merit_flaw-${formIndex}-rating`;
-
-                const selectedValue = this.value;
-
-                // Assuming "MeritFlaw" is a category for example purposes
-                    $.ajax({
-                        url: '{% url 'characters:ajax:load_values' %}',
-                        data: {
-                            'example': selectedValue
-                        },
-                        success: function (data) {
-                            // Update the corresponding rating field with the AJAX response
-                            populateDropdownFromValues(ratingFieldId, data.values);
-                        }
-                    });
-            }
-        });
     });
 </script>

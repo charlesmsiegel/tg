@@ -2,6 +2,8 @@ from characters import views
 from django.urls import path
 
 app_name = "mage:ajax"
+# Note: Most freebies AJAX views removed - now using ChainedSelect.
+# Keep XP and other AJAX views for now (to be removed in later phases).
 urls = [
     path(
         "load_mf_ratings/",
@@ -13,16 +15,7 @@ urls = [
         views.mage.mage.LoadXPExamplesView.as_view(),
         name="load_xp_examples",
     ),
-    path(
-        "load_mage_examples/",
-        views.mage.mage.MageFreebieFormPopulationView.as_view(),
-        name="load_mage_examples",
-    ),
-    path(
-        "load_mtahuman_examples/",
-        views.mage.mtahuman.MtAHumanFreebieFormPopulationView.as_view(),
-        name="load_mtahuman_examples",
-    ),
+    # Companion and Sorcerer freebies - complex forms, keep for now
     path(
         "load_companion_examples/",
         views.mage.companion.LoadExamplesView.as_view(),

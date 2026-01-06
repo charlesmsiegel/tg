@@ -299,30 +299,6 @@
                                 <i class="fas fa-plus-circle mr-2"></i>Create Location
                             </button>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                const gamelineSelect = document.getElementById('id_loc_gameline');
-                                const locTypeSelect = document.getElementById('id_loc_type');
-                                const typesByGameline = JSON.parse(locTypeSelect.dataset.typesByGameline || '{}');
-
-                                function updateLocTypes() {
-                                    const selectedGameline = gamelineSelect.value;
-                                    const types = typesByGameline[selectedGameline] || [];
-
-                                    locTypeSelect.innerHTML = '';
-
-                                    types.forEach(function(type) {
-                                        const option = document.createElement('option');
-                                        option.value = type.value;
-                                        option.textContent = type.label;
-                                        locTypeSelect.appendChild(option);
-                                    });
-                                }
-
-                                gamelineSelect.addEventListener('change', updateLocTypes);
-                                updateLocTypes();
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

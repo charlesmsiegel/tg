@@ -1,3 +1,4 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.resonance import Resonance
 from core.models import Number
@@ -52,40 +53,50 @@ NodeResonanceRatingFormSet = forms.inlineformset_factory(
 )
 
 
-class NodeMeritFlawForm(forms.ModelForm):
+class NodeMeritFlawForm(ChainedSelectMixin, forms.ModelForm):
     class Meta:
         model = NodeMeritFlawRating
         fields = ["mf", "rating"]
 
-    rating = forms.ModelChoiceField(queryset=Number.objects.none(), required=False)
-    mf = forms.ModelChoiceField(queryset=MeritFlaw.objects.none())
+    mf = ChainedChoiceField(choices=[], required=False)
+    rating = ChainedChoiceField(parent_field="mf", choices_map={}, required=False)
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Get node object type for filtering MeritFlaws
         n = ObjectType.objects.get_or_create(
             name="node", defaults={"type": "loc", "gameline": "mta"}
         )[0]
-        super().__init__(*args, **kwargs)
-        self.fields["mf"].queryset = MeritFlaw.objects.filter(allowed_types__in=[n])
 
-        if self.is_bound:
-            mf_id = self.data.get(self.add_prefix("mf"))
-            if mf_id:
-                try:
-                    mf = MeritFlaw.objects.get(pk=mf_id)
-                    self.fields["rating"].queryset = mf.ratings.all()
-                except MeritFlaw.DoesNotExist:
-                    self.fields["rating"].queryset = Number.objects.none()
-            else:
-                self.fields["rating"].queryset = Number.objects.none()
-        elif self.instance.pk:
-            mf = self.instance.mf
-            self.fields["rating"].queryset = mf.ratings.all()
-        else:
-            self.fields["rating"].queryset = Number.objects.none()
+        # Build mf choices
+        mfs = MeritFlaw.objects.filter(allowed_types__in=[n]).order_by("name")
+        self.fields["mf"].choices = [("", "---------")] + [(str(mf.pk), str(mf)) for mf in mfs]
+
+        # Build rating choices_map (mf → ratings)
+        rating_choices_map = {}
+        for mf in mfs:
+            ratings = mf.ratings.all().order_by("value")
+            rating_choices_map[str(mf.pk)] = [(str(r.pk), str(r.value)) for r in ratings]
+        self.fields["rating"].choices_map = rating_choices_map
+
+        # Re-run chain setup
+        self._setup_chains()
+
+    def clean_mf(self):
+        """Convert string PK back to MeritFlaw object."""
+        mf_pk = self.cleaned_data.get("mf")
+        if mf_pk:
+            return MeritFlaw.objects.get(pk=mf_pk)
+        return None
 
     def clean_rating(self):
-        rating = self.cleaned_data.get("rating")
-        return rating.value
+        """Convert string PK to Number value."""
+        rating_pk = self.cleaned_data.get("rating")
+        if rating_pk:
+            rating = Number.objects.get(pk=rating_pk)
+            return rating.value
+        return None
 
 
 NodeMeritFlawRatingFormSet = forms.inlineformset_factory(

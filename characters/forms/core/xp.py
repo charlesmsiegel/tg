@@ -1,6 +1,7 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background
+from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from core.models import Number
 from django import forms
@@ -16,10 +17,10 @@ CATEGORY_CHOICES = [
 ]
 
 
-class XPForm(forms.Form):
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES)
-    example = forms.ChoiceField(choices=[], required=False)
-    value = forms.ModelChoiceField(queryset=Number.objects.all(), required=False)
+class XPForm(ChainedSelectMixin, forms.Form):
+    category = ChainedChoiceField(choices=[])
+    example = ChainedChoiceField(parent_field="category", choices_map={}, required=False)
+    value = ChainedChoiceField(parent_field="example", choices_map={}, required=False)
     note = forms.CharField(max_length=300, required=False)
     pooled = forms.BooleanField(required=False)
     image_field = forms.ImageField(required=False)
@@ -28,73 +29,115 @@ class XPForm(forms.Form):
         self.character = kwargs.pop("character", None)
         super().__init__(*args, **kwargs)
 
+        # Build category choices based on what's valid for the character
+        category_choices = list(CATEGORY_CHOICES)
         if not self.image_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Image"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Image"]
         if not self.attribute_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Attribute"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Attribute"]
         if not self.ability_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Ability"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Ability"]
         if not self.background_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Background"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Background"]
         if not self.willpower_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Willpower"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Willpower"]
         if not self.mf_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "MeritFlaw"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "MeritFlaw"]
+        self.fields["category"].choices = category_choices
 
-        category = self.data.get("category")
-        if category == "Attribute":
-            self.fields["example"].choices = [
-                (attr.id, attr.name) for attr in Attribute.objects.all()
-            ]
-        elif category == "Ability":
-            self.fields["example"].choices = [
-                (ability.id, ability.name) for ability in Ability.objects.all()
-            ]
-        elif category == "Background":
-            # Background uses prefixed values - populated by AJAX
-            # Example values will be "bg_123" for new, "br_456" for existing
-            pass
-        elif category == "MeritFlaw":
-            # Filter merit/flaws by character type and affordability
-            from game.models import ObjectType
+        # Build example choices_map based on category
+        example_choices_map = self._build_example_choices_map(category_choices)
+        self.fields["example"].choices_map = example_choices_map
 
-            char_type = self.character.type
-            if "human" in char_type:
-                char_type = "human"
+        # Build value choices_map for MeritFlaw (example → value)
+        value_choices_map = self._build_value_choices_map(example_choices_map)
+        self.fields["value"].choices_map = value_choices_map
 
-            chartype, _ = ObjectType.objects.get_or_create(
-                name=char_type, defaults={"type": "char", "gameline": "wod"}
-            )
-            filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
+        # Re-run chain setup after choices configured
+        self._setup_chains()
 
-            # Only show merit/flaws with at least one affordable rating
-            affordable_mfs = []
-            for mf in filtered_mfs:
-                current_rating = self.character.mf_rating(mf)
+    def _build_example_choices_map(self, category_choices):
+        """Build the choices_map for example field based on categories."""
+        example_choices_map = {}
+        char = self.character
+
+        for cat_value, cat_label in category_choices:
+            if cat_value == "Attribute":
+                examples = [
+                    attr
+                    for attr in Attribute.objects.all()
+                    if getattr(char, attr.property_name) < 5
+                    and char.xp_cost("attribute", getattr(char, attr.property_name)) <= char.xp
+                ]
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Ability":
+                examples = [
+                    ability
+                    for ability in Ability.objects.filter(
+                        property_name__in=char.talents + char.skills + char.knowledges
+                    )
+                    if getattr(char, ability.property_name) < 5
+                    and char.xp_cost("ability", getattr(char, ability.property_name)) <= char.xp
+                ]
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Background":
+                # New backgrounds
+                new_bgs = Background.objects.filter(
+                    property_name__in=char.allowed_backgrounds
+                ).order_by("name")
+                new_bg_choices = [(f"bg_{x.pk}", f"New: {x}") for x in new_bgs if char.xp >= 5]
+                # Existing backgrounds that can be increased
+                existing_bgs = char.backgrounds.filter(rating__lt=5)
+                existing_bg_choices = [
+                    (f"br_{x.pk}", f"{x}")
+                    for x in existing_bgs
+                    if char.xp_cost("background", x.rating) <= char.xp
+                ]
+                example_choices_map[cat_value] = new_bg_choices + existing_bg_choices
+            elif cat_value == "MeritFlaw":
+                from game.models import ObjectType
+
+                char_type = char.type
+                if "human" in char_type:
+                    char_type = "human"
+                chartype, _ = ObjectType.objects.get_or_create(
+                    name=char_type, defaults={"type": "char", "gameline": "wod"}
+                )
+                filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
+                affordable_mfs = []
+                for mf in filtered_mfs:
+                    current_rating = char.mf_rating(mf)
+                    ratings = mf.get_ratings()
+                    for rating in ratings:
+                        cost = 3 * abs(rating - current_rating)
+                        if cost <= char.xp and rating != current_rating:
+                            affordable_mfs.append(mf.id)
+                            break
+                filtered_mfs = filtered_mfs.filter(id__in=affordable_mfs)
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in filtered_mfs]
+            else:
+                example_choices_map[cat_value] = []
+
+        return example_choices_map
+
+    def _build_value_choices_map(self, example_choices_map):
+        """Build the choices_map for value field (MeritFlaw ratings)."""
+        value_choices_map = {}
+        char = self.character
+
+        if "MeritFlaw" in example_choices_map:
+            for mf_pk, mf_label in example_choices_map["MeritFlaw"]:
+                mf = MeritFlaw.objects.get(pk=mf_pk)
+                current_rating = char.mf_rating(mf)
                 ratings = mf.get_ratings()
-
+                affordable_ratings = []
                 for rating in ratings:
-                    # Calculate cost: 3 × |new_rating - current_rating|
                     cost = 3 * abs(rating - current_rating)
-                    if cost <= self.character.xp and rating != current_rating:
-                        affordable_mfs.append(mf.id)
-                        break
+                    if cost <= char.xp and rating != current_rating:
+                        affordable_ratings.append(rating)
+                value_choices_map[mf_pk] = [(str(r), str(r)) for r in affordable_ratings]
 
-            filtered_mfs = filtered_mfs.filter(id__in=affordable_mfs)
-
-            self.fields["example"].choices = [(mf.id, mf.name) for mf in filtered_mfs]
+        return value_choices_map
 
     def image_valid(self):
         if self.character.image and self.character.image.storage.exists(self.character.image.name):

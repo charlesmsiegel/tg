@@ -53,37 +53,6 @@
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $('#id_practice').change(function(){
-            var practiceId = $(this).val();
-            $.ajax({
-                url: "{% url 'characters:mage:ajax:get_abilities' %}",  // Your AJAX view URL
-                data: {
-                    'practice_id': practiceId,
-                    'object': {{ object.id }}
-                },
-                success: function(data) {
-                    var $abilitySelect = $('#id_ability');
-                    $abilitySelect.empty();
-                    $.each(data, function(index, item) {
-                        $abilitySelect.append($('<option>', { 
-                            value: item.id,
-                            text : item.name 
-                        }));
-                    });
-                }
-            });
-        });
-    });
-
-    $(document).ready(function() {
-        $('#id_select_or_create_rote').click(function() {
-            $('#id_ability').empty();
-            $('#id_ability').append($('<option>', { value: '', text: '--------' }));
-        });
-    });
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Select all elements with data-toggle="toggle"

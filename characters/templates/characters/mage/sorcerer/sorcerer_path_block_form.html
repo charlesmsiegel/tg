@@ -27,44 +27,19 @@
 <button type="button" id="{{ numina_form_context.add_button_id }}">Add Path</button>
 {{ numina_form_js|safe }}
 <script>
+    // Reinitialize chained selects when new forms are added
     document.addEventListener("DOMContentLoaded", function() {
-        let formCount = 1;
+        const button = document.getElementById("add_numina_form_form");
 
-        const button = document.getElementById("add_numina_form_form")
-
-        addPracticeAbilityListener(0);
-
-        button.addEventListener("click", function() {
-            addPracticeAbilityListener(formCount);
-            formCount += 1;
-        });
-
-        function addPracticeAbilityListener(index) {
-            const pathSelectMenu = document.getElementById(`id_numina_form-${index}-practice`);
-
-            if (pathSelectMenu) {
-                pathSelectMenu.addEventListener("change", function() {
-                    $.ajax({
-                        url: '{% url 'characters:mage:ajax:get_practice_abilities' %}',
-                        data: {
-                            'practice_id': this.value,
-                            'object': {{ object.id }} // add the object id to the GET parameters
-                        },
-                        success: function(data) {
-                            var $abilitySelect = $(`#id_numina_form-${index}-ability`);
-                            $abilitySelect.empty(); // Clear the existing options
-                            $.each(data, function(index, item) {
-                                $abilitySelect.append($('<option>', {
-                                    value: item.id,
-                                    text: item.name
-                                }));
-                            });
-                        }
-                    });
-                });
-            }
+        if (button) {
+            button.addEventListener("click", function() {
+                // Give the DOM time to update, then reinitialize ChainedSelect
+                setTimeout(function() {
+                    if (window.ChainedSelect) {
+                        window.ChainedSelect.init();
+                    }
+                }, 100);
+            });
         }
-
-
     });
 </script>

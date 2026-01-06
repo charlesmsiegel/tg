@@ -63,91 +63,65 @@
         <div class="col-sm">{{ item.cost }} freebies</div>
     </div>
 {% endfor %}
+{# ChainedSelect auto-injects dropdown population JavaScript #}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const categorySelectMenu = document.getElementById("id_category");
-        const exampleSelectMenu = document.getElementById("id_example")
+        const exampleSelectMenu = document.getElementById("id_example");
         const exampleElement = document.getElementById("example_wrap");
         const valueElement = document.getElementById("value_wrap");
         const noteElement = document.getElementById("note_wrap");
         const pooled_wrap = document.getElementById("pooled_wrap");
 
         var isGroupMember = {{ object.is_group_member|lower }};
-    
-        categorySelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            
-            // Update the class of the element
-            if(["Willpower", "-----", "Rotes", "Quintessence"].includes(this.value)){
-                exampleElement.classList.add("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
-            } else {
+
+        // Visibility logic - show/hide fields based on category
+        function updateVisibility() {
+            const category = categorySelectMenu.value;
+
+            // Default: hide all optional fields
+            exampleElement.classList.add("d-none");
+            valueElement.classList.add("d-none");
+            noteElement.classList.add("d-none");
+            pooled_wrap.classList.add("d-none");
+
+            // Show example for most categories (except Willpower)
+            if (!["Willpower", "-----"].includes(category)) {
                 exampleElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
             }
-            if(this.value == "MeritFlaw"){
+
+            // Show value for MeritFlaw
+            if (category === "MeritFlaw") {
                 valueElement.classList.remove("d-none");
-                noteElement.classList.add("d-none");
-                pooled_wrap.classList.add("d-none");
             }
-            if(this.value == "Background"){
-                exampleElement.classList.remove("d-none");
+
+            // Show note and pooled for Background
+            if (category === "Background") {
                 noteElement.classList.remove("d-none");
-                valueElement.classList.add("d-none");
                 if (isGroupMember) {
-                    pooled_wrap.classList.remove("d-none");
-                } else {
-                    pooled_wrap.classList.add("d-none");
+                    updatePooledVisibility();
                 }
             }
-            if(this.value == "Arete"){
-                exampleElement.classList.remove("d-none");;
-                noteElement.classList.add("d-none");
-                valueElement.classList.add("d-none");
+        }
+
+        // Update pooled visibility based on selected background
+        function updatePooledVisibility() {
+            if (categorySelectMenu.value !== "Background" || !isGroupMember) {
+                pooled_wrap.classList.add("d-none");
+                return;
+            }
+            const selectedOption = exampleSelectMenu.selectedOptions[0];
+            if (selectedOption && selectedOption.dataset.poolable === "true") {
+                pooled_wrap.classList.remove("d-none");
+            } else {
                 pooled_wrap.classList.add("d-none");
             }
-            
-            // Make the AJAX call
-            $.ajax({
-                url: '{% url 'characters:wraith:ajax:load_wtohuman_examples' %}',
-                data: {
-                    'category': this.value,
-                    'object': {{object.id}}
-                },
-                success: function (data) {
-                    populateDropdown('#id_example', data.options);
-                    populateDropdownFromValues('#id_value', []);
-                }
-            });
-        });
+        }
 
-        exampleSelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            if(categorySelectMenu.value == "MeritFlaw"){
-                $.ajax({
-                    url: '{% url 'characters:ajax:load_values' %}',
-                    data: {
-                        'example': this.value,
-                        'object': {{object.id}}
-                    },
-                    success: function (data) {
-                        populateDropdownFromValues('#id_value', data.values);
-                    }
-                });
-            }
-            // Hide pooled checkbox for non-poolable backgrounds
-            if(categorySelectMenu.value == "Background" && isGroupMember){
-                if (isSelectedOptionPoolable('#id_example')) {
-                    pooled_wrap.classList.remove("d-none");
-                } else {
-                    pooled_wrap.classList.add("d-none");
-                }
-            }
-        });
+        categorySelectMenu.addEventListener("change", updateVisibility);
+        exampleSelectMenu.addEventListener("change", updatePooledVisibility);
+
+        // Initialize visibility on page load
+        updateVisibility();
     });
-
 </script>

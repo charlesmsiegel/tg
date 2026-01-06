@@ -1,5 +1,4 @@
-import json
-
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
 from django import forms
@@ -72,7 +71,7 @@ class SceneCreationForm(forms.Form):
                 self.fields["gameline"].initial = self.fields["gameline"].choices[0][0]
 
 
-class ChronicleObjectCreationFormBase(forms.Form):
+class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
     """Base class for chronicle-aware object creation forms."""
 
     # Mapping from Gameline model names to GameLine choice codes
@@ -92,7 +91,7 @@ class ChronicleObjectCreationFormBase(forms.Form):
     object_type_code = None  # 'char', 'loc', or 'obj'
     type_field_name = None  # 'char_type', 'loc_type', or 'item_type'
 
-    gameline = forms.ChoiceField(choices=[], label="Game Line")
+    gameline = ChainedChoiceField(choices=[], label="Game Line")
     # type field is added dynamically in subclasses
 
     def _format_label(self, name):
@@ -142,7 +141,11 @@ class ChronicleObjectCreationFormBase(forms.Form):
         )
 
     def _build_choices(self, chronicle, user, excluded_types=None):
-        """Build gameline and type choices based on permissions."""
+        """Build gameline and type choices based on permissions.
+
+        Returns tuple of (gameline_choices, choices_map) where choices_map
+        is in format suitable for ChainedChoiceField.
+        """
         excluded_types = excluded_types or []
         is_privileged = user.is_staff or user.profile.is_st()
 
@@ -165,21 +168,19 @@ class ChronicleObjectCreationFormBase(forms.Form):
             (code, label) for code, label in GameLine.CHOICES if code in allowed_gamelines
         ]
 
-        # Build type choices organized by gameline
-        types_by_gameline = {}
+        # Build choices_map for ChainedChoiceField
+        choices_map = {}
         for obj in all_types:
             if obj.gameline in allowed_gamelines and obj.name in allowed_type_names:
-                if obj.gameline not in types_by_gameline:
-                    types_by_gameline[obj.gameline] = []
-                types_by_gameline[obj.gameline].append(
-                    {"value": obj.name, "label": self._format_label(obj.name)}
-                )
+                if obj.gameline not in choices_map:
+                    choices_map[obj.gameline] = []
+                choices_map[obj.gameline].append((obj.name, self._format_label(obj.name)))
 
         # Sort each gameline's types
-        for gameline in types_by_gameline:
-            types_by_gameline[gameline].sort(key=lambda x: x["label"])
+        for gameline in choices_map:
+            choices_map[gameline].sort(key=lambda x: x[1])
 
-        return gameline_choices, types_by_gameline
+        return gameline_choices, choices_map
 
 
 class ChronicleCharacterCreationForm(ChronicleObjectCreationFormBase):
@@ -188,10 +189,10 @@ class ChronicleCharacterCreationForm(ChronicleObjectCreationFormBase):
     object_type_code = "char"
     type_field_name = "char_type"
 
-    char_type = forms.ChoiceField(
-        choices=[],
+    char_type = ChainedChoiceField(
+        parent_field="gameline",
+        choices_map={},
         label="Character Type",
-        widget=forms.Select(attrs={"id": "id_chronicle_char_type"}),
     )
 
     # Group types and non-character types to exclude
@@ -288,24 +289,13 @@ class ChronicleCharacterCreationForm(ChronicleObjectCreationFormBase):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-        gameline_choices, types_by_gameline = self._build_choices(
-            chronicle, user, self.EXCLUDED_TYPES
-        )
+        gameline_choices, choices_map = self._build_choices(chronicle, user, self.EXCLUDED_TYPES)
 
         self.fields["gameline"].choices = gameline_choices
-        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_gameline"
+        self.fields["char_type"].choices_map = choices_map
 
-        # Store types in widget for JavaScript
-        self.fields["char_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-            types_by_gameline
-        )
-
-        # Set initial choices
-        if gameline_choices and types_by_gameline:
-            first_gameline = gameline_choices[0][0]
-            self.fields["char_type"].choices = [
-                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
-            ]
+        # Re-run chain setup after choices are configured
+        self._setup_chains()
 
 
 class ChronicleLocationCreationForm(ChronicleObjectCreationFormBase):
@@ -314,10 +304,10 @@ class ChronicleLocationCreationForm(ChronicleObjectCreationFormBase):
     object_type_code = "loc"
     type_field_name = "loc_type"
 
-    loc_type = forms.ChoiceField(
-        choices=[],
+    loc_type = ChainedChoiceField(
+        parent_field="gameline",
+        choices_map={},
         label="Location Type",
-        widget=forms.Select(attrs={"id": "id_chronicle_loc_type"}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -325,20 +315,13 @@ class ChronicleLocationCreationForm(ChronicleObjectCreationFormBase):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-        gameline_choices, types_by_gameline = self._build_choices(chronicle, user)
+        gameline_choices, choices_map = self._build_choices(chronicle, user)
 
         self.fields["gameline"].choices = gameline_choices
-        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_loc_gameline"
+        self.fields["loc_type"].choices_map = choices_map
 
-        self.fields["loc_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-            types_by_gameline
-        )
-
-        if gameline_choices and types_by_gameline:
-            first_gameline = gameline_choices[0][0]
-            self.fields["loc_type"].choices = [
-                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
-            ]
+        # Re-run chain setup after choices are configured
+        self._setup_chains()
 
 
 class ChronicleItemCreationForm(ChronicleObjectCreationFormBase):
@@ -347,10 +330,10 @@ class ChronicleItemCreationForm(ChronicleObjectCreationFormBase):
     object_type_code = "obj"
     type_field_name = "item_type"
 
-    item_type = forms.ChoiceField(
-        choices=[],
+    item_type = ChainedChoiceField(
+        parent_field="gameline",
+        choices_map={},
         label="Item Type",
-        widget=forms.Select(attrs={"id": "id_chronicle_item_type"}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -358,20 +341,13 @@ class ChronicleItemCreationForm(ChronicleObjectCreationFormBase):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-        gameline_choices, types_by_gameline = self._build_choices(chronicle, user)
+        gameline_choices, choices_map = self._build_choices(chronicle, user)
 
         self.fields["gameline"].choices = gameline_choices
-        self.fields["gameline"].widget.attrs["id"] = "id_chronicle_item_gameline"
+        self.fields["item_type"].choices_map = choices_map
 
-        self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-            types_by_gameline
-        )
-
-        if gameline_choices and types_by_gameline:
-            first_gameline = gameline_choices[0][0]
-            self.fields["item_type"].choices = [
-                (t["value"], t["label"]) for t in types_by_gameline.get(first_gameline, [])
-            ]
+        # Re-run chain setup after choices are configured
+        self._setup_chains()
 
 
 class AddCharForm(forms.Form):

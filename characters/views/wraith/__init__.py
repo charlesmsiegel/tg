@@ -11,7 +11,6 @@ from .wraith_chargen import (
     WraithCharacterCreationView,
     WraithExtrasView,
     WraithFettersView,
-    WraithFreebieFormPopulationView,
     WraithFreebiesView,
     WraithLanguagesView,
     WraithPassionsView,

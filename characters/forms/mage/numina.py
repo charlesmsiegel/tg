@@ -1,3 +1,5 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
+from characters.models.core.ability_block import Ability
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
     LinearMagicPath,
@@ -9,7 +11,7 @@ from django import forms
 from django.db.models import Q
 
 
-class NuminaPathForm(forms.ModelForm):
+class NuminaPathForm(ChainedSelectMixin, forms.ModelForm):
     class Meta:
         model = PathRating
         fields = ["path", "rating", "practice", "ability"]
@@ -19,12 +21,31 @@ class NuminaPathForm(forms.ModelForm):
         empty_label="Choose a Path",
     )
     rating = forms.IntegerField(min_value=0, max_value=5, initial=0)
+    practice = ChainedChoiceField(choices=[], required=False)
+    ability = ChainedChoiceField(parent_field="practice", choices_map={}, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["practice"].queryset = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+
+        # Build practice choices
+        practices = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .order_by("name")
+        )
+        self.fields["practice"].choices = [("", "---------")] + [
+            (str(p.pk), str(p)) for p in practices
+        ]
+
+        # Build ability choices_map (practice → abilities)
+        ability_choices_map = {}
+        for practice in practices:
+            abilities = practice.abilities.all().order_by("name")
+            ability_choices_map[str(practice.pk)] = [(str(a.pk), str(a)) for a in abilities]
+        self.fields["ability"].choices_map = ability_choices_map
+
+        # Re-run chain setup
+        self._setup_chains()
 
 
 class BaseNuminaPathRatingFormSet(forms.BaseInlineFormSet):
@@ -45,7 +66,7 @@ NuminaPathRatingFormSet = forms.inlineformset_factory(
 )
 
 
-class PsychicPathForm(forms.ModelForm):
+class PsychicPathForm(ChainedSelectMixin, forms.ModelForm):
     class Meta:
         model = PathRating
         fields = ["path", "rating", "practice", "ability"]
@@ -55,12 +76,31 @@ class PsychicPathForm(forms.ModelForm):
         empty_label="Choose a Path",
     )
     rating = forms.IntegerField(min_value=0, max_value=5, initial=0)
+    practice = ChainedChoiceField(choices=[], required=False)
+    ability = ChainedChoiceField(parent_field="practice", choices_map={}, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["practice"].queryset = Practice.objects.exclude(
-            polymorphic_ctype__model="specializedpractice"
-        ).exclude(polymorphic_ctype__model="corruptedpractice")
+
+        # Build practice choices
+        practices = (
+            Practice.objects.exclude(polymorphic_ctype__model="specializedpractice")
+            .exclude(polymorphic_ctype__model="corruptedpractice")
+            .order_by("name")
+        )
+        self.fields["practice"].choices = [("", "---------")] + [
+            (str(p.pk), str(p)) for p in practices
+        ]
+
+        # Build ability choices_map (practice → abilities)
+        ability_choices_map = {}
+        for practice in practices:
+            abilities = practice.abilities.all().order_by("name")
+            ability_choices_map[str(practice.pk)] = [(str(a.pk), str(a)) for a in abilities]
+        self.fields["ability"].choices_map = ability_choices_map
+
+        # Re-run chain setup
+        self._setup_chains()
 
 
 class BasePsychicPathRatingFormSet(forms.BaseInlineFormSet):

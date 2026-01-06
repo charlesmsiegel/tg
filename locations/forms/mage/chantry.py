@@ -1,3 +1,4 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
@@ -6,7 +7,7 @@ from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
 
 
-class ChantryPointForm(forms.Form):
+class ChantryPointForm(ChainedSelectMixin, forms.Form):
     INTEGRATED_EFFECTS_NUMBERS = {
         0: 0,
         1: 4,
@@ -21,15 +22,8 @@ class ChantryPointForm(forms.Form):
         10: 90,
     }
 
-    category = forms.ChoiceField(
-        choices=[
-            ("-----", "-----"),
-            ("Integrated Effects", "Integrated Effects"),
-            ("New Background", "New Background"),
-            ("Existing Background", "Existing Background"),
-        ]
-    )
-    example = forms.ModelChoiceField(queryset=Background.objects.none(), required=False)
+    category = ChainedChoiceField(choices=[])
+    example = ChainedChoiceField(parent_field="category", choices_map={}, required=False)
     note = forms.CharField(max_length=300, required=False)
     display_alt_name = forms.BooleanField(required=False)
 
@@ -37,23 +31,43 @@ class ChantryPointForm(forms.Form):
         pk = kwargs.pop("pk")
         self.object = Chantry.objects.get(pk=pk)
         super().__init__(*args, **kwargs)
+
+        # Build category choices
+        category_choices = [
+            ("-----", "-----"),
+            ("Integrated Effects", "Integrated Effects"),
+            ("New Background", "New Background"),
+            ("Existing Background", "Existing Background"),
+        ]
+
         if self.object.backgrounds.count() == 0:
-            self.fields["category"].choices = [
+            category_choices = [
                 ("-----", "-----"),
                 ("Integrated Effects", "Integrated Effects"),
                 ("New Background", "New Background"),
             ]
 
         if self.object.integrated_effects_score == 10:
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Integrated Effects"
-            ]
+            category_choices = [x for x in category_choices if x[0] != "Integrated Effects"]
 
-        category = self.data.get("category")
-        if category == "New Background":
-            self.fields["example"].queryset = Background.objects.all()
-        if category == "Existing Background":
-            self.fields["example"].queryset = self.object.backgrounds.all()
+        self.fields["category"].choices = category_choices
+
+        # Build example choices_map based on category
+        example_choices_map = {}
+        for cat_value, cat_label in category_choices:
+            if cat_value == "New Background":
+                examples = Background.objects.all().order_by("name")
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Existing Background":
+                examples = self.object.backgrounds.all()
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            else:
+                example_choices_map[cat_value] = []
+
+        self.fields["example"].choices_map = example_choices_map
+
+        # Re-run chain setup after choices configured
+        self._setup_chains()
 
     def clean(self):
         cleaned_data = super().clean()

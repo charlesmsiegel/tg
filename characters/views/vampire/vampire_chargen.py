@@ -2,6 +2,7 @@ from typing import Any
 
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
+from characters.forms.vampire.chained_freebies import ChainedVampireFreebiesForm
 from characters.forms.vampire.freebies import VampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.core.background_block import Background, BackgroundRating
@@ -14,7 +15,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -314,7 +314,7 @@ class VampireFreebiesView(HumanFreebiesView):
     """
 
     model = Vampire
-    form_class = VampireFreebiesForm
+    form_class = ChainedVampireFreebiesForm
     template_name = "characters/vampire/vampire/chargen.html"
 
 
@@ -354,22 +354,6 @@ class VampireRetainersView(GenericBackgroundView):
 class VampireSpecialtiesView(HumanSpecialtiesView):
     model = Vampire
     template_name = "characters/vampire/vampire/chargen.html"
-
-
-class VampireFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Vampire
-
-    def category_method_map(self):
-        d = super().category_method_map()
-        d.update(
-            {
-                "Discipline": self.discipline_options,
-            }
-        )
-        return d
-
-    def discipline_options(self):
-        return Discipline.objects.all().order_by("name")
 
 
 class VampireCharacterCreationView(HumanCharacterCreationView):

@@ -1,3 +1,4 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
@@ -8,7 +9,7 @@ from django import forms
 from django.db.models import Q
 
 
-class RoteCreationForm(forms.Form):
+class RoteCreationForm(ChainedSelectMixin, forms.Form):
     select_or_create_rote = forms.BooleanField(required=False)
     select_or_create_effect = forms.BooleanField(required=False)
 
@@ -16,9 +17,9 @@ class RoteCreationForm(forms.Form):
     effect_options = forms.ModelChoiceField(queryset=Effect.objects.all(), required=False)
 
     name = forms.CharField(max_length=100, required=False)
-    practice = forms.ModelChoiceField(queryset=Practice.objects.none(), required=False)
+    practice = ChainedChoiceField(choices=[], required=False)
     attribute = forms.ModelChoiceField(queryset=Attribute.objects.all(), required=False)
-    ability = forms.ModelChoiceField(queryset=Ability.objects.all(), required=False)
+    ability = ChainedChoiceField(parent_field="practice", choices_map={}, required=False)
     systems = forms.CharField(widget=forms.Textarea(), required=False)
     description = forms.CharField(widget=forms.Textarea(), required=False)
     correspondence = forms.IntegerField(min_value=0, initial=0, required=False)
@@ -46,7 +47,19 @@ class RoteCreationForm(forms.Form):
             id__in=[x.parent_practice.id for x in special_practices]
         )
 
-        self.fields["practice"].queryset = (practice_choices | special_practices).order_by("name")
+        practices = (practice_choices | special_practices).order_by("name")
+
+        # Build practice choices for ChainedChoiceField
+        self.fields["practice"].choices = [("", "---------")] + [
+            (str(p.pk), str(p)) for p in practices
+        ]
+
+        # Build ability choices_map (practice → abilities)
+        ability_choices_map = {}
+        for practice in practices:
+            abilities = practice.abilities.all().order_by("name")
+            ability_choices_map[str(practice.pk)] = [(str(a.pk), str(a)) for a in abilities]
+        self.fields["ability"].choices_map = ability_choices_map
         self.fields["correspondence"].widget.attrs["max"] = getattr(self.instance, "correspondence")
         self.fields["time"].widget.attrs["max"] = getattr(self.instance, "time")
         self.fields["spirit"].widget.attrs["max"] = getattr(self.instance, "spirit")
@@ -106,13 +119,19 @@ class RoteCreationForm(forms.Form):
             **effect_filter_dict
         ).exclude(id__in=effects_known)
 
+        # Re-run chain setup after choices are configured
+        self._setup_chains()
+
     def save(self, mage):
         if self.cleaned_data["select_or_create_rote"]:
             # Create Rote
             name = self.cleaned_data.get("name")
-            practice = self.cleaned_data.get("practice")
+            # practice and ability are now string PKs from ChainedChoiceField
+            practice_pk = self.data.get("practice")
+            practice = Practice.objects.get(pk=practice_pk) if practice_pk else None
             attribute = self.cleaned_data.get("attribute")
-            ability = Ability.objects.get(pk=self.data.get("ability"))
+            ability_pk = self.data.get("ability")
+            ability = Ability.objects.get(pk=ability_pk) if ability_pk else None
             description = self.cleaned_data.get("description")
             if self.cleaned_data["select_or_create_effect"]:
                 # Create Effect

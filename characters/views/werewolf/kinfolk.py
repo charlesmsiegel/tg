@@ -5,16 +5,11 @@ from characters.models.core.merit_flaw_block import MeritFlawRating
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
-from characters.views.core.human import (
-    HumanAttributeView,
-    HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
-)
+from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
     WtAHumanAlliesView,
     WtAHumanExtrasView,
-    WtAHumanFreebieFormPopulationView,
     WtAHumanFreebiesView,
     WtAHumanLanguagesView,
     WtAHumanSpecialtiesView,
@@ -388,10 +383,6 @@ class KinfolkExtrasView(WtAHumanExtrasView):
 class KinfolkFreebiesView(WtAHumanFreebiesView):
     model = Kinfolk
     template_name = "characters/werewolf/kinfolk/chargen.html"
-
-
-class KinfolkFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Kinfolk
 
 
 class KinfolkLanguagesView(WtAHumanLanguagesView):

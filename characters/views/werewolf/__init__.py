@@ -32,7 +32,6 @@ from .fomor import (
     FomorCreateView,
     FomorDetailView,
     FomorExtrasView,
-    FomorFreebieFormPopulationView,
     FomorFreebiesView,
     FomorLanguagesView,
     FomorPowersView,

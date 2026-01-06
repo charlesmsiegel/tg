@@ -6,7 +6,7 @@ from characters.models.mage.sphere import Sphere
 from core.widgets import AutocompleteTextInput
 from django import forms
 
-CATEGORY_CHOICES = CATEGORY_CHOICES + [
+MAGE_CATEGORY_CHOICES = CATEGORY_CHOICES + [
     ("Sphere", "Sphere"),
     ("Rote Points", "Rote Points"),
     ("Resonance", "Resonance"),
@@ -19,7 +19,6 @@ CATEGORY_CHOICES = CATEGORY_CHOICES + [
 
 
 class MageXPForm(XPForm):
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES)
     resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
@@ -27,56 +26,100 @@ class MageXPForm(XPForm):
         if suggestions is None:
             suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
         self.fields["resonance"].widget.suggestions = suggestions
-        if not self.spheres_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Sphere"
-            ]
-        if not self.rote_points_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Rote Points"
-            ]
-        if not self.resonance_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Resonance"
-            ]
-        if not self.add_tenet_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Tenet"
-            ]
-        if not self.remove_tenet_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Remove Tenet"
-            ]
-        if not self.practice_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Practice"
-            ]
-        if not self.arete_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Arete"
-            ]
-        if not self.rote_valid():
-            self.fields["category"].choices = [
-                x for x in self.fields["category"].choices if x[0] != "Rote"
-            ]
 
-        category = self.data.get("category")
-        if category == "Sphere":
-            self.fields["example"].choices = [
-                (sphere.id, sphere.name) for sphere in Sphere.objects.all()
-            ]
-        elif category == "Tenet":
-            self.fields["example"].choices = [
-                (tenet.id, tenet.name) for tenet in Tenet.objects.all()
-            ]
-        elif category == "Remove Tenet":
-            self.fields["example"].choices = [
-                (tenet.id, tenet.name) for tenet in Tenet.objects.all()
-            ]
-        elif category == "Practice":
-            self.fields["example"].choices = [
-                (practice.id, practice.name) for practice in Practice.objects.all()
-            ]
+        # Add mage-specific categories to the choices
+        category_choices = list(MAGE_CATEGORY_CHOICES)
+
+        # Filter out invalid base categories (already done in parent)
+        if not self.image_valid():
+            category_choices = [x for x in category_choices if x[0] != "Image"]
+        if not self.attribute_valid():
+            category_choices = [x for x in category_choices if x[0] != "Attribute"]
+        if not self.ability_valid():
+            category_choices = [x for x in category_choices if x[0] != "Ability"]
+        if not self.background_valid():
+            category_choices = [x for x in category_choices if x[0] != "Background"]
+        if not self.willpower_valid():
+            category_choices = [x for x in category_choices if x[0] != "Willpower"]
+        if not self.mf_valid():
+            category_choices = [x for x in category_choices if x[0] != "MeritFlaw"]
+
+        # Filter mage-specific categories
+        if not self.spheres_valid():
+            category_choices = [x for x in category_choices if x[0] != "Sphere"]
+        if not self.rote_points_valid():
+            category_choices = [x for x in category_choices if x[0] != "Rote Points"]
+        if not self.resonance_valid():
+            category_choices = [x for x in category_choices if x[0] != "Resonance"]
+        if not self.add_tenet_valid():
+            category_choices = [x for x in category_choices if x[0] != "Tenet"]
+        if not self.remove_tenet_valid():
+            category_choices = [x for x in category_choices if x[0] != "Remove Tenet"]
+        if not self.practice_valid():
+            category_choices = [x for x in category_choices if x[0] != "Practice"]
+        if not self.arete_valid():
+            category_choices = [x for x in category_choices if x[0] != "Arete"]
+        if not self.rote_valid():
+            category_choices = [x for x in category_choices if x[0] != "Rote"]
+
+        self.fields["category"].choices = category_choices
+
+        # Build example choices_map with mage-specific categories
+        example_choices_map = self._build_example_choices_map(category_choices)
+        self.fields["example"].choices_map = example_choices_map
+
+        # Build value choices_map
+        value_choices_map = self._build_value_choices_map(example_choices_map)
+        self.fields["value"].choices_map = value_choices_map
+
+        # Re-run chain setup
+        self._setup_chains()
+
+    def _build_example_choices_map(self, category_choices):
+        """Override to add mage-specific categories."""
+        example_choices_map = super()._build_example_choices_map(category_choices)
+        char = self.character
+
+        for cat_value, cat_label in category_choices:
+            if cat_value == "Sphere":
+                examples = [
+                    sphere
+                    for sphere in Sphere.objects.all()
+                    if getattr(char, sphere.property_name) < char.arete
+                    and char.xp_cost(
+                        char.sphere_to_trait_type(sphere.property_name),
+                        getattr(char, sphere.property_name),
+                    )
+                    <= char.xp
+                ]
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Tenet":
+                examples = Tenet.objects.all()
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Remove Tenet":
+                examples = char.other_tenets.all()
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+            elif cat_value == "Practice":
+                examples = Practice.objects.exclude(
+                    polymorphic_ctype__model="specializedpractice"
+                ).exclude(polymorphic_ctype__model="corruptedpractice")
+                spec = SpecializedPractice.objects.filter(faction=char.faction)
+                if spec.count() > 0:
+                    examples = examples.exclude(
+                        id__in=[x.parent_practice.id for x in spec]
+                    ) | Practice.objects.filter(id__in=[x.id for x in spec])
+                ids = PracticeRating.objects.filter(mage=char, rating=5).values_list(
+                    "practice__id", flat=True
+                )
+                examples = examples.exclude(pk__in=ids).order_by("name")
+                examples = [
+                    x
+                    for x in examples
+                    if char.xp_cost("practice", char.practice_rating(x)) <= char.xp
+                ]
+                example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
+
+        return example_choices_map
 
     def spheres_valid(self):
         filtered_spheres = [

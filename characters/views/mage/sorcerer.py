@@ -11,7 +11,7 @@ from characters.forms.mage.numina import (
     NuminaRitualForm,
     PsychicPathRatingFormSet,
 )
-from characters.forms.mage.sorcerer import SorcererForm
+from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
@@ -70,40 +70,15 @@ from locations.forms.mage.sanctum import SanctumForm
 
 class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
     model = Sorcerer
+    form_class = SorcererBasicsForm
     success_message = "Sorcerer created successfully."
     error_message = "Error creating sorcerer."
-    fields = [
-        "name",
-        "nature",
-        "demeanor",
-        "concept",
-        "fellowship",
-        "affinity_path",
-        "casting_attribute",
-        "sorcerer_type",
-        "chronicle",
-        "image",
-        "npc",
-    ]
     template_name = "characters/mage/sorcerer/basics.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        context["storyteller"] = self.request.user.profile.is_st()
         return context
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["nature"].queryset = Archetype.objects.all().order_by("name")
-        form.fields["demeanor"].queryset = Archetype.objects.all().order_by("name")
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
-        form.fields["image"].required = False
-        form.fields["casting_attribute"].queryset = Attribute.objects.none()
-        form.fields["affinity_path"].queryset = LinearMagicPath.objects.none()
-        return form
 
     def form_invalid(self, form):
         errors = form.errors
@@ -117,14 +92,17 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
     def form_valid(self, form):
-        if form.data["casting_attribute"]:
-            form.instance.casting_attribute = get_object_or_404(
-                Attribute, pk=form.data["casting_attribute"]
-            )
-        if form.data["affinity_path"]:
-            form.instance.affinity_path = get_object_or_404(
-                LinearMagicPath, pk=form.data["affinity_path"]
-            )
+        # Handle foreign key fields from ChainedChoiceField string values
+        casting_attr_pk = form.data.get("casting_attribute")
+        affinity_path_pk = form.data.get("affinity_path")
+        fellowship_pk = form.data.get("fellowship")
+
+        if casting_attr_pk:
+            form.instance.casting_attribute = get_object_or_404(Attribute, pk=casting_attr_pk)
+        if affinity_path_pk:
+            form.instance.affinity_path = get_object_or_404(LinearMagicPath, pk=affinity_path_pk)
+        if fellowship_pk:
+            form.instance.fellowship = get_object_or_404(SorcererFellowship, pk=fellowship_pk)
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
