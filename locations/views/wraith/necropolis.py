@@ -1,7 +1,5 @@
 from core.mixins import (
     EditPermissionMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from django.contrib.auth.mixins import LoginRequiredMixin

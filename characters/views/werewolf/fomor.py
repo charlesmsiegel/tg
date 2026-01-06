@@ -23,7 +23,6 @@ from core.mixins import (
     MessageMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.models import Language

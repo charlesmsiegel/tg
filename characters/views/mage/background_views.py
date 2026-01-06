@@ -3,12 +3,7 @@ from typing import Any
 from characters.forms.mage.enhancements import EnhancementForm
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
-from core.mixins import (
-    EditPermissionMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
-)
+from core.mixins import SpendFreebiesPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404

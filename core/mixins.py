@@ -78,16 +78,6 @@ class EditPermissionMixin(PermissionRequiredMixin):
     raise_404_on_deny = False
 
 
-class SpendXPPermissionMixin(PermissionRequiredMixin):
-    """
-    Require XP spending permission for CBV.
-    Raises 403 if user cannot spend XP.
-    """
-
-    required_permission = Permission.SPEND_XP
-    raise_404_on_deny = False
-
-
 class SpendFreebiesPermissionMixin(PermissionRequiredMixin):
     """
     Require freebie spending permission for CBV.

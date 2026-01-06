@@ -3,8 +3,6 @@ from characters.models.demon import DtFHuman
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     VisibilityFilterMixin,
     XPApprovalMixin,

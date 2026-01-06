@@ -7,7 +7,6 @@ from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.views.generic import DictView

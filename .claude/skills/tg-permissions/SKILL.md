@@ -57,7 +57,6 @@ All mixins in `core/mixins.py`:
 from core.mixins import (
     ViewPermissionMixin,      # VIEW_FULL permission
     EditPermissionMixin,      # EDIT_FULL permission
-    SpendXPPermissionMixin,   # XP spending permission
     SpendFreebiesPermissionMixin,  # Freebie spending permission
     VisibilityFilterMixin,    # Filter queryset by visibility
     OwnerRequiredMixin,       # Must be object owner

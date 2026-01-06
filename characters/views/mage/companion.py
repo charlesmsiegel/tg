@@ -28,7 +28,6 @@ from core.mixins import (
     SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
 )

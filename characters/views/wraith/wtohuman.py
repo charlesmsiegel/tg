@@ -24,7 +24,6 @@ from core.mixins import (
     MessageMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
 )

@@ -174,19 +174,12 @@ Same pattern for applying CSS classes to form widgets.
 
 ---
 
-### Phase 3: Simplify ProfileView.post() (HIGH IMPACT) ✅ DONE
+### Phase 3: Simplify ProfileView.post() (HIGH IMPACT)
 **File:** `accounts/views.py`
 
 1. Extract approval handlers into dispatch dictionary or separate methods
 2. Reduce 149-line method to manageable chunks
 3. Run tests: `python manage.py test accounts`
-
-**Changes Made:**
-- Added `ST_ONLY_ACTIONS` frozenset for cleaner permission checking
-- Extracted 7 handler methods: `_check_st_permission()`, `_handle_scene_xp()`, `_handle_object_approval()`, `_handle_image_approval()`, `_handle_freebies()`, `_handle_weekly_request()`, `_handle_weekly_approval()`, `_handle_mark_scene_read()`
-- Used loops for object/image approvals to eliminate duplicate code
-- Reduced `post()` method from 149 lines to ~40 lines
-- All 71 non-view tests pass; view tests have pre-existing URL namespace issues
 
 ---
 

@@ -25,7 +25,6 @@ from core.mixins import (
     EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.models import Language

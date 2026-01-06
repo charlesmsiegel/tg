@@ -11,7 +11,6 @@ from core.mixins import (
     PermissionRequiredMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     StorytellerRequiredMixin,
     STRequiredMixin,
     SuccessMessageMixin,
@@ -218,8 +217,8 @@ class EditPermissionMixinTest(TestCase):
             view(request, pk=self.character.pk)
 
 
-class SpendXPPermissionMixinTest(TestCase):
-    """Tests for SpendXPPermissionMixin."""
+class SpendXPPermissionTest(TestCase):
+    """Tests for SPEND_XP permission via PermissionRequiredMixin."""
 
     def setUp(self):
         """Set up test data."""
@@ -238,9 +237,11 @@ class SpendXPPermissionMixinTest(TestCase):
     def test_owner_can_spend_xp(self):
         """Test that owner can spend XP on approved character."""
 
-        class TestView(SpendXPPermissionMixin, DetailView):
+        class TestView(PermissionRequiredMixin, DetailView):
             model = Character
             template_name = "test.html"
+            required_permission = Permission.SPEND_XP
+            raise_404_on_deny = False
 
         request = self.factory.get("/")
         request.user = self.owner
@@ -252,9 +253,11 @@ class SpendXPPermissionMixinTest(TestCase):
     def test_stranger_cannot_spend_xp(self):
         """Test that stranger cannot spend XP (raises 403)."""
 
-        class TestView(SpendXPPermissionMixin, DetailView):
+        class TestView(PermissionRequiredMixin, DetailView):
             model = Character
             template_name = "test.html"
+            required_permission = Permission.SPEND_XP
+            raise_404_on_deny = False
 
         request = self.factory.get("/")
         request.user = self.stranger

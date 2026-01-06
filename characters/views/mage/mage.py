@@ -46,7 +46,6 @@ from core.mixins import (
     SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.models import Language

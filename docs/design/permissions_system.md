@@ -95,7 +95,6 @@ Three-tier visibility system for object data:
 from core.mixins import (
     ViewPermissionMixin,      # Requires VIEW_FULL
     EditPermissionMixin,      # Requires EDIT_FULL
-    SpendXPPermissionMixin,   # Requires SPEND_XP
     SpendFreebiesPermissionMixin,  # Requires SPEND_FREEBIES
     VisibilityFilterMixin,    # Filters querysets by visibility
     OwnerRequiredMixin,       # Owner or admin only
