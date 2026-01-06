@@ -149,83 +149,61 @@ class PermissionsContextProcessorTest(TestCase):
         self.assertIn("user_can_edit", result)
         self.assertTrue(callable(result["user_can_edit"]))
 
-    def test_user_can_view_returns_true_when_object_has_method_returning_true(self):
-        """Test that user_can_view returns True when object.user_can_view returns True."""
+    @patch("core.context_processors.PermissionManager.user_can_view")
+    def test_user_can_view_returns_true_when_permission_manager_returns_true(self, mock_perm):
+        """Test that user_can_view returns True when PermissionManager returns True."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
 
         result = permissions(request)
-
         mock_obj = Mock()
-        mock_obj.user_can_view = Mock(return_value=True)
 
         can_view = result["user_can_view"](mock_obj)
         self.assertTrue(can_view)
-        mock_obj.user_can_view.assert_called_once_with(self.user)
+        mock_perm.assert_called_once_with(self.user, mock_obj)
 
-    def test_user_can_view_returns_false_when_object_has_method_returning_false(self):
-        """Test that user_can_view returns False when object.user_can_view returns False."""
+    @patch("core.context_processors.PermissionManager.user_can_view")
+    def test_user_can_view_returns_false_when_permission_manager_returns_false(self, mock_perm):
+        """Test that user_can_view returns False when PermissionManager returns False."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
 
         result = permissions(request)
-
         mock_obj = Mock()
-        mock_obj.user_can_view = Mock(return_value=False)
 
         can_view = result["user_can_view"](mock_obj)
         self.assertFalse(can_view)
+        mock_perm.assert_called_once_with(self.user, mock_obj)
 
-    def test_user_can_view_returns_false_when_object_has_no_method(self):
-        """Test that user_can_view returns False when object has no user_can_view method."""
+    @patch("core.context_processors.PermissionManager.user_can_edit")
+    def test_user_can_edit_returns_true_when_permission_manager_returns_true(self, mock_perm):
+        """Test that user_can_edit returns True when PermissionManager returns True."""
+        mock_perm.return_value = True
         request = self.factory.get("/")
         request.user = self.user
 
         result = permissions(request)
-
-        mock_obj = object()  # Plain object with no user_can_view method
-
-        can_view = result["user_can_view"](mock_obj)
-        self.assertFalse(can_view)
-
-    def test_user_can_edit_returns_true_when_object_has_method_returning_true(self):
-        """Test that user_can_edit returns True when object.user_can_edit returns True."""
-        request = self.factory.get("/")
-        request.user = self.user
-
-        result = permissions(request)
-
         mock_obj = Mock()
-        mock_obj.user_can_edit = Mock(return_value=True)
 
         can_edit = result["user_can_edit"](mock_obj)
         self.assertTrue(can_edit)
-        mock_obj.user_can_edit.assert_called_once_with(self.user)
+        mock_perm.assert_called_once_with(self.user, mock_obj)
 
-    def test_user_can_edit_returns_false_when_object_has_method_returning_false(self):
-        """Test that user_can_edit returns False when object.user_can_edit returns False."""
+    @patch("core.context_processors.PermissionManager.user_can_edit")
+    def test_user_can_edit_returns_false_when_permission_manager_returns_false(self, mock_perm):
+        """Test that user_can_edit returns False when PermissionManager returns False."""
+        mock_perm.return_value = False
         request = self.factory.get("/")
         request.user = self.user
 
         result = permissions(request)
-
         mock_obj = Mock()
-        mock_obj.user_can_edit = Mock(return_value=False)
 
         can_edit = result["user_can_edit"](mock_obj)
         self.assertFalse(can_edit)
-
-    def test_user_can_edit_returns_false_when_object_has_no_method(self):
-        """Test that user_can_edit returns False when object has no user_can_edit method."""
-        request = self.factory.get("/")
-        request.user = self.user
-
-        result = permissions(request)
-
-        mock_obj = object()  # Plain object with no user_can_edit method
-
-        can_edit = result["user_can_edit"](mock_obj)
-        self.assertFalse(can_edit)
+        mock_perm.assert_called_once_with(self.user, mock_obj)
 
     def test_visibility_tier_enum_values_accessible(self):
         """Test that VisibilityTier enum values are accessible."""

@@ -26,28 +26,28 @@ register = template.Library()
 def user_can_view(context, obj):
     """Check if current user can view object."""
     user = context["request"].user
-    return obj.user_can_view(user)
+    return PermissionManager.user_can_view(user, obj)
 
 
 @register.simple_tag(takes_context=True)
 def user_can_edit(context, obj):
     """Check if current user can edit object (EDIT_FULL)."""
     user = context["request"].user
-    return obj.user_can_edit(user)
+    return PermissionManager.user_can_edit(user, obj)
 
 
 @register.simple_tag(takes_context=True)
 def user_can_spend_xp(context, obj):
     """Check if current user can spend XP on object."""
     user = context["request"].user
-    return obj.user_can_spend_xp(user)
+    return PermissionManager.user_can_spend_xp(user, obj)
 
 
 @register.simple_tag(takes_context=True)
 def user_can_spend_freebies(context, obj):
     """Check if current user can spend freebies on object."""
     user = context["request"].user
-    return obj.user_can_spend_freebies(user)
+    return PermissionManager.user_can_spend_freebies(user, obj)
 
 
 @register.simple_tag(takes_context=True)
@@ -81,7 +81,7 @@ def visibility_tier(context, obj):
         {% if tier|is_full %}...{% endif %}
     """
     user = context["request"].user
-    return obj.get_visibility_tier(user)
+    return PermissionManager.get_visibility_tier(user, obj)
 
 
 @register.simple_tag(takes_context=True)
@@ -96,7 +96,7 @@ def user_roles(context, obj):
         {% endfor %}
     """
     user = context["request"].user
-    return obj.get_user_roles(user)
+    return PermissionManager.get_user_roles(user, obj)
 
 
 @register.filter

@@ -271,42 +271,6 @@ class PermissionMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_user_roles(self, user):
-        """Get all roles user has for this object."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.get_user_roles(user, self)
-
-    def user_can_view(self, user):
-        """Check if user can view this object."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.user_can_view(user, self)
-
-    def user_can_edit(self, user):
-        """Check if user can edit this object (EDIT_FULL)."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.user_can_edit(user, self)
-
-    def user_can_spend_xp(self, user):
-        """Check if user can spend XP on this object."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.user_can_spend_xp(user, self)
-
-    def user_can_spend_freebies(self, user):
-        """Check if user can spend freebie points on this object."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.user_can_spend_freebies(user, self)
-
-    def get_visibility_tier(self, user):
-        """Get visibility tier for user."""
-        from core.permissions import PermissionManager
-
-        return PermissionManager.get_visibility_tier(user, self)
-
     def add_observer(self, user, granted_by):
         """Grant observer access to a user."""
         from django.contrib.contenttypes.models import ContentType
