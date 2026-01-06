@@ -1,3 +1,4 @@
+{% load formset_tags %}
 <div class="row">
     <h2 class="col-sm {{ object.get_heading }}">Focus</h2>
 </div>
@@ -29,42 +30,22 @@
     <h3 class="col-sm {{ object.get_heading }}">Practices</h3>
 </div>
 <!-- Container for the dynamic formset -->
-<div id="practice-formset">
+<div id="practicerating_set_formset" {% formset_container "practicerating_set" empty_form_id="empty_practicerating_set_form" %}>
     <!-- This is the management form for the formset -->
     {{ practice_formset.management_form }}
     {% for f in practice_formset %}
-        <div class="row form-row">
+        <div class="row form-row" {% formset_form_wrapper %}>
             <div class="col-sm">{{ f.practice }}</div>
             <div class="col-sm">{{ f.rating }}</div>
         </div>
     {% endfor %}
 </div>
 <!-- Hidden template for new forms -->
-<div id="empty-form" class="row form-row d-none">
-    <div class="col-sm">{{ practice_formset.empty_form.practice }}</div>
-    <div class="col-sm">{{ practice_formset.empty_form.rating }}</div>
+<div id="empty_practicerating_set_form" class="d-none">
+    <div class="row form-row" {% formset_form_wrapper %}>
+        <div class="col-sm">{{ practice_formset.empty_form.practice }}</div>
+        <div class="col-sm">{{ practice_formset.empty_form.rating }}</div>
+    </div>
 </div>
-<button type="button" id="add-form">Add Practice</button>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let formCount = {{ practice_formset.total_form_count }};
-        console.log({{ practice_formset.total_form_count }})
-        const emptyFormTemplate = document.getElementById("empty-form").innerHTML;
-        const formsetDiv = document.getElementById("practice-formset");
-
-        document.getElementById("add-form").addEventListener("click", function() {
-            // Replace the placeholder with the current form count
-            let newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formCount);
-
-            // Create a new div for the form and add the generated HTML
-            let newDiv = document.createElement("div");
-            newDiv.classList.add("row", "form-row");
-            newDiv.innerHTML = newFormHtml;
-            formsetDiv.appendChild(newDiv);
-
-            // Update the management form to include the new form
-            formCount++;
-            document.getElementById("id_practicerating_set-TOTAL_FORMS").value = formCount;
-        });
-    });
-</script>
+{% formset_add_btn "practicerating_set" "Add Practice" %}
+{% formset_script %}

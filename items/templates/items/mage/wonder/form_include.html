@@ -1,3 +1,4 @@
+{% load formset_tags %}
 <div class="row">
     <h2 class="col-sm mta_heading">Create Wonder</h2>
 </div>
@@ -30,28 +31,28 @@
         <h2>Resonance</h2>
     </div>
     {{ form.resonance_formset.management_form }}
-    <div id="resonance_formset">
+    <div id="resonance_formset" {% formset_container "resonance" %}>
         {% for subform in form.resonance_formset.forms %}
-            <div class="row">
+            <div class="row" {% formset_form_wrapper %}>
                 <div class="col-sm">{{ subform.resonance }}</div>
                 <div class="col-sm">{{ subform.rating }}</div>
             </div>
         {% endfor %}
     </div>
     <div id="empty_resonance_form" class="d-none">
-        <div class="row">
+        <div class="row" {% formset_form_wrapper %}>
             <div class="col-sm">{{ form.resonance_formset.empty_form.resonance }}</div>
             <div class="col-sm">{{ form.resonance_formset.empty_form.rating }}</div>
         </div>
     </div>
-    <button type="button" id="add-resonance">Add Resonance</button>
+    {% formset_add_btn "resonance" "Add Resonance" %}
     <div class="col-sm">
         <h2>Powers</h2>
     </div>
     {{ form.effect_formset.management_form }}
-    <div id="effects_formset">
+    <div id="effects_formset" {% formset_container "effects" %}>
         {% for subform in form.effect_formset.forms %}
-            <div class="effect-subform" data-prefix="effects-{{ forloop.counter0 }}">
+            <div class="effect-subform" data-prefix="effects-{{ forloop.counter0 }}" {% formset_form_wrapper %}>
                 <div class="row form-row">
                     <div class="col-sm">Create New Effect: {{ subform.select_or_create }}</div>
                 </div>
@@ -97,7 +98,7 @@
     </div>
     <!-- Empty form with updated prefix -->
     <div id="empty_effects_form" class="d-none">
-        <div class="effect-subform" data-prefix="effects-__prefix__">
+        <div class="effect-subform" data-prefix="effects-__prefix__" {% formset_form_wrapper %}>
             <div class="row form-row">
                 <div class="col-sm">Create New Effect: {{ form.effect_formset.empty_form.select_or_create }}</div>
             </div>
@@ -140,7 +141,118 @@
             </div>
         </div>
     </div>
-    <button type="button" class="d-none" id="add-power">Add Power</button>
+    <button type="button" class="d-none" id="add-power" data-formset-add="effects">Add Power</button>
 </div>
-{% load static %}
-<script src="{% static 'js/wonder-form.js' %}"></script>
+
+{% formset_script %}
+
+<!-- Wonder-specific form logic -->
+<script>
+(function() {
+    'use strict';
+
+    /**
+     * Toggle visibility of effect fields based on select_or_create checkbox.
+     */
+    function toggleEffectFields(prefix) {
+        var subform = document.querySelector('[data-prefix="' + prefix + '"]');
+        if (!subform) return;
+
+        var selectCreateCheckbox = subform.querySelector('#id_' + prefix + '-select_or_create');
+        var selectRow = subform.querySelector('.effect-select-row');
+        var createFields = subform.querySelector('.effect-create-fields');
+
+        if (!selectCreateCheckbox || !selectRow || !createFields) return;
+
+        if (selectCreateCheckbox.checked) {
+            selectRow.classList.add('d-none');
+            createFields.classList.remove('d-none');
+        } else {
+            selectRow.classList.remove('d-none');
+            createFields.classList.add('d-none');
+        }
+    }
+
+    /**
+     * Initialize effect form toggle for a subform.
+     */
+    function initEffectSubform(subform) {
+        var prefix = subform.getAttribute('data-prefix');
+        if (!prefix) return;
+
+        toggleEffectFields(prefix);
+
+        var checkbox = subform.querySelector('#id_' + prefix + '-select_or_create');
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                toggleEffectFields(prefix);
+            });
+        }
+    }
+
+    /**
+     * Reset the effects formset to a single empty form.
+     */
+    function resetEffectsFormset() {
+        var totalForms = document.getElementById('id_effects-TOTAL_FORMS');
+        var effectsContainer = document.getElementById('effects_formset');
+        var emptyFormHtml = document.getElementById('empty_effects_form').innerHTML;
+
+        effectsContainer.innerHTML = '';
+        var newFormHtml = emptyFormHtml.replace(/__prefix__/g, 0);
+        effectsContainer.insertAdjacentHTML('beforeend', newFormHtml);
+
+        totalForms.value = 1;
+
+        var newSubform = effectsContainer.querySelector('.effect-subform');
+        if (newSubform) {
+            initEffectSubform(newSubform);
+        }
+
+        // Re-register with FormsetManager
+        if (window.FormsetManager) {
+            window.FormsetManager.init();
+        }
+    }
+
+    /**
+     * Initialize the wonder form on page load.
+     */
+    function initWonderForm() {
+        // Initialize existing effect forms
+        document.querySelectorAll('.effect-subform').forEach(initEffectSubform);
+
+        // Listen for new effects being added via FormsetManager
+        document.addEventListener('formset:added', function(e) {
+            if (e.detail.prefix === 'effects') {
+                var newSubform = e.detail.form;
+                if (newSubform) {
+                    initEffectSubform(newSubform);
+                }
+            }
+        });
+
+        // Wonder type change handler - show/hide effects add button based on type
+        var wonderTypeSelect = document.getElementById('id_wonder_type');
+        var wonderEffectAdd = document.getElementById('add-power');
+        if (wonderTypeSelect && wonderEffectAdd) {
+            wonderTypeSelect.addEventListener('change', function() {
+                var selectedValue = this.value;
+                if (['artifact', 'charm'].includes(selectedValue)) {
+                    wonderEffectAdd.classList.add('d-none');
+                    resetEffectsFormset();
+                } else {
+                    wonderEffectAdd.classList.remove('d-none');
+                }
+            });
+        }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWonderForm);
+    } else {
+        initWonderForm();
+    }
+})();
+</script>

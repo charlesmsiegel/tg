@@ -1,3 +1,4 @@
+{% load formset_tags %}
 <!-- Instructions Card -->
 <div class="tg-card mb-4">
     <div class="tg-card-header">
@@ -100,9 +101,9 @@
     </div>
     <div class="tg-card-body" style="padding: 24px;">
         {{ form.merit_flaw_formset.management_form }}
-        <div id="merit_flaw_formset">
+        <div id="merit_flaw_formset" {% formset_container "merit_flaw" %}>
             {% for subform in form.merit_flaw_formset.forms %}
-                <div class="row mb-3 merit-flaw-row">
+                <div class="row mb-3 merit-flaw-row" {% formset_form_wrapper %}>
                     <div class="col-md-6">
                         <label class="form-label">Merit/Flaw</label>
                         {{ subform.mf }}
@@ -112,13 +113,13 @@
                         {{ subform.rating }}
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="tg-btn btn-danger btn-sm remove-merit-flaw" style="margin-bottom: 0.5rem;">Remove</button>
+                        <button type="button" {% formset_remove_btn "merit_flaw" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div id="empty_merit_flaw_form" class="d-none">
-            <div class="row mb-3 merit-flaw-row">
+            <div class="row mb-3 merit-flaw-row" {% formset_form_wrapper %}>
                 <div class="col-md-6">
                     <label class="form-label">Merit/Flaw</label>
                     {{ form.merit_flaw_formset.empty_form.mf }}
@@ -128,14 +129,12 @@
                     {{ form.merit_flaw_formset.empty_form.rating }}
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="tg-btn btn-danger btn-sm remove-merit-flaw" style="margin-bottom: 0.5rem;">Remove</button>
+                    <button type="button" {% formset_remove_btn "merit_flaw" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                 </div>
             </div>
         </div>
         <div class="text-center mt-3">
-            <button type="button" id="add-merit-flaw" class="tg-btn btn-primary">
-                <i class="fas fa-plus mr-1"></i> Add Merit/Flaw
-            </button>
+            {% formset_add_btn "merit_flaw" "<i class='fas fa-plus mr-1'></i> Add Merit/Flaw" class="tg-btn btn-primary" %}
         </div>
     </div>
 </div>
@@ -148,9 +147,9 @@
     </div>
     <div class="tg-card-body" style="padding: 24px;">
         {{ form.resonance_formset.management_form }}
-        <div id="resonance_formset">
+        <div id="resonance_formset" {% formset_container "resonance" %}>
             {% for subform in form.resonance_formset.forms %}
-                <div class="row mb-3 resonance-row">
+                <div class="row mb-3 resonance-row" {% formset_form_wrapper %}>
                     <div class="col-md-6">
                         <label class="form-label">Resonance Type</label>
                         {{ subform.resonance }}
@@ -160,13 +159,13 @@
                         {{ subform.rating }}
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="tg-btn btn-danger btn-sm remove-resonance" style="margin-bottom: 0.5rem;">Remove</button>
+                        <button type="button" {% formset_remove_btn "resonance" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div id="empty_resonance_form" class="d-none">
-            <div class="row mb-3 resonance-row">
+            <div class="row mb-3 resonance-row" {% formset_form_wrapper %}>
                 <div class="col-md-6">
                     <label class="form-label">Resonance Type</label>
                     {{ form.resonance_formset.empty_form.resonance }}
@@ -176,14 +175,12 @@
                     {{ form.resonance_formset.empty_form.rating }}
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="tg-btn btn-danger btn-sm remove-resonance" style="margin-bottom: 0.5rem;">Remove</button>
+                    <button type="button" {% formset_remove_btn "resonance" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                 </div>
             </div>
         </div>
         <div class="text-center mt-3">
-            <button type="button" id="add-resonance" class="tg-btn btn-primary">
-                <i class="fas fa-plus mr-1"></i> Add Resonance
-            </button>
+            {% formset_add_btn "resonance" "<i class='fas fa-plus mr-1'></i> Add Resonance" class="tg-btn btn-primary" %}
         </div>
     </div>
 </div>
@@ -195,9 +192,9 @@
     </div>
     <div class="tg-card-body" style="padding: 24px;">
         {{ form.reality_zone_formset.management_form }}
-        <div id="reality_zone_formset">
+        <div id="reality_zone_formset" {% formset_container "reality_zone" %}>
             {% for subform in form.reality_zone_formset.forms %}
-                <div class="row mb-3 reality-zone-row">
+                <div class="row mb-3 reality-zone-row" {% formset_form_wrapper %}>
                     <div class="col-md-6">
                         <label class="form-label">Practice</label>
                         {{ subform.practice }}
@@ -207,13 +204,13 @@
                         {{ subform.rating }}
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="tg-btn btn-danger btn-sm remove-reality-zone" style="margin-bottom: 0.5rem;">Remove</button>
+                        <button type="button" {% formset_remove_btn "reality_zone" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div id="empty_reality_zone_form" class="d-none">
-            <div class="row mb-3 reality-zone-row">
+            <div class="row mb-3 reality-zone-row" {% formset_form_wrapper %}>
                 <div class="col-md-6">
                     <label class="form-label">Practice</label>
                     {{ form.reality_zone_formset.empty_form.practice }}
@@ -223,14 +220,12 @@
                     {{ form.reality_zone_formset.empty_form.rating }}
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="tg-btn btn-danger btn-sm remove-reality-zone" style="margin-bottom: 0.5rem;">Remove</button>
+                    <button type="button" {% formset_remove_btn "reality_zone" %} class="tg-btn btn-danger btn-sm" style="margin-bottom: 0.5rem;">Remove</button>
                 </div>
             </div>
         </div>
         <div class="text-center mt-3">
-            <button type="button" id="add-reality-zone" class="tg-btn btn-primary">
-                <i class="fas fa-plus mr-1"></i> Add Reality Zone Rating
-            </button>
+            {% formset_add_btn "reality_zone" "<i class='fas fa-plus mr-1'></i> Add Reality Zone Rating" class="tg-btn btn-primary" %}
         </div>
     </div>
 </div>
@@ -245,31 +240,4 @@
     </div>
 </div>
 
-<!-- Formset JavaScript -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function addForm(btnId, formsetPrefix) {
-        const totalForms = $(`#id_${formsetPrefix}-TOTAL_FORMS`);
-        const currentFormCount = parseInt(totalForms.val());
-        const formHtml = $(`#empty_${formsetPrefix}_form`).html().replace(/__prefix__/g, currentFormCount);
-        totalForms.val(currentFormCount + 1);
-        $(`#${formsetPrefix}_formset`).append(formHtml);
-
-        // Reinitialize chained selects for new form rows
-        if (window.ChainedSelect) {
-            window.ChainedSelect.init();
-        }
-    }
-
-    $('#add-resonance').click(function() {
-        addForm('add-resonance', 'resonance');
-    });
-
-    $('#add-merit-flaw').click(function() {
-        addForm('add-merit-flaw', 'merit_flaw');
-    });
-
-    $('#add-reality-zone').click(function() {
-        addForm('add-reality-zone', 'reality_zone');
-    });
-</script>
+{% formset_script %}

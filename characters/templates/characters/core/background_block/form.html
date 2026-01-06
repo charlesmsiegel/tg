@@ -1,3 +1,4 @@
+{% load formset_tags %}
 <div class="row">
     <h2 class="col-sm {{ object.get_heading }}">Backgrounds</h2>
 </div>
@@ -6,10 +7,10 @@
         Distribute {{ object.background_points }} background dots. Keep in mind that Enhancements, Sanctum, and Totem cost 2 points per dot. Pooled backgrounds must have the exact same note field to be pooled properly, and should only be used for shared backgrounds across a group.
     </div>
 </div>
-<div id="bg_form_container">
+<div id="backgrounds_formset" {% formset_container "backgrounds" empty_form_id="bg_form_empty_form" %}>
     {{ form.management_form }}
     {% for f in form %}
-        <div class="row form-row">
+        <div class="row form-row" {% formset_form_wrapper %}>
             <div class="col-sm">{{ f.bg }}</div>
             <div class="col-sm">{{ f.rating }}</div>
             <div class="col-sm">{{ f.note }}</div>
@@ -20,7 +21,7 @@
 </div>
 <!-- Hidden empty form to clone -->
 <div id="bg_form_empty_form" class="d-none">
-    <div class="row form-row">
+    <div class="row form-row" {% formset_form_wrapper %}>
         <div class="col-sm">{{ empty_form.bg }}</div>
         <div class="col-sm">{{ empty_form.rating }}</div>
         <div class="col-sm">{{ empty_form.note }}</div>
@@ -33,16 +34,5 @@
         {% for error in f.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
     {% endif %}
 {% endfor %}
-<button type="button" id="add-background-button">Add Background</button>
-<script>
-    document.getElementById('add-background-button').addEventListener('click', function(e) {{
-        e.preventDefault();  // Prevent form submission
-
-        var totalForms = document.getElementById('id_backgrounds-TOTAL_FORMS');
-        var formCount = parseInt(totalForms.value);
-        var emptyForm = document.getElementById('bg_form_empty_form').innerHTML;
-        var newForm = emptyForm.replace(/__prefix__/g, formCount);  // Replace prefix
-        document.getElementById('bg_form_container').insertAdjacentHTML('beforeend', newForm);
-        totalForms.value = formCount + 1;
-    }});
-</script>
+{% formset_add_btn "backgrounds" "Add Background" %}
+{% formset_script %}
