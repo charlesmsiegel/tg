@@ -54,34 +54,6 @@
             {% endif %}
         </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const fellowshipSelectMenu = document.getElementById("id_fellowship");
-
-            fellowshipSelectMenu.addEventListener("change", function() {
-                $.ajax({
-                    url: '{% url 'characters:mage:ajax:load_attributes' %}',
-                    data: {
-                        'fellowship': this.value
-                    },
-                    success: function (data) {
-                        populateDropdown('#id_casting_attribute', data.options);
-                    }
-                });
-
-                $.ajax({
-                    url: '{% url 'characters:mage:ajax:load_affinities' %}',
-                    data: {
-                        'fellowship': this.value
-                    },
-                    success: function (data) {
-                        populateDropdown('#id_affinity_path', data.options);
-                    }
-                });
-            });
-        });
-
-    </script>
 {% endblock contents %}
 {% block buttons %}
     <input name="Save" type="submit" value="Save" />

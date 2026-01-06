@@ -16,7 +16,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
 )
 from characters.views.wraith.wraith import WraithDetailView
@@ -412,50 +411,6 @@ class WraithFreebiesView(HumanFreebiesView):
     model = Wraith
     form_class = WraithFreebiesForm
     template_name = "characters/wraith/wraith/chargen.html"
-
-
-class WraithFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Wraith
-
-    def category_method_map(self):
-        base_map = super().category_method_map()
-        base_map.update(
-            {
-                "Arcanos": self.arcanos_options,
-                "Pathos": self.pathos_options,
-                "Passion": self.passion_options,
-                "Fetter": self.fetter_options,
-                "Corpus": self.corpus_options,
-            }
-        )
-        return base_map
-
-    def arcanos_options(self, wraith):
-        """Return available arcanoi for freebie spending."""
-        arcanoi = wraith.get_arcanoi()
-        return [
-            (name.replace("_", " ").title(), name) for name, value in arcanoi.items() if value < 5
-        ]
-
-    def pathos_options(self, wraith):
-        """Return pathos option if it can be increased."""
-        if wraith.pathos_permanent < 10:
-            return [("Pathos", "pathos")]
-        return []
-
-    def passion_options(self, wraith):
-        """Return passion as an option."""
-        return [("New Passion", "passion")]
-
-    def fetter_options(self, wraith):
-        """Return fetter as an option."""
-        return [("New Fetter", "fetter")]
-
-    def corpus_options(self, wraith):
-        """Return corpus option if it can be increased."""
-        if wraith.corpus < 10:
-            return [("Corpus", "corpus")]
-        return []
 
 
 class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView):

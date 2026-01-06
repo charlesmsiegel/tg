@@ -35,37 +35,28 @@
         const noteElement = document.getElementById("note_wrap");
         const altNameElement = document.getElementById("alt_name_wrap");
 
-        categorySelectMenu.addEventListener("change", function() {
-            const selectedValue = this.value;
-            
-            // Update the class of the element
-            if(["-----", "Integrated Effects"].includes(this.value)){
-                exampleElement.classList.add("d-none");
-                noteElement.classList.add("d-none");
-                altNameElement.classList.add("d-none")
-            } else {
+        function updateVisibility() {
+            const value = categorySelectMenu.value;
+
+            // Reset all to hidden
+            exampleElement.classList.add("d-none");
+            noteElement.classList.add("d-none");
+            altNameElement.classList.add("d-none");
+
+            // Show fields based on category
+            if (!["-----", "Integrated Effects"].includes(value)) {
                 exampleElement.classList.remove("d-none");
-                noteElement.classList.add("d-none");
-                altNameElement.classList.add("d-none")
             }
-            if(this.value == "New Background"){
-                exampleElement.classList.remove("d-none");
+
+            if (value === "New Background") {
                 noteElement.classList.remove("d-none");
-                altNameElement.classList.remove("d-none")
+                altNameElement.classList.remove("d-none");
             }
-            
-            // Make the AJAX call
-            $.ajax({
-                url: '{% url 'locations:mage:ajax:load_chantry_examples' %}',
-                data: {
-                    'category': this.value,
-                    'object': {{object.id}}
-                },
-                success: function (data) {
-                    populateDropdown('#id_example', data.options);
-                }
-            });
-        });
+        }
+
+        categorySelectMenu.addEventListener("change", updateVisibility);
+
+        // Initial visibility on page load
+        updateVisibility();
     });
-    
 </script>

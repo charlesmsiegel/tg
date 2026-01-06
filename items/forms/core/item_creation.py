@@ -1,20 +1,18 @@
-import json
-
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from core.constants import GameLine
 from django import forms
 from game.models import ObjectType
 
 
-class ItemCreationForm(forms.Form):
-    gameline = forms.ChoiceField(
+class ItemCreationForm(ChainedSelectMixin, forms.Form):
+    gameline = ChainedChoiceField(
         choices=[],
         label="Game Line",
-        widget=forms.Select(attrs={"id": "id_item_gameline"}),
     )
-    item_type = forms.ChoiceField(
-        choices=[],
+    item_type = ChainedChoiceField(
+        parent_field="gameline",
+        choices_map={},
         label="Item Type",
-        widget=forms.Select(attrs={"id": "id_item_type"}),
     )
     name = forms.CharField(
         max_length=100,
@@ -59,49 +57,31 @@ class ItemCreationForm(forms.Form):
                 ]
                 self.fields["gameline"].choices = gameline_choices
 
-                # Build item type choices organized by gameline
-                item_types_by_gameline = {}
+                # Build choices_map for ChainedChoiceField
+                choices_map = {}
                 for obj in all_item_types:
-                    if obj.gameline not in item_types_by_gameline:
-                        item_types_by_gameline[obj.gameline] = []
-                    item_types_by_gameline[obj.gameline].append(
-                        {"value": obj.name, "label": self._format_label(obj.name)}
-                    )
+                    if obj.gameline not in choices_map:
+                        choices_map[obj.gameline] = []
+                    choices_map[obj.gameline].append((obj.name, self._format_label(obj.name)))
 
                 # Sort each gameline's types by label
-                for gameline in item_types_by_gameline:
-                    item_types_by_gameline[gameline].sort(key=lambda x: x["label"])
+                for gameline in choices_map:
+                    choices_map[gameline].sort(key=lambda x: x[1])
 
-                # Store in widget attrs for JavaScript access
-                self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    item_types_by_gameline
-                )
-
-                # Initially populate with first gameline's types
-                if gameline_choices:
-                    first_gameline = gameline_choices[0][0]
-                    initial_choices = [
-                        (t["value"], t["label"])
-                        for t in item_types_by_gameline.get(first_gameline, [])
-                    ]
-                    self.fields["item_type"].choices = initial_choices
+                self.fields["item_type"].choices_map = choices_map
             else:
                 # For regular users, only show mage gameline
                 self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
 
                 mage_items = ObjectType.objects.filter(type="obj", gameline="mta")
 
-                item_types_by_gameline = {
-                    "mta": [
-                        {"value": obj.name, "label": self._format_label(obj.name)}
-                        for obj in mage_items
-                    ]
+                choices_map = {
+                    "mta": sorted(
+                        [(obj.name, self._format_label(obj.name)) for obj in mage_items],
+                        key=lambda x: x[1],
+                    )
                 }
-                item_types_by_gameline["mta"].sort(key=lambda x: x["label"])
+                self.fields["item_type"].choices_map = choices_map
 
-                self.fields["item_type"].widget.attrs["data-types-by-gameline"] = json.dumps(
-                    item_types_by_gameline
-                )
-                self.fields["item_type"].choices = [
-                    (t["value"], t["label"]) for t in item_types_by_gameline["mta"]
-                ]
+            # Re-run chain setup after choices are configured
+            self._setup_chains()

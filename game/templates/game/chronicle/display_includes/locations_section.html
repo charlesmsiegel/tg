@@ -87,30 +87,6 @@
                             </button>
                         </div>
                     </form>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const gamelineSelect = document.getElementById('id_chronicle_loc_gameline');
-                            const locTypeSelect = document.getElementById('id_chronicle_loc_type');
-                            if (gamelineSelect && locTypeSelect) {
-                                const typesByGameline = JSON.parse(locTypeSelect.dataset.typesByGameline || '{}');
-
-                                function updateLocTypes() {
-                                    const selectedGameline = gamelineSelect.value;
-                                    const types = typesByGameline[selectedGameline] || [];
-                                    locTypeSelect.innerHTML = '';
-                                    types.forEach(function(type) {
-                                        const option = document.createElement('option');
-                                        option.value = type.value;
-                                        option.textContent = type.label;
-                                        locTypeSelect.appendChild(option);
-                                    });
-                                }
-
-                                gamelineSelect.addEventListener('change', updateLocTypes);
-                                updateLocTypes();
-                            }
-                        });
-                    </script>
                 </div>
             </div>
         </div>

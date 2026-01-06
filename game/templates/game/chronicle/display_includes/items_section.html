@@ -112,30 +112,6 @@
                             </button>
                         </div>
                     </form>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const gamelineSelect = document.getElementById('id_chronicle_item_gameline');
-                            const itemTypeSelect = document.getElementById('id_chronicle_item_type');
-                            if (gamelineSelect && itemTypeSelect) {
-                                const typesByGameline = JSON.parse(itemTypeSelect.dataset.typesByGameline || '{}');
-
-                                function updateItemTypes() {
-                                    const selectedGameline = gamelineSelect.value;
-                                    const types = typesByGameline[selectedGameline] || [];
-                                    itemTypeSelect.innerHTML = '';
-                                    types.forEach(function(type) {
-                                        const option = document.createElement('option');
-                                        option.value = type.value;
-                                        option.textContent = type.label;
-                                        itemTypeSelect.appendChild(option);
-                                    });
-                                }
-
-                                gamelineSelect.addEventListener('change', updateItemTypes);
-                                updateItemTypes();
-                            }
-                        });
-                    </script>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 from typing import Any
 
 from characters.forms.changeling.ctdhuman import CtDHumanCreationForm
-from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -14,7 +14,6 @@ from characters.views.core.human import (
     HumanAbilityView,
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
 )
 from core.forms.language import HumanLanguageForm
@@ -280,12 +279,8 @@ class CtDHumanExtrasView(SpecialUserMixin, UpdateView):
 
 class CtDHumanFreebiesView(HumanFreebiesView):
     model = CtDHuman
-    form_class = HumanFreebiesForm
+    form_class = ChainedHumanFreebiesForm
     template_name = "characters/changeling/ctdhuman/chargen.html"
-
-
-class CtDHumanFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = CtDHuman
 
 
 class CtDHumanLanguagesView(EditPermissionMixin, FormView):

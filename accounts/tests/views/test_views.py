@@ -213,7 +213,9 @@ class TestProfileUpdateView(TestCase):
 
     def test_requires_login(self):
         """Test that profile update requires authentication."""
-        response = self.client.get(reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk}))
+        response = self.client.get(
+            reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk})
+        )
         self.assertEqual(response.status_code, 401)
 
     def test_can_update_profile(self):

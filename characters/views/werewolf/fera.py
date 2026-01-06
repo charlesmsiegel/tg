@@ -1,6 +1,6 @@
 from typing import Any
 
-from characters.forms.core.freebies import HumanFreebiesForm
+from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.fera import FeraCreationForm
@@ -24,7 +24,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import (
     HumanAttributeView,
     HumanCharacterCreationView,
-    HumanFreebieFormPopulationView,
     HumanFreebiesView,
     HumanLanguagesView,
     HumanSpecialtiesView,
@@ -622,13 +621,9 @@ class FeraExtrasView(SpecialUserMixin, UpdateView):
         return form
 
 
-class FeraFreebieFormPopulationView(HumanFreebieFormPopulationView):
-    primary_class = Fera
-
-
 class FeraFreebiesView(HumanFreebiesView):
     model = Fera
-    form_class = HumanFreebiesForm
+    form_class = ChainedHumanFreebiesForm
     template_name = "characters/werewolf/fera/chargen.html"
 
 

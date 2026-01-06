@@ -1,13 +1,160 @@
 {% load dots %}
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="tg-card" data-gameline="wta">
-            <div class="tg-card-header">
-                <h5 class="tg-card-title wta_heading">Freebie Points</h5>
-            </div>
-            <div class="tg-card-body">
-                {% include "characters/core/human/freebies_form.html" %}
-            </div>
+<div class="row">
+    <h2 class="col-sm {{ object.get_heading }}">Freebie Spend</h2>
+</div>
+{% if object.freebies > 0 %}
+    <div class="row">
+        <div class="col-sm">Spend Freebie points. The costs are as follows:</div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">
+            <b>Trait</b>
+        </div>
+        <div class="col-sm-3 border">
+            <b>Cost</b>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Attribute</div>
+        <div class="col-sm-3 border">5</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Ability</div>
+        <div class="col-sm-3 border">2</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Background</div>
+        <div class="col-sm-3 border">1</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Willpower</div>
+        <div class="col-sm-3 border">1</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row centertext">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-3 border">Merits/Flaws</div>
+        <div class="col-sm-3 border">Rating</div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row">
+        <h3 class="col-sm {{ object.get_heading }}">Freebies Remaining</h3>
+        <h3 class="col-sm {{ object.get_heading }}">{{ object.freebies }}</h3>
+    </div>
+{% endif %}
+{% if form.non_field_errors %}
+    <div class="row mb-2">
+        <div class="col-sm">
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.non_field_errors }}</div>
         </div>
     </div>
+{% endif %}
+<div class="row">
+    <div class="col-sm">
+        {{ form.category }}
+        {% if form.category.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.category.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="example_wrap">
+        {{ form.example }}
+        {% if form.example.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.example.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="value_wrap">
+        {{ form.value }}
+        {% if form.value.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.value.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="note_wrap">
+        {{ form.note }}
+        {% if form.note.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.note.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="col-sm d-none" id="pooled_wrap">
+        Pooled? {{ form.pooled }}
+        {% if form.pooled.errors %}
+            <div class="text-danger" style="font-size: 0.875rem;">{{ form.pooled.errors }}</div>
+        {% endif %}
+    </div>
 </div>
+{% for item in object.spent_freebies %}
+    <div class="row">
+        <div class="col-sm">{{ item.trait }} {{ item.value }}</div>
+        <div class="col-sm">{{ item.cost }} freebies</div>
+    </div>
+{% endfor %}
+{# ChainedSelect auto-injects dropdown population JavaScript #}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const categorySelectMenu = document.getElementById("id_category");
+        const exampleSelectMenu = document.getElementById("id_example");
+        const exampleElement = document.getElementById("example_wrap");
+        const valueElement = document.getElementById("value_wrap");
+        const noteElement = document.getElementById("note_wrap");
+        const pooled_wrap = document.getElementById("pooled_wrap");
+
+        var isGroupMember = {{ object.is_group_member|lower }};
+
+        // Visibility logic - show/hide fields based on category
+        function updateVisibility() {
+            const category = categorySelectMenu.value;
+
+            // Default: hide all optional fields
+            exampleElement.classList.add("d-none");
+            valueElement.classList.add("d-none");
+            noteElement.classList.add("d-none");
+            pooled_wrap.classList.add("d-none");
+
+            // Show example for most categories (except Willpower)
+            if (!["Willpower", "-----"].includes(category)) {
+                exampleElement.classList.remove("d-none");
+            }
+
+            // Show value for MeritFlaw
+            if (category === "MeritFlaw") {
+                valueElement.classList.remove("d-none");
+            }
+
+            // Show note and pooled for Background
+            if (category === "Background") {
+                noteElement.classList.remove("d-none");
+                if (isGroupMember) {
+                    updatePooledVisibility();
+                }
+            }
+        }
+
+        // Update pooled visibility based on selected background
+        function updatePooledVisibility() {
+            if (categorySelectMenu.value !== "Background" || !isGroupMember) {
+                pooled_wrap.classList.add("d-none");
+                return;
+            }
+            const selectedOption = exampleSelectMenu.selectedOptions[0];
+            if (selectedOption && selectedOption.dataset.poolable === "true") {
+                pooled_wrap.classList.remove("d-none");
+            } else {
+                pooled_wrap.classList.add("d-none");
+            }
+        }
+
+        categorySelectMenu.addEventListener("change", updateVisibility);
+        exampleSelectMenu.addEventListener("change", updatePooledVisibility);
+
+        // Initialize visibility on page load
+        updateVisibility();
+    });
+</script>
