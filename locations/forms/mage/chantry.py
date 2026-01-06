@@ -1,4 +1,4 @@
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect

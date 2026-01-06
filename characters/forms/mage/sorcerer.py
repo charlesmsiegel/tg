@@ -1,6 +1,6 @@
 """Forms for Sorcerer character type."""
 
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.archetype import Archetype
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer

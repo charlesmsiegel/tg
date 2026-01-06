@@ -1,4 +1,4 @@
-from chained_select import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.resonance import Resonance
 from core.models import Number
