@@ -40,7 +40,6 @@ from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    DropdownOptionsView,
     EditPermissionMixin,
     JsonListView,
     MessageMixin,
@@ -72,22 +71,6 @@ from locations.forms.mage.chantry import ChantrySelectOrCreateForm
 from locations.forms.mage.library import LibraryForm
 from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
-
-
-class LoadFactionsView(DropdownOptionsView):
-    """AJAX view to load faction options filtered by affiliation."""
-
-    def get_queryset(self):
-        affiliation_id = self.request.GET.get("affiliation")
-        return MageFaction.objects.filter(parent=affiliation_id).order_by("name")
-
-
-class LoadSubfactionsView(DropdownOptionsView):
-    """AJAX view to load subfaction options filtered by faction."""
-
-    def get_queryset(self):
-        faction_id = self.request.GET.get("faction")
-        return MageFaction.objects.filter(parent=faction_id).order_by("name")
 
 
 class LoadMFRatingsView(SimpleValuesView):

@@ -5,8 +5,6 @@
 {% block formdetails %}
     method="post"
     id="mageForm"
-    data-factions-url="{% url 'characters:mage:ajax:load_factions' %}"
-    data-subfactions-url="{% url 'characters:mage:ajax:load_subfactions' %}"
     action=""
     novalidate
     enctype="multipart/form-data"
@@ -61,36 +59,7 @@
             {% endif %}
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script>
-$("#id_affiliation").change(function () {
-    var url = $("#mageForm").attr("data-factions-url");
-    var affiliationId = $(this).val();
-    $.ajax({
-        url: url,
-        data: {
-            'affiliation': affiliationId
-        },
-        success: function (data) {
-            populateDropdown('#id_faction', data.options);
-            populateDropdown('#id_subfaction', []);
-        }
-    });
-});
-
-$("#id_faction").change(function () {
-    var factionId = $(this).val();
-    $.ajax({
-        url: '{% url 'characters:mage:ajax:load_subfactions' %}',
-        data: {
-            'faction': factionId
-        },
-        success: function (data) {
-            populateDropdown('#id_subfaction', data.options);
-        }
-    });
-});
-    </script>
+    {# ChainedSelect JavaScript auto-injects - no manual script needed #}
 {% endblock contents %}
 {% block buttons %}
     <input name="Save" type="submit" value="Save" />

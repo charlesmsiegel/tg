@@ -5,9 +5,7 @@
     <div class="col-sm">Decide identity and motivation; choose concept, Affiliation, Essence, and Archetypes.</div>
 </div>
 <div class="centertext container"
-     id="mageForm"
-     data-factions-url="{% url 'characters:mage:ajax:load_factions' %}"
-     data-subfactions-url="{% url 'characters:mage:ajax:load_subfactions' %}">
+     id="mageForm">
     <div class="row">
         <div class="col-sm">{{ form.image }}</div>
     </div>
@@ -30,4 +28,3 @@
         <div class="col-sm-2">{{ form.concept }}</div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>

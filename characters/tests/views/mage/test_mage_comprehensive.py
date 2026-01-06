@@ -185,26 +185,6 @@ class TestMageAjaxViews(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"
         )
-        self.affiliation = MageFaction.objects.filter(parent=None).first()
-        self.faction = MageFaction.objects.filter(parent=self.affiliation).first()
-
-    def test_load_factions_ajax(self):
-        """Test loading factions via AJAX."""
-        self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": self.affiliation.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_subfactions_ajax(self):
-        """Test loading subfactions via AJAX."""
-        self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_subfactions"),
-            {"faction": self.faction.id},
-        )
-        self.assertEqual(response.status_code, 200)
 
     def test_load_mf_ratings_ajax(self):
         """Test loading merit/flaw ratings via AJAX."""

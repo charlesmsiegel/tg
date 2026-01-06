@@ -100,68 +100,6 @@ class TestLoadValuesJsonResponse(TestCase):
         self.assertIsInstance(data["values"], list)
 
 
-class TestMageLoadFactionsJsonResponse(TestCase):
-    """Test that load_factions returns JSON instead of HTML."""
-
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-        self.client.login(username="testuser", password="password")
-
-    def test_returns_json_content_type(self):
-        """Test that response has JSON content type."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": "1"},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-
-    def test_returns_options_structure(self):
-        """Test that response has options array structure."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": "1"},
-        )
-        data = json.loads(response.content)
-
-        self.assertIn("options", data)
-        self.assertIsInstance(data["options"], list)
-
-
-class TestMageLoadSubfactionsJsonResponse(TestCase):
-    """Test that load_subfactions returns JSON instead of HTML."""
-
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-        self.client.login(username="testuser", password="password")
-
-    def test_returns_json_content_type(self):
-        """Test that response has JSON content type."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_subfactions"),
-            {"faction": "1"},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/json")
-
-    def test_returns_options_structure(self):
-        """Test that response has options array structure."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_subfactions"),
-            {"faction": "1"},
-        )
-        data = json.loads(response.content)
-
-        self.assertIn("options", data)
-        self.assertIsInstance(data["options"], list)
-
-
 class TestMageLoadMfRatingsJsonResponse(TestCase):
     """Test that load_mf_ratings returns JSON instead of HTML."""
 
@@ -220,16 +158,6 @@ class TestAjaxAuthenticationRequired(TestCase):
         response = self.client.get(
             reverse("characters:ajax:load_values"),
             {"example": mf.pk},
-        )
-        self.assertEqual(response.status_code, 401)
-        data = json.loads(response.content)
-        self.assertIn("error", data)
-
-    def test_load_factions_requires_auth(self):
-        """Test that load_factions returns 401 for unauthenticated users."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": "1"},
         )
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.content)

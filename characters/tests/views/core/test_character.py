@@ -34,32 +34,6 @@ class TestMageAjaxAuthenticationRequired(TestCase):
         if response.status_code == 302:
             self.assertIn("/accounts/login/", response.url)
 
-    def test_load_factions_requires_auth(self):
-        """Test that load_factions view requires authentication."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": "1"},
-        )
-        self.assertRequiresAuth(response)
-
-    def test_load_factions_accessible_when_logged_in(self):
-        """Test that load_factions is accessible when authenticated."""
-        self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": "1"},
-        )
-        # Should be accessible (may return empty results)
-        self.assertIn(response.status_code, [200, 404])
-
-    def test_load_subfactions_requires_auth(self):
-        """Test that load_subfactions view requires authentication."""
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_subfactions"),
-            {"faction": "1"},
-        )
-        self.assertRequiresAuth(response)
-
     def test_load_mf_ratings_requires_auth(self):
         """Test that load_mf_ratings view requires authentication."""
         response = self.client.get(

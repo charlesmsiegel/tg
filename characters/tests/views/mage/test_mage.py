@@ -266,39 +266,6 @@ class TestMageSpheresView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestMageAjaxViews(TestCase):
-    """Test Mage AJAX views."""
-
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
-        self.affiliation = MageFaction.objects.create(name="Traditions")
-        self.faction = MageFaction.objects.create(
-            name="Order of Hermes",
-            parent=self.affiliation,
-        )
-
-    def test_load_factions_returns_data_when_authenticated(self):
-        """Test that load_factions returns data when authenticated."""
-        self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_factions"),
-            {"affiliation": self.affiliation.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    def test_load_subfactions_returns_data_when_authenticated(self):
-        """Test that load_subfactions returns data when authenticated."""
-        self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("characters:mage:ajax:load_subfactions"),
-            {"faction": self.faction.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-
 class TestMageFocusView(TestCase):
     """Test MageFocusView for focus selection."""
 

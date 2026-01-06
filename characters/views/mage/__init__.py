@@ -59,9 +59,7 @@ from .hedge_magic import (
 )
 from .mage import (
     GetAbilitiesView,
-    LoadFactionsView,
     LoadMFRatingsView,
-    LoadSubfactionsView,
     MageBasicsView,
     MageCharacterCreationView,
     MageCreateView,

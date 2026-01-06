@@ -1,20 +1,43 @@
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from django import forms
 from django.core.exceptions import ValidationError
 
 
-class MageCreationForm(forms.ModelForm):
+def get_child_factions(parent_id):
+    """Get child factions for a given parent faction ID."""
+    if not parent_id:
+        return []
+    return list(
+        MageFaction.objects.filter(parent_id=parent_id).order_by("name").values_list("id", "name")
+    )
+
+
+class MageCreationForm(ChainedSelectMixin, forms.ModelForm):
+    # Override faction and subfaction with ChainedChoiceField (excluded from Meta.fields)
+    faction = ChainedChoiceField(
+        parent_field="affiliation",
+        choices_callback=get_child_factions,
+        empty_label="Select faction...",
+        required=False,
+    )
+    subfaction = ChainedChoiceField(
+        parent_field="faction",
+        choices_callback=get_child_factions,
+        empty_label="Select subfaction...",
+        required=False,
+    )
+
     class Meta:
         model = Mage
+        # Note: faction and subfaction are handled manually via ChainedChoiceField
         fields = [
             "name",
             "nature",
             "demeanor",
             "concept",
             "affiliation",
-            "faction",
-            "subfaction",
             "essence",
             "chronicle",
             "image",
@@ -26,8 +49,6 @@ class MageCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["affiliation"].queryset = MageFaction.objects.filter(parent=None)
-        self.fields["faction"].queryset = MageFaction.objects.none()
-        self.fields["subfaction"].queryset = MageFaction.objects.none()
         self.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
         self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
@@ -37,14 +58,24 @@ class MageCreationForm(forms.ModelForm):
                     name__in=["Nephandi", "Marauders"]
                 )
 
-        if self.is_bound:
-            self.fields["faction"].queryset = MageFaction.objects.all()
-            self.fields["subfaction"].queryset = MageFaction.objects.all()
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:  # If we have a user
             instance.owner = self.user
+
+        # Convert faction/subfaction IDs to model instances
+        faction_id = self.cleaned_data.get("faction")
+        if faction_id:
+            instance.faction = MageFaction.objects.get(pk=faction_id)
+        else:
+            instance.faction = None
+
+        subfaction_id = self.cleaned_data.get("subfaction")
+        if subfaction_id:
+            instance.subfaction = MageFaction.objects.get(pk=subfaction_id)
+        else:
+            instance.subfaction = None
+
         if commit:
             instance.save()
         return instance

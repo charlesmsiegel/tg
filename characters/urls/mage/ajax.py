@@ -4,16 +4,6 @@ from django.urls import path
 app_name = "mage:ajax"
 urls = [
     path(
-        "load_faction_details/",
-        views.mage.mage.LoadFactionsView.as_view(),
-        name="load_factions",
-    ),
-    path(
-        "load_subfaction_details/",
-        views.mage.mage.LoadSubfactionsView.as_view(),
-        name="load_subfactions",
-    ),
-    path(
         "load_mf_ratings/",
         views.mage.mage.LoadMFRatingsView.as_view(),
         name="load_mf_ratings",

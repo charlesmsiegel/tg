@@ -65,11 +65,11 @@ class TestMageCreationForm(TestCase):
                 "demeanor": self.demeanor.id,
                 "concept": "Test Concept",
                 "affiliation": self.affiliation.id,
-                "faction": self.faction.id,
+                "faction": str(self.faction.id),  # ChainedChoiceField expects string
                 "essence": "Dynamic",
             },
         )
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_form_save_sets_owner(self):
         """Test form save sets owner."""
@@ -81,7 +81,7 @@ class TestMageCreationForm(TestCase):
                 "demeanor": self.demeanor.id,
                 "concept": "Test Concept",
                 "affiliation": self.affiliation.id,
-                "faction": self.faction.id,
+                "faction": str(self.faction.id),  # ChainedChoiceField expects string
                 "essence": "Dynamic",
             },
         )
@@ -89,22 +89,12 @@ class TestMageCreationForm(TestCase):
             mage = form.save()
             self.assertEqual(mage.owner, self.player)
 
-    def test_form_bound_enables_faction_queryset(self):
-        """Test bound form enables faction queryset."""
-        form = MageCreationForm(
-            user=self.player,
-            data={
-                "name": "Test Mage",
-                "nature": self.nature.id,
-                "demeanor": self.demeanor.id,
-                "concept": "Test Concept",
-                "affiliation": self.affiliation.id,
-                "faction": self.faction.id,
-                "essence": "Dynamic",
-            },
-        )
-        # When bound, faction queryset should include all factions
-        self.assertIsNotNone(form.fields["faction"].queryset)
+    def test_form_faction_uses_chained_select(self):
+        """Test faction field uses ChainedChoiceField with choices_callback."""
+        form = MageCreationForm(user=self.player)
+        # ChainedChoiceField uses choices_callback instead of queryset
+        self.assertTrue(hasattr(form.fields["faction"], "choices_callback"))
+        self.assertIsNotNone(form.fields["faction"].choices_callback)
 
 
 class TestMageSpheresForm(TestCase):
