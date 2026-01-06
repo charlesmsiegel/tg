@@ -9,12 +9,12 @@
 <div class="row">
     <div class="col-sm">Create New Artifact: {{ form.select_or_create }}</div>
 </div>
-<div id="artifact selection">
+<div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="select">
     <div class="row">
         <div class="col-sm">{{ form.select }}</div>
     </div>
 </div>
-<div id="artifact creation" class="d-none">
+<div data-create-or-select-container="{{ form.select_or_create.name }}" data-create-or-select-mode="create" class="d-none">
     <div class="row">
         <div class="col-sm">{{ form.artifact_form.name }}</div>
     </div>
@@ -26,24 +26,3 @@
         <div class="col-sm">{{ form.artifact_form.description }}</div>
     </div>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with data-toggle="toggle"
-        const artifact_creation_toggle = document.getElementById('id_select_or_create');
-        const artifact_creation = document.getElementById('artifact creation');
-        const artifact_selection = document.getElementById('artifact selection');
-        
-        // Attach event listener to each toggle
-        artifact_creation_toggle.addEventListener('change', function() {
-            console.log("TEST")
-
-            if ($(this).prop('checked')) {
-                artifact_selection.classList.add("d-none");
-                artifact_creation.classList.remove("d-none");
-            } else {
-                artifact_creation.classList.add("d-none")
-                artifact_selection.classList.remove("d-none")
-            }
-        });
-    });
-</script>

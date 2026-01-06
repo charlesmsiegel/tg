@@ -1,10 +1,16 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
+from django import forms
+
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
-from django import forms
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
+from widgets import (
+    ChainedChoiceField,
+    ChainedSelectMixin,
+    CreateOrSelectField,
+    CreateOrSelectFormMixin,
+)
 
 
 class ChantryPointForm(ChainedSelectMixin, forms.Form):
@@ -150,8 +156,17 @@ class ChantryCreateForm(forms.ModelForm):
         return chantry
 
 
-class ChantrySelectOrCreateForm(forms.Form):
-    create_new = forms.BooleanField(required=False, label="Create a new Chantry?")
+class ChantrySelectOrCreateForm(CreateOrSelectFormMixin, forms.Form):
+    """Form for selecting an existing Chantry or creating a new one."""
+
+    create_or_select_config = {
+        "toggle_field": "create_new",
+        "select_field": "existing_chantry",
+        "creation_form_attr": "chantry_creation_form",
+        "error_message": "Please select an existing Chantry.",
+    }
+
+    create_new = CreateOrSelectField(label="Create a new Chantry?")
     existing_chantry = forms.ModelChoiceField(
         queryset=Chantry.objects.all(),
         required=False,
@@ -173,32 +188,8 @@ class ChantrySelectOrCreateForm(forms.Form):
                 chronicle=self.character.chronicle
             )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        create_new = cleaned_data.get("create_new")
-        existing_chantry = cleaned_data.get("existing_chantry")
-
-        if create_new:
-            # Validate the creation form if the user wants to create a new Chantry
-            if not self.chantry_creation_form.is_valid():
-                # Propagate the child form's errors to this parent form
-                for field, errors in self.chantry_creation_form.errors.items():
-                    if field == "__all__":
-                        # Non-field errors
-                        self.add_error(None, errors)
-                    else:
-                        # Field-specific errors
-                        self.add_error(field, errors)
-        else:
-            # If not creating new, an existing chantry must be selected
-            if not existing_chantry:
-                self.add_error("existing_chantry", "Please select an existing Chantry.")
-
-        return cleaned_data
-
     def save(self, commit=True):
-        create_new = self.cleaned_data.get("create_new")
-        if create_new:
+        if self.is_creating():
             chantry = self.chantry_creation_form.save(commit=commit)
         else:
             chantry = self.cleaned_data.get("existing_chantry")
