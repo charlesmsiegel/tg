@@ -644,7 +644,10 @@ class ApprovalMixin:
             return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
         # Call parent post() for other actions (retire, decease, etc.)
-        return super().post(request, *args, **kwargs)
+        if hasattr(super(), "post"):
+            return super().post(request, *args, **kwargs)
+        # If parent doesn't have post(), return to detail view
+        return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
 
 class XPApprovalMixin(ApprovalMixin):

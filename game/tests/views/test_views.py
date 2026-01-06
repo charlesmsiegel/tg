@@ -112,25 +112,25 @@ class TestChronicleDetailView(TestCase):
 
     def test_chronicle_detail_view_requires_login(self):
         """Test that unauthenticated users get a 401 response."""
-        response = self.client.get(f"/game/chronicle/{self.chronicle.id}")
+        response = self.client.get(f"/game/chronicle/{self.chronicle.id}/")
         self.assertEqual(response.status_code, 401)
 
     def test_chronicle_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(f"/game/chronicle/{self.chronicle.id}")
+        response = self.client.get(f"/game/chronicle/{self.chronicle.id}/")
         self.assertEqual(response.status_code, 200)
 
     def test_chronicle_detail_view_template(self):
         self.client.login(username="testuser", password="password")
-        response = self.client.get(f"/game/chronicle/{self.chronicle.id}")
+        response = self.client.get(f"/game/chronicle/{self.chronicle.id}/")
         self.assertTemplateUsed(response, "game/chronicle/detail.html")
 
     def test_non_st_cannot_create_scene(self):
         """Test that non-storytellers cannot create scenes."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.id}",
+            f"/game/chronicle/{self.chronicle.id}/",
             {
                 "create_scene": "true",
                 "name": "New Scene",
@@ -145,7 +145,7 @@ class TestChronicleDetailView(TestCase):
         self.client.login(username="stuser", password="password")
         initial_count = Scene.objects.count()
         response = self.client.post(
-            f"/game/chronicle/{self.chronicle.id}",
+            f"/game/chronicle/{self.chronicle.id}/",
             {
                 "create_scene": "true",
                 "name": "New Scene",
@@ -159,7 +159,7 @@ class TestChronicleDetailView(TestCase):
     def test_404_for_nonexistent_chronicle(self):
         """Test that accessing nonexistent chronicle returns 404."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get("/game/chronicle/99999")
+        response = self.client.get("/game/chronicle/99999/")
         self.assertEqual(response.status_code, 404)
 
 
@@ -186,24 +186,24 @@ class TestSceneDetailView(TestCase):
 
     def test_scene_detail_view_requires_login(self):
         """Test that unauthenticated users get a 401 response."""
-        response = self.client.get(f"/game/scene/{self.scene.id}")
+        response = self.client.get(f"/game/scene/{self.scene.id}/")
         self.assertEqual(response.status_code, 401)
 
     def test_scene_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(f"/game/scene/{self.scene.id}")
+        response = self.client.get(f"/game/scene/{self.scene.id}/")
         self.assertEqual(response.status_code, 200)
 
     def test_scene_detail_view_template(self):
         self.client.login(username="testuser", password="password")
-        response = self.client.get(f"/game/scene/{self.scene.id}")
+        response = self.client.get(f"/game/scene/{self.scene.id}/")
         self.assertTemplateUsed(response, "game/scene/detail.html")
 
     def test_non_st_cannot_close_scene(self):
         """Test that non-storytellers cannot close scenes."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}", {"close_scene": "true"})
+        response = self.client.post(f"/game/scene/{self.scene.id}/", {"close_scene": "true"})
         self.assertEqual(response.status_code, 403)
         self.scene.refresh_from_db()
         self.assertFalse(self.scene.finished)
@@ -211,7 +211,7 @@ class TestSceneDetailView(TestCase):
     def test_st_can_close_scene(self):
         """Test that storytellers can close scenes."""
         self.client.login(username="stuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}", {"close_scene": "true"})
+        response = self.client.post(f"/game/scene/{self.scene.id}/", {"close_scene": "true"})
         self.assertEqual(response.status_code, 302)
         self.scene.refresh_from_db()
         self.assertTrue(self.scene.finished)
@@ -221,7 +221,7 @@ class TestSceneDetailView(TestCase):
         self.client.login(username="testuser", password="password")
         initial_count = self.scene.characters.count()
         response = self.client.post(
-            f"/game/scene/{self.scene.id}", {"character_to_add": self.char.id}
+            f"/game/scene/{self.scene.id}/", {"character_to_add": self.char.id}
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.scene.characters.count(), initial_count + 1)
@@ -235,13 +235,13 @@ class TestSceneDetailView(TestCase):
             concept="Test",
         )
         self.client.login(username="testuser", password="password")
-        response = self.client.post(f"/game/scene/{self.scene.id}", {"character_to_add": char2.id})
+        response = self.client.post(f"/game/scene/{self.scene.id}/", {"character_to_add": char2.id})
         self.assertEqual(response.status_code, 403)
 
     def test_404_for_nonexistent_scene(self):
         """Test that accessing nonexistent scene returns 404."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get("/game/scene/99999")
+        response = self.client.get("/game/scene/99999/")
         self.assertEqual(response.status_code, 404)
 
 

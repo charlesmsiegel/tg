@@ -34,3 +34,7 @@ class Pact(models.Model):
     @classmethod
     def get_creation_url(cls):
         return reverse("characters:demon:create:pact")
+
+    def get_heading(self):
+        """Get the CSS heading class for Demon: The Fallen."""
+        return "dtf_heading"

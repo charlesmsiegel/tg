@@ -544,7 +544,7 @@ class TestChronicleModel(TestCase):
         """Test Chronicle get_absolute_url returns correct URL."""
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         url = chronicle.get_absolute_url()
-        self.assertEqual(url, f"/game/chronicle/{chronicle.pk}")
+        self.assertEqual(url, f"/game/chronicle/{chronicle.pk}/")
 
     def test_chronicle_get_deceased_character_url(self):
         """Test Chronicle get_deceased_character_url."""
@@ -741,7 +741,7 @@ class TestSceneModel(TestCase):
             location=self.location,
         )
         url = scene.get_absolute_url()
-        self.assertEqual(url, f"/game/scene/{scene.pk}")
+        self.assertEqual(url, f"/game/scene/{scene.pk}/")
 
     def test_scene_add_character_by_string(self):
         """Test Scene add_character can accept character name as string."""

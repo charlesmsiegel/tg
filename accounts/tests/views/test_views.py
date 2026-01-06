@@ -179,7 +179,7 @@ class TestSignUpViewIntegration(TestCase):
     def test_signup_creates_user_and_profile(self):
         """Test that signing up creates both user and profile."""
         response = self.client.post(
-            reverse("signup"),
+            reverse("accounts:signup"),
             {
                 "username": "newuser",
                 "email": "new@test.com",
@@ -194,7 +194,7 @@ class TestSignUpViewIntegration(TestCase):
     def test_signup_redirects_on_success(self):
         """Test that successful signup redirects."""
         response = self.client.post(
-            reverse("signup"),
+            reverse("accounts:signup"),
             {
                 "username": "newuser",
                 "email": "new@test.com",
@@ -213,14 +213,14 @@ class TestProfileUpdateView(TestCase):
 
     def test_requires_login(self):
         """Test that profile update requires authentication."""
-        response = self.client.get(reverse("profile_update", kwargs={"pk": self.user.profile.pk}))
+        response = self.client.get(reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk}))
         self.assertEqual(response.status_code, 401)
 
     def test_can_update_profile(self):
         """Test that user can update their profile."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            reverse("profile_update", kwargs={"pk": self.user.profile.pk}),
+            reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk}),
             {
                 "preferred_heading": "mta_heading",
                 "theme": "dark",
@@ -273,7 +273,7 @@ class TestProfileSceneXPWorkflow(TestCase):
             self.st_user.profile.get_absolute_url(),
             {
                 "submit_scene": self.scene.id,
-                self.char.name: "on",
+                f"scene_{self.scene.pk}-{self.char.name}": "on",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -289,7 +289,7 @@ class TestProfileSceneXPWorkflow(TestCase):
             self.user.profile.get_absolute_url(),
             {
                 "submit_scene": self.scene.id,
-                self.char.name: "on",
+                f"scene_{self.scene.pk}-{self.char.name}": "on",
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -607,7 +607,7 @@ class TestProfileEditPreferencesRedirect(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(
-            response.url, reverse("profile_update", kwargs={"pk": self.user.profile.pk})
+            response.url, reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk})
         )
 
 
