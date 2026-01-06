@@ -60,12 +60,15 @@ from .mixins.create_or_select import CreateOrSelectMixin
 from .views import ChainedSelectAjaxView, auto_chained_ajax_view, make_ajax_view
 from .widgets.chained import ChainedSelect, ChainedSelectMultiple
 from .widgets.create_or_select import CreateOrSelectWidget
+from .widgets.metadata_select import OptionMetadataSelect, OptionMetadataSelectMultiple
 
 __all__ = [
     # Widgets
     "ChainedSelect",
     "ChainedSelectMultiple",
     "CreateOrSelectWidget",
+    "OptionMetadataSelect",
+    "OptionMetadataSelectMultiple",
     # Fields
     "ChainedChoiceField",
     "ChainedModelChoiceField",

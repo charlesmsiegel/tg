@@ -151,7 +151,7 @@ class ChainedSelectMixin:
                 if position == 0:
                     # Root field - store its choices
                     choices_tree["_root"] = [
-                        {"value": str(v), "label": str(l)} for v, l in field.choices if v != ""
+                        self._choice_to_dict(choice) for choice in field.choices if choice[0] != ""
                     ]
                     choices_tree["_root_field"] = field_name
 
@@ -160,7 +160,7 @@ class ChainedSelectMixin:
                     for parent_val, child_choices in field.choices_map.items():
                         key = f"{field_name}:{parent_val}"
                         choices_tree[key] = [
-                            {"value": str(v), "label": str(l)} for v, l in child_choices
+                            self._choice_to_dict(choice) for choice in child_choices
                         ]
 
         # Attach tree to root widget for embedding
@@ -194,6 +194,18 @@ class ChainedSelectMixin:
                 choices = field.get_choices_for_parent(parent_value)
                 field.choices = choices
                 field.widget.choices = choices
+
+    def _choice_to_dict(self, choice):
+        """
+        Convert a choice tuple to a dict for the choices tree.
+
+        Supports:
+        - 2-tuple: (value, label)
+        - 3-tuple: (value, label, metadata_dict)
+        """
+        if len(choice) >= 3:
+            return {"value": str(choice[0]), "label": str(choice[1]), "metadata": choice[2]}
+        return {"value": str(choice[0]), "label": str(choice[1])}
 
     def clean(self):
         """Validate chained field consistency."""
