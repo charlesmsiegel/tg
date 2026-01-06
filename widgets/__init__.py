@@ -62,6 +62,12 @@ from .widgets.chained import ChainedSelect, ChainedSelectMultiple
 from .widgets.create_or_select import CreateOrSelectWidget
 from .widgets.metadata_select import OptionMetadataSelect, OptionMetadataSelectMultiple
 
+# FilterableList exports
+from .widgets.filterable import (
+    get_filterable_list_js,
+    render_filterable_list_script,
+)
+
 __all__ = [
     # Widgets
     "ChainedSelect",
@@ -82,6 +88,9 @@ __all__ = [
     "ChainedSelectAjaxView",
     "auto_chained_ajax_view",
     "make_ajax_view",
+    # FilterableList
+    "get_filterable_list_js",
+    "render_filterable_list_script",
 ]
 
 __version__ = "1.0.0"
