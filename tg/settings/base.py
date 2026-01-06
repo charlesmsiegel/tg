@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "locations",
     "polymorphic",
     "core",
+    "chained_select",
     "django.contrib.humanize",
     "crispy_forms",
     "crispy_bootstrap4",
