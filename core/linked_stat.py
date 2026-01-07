@@ -11,11 +11,179 @@ stats common in WoD games, such as:
 
 Components:
 1. LinkedStat - Descriptor for clean model access
-2. linked_stat_constraints() - Generates CheckConstraints for validation
-3. LinkedStatAccessor - Provides spend/restore/query methods
+2. linked_stat_fields() - Factory to create both fields + descriptor together
+3. linked_stat_constraints() - Generates CheckConstraints for validation
+4. LinkedStatAccessor - Provides spend/restore/query methods
 """
 
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.db.models import CheckConstraint, F, Q
+
+
+class LinkedStatFields:
+    """
+    Container for linked stat field definitions.
+
+    Holds the permanent field, temporary field, descriptor, and constraints
+    for a linked stat pair. Use with linked_stat_fields() factory function.
+
+    Usage:
+        wp = linked_stat_fields('willpower', default=3, min_permanent=1)
+
+        class Human(Character):
+            willpower = wp.permanent
+            temporary_willpower = wp.temporary
+            willpower_stat = wp.descriptor
+
+            class Meta:
+                constraints = [*wp.constraints('characters_human_')]
+    """
+
+    def __init__(
+        self,
+        name,
+        permanent_field,
+        temporary_field,
+        descriptor,
+        *,
+        cap_temporary=True,
+        min_permanent=0,
+        max_permanent=10,
+        min_temporary=0,
+        max_temporary=10,
+    ):
+        self.name = name
+        self.permanent = permanent_field
+        self.temporary = temporary_field
+        self.descriptor = descriptor
+        self._cap_temporary = cap_temporary
+        self._min_permanent = min_permanent
+        self._max_permanent = max_permanent
+        self._min_temporary = min_temporary
+        self._max_temporary = max_temporary
+        # Store field names for constraint generation
+        self._permanent_name = name
+        self._temporary_name = f"temporary_{name}"
+
+    def constraints(self, prefix=""):
+        """
+        Generate CheckConstraints for this linked stat.
+
+        Args:
+            prefix: Constraint name prefix (e.g., 'characters_human_')
+
+        Returns:
+            list: List of CheckConstraint objects
+        """
+        return linked_stat_constraints(
+            self._permanent_name,
+            self._temporary_name,
+            cap_temporary=self._cap_temporary,
+            min_permanent=self._min_permanent,
+            max_permanent=self._max_permanent,
+            min_temporary=self._min_temporary,
+            max_temporary=self._max_temporary,
+            constraint_prefix=prefix,
+        )
+
+
+def linked_stat_fields(
+    name,
+    *,
+    default=0,
+    min_permanent=0,
+    max_permanent=10,
+    min_temporary=0,
+    max_temporary=10,
+    cap_temporary=True,
+    temporary_default=None,
+):
+    """
+    Factory function to create a complete linked stat (both fields + descriptor).
+
+    Creates:
+    - permanent field: {name}
+    - temporary field: temporary_{name}
+    - descriptor: {name}_stat
+
+    Args:
+        name: Base name for the stat (e.g., 'willpower')
+        default: Default value for both fields (default 0)
+        min_permanent: Minimum permanent value (default 0)
+        max_permanent: Maximum permanent value (default 10)
+        min_temporary: Minimum temporary value (default 0)
+        max_temporary: Maximum temporary value (default 10)
+        cap_temporary: Whether temporary is capped at permanent (default True)
+        temporary_default: Default for temporary if different from permanent (default None = same as default)
+
+    Returns:
+        LinkedStatFields: Container with .permanent, .temporary, .descriptor attributes
+
+    Usage:
+        wp = linked_stat_fields('willpower', default=3, min_permanent=1)
+
+        class Human(Character):
+            willpower = wp.permanent
+            temporary_willpower = wp.temporary
+            willpower_stat = wp.descriptor
+
+            class Meta:
+                constraints = [*wp.constraints('characters_human_')]
+
+    Or for blood pool style (max/current naming):
+        blood = linked_stat_fields(
+            'blood_pool',
+            default=10,
+            max_permanent=50,
+            max_temporary=50,
+        )
+
+        class Vampire(Human):
+            max_blood_pool = blood.permanent  # Note: you choose the field name
+            blood_pool = blood.temporary
+            blood = blood.descriptor
+    """
+    temp_default = temporary_default if temporary_default is not None else default
+
+    # Create the permanent field
+    permanent_field = models.IntegerField(
+        default=default,
+        validators=[
+            MinValueValidator(min_permanent),
+            MaxValueValidator(max_permanent),
+        ],
+    )
+
+    # Create the temporary field
+    temporary_field = models.IntegerField(
+        default=temp_default,
+        validators=[
+            MinValueValidator(min_temporary),
+            MaxValueValidator(max_temporary),
+        ],
+    )
+
+    # Create the descriptor (field names will be set when assigned to model)
+    # We use placeholder names that get overridden by actual assignment
+    descriptor = LinkedStat(
+        name,  # Will be the permanent field name
+        f"temporary_{name}",  # Will be the temporary field name
+        cap_temporary=cap_temporary,
+        min_temporary=min_temporary,
+    )
+
+    return LinkedStatFields(
+        name,
+        permanent_field,
+        temporary_field,
+        descriptor,
+        cap_temporary=cap_temporary,
+        min_permanent=min_permanent,
+        max_permanent=max_permanent,
+        min_temporary=min_temporary,
+        max_temporary=max_temporary,
+    )
 
 
 class LinkedStatAccessor:
