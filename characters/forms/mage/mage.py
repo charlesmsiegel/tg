@@ -1,8 +1,8 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from django import forms
 from django.core.exceptions import ValidationError
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 def get_child_factions(parent_id):

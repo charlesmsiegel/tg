@@ -5,10 +5,8 @@ Tests for the widgets app create-or-select functionality.
 from django import forms
 from django.db import models
 from django.test import TestCase
-
 from widgets import (
     CreateOrSelectField,
-    CreateOrSelectFormMixin,
     CreateOrSelectMixin,
     CreateOrSelectModelChoiceField,
     CreateOrSelectWidget,
@@ -242,77 +240,6 @@ class TestCreateOrSelectMixin(TestCase):
         self.assertTrue(form.is_valid())
 
 
-class TestCreateOrSelectFormMixin(TestCase):
-    """Tests for CreateOrSelectFormMixin with regular Forms and nested creation forms."""
-
-    def test_mixin_get_creation_form(self):
-        """Test mixin retrieves nested creation form."""
-
-        class NestedForm(forms.Form):
-            name = forms.CharField()
-
-        class TestForm(CreateOrSelectFormMixin, forms.Form):
-            create_or_select_config = {
-                "creation_form_attr": "nested_form",
-            }
-            select_or_create = CreateOrSelectField()
-            select = forms.CharField(required=False)
-
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.nested_form = NestedForm()
-
-        form = TestForm()
-        creation_form = form.get_creation_form()
-        self.assertIsInstance(creation_form, NestedForm)
-
-    def test_validation_with_invalid_nested_form(self):
-        """Test validation fails when nested form is invalid in create mode."""
-
-        class NestedForm(forms.Form):
-            name = forms.CharField(required=True)
-
-        class TestForm(CreateOrSelectFormMixin, forms.Form):
-            create_or_select_config = {
-                "creation_form_attr": "nested_form",
-            }
-            select_or_create = CreateOrSelectField()
-            select = forms.CharField(required=False)
-
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.nested_form = NestedForm(
-                    data=self.data if self.is_bound else None, prefix="nested"
-                )
-
-        # Create mode but missing nested form data
-        form = TestForm(data={"select_or_create": "on"})
-        self.assertFalse(form.is_valid())
-
-    def test_validation_with_valid_nested_form(self):
-        """Test validation passes when nested form is valid in create mode."""
-
-        class NestedForm(forms.Form):
-            name = forms.CharField(required=True)
-
-        class TestForm(CreateOrSelectFormMixin, forms.Form):
-            create_or_select_config = {
-                "creation_form_attr": "nested_form",
-            }
-            select_or_create = CreateOrSelectField()
-            select = forms.CharField(required=False)
-
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self.nested_form = NestedForm(
-                    data=self.data if self.is_bound else None, prefix="nested"
-                )
-
-        # Create mode with valid nested form data
-        form = TestForm(data={"select_or_create": "on", "nested-name": "Test Item"})
-        self.assertTrue(form.is_valid())
-
-
 class TestWidgetsCreateOrSelectImports(TestCase):
     """Tests that the create-or-select exports are available from widgets package."""
 
@@ -320,7 +247,6 @@ class TestWidgetsCreateOrSelectImports(TestCase):
         """Test all expected exports are available from widgets package."""
         from widgets import (
             CreateOrSelectField,
-            CreateOrSelectFormMixin,
             CreateOrSelectMixin,
             CreateOrSelectModelChoiceField,
             CreateOrSelectWidget,
@@ -331,7 +257,6 @@ class TestWidgetsCreateOrSelectImports(TestCase):
         self.assertIsNotNone(CreateOrSelectField)
         self.assertIsNotNone(CreateOrSelectModelChoiceField)
         self.assertIsNotNone(CreateOrSelectMixin)
-        self.assertIsNotNone(CreateOrSelectFormMixin)
 
 
 class TestJavaScriptBehavior(TestCase):
@@ -347,8 +272,12 @@ class TestJavaScriptBehavior(TestCase):
         self.assertIn('data-create-or-select-group="effects-0"', html)
 
         # Document expected container attribute format
-        expected_select = 'data-create-or-select-container="effects-0" data-create-or-select-mode="select"'
-        expected_create = 'data-create-or-select-container="effects-0" data-create-or-select-mode="create"'
+        expected_select = (
+            'data-create-or-select-container="effects-0" data-create-or-select-mode="select"'
+        )
+        expected_create = (
+            'data-create-or-select-container="effects-0" data-create-or-select-mode="create"'
+        )
 
         # These assertions document the expected template usage pattern
         # (actual templates need to include these attributes)

@@ -1,4 +1,3 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
 from django import forms
@@ -15,6 +14,7 @@ from game.models import (
     XPSpendingRequest,
 )
 from locations.models.core import LocationModel
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 class SceneCreationForm(forms.Form):

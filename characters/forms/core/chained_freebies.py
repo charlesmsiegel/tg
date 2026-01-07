@@ -6,13 +6,13 @@ without manual AJAX. Choices are computed at form initialization
 and embedded in the page JavaScript.
 """
 
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from django import forms
 from game.models import ObjectType
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 CATEGORY_CHOICES = [
     ("-----", "-----"),

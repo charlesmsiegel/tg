@@ -1,15 +1,14 @@
-from django import forms
-
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
+from django import forms
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
 from widgets import (
     ChainedChoiceField,
     ChainedSelectMixin,
     CreateOrSelectField,
-    CreateOrSelectFormMixin,
+    CreateOrSelectMixin,
 )
 
 
@@ -156,13 +155,12 @@ class ChantryCreateForm(forms.ModelForm):
         return chantry
 
 
-class ChantrySelectOrCreateForm(CreateOrSelectFormMixin, forms.Form):
+class ChantrySelectOrCreateForm(CreateOrSelectMixin, forms.ModelForm):
     """Form for selecting an existing Chantry or creating a new one."""
 
     create_or_select_config = {
         "toggle_field": "create_new",
         "select_field": "existing_chantry",
-        "creation_form_attr": "chantry_creation_form",
         "error_message": "Please select an existing Chantry.",
     }
 
@@ -172,16 +170,40 @@ class ChantrySelectOrCreateForm(CreateOrSelectFormMixin, forms.Form):
         required=False,
         label="Select an existing Chantry",
     )
+    total_points = forms.IntegerField(
+        min_value=0,
+        required=False,
+        error_messages={"min_value": "Total points must be 0 or higher."},
+    )
+
+    class Meta:
+        model = Chantry
+        fields = [
+            "create_new",
+            "existing_chantry",
+            "name",
+            "chronicle",
+            "contained_within",
+            "description",
+            "faction",
+            "leadership_type",
+            "season",
+            "chantry_type",
+            "gauntlet",
+            "shroud",
+            "dimension_barrier",
+            "total_points",
+        ]
+        widgets = {
+            "name": forms.TextInput(attrs={"placeholder": "Enter name here"}),
+            "description": forms.Textarea(attrs={"placeholder": "Enter description here"}),
+        }
 
     def __init__(self, *args, **kwargs):
         self.character = kwargs.pop("character")
         super().__init__(*args, **kwargs)
-        self.chantry_creation_form = ChantryCreateForm(
-            data=self.data if self.is_bound else None,
-            prefix="chantry",
-        )
-        for field in self.chantry_creation_form.fields.keys():
-            self.chantry_creation_form.fields[field].required = False
+        for field in self.fields.keys():
+            self.fields[field].required = False
 
         if self.character is not None:
             self.fields["existing_chantry"].queryset = Chantry.objects.filter(
@@ -190,9 +212,11 @@ class ChantrySelectOrCreateForm(CreateOrSelectFormMixin, forms.Form):
 
     def save(self, commit=True):
         if self.is_creating():
-            chantry = self.chantry_creation_form.save(commit=commit)
+            chantry = super().save(commit=commit)
+            chantry.total_points = int(self.cleaned_data.get("total_points") or 0)
+            chantry.save()
         else:
             chantry = self.cleaned_data.get("existing_chantry")
-            chantry.total_points += int(self.data["chantry-total_points"])
-        chantry.save()
+            chantry.total_points += int(self.cleaned_data.get("total_points") or 0)
+            chantry.save()
         return chantry

@@ -4,7 +4,6 @@ Tests for the widgets app chained select functionality.
 
 from django import forms
 from django.test import RequestFactory, TestCase
-
 from widgets import (
     ChainedChoiceField,
     ChainedModelChoiceField,

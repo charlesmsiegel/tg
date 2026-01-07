@@ -1,4 +1,3 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
@@ -13,6 +12,7 @@ from core.widgets import AutocompleteTextInput
 from django import forms
 from django.db.models import Q
 from game.models import ObjectType
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 CATEGORY_CHOICES = CATEGORY_CHOICES + [
     ("Sphere", "Sphere"),

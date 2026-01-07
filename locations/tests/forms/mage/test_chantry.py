@@ -380,6 +380,9 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
 
         self.assertIn("create_new", form.fields)
         self.assertIn("existing_chantry", form.fields)
+        self.assertIn("name", form.fields)
+        self.assertIn("total_points", form.fields)
+        self.assertIn("description", form.fields)
 
     def test_existing_chantry_queryset_filtered_by_chronicle(self):
         """Test that existing_chantry queryset is filtered by character's chronicle."""
@@ -391,11 +394,12 @@ class TestChantrySelectOrCreateFormBasics(TestChantrySelectOrCreateFormSetup):
         self.assertIn(self.existing_chantry, form.fields["existing_chantry"].queryset)
         self.assertNotIn(other_chantry, form.fields["existing_chantry"].queryset)
 
-    def test_chantry_creation_form_is_embedded(self):
-        """Test that ChantryCreateForm is embedded."""
+    def test_all_fields_optional(self):
+        """Test that all fields are optional."""
         form = ChantrySelectOrCreateForm(character=self.character)
 
-        self.assertIsInstance(form.chantry_creation_form, ChantryCreateForm)
+        for field in form.fields.values():
+            self.assertFalse(field.required)
 
 
 class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup):
@@ -406,7 +410,7 @@ class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup
         form_data = {
             "create_new": False,
             "existing_chantry": self.existing_chantry.pk,
-            "chantry-total_points": "5",
+            "total_points": "5",
         }
 
         form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
@@ -418,7 +422,7 @@ class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup
         form_data = {
             "create_new": False,
             "existing_chantry": "",
-            "chantry-total_points": "5",
+            "total_points": "5",
         }
 
         form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
@@ -429,20 +433,16 @@ class TestChantrySelectOrCreateFormValidation(TestChantrySelectOrCreateFormSetup
     def test_valid_create_new_with_valid_data(self):
         """Test that creating new with valid data is valid."""
         form_data = {
-            "create_new": True,
+            "create_new": "on",
             "existing_chantry": "",
-            "chantry-name": "New Chantry",
-            "chantry-total_points": "10",
-            "chantry-description": "Test description",
+            "name": "New Chantry",
+            "total_points": "10",
+            "description": "Test description",
         }
 
         form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
 
-        # Note: The form requires the nested form to be valid when create_new=True
-        # This depends on the ChantryCreateForm validation
-        is_valid = form.is_valid()
-        # The form may or may not be valid depending on required fields
-        self.assertIsNotNone(is_valid)
+        self.assertTrue(form.is_valid())
 
 
 class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
@@ -453,7 +453,7 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
         form_data = {
             "create_new": False,
             "existing_chantry": self.existing_chantry.pk,
-            "chantry-total_points": "5",
+            "total_points": "5",
         }
 
         form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
@@ -469,7 +469,7 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
         form_data = {
             "create_new": False,
             "existing_chantry": self.existing_chantry.pk,
-            "chantry-total_points": "5",
+            "total_points": "5",
         }
 
         form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
@@ -478,3 +478,22 @@ class TestChantrySelectOrCreateFormSave(TestChantrySelectOrCreateFormSetup):
 
         self.existing_chantry.refresh_from_db()
         self.assertEqual(self.existing_chantry.total_points, initial_points + 5)
+
+    def test_save_creates_new_chantry(self):
+        """Test that save creates a new chantry when in create mode."""
+        initial_count = Chantry.objects.count()
+
+        form_data = {
+            "create_new": "on",
+            "name": "Created Chantry",
+            "total_points": "15",
+            "description": "A new chantry",
+        }
+
+        form = ChantrySelectOrCreateForm(data=form_data, character=self.character)
+        self.assertTrue(form.is_valid())
+        chantry = form.save()
+
+        self.assertEqual(Chantry.objects.count(), initial_count + 1)
+        self.assertEqual(chantry.name, "Created Chantry")
+        self.assertEqual(chantry.total_points, 15)

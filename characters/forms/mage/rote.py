@@ -1,4 +1,3 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
@@ -7,6 +6,7 @@ from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from django import forms
 from django.db.models import Q
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 class RoteCreationForm(ChainedSelectMixin, forms.Form):
