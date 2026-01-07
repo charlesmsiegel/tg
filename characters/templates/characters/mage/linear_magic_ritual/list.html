@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load dots %}
+{% load dots filterable_list %}
 {% block title %}
     Linear Magic Rituals
 {% endblock title %}
@@ -24,13 +24,13 @@
                     <!-- Search Filter -->
                     <div class="mb-3">
                         <label for="nameFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Search by Name</label>
-                        <input type="text" class="form-control" id="nameFilter" placeholder="Type to filter by name...">
+                        <input type="text" class="form-control" id="nameFilter" data-filter-input="name" placeholder="Type to filter by name...">
                     </div>
 
                     <!-- Path Filter -->
                     <div class="mb-3">
                         <label for="pathFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Filter by Path</label>
-                        <select class="form-control" id="pathFilter">
+                        <select class="form-control" id="pathFilter" data-filter-select="path">
                             <option value="">All Paths</option>
                             {% for path in paths %}
                                 <option value="{{ path.id }}">{{ path.name }}</option>
@@ -41,22 +41,23 @@
                     <!-- Level Filter -->
                     <div class="mb-3">
                         <label for="levelFilter" style="font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary);">Max Level</label>
-                        <input type="number" class="form-control" id="levelFilter" min="1" max="5" placeholder="Filter by max level...">
+                        <input type="number" class="form-control" id="levelFilter" data-filter-max="level" min="1" max="5" placeholder="Filter by max level...">
                     </div>
 
                     <!-- Clear Filters -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clearFilters">Clear All Filters</button>
-                        <span id="resultCount" style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
+                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Ritual List -->
-        <div class="row" id="ritualList">
+        <div class="row" data-filterable-list="rituals">
             {% for obj in object_list %}
-                <div class="col-md-4 col-sm-6 mb-3 ritual-item"
+                <div class="col-md-4 col-sm-6 mb-3"
+                     data-filterable-item
                      data-name="{{ obj.name|lower }}"
                      data-path="{{ obj.path.id|default:'' }}"
                      data-level="{{ obj.level }}">
@@ -90,7 +91,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div id="noResults" class="tg-card" style="display: none;">
+        <div data-filter-no-results class="tg-card" style="display: none;">
             <div class="tg-card-body text-center" style="padding: 20px;">
                 <p style="color: var(--theme-text-secondary); margin: 0;">No rituals match the current filters.</p>
             </div>
@@ -99,79 +100,5 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const nameFilter = document.getElementById('nameFilter');
-    const pathFilter = document.getElementById('pathFilter');
-    const levelFilter = document.getElementById('levelFilter');
-    const ritualItems = document.querySelectorAll('.ritual-item');
-    const clearButton = document.getElementById('clearFilters');
-    const resultCount = document.getElementById('resultCount');
-    const noResults = document.getElementById('noResults');
-
-    function updateFilters() {
-        const nameQuery = nameFilter.value.toLowerCase().trim();
-        const selectedPath = pathFilter.value;
-        const maxLevel = levelFilter.value ? parseInt(levelFilter.value) : null;
-
-        let visibleCount = 0;
-
-        ritualItems.forEach(item => {
-            let show = true;
-
-            // Name filter
-            if (nameQuery && !item.dataset.name.includes(nameQuery)) {
-                show = false;
-            }
-
-            // Path filter
-            if (selectedPath && item.dataset.path !== selectedPath) {
-                show = false;
-            }
-
-            // Level filter
-            if (maxLevel !== null && parseInt(item.dataset.level) > maxLevel) {
-                show = false;
-            }
-
-            if (show) {
-                item.style.display = '';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        // Update result count
-        const totalCount = ritualItems.length;
-        if (nameQuery || selectedPath || maxLevel !== null) {
-            resultCount.textContent = `Showing ${visibleCount} of ${totalCount} rituals`;
-        } else {
-            resultCount.textContent = `${totalCount} rituals`;
-        }
-
-        // Show/hide no results message
-        if (visibleCount === 0 && totalCount > 0) {
-            noResults.style.display = '';
-        } else {
-            noResults.style.display = 'none';
-        }
-    }
-
-    // Event listeners
-    nameFilter.addEventListener('input', updateFilters);
-    pathFilter.addEventListener('change', updateFilters);
-    levelFilter.addEventListener('input', updateFilters);
-
-    clearButton.addEventListener('click', function() {
-        nameFilter.value = '';
-        pathFilter.value = '';
-        levelFilter.value = '';
-        updateFilters();
-    });
-
-    // Initial count
-    updateFilters();
-});
-</script>
+{% filterable_list_script %}
 {% endblock extra_js %}

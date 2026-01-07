@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load filterable_list %}
 {% block title %}
     Rotes
 {% endblock title %}
@@ -20,146 +21,118 @@
         <div class="collapse mb-4" id="filter-panel">
             <div class="tg-card">
                 <div class="card-body">
-                    <form id="filter-form">
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="name-filter" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name-filter">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="practice-filter" class="form-label">Practice</label>
-                                <select class="form-control" id="practice-filter">
-                                    <option value="">Any</option>
-                                    {% for practice in practices %}
-                                        <option value="{{ practice.id }}">{{ practice.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="name-filter" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name-filter" data-filter-input="name">
                         </div>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="attribute-filter" class="form-label">Attribute</label>
-                                <select class="form-control" id="attribute-filter">
-                                    <option value="">Any</option>
-                                    {% for attribute in attributes %}
-                                        <option value="{{ attribute.id }}">{{ attribute.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="ability-filter" class="form-label">Ability</label>
-                                <select class="form-control" id="ability-filter">
-                                    <option value="">Any</option>
-                                    {% for ability in abilities %}
-                                        <option value="{{ ability.id }}">{{ ability.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                        <div class="col-md-6">
+                            <label for="practice-filter" class="form-label">Practice</label>
+                            <select class="form-control" id="practice-filter" data-filter-select="practice">
+                                <option value="">Any</option>
+                                {% for practice in practices %}
+                                    <option value="{{ practice.id }}">{{ practice.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="correspondence-filter" class="form-label">Correspondence (≤)</label>
-                                <input type="number" class="form-control" id="correspondence-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="entropy-filter" class="form-label">Entropy (≤)</label>
-                                <input type="number" class="form-control" id="entropy-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="forces-filter" class="form-label">Forces (≤)</label>
-                                <input type="number" class="form-control" id="forces-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="life-filter" class="form-label">Life (≤)</label>
-                                <input type="number" class="form-control" id="life-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="matter-filter" class="form-label">Matter (≤)</label>
-                                <input type="number" class="form-control" id="matter-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="mind-filter" class="form-label">Mind (≤)</label>
-                                <input type="number" class="form-control" id="mind-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="prime-filter" class="form-label">Prime (≤)</label>
-                                <input type="number" class="form-control" id="prime-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="spirit-filter" class="form-label">Spirit (≤)</label>
-                                <input type="number" class="form-control" id="spirit-filter" min="0" max="5">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="time-filter" class="form-label">Time (≤)</label>
-                                <input type="number" class="form-control" id="time-filter" min="0" max="5">
-                            </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="attribute-filter" class="form-label">Attribute</label>
+                            <select class="form-control" id="attribute-filter" data-filter-select="attribute">
+                                <option value="">Any</option>
+                                {% for attribute in attributes %}
+                                    <option value="{{ attribute.id }}">{{ attribute.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                    </form>
+                        <div class="col-md-6">
+                            <label for="ability-filter" class="form-label">Ability</label>
+                            <select class="form-control" id="ability-filter" data-filter-select="ability">
+                                <option value="">Any</option>
+                                {% for ability in abilities %}
+                                    <option value="{{ ability.id }}">{{ ability.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="correspondence-filter" class="form-label">Correspondence (≤)</label>
+                            <input type="number" class="form-control" id="correspondence-filter" data-filter-max="correspondence" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="entropy-filter" class="form-label">Entropy (≤)</label>
+                            <input type="number" class="form-control" id="entropy-filter" data-filter-max="entropy" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="forces-filter" class="form-label">Forces (≤)</label>
+                            <input type="number" class="form-control" id="forces-filter" data-filter-max="forces" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="life-filter" class="form-label">Life (≤)</label>
+                            <input type="number" class="form-control" id="life-filter" data-filter-max="life" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="matter-filter" class="form-label">Matter (≤)</label>
+                            <input type="number" class="form-control" id="matter-filter" data-filter-max="matter" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="mind-filter" class="form-label">Mind (≤)</label>
+                            <input type="number" class="form-control" id="mind-filter" data-filter-max="mind" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="prime-filter" class="form-label">Prime (≤)</label>
+                            <input type="number" class="form-control" id="prime-filter" data-filter-max="prime" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="spirit-filter" class="form-label">Spirit (≤)</label>
+                            <input type="number" class="form-control" id="spirit-filter" data-filter-max="spirit" min="0" max="5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="time-filter" class="form-label">Time (≤)</label>
+                            <input type="number" class="form-control" id="time-filter" data-filter-max="time" min="0" max="5">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-filter-clear>Clear All Filters</button>
+                        <span data-filter-count style="font-size: 0.875rem; color: var(--theme-text-secondary);"></span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4" id="rote-list">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4" data-filterable-list="rotes">
             {% for obj in object_list %}
-            <div class="col-3 mb-4">
+            <div class="col-3 mb-4"
+                 data-filterable-item
+                 data-name="{{ obj.name|lower }}"
+                 data-practice="{{ obj.practice.id }}"
+                 data-attribute="{{ obj.attribute.id }}"
+                 data-ability="{{ obj.ability.id }}"
+                 data-correspondence="{{ obj.effect.correspondence }}"
+                 data-entropy="{{ obj.effect.entropy }}"
+                 data-forces="{{ obj.effect.forces }}"
+                 data-life="{{ obj.effect.life }}"
+                 data-matter="{{ obj.effect.matter }}"
+                 data-mind="{{ obj.effect.mind }}"
+                 data-prime="{{ obj.effect.prime }}"
+                 data-spirit="{{ obj.effect.spirit }}"
+                 data-time="{{ obj.effect.time }}">
                 {% include "characters/mage/rote/summary.html" with object=obj %}
             </div>
             {% endfor %}
         </div>
+
+        <!-- No Results Message -->
+        <div data-filter-no-results class="tg-card" style="display: none;">
+            <div class="tg-card-body text-center" style="padding: 20px;">
+                <p style="color: var(--theme-text-secondary); margin: 0;">No rotes match the current filters.</p>
+            </div>
+        </div>
     </div>
 
     {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterForm = document.getElementById('filter-form');
-            const roteList = document.getElementById('rote-list');
-            const rotes = Array.from(roteList.children);
-
-            function applyFilters() {
-                const nameFilter = document.getElementById('name-filter').value.toLowerCase();
-                const practiceFilter = document.getElementById('practice-filter').value;
-                const attributeFilter = document.getElementById('attribute-filter').value;
-                const abilityFilter = document.getElementById('ability-filter').value;
-                const sphereFilters = {
-                    correspondence: document.getElementById('correspondence-filter').value,
-                    entropy: document.getElementById('entropy-filter').value,
-                    forces: document.getElementById('forces-filter').value,
-                    life: document.getElementById('life-filter').value,
-                    matter: document.getElementById('matter-filter').value,
-                    mind: document.getElementById('mind-filter').value,
-                    prime: document.getElementById('prime-filter').value,
-                    spirit: document.getElementById('spirit-filter').value,
-                    time: document.getElementById('time-filter').value
-                };
-
-                rotes.forEach(rote => {
-                    const name = rote.querySelector('.card-header h5').textContent.toLowerCase();
-                    const practice = rote.querySelector('.badge.bg-info').getAttribute('data-practice-id');
-                    const attribute = rote.querySelector('.badge.bg-warning').getAttribute('data-attribute-id');
-                    const ability = rote.querySelector('.badge.bg-warning').getAttribute('data-ability-id');
-                    const spheres = {};
-                    rote.querySelectorAll('.badge.bg-primary').forEach(badge => {
-                        const [sphere, level] = badge.textContent.split(' ');
-                        spheres[sphere.toLowerCase()] = parseInt(level);
-                    });
-
-                    const nameMatch = name.includes(nameFilter);
-                    const practiceMatch = !practiceFilter || practice === practiceFilter;
-                    const attributeMatch = !attributeFilter || attribute === attributeFilter;
-                    const abilityMatch = !abilityFilter || ability === abilityFilter;
-                    const sphereMatch = Object.entries(sphereFilters).every(([sphere, value]) => {
-                        if (!value) return true; // No filter set for this sphere
-                        const effectLevel = spheres[sphere] || 0; // If sphere not present, treat as level 0
-                        return effectLevel <= parseInt(value);
-                    });
-
-                    rote.style.display = nameMatch && practiceMatch && attributeMatch && abilityMatch && sphereMatch ? '' : 'none';
-                });
-            }
-
-            filterForm.addEventListener('input', applyFilters);
-            filterForm.addEventListener('change', applyFilters);
-        });
-    </script>
+    {% filterable_list_script %}
     {% endblock %}
 {% endblock content %}
