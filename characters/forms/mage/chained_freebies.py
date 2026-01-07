@@ -68,6 +68,15 @@ class ChainedMageFreebiesForm(ChainedHumanFreebiesForm):
 
         return categories
 
+    def _get_additional_conditional_fields(self):
+        """Add mage-specific visibility rules."""
+        return {
+            "resonance": {
+                "visible_when": {"category": {"value_is": "Resonance"}},
+                "initially_hidden": True,
+            },
+        }
+
     def _get_additional_example_choices(self):
         """Add mage-specific example choices for each category."""
         choices = {}

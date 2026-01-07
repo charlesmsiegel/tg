@@ -20,7 +20,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def conditional_wrap(bound_field, label_prefix='', css_class='col-sm'):
+def conditional_wrap(bound_field, label_prefix="", css_class="col-sm"):
     """
     Wrap a form field in a conditional visibility container.
 
@@ -42,20 +42,20 @@ def conditional_wrap(bound_field, label_prefix='', css_class='col-sm'):
 
     # Get visibility rules from form if available
     rules = {}
-    if hasattr(form, 'get_conditional_rules'):
+    if hasattr(form, "get_conditional_rules"):
         rules = form.get_conditional_rules()
 
     field_rules = rules.get(field_name, {})
 
     # Determine initial visibility (default to hidden)
-    initially_hidden = field_rules.get('initially_hidden', True)
-    hidden_class = ' d-none' if initially_hidden else ''
+    initially_hidden = field_rules.get("initially_hidden", True)
+    hidden_class = " d-none" if initially_hidden else ""
 
-    wrapper_id = f'{field_name}_wrap'
+    wrapper_id = f"{field_name}_wrap"
 
     # Build content
     if label_prefix:
-        content = f'{label_prefix} {bound_field}'
+        content = f"{label_prefix} {bound_field}"
     else:
         content = str(bound_field)
 
@@ -71,12 +71,12 @@ def conditional_wrap(bound_field, label_prefix='', css_class='col-sm'):
         wrapper_id,
         css_class,
         hidden_class,
-        mark_safe(content)
+        mark_safe(content),
     )
 
 
 @register.filter
-def as_conditional(bound_field, label_prefix=''):
+def as_conditional(bound_field, label_prefix=""):
     """
     Filter version of conditional_wrap for simpler usage.
 

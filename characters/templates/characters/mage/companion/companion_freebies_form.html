@@ -82,38 +82,4 @@
         <div class="col-sm">{{ item.cost }} freebies</div>
     </div>
 {% endfor %}
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const categorySelectMenu = document.getElementById("id_category");
-        const exampleElement = document.getElementById("example_wrap");
-        const valueElement = document.getElementById("value_wrap");
-        const noteElement = document.getElementById("note_wrap");
-
-        function updateVisibility() {
-            const value = categorySelectMenu.value;
-
-            // Reset all to hidden
-            exampleElement.classList.add("d-none");
-            valueElement.classList.add("d-none");
-            noteElement.classList.add("d-none");
-
-            // Show fields based on category
-            if (!["Willpower", "-----"].includes(value)) {
-                exampleElement.classList.remove("d-none");
-            }
-
-            if (value === "MeritFlaw" || value === "Advantage") {
-                valueElement.classList.remove("d-none");
-            }
-
-            if (value === "Background") {
-                noteElement.classList.remove("d-none");
-            }
-        }
-
-        categorySelectMenu.addEventListener("change", updateVisibility);
-
-        // Initial visibility on page load
-        updateVisibility();
-    });
-</script>
+{{ form.conditional_js }}

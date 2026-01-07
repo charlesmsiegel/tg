@@ -12,7 +12,7 @@ from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from django import forms
 from game.models import ObjectType
-from widgets import ChainedChoiceField, ChainedSelectMixin
+from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
 CATEGORY_CHOICES = [
     ("-----", "-----"),
@@ -23,13 +23,43 @@ CATEGORY_CHOICES = [
     ("MeritFlaw", "MeritFlaw"),
 ]
 
+# Base conditional visibility rules for freebies forms
+# Subclasses can extend via _get_conditional_fields()
+BASE_CONDITIONAL_FIELDS = {
+    "example": {
+        "hidden_when": {
+            "category": {"value_in": ["-----", "Willpower", "Quintessence", "Rotes", "Resonance"]}
+        },
+        "initially_hidden": True,
+    },
+    "value": {
+        "visible_when": {"category": {"value_is": "MeritFlaw"}},
+        "initially_hidden": True,
+    },
+    "note": {
+        "visible_when": {"category": {"value_is": "Background"}},
+        "initially_hidden": True,
+    },
+    "pooled": {
+        "visible_when": {
+            "category": {"value_is": "Background"},
+            "example": {"metadata_truthy": "poolable"},
+            "_context": {"is_group_member": True},
+        },
+        "initially_hidden": True,
+    },
+}
 
-class ChainedHumanFreebiesForm(ChainedSelectMixin, forms.Form):
+
+class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms.Form):
     """
-    Freebie spending form using ChainedSelectMixin.
+    Freebie spending form using ChainedSelectMixin and ConditionalFieldsMixin.
 
     All cascading dropdown options are computed at form initialization
     based on the character instance, then embedded in the page.
+
+    Field visibility is handled declaratively via conditional_fields rules,
+    eliminating the need for custom JavaScript in templates.
     """
 
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)
@@ -54,6 +84,23 @@ class ChainedHumanFreebiesForm(ChainedSelectMixin, forms.Form):
             self._setup_category_choices()
             self._setup_example_choices()
             self._setup_value_choices()
+
+    def get_conditional_context(self):
+        """Provide context variables for conditional field visibility."""
+        context = super().get_conditional_context()
+        if self.instance:
+            context["is_group_member"] = getattr(self.instance, "is_group_member", False)
+        return context
+
+    def get_conditional_rules(self):
+        """Return visibility rules, allowing subclasses to extend."""
+        rules = dict(BASE_CONDITIONAL_FIELDS)
+        rules.update(self._get_additional_conditional_fields())
+        return rules
+
+    def _get_additional_conditional_fields(self):
+        """Override in subclasses to add gameline-specific visibility rules."""
+        return {}
 
     def _get_base_categories(self):
         """Return base category choices. Override to customize."""
