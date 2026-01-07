@@ -7,11 +7,18 @@ from characters.models.mage.sphere import Sphere
 from django import forms
 from django.db.models import Q
 from widgets import ChainedChoiceField, ChainedSelectMixin
+from widgets.fields.create_or_select import CreateOrSelectField
 
 
 class RoteCreationForm(ChainedSelectMixin, forms.Form):
-    select_or_create_rote = forms.BooleanField(required=False)
-    select_or_create_effect = forms.BooleanField(required=False)
+    select_or_create_rote = CreateOrSelectField(
+        select_field="rote_options",
+        group_name="select_or_create_rote",
+    )
+    select_or_create_effect = CreateOrSelectField(
+        select_field="effect_options",
+        group_name="select_or_create_effect",
+    )
 
     rote_options = forms.ModelChoiceField(queryset=Rote.objects.all(), required=False)
     effect_options = forms.ModelChoiceField(queryset=Effect.objects.all(), required=False)

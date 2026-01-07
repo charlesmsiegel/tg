@@ -26,9 +26,72 @@ from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
 from django import forms
 from game.models import Chronicle
+from widgets import ConditionalFieldsMixin
+
+# Types that have specific field sections
+TYPES_WITH_FIELDS = [
+    "mage",
+    "sorcerer",
+    "werewolf",
+    "kinfolk",
+    "wraith",
+    "changeling",
+    "thrall",
+    "demon",
+]
 
 
-class NPCProfileForm(forms.Form):
+class NPCProfileForm(ConditionalFieldsMixin, forms.Form):
+    # Conditional visibility rules for type-specific field sections
+    conditional_fields = {
+        # The container section - visible when any type with fields is selected
+        "type_specific_section": {
+            "wrapper_id": "type-specific-section",
+            "visible_when": {"npc_type": {"value_in": TYPES_WITH_FIELDS}},
+            "initially_hidden": True,
+        },
+        # Individual type sections
+        "mage_section": {
+            "wrapper_id": "mage-fields",
+            "visible_when": {"npc_type": {"value_is": "mage"}},
+            "initially_hidden": True,
+        },
+        "sorcerer_section": {
+            "wrapper_id": "sorcerer-fields",
+            "visible_when": {"npc_type": {"value_is": "sorcerer"}},
+            "initially_hidden": True,
+        },
+        "werewolf_section": {
+            "wrapper_id": "werewolf-fields",
+            "visible_when": {"npc_type": {"value_is": "werewolf"}},
+            "initially_hidden": True,
+        },
+        "kinfolk_section": {
+            "wrapper_id": "kinfolk-fields",
+            "visible_when": {"npc_type": {"value_is": "kinfolk"}},
+            "initially_hidden": True,
+        },
+        "wraith_section": {
+            "wrapper_id": "wraith-fields",
+            "visible_when": {"npc_type": {"value_is": "wraith"}},
+            "initially_hidden": True,
+        },
+        "changeling_section": {
+            "wrapper_id": "changeling-fields",
+            "visible_when": {"npc_type": {"value_is": "changeling"}},
+            "initially_hidden": True,
+        },
+        "thrall_section": {
+            "wrapper_id": "thrall-fields",
+            "visible_when": {"npc_type": {"value_is": "thrall"}},
+            "initially_hidden": True,
+        },
+        "demon_section": {
+            "wrapper_id": "demon-fields",
+            "visible_when": {"npc_type": {"value_is": "demon"}},
+            "initially_hidden": True,
+        },
+    }
     """
     Unified form for creating NPC profiles of any character type.
     Used for creating mentors, contacts, allies, and other NPCs related to PCs.

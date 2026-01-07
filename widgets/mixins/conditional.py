@@ -121,7 +121,9 @@ CONDITIONAL_FIELDS_JS = """
         }
 
         applyRule(targetField, config) {
-            const wrapper = document.getElementById(targetField + '_wrap');
+            // Support custom wrapper_id or default to {field}_wrap
+            const wrapperId = config.wrapper_id || (targetField + '_wrap');
+            const wrapper = document.getElementById(wrapperId);
             if (!wrapper) return;
 
             let visible = true;
@@ -161,7 +163,15 @@ CONDITIONAL_FIELDS_JS = """
                     continue;
                 }
 
-                const value = field.value;
+                // Handle checkbox inputs
+                const isCheckbox = field.type === 'checkbox';
+                const value = isCheckbox ? field.checked : field.value;
+
+                // Check checked_is (for checkboxes)
+                if (checks.checked_is !== undefined) {
+                    results.push(field.checked === checks.checked_is);
+                    continue;  // Skip other checks for checkbox
+                }
 
                 // Check value_is
                 if (checks.value_is !== undefined) {
@@ -249,11 +259,13 @@ class ConditionalFieldsMixin:
     Rule format:
         conditional_fields = {
             'field_name': {
+                'wrapper_id': 'custom-id',               # Custom element ID (default: {field}_wrap)
                 'visible_when': {
                     'source_field': {
                         'value_is': 'specific_value',     # Exact match
                         'value_in': ['val1', 'val2'],     # In list
                         'value_not_in': ['val1'],         # Not in list
+                        'checked_is': True,               # Checkbox checked state
                         'metadata_is': {'key': 'value'},  # Metadata exact match
                         'metadata_truthy': 'key',         # Metadata is truthy
                     },

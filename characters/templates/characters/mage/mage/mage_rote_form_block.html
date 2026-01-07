@@ -10,12 +10,12 @@
 <div class="row">
     <div class="col-sm">Create New Rote: {{ form.select_or_create_rote }}</div>
 </div>
-<div id="rote selection">
+<div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="select">
     <div class="row">
         <div class="col-sm">{{ form.rote_options }}</div>
     </div>
 </div>
-<div id="rote creation" class="d-none">
+<div data-create-or-select-container="select_or_create_rote" data-create-or-select-mode="create" class="d-none">
     <div class="row">
         <h3 class="col-sm {{ object.get_heading }}">Rote Points Remaining</h3>
         <h3 class="col-sm {{ object.get_heading }}">{{ object.rote_points }}</h3>
@@ -39,12 +39,12 @@
     <div class="row">
         <div class="col-sm">Create New Effect: {{ form.select_or_create_effect }}</div>
     </div>
-    <div id="effect selection">
+    <div data-create-or-select-container="select_or_create_effect" data-create-or-select-mode="select">
         <div class="row">
             <div class="col-sm">{{ form.effect_options }}</div>
         </div>
     </div>
-    <div id="effect creation" class="d-none">
+    <div data-create-or-select-container="select_or_create_effect" data-create-or-select-mode="create" class="d-none">
         {% include "characters/mage/spheres/form.html" %}
         <div class="row">
             <div class="col-sm">Systems</div>
@@ -52,38 +52,3 @@
         </div>
     </div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with data-toggle="toggle"
-        const rote_creation_toggle = document.getElementById('id_select_or_create_rote');
-        const effect_creation_toggle = document.getElementById('id_select_or_create_effect');
-        const rote_creation = document.getElementById('rote creation');
-        const rote_selection = document.getElementById('rote selection');
-        const effect_creation = document.getElementById('effect creation');
-        const effect_selection = document.getElementById('effect selection');
-        
-        // Attach event listener to each toggle
-        rote_creation_toggle.addEventListener('change', function() {
-            if ($(this).prop('checked')) {
-                rote_selection.classList.add("d-none");
-                rote_creation.classList.remove("d-none");
-            } else {
-                rote_creation.classList.add("d-none")
-                rote_selection.classList.remove("d-none")
-            }
-        });
-
-        effect_creation_toggle.addEventListener('change', function() {
-            if ($(this).prop('checked')) {
-                effect_selection.classList.add("d-none");
-                effect_creation.classList.remove("d-none");
-            } else {
-                effect_selection.classList.add("d-none")
-                effect_creation.classList.remove("d-none")
-            }
-        });
-    });
-
-    
-</script>

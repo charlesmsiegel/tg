@@ -104,14 +104,14 @@
     </div>
 
     <!-- Character Type-Specific Fields Section -->
-    <div class="tg-card mb-4" id="type-specific-section" style="display: none;">
+    <div class="tg-card mb-4 d-none" id="type-specific-section">
         <div class="tg-card-header">
             <h5 class="tg-card-title mb-0">Character Details</h5>
         </div>
         <div class="tg-card-body" style="padding: 20px;">
 
             <!-- Mage Fields -->
-            <div id="mage-fields" class="type-specific-fields" style="display: none;">
+            <div id="mage-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.mage_affiliation.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -143,7 +143,7 @@
             </div>
 
             <!-- Werewolf Fields -->
-            <div id="werewolf-fields" class="type-specific-fields" style="display: none;">
+            <div id="werewolf-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="{{ form.werewolf_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -167,7 +167,7 @@
             </div>
 
             <!-- Kinfolk Fields -->
-            <div id="kinfolk-fields" class="type-specific-fields" style="display: none;">
+            <div id="kinfolk-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.kinfolk_tribe.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -185,7 +185,7 @@
             </div>
 
             <!-- Wraith Fields -->
-            <div id="wraith-fields" class="type-specific-fields" style="display: none;">
+            <div id="wraith-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.wraith_guild.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -217,7 +217,7 @@
             </div>
 
             <!-- Changeling Fields -->
-            <div id="changeling-fields" class="type-specific-fields" style="display: none;">
+            <div id="changeling-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.changeling_kith.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -249,7 +249,7 @@
             </div>
 
             <!-- Sorcerer Fields -->
-            <div id="sorcerer-fields" class="type-specific-fields" style="display: none;">
+            <div id="sorcerer-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.sorcerer_fellowship.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -261,7 +261,7 @@
             </div>
 
             <!-- Thrall Fields -->
-            <div id="thrall-fields" class="type-specific-fields" style="display: none;">
+            <div id="thrall-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.thrall_master.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -276,7 +276,7 @@
             </div>
 
             <!-- Demon Fields -->
-            <div id="demon-fields" class="type-specific-fields" style="display: none;">
+            <div id="demon-fields" class="type-specific-fields d-none">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="{{ form.demon_house.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--theme-text-secondary); margin-bottom: 8px; display: block;">
@@ -397,54 +397,5 @@
 {% endblock buttons %}
 
 {% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const npcTypeSelect = document.getElementById('{{ form.npc_type.id_for_label }}');
-    const typeSpecificSection = document.getElementById('type-specific-section');
-    const allTypeFields = document.querySelectorAll('.type-specific-fields');
-
-    // Mapping of character types to their corresponding field divs
-    const typeFieldMapping = {
-        'mage': 'mage-fields',
-        'sorcerer': 'sorcerer-fields',
-        'werewolf': 'werewolf-fields',
-        'kinfolk': 'kinfolk-fields',
-        'wraith': 'wraith-fields',
-        'changeling': 'changeling-fields',
-        'thrall': 'thrall-fields',
-        'demon': 'demon-fields'
-    };
-
-    function toggleTypeSpecificFields() {
-        const selectedType = npcTypeSelect.value;
-
-        // Hide all type-specific field sets
-        allTypeFields.forEach(fieldSet => {
-            fieldSet.style.display = 'none';
-        });
-
-        // Check if the selected type needs specific fields
-        if (typeFieldMapping.hasOwnProperty(selectedType)) {
-            // Show the type-specific section
-            typeSpecificSection.style.display = 'block';
-
-            // Show only the relevant fields for this type
-            const relevantFieldsId = typeFieldMapping[selectedType];
-            const relevantFields = document.getElementById(relevantFieldsId);
-            if (relevantFields) {
-                relevantFields.style.display = 'block';
-            }
-        } else {
-            // Hide the entire type-specific section for types without special fields
-            typeSpecificSection.style.display = 'none';
-        }
-    }
-
-    // Run on page load
-    toggleTypeSpecificFields();
-
-    // Run when selection changes
-    npcTypeSelect.addEventListener('change', toggleTypeSpecificFields);
-});
-</script>
+{{ form.conditional_js }}
 {% endblock extra_scripts %}

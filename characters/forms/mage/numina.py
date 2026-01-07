@@ -9,6 +9,7 @@ from characters.models.mage.sorcerer import (
 from django import forms
 from django.db.models import Q
 from widgets import ChainedChoiceField, ChainedSelectMixin
+from widgets.fields.create_or_select import CreateOrSelectField
 
 
 class NuminaPathForm(ChainedSelectMixin, forms.ModelForm):
@@ -122,7 +123,10 @@ PsychicPathRatingFormSet = forms.inlineformset_factory(
 
 
 class NuminaRitualForm(forms.ModelForm):
-    select_or_create = forms.BooleanField(required=False)
+    select_or_create = CreateOrSelectField(
+        select_field="select_ritual",
+        group_name="select_or_create",
+    )
     select_ritual = forms.ModelChoiceField(queryset=LinearMagicRitual.objects.all())
 
     class Meta:
