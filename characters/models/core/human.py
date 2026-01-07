@@ -9,6 +9,7 @@ from characters.models.core.derangement import Derangement
 from characters.models.core.health_block import HealthBlock
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
+from core.linked_stat import LinkedStat
 from core.models import Language
 from core.utils import add_dot, get_short_gameline_name
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -99,6 +100,8 @@ class Human(
     temporary_willpower = models.IntegerField(
         default=3, validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
+    willpower_stat = LinkedStat("willpower", "temporary_willpower")
+
     derangements = models.ManyToManyField("Derangement", blank=True)
 
     age = models.IntegerField(

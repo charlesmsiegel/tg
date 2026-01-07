@@ -6,6 +6,7 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
+from core.linked_stat import LinkedStat
 from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
@@ -76,8 +77,10 @@ class Demon(LoreBlock, DtFHuman):
     # Faith and Torment
     faith = models.IntegerField(default=3)  # Permanent Faith rating (1-10)
     temporary_faith = models.IntegerField(default=3)  # Temporary Faith pool
+    faith_stat = LinkedStat("faith", "temporary_faith")
     torment = models.IntegerField(default=3)  # Permanent Torment rating (0-10)
     temporary_torment = models.IntegerField(default=0)  # Temporary Torment
+    torment_stat = LinkedStat("torment", "temporary_torment")
 
     # Virtues (replaces some Human virtues with Demon-specific ones)
     conviction = models.IntegerField(default=1)  # 1-5

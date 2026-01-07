@@ -2,6 +2,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 
+from core.linked_stat import LinkedStat
+
 from .mtr_human import MtRHuman
 
 
@@ -45,6 +47,7 @@ class Mummy(MtRHuman):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text="Permanent spiritual energy capacity (derived from Sekhem + backgrounds)",
     )
+    ba_stat = LinkedStat("ka_rating", "ba")
 
     # ========================================
     # VIRTUES (Mummy-specific)
