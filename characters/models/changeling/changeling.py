@@ -2,6 +2,7 @@ from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
+from core.linked_stat import LinkedStat
 from core.utils import add_dot, weighted_choice
 from django.db import models
 from django.utils.timezone import now
@@ -69,7 +70,12 @@ class Changeling(CtDHuman):
     time = models.IntegerField(default=0)
 
     banality = models.IntegerField(default=3)
+    temporary_banality = models.IntegerField(default=0)
+    banality_stat = LinkedStat("banality", "temporary_banality")
+
     glamour = models.IntegerField(default=4)
+    temporary_glamour = models.IntegerField(default=4)
+    glamour_stat = LinkedStat("glamour", "temporary_glamour")
 
     MUSING_THRESHOLDS = [
         ("inspire_creativity", "Inspire Creativity"),
@@ -162,14 +168,18 @@ class Changeling(CtDHuman):
 
     def set_seeming(self, seeming):
         self.willpower = 4
+        self.temporary_willpower = 4
         self.seeming = seeming
         if self.seeming == "childling":
             self.add_glamour()
+            self.temporary_glamour = self.glamour
         if self.seeming == "wilder":
             # Wilder can add to either glamour or willpower
             self.add_glamour()
+            self.temporary_glamour = self.glamour
         if self.seeming == "grump":
             self.add_willpower()
+            self.temporary_willpower = self.willpower
         return True
 
     def has_kith(self):

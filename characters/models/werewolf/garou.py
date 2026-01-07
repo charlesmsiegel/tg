@@ -5,6 +5,7 @@ from characters.models.werewolf.renownincident import RenownIncident
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
+from core.linked_stat import LinkedStat
 from core.utils import add_dot
 from django.db import models
 from django.db.models import Q
@@ -58,10 +59,15 @@ class Werewolf(WtAHuman):
 
     glory = models.IntegerField(default=0)
     temporary_glory = models.IntegerField(default=0)
+    glory_renown = LinkedStat("glory", "temporary_glory", cap_temporary=False)
+
     wisdom = models.IntegerField(default=0)
     temporary_wisdom = models.IntegerField(default=0)
+    wisdom_renown = LinkedStat("wisdom", "temporary_wisdom", cap_temporary=False)
+
     honor = models.IntegerField(default=0)
     temporary_honor = models.IntegerField(default=0)
+    honor_renown = LinkedStat("honor", "temporary_honor", cap_temporary=False)
 
     renown_incidents = models.JSONField(default=list, blank=True)  # list is callable - safe
 

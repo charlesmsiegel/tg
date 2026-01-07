@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from core.linked_stat import LinkedStat
+
 from .clan import VampireClan
 from .discipline import Discipline
 from .path import Path
@@ -67,6 +69,7 @@ class Vampire(VtMHuman):
     blood_pool = models.IntegerField(default=10)
     max_blood_pool = models.IntegerField(default=10)
     blood_per_turn = models.IntegerField(default=1)
+    blood = LinkedStat("max_blood_pool", "blood_pool")
 
     # Physical Disciplines
     celerity = models.IntegerField(default=0)

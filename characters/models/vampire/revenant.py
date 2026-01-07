@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from core.linked_stat import LinkedStat
+
 from .vtmhuman import VtMHuman
 
 
@@ -66,6 +68,7 @@ class Revenant(VtMHuman):
     # Blood pool (revenants produce vitae naturally)
     blood_pool = models.IntegerField(default=10)
     max_blood_pool = models.IntegerField(default=10)
+    blood = LinkedStat("max_blood_pool", "blood_pool")
 
     # Pseudo-generation (typically 10-12)
     pseudo_generation = models.IntegerField(

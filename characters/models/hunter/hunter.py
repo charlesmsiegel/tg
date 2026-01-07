@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from core.linked_stat import LinkedStat
+
 from .creed import Creed
 from .htrhuman import HtRHuman
 
@@ -27,13 +29,16 @@ class Hunter(HtRHuman):
     # ===== VIRTUES (Hunter-specific trinity) =====
     # These replace Conscience/Self-Control/Courage from other gamelines
     conviction = models.IntegerField(default=1)  # Justice/Judgement
-    vision = models.IntegerField(default=1)  # Defense/Mercy
-    zeal = models.IntegerField(default=1)  # Zeal/Vengeance
-
-    # Temporary pools for spending
     temporary_conviction = models.IntegerField(default=1)
+    conviction_stat = LinkedStat("conviction", "temporary_conviction")
+
+    vision = models.IntegerField(default=1)  # Defense/Mercy
     temporary_vision = models.IntegerField(default=1)
+    vision_stat = LinkedStat("vision", "temporary_vision")
+
+    zeal = models.IntegerField(default=1)  # Zeal/Vengeance
     temporary_zeal = models.IntegerField(default=1)
+    zeal_stat = LinkedStat("zeal", "temporary_zeal")
 
     # ===== EDGES (Supernatural Powers) =====
     # Conviction Edges (Judgement) - 7 edges

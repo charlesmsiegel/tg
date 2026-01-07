@@ -4,6 +4,7 @@ from characters.models.wraith.guild import Guild
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
+from core.linked_stat import LinkedStat
 from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -56,11 +57,13 @@ class Wraith(WtOHuman):
     # Core Wraith Stats
     corpus = models.IntegerField(default=10)
     pathos = models.IntegerField(default=5)
-    pathos_permanent = models.IntegerField(default=5)
+    temporary_pathos = models.IntegerField(default=5)
+    pathos_stat = LinkedStat("pathos", "temporary_pathos")
 
     # Shadow Stats
     angst = models.IntegerField(default=0)
-    angst_permanent = models.IntegerField(default=0)
+    temporary_angst = models.IntegerField(default=0)
+    angst_stat = LinkedStat("angst", "temporary_angst")
 
     # Arcanoi (Standard - 13 Greater Guilds)
     argos = models.IntegerField(default=0)
@@ -285,10 +288,10 @@ class Wraith(WtOHuman):
         return add_dot(self, "corpus", 10)
 
     def add_pathos(self):
-        return add_dot(self, "pathos_permanent", 10)
+        return add_dot(self, "pathos", 10)
 
     def add_angst(self):
-        return add_dot(self, "angst_permanent", 10)
+        return add_dot(self, "angst", 10)
 
     def has_wraith_history(self):
         return self.death_description != "" and self.age_at_death != 0
@@ -337,7 +340,7 @@ class Wraith(WtOHuman):
         Check if Catharsis should trigger.
         Catharsis triggers when Shadow's temporary Angst exceeds Psyche's permanent Willpower.
         """
-        return self.angst > self.willpower
+        return self.temporary_angst > self.willpower
 
     def trigger_catharsis(self):
         """
@@ -390,7 +393,7 @@ class Wraith(WtOHuman):
             triggers.append("no_fetters")
 
         # Check permanent Angst
-        if self.angst_permanent >= 10:
+        if self.angst >= 10:
             triggers.append("max_angst")
 
         return triggers
@@ -420,8 +423,8 @@ class Wraith(WtOHuman):
             return self.become_spectre()
         elif result == "catharsis":
             # Extraordinary success - reduce Angst
-            self.angst_permanent = max(0, self.angst_permanent - 1)
-            self.angst = max(0, self.angst - 3)
+            self.angst = max(0, self.angst - 1)
+            self.temporary_angst = max(0, self.temporary_angst - 3)
         # Success - just survive
 
         self.save()
@@ -460,7 +463,7 @@ class Wraith(WtOHuman):
 
         # Shadow gains any Eidolon background points
         if self.eidolon > 0:
-            self.angst_permanent = min(10, self.angst_permanent + self.eidolon)
+            self.angst = min(10, self.angst + self.eidolon)
             self.eidolon = 0
 
         self.save()
@@ -489,12 +492,12 @@ class Wraith(WtOHuman):
         from characters.models.wraith.fetter import Fetter
 
         fetters = Fetter.objects.filter(wraith=self).count()
-        can_attempt = fetters > 0 and self.angst_permanent < 10
+        can_attempt = fetters > 0 and self.angst < 10
 
         if not can_attempt:
             return {
                 "success": False,
-                "message": f"Redemption requirements not met. Fetters: {fetters}, Permanent Angst: {self.angst_permanent}",
+                "message": f"Redemption requirements not met. Fetters: {fetters}, Permanent Angst: {self.angst}",
                 "requirements": {
                     "fetters": "At least 1 Fetter required",
                     "angst": "Permanent Angst must be below 10",
@@ -508,7 +511,7 @@ class Wraith(WtOHuman):
             "message": "Redemption requirements met - ready for contested roll",
             "roll_info": {
                 "psyche_pool": f"Willpower ({self.willpower}) + Eidolon (if any)",
-                "shadow_pool": f"Permanent Angst ({self.angst_permanent})",
+                "shadow_pool": f"Permanent Angst ({self.angst})",
                 "difficulty": 6,
             },
         }
@@ -535,10 +538,10 @@ class Wraith(WtOHuman):
                 passion.save()
 
             # Reduce Angst
-            self.angst_permanent = max(
-                0, self.angst_permanent - (psyche_successes - shadow_successes)
+            self.angst = max(
+                0, self.angst - (psyche_successes - shadow_successes)
             )
-            self.angst = max(0, self.angst - (psyche_successes - shadow_successes) * 2)
+            self.temporary_angst = max(0, self.temporary_angst - (psyche_successes - shadow_successes) * 2)
 
             self.save()
             return {
@@ -562,7 +565,7 @@ class Wraith(WtOHuman):
             "catharsis_count": self.catharsis_count,
             "can_trigger": self.check_catharsis_trigger(),
             "shadow_dominant": self.is_shadow_dominant,
-            "angst": self.angst,
+            "temporary_angst": self.temporary_angst,
             "willpower": self.willpower,
         }
 
@@ -574,7 +577,7 @@ class Wraith(WtOHuman):
             "last_result": self.last_harrowing_result,
             "active_triggers": triggers,
             "at_risk": len(triggers) > 0,
-            "angst_permanent": self.angst_permanent,
+            "angst": self.angst,
             "corpus": self.corpus,
             "willpower": self.willpower,
         }
@@ -622,13 +625,13 @@ class Wraith(WtOHuman):
             return False
 
         # Handle pathos
-        if trait == "pathos_permanent" or trait == "pathos":
-            cost = self.xp_cost("pathos", self.pathos_permanent + 1)
+        if trait == "pathos":
+            cost = self.xp_cost("pathos", self.pathos + 1)
             if cost <= self.xp:
                 if self.add_pathos():
                     self.xp -= cost
-                    self.pathos = self.pathos_permanent
-                    self.add_to_spend(trait, self.pathos_permanent, cost)
+                    self.temporary_pathos = self.pathos
+                    self.add_to_spend(trait, self.pathos, cost)
                     return True
                 return False
             return False
@@ -645,13 +648,13 @@ class Wraith(WtOHuman):
             return False
 
         # Handle angst
-        if trait == "angst_permanent" or trait == "angst":
-            cost = self.xp_cost("angst", self.angst_permanent + 1)
+        if trait == "angst":
+            cost = self.xp_cost("angst", self.angst + 1)
             if cost <= self.xp:
                 if self.add_angst():
                     self.xp -= cost
-                    self.angst = self.angst_permanent
-                    self.add_to_spend(trait, self.angst_permanent, cost)
+                    self.temporary_angst = self.angst
+                    self.add_to_spend(trait, self.angst, cost)
                     return True
                 return False
             return False
@@ -690,12 +693,12 @@ class Wraith(WtOHuman):
             return False
 
         # Handle pathos
-        if trait == "pathos_permanent" or trait == "pathos":
+        if trait == "pathos":
             cost = self.freebie_cost("pathos")
             if cost <= self.freebies:
                 if self.add_pathos():
                     self.freebies -= cost
-                    self.pathos = self.pathos_permanent
+                    self.temporary_pathos = self.pathos
                     return True
                 return False
             return False
@@ -744,14 +747,14 @@ class Wraith(WtOHuman):
         """Spend freebies to increase permanent pathos."""
         trait = "Pathos"
         cost = 1
-        value = self.pathos_permanent + 1
+        value = self.pathos + 1
 
         # Add pathos
         self.add_pathos()
         self.freebies -= cost
 
         # Update current pathos to match permanent
-        self.pathos = self.pathos_permanent
+        self.temporary_pathos = self.pathos
 
         # Record the spend
         self.spent_freebies.append(self.freebie_spend_record(trait, "pathos", value, cost))

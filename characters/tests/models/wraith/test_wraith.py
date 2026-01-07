@@ -36,12 +36,12 @@ class TestWraithCreation(WraithTestCase):
     def test_wraith_default_pathos(self):
         """Wraith has default pathos of 5."""
         self.assertEqual(self.wraith.pathos, 5)
-        self.assertEqual(self.wraith.pathos_permanent, 5)
+        self.assertEqual(self.wraith.temporary_pathos, 5)
 
     def test_wraith_default_angst(self):
         """Wraith has default angst of 0."""
         self.assertEqual(self.wraith.angst, 0)
-        self.assertEqual(self.wraith.angst_permanent, 0)
+        self.assertEqual(self.wraith.temporary_angst, 0)
 
     def test_wraith_default_character_type(self):
         """Wraith has default character type of wraith."""
@@ -474,37 +474,37 @@ class TestWraithCorpusPathos(WraithTestCase):
         self.assertEqual(self.wraith.corpus, 9)
 
     def test_add_pathos(self):
-        """add_pathos increases pathos_permanent by 1."""
-        self.assertEqual(self.wraith.pathos_permanent, 5)
+        """add_pathos increases pathos by 1."""
+        self.assertEqual(self.wraith.pathos, 5)
         result = self.wraith.add_pathos()
         self.assertTrue(result)
-        self.assertEqual(self.wraith.pathos_permanent, 6)
+        self.assertEqual(self.wraith.pathos, 6)
 
     def test_add_pathos_up_to_max(self):
         """add_pathos works up to maximum of 10."""
-        self.wraith.pathos_permanent = 9
+        self.wraith.pathos = 9
         self.wraith.save()
         result = self.wraith.add_pathos()
         self.assertTrue(result)
-        self.assertEqual(self.wraith.pathos_permanent, 10)
+        self.assertEqual(self.wraith.pathos, 10)
         # Cannot exceed 10
         result = self.wraith.add_pathos()
         self.assertFalse(result)
 
     def test_add_angst(self):
-        """add_angst increases angst_permanent by 1."""
-        self.assertEqual(self.wraith.angst_permanent, 0)
+        """add_angst increases angst by 1."""
+        self.assertEqual(self.wraith.angst, 0)
         result = self.wraith.add_angst()
         self.assertTrue(result)
-        self.assertEqual(self.wraith.angst_permanent, 1)
+        self.assertEqual(self.wraith.angst, 1)
 
     def test_add_angst_up_to_max(self):
         """add_angst works up to maximum of 10."""
-        self.wraith.angst_permanent = 9
+        self.wraith.angst = 9
         self.wraith.save()
         result = self.wraith.add_angst()
         self.assertTrue(result)
-        self.assertEqual(self.wraith.angst_permanent, 10)
+        self.assertEqual(self.wraith.angst, 10)
         # Cannot exceed 10
         result = self.wraith.add_angst()
         self.assertFalse(result)
@@ -533,28 +533,28 @@ class TestWraithCatharsis(WraithTestCase):
     """Tests for Wraith catharsis mechanics."""
 
     def test_check_catharsis_trigger_false_when_angst_low(self):
-        """check_catharsis_trigger returns False when angst <= willpower."""
-        self.wraith.angst = 3
+        """check_catharsis_trigger returns False when temporary_angst <= willpower."""
+        self.wraith.temporary_angst = 3
         self.wraith.willpower = 5
         self.assertFalse(self.wraith.check_catharsis_trigger())
 
     def test_check_catharsis_trigger_true_when_angst_high(self):
-        """check_catharsis_trigger returns True when angst > willpower."""
-        self.wraith.angst = 6
+        """check_catharsis_trigger returns True when temporary_angst > willpower."""
+        self.wraith.temporary_angst = 6
         self.wraith.willpower = 5
         self.assertTrue(self.wraith.check_catharsis_trigger())
 
     def test_trigger_catharsis_fails_when_conditions_not_met(self):
         """trigger_catharsis returns False when conditions not met."""
-        self.wraith.angst = 3
+        self.wraith.temporary_angst = 3
         self.wraith.willpower = 5
         result = self.wraith.trigger_catharsis()
         self.assertFalse(result)
         self.assertFalse(self.wraith.in_catharsis)
 
     def test_trigger_catharsis_succeeds_when_conditions_met(self):
-        """trigger_catharsis succeeds when angst > willpower."""
-        self.wraith.angst = 6
+        """trigger_catharsis succeeds when temporary_angst > willpower."""
+        self.wraith.temporary_angst = 6
         self.wraith.willpower = 5
         result = self.wraith.trigger_catharsis()
         self.assertTrue(result)
@@ -564,7 +564,7 @@ class TestWraithCatharsis(WraithTestCase):
 
     def test_resolve_catharsis_psyche_wins(self):
         """resolve_catharsis with shadow_won=False restores psyche."""
-        self.wraith.angst = 6
+        self.wraith.temporary_angst = 6
         self.wraith.willpower = 5
         self.wraith.trigger_catharsis()
 
@@ -575,7 +575,7 @@ class TestWraithCatharsis(WraithTestCase):
 
     def test_resolve_catharsis_shadow_wins(self):
         """resolve_catharsis with shadow_won=True keeps shadow dominant."""
-        self.wraith.angst = 6
+        self.wraith.temporary_angst = 6
         self.wraith.willpower = 5
         self.wraith.trigger_catharsis()
 
@@ -586,7 +586,7 @@ class TestWraithCatharsis(WraithTestCase):
 
     def test_get_catharsis_info(self):
         """get_catharsis_info returns correct state information."""
-        self.wraith.angst = 6
+        self.wraith.temporary_angst = 6
         self.wraith.willpower = 5
         self.wraith.trigger_catharsis()
 
@@ -594,7 +594,7 @@ class TestWraithCatharsis(WraithTestCase):
         self.assertTrue(info["in_catharsis"])
         self.assertEqual(info["catharsis_count"], 1)
         self.assertTrue(info["shadow_dominant"])
-        self.assertEqual(info["angst"], 6)
+        self.assertEqual(info["temporary_angst"], 6)
         self.assertEqual(info["willpower"], 5)
 
 
@@ -627,7 +627,7 @@ class TestWraithHarrowing(WraithTestCase):
 
     def test_check_harrowing_trigger_max_angst(self):
         """check_harrowing_trigger detects max angst."""
-        self.wraith.angst_permanent = 10
+        self.wraith.angst = 10
         triggers = self.wraith.check_harrowing_trigger()
         self.assertIn("max_angst", triggers)
 
@@ -658,13 +658,13 @@ class TestWraithHarrowing(WraithTestCase):
 
     def test_resolve_harrowing_catharsis(self):
         """resolve_harrowing with catharsis reduces angst."""
-        self.wraith.angst_permanent = 5
         self.wraith.angst = 5
+        self.wraith.temporary_angst = 5
         result = self.wraith.resolve_harrowing(result="catharsis")
         self.assertTrue(result)
         self.assertEqual(self.wraith.last_harrowing_result, "catharsis")
-        self.assertEqual(self.wraith.angst_permanent, 4)
-        self.assertEqual(self.wraith.angst, 2)
+        self.assertEqual(self.wraith.angst, 4)
+        self.assertEqual(self.wraith.temporary_angst, 2)
 
     def test_resolve_harrowing_failure_becomes_spectre(self):
         """resolve_harrowing with failure transforms to spectre."""
@@ -729,12 +729,12 @@ class TestWraithBecomeSpectre(WraithTestCase):
     def test_become_spectre_converts_eidolon_to_angst(self):
         """become_spectre converts eidolon to angst."""
         self.wraith.eidolon = 3
-        self.wraith.angst_permanent = 2
+        self.wraith.angst = 2
         self.wraith.add_fetter("object", "Ring", rating=4)
 
         self.wraith.become_spectre()
         self.assertEqual(self.wraith.eidolon, 0)
-        self.assertEqual(self.wraith.angst_permanent, 5)
+        self.assertEqual(self.wraith.angst, 5)
 
     def test_become_spectre_returns_false_if_already_spectre(self):
         """become_spectre returns False if already a spectre."""
@@ -766,26 +766,26 @@ class TestWraithRedemption(WraithTestCase):
 
     def test_attempt_redemption_fails_if_angst_too_high(self):
         """attempt_redemption fails if angst >= 10."""
-        self.wraith.angst_permanent = 10
+        self.wraith.angst = 10
         result = self.wraith.attempt_redemption()
         self.assertFalse(result["success"])
 
     def test_attempt_redemption_succeeds_if_conditions_met(self):
         """attempt_redemption succeeds if conditions met."""
-        self.wraith.angst_permanent = 5
+        self.wraith.angst = 5
         result = self.wraith.attempt_redemption()
         self.assertTrue(result["success"])
         self.assertTrue(result["can_attempt"])
 
     def test_attempt_redemption_increments_attempts(self):
         """attempt_redemption increments redemption_attempts."""
-        self.wraith.angst_permanent = 5
+        self.wraith.angst = 5
         self.wraith.attempt_redemption()
         self.assertEqual(self.wraith.redemption_attempts, 1)
 
     def test_complete_redemption_success(self):
         """complete_redemption succeeds when psyche wins."""
-        self.wraith.angst_permanent = 5
+        self.wraith.angst = 5
         self.wraith.add_passion("Hatred", "Destroy", rating=3, is_dark=True)
 
         result = self.wraith.complete_redemption(psyche_successes=5, shadow_successes=2)
@@ -795,13 +795,13 @@ class TestWraithRedemption(WraithTestCase):
 
     def test_complete_redemption_reduces_angst(self):
         """complete_redemption reduces angst on success."""
-        self.wraith.angst_permanent = 5
-        self.wraith.angst = 8
+        self.wraith.angst = 5
+        self.wraith.temporary_angst = 8
 
         result = self.wraith.complete_redemption(psyche_successes=5, shadow_successes=2)
         self.assertTrue(result["success"])
-        self.assertEqual(self.wraith.angst_permanent, 2)  # Reduced by 3 (5-2)
-        self.assertEqual(self.wraith.angst, 2)  # Reduced by 6 (3*2)
+        self.assertEqual(self.wraith.angst, 2)  # Reduced by 3 (5-2)
+        self.assertEqual(self.wraith.temporary_angst, 2)  # Reduced by 6 (3*2)
 
     def test_complete_redemption_failure(self):
         """complete_redemption fails when shadow wins."""

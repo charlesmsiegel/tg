@@ -6,6 +6,7 @@ from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
+from core.linked_stat import LinkedStat
 from django.db import models
 from django.urls import reverse
 
@@ -90,11 +91,13 @@ class Earthbound(LoreBlock, DtFHuman):
     max_faith = models.IntegerField(
         default=10, help_text="Maximum Faith pool from Hoard (10-35 for Earthbound)"
     )
+    faith_stat = LinkedStat("faith", "temporary_faith")
 
     torment = models.IntegerField(
         default=6, help_text="Permanent Torment rating (becomes 10 at Final Damnation)"
     )
     temporary_torment = models.IntegerField(default=0)
+    torment_stat = LinkedStat("torment", "temporary_torment")
 
     # VIRTUES (Earthbound still have these)
     conviction = models.IntegerField(default=1)
