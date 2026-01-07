@@ -1,7 +1,7 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from core.constants import GameLine
 from django import forms
 from game.models import ObjectType
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 class ItemCreationForm(ChainedSelectMixin, forms.Form):

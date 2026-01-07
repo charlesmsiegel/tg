@@ -55,7 +55,7 @@ JavaScript is auto-injected. No {{ form.media }} needed!
 from .fields.chained import ChainedChoiceField, ChainedModelChoiceField
 from .fields.create_or_select import CreateOrSelectField, CreateOrSelectModelChoiceField
 from .mixins.chained import ChainedSelectMixin
-from .mixins.create_or_select import CreateOrSelectFormMixin, CreateOrSelectMixin
+from .mixins.create_or_select import CreateOrSelectMixin
 from .views import ChainedSelectAjaxView, auto_chained_ajax_view, make_ajax_view
 from .widgets.chained import ChainedSelect, ChainedSelectMultiple
 from .widgets.create_or_select import CreateOrSelectWidget
@@ -73,7 +73,6 @@ __all__ = [
     # Mixins
     "ChainedSelectMixin",
     "CreateOrSelectMixin",
-    "CreateOrSelectFormMixin",
     # Views
     "ChainedSelectAjaxView",
     "auto_chained_ajax_view",

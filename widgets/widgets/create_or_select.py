@@ -11,7 +11,6 @@ No {{ form.media }} or static file configuration needed.
 from django import forms
 from django.utils.safestring import mark_safe
 
-
 # The JavaScript code, embedded directly so no static files or {{ form.media }} needed
 CREATE_OR_SELECT_JS = """
 (function() {
@@ -173,14 +172,10 @@ class CreateOrSelectWidget(forms.CheckboxInput):
         # Inject JavaScript (only once per page)
         if not CreateOrSelectWidget._js_rendered:
             CreateOrSelectWidget._js_rendered = True
-            parts.append(
-                f"<script data-create-or-select-js>{CREATE_OR_SELECT_JS}</script>"
-            )
+            parts.append(f"<script data-create-or-select-js>{CREATE_OR_SELECT_JS}</script>")
 
         # Add a micro-script to re-initialize (handles dynamic/AJAX-loaded forms)
-        parts.append(
-            "<script>if(window.CreateOrSelect)window.CreateOrSelect.init();</script>"
-        )
+        parts.append("<script>if(window.CreateOrSelect)window.CreateOrSelect.init();</script>")
 
         return mark_safe("".join(parts))
 
@@ -194,8 +189,6 @@ class CreateOrSelectWidget(forms.CheckboxInput):
 try:
     from django.core.signals import request_finished
 
-    request_finished.connect(
-        lambda sender, **kwargs: CreateOrSelectWidget.reset_js_rendered()
-    )
+    request_finished.connect(lambda sender, **kwargs: CreateOrSelectWidget.reset_js_rendered())
 except ImportError:
     pass

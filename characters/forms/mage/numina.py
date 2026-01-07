@@ -1,4 +1,3 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
@@ -9,6 +8,7 @@ from characters.models.mage.sorcerer import (
 )
 from django import forms
 from django.db.models import Q
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 class NuminaPathForm(ChainedSelectMixin, forms.ModelForm):

@@ -1,10 +1,10 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from core.models import Number
 from django import forms
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 CATEGORY_CHOICES = [
     ("-----", "-----"),

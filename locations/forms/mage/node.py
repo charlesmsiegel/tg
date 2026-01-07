@@ -1,4 +1,3 @@
-from widgets import ChainedChoiceField, ChainedSelectMixin
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.resonance import Resonance
 from core.models import Number
@@ -9,6 +8,7 @@ from locations.forms.mage.reality_zone import RealityZonePracticeRatingFormSet
 from locations.models.mage import Node
 from locations.models.mage.node import NodeMeritFlawRating, NodeResonanceRating
 from locations.models.mage.reality_zone import RealityZone
+from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
 class NodeResonanceRatingForm(forms.ModelForm):

@@ -870,8 +870,8 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
         ).first()
         form = super().get_form(form_class)
 
-        form.artifact_form.fields["name"].initial = self.current_artifact.note
-        form.artifact_form.fields["rank"].widget.attrs.update(
+        form.fields["name"].initial = self.current_artifact.note
+        form.fields["rank"].widget.attrs.update(
             {
                 "min": self.current_artifact.rating,
                 "max": self.current_artifact.rating,
