@@ -5,7 +5,6 @@ Tests for the FormsetManager widget and template tags.
 from django import forms
 from django.template import Context, Template
 from django.test import TestCase
-
 from widgets.templatetags.formset_tags import (
     formset_add_btn,
     formset_container,
@@ -106,10 +105,10 @@ class TestFormsetTemplateTags(TestCase):
     def test_formset_add_btn_basic(self):
         """Test formset_add_btn creates button."""
         result = formset_add_btn("my_prefix", "Add Item")
-        self.assertIn('<button', result)
+        self.assertIn("<button", result)
         self.assertIn('data-formset-add="my_prefix"', result)
         self.assertIn('type="button"', result)
-        self.assertIn('Add Item', result)
+        self.assertIn("Add Item", result)
 
     def test_formset_add_btn_with_attrs(self):
         """Test formset_add_btn with custom attributes."""
@@ -136,6 +135,7 @@ class TestFormsetBlockTag(TestCase):
 
     def _create_formset(self, prefix="items", extra=1):
         """Create a simple formset for testing."""
+
         class ItemForm(forms.Form):
             name = forms.CharField()
             quantity = forms.IntegerField()
@@ -148,12 +148,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn("id_items-TOTAL_FORMS", result)
@@ -164,12 +166,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('data-formset-container=""', result)
@@ -181,12 +185,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('id="empty_items_form"', result)
@@ -197,12 +203,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" add_label="Add Item" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('data-formset-add="items"', result)
@@ -214,11 +222,13 @@ class TestFormsetBlockTag(TestCase):
         formset2 = self._create_formset(prefix="items2")
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs1 prefix="items1" %}{{ subform.name }}{% endformset %}
         {% formset fs2 prefix="items2" %}{{ subform.name }}{% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs1": formset1, "fs2": formset2}))
         count = result.count("data-formset-manager-js")
@@ -229,12 +239,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('data-formset-remove="items"', result)
@@ -244,12 +256,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" show_remove=False %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertNotIn('data-formset-remove="items"', result)
@@ -259,12 +273,14 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" wrapper_class="custom-row" %}
             {{ subform.name }}
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('class="custom-row"', result)
@@ -274,16 +290,18 @@ class TestFormsetBlockTag(TestCase):
         formset = self._create_formset()
         _reset_js_rendered()
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset fs prefix="items" %}
             <div class="field">{{ subform.name }}</div>
         {% endformset %}
-        """)
+        """
+        )
 
         result = template.render(Context({"fs": formset}))
         self.assertIn('class="field"', result)
-        self.assertIn('id_items-0-name', result)
+        self.assertIn("id_items-0-name", result)
 
 
 class TestFormsetTemplateTagsInTemplate(TestCase):
@@ -301,21 +319,17 @@ class TestFormsetTemplateTagsInTemplate(TestCase):
 
     def test_formset_container_in_template(self):
         """Test formset_container tag works in template context."""
-        template = Template(
-            '{% load formset_tags %}<div {% formset_container "test" %}></div>'
-        )
+        template = Template('{% load formset_tags %}<div {% formset_container "test" %}></div>')
         result = template.render(Context({}))
         self.assertIn('data-formset-container=""', result)
         self.assertIn('data-formset-prefix="test"', result)
 
     def test_formset_add_btn_in_template(self):
         """Test formset_add_btn tag works in template context."""
-        template = Template(
-            '{% load formset_tags %}{% formset_add_btn "test" "Add Row" %}'
-        )
+        template = Template('{% load formset_tags %}{% formset_add_btn "test" "Add Row" %}')
         result = template.render(Context({}))
-        self.assertIn('<button', result)
-        self.assertIn('Add Row', result)
+        self.assertIn("<button", result)
+        self.assertIn("Add Row", result)
 
     def test_formset_remove_btn_in_template(self):
         """Test formset_remove_btn tag works in template context."""
@@ -343,7 +357,8 @@ class TestFormsetManagerIntegration(TestCase):
         ItemFormSet = forms.formset_factory(ItemForm, extra=1)
         formset = ItemFormSet(prefix="items")
 
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {{ formset.management_form }}
         <div id="items_formset" {% formset_container "items" %}>
@@ -360,7 +375,8 @@ class TestFormsetManagerIntegration(TestCase):
         </div>
         {% formset_add_btn "items" "Add Item" %}
         {% formset_script %}
-        """)
+        """
+        )
 
         result = template.render(Context({"formset": formset}))
 
@@ -369,17 +385,19 @@ class TestFormsetManagerIntegration(TestCase):
         self.assertIn('data-formset-prefix="items"', result)
         self.assertIn('data-formset-form=""', result)
         self.assertIn('data-formset-add="items"', result)
-        self.assertIn('data-formset-manager-js', result)
+        self.assertIn("data-formset-manager-js", result)
         self.assertIn("id_items-TOTAL_FORMS", result)
 
     def test_script_only_rendered_once_across_formsets(self):
         """Test script is only rendered once even with multiple formsets."""
-        template = Template("""
+        template = Template(
+            """
         {% load formset_tags %}
         {% formset_script %}
         {% formset_script %}
         {% formset_script %}
-        """)
+        """
+        )
 
         result = template.render(Context({}))
 

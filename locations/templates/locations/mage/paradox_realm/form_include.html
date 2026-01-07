@@ -1,3 +1,4 @@
+{% load formset_tags %}
 <div class="row">
     <h2 class="col-sm mta_heading">
         {% if object.pk %}Update{% else %}Create{% endif %} Paradox Realm
@@ -125,138 +126,52 @@
 <div class="row mb-3">
     <h4 class="col-sm mta_heading">Atmosphere Elements</h4>
 </div>
-{{ form.atmosphere_formset.management_form }}
-<div id="atmosphere_formset">
-    {% for subform in form.atmosphere_formset.forms %}
-        <div class="atmosphere-form row mb-2" style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-            <div class="col-sm-3">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Paradigm</label>
-                {{ subform.paradigm }}
-            </div>
-            <div class="col-sm-2">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number (1-10)</label>
-                {{ subform.atmosphere_number }}
-            </div>
-            <div class="col-sm-6">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
-                {{ subform.description }}
-            </div>
-            <div class="col-sm-1">
-                {{ subform.DELETE }}
-                <label for="{{ subform.DELETE.id_for_label }}" style="font-size: 0.75rem;">Delete</label>
-            </div>
-        </div>
-    {% endfor %}
-</div>
-<div id="empty_atmosphere_form" class="d-none">
-    <div class="atmosphere-form row mb-2" style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-        <div class="col-sm-3">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Paradigm</label>
-            {{ form.atmosphere_formset.empty_form.paradigm }}
-        </div>
-        <div class="col-sm-2">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number (1-10)</label>
-            {{ form.atmosphere_formset.empty_form.atmosphere_number }}
-        </div>
-        <div class="col-sm-6">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
-            {{ form.atmosphere_formset.empty_form.description }}
-        </div>
-        <div class="col-sm-1">
-            {{ form.atmosphere_formset.empty_form.DELETE }}
-            <label style="font-size: 0.75rem;">Delete</label>
-        </div>
+{% formset form.atmosphere_formset prefix="atmospheres" add_label="Add Atmosphere Element" add_class="btn btn-secondary btn-sm mb-4" wrapper_class="atmosphere-form row mb-2" show_remove=False %}
+    <div class="col-sm-3">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Paradigm</label>
+        {{ subform.paradigm }}
     </div>
-</div>
-<button type="button" id="add-atmosphere" class="btn btn-secondary btn-sm mb-4">Add Atmosphere Element</button>
+    <div class="col-sm-2">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number (1-10)</label>
+        {{ subform.atmosphere_number }}
+    </div>
+    <div class="col-sm-6">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
+        {{ subform.description }}
+    </div>
+    <div class="col-sm-1">
+        {{ subform.DELETE }}
+        <label for="{{ subform.DELETE.id_for_label }}" style="font-size: 0.75rem;">Delete</label>
+    </div>
+{% endformset %}
 
 <!-- Obstacles -->
 <div class="row mb-3">
     <h4 class="col-sm mta_heading">Obstacles</h4>
 </div>
-{{ form.obstacle_formset.management_form }}
-<div id="obstacle_formset">
-    {% for subform in form.obstacle_formset.forms %}
-        <div class="obstacle-form row mb-2" style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-            <div class="col-sm-2">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Sphere</label>
-                {{ subform.sphere }}
-            </div>
-            <div class="col-sm-1">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number</label>
-                {{ subform.obstacle_number }}
-            </div>
-            <div class="col-sm-1">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Order</label>
-                {{ subform.order }}
-            </div>
-            <div class="col-sm-2">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Name</label>
-                {{ subform.name }}
-            </div>
-            <div class="col-sm-5">
-                <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
-                {{ subform.description }}
-            </div>
-            <div class="col-sm-1">
-                {{ subform.DELETE }}
-                <label for="{{ subform.DELETE.id_for_label }}" style="font-size: 0.75rem;">Delete</label>
-            </div>
-        </div>
-    {% endfor %}
-</div>
-<div id="empty_obstacle_form" class="d-none">
-    <div class="obstacle-form row mb-2" style="padding: 12px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-        <div class="col-sm-2">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Sphere</label>
-            {{ form.obstacle_formset.empty_form.sphere }}
-        </div>
-        <div class="col-sm-1">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number</label>
-            {{ form.obstacle_formset.empty_form.obstacle_number }}
-        </div>
-        <div class="col-sm-1">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Order</label>
-            {{ form.obstacle_formset.empty_form.order }}
-        </div>
-        <div class="col-sm-2">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Name</label>
-            {{ form.obstacle_formset.empty_form.name }}
-        </div>
-        <div class="col-sm-5">
-            <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
-            {{ form.obstacle_formset.empty_form.description }}
-        </div>
-        <div class="col-sm-1">
-            {{ form.obstacle_formset.empty_form.DELETE }}
-            <label style="font-size: 0.75rem;">Delete</label>
-        </div>
+{% formset form.obstacle_formset prefix="obstacles" add_label="Add Obstacle" add_class="btn btn-secondary btn-sm mb-4" wrapper_class="obstacle-form row mb-2" show_remove=False %}
+    <div class="col-sm-2">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Sphere</label>
+        {{ subform.sphere }}
     </div>
-</div>
-<button type="button" id="add-obstacle" class="btn btn-secondary btn-sm mb-4">Add Obstacle</button>
-
-<script>
-    // Add atmosphere element
-    document.getElementById('add-atmosphere').addEventListener('click', function() {
-        const formsetDiv = document.getElementById('atmosphere_formset');
-        const totalForms = document.getElementById('id_atmospheres-TOTAL_FORMS');
-        const emptyForm = document.getElementById('empty_atmosphere_form').innerHTML;
-        const formCount = parseInt(totalForms.value);
-
-        const newForm = emptyForm.replace(/__prefix__/g, formCount);
-        formsetDiv.insertAdjacentHTML('beforeend', newForm);
-        totalForms.value = formCount + 1;
-    });
-
-    // Add obstacle
-    document.getElementById('add-obstacle').addEventListener('click', function() {
-        const formsetDiv = document.getElementById('obstacle_formset');
-        const totalForms = document.getElementById('id_obstacles-TOTAL_FORMS');
-        const emptyForm = document.getElementById('empty_obstacle_form').innerHTML;
-        const formCount = parseInt(totalForms.value);
-
-        const newForm = emptyForm.replace(/__prefix__/g, formCount);
-        formsetDiv.insertAdjacentHTML('beforeend', newForm);
-        totalForms.value = formCount + 1;
-    });
-</script>
+    <div class="col-sm-1">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Number</label>
+        {{ subform.obstacle_number }}
+    </div>
+    <div class="col-sm-1">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Order</label>
+        {{ subform.order }}
+    </div>
+    <div class="col-sm-2">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Name</label>
+        {{ subform.name }}
+    </div>
+    <div class="col-sm-5">
+        <label style="font-weight: 600; font-size: 0.75rem; margin-bottom: 4px;">Description</label>
+        {{ subform.description }}
+    </div>
+    <div class="col-sm-1">
+        {{ subform.DELETE }}
+        <label for="{{ subform.DELETE.id_for_label }}" style="font-size: 0.75rem;">Delete</label>
+    </div>
+{% endformset %}
