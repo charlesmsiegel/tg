@@ -79,30 +79,32 @@ class ChantryPointForm(ChainedSelectMixin, forms.Form):
         category = cleaned_data.get("category")
         example = cleaned_data.get("example")
 
-        if category == "New Background" and example is None:
+        if category == "New Background" and not example:
             raise forms.ValidationError("Need to choose a Background")
-        if category == "Existing Background" and example is None:
+        if category == "Existing Background" and not example:
             raise forms.ValidationError("Need to choose a Background")
 
         return cleaned_data
 
     def save(self, commit=True):
         category = self.cleaned_data["category"]
+        example_pk = self.cleaned_data["example"]
         if category == "Integrated Effects":
             self.object.integrated_effects_score += 1
             self.object.save()
         elif "New Background" == category:
+            bg = Background.objects.get(pk=example_pk)
             ChantryBackgroundRating.objects.create(
-                bg=self.cleaned_data["example"],
+                bg=bg,
                 note=self.cleaned_data["note"],
                 chantry=self.object,
                 display_alt_name=self.cleaned_data["display_alt_name"],
                 rating=1,
             )
         elif "Existing Background" == category:
-            x = self.cleaned_data["example"]
-            x.rating += 1
-            x.save()
+            bg_rating = ChantryBackgroundRating.objects.get(pk=example_pk)
+            bg_rating.rating += 1
+            bg_rating.save()
         else:
             pass
 
