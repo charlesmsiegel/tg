@@ -359,7 +359,7 @@ def render_formset_manager_script():
     Returns:
         Safe HTML string containing the script tag.
     """
-    return mark_safe(f'<script data-formset-manager-js>{FORMSET_MANAGER_JS}</script>')
+    return mark_safe(f"<script data-formset-manager-js>{FORMSET_MANAGER_JS}</script>")
 
 
 # Track if JS has been rendered in this request
@@ -384,12 +384,13 @@ def render_formset_manager_script_once():
     if not _js_rendered:
         _js_rendered = True
         return render_formset_manager_script()
-    return mark_safe('')
+    return mark_safe("")
 
 
 # Reset flag between requests using Django's request_finished signal
 try:
     from django.core.signals import request_finished
+
     request_finished.connect(_reset_js_rendered)
 except ImportError:
     pass
