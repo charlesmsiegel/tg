@@ -7,7 +7,6 @@ The JavaScript behavior would be tested via browser/integration tests.
 
 from django.template import Context, Template
 from django.test import TestCase
-
 from widgets import get_filterable_list_js, render_filterable_list_script
 
 
@@ -41,6 +40,7 @@ class TestFilterableListScript(TestCase):
         self.assertIn("data-filter-input", js)
         self.assertIn("data-filter-select", js)
         self.assertIn("data-filter-checkbox", js)
+        self.assertIn("data-filter-max", js)
         self.assertIn("data-filter-clear", js)
         self.assertIn("data-filter-count", js)
         self.assertIn("data-filter-no-results", js)
@@ -52,6 +52,7 @@ class TestFilterableListScript(TestCase):
         self.assertIn("refresh", js)
         self.assertIn("clearFilters", js)
         self.assertIn("updateFilters", js)
+        self.assertIn("getMaxFilters", js)
 
     def test_script_handles_htmx_turbo(self):
         """Test that the script re-initializes for htmx/Turbo."""
@@ -71,9 +72,7 @@ class TestFilterableListTemplateTag(TestCase):
 
     def test_template_tag_renders(self):
         """Test that the template tag renders correctly."""
-        template = Template(
-            "{% load filterable_list %}{% filterable_list_script %}"
-        )
+        template = Template("{% load filterable_list %}{% filterable_list_script %}")
         html = template.render(Context({}))
         self.assertIn("<script", html)
         self.assertIn("FilterableListManager", html)
@@ -96,16 +95,19 @@ class TestFilterableListDocumentation(TestCase):
     def test_module_docstring_exists(self):
         """Test that the module has documentation."""
         from widgets.widgets import filterable
+
         self.assertIsNotNone(filterable.__doc__)
         self.assertIn("data-filterable-list", filterable.__doc__)
 
     def test_example_in_docstring(self):
         """Test that the docstring includes usage examples."""
         from widgets.widgets import filterable
+
         doc = filterable.__doc__
         self.assertIn("data-filter-input", doc)
         self.assertIn("data-filter-select", doc)
         self.assertIn("data-filter-checkbox", doc)
+        self.assertIn("data-filter-max", doc)
 
 
 class TestFilterableListImports(TestCase):
@@ -114,6 +116,7 @@ class TestFilterableListImports(TestCase):
     def test_imports_from_widgets_package(self):
         """Test that functions can be imported from widgets package."""
         from widgets import get_filterable_list_js, render_filterable_list_script
+
         self.assertIsNotNone(get_filterable_list_js)
         self.assertIsNotNone(render_filterable_list_script)
 
@@ -123,5 +126,6 @@ class TestFilterableListImports(TestCase):
             get_filterable_list_js,
             render_filterable_list_script,
         )
+
         self.assertIsNotNone(get_filterable_list_js)
         self.assertIsNotNone(render_filterable_list_script)

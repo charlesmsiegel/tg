@@ -14,6 +14,7 @@ Data-attribute API:
     data-filter-select="field"          - Select dropdown filter
     data-filter-checkbox="field"        - Checkbox filter
     data-filter-mode="any|all|none"     - Mode for checkbox groups (default: 'all')
+    data-filter-max="field"             - Numeric max filter (item's data-field <= input value)
     data-filter-clear                   - Button to clear all filters
 
   Items (place in list):
@@ -89,6 +90,7 @@ FILTERABLE_LIST_JS = """
             const textInputs = page.querySelectorAll(`[data-filter-input][data-filter-list="${listName}"], [data-filter-input]`);
             const selects = page.querySelectorAll(`[data-filter-select][data-filter-list="${listName}"], [data-filter-select]`);
             const checkboxes = page.querySelectorAll(`[data-filter-checkbox][data-filter-list="${listName}"], [data-filter-checkbox]`);
+            const maxInputs = page.querySelectorAll(`[data-filter-max][data-filter-list="${listName}"], [data-filter-max]`);
             const clearBtn = page.querySelector(`[data-filter-clear][data-filter-list="${listName}"], [data-filter-clear]`);
             const countEl = page.querySelector(`[data-filter-count][data-filter-list="${listName}"], [data-filter-count]`);
             const noResultsEl = page.querySelector(`[data-filter-no-results][data-filter-list="${listName}"], [data-filter-no-results]`);
@@ -100,6 +102,7 @@ FILTERABLE_LIST_JS = """
                 textInputs: Array.from(textInputs),
                 selects: Array.from(selects),
                 checkboxes: Array.from(checkboxes),
+                maxInputs: Array.from(maxInputs),
                 clearBtn: clearBtn,
                 countEl: countEl,
                 noResultsEl: noResultsEl
@@ -130,6 +133,11 @@ FILTERABLE_LIST_JS = """
                 cb.addEventListener('change', () => this.updateFilters(listName));
             });
 
+            // Max inputs - filter on input
+            list.maxInputs.forEach(input => {
+                input.addEventListener('input', () => this.updateFilters(listName));
+            });
+
             // Clear button
             if (list.clearBtn) {
                 list.clearBtn.addEventListener('click', () => this.clearFilters(listName));
@@ -147,10 +155,11 @@ FILTERABLE_LIST_JS = """
             const textFilters = this.getTextFilters(list);
             const selectFilters = this.getSelectFilters(list);
             const checkboxFilters = this.getCheckboxFilters(list);
+            const maxFilters = this.getMaxFilters(list);
 
             // Apply filters to each item
             list.items.forEach(item => {
-                const show = this.itemMatchesFilters(item, textFilters, selectFilters, checkboxFilters);
+                const show = this.itemMatchesFilters(item, textFilters, selectFilters, checkboxFilters, maxFilters);
 
                 if (show) {
                     item.style.display = '';
@@ -211,7 +220,19 @@ FILTERABLE_LIST_JS = """
             return groups;
         }
 
-        itemMatchesFilters(item, textFilters, selectFilters, checkboxFilters) {
+        getMaxFilters(list) {
+            const filters = {};
+            list.maxInputs.forEach(input => {
+                const field = input.dataset.filterMax;
+                const value = input.value.trim();
+                if (value !== '') {
+                    filters[field] = parseInt(value, 10);
+                }
+            });
+            return filters;
+        }
+
+        itemMatchesFilters(item, textFilters, selectFilters, checkboxFilters, maxFilters) {
             // Text filters - check if item's data attribute contains the search text
             for (const [field, query] of Object.entries(textFilters)) {
                 const itemValue = item.dataset[field] || '';
@@ -276,6 +297,14 @@ FILTERABLE_LIST_JS = """
                 }
             }
 
+            // Max filters - numeric less-than-or-equal comparison
+            for (const [field, maxValue] of Object.entries(maxFilters)) {
+                const itemValue = parseInt(item.dataset[field] || '0', 10);
+                if (itemValue > maxValue) {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -318,6 +347,10 @@ FILTERABLE_LIST_JS = """
             for (const cb of list.checkboxes) {
                 if (cb.checked) return true;
             }
+            // Check max inputs
+            for (const input of list.maxInputs) {
+                if (input.value.trim()) return true;
+            }
             return false;
         }
 
@@ -338,6 +371,11 @@ FILTERABLE_LIST_JS = """
             // Uncheck checkboxes
             list.checkboxes.forEach(cb => {
                 cb.checked = false;
+            });
+
+            // Clear max inputs
+            list.maxInputs.forEach(input => {
+                input.value = '';
             });
 
             // Re-apply filters (will show all)
@@ -394,4 +432,4 @@ def render_filterable_list_script():
         {% load filterable_list %}
         {% filterable_list_script %}
     """
-    return mark_safe(f'<script data-filterable-list-js>{FILTERABLE_LIST_JS}</script>')
+    return mark_safe(f"<script data-filterable-list-js>{FILTERABLE_LIST_JS}</script>")
