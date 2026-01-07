@@ -311,6 +311,9 @@ class DotsBoxesWidget(forms.Widget):
 
         # Blood pool style (single row, filled = current)
         DotsBoxesWidget(mode="pool")  # ■■■■■□□□□□
+
+        # Large pool with row breaks (10 per row)
+        DotsBoxesWidget(mode="pool", row_length=10)
     """
 
     # Display mode constants
@@ -318,17 +321,19 @@ class DotsBoxesWidget(forms.Widget):
     MODE_POOL = "pool"  # Single row: filled boxes = current, empty = remaining
     MODE_POOL_DOTS = "pool_dots"  # Single row: filled dots = current, empty = remaining
 
-    def __init__(self, max_value=10, mode="willpower", attrs=None):
+    def __init__(self, max_value=10, mode="willpower", row_length=None, attrs=None):
         """
         Initialize the widget.
 
         Args:
             max_value: Maximum display value (default 10)
             mode: Display mode - "willpower", "pool", or "pool_dots"
+            row_length: Max symbols per row for pool modes (default None = no wrapping)
             attrs: Additional HTML attributes
         """
         self.max_value = max_value
         self.mode = mode
+        self.row_length = row_length
         super().__init__(attrs)
 
     def _extract_values(self, value):
@@ -350,6 +355,17 @@ class DotsBoxesWidget(forms.Widget):
 
         return permanent, temporary
 
+    def _render_with_rows(self, full_str, row_length):
+        """Split a string into rows of specified length."""
+        if row_length is None or row_length <= 0 or len(full_str) <= row_length:
+            return f'<span class="dots">{full_str}</span>'
+
+        rows = []
+        for i in range(0, len(full_str), row_length):
+            row = full_str[i : i + row_length]
+            rows.append(f'<span class="dots">{row}</span>')
+        return "<br>".join(rows)
+
     def render(self, name, value, attrs=None, renderer=None):
         """Render the stat display."""
         permanent, temporary = self._extract_values(value)
@@ -360,10 +376,11 @@ class DotsBoxesWidget(forms.Widget):
             display_max = min(permanent, self.max_value) if permanent > 0 else self.max_value
             current = min(temporary, display_max)
             boxes = "■" * current + "□" * (display_max - current)
+            boxes_html = self._render_with_rows(boxes, self.row_length)
 
             html = f"""
-<div class="linked-stat-display pool-display">
-    <span class="dots" title="Current: {temporary} / Max: {permanent}">{boxes}</span>
+<div class="linked-stat-display pool-display" title="Current: {temporary} / Max: {permanent}">
+    {boxes_html}
 </div>
 """
         elif self.mode == self.MODE_POOL_DOTS:
@@ -371,10 +388,11 @@ class DotsBoxesWidget(forms.Widget):
             display_max = min(permanent, self.max_value) if permanent > 0 else self.max_value
             current = min(temporary, display_max)
             dots = "●" * current + "○" * (display_max - current)
+            dots_html = self._render_with_rows(dots, self.row_length)
 
             html = f"""
-<div class="linked-stat-display pool-display">
-    <span class="dots" title="Current: {temporary} / Max: {permanent}">{dots}</span>
+<div class="linked-stat-display pool-display" title="Current: {temporary} / Max: {permanent}">
+    {dots_html}
 </div>
 """
         else:
@@ -404,10 +422,23 @@ class PoolWidget(DotsBoxesWidget):
     """
     Convenience widget for blood pool style display.
 
-    Shows a single row: filled squares for current, empty for remaining capacity.
-    Example: ■■■■■■■□□□ (7 blood out of 10 max)
+    Shows filled squares for current, empty for remaining capacity.
+    Supports row_length for large pools (e.g., elder vampires with 50 blood).
+
+    Examples:
+        PoolWidget()  # ■■■■■■■□□□
+        PoolWidget(max_value=50, row_length=10)  # 5 rows of 10
     """
 
-    def __init__(self, max_value=10, use_dots=False, attrs=None):
+    def __init__(self, max_value=10, use_dots=False, row_length=None, attrs=None):
+        """
+        Initialize the pool widget.
+
+        Args:
+            max_value: Maximum pool size (default 10)
+            use_dots: Use dots instead of boxes (default False)
+            row_length: Symbols per row, None for single row (default None)
+            attrs: Additional HTML attributes
+        """
         mode = DotsBoxesWidget.MODE_POOL_DOTS if use_dots else DotsBoxesWidget.MODE_POOL
-        super().__init__(max_value=max_value, mode=mode, attrs=attrs)
+        super().__init__(max_value=max_value, mode=mode, row_length=row_length, attrs=attrs)

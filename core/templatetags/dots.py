@@ -105,30 +105,11 @@ def linked_dots(value, maximum=10):
     return mark_safe(f'<span class="dots">{dots_str}</span><br><span class="dots">{boxes_str}</span>')
 
 
-@register.filter(name="pool")
-def pool(value, maximum=None):
-    """
-    Render a linked stat as a pool (blood pool style).
-
-    Shows filled boxes for current value, empty boxes for remaining capacity.
-    The total number of boxes equals the max/permanent value.
-
-    Usage:
-        {{ character.blood|pool }}
-        {{ character.blood|pool:20 }}  # Override max display
-
-    Accepts:
-        - LinkedStatAccessor object (with .permanent and .temporary)
-        - tuple/list: (max, current)
-        - dict: {'permanent': x, 'temporary': y} or {'max': x, 'current': y}
-
-    Example output for blood_pool=7, max_blood_pool=10:
-        ■■■■■■■□□□
-    """
+def _extract_pool_values(value):
+    """Extract max and current values from various input types."""
     max_val = 0
     current = 0
 
-    # Extract values based on input type
     if hasattr(value, "permanent") and hasattr(value, "temporary"):
         max_val = value.permanent
         current = value.temporary
@@ -147,6 +128,51 @@ def pool(value, maximum=None):
         max_val = 0
         current = 0
 
+    return max_val, current
+
+
+def _render_pool_rows(current, display_max, row_length, filled_char, empty_char):
+    """Render pool as rows of specified length."""
+    # Generate the full string
+    full_str = filled_char * current + empty_char * (display_max - current)
+
+    if row_length is None or row_length <= 0 or display_max <= row_length:
+        # Single row
+        return f'<span class="dots">{full_str}</span>'
+
+    # Split into rows
+    rows = []
+    for i in range(0, len(full_str), row_length):
+        row = full_str[i : i + row_length]
+        rows.append(f'<span class="dots">{row}</span>')
+
+    return "<br>".join(rows)
+
+
+@register.filter(name="pool")
+def pool(value, maximum=None):
+    """
+    Render a linked stat as a pool (blood pool style).
+
+    Shows filled boxes for current value, empty boxes for remaining capacity.
+    The total number of boxes equals the max/permanent value.
+
+    Usage:
+        {{ character.blood|pool }}
+        {{ character.blood|pool:20 }}  # Override max display
+
+    For row-based display of large pools, use the pool_rows tag instead.
+
+    Accepts:
+        - LinkedStatAccessor object (with .permanent and .temporary)
+        - tuple/list: (max, current)
+        - dict: {'permanent': x, 'temporary': y} or {'max': x, 'current': y}
+
+    Example output for blood_pool=7, max_blood_pool=10:
+        ■■■■■■■□□□
+    """
+    max_val, current = _extract_pool_values(value)
+
     # Use override maximum if provided, otherwise use the stat's max
     display_max = maximum if maximum is not None else max_val
     display_max = max(display_max, 1)  # At least 1 box
@@ -158,6 +184,37 @@ def pool(value, maximum=None):
     boxes_str = "■" * current + "□" * (display_max - current)
 
     return mark_safe(f'<span class="dots" title="{current}/{max_val}">{boxes_str}</span>')
+
+
+@register.simple_tag(name="pool_rows")
+def pool_rows(value, row_length=10, use_dots=False):
+    """
+    Render a linked stat as a pool with rows of specified length.
+
+    Useful for large pools like elder vampire blood pools (up to 50).
+
+    Usage:
+        {% pool_rows character.blood %}                    {# 10 per row, boxes #}
+        {% pool_rows character.blood 10 %}                 {# 10 per row, boxes #}
+        {% pool_rows character.blood 10 True %}            {# 10 per row, dots #}
+
+    Example output for blood_pool=35, max_blood_pool=50:
+        ■■■■■■■■■■
+        ■■■■■■■■■■
+        ■■■■■■■■■■
+        ■■■■■□□□□□
+        □□□□□□□□□□
+    """
+    max_val, current = _extract_pool_values(value)
+    display_max = max(max_val, 1)
+    current = min(current, display_max)
+
+    filled_char = "●" if use_dots else "■"
+    empty_char = "○" if use_dots else "□"
+
+    html = _render_pool_rows(current, display_max, row_length, filled_char, empty_char)
+
+    return mark_safe(f'<div class="pool-display" title="{current}/{max_val}">{html}</div>')
 
 
 @register.filter(name="pool_dots")
@@ -173,27 +230,7 @@ def pool_dots(value, maximum=None):
     Example output for gnosis=4, max=6:
         ●●●●○○
     """
-    max_val = 0
-    current = 0
-
-    # Extract values based on input type
-    if hasattr(value, "permanent") and hasattr(value, "temporary"):
-        max_val = value.permanent
-        current = value.temporary
-    elif isinstance(value, (list, tuple)) and len(value) >= 2:
-        max_val = value[0]
-        current = value[1]
-    elif isinstance(value, dict):
-        max_val = value.get("permanent", value.get("max", 0))
-        current = value.get("temporary", value.get("current", 0))
-
-    # Convert to int safely
-    try:
-        max_val = int(max_val) if max_val else 0
-        current = int(current) if current else 0
-    except (ValueError, TypeError):
-        max_val = 0
-        current = 0
+    max_val, current = _extract_pool_values(value)
 
     # Use override maximum if provided, otherwise use the stat's max
     display_max = maximum if maximum is not None else max_val
