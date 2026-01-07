@@ -207,25 +207,21 @@ def do_formset(parser, token):
     for bit in bits[2:]:
         if "=" in bit:
             key, value = bit.split("=", 1)
-            # Remove quotes if present
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
-            elif value.startswith("'") and value.endswith("'"):
-                value = value[1:-1]
-            kwargs[key] = (
-                parser.compile_filter(value)
-                if not value.startswith('"')
-                else template.Variable(f'"{value}"')
-            )
-            # Handle string literals vs variables
-            if value in ("True", "False"):
-                kwargs[key] = value == "True"
+
+            # Handle boolean literals
+            if value == "True":
+                kwargs[key] = True
+            elif value == "False":
+                kwargs[key] = False
+            # Handle quoted strings - strip quotes and store as string
+            elif (value.startswith('"') and value.endswith('"')) or (
+                value.startswith("'") and value.endswith("'")
+            ):
+                # Store the unquoted value as a simple string variable
+                kwargs[key] = parser.compile_filter(value)
             else:
-                kwargs[key] = (
-                    parser.compile_filter(f'"{value}"')
-                    if '"' not in value and "'" not in value
-                    else parser.compile_filter(value)
-                )
+                # Variable reference
+                kwargs[key] = parser.compile_filter(value)
         else:
             raise template.TemplateSyntaxError(
                 f"'{tag_name}' tag arguments must be in key=value format"

@@ -38,11 +38,23 @@ class DictView(View):
 
 
 class MultipleFormsetsMixin:
+    """
+    Mixin for views that need to handle multiple formsets.
+
+    Uses FormsetManager for dynamic add/remove functionality with data attributes.
+
+    ID Conventions (aligned with FormsetManager):
+    - Container: {prefix}_formset
+    - Empty form: empty_{prefix}_form
+    - Add button: data-formset-add="{prefix}"
+    """
+
     formsets = {}
     _bound_formsets = None  # Cache for bound formsets during POST
+    _formset_js_included = False  # Track if JS has been included
 
     def get_formset_context(self, formset_class, formset_prefix, bound_formset=None):
-        """Generate context and JavaScript code for a given formset."""
+        """Generate context for a given formset using FormsetManager conventions."""
         if bound_formset is not None:
             formset = bound_formset
         else:
@@ -58,25 +70,19 @@ class MultipleFormsetsMixin:
         context = {
             "formset": formset,
             "formset_prefix": formset_prefix,
+            # FormsetManager-aligned IDs
+            "container_id": f"{formset_prefix}_formset",
+            "empty_form_id": f"empty_{formset_prefix}_form",
+            "empty_form": empty_form,  # Pass empty form to context
+            # Legacy IDs for backwards compatibility
             "add_button_id": f"add_{formset_prefix}_form",
             "remove_button_class": f"remove_{formset_prefix}_form",
-            "empty_form": empty_form,  # Pass empty form to context
         }
 
-        js_code = f"""
-        <script>
-        document.getElementById('{context['add_button_id']}').addEventListener('click', function(e) {{
-            e.preventDefault();  // Prevent form submission
+        # Include FormsetManager JS once per request
+        from widgets.widgets.formset_manager import render_formset_manager_script_once
 
-            var totalForms = document.getElementById('id_{formset_prefix}-TOTAL_FORMS');
-            var formCount = parseInt(totalForms.value);
-            var emptyForm = document.getElementById('{formset_prefix}_empty_form').innerHTML;
-            var newForm = emptyForm.replace(/__prefix__/g, formCount);  // Replace prefix
-            document.getElementById('{formset_prefix}_container').insertAdjacentHTML('beforeend', newForm);
-            totalForms.value = formCount + 1;
-        }});
-        </script>
-        """
+        js_code = render_formset_manager_script_once()
 
         return context, js_code
 

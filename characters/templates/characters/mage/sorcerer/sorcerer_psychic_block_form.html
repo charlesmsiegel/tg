@@ -4,21 +4,21 @@
 <div class="row">
     <div class="col-sm">Select 5 levels of Numina Paths</div>
 </div>
-<div id="numina_form_container">
-    {{ numina_form_context.formset.management_form }}
+{{ numina_form_context.formset.management_form }}
+<div id="{{ numina_form_context.container_id }}" data-formset-container data-formset-prefix="numina_form">
     {% for f in numina_form_context.formset %}
-        <div class="row form-row">
+        <div class="row form-row" data-formset-form>
             <div class="col-sm">{{ f.path }}</div>
             <div class="col-sm">{{ f.rating }}</div>
         </div>
     {% endfor %}
 </div>
 <!-- Hidden empty form to clone -->
-<div id="numina_form_empty_form" class="d-none">
-    <div class="row form-row">
+<div id="{{ numina_form_context.empty_form_id }}" class="d-none">
+    <div class="row form-row" data-formset-form>
         <div class="col-sm">{{ numina_form_context.empty_form.path }}</div>
         <div class="col-sm">{{ numina_form_context.empty_form.rating }}</div>
     </div>
 </div>
-<button type="button" id="{{ numina_form_context.add_button_id }}">Add Path</button>
+<button type="button" data-formset-add="numina_form">Add Path</button>
 {{ numina_form_js|safe }}

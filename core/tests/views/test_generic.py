@@ -261,7 +261,10 @@ class MultipleFormsetsMixinTest(TestCase):
         self.assertEqual(kwargs["instance"], "mock_object")
 
     def test_get_formset_context_generates_context_and_js(self):
-        """Test get_formset_context generates proper context and JavaScript."""
+        """Test get_formset_context generates proper context and FormsetManager JS."""
+        from widgets.widgets.formset_manager import _reset_js_rendered
+
+        _reset_js_rendered()  # Reset JS tracking for clean test
 
         class TestView(MultipleFormsetsMixin, TemplateView):
             template_name = "test.html"
@@ -272,11 +275,15 @@ class MultipleFormsetsMixinTest(TestCase):
 
         self.assertIn("formset", context)
         self.assertEqual(context["formset_prefix"], "items")
+        # FormsetManager-aligned IDs
+        self.assertEqual(context["container_id"], "items_formset")
+        self.assertEqual(context["empty_form_id"], "empty_items_form")
+        # Legacy IDs for backwards compatibility
         self.assertEqual(context["add_button_id"], "add_items_form")
         self.assertEqual(context["remove_button_class"], "remove_items_form")
         self.assertIn("empty_form", context)
-        self.assertIn("<script>", js_code)
-        self.assertIn("add_items_form", js_code)
+        # JS should be FormsetManager script
+        self.assertIn("FormsetManager", js_code)
 
     def test_get_formset_context_with_bound_formset(self):
         """Test get_formset_context uses bound formset when provided."""
