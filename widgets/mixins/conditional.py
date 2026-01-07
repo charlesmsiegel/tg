@@ -53,7 +53,6 @@ import json
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-
 # JavaScript for conditional field visibility
 CONDITIONAL_FIELDS_JS = """
 (function() {
@@ -274,7 +273,7 @@ class ConditionalFieldsMixin:
 
     def __init__(self, *args, **kwargs):
         # Allow passing context via kwargs
-        context = kwargs.pop('conditional_context', None)
+        context = kwargs.pop("conditional_context", None)
         super().__init__(*args, **kwargs)
 
         if context:
@@ -305,7 +304,7 @@ class ConditionalFieldsMixin:
         """
         rules = self.get_conditional_rules()
         if not rules:
-            return ''
+            return ""
 
         context = self.get_conditional_context()
 
@@ -314,52 +313,51 @@ class ConditionalFieldsMixin:
         # Inject the manager JavaScript (only once)
         if not ConditionalFieldsMixin._conditional_js_rendered:
             ConditionalFieldsMixin._conditional_js_rendered = True
-            parts.append(f'<script data-conditional-fields-js>{CONDITIONAL_FIELDS_JS}</script>')
+            parts.append(f"<script data-conditional-fields-js>{CONDITIONAL_FIELDS_JS}</script>")
 
         # Embed rules as JSON
         data = {
-            'rules': rules,
-            'context': context,
+            "rules": rules,
+            "context": context,
         }
         parts.append(
             f'<script type="application/json" data-conditional-rules>'
-            f'{json.dumps(data)}</script>'
+            f"{json.dumps(data)}</script>"
         )
 
         # Re-init script
-        parts.append('<script>if(window.ConditionalFields)window.ConditionalFields.init();</script>')
+        parts.append(
+            "<script>if(window.ConditionalFields)window.ConditionalFields.init();</script>"
+        )
 
-        return mark_safe(''.join(parts))
+        return mark_safe("".join(parts))
 
-    def wrap_field(self, field_name, label_prefix=''):
+    def wrap_field(self, field_name, label_prefix=""):
         """
         Wrap a field in a conditional visibility container.
 
         Usage in template: {{ form.wrap_field('pooled', 'Pooled?') }}
         """
         if field_name not in self.fields:
-            return ''
+            return ""
 
         field = self[field_name]
         rules = self.get_conditional_rules()
         field_rules = rules.get(field_name, {})
 
         # Determine initial visibility
-        initially_hidden = field_rules.get('initially_hidden', True)
-        hidden_class = ' d-none' if initially_hidden else ''
+        initially_hidden = field_rules.get("initially_hidden", True)
+        hidden_class = " d-none" if initially_hidden else ""
 
-        wrapper_id = f'{field_name}_wrap'
+        wrapper_id = f"{field_name}_wrap"
 
         if label_prefix:
-            content = f'{label_prefix} {field}'
+            content = f"{label_prefix} {field}"
         else:
             content = str(field)
 
         return format_html(
-            '<div id="{}" class="col-sm{}">{}</div>',
-            wrapper_id,
-            hidden_class,
-            mark_safe(content)
+            '<div id="{}" class="col-sm{}">{}</div>', wrapper_id, hidden_class, mark_safe(content)
         )
 
     @classmethod
