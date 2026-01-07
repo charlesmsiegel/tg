@@ -28,7 +28,15 @@ class LinkedStatFields:
     Holds the permanent field, temporary field, descriptor, and constraints
     for a linked stat pair. Use with linked_stat_fields() factory function.
 
-    Usage:
+    Supports tuple unpacking for inline class definition:
+
+        class Human(Character):
+            willpower, temporary_willpower, willpower_stat = linked_stat_fields(
+                'willpower', default=3, min_permanent=1
+            )
+
+    Or attribute access for more control:
+
         wp = linked_stat_fields('willpower', default=3, min_permanent=1)
 
         class Human(Character):
@@ -66,19 +74,32 @@ class LinkedStatFields:
         self._permanent_name = name
         self._temporary_name = f"temporary_{name}"
 
-    def constraints(self, prefix=""):
+    def __iter__(self):
+        """Allow tuple unpacking: perm, temp, desc = linked_stat_fields(...)"""
+        return iter((self.permanent, self.temporary, self.descriptor))
+
+    def __len__(self):
+        """Support len() for unpacking."""
+        return 3
+
+    def constraints(self, prefix="", permanent_name=None, temporary_name=None):
         """
         Generate CheckConstraints for this linked stat.
 
         Args:
             prefix: Constraint name prefix (e.g., 'characters_human_')
+            permanent_name: Override the permanent field name (for custom naming)
+            temporary_name: Override the temporary field name (for custom naming)
 
         Returns:
             list: List of CheckConstraint objects
         """
+        perm_name = permanent_name or self._permanent_name
+        temp_name = temporary_name or self._temporary_name
+
         return linked_stat_constraints(
-            self._permanent_name,
-            self._temporary_name,
+            perm_name,
+            temp_name,
             cap_temporary=self._cap_temporary,
             min_permanent=self._min_permanent,
             max_permanent=self._max_permanent,
@@ -118,31 +139,34 @@ def linked_stat_fields(
         temporary_default: Default for temporary if different from permanent (default None = same as default)
 
     Returns:
-        LinkedStatFields: Container with .permanent, .temporary, .descriptor attributes
+        LinkedStatFields: Iterable container supporting tuple unpacking
 
-    Usage:
-        wp = linked_stat_fields('willpower', default=3, min_permanent=1)
+    Usage (inline with tuple unpacking):
 
         class Human(Character):
-            willpower = wp.permanent
-            temporary_willpower = wp.temporary
-            willpower_stat = wp.descriptor
+            willpower, temporary_willpower, willpower_stat = linked_stat_fields(
+                'willpower', default=3, min_permanent=1
+            )
+
+    Usage (with attribute access for constraints):
+
+        _wp = linked_stat_fields('willpower', default=3, min_permanent=1)
+
+        class Human(Character):
+            willpower, temporary_willpower, willpower_stat = _wp
 
             class Meta:
-                constraints = [*wp.constraints('characters_human_')]
+                constraints = [*_wp.constraints('characters_human_')]
 
-    Or for blood pool style (max/current naming):
-        blood = linked_stat_fields(
-            'blood_pool',
-            default=10,
-            max_permanent=50,
-            max_temporary=50,
-        )
+    Blood pool style (max/current naming):
 
         class Vampire(Human):
-            max_blood_pool = blood.permanent  # Note: you choose the field name
-            blood_pool = blood.temporary
-            blood = blood.descriptor
+            max_blood_pool, blood_pool, blood = linked_stat_fields(
+                'blood_pool',
+                default=10,
+                max_permanent=50,
+                max_temporary=50,
+            )
     """
     temp_default = temporary_default if temporary_default is not None else default
 
