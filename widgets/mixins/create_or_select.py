@@ -65,6 +65,32 @@ class CreateOrSelectMixin:
         select_field = config["select_field"]
         return self.cleaned_data.get(select_field)
 
+    def _is_creating_from_data(self):
+        """Check if in create mode directly from cleaned_data (for use in _post_clean)."""
+        config = self.get_create_or_select_config()
+        toggle_field = config["toggle_field"]
+        return getattr(self, "cleaned_data", {}).get(toggle_field, False)
+
+    def _post_clean(self):
+        """
+        Skip model validation when in select mode.
+
+        When selecting an existing object, we don't need to validate the model
+        fields since we're returning an existing (already valid) object.
+        """
+        # If we're in select mode with a valid selection, skip model validation
+        if not self._is_creating_from_data():
+            config = self.get_create_or_select_config()
+            select_field = config["select_field"]
+            selection = self.cleaned_data.get(select_field)
+            if selection:
+                # Clear any model-related errors since we're using an existing object
+                # Don't run model validation - just ensure the instance is set
+                self.instance = selection
+                return
+        # In create mode, run normal model validation
+        super()._post_clean()
+
     def clean(self):
         """Validate that either selection is made or creation mode is enabled."""
         cleaned_data = super().clean()
