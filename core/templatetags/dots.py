@@ -105,6 +105,109 @@ def linked_dots(value, maximum=10):
     return mark_safe(f'<span class="dots">{dots_str}</span><br><span class="dots">{boxes_str}</span>')
 
 
+@register.filter(name="pool")
+def pool(value, maximum=None):
+    """
+    Render a linked stat as a pool (blood pool style).
+
+    Shows filled boxes for current value, empty boxes for remaining capacity.
+    The total number of boxes equals the max/permanent value.
+
+    Usage:
+        {{ character.blood|pool }}
+        {{ character.blood|pool:20 }}  # Override max display
+
+    Accepts:
+        - LinkedStatAccessor object (with .permanent and .temporary)
+        - tuple/list: (max, current)
+        - dict: {'permanent': x, 'temporary': y} or {'max': x, 'current': y}
+
+    Example output for blood_pool=7, max_blood_pool=10:
+        ■■■■■■■□□□
+    """
+    max_val = 0
+    current = 0
+
+    # Extract values based on input type
+    if hasattr(value, "permanent") and hasattr(value, "temporary"):
+        max_val = value.permanent
+        current = value.temporary
+    elif isinstance(value, (list, tuple)) and len(value) >= 2:
+        max_val = value[0]
+        current = value[1]
+    elif isinstance(value, dict):
+        max_val = value.get("permanent", value.get("max", 0))
+        current = value.get("temporary", value.get("current", 0))
+
+    # Convert to int safely
+    try:
+        max_val = int(max_val) if max_val else 0
+        current = int(current) if current else 0
+    except (ValueError, TypeError):
+        max_val = 0
+        current = 0
+
+    # Use override maximum if provided, otherwise use the stat's max
+    display_max = maximum if maximum is not None else max_val
+    display_max = max(display_max, 1)  # At least 1 box
+
+    # Cap current at display max
+    current = min(current, display_max)
+
+    # Generate boxes: filled for current, empty for remaining
+    boxes_str = "■" * current + "□" * (display_max - current)
+
+    return mark_safe(f'<span class="dots" title="{current}/{max_val}">{boxes_str}</span>')
+
+
+@register.filter(name="pool_dots")
+def pool_dots(value, maximum=None):
+    """
+    Render a linked stat as a pool using dots instead of boxes.
+
+    Shows filled dots for current value, empty dots for remaining capacity.
+
+    Usage:
+        {{ character.gnosis|pool_dots }}
+
+    Example output for gnosis=4, max=6:
+        ●●●●○○
+    """
+    max_val = 0
+    current = 0
+
+    # Extract values based on input type
+    if hasattr(value, "permanent") and hasattr(value, "temporary"):
+        max_val = value.permanent
+        current = value.temporary
+    elif isinstance(value, (list, tuple)) and len(value) >= 2:
+        max_val = value[0]
+        current = value[1]
+    elif isinstance(value, dict):
+        max_val = value.get("permanent", value.get("max", 0))
+        current = value.get("temporary", value.get("current", 0))
+
+    # Convert to int safely
+    try:
+        max_val = int(max_val) if max_val else 0
+        current = int(current) if current else 0
+    except (ValueError, TypeError):
+        max_val = 0
+        current = 0
+
+    # Use override maximum if provided, otherwise use the stat's max
+    display_max = maximum if maximum is not None else max_val
+    display_max = max(display_max, 1)  # At least 1 dot
+
+    # Cap current at display max
+    current = min(current, display_max)
+
+    # Generate dots: filled for current, empty for remaining
+    dots_str = "●" * current + "○" * (display_max - current)
+
+    return mark_safe(f'<span class="dots" title="{current}/{max_val}">{dots_str}</span>')
+
+
 @register.simple_tag(name="linked_stat")
 def linked_stat_tag(obj, permanent_field, temporary_field=None, maximum=10, show_labels=False):
     """

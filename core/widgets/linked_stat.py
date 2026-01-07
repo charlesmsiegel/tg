@@ -298,45 +298,99 @@ class LinkedStatFormField(forms.MultiValueField):
 
 class DotsBoxesWidget(forms.Widget):
     """
-    A read-only widget that displays linked stats as dots (permanent) and boxes (temporary).
+    A read-only widget that displays linked stats in various WoD styles.
 
-    This is useful for display-only forms or character sheet views.
+    Supports multiple display modes:
+    - "willpower": Two rows - dots (●○) for permanent, boxes (■□) for temporary
+    - "pool": Single row of boxes showing current/max (■■■■■□□□□□)
+    - "pool_dots": Single row of dots showing current/max (●●●●●○○○○○)
 
     Usage:
-        {{ form.willpower }}  # Renders as ●●●●●●●○○○ / ■■■■■□□□□□
+        # Willpower style (two rows)
+        {{ form.willpower }}  # ●●●●●●●○○○ / ■■■■■□□□□□
+
+        # Blood pool style (single row, filled = current)
+        DotsBoxesWidget(mode="pool")  # ■■■■■□□□□□
     """
 
-    def __init__(self, max_value=10, attrs=None):
+    # Display mode constants
+    MODE_WILLPOWER = "willpower"  # Two rows: dots for perm, boxes for temp
+    MODE_POOL = "pool"  # Single row: filled boxes = current, empty = remaining
+    MODE_POOL_DOTS = "pool_dots"  # Single row: filled dots = current, empty = remaining
+
+    def __init__(self, max_value=10, mode="willpower", attrs=None):
+        """
+        Initialize the widget.
+
+        Args:
+            max_value: Maximum display value (default 10)
+            mode: Display mode - "willpower", "pool", or "pool_dots"
+            attrs: Additional HTML attributes
+        """
         self.max_value = max_value
+        self.mode = mode
         super().__init__(attrs)
 
-    def render(self, name, value, attrs=None, renderer=None):
-        """Render the stat as dots and boxes."""
+    def _extract_values(self, value):
+        """Extract permanent and temporary values from various input types."""
         if value is None:
-            permanent = 0
-            temporary = 0
-        elif isinstance(value, (list, tuple)):
+            return 0, 0
+
+        if isinstance(value, (list, tuple)):
             permanent = value[0] if len(value) > 0 else 0
             temporary = value[1] if len(value) > 1 else 0
         elif isinstance(value, dict):
-            permanent = value.get("permanent", 0)
-            temporary = value.get("temporary", 0)
+            permanent = value.get("permanent", value.get("max", 0))
+            temporary = value.get("temporary", value.get("current", 0))
         elif hasattr(value, "permanent") and hasattr(value, "temporary"):
             permanent = value.permanent
             temporary = value.temporary
         else:
             permanent = temporary = int(value) if value else 0
 
-        # Generate dots (●○) for permanent
-        dots = "●" * permanent + "○" * (self.max_value - permanent)
+        return permanent, temporary
 
-        # Generate boxes (■□) for temporary
-        boxes = "■" * temporary + "□" * (self.max_value - temporary)
+    def render(self, name, value, attrs=None, renderer=None):
+        """Render the stat display."""
+        permanent, temporary = self._extract_values(value)
 
-        html = f"""
-<div class="linked-stat-display">
-    <div class="stat-dots" title="Permanent: {permanent}">{dots}</div>
-    <div class="stat-boxes" title="Temporary: {temporary}">{boxes}</div>
+        if self.mode == self.MODE_POOL:
+            # Blood pool style: single row of boxes, filled = current
+            # Display up to the max (permanent) capacity
+            display_max = min(permanent, self.max_value) if permanent > 0 else self.max_value
+            current = min(temporary, display_max)
+            boxes = "■" * current + "□" * (display_max - current)
+
+            html = f"""
+<div class="linked-stat-display pool-display">
+    <span class="dots" title="Current: {temporary} / Max: {permanent}">{boxes}</span>
+</div>
+"""
+        elif self.mode == self.MODE_POOL_DOTS:
+            # Pool style with dots instead of boxes
+            display_max = min(permanent, self.max_value) if permanent > 0 else self.max_value
+            current = min(temporary, display_max)
+            dots = "●" * current + "○" * (display_max - current)
+
+            html = f"""
+<div class="linked-stat-display pool-display">
+    <span class="dots" title="Current: {temporary} / Max: {permanent}">{dots}</span>
+</div>
+"""
+        else:
+            # Willpower style: two rows
+            # Generate dots (●○) for permanent
+            perm_display = min(permanent, self.max_value)
+            dots = "●" * perm_display + "○" * (self.max_value - perm_display)
+
+            # Generate boxes (■□) for temporary
+            temp_display = min(temporary, self.max_value)
+            boxes = "■" * temp_display + "□" * (self.max_value - temp_display)
+
+            html = f"""
+<div class="linked-stat-display willpower-display">
+    <div class="stat-dots" title="Permanent: {permanent}"><span class="dots">{dots}</span></div>
+    <div class="stat-boxes" title="Temporary: {temporary}"><span class="dots">{boxes}</span></div>
 </div>
 """
         return mark_safe(html)
@@ -344,3 +398,16 @@ class DotsBoxesWidget(forms.Widget):
     def value_from_datadict(self, data, files, name):
         """This widget is read-only, return None."""
         return None
+
+
+class PoolWidget(DotsBoxesWidget):
+    """
+    Convenience widget for blood pool style display.
+
+    Shows a single row: filled squares for current, empty for remaining capacity.
+    Example: ■■■■■■■□□□ (7 blood out of 10 max)
+    """
+
+    def __init__(self, max_value=10, use_dots=False, attrs=None):
+        mode = DotsBoxesWidget.MODE_POOL_DOTS if use_dots else DotsBoxesWidget.MODE_POOL
+        super().__init__(max_value=max_value, mode=mode, attrs=attrs)
