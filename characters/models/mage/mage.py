@@ -374,7 +374,7 @@ class Mage(MtAHuman):
         if self.subfaction is not None:
             q |= self.subfaction.affinities.all()
         q = q.distinct()
-        if q.count() == 0:
+        if not q.exists():
             return Sphere.objects.all()
         return q
 
@@ -500,7 +500,7 @@ class Mage(MtAHuman):
     def has_specialties(self):
         output = super().has_specialties()
         for sphere in self.filter_spheres(minimum=4):
-            output = output and (self.specialties.filter(stat=sphere).count() > 0)
+            output = output and self.specialties.filter(stat=sphere).exists()
         return output
 
     def needs_specialties(self):

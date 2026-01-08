@@ -55,7 +55,7 @@ class ChantryPointForm(ChainedSelectMixin, ConditionalFieldsMixin, forms.Form):
             ("Existing Background", "Existing Background"),
         ]
 
-        if self.object.backgrounds.count() == 0:
+        if not self.object.backgrounds.exists():
             category_choices = [
                 ("-----", "-----"),
                 ("Integrated Effects", "Integrated Effects"),

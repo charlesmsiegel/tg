@@ -103,9 +103,7 @@ class Command(BaseCommand):
         if approved_chars.exists():
             total_xp = sum(char.xp for char in approved_chars if hasattr(char, "xp"))
             stats["xp"]["total_awarded"] = total_xp
-            stats["xp"]["average_per_character"] = (
-                total_xp / approved_chars.count() if approved_chars.count() > 0 else 0
-            )
+            stats["xp"]["average_per_character"] = total_xp / approved_chars.count()
 
             # Count pending XP requests
             char_ids = approved_chars.values_list("id", flat=True)

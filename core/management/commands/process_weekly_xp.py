@@ -129,7 +129,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Characters participating: {characters.count()}")
         self.stdout.write("=" * 70 + "\n")
 
-        if characters.count() == 0:
+        if not characters.exists():
             self.stdout.write(self.style.WARNING("No characters participated in scenes this week."))
             return
 

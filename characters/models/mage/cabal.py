@@ -16,7 +16,7 @@ class Cabal(Group):
     def get_display_type(self):
         if self.leader is None:
             return "Cabal"
-        if Mage.objects.filter(pk=self.leader.pk).count() == 0:
+        if not Mage.objects.filter(pk=self.leader.pk).exists():
             return "Cabal"
         m = Mage.objects.get(pk=self.leader.pk)
         if m.affiliation == MageFaction.objects.get_or_create(name="Technocratic Union")[0]:

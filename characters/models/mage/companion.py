@@ -24,14 +24,14 @@ class Advantage(Model):
         return reverse("characters:mage:advantage", kwargs={"pk": self.pk})
 
     def update_max_rating(self):
-        if self.ratings.all().count() == 0:
+        if not self.ratings.exists():
             self.max_rating = 0
         else:
             self.max_rating = max(self.ratings.all().values_list("value", flat=True))
         self.save()
 
     def update_min_rating(self):
-        if self.ratings.all().count() == 0:
+        if not self.ratings.exists():
             self.min_rating = 0
         else:
             self.min_rating = min(self.ratings.all().values_list("value", flat=True))

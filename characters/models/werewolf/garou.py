@@ -249,7 +249,7 @@ class Werewolf(WtAHuman):
         return True
 
     def has_camp(self):
-        return self.camps.count() != 0
+        return self.camps.exists()
 
     def add_camp(self, camp):
         if camp is None:
@@ -287,9 +287,9 @@ class Werewolf(WtAHuman):
         else:
             b = False
 
-        b = b and self.gifts.filter(allowed=breed).count() > 0
-        b = b and self.gifts.filter(allowed=auspice).count() > 0
-        b = b and self.gifts.filter(allowed=tribe).count() > 0
+        b = b and self.gifts.filter(allowed=breed).exists()
+        b = b and self.gifts.filter(allowed=auspice).exists()
+        b = b and self.gifts.filter(allowed=tribe).exists()
 
         return b
 

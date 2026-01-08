@@ -104,7 +104,7 @@ class MageXPForm(XPForm):
                     polymorphic_ctype__model="specializedpractice"
                 ).exclude(polymorphic_ctype__model="corruptedpractice")
                 spec = SpecializedPractice.objects.filter(faction=char.faction)
-                if spec.count() > 0:
+                if spec.exists():
                     examples = examples.exclude(
                         id__in=[x.parent_practice.id for x in spec]
                     ) | Practice.objects.filter(id__in=[x.id for x in spec])
@@ -159,7 +159,7 @@ class MageXPForm(XPForm):
             polymorphic_ctype__model="corruptedpractice"
         )
         spec = SpecializedPractice.objects.filter(faction=self.character.faction)
-        if spec.count() > 0:
+        if spec.exists():
             examples = examples.exclude(
                 id__in=[x.parent_practice.id for x in spec]
             ) | Practice.objects.filter(id__in=[x.id for x in spec])

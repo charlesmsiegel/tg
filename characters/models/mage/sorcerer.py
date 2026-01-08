@@ -155,7 +155,7 @@ class Sorcerer(MtAHuman):
 
     def path_rating(self, path):
         ratings = PathRating.objects.filter(path=path, character=self)
-        if ratings.count() == 0:
+        if not ratings.exists():
             return 0
         return ratings.first().rating
 

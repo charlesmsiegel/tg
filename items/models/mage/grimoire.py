@@ -68,7 +68,7 @@ class Grimoire(Wonder):
         return True
 
     def has_abilities(self):
-        return self.abilities.count() != 0
+        return self.abilities.exists()
 
     def set_date_written(self, date_written):
         self.date_written = date_written
@@ -91,7 +91,7 @@ class Grimoire(Wonder):
         return True
 
     def has_focus(self):
-        return self.practices.count() != 0 and self.instruments.count() != 0
+        return self.practices.exists() and self.instruments.exists()
 
     def set_language(self, language):
         self.language = language
@@ -155,7 +155,7 @@ class Grimoire(Wonder):
         return True
 
     def has_spheres(self):
-        return self.spheres.count() != 0
+        return self.spheres.exists()
 
     def set_is_primer(self, is_primer):
         self.is_primer = is_primer
@@ -218,7 +218,7 @@ class Grimoire(Wonder):
             raise ValueError("Faction must come before Practice")
         if practices is None:
             practices = self.faction.practices.all()
-            if practices.count() == 0:
+            if not practices.exists():
                 practices = Practice.objects.all()
             num_practices = 1
             while random.random() < 0.25 and num_practices < practices.distinct().count():
@@ -234,7 +234,7 @@ class Grimoire(Wonder):
                     instruments |= practice.instruments.all()
             else:
                 instruments = Instrument.objects.all()
-            if instruments.count() == 0:
+            if not instruments.exists():
                 instruments = Instrument.objects.all()
             num_instruments = 1
             while random.random() < 0.3 and num_instruments < instruments.distinct().count():
@@ -250,7 +250,7 @@ class Grimoire(Wonder):
     def random_language(self, language=None):
         if language is None:
             if self.faction is not None:
-                if self.faction.languages.count() > 0:
+                if self.faction.languages.exists():
                     languages = self.faction.languages.all()
                     language = weighted_choice({x: x.frequency for x in languages})
                 else:
@@ -281,7 +281,7 @@ class Grimoire(Wonder):
     def random_material(self, cover_material=None, inner_material=None):
         if cover_material is None:
             if self.faction is not None:
-                if self.faction.materials.count() > 0:
+                if self.faction.materials.exists():
                     cover_material = self.faction.materials.order_by("?").first()
                 else:
                     cover_material = Material.objects.order_by("?").first()
@@ -290,7 +290,7 @@ class Grimoire(Wonder):
         if inner_material is None:
             is_hard = random.random() <= 0.3
             if self.faction is not None:
-                if self.faction.materials.filter(is_hard=is_hard).count() > 0:
+                if self.faction.materials.filter(is_hard=is_hard).exists():
                     inner_material = (
                         self.faction.materials.filter(is_hard=is_hard).order_by("?").first()
                     )
@@ -303,7 +303,7 @@ class Grimoire(Wonder):
     def random_medium(self, medium=None):
         if medium is None:
             if self.faction is not None:
-                if self.faction.media.count() != 0:
+                if self.faction.media.exists():
                     medium = self.faction.media.order_by("?").first()
                 else:
                     medium = Medium.objects.order_by("?").first()
@@ -319,7 +319,7 @@ class Grimoire(Wonder):
         self.set_rank(rank)
 
     def random_rotes(self, rotes=None):
-        if self.spheres.count() == 0:
+        if not self.spheres.exists():
             raise ValueError("Spheres must be determiend before rotes")
         if rotes is None:
             effects = []
