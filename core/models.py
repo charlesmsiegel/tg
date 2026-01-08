@@ -344,7 +344,7 @@ class Model(PermissionMixin, PolymorphicModel):
         return True
 
     def has_source(self):
-        return self.sources.count() > 0
+        return self.sources.exists()
 
     def add_source(self, book_title, page_number):
         book = Book.objects.get_or_create(name=book_title)[0]

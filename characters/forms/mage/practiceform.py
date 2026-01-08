@@ -22,7 +22,7 @@ class PracticeRatingForm(forms.ModelForm):
                 polymorphic_ctype__model="corruptedpractice"
             )
             spec = SpecializedPractice.objects.filter(faction=mage.faction)
-            if spec.count() > 0:
+            if spec.exists():
                 q = q.exclude(
                     id__in=[x.parent_practice.id for x in spec]
                 ) | Practice.objects.filter(id__in=spec)
@@ -47,7 +47,7 @@ class BasePracticeRatingFormSet(BaseInlineFormSet):
                 polymorphic_ctype__model="corruptedpractice"
             )
             spec = SpecializedPractice.objects.filter(faction=self.mage.faction)
-            if spec.count() > 0:
+            if spec.exists():
                 q = q.exclude(
                     id__in=[x.parent_practice.id for x in spec]
                 ) | Practice.objects.filter(id__in=spec)

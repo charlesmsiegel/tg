@@ -387,7 +387,7 @@ class Wraith(WtOHuman):
             triggers.append("zero_corpus")
 
         # Check for lost Fetters (this would need to be tracked separately)
-        if Fetter.objects.filter(wraith=self).count() == 0:
+        if not Fetter.objects.filter(wraith=self).exists():
             triggers.append("no_fetters")
 
         # Check permanent Angst

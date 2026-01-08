@@ -434,7 +434,7 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
                 "One ritual per path dot at this stage",
             )
             return self.form_invalid(form)
-        if r.level != 1 and sorcerer.rituals.filter(path=p, level=r.level - 1).count() == 0:
+        if r.level != 1 and not sorcerer.rituals.filter(path=p, level=r.level - 1).exists():
             form.add_error(
                 None,
                 "Must learn rituals in ascending level",
