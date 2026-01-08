@@ -1379,6 +1379,79 @@ class TestWeeklyXPRequestModel(TestCase):
         )
         self.assertEqual(request.total_xp(), 5)
 
+    def test_weekly_xp_request_approve_awards_xp(self):
+        """Test WeeklyXPRequest.approve() awards XP to the character."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+            learning=False,
+        )
+
+        initial_xp = self.character.xp
+        xp_awarded = request.approve()
+
+        request.refresh_from_db()
+        self.character.refresh_from_db()
+
+        self.assertTrue(request.approved)
+        self.assertEqual(xp_awarded, 1)  # finishing only
+        self.assertEqual(self.character.xp, initial_xp + 1)
+
+    def test_weekly_xp_request_approve_with_xp_data(self):
+        """Test WeeklyXPRequest.approve() with xp_data updates fields."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+        )
+
+        initial_xp = self.character.xp
+        xp_data = {
+            "finishing": True,
+            "learning": True,
+            "rp": True,
+            "focus": False,
+            "standingout": False,
+        }
+        xp_awarded = request.approve(xp_data=xp_data)
+
+        request.refresh_from_db()
+        self.character.refresh_from_db()
+
+        self.assertTrue(request.approved)
+        self.assertTrue(request.learning)
+        self.assertTrue(request.rp)
+        self.assertEqual(xp_awarded, 3)  # finishing + learning + rp
+        self.assertEqual(self.character.xp, initial_xp + 3)
+
+    def test_weekly_xp_request_approve_prevents_double_approval(self):
+        """Test WeeklyXPRequest.approve() raises error if already approved."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+            approved=True,
+        )
+
+        with self.assertRaises(ValueError) as context:
+            request.approve()
+        self.assertIn("already been approved", str(context.exception))
+
+    def test_weekly_xp_request_approve_is_atomic(self):
+        """Test WeeklyXPRequest.approve() uses atomic transaction."""
+        from django.db import transaction
+
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+        )
+
+        # The approve method is decorated with @transaction.atomic
+        # Verify it has the atomic wrapper
+        self.assertTrue(hasattr(request.approve, "__wrapped__"))
+
 
 class TestStoryXPRequestModel(TestCase):
     """Tests for StoryXPRequest model."""

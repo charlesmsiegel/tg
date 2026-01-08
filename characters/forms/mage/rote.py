@@ -133,11 +133,11 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
         if self.cleaned_data["select_or_create_rote"]:
             # Create Rote
             name = self.cleaned_data.get("name")
-            # practice and ability are now string PKs from ChainedChoiceField
-            practice_pk = self.data.get("practice")
+            # practice and ability are string PKs from ChainedChoiceField
+            practice_pk = self.cleaned_data.get("practice")
             practice = Practice.objects.get(pk=practice_pk) if practice_pk else None
             attribute = self.cleaned_data.get("attribute")
-            ability_pk = self.data.get("ability")
+            ability_pk = self.cleaned_data.get("ability")
             ability = Ability.objects.get(pk=ability_pk) if ability_pk else None
             description = self.cleaned_data.get("description")
             if self.cleaned_data["select_or_create_effect"]:

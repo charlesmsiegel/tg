@@ -1139,6 +1139,42 @@ class WeeklyXPRequest(models.Model):
         """Calculate total XP for this request."""
         return sum([self.finishing, self.learning, self.rp, self.focus, self.standingout])
 
+    @transaction.atomic
+    def approve(self, xp_data=None):
+        """
+        Approve this XP request and award XP to the character atomically.
+
+        Args:
+            xp_data: Optional dict with XP category values to update before approval.
+                     Keys can be: finishing, learning, rp, focus, standingout.
+
+        Returns:
+            The total XP awarded.
+
+        Raises:
+            ValueError: If the request is already approved.
+        """
+        if self.approved:
+            raise ValueError("This XP request has already been approved.")
+
+        # Update XP categories if provided
+        if xp_data:
+            for field in ["finishing", "learning", "rp", "focus", "standingout"]:
+                if field in xp_data:
+                    setattr(self, field, xp_data[field])
+
+        self.approved = True
+        xp_increase = self.total_xp()
+
+        # Award XP to the character
+        if self.character:
+            character = self.character.get_real_instance()
+            character.xp += xp_increase
+            character.save()
+
+        self.save()
+        return xp_increase
+
 
 class StoryXPRequest(models.Model):
     story = models.ForeignKey(Story, on_delete=models.SET_NULL, null=True)
