@@ -115,6 +115,48 @@ class SanitizeHTMLFilterTest(TestCase):
 class QuoteTagFilterTest(TestCase):
     """Tests for quote_tag filter."""
 
+    def test_escapes_html_in_quoted_text(self):
+        """Test filter escapes HTML special characters in quoted text."""
+        text = 'He said "<script>alert(1)</script>" to her.'
+        result = quote_tag(text)
+        # The script tag should be escaped, not rendered as HTML
+        self.assertNotIn("<script>", result)
+        self.assertIn("&lt;script&gt;", result)
+
+    def test_escapes_html_outside_quotes(self):
+        """Test filter escapes HTML special characters outside quotes."""
+        text = '<b>Bold</b> "quoted" text'
+        result = quote_tag(text)
+        # HTML outside quotes should also be escaped
+        self.assertIn("&lt;b&gt;", result)
+        self.assertIn("&lt;/b&gt;", result)
+
+    def test_returns_safe_string(self):
+        """Test filter returns a SafeString."""
+        from django.utils.safestring import SafeString
+
+        text = 'He said "hello" to her.'
+        result = quote_tag(text)
+        self.assertIsInstance(result, SafeString)
+
+    def test_xss_prevention_complex_payload(self):
+        """Test filter prevents XSS with complex payloads."""
+        # Test various XSS vectors - ensure HTML tags are escaped
+        payloads = [
+            ('"<img src=x onerror=alert(1)>"', "&lt;img"),
+            ('"<svg onload=alert(1)>"', "&lt;svg"),
+            ('"><script>alert(1)</script><"', "&lt;script&gt;"),
+            ('"</span><script>alert(1)</script><span>"', "&lt;/span&gt;"),
+        ]
+        for payload, expected_escaped in payloads:
+            result = quote_tag(payload)
+            # Ensure HTML tags are escaped, not rendered
+            self.assertIn(expected_escaped, result, f"Failed for payload: {payload}")
+            # Ensure no unescaped dangerous HTML tags
+            self.assertNotIn("<script>", result)
+            self.assertNotIn("<img ", result)
+            self.assertNotIn("<svg ", result)
+
     def test_wraps_quoted_text_in_span(self):
         """Test filter wraps quoted text in span tags."""
         text = 'He said "hello" to her.'
@@ -158,6 +200,46 @@ class QuoteTagFilterTest(TestCase):
 
 class SimpleMarkdownFilterTest(TestCase):
     """Tests for simple_markdown filter."""
+
+    def test_escapes_html_in_bold_text(self):
+        """Test filter escapes HTML special characters in bold text."""
+        text = "This is **<script>alert(1)</script>** bold."
+        result = simple_markdown(text)
+        # The script tag should be escaped
+        self.assertNotIn("<script>", result)
+        self.assertIn("&lt;script&gt;", result)
+
+    def test_escapes_html_in_italic_text(self):
+        """Test filter escapes HTML special characters in italic text."""
+        text = "This is *<img src=x onerror=alert(1)>* italic."
+        result = simple_markdown(text)
+        # The img tag should be escaped
+        self.assertNotIn("<img", result)
+        self.assertNotIn("onerror", result)
+
+    def test_escapes_html_outside_markdown(self):
+        """Test filter escapes HTML outside of markdown formatting."""
+        text = "<script>alert(1)</script> and **bold**"
+        result = simple_markdown(text)
+        self.assertNotIn("<script>", result)
+        self.assertIn("<strong>bold</strong>", result)
+
+    def test_xss_prevention_complex_payload(self):
+        """Test filter prevents XSS with complex payloads."""
+        # Test various XSS vectors - ensure HTML tags are escaped
+        payloads = [
+            ("**</strong><script>alert(1)</script><strong>**", "&lt;/strong&gt;"),
+            ("*</em><svg onload=alert(1)><em>*", "&lt;/em&gt;"),
+            ("<p onmouseover=alert(1)>text</p>", "&lt;p"),
+            ("</p><script>alert(1)</script><p>", "&lt;script&gt;"),
+        ]
+        for payload, expected_escaped in payloads:
+            result = simple_markdown(payload)
+            # Ensure HTML tags are escaped, not rendered
+            self.assertIn(expected_escaped, result, f"Failed for payload: {payload}")
+            # Ensure no unescaped dangerous HTML tags (besides our safe tags)
+            self.assertNotIn("<script>", result)
+            self.assertNotIn("<svg", result)
 
     def test_returns_empty_string_for_none(self):
         """Test filter returns empty string for None input."""
