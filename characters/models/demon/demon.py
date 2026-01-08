@@ -6,12 +6,17 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+
+# Factory-created linked stat fields for Demon
+_faith_fields = linked_stat_fields("faith", default=3, min_permanent=1)
+_torment_fields = linked_stat_fields("torment", default=3, temporary_default=0)
 
 
 class Demon(LoreBlock, DtFHuman):
@@ -75,12 +80,8 @@ class Demon(LoreBlock, DtFHuman):
     )
 
     # Faith and Torment
-    faith = models.IntegerField(default=3)  # Permanent Faith rating (1-10)
-    temporary_faith = models.IntegerField(default=3)  # Temporary Faith pool
-    faith_stat = LinkedStat("faith", "temporary_faith")
-    torment = models.IntegerField(default=3)  # Permanent Torment rating (0-10)
-    temporary_torment = models.IntegerField(default=0)  # Temporary Torment
-    torment_stat = LinkedStat("torment", "temporary_torment")
+    faith, temporary_faith, faith_stat = _faith_fields
+    torment, temporary_torment, torment_stat = _torment_fields
 
     # Virtues (replaces some Human virtues with Demon-specific ones)
     conviction = models.IntegerField(default=1)  # 1-5

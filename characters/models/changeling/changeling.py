@@ -2,10 +2,15 @@ from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from core.utils import add_dot, weighted_choice
 from django.db import models
 from django.utils.timezone import now
+
+
+# Factory-created linked stat fields for Changeling
+_banality_fields = linked_stat_fields("banality", default=3, temporary_default=0)
+_glamour_fields = linked_stat_fields("glamour", default=4)
 
 
 class Changeling(CtDHuman):
@@ -69,13 +74,8 @@ class Changeling(CtDHuman):
     scene = models.IntegerField(default=0)
     time = models.IntegerField(default=0)
 
-    banality = models.IntegerField(default=3)
-    temporary_banality = models.IntegerField(default=0)
-    banality_stat = LinkedStat("banality", "temporary_banality")
-
-    glamour = models.IntegerField(default=4)
-    temporary_glamour = models.IntegerField(default=4)
-    glamour_stat = LinkedStat("glamour", "temporary_glamour")
+    banality, temporary_banality, banality_stat = _banality_fields
+    glamour, temporary_glamour, glamour_stat = _glamour_fields
 
     MUSING_THRESHOLDS = [
         ("inspire_creativity", "Inspire Creativity"),

@@ -1,10 +1,16 @@
 from django.db import models
 from django.urls import reverse
 
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 
 from .creed import Creed
 from .htrhuman import HtRHuman
+
+
+# Factory-created linked stat fields for Hunter virtues
+_conviction_fields = linked_stat_fields("conviction", default=1, min_permanent=1, max_permanent=5)
+_vision_fields = linked_stat_fields("vision", default=1, min_permanent=1, max_permanent=5)
+_zeal_fields = linked_stat_fields("zeal", default=1, min_permanent=1, max_permanent=5)
 
 
 class Hunter(HtRHuman):
@@ -28,17 +34,9 @@ class Hunter(HtRHuman):
 
     # ===== VIRTUES (Hunter-specific trinity) =====
     # These replace Conscience/Self-Control/Courage from other gamelines
-    conviction = models.IntegerField(default=1)  # Justice/Judgement
-    temporary_conviction = models.IntegerField(default=1)
-    conviction_stat = LinkedStat("conviction", "temporary_conviction")
-
-    vision = models.IntegerField(default=1)  # Defense/Mercy
-    temporary_vision = models.IntegerField(default=1)
-    vision_stat = LinkedStat("vision", "temporary_vision")
-
-    zeal = models.IntegerField(default=1)  # Zeal/Vengeance
-    temporary_zeal = models.IntegerField(default=1)
-    zeal_stat = LinkedStat("zeal", "temporary_zeal")
+    conviction, temporary_conviction, conviction_stat = _conviction_fields  # Justice/Judgement
+    vision, temporary_vision, vision_stat = _vision_fields  # Defense/Mercy
+    zeal, temporary_zeal, zeal_stat = _zeal_fields  # Zeal/Vengeance
 
     # ===== EDGES (Supernatural Powers) =====
     # Conviction Edges (Judgement) - 7 edges

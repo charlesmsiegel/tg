@@ -5,11 +5,17 @@ from characters.models.werewolf.renownincident import RenownIncident
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
 from django.db import models
 from django.db.models import Q
 from items.models.werewolf.fetish import Fetish
+
+
+# Factory-created linked stat fields for Garou renown (cap_temporary=False allows accumulation)
+_glory_fields = linked_stat_fields("glory", default=0, cap_temporary=False)
+_wisdom_fields = linked_stat_fields("wisdom", default=0, cap_temporary=False)
+_honor_fields = linked_stat_fields("honor", default=0, cap_temporary=False)
 
 
 class Werewolf(WtAHuman):
@@ -57,17 +63,9 @@ class Werewolf(WtAHuman):
     gnosis = models.IntegerField(default=0)
     rage = models.IntegerField(default=0)
 
-    glory = models.IntegerField(default=0)
-    temporary_glory = models.IntegerField(default=0)
-    glory_renown = LinkedStat("glory", "temporary_glory", cap_temporary=False)
-
-    wisdom = models.IntegerField(default=0)
-    temporary_wisdom = models.IntegerField(default=0)
-    wisdom_renown = LinkedStat("wisdom", "temporary_wisdom", cap_temporary=False)
-
-    honor = models.IntegerField(default=0)
-    temporary_honor = models.IntegerField(default=0)
-    honor_renown = LinkedStat("honor", "temporary_honor", cap_temporary=False)
+    glory, temporary_glory, glory_renown = _glory_fields
+    wisdom, temporary_wisdom, wisdom_renown = _wisdom_fields
+    honor, temporary_honor, honor_renown = _honor_fields
 
     renown_incidents = models.JSONField(default=list, blank=True)  # list is callable - safe
 

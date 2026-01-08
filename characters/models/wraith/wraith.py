@@ -4,12 +4,17 @@ from characters.models.wraith.guild import Guild
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+
+# Factory-created linked stat fields for Wraith
+_pathos_fields = linked_stat_fields("pathos", default=5)
+_angst_fields = linked_stat_fields("angst", default=0)
 
 
 class Wraith(WtOHuman):
@@ -56,14 +61,10 @@ class Wraith(WtOHuman):
 
     # Core Wraith Stats
     corpus = models.IntegerField(default=10)
-    pathos = models.IntegerField(default=5)
-    temporary_pathos = models.IntegerField(default=5)
-    pathos_stat = LinkedStat("pathos", "temporary_pathos")
+    pathos, temporary_pathos, pathos_stat = _pathos_fields
 
     # Shadow Stats
-    angst = models.IntegerField(default=0)
-    temporary_angst = models.IntegerField(default=0)
-    angst_stat = LinkedStat("angst", "temporary_angst")
+    angst, temporary_angst, angst_stat = _angst_fields
 
     # Arcanoi (Standard - 13 Greater Guilds)
     argos = models.IntegerField(default=0)
