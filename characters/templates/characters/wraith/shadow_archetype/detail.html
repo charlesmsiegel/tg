@@ -1,0 +1,52 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title wto_heading">Shadow Archetype Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Point Cost:</strong></div>
+            <div class="col-md-8">{{ object.point_cost }}</div>
+        </div>
+        {% if object.core_function %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Core Function:</strong></div>
+                <div class="col-md-8">{{ object.core_function|sanitize_html }}</div>
+            </div>
+        {% endif %}
+        {% if object.modus_operandi %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Modus Operandi:</strong></div>
+                <div class="col-md-8">{{ object.modus_operandi|sanitize_html }}</div>
+            </div>
+        {% endif %}
+        {% if object.dominance_behavior %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Dominance Behavior:</strong></div>
+                <div class="col-md-8">{{ object.dominance_behavior|sanitize_html }}</div>
+            </div>
+        {% endif %}
+        {% if object.effect_on_psyche %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Effect on Psyche:</strong></div>
+                <div class="col-md-8">{{ object.effect_on_psyche|sanitize_html }}</div>
+            </div>
+        {% endif %}
+        {% if object.strengths %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Strengths:</strong></div>
+                <div class="col-md-8">{{ object.strengths|sanitize_html }}</div>
+            </div>
+        {% endif %}
+        {% if object.weaknesses %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Weaknesses:</strong></div>
+                <div class="col-md-8">{{ object.weaknesses|sanitize_html }}</div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock contents %}

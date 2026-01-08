@@ -3,7 +3,9 @@ from .autumn_person import (
     AutumnPersonDetailView,
     AutumnPersonUpdateView,
 )
+from .cantrip import CantripCreateView, CantripDetailView, CantripListView, CantripUpdateView
 from .changeling import ChangelingCharacterCreationView
+from .chimera import ChimeraCreateView, ChimeraDetailView, ChimeraListView, ChimeraUpdateView
 from .changeling import ChangelingCreateView as ChangelingCharacterListView
 from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
 from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView

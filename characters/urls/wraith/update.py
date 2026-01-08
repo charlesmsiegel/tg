@@ -3,9 +3,29 @@ from django.urls import path
 
 urls = [
     path(
+        "arcanos/<pk>/",
+        views.wraith.ArcanosUpdateView.as_view(),
+        name="arcanos",
+    ),
+    path(
         "circle/<pk>/",
         views.wraith.CircleUpdateView.as_view(),
         name="circle",
+    ),
+    path(
+        "faction/<pk>/",
+        views.wraith.WraithFactionUpdateView.as_view(),
+        name="faction",
+    ),
+    path(
+        "guild/<pk>/",
+        views.wraith.GuildUpdateView.as_view(),
+        name="guild",
+    ),
+    path(
+        "shadow_archetype/<pk>/",
+        views.wraith.ShadowArchetypeUpdateView.as_view(),
+        name="shadow_archetype",
     ),
     path(
         "thorn/<pk>/",

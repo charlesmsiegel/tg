@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Apocalyptic Form Traits
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="dtf">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title dtf_heading">Apocalyptic Form Traits</h1>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body">
+                <table class="tg-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Cost</th>
+                            <th>House</th>
+                            <th>High Torment Only</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                            <tr>
+                                <td><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                                <td>{{ obj.cost }}</td>
+                                <td>{% if obj.house %}{{ obj.house.name }}{% else %}-{% endif %}</td>
+                                <td>{% if obj.high_torment_only %}Yes{% else %}No{% endif %}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No apocalyptic form traits found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,3 +1,9 @@
+from .apocalyptic_trait import (
+    ApocalypticFormTraitCreateView,
+    ApocalypticFormTraitDetailView,
+    ApocalypticFormTraitListView,
+    ApocalypticFormTraitUpdateView,
+)
 from .conclave import (
     ConclaveCreateView,
     ConclaveDetailView,

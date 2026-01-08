@@ -1,0 +1,38 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Arcanos{% else %}Create Arcanos{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Arcanos Type</div>
+        <div class="col-sm">{{ form.arcanos_type }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Parent Arcanos</div>
+        <div class="col-sm">{{ form.parent_arcanos }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Level</div>
+        <div class="col-sm">{{ form.level }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Pathos Cost</div>
+        <div class="col-sm">{{ form.pathos_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Angst Cost</div>
+        <div class="col-sm">{{ form.angst_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Difficulty</div>
+        <div class="col-sm">{{ form.difficulty }}</div>
+    </div>
+{% endblock contents %}

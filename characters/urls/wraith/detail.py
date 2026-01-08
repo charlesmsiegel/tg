@@ -2,6 +2,36 @@ from characters import views
 from django.urls import path
 
 urls = [
+    # Arcanos detail view
+    path(
+        "arcanos/<pk>/",
+        views.wraith.ArcanosDetailView.as_view(),
+        name="arcanos",
+    ),
+    # Circle detail view
+    path(
+        "circle/<pk>/",
+        views.wraith.CircleDetailView.as_view(),
+        name="circle",
+    ),
+    # Faction detail view
+    path(
+        "faction/<pk>/",
+        views.wraith.WraithFactionDetailView.as_view(),
+        name="faction",
+    ),
+    # Guild detail view
+    path(
+        "guild/<pk>/",
+        views.wraith.GuildDetailView.as_view(),
+        name="guild",
+    ),
+    # Shadow Archetype detail view
+    path(
+        "shadow_archetype/<pk>/",
+        views.wraith.ShadowArchetypeDetailView.as_view(),
+        name="shadow_archetype",
+    ),
     # Wraith detail view
     path(
         "wraith/<pk>/",
