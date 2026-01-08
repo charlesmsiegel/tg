@@ -46,7 +46,9 @@ class TestPathListView(TestCase):
     def setUp(self):
         self.client = Client()
         Path.objects.create(name="Path of Caine", requires_conviction=True, requires_instinct=True)
-        Path.objects.create(name="Path of Death and the Soul", requires_conviction=True, requires_instinct=False)
+        Path.objects.create(
+            name="Path of Death and the Soul", requires_conviction=True, requires_instinct=False
+        )
         self.url = reverse("characters:vampire:list:path")
 
     def test_list_url_resolves(self):

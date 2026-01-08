@@ -416,9 +416,7 @@ class CharacterIndexView(ListView):
         # Optimize: fetch all visible characters in one query, then group by chronicle
         # Include polymorphic_ctype for subclass-specific method calls in templates
         all_characters = list(
-            self.get_queryset()
-            .select_related("polymorphic_ctype", "owner", "chronicle")
-            .visible()
+            self.get_queryset().select_related("polymorphic_ctype", "owner", "chronicle").visible()
         )
 
         # Initialize chron_dict with all chronicles and None

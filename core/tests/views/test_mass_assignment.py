@@ -282,7 +282,9 @@ class TestCompanionMassAssignment(TestCase):
             if form and form.errors:
                 self.fail(f"Form errors: {form.errors}")
 
-        self.assertEqual(response.status_code, 302, f"Expected redirect, got {response.status_code}")
+        self.assertEqual(
+            response.status_code, 302, f"Expected redirect, got {response.status_code}"
+        )
         self.companion.refresh_from_db()
         self.assertEqual(self.companion.status, "Sub")
 
@@ -323,7 +325,9 @@ class TestCompanionMassAssignment(TestCase):
         self.client.login(username="st", password="password")
         url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
-        response = self.client.post(url, self._get_st_form_data(st_notes="ST notes for this character"))
+        response = self.client.post(
+            url, self._get_st_form_data(st_notes="ST notes for this character")
+        )
 
         if response.status_code == 200 and hasattr(response, "context") and response.context:
             form = response.context.get("form")

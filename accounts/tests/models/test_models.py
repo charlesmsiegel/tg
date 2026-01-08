@@ -310,6 +310,41 @@ class TestProfileSTMethods(TestCase):
         relations = self.user.profile.st_relations()
         self.assertEqual(len(relations), 0)
 
+    def test_is_st_for_returns_true_for_chronicle_st(self):
+        """Test that is_st_for returns True when user is ST for the chronicle."""
+        self.assertTrue(self.st_user.profile.is_st_for(self.chronicle1))
+        self.assertTrue(self.st_user.profile.is_st_for(self.chronicle2))
+
+    def test_is_st_for_returns_false_for_other_chronicle(self):
+        """Test that is_st_for returns False for chronicle user is not ST of."""
+        other_chronicle = Chronicle.objects.create(name="Other Chronicle")
+        self.assertFalse(self.st_user.profile.is_st_for(other_chronicle))
+
+    def test_is_st_for_returns_false_for_non_st(self):
+        """Test that is_st_for returns False for non-storytellers."""
+        self.assertFalse(self.user.profile.is_st_for(self.chronicle1))
+        self.assertFalse(self.user.profile.is_st_for(self.chronicle2))
+
+    def test_is_st_for_returns_false_for_none_chronicle(self):
+        """Test that is_st_for returns False when chronicle is None."""
+        self.assertFalse(self.st_user.profile.is_st_for(None))
+
+    def test_is_st_for_returns_true_for_head_st(self):
+        """Test that is_st_for returns True when user is head_st of chronicle."""
+        new_chronicle = Chronicle.objects.create(name="New Chronicle", head_st=self.user)
+        # User is not in STRelationship but is head_st
+        self.assertTrue(self.user.profile.is_st_for(new_chronicle))
+
+    def test_is_st_for_prioritizes_head_st_over_relationship(self):
+        """Test that head_st role grants ST permissions even without STRelationship."""
+        # Create a chronicle where user is head_st but has no STRelationship
+        new_chronicle = Chronicle.objects.create(name="Head ST Chronicle", head_st=self.user)
+        self.assertTrue(self.user.profile.is_st_for(new_chronicle))
+        # Verify they don't have an STRelationship
+        self.assertFalse(
+            STRelationship.objects.filter(user=self.user, chronicle=new_chronicle).exists()
+        )
+
 
 class TestProfileObjectQueries(TestCase):
     """Test Profile methods for querying owned objects."""
@@ -424,9 +459,7 @@ class TestUnfulfilledWeeklyXPRequests(TestCase):
         from game.models import WeeklyXPRequest
 
         # Create XP request for week1
-        WeeklyXPRequest.objects.create(
-            character=self.character, week=self.week1, approved=False
-        )
+        WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=False)
 
         results = self.player.profile.get_unfulfilled_weekly_xp_requests()
 
@@ -503,9 +536,7 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
         from game.models import WeeklyXPRequest
 
         # Create unapproved request
-        WeeklyXPRequest.objects.create(
-            character=self.character, week=self.week1, approved=False
-        )
+        WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=False)
 
         results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
 
@@ -518,13 +549,9 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
         from game.models import WeeklyXPRequest
 
         # Create approved request
-        WeeklyXPRequest.objects.create(
-            character=self.character, week=self.week1, approved=True
-        )
+        WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=True)
         # Create unapproved request
-        WeeklyXPRequest.objects.create(
-            character=self.character, week=self.week2, approved=False
-        )
+        WeeklyXPRequest.objects.create(character=self.character, week=self.week2, approved=False)
 
         results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
 
@@ -538,9 +565,7 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
         """Test that method returns empty list when all requests are approved."""
         from game.models import WeeklyXPRequest
 
-        WeeklyXPRequest.objects.create(
-            character=self.character, week=self.week1, approved=True
-        )
+        WeeklyXPRequest.objects.create(character=self.character, week=self.week1, approved=True)
 
         results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
         self.assertEqual(len(results), 0)

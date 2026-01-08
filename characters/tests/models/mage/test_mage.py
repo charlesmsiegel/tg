@@ -121,8 +121,7 @@ class TestMage(TestCase):
             self.character.clean()
         # Should fail on the first sphere that exceeds
         self.assertTrue(
-            "forces" in context.exception.message_dict
-            or "mind" in context.exception.message_dict
+            "forces" in context.exception.message_dict or "mind" in context.exception.message_dict
         )
 
     def test_batini_no_entropy(self):

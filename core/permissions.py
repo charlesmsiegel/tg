@@ -454,10 +454,9 @@ class PermissionManager:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
         # 3. Player chronicle access - fetch IDs once, then use pk__in
-        if (
-            PermissionManager._model_has_field(model, "chronicle")
-            and PermissionManager._model_has_field(model, "status")
-        ):
+        if PermissionManager._model_has_field(
+            model, "chronicle"
+        ) and PermissionManager._model_has_field(model, "status"):
             from characters.models import Character
 
             # Get list of chronicle IDs where user has an approved character
@@ -475,9 +474,7 @@ class PermissionManager:
 
         ct = ContentType.objects.get_for_model(model)
         observed_ids = list(
-            Observer.objects.filter(content_type=ct, user=user).values_list(
-                "object_id", flat=True
-            )
+            Observer.objects.filter(content_type=ct, user=user).values_list("object_id", flat=True)
         )
         if observed_ids:
             filters |= Q(pk__in=observed_ids)

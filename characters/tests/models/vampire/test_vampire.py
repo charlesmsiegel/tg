@@ -955,6 +955,8 @@ class TestVampireBloodPoolMechanics(VampireModelTestCase):
         errors = vampire.validate_blood_pool()
         self.assertIn("blood_pool", errors)
         self.assertIn("exceeds maximum", errors["blood_pool"])
+
+
 class TestVampireVirtueValidation(VampireModelTestCase):
     """Tests for Vampire virtue and humanity validation (issues #1358, #1120)."""
 
