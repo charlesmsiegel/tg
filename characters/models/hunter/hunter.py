@@ -1,11 +1,9 @@
+from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
 
-from core.linked_stat import linked_stat_fields
-
 from .creed import Creed
 from .htrhuman import HtRHuman
-
 
 # Factory-created linked stat fields for Hunter virtues
 _conviction_fields = linked_stat_fields("conviction", default=1, min_permanent=1, max_permanent=5)

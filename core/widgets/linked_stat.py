@@ -148,21 +148,21 @@ class LinkedStatWidget(forms.MultiWidget):
             html_parts.append(
                 f'<div class="linked-stat-row">'
                 f'<label class="linked-stat-label">{self.permanent_label}</label>'
-                f'{widgets_html[0]}'
+                f"{widgets_html[0]}"
                 f"</div>"
             )
             html_parts.append(
                 f'<div class="linked-stat-row">'
                 f'<label class="linked-stat-label">{self.temporary_label}</label>'
-                f'{widgets_html[1]}'
+                f"{widgets_html[1]}"
                 f"</div>"
             )
         else:
             html_parts.append(
                 f'<div class="linked-stat-row">'
-                f'{widgets_html[0]}'
+                f"{widgets_html[0]}"
                 f'<span class="linked-stat-separator">/</span>'
-                f'{widgets_html[1]}'
+                f"{widgets_html[1]}"
                 f"</div>"
             )
 
@@ -289,9 +289,7 @@ class LinkedStatFormField(forms.MultiValueField):
 
         if result and self.cap_temporary:
             if result["temporary"] > result["permanent"]:
-                raise forms.ValidationError(
-                    "Temporary value cannot exceed permanent value."
-                )
+                raise forms.ValidationError("Temporary value cannot exceed permanent value.")
 
         return result
 

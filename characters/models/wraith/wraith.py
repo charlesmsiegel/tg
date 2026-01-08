@@ -11,7 +11,6 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-
 # Factory-created linked stat fields for Wraith
 _pathos_fields = linked_stat_fields("pathos", default=5)
 _angst_fields = linked_stat_fields("angst", default=0)
@@ -539,10 +538,10 @@ class Wraith(WtOHuman):
                 passion.save()
 
             # Reduce Angst
-            self.angst = max(
-                0, self.angst - (psyche_successes - shadow_successes)
+            self.angst = max(0, self.angst - (psyche_successes - shadow_successes))
+            self.temporary_angst = max(
+                0, self.temporary_angst - (psyche_successes - shadow_successes) * 2
             )
-            self.temporary_angst = max(0, self.temporary_angst - (psyche_successes - shadow_successes) * 2)
 
             self.save()
             return {

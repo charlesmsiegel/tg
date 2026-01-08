@@ -31,7 +31,6 @@ class EarthboundModelTests(TestCase):
         """Test default values for Earthbound fields."""
         self.assertEqual(self.earthbound.faith, 3)
         self.assertEqual(self.earthbound.temporary_faith, 10)
-        self.assertEqual(self.earthbound.max_faith, 10)
         self.assertEqual(self.earthbound.torment, 6)
         self.assertEqual(self.earthbound.temporary_torment, 0)
         self.assertEqual(self.earthbound.conviction, 1)
@@ -153,15 +152,17 @@ class EarthboundMaxFaithTests(TestCase):
         self.user = User.objects.create_user(username="testuser", password="testpass")
         self.earthbound = Earthbound.objects.create(name="Test Earthbound", owner=self.user)
 
-    def test_get_max_faith_from_hoard(self):
-        """get_max_faith_from_hoard returns stored value."""
-        self.earthbound.max_faith = 25
-        self.earthbound.save()
-        self.assertEqual(self.earthbound.get_max_faith_from_hoard(), 25)
-
-    def test_default_max_faith(self):
-        """Default max_faith is 10."""
+    def test_get_max_faith_from_hoard_no_background(self):
+        """get_max_faith_from_hoard returns 10 with no Hoard background."""
         self.assertEqual(self.earthbound.get_max_faith_from_hoard(), 10)
+
+    def test_get_max_faith_from_hoard_with_background(self):
+        """get_max_faith_from_hoard calculates from Hoard background (0=10, 1=15, ..., 5=35)."""
+        # Add hoard background at rating 3 (should give 10 + 3*5 = 25)
+        self.earthbound.background_manager.add_background("hoard", maximum=5)
+        self.earthbound.background_manager.add_background("hoard", maximum=5)
+        self.earthbound.background_manager.add_background("hoard", maximum=5)
+        self.assertEqual(self.earthbound.get_max_faith_from_hoard(), 25)
 
 
 class EarthboundReliquaryHealthTests(TestCase):

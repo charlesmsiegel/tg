@@ -102,7 +102,9 @@ def linked_dots(value, maximum=10):
     # Generate boxes for temporary (■□)
     boxes_str = "■" * temporary + "□" * (maximum - temporary)
 
-    return mark_safe(f'<span class="dots">{dots_str}</span><br><span class="dots">{boxes_str}</span>')
+    return mark_safe(
+        f'<span class="dots">{dots_str}</span><br><span class="dots">{boxes_str}</span>'
+    )
 
 
 def _extract_pool_values(value):

@@ -7,7 +7,6 @@ from core.utils import add_dot, weighted_choice
 from django.db import models
 from django.utils.timezone import now
 
-
 # Factory-created linked stat fields for Changeling
 _banality_fields = linked_stat_fields("banality", default=3, temporary_default=0)
 _glamour_fields = linked_stat_fields("glamour", default=4)

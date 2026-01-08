@@ -11,13 +11,8 @@ Tests cover:
 from unittest.mock import Mock
 
 import pytest
+from core.linked_stat import LinkedStat, LinkedStatAccessor, linked_stat_constraints
 from django.db.models import CheckConstraint
-
-from core.linked_stat import (
-    LinkedStat,
-    LinkedStatAccessor,
-    linked_stat_constraints,
-)
 
 
 class TestLinkedStatAccessor:
@@ -100,9 +95,7 @@ class TestLinkedStatAccessor:
         instance.willpower = 5
         instance.temporary_willpower = 3
 
-        accessor = LinkedStatAccessor(
-            instance, "willpower", "temporary_willpower", min_temporary=0
-        )
+        accessor = LinkedStatAccessor(instance, "willpower", "temporary_willpower", min_temporary=0)
 
         # Try to set temporary below minimum
         accessor.temporary = -5
@@ -204,9 +197,7 @@ class TestLinkedStatAccessor:
         # Not depleted
         instance.willpower = 7
         instance.temporary_willpower = 3
-        accessor = LinkedStatAccessor(
-            instance, "willpower", "temporary_willpower", min_temporary=0
-        )
+        accessor = LinkedStatAccessor(instance, "willpower", "temporary_willpower", min_temporary=0)
         assert accessor.is_depleted is False
 
         # Depleted
