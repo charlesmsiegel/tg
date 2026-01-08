@@ -101,18 +101,20 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
     """
     Create view for characters.
     Automatically sets the owner to the current user.
+
+    Security: Uses explicit field whitelist to prevent mass assignment of
+    sensitive fields like status, xp, owner, freebies_approved, etc.
     """
 
     model = Character
-    fields = "__all__"
+    fields = ["name", "concept", "description", "public_info", "chronicle", "npc"]
     template_name = "characters/core/character/form.html"
     success_message = "Character '{name}' created successfully!"
     error_message = "Failed to create Character. Please correct the errors below."
 
     def form_valid(self, form):
-        # Set owner to current user if not already set
-        if not form.instance.owner:
-            form.instance.owner = self.request.user
+        # Set owner to current user - not exposed in form for security
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
@@ -121,12 +123,32 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
     Update view for characters.
     Automatically enforces edit permissions.
 
-    - Chronicle Head STs can edit everything
-    - Owners can only edit limited fields (enforced by form)
+    - Chronicle Head STs can edit everything (via ST_EDIT_FIELDS)
+    - Owners can only edit limited fields (enforced by LimitedCharacterEditForm)
+
+    Security: Uses explicit field whitelist to prevent mass assignment attacks.
     """
 
     model = Character
-    fields = "__all__"
+    # Fields available to STs with full edit permission
+    # Note: owners get LimitedCharacterEditForm via get_form_class()
+    ST_EDIT_FIELDS = [
+        "name",
+        "concept",
+        "description",
+        "public_info",
+        "notes",
+        "chronicle",
+        "npc",
+        "status",
+        "xp",
+        "image",
+        "st_notes",
+        "freebies_approved",
+        "display",
+        "visibility",
+    ]
+    fields = ST_EDIT_FIELDS
     template_name = "characters/core/character/form.html"
     success_message = "Character '{name}' updated successfully!"
     error_message = "Failed to update Character. Please correct the errors below."
@@ -135,7 +157,7 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
         """
         Return different form based on user permissions.
         Owners get limited fields (notes, description, etc.) via LimitedCharacterEditForm.
-        STs and admins get full access to all fields via the default form.
+        STs and admins get full access via the default form with ST_EDIT_FIELDS.
         """
         # Check if user has full edit permission
         has_full_edit = PermissionManager.user_has_permission(
@@ -143,7 +165,7 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
         )
 
         if has_full_edit:
-            # STs and admins get all fields (ModelForm with fields="__all__")
+            # STs and admins get ST_EDIT_FIELDS
             return super().get_form_class()
         else:
             # Owners get limited fields (notes, description, public_info, image)

@@ -16,7 +16,7 @@ class NewsItemListView(ListView):
 
 class NewsItemCreateView(MessageMixin, CreateView):
     model = NewsItem
-    fields = "__all__"
+    fields = ["title", "content", "date"]
     template_name = "core/newsitem/form.html"
     success_message = "News item created successfully."
     error_message = "Error creating news item."
@@ -24,7 +24,7 @@ class NewsItemCreateView(MessageMixin, CreateView):
 
 class NewsItemUpdateView(MessageMixin, UpdateView):
     model = NewsItem
-    fields = "__all__"
+    fields = ["title", "content", "date"]
     template_name = "core/newsitem/form.html"
     success_message = "News item updated successfully."
     error_message = "Error updating news item."

@@ -10,7 +10,7 @@ class LanguageDetailView(DetailView):
 
 class LanguageCreateView(MessageMixin, CreateView):
     model = Language
-    fields = "__all__"
+    fields = ["name", "frequency"]
     template_name = "core/language/form.html"
     success_message = "Language created successfully."
     error_message = "Error creating language."
@@ -18,7 +18,7 @@ class LanguageCreateView(MessageMixin, CreateView):
 
 class LanguageUpdateView(MessageMixin, UpdateView):
     model = Language
-    fields = "__all__"
+    fields = ["name", "frequency"]
     template_name = "core/language/form.html"
     success_message = "Language updated successfully."
     error_message = "Error updating language."
