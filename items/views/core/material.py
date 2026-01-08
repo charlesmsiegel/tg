@@ -10,7 +10,7 @@ class MaterialDetailView(DetailView):
 
 class MaterialCreateView(MessageMixin, CreateView):
     model = Material
-    fields = "__all__"
+    fields = ["name", "is_hard"]
     template_name = "items/core/material/form.html"
     success_message = "Material '{name}' created successfully!"
     error_message = "Failed to create Material. Please correct the errors below."
@@ -23,7 +23,7 @@ class MaterialCreateView(MessageMixin, CreateView):
 
 class MaterialUpdateView(MessageMixin, UpdateView):
     model = Material
-    fields = "__all__"
+    fields = ["name", "is_hard"]
     template_name = "items/core/material/form.html"
     success_message = "Material '{name}' updated successfully!"
     error_message = "Failed to update Material. Please correct the errors below."
