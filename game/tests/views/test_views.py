@@ -1557,6 +1557,60 @@ class TestSceneDetailViewPost(TestCase):
         self.assertEqual(result, "\"Hello\" 'World'")
 
 
+class TestChronicleDetailViewQueryOptimization(TestCase):
+    """Test that ChronicleDetailView uses optimized queries for characters."""
+
+    def setUp(self):
+        from django.db import connection
+        from django.test import Client
+        from django.test.utils import CaptureQueriesContext
+
+        self.CaptureQueriesContext = CaptureQueriesContext
+        self.connection = connection
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+
+        # Create multiple characters with different owners to trigger N+1 if not optimized
+        for i in range(5):
+            owner = User.objects.create_user(
+                username=f"owner{i}", email=f"owner{i}@test.com", password="password"
+            )
+            Human.objects.create(
+                name=f"Character {i}",
+                owner=owner,
+                chronicle=self.chronicle,
+                concept="Test",
+                status="App",
+            )
+
+    def test_chronicle_detail_query_count_is_bounded(self):
+        """Test that chronicle detail query count doesn't scale with number of characters.
+
+        Without select_related, accessing character.owner.username and
+        character.owner.profile for each character causes N+1 queries.
+        With optimization, query count should be bounded regardless of character count.
+        """
+        self.client.login(username="testuser", password="password")
+
+        with self.CaptureQueriesContext(self.connection) as context:
+            response = self.client.get(f"/game/chronicle/{self.chronicle.pk}/")
+
+        self.assertEqual(response.status_code, 200)
+        query_count = len(context.captured_queries)
+        # Base overhead includes session, user/profile, polymorphic lookups, etc.
+        # Without optimization, this would be 30+ queries (5 chars * 2 relations + overhead)
+        # With optimization, should be under 30 queries
+        self.assertLessEqual(
+            query_count,
+            30,
+            f"Too many queries ({query_count}). Chronicle detail view may have N+1 issue for characters.",
+        )
+
+
 class TestChronicleListView(TestCase):
     """Test ChronicleListView."""
 

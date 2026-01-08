@@ -89,26 +89,35 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         locations_by_gameline = ChronicleDataService.group_locations_by_gameline(top_locations)
 
         # --- Characters by status ---
+        # Use select_related to prevent N+1 queries when accessing owner.username
+        # and owner.profile in templates
         active_characters = (
             Character.objects.active()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         retired_characters = (
             Character.objects.retired()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         deceased_characters = (
             Character.objects.deceased()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         npc_characters = (
-            Character.objects.active().npcs().with_group_ordering().filter(chronicle=chronicle)
+            Character.objects.active()
+            .npcs()
+            .with_group_ordering()
+            .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
 
         # --- Items ---
