@@ -681,3 +681,274 @@ class TestVampireFreebieStep(VampireModelTestCase):
         """Test that vampires have freebie_step of 7."""
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         self.assertEqual(vampire.freebie_step, 7)
+
+
+class TestVampireGenerationTraitMax(VampireModelTestCase):
+    """Test generation-based trait maximums (Issue #1356, #1119, #1376)."""
+
+    def test_generation_3_trait_max(self):
+        """Test 3rd generation trait maximum is 10."""
+        vampire = Vampire.objects.create(
+            name="Antediluvian",
+            owner=self.user,
+            generation_rating=3,
+        )
+        self.assertEqual(vampire.get_trait_max(), 10)
+        self.assertEqual(vampire.get_attribute_max(), 10)
+        self.assertEqual(vampire.get_discipline_max(), 10)
+
+    def test_generation_4_trait_max(self):
+        """Test 4th generation trait maximum is 9."""
+        vampire = Vampire.objects.create(
+            name="Methuselah",
+            owner=self.user,
+            generation_rating=4,
+        )
+        self.assertEqual(vampire.get_trait_max(), 9)
+        self.assertEqual(vampire.get_attribute_max(), 9)
+        self.assertEqual(vampire.get_discipline_max(), 9)
+
+    def test_generation_5_trait_max(self):
+        """Test 5th generation trait maximum is 8."""
+        vampire = Vampire.objects.create(
+            name="Elder",
+            owner=self.user,
+            generation_rating=5,
+        )
+        self.assertEqual(vampire.get_trait_max(), 8)
+
+    def test_generation_6_trait_max(self):
+        """Test 6th generation trait maximum is 7."""
+        vampire = Vampire.objects.create(
+            name="Elder",
+            owner=self.user,
+            generation_rating=6,
+        )
+        self.assertEqual(vampire.get_trait_max(), 7)
+
+    def test_generation_7_trait_max(self):
+        """Test 7th generation trait maximum is 6."""
+        vampire = Vampire.objects.create(
+            name="Elder",
+            owner=self.user,
+            generation_rating=7,
+        )
+        self.assertEqual(vampire.get_trait_max(), 6)
+
+    def test_generation_8_plus_trait_max(self):
+        """Test 8th generation and higher trait maximum is 5."""
+        for gen in [8, 9, 10, 11, 12, 13, 14, 15]:
+            vampire = Vampire.objects.create(
+                name=f"Gen {gen}",
+                owner=self.user,
+                generation_rating=gen,
+            )
+            self.assertEqual(
+                vampire.get_trait_max(),
+                5,
+                f"Generation {gen} should have trait max 5",
+            )
+
+
+class TestVampireAttributeMinimums(VampireModelTestCase):
+    """Test attribute minimum validation (Issue #1117)."""
+
+    def setUp(self):
+        super().setUp()
+        # Create Nosferatu clan
+        self.nosferatu = VampireClan.objects.create(
+            name="Nosferatu",
+            nickname="Sewer Rats",
+            weakness="Appearance 0",
+        )
+
+    def test_vampire_attribute_min_default(self):
+        """Test default minimum attribute is 1."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            clan=self.brujah,
+        )
+        self.assertEqual(vampire.get_attribute_min("strength"), 1)
+        self.assertEqual(vampire.get_attribute_min("dexterity"), 1)
+        self.assertEqual(vampire.get_attribute_min("appearance"), 1)
+
+    def test_nosferatu_appearance_zero(self):
+        """Test Nosferatu can have Appearance 0 (clan weakness)."""
+        vampire = Vampire.objects.create(
+            name="Nosferatu",
+            owner=self.user,
+            clan=self.nosferatu,
+        )
+        self.assertEqual(vampire.get_attribute_min("appearance"), 0)
+        # Other attributes should still be 1
+        self.assertEqual(vampire.get_attribute_min("strength"), 1)
+        self.assertEqual(vampire.get_attribute_min("charisma"), 1)
+
+    def test_validate_attributes_all_valid(self):
+        """Test validation passes for valid attributes."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            strength=2,
+            dexterity=3,
+            stamina=2,
+            charisma=2,
+            manipulation=2,
+            appearance=2,
+            perception=2,
+            intelligence=2,
+            wits=2,
+        )
+        errors = vampire.validate_attributes()
+        self.assertEqual(errors, {})
+
+    def test_validate_attributes_too_low(self):
+        """Test validation catches attributes below minimum."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            clan=self.brujah,
+        )
+        # Directly set to bypass validation
+        vampire.strength = 0
+        errors = vampire.validate_attributes()
+        self.assertIn("strength", errors)
+        self.assertIn("must be at least 1", errors["strength"])
+
+    def test_validate_attributes_nosferatu_appearance(self):
+        """Test Nosferatu can have Appearance 0 without errors."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            clan=self.nosferatu,
+        )
+        vampire.appearance = 0
+        errors = vampire.validate_attributes()
+        self.assertNotIn("appearance", errors)
+
+
+class TestVampireBloodPoolMechanics(VampireModelTestCase):
+    """Test blood pool spending and validation (Issue #1355)."""
+
+    def test_spend_blood_success(self):
+        """Test successful blood spending."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,
+        )
+        vampire.blood_pool = 5
+        vampire.save()
+
+        result = vampire.spend_blood(1)
+        self.assertTrue(result)
+        self.assertEqual(vampire.blood_pool, 4)
+
+    def test_spend_blood_insufficient(self):
+        """Test spending more blood than available fails."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,
+        )
+        vampire.blood_pool = 2
+        vampire.save()
+
+        result = vampire.spend_blood(3)
+        self.assertFalse(result)
+        self.assertEqual(vampire.blood_pool, 2)
+
+    def test_spend_blood_exceeds_per_turn(self):
+        """Test spending more than per-turn limit raises error."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,  # 1 blood per turn
+        )
+        vampire.blood_pool = 10
+        vampire.save()
+
+        with self.assertRaises(ValueError) as context:
+            vampire.spend_blood(2)
+        self.assertIn("Maximum per turn is 1", str(context.exception))
+
+    def test_spend_blood_high_generation_limit(self):
+        """Test higher generation vampire can spend more per turn."""
+        vampire = Vampire.objects.create(
+            name="Elder",
+            owner=self.user,
+            generation_rating=6,  # 6 blood per turn
+        )
+        vampire.blood_pool = 20
+        vampire.save()
+
+        result = vampire.spend_blood(6)
+        self.assertTrue(result)
+        self.assertEqual(vampire.blood_pool, 14)
+
+        # But 7 should fail
+        with self.assertRaises(ValueError):
+            vampire.spend_blood(7)
+
+    def test_restore_blood_success(self):
+        """Test successful blood restoration."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,
+        )
+        vampire.blood_pool = 5
+        vampire.save()
+
+        restored = vampire.restore_blood(3)
+        self.assertEqual(restored, 3)
+        self.assertEqual(vampire.blood_pool, 8)
+
+    def test_restore_blood_capped_at_max(self):
+        """Test blood restoration doesn't exceed max pool."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,  # max 10
+        )
+        vampire.blood_pool = 8
+        vampire.save()
+
+        restored = vampire.restore_blood(5)
+        self.assertEqual(restored, 2)  # Only 2 could be added
+        self.assertEqual(vampire.blood_pool, 10)
+
+    def test_validate_blood_pool_valid(self):
+        """Test validation passes for valid blood pool."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,
+        )
+        vampire.blood_pool = 5
+        errors = vampire.validate_blood_pool()
+        self.assertEqual(errors, {})
+
+    def test_validate_blood_pool_negative(self):
+        """Test validation catches negative blood pool."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+        )
+        vampire.blood_pool = -1
+        errors = vampire.validate_blood_pool()
+        self.assertIn("blood_pool", errors)
+        self.assertIn("cannot be negative", errors["blood_pool"])
+
+    def test_validate_blood_pool_exceeds_max(self):
+        """Test validation catches blood pool exceeding max."""
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            generation_rating=13,  # max 10
+        )
+        vampire.blood_pool = 15
+        errors = vampire.validate_blood_pool()
+        self.assertIn("blood_pool", errors)
+        self.assertIn("exceeds maximum", errors["blood_pool"])

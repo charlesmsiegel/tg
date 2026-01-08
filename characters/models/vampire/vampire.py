@@ -154,25 +154,115 @@ class Vampire(VtMHuman):
     def get_creation_url(cls):
         return reverse("characters:vampire:create:vampire")
 
+    # Generation table for trait maximums (V20 rules)
+    # Format: generation: (max_trait, max_blood_pool, blood_per_turn)
+    GENERATION_TABLE = {
+        3: (10, 50, 10),
+        4: (9, 50, 10),
+        5: (8, 40, 8),
+        6: (7, 30, 6),
+        7: (6, 20, 4),
+        8: (5, 15, 3),
+        9: (5, 14, 2),
+        10: (5, 13, 1),
+        11: (5, 12, 1),
+        12: (5, 11, 1),
+        13: (5, 10, 1),
+        14: (5, 10, 1),
+        15: (5, 10, 1),
+    }
+
     def update_generation_values(self):
         """Update max blood pool and blood per turn based on generation."""
-        generation_table = {
-            3: (50, 10),
-            4: (50, 10),
-            5: (40, 8),
-            6: (30, 6),
-            7: (20, 4),
-            8: (15, 3),
-            9: (14, 2),
-            10: (13, 1),
-            11: (12, 1),
-            12: (11, 1),
-            13: (10, 1),
-            14: (10, 1),
-            15: (10, 1),
-        }
-        if self.generation_rating in generation_table:
-            self.max_blood_pool, self.blood_per_turn = generation_table[self.generation_rating]
+        if self.generation_rating in self.GENERATION_TABLE:
+            _, self.max_blood_pool, self.blood_per_turn = self.GENERATION_TABLE[
+                self.generation_rating
+            ]
+
+    def get_trait_max(self):
+        """Return the maximum value for traits based on generation.
+
+        Per V20 rules:
+        - Generation 3: Max 10
+        - Generation 4: Max 9
+        - Generation 5: Max 8
+        - Generation 6: Max 7
+        - Generation 7: Max 6
+        - Generation 8+: Max 5
+        """
+        if self.generation_rating in self.GENERATION_TABLE:
+            return self.GENERATION_TABLE[self.generation_rating][0]
+        return 5  # Default for unknown generations
+
+    def get_attribute_max(self):
+        """Return the maximum value for attributes based on generation."""
+        return self.get_trait_max()
+
+    def get_discipline_max(self):
+        """Return the maximum value for disciplines based on generation."""
+        return self.get_trait_max()
+
+    def get_attribute_min(self, attribute_name=None):
+        """Return the minimum value for an attribute.
+
+        Nosferatu have Appearance 0 as their clan weakness.
+        """
+        if attribute_name == "appearance" and self.clan and self.clan.name == "Nosferatu":
+            return 0
+        return 1
+
+    def spend_blood(self, amount):
+        """Spend blood points from the blood pool.
+
+        Args:
+            amount: Number of blood points to spend
+
+        Returns:
+            True if successful, False if insufficient blood
+
+        Raises:
+            ValueError: If amount exceeds per-turn spending limit
+        """
+        if amount > self.blood_per_turn:
+            raise ValueError(
+                f"Cannot spend {amount} blood points per turn. "
+                f"Maximum per turn is {self.blood_per_turn} (Generation {self.generation_rating})."
+            )
+        if amount > self.blood_pool:
+            return False
+        self.blood_pool -= amount
+        self.save()
+        return True
+
+    def restore_blood(self, amount):
+        """Restore blood points to the blood pool.
+
+        Args:
+            amount: Number of blood points to restore
+
+        Returns:
+            int: Actual amount restored (may be less if at max)
+        """
+        old_pool = self.blood_pool
+        self.blood_pool = min(self.blood_pool + amount, self.max_blood_pool)
+        self.save()
+        return self.blood_pool - old_pool
+
+    def validate_blood_pool(self):
+        """Validate blood pool is within valid range.
+
+        Returns:
+            dict: Validation errors, empty if valid
+        """
+        errors = {}
+        if self.blood_pool < 0:
+            errors["blood_pool"] = "Blood pool cannot be negative"
+        if self.blood_pool > self.max_blood_pool:
+            errors["blood_pool"] = (
+                f"Blood pool ({self.blood_pool}) exceeds maximum "
+                f"({self.max_blood_pool}) for Generation {self.generation_rating}"
+            )
+        return errors
 
     def save(self, *args, **kwargs):
         """Override save to update generation-dependent values and handle path changes."""
@@ -427,7 +517,8 @@ class Vampire(VtMHuman):
                 if cost <= self.xp:
                     from core.utils import add_dot
 
-                    if add_dot(self, trait, 5):
+                    # Use generation-based maximum for disciplines
+                    if add_dot(self, trait, self.get_discipline_max()):
                         self.xp -= cost
                         self.add_to_spend(trait, getattr(self, trait), cost)
                         return True
@@ -552,7 +643,8 @@ class Vampire(VtMHuman):
                 if cost <= self.freebies:
                     from core.utils import add_dot
 
-                    if add_dot(self, trait, 5):
+                    # Use generation-based maximum for disciplines
+                    if add_dot(self, trait, self.get_discipline_max()):
                         self.freebies -= cost
                         return True
                     return False
