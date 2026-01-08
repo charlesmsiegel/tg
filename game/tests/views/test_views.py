@@ -9,6 +9,8 @@ from game.models import (
     Chronicle,
     FreebieSpendingRecord,
     Gameline,
+    Journal,
+    JournalEntry,
     ObjectType,
     Scene,
     Story,
@@ -1143,6 +1145,84 @@ class TestJournalListView(TestCase):
         response = self.client.get(reverse("game:journals") + "?filter=st")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["current_filter"], "st")
+
+    def test_journal_list_has_entry_count_annotation(self):
+        """Test that journals are annotated with entry_count."""
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        # Get the journal created by signal
+        journal1, _ = Journal.objects.get_or_create(character=self.char1)
+        # Add entries
+        JournalEntry.objects.create(
+            journal=journal1, message="Entry 1", date=timezone.now()
+        )
+        JournalEntry.objects.create(
+            journal=journal1, message="Entry 2", date=timezone.now()
+        )
+        response = self.client.get(reverse("game:journals"))
+        # Check that journals in object_list have entry_count annotation
+        for journal in response.context["object_list"]:
+            if journal.pk == journal1.pk:
+                self.assertEqual(journal.entry_count, 2)
+
+    def test_journal_list_has_latest_entry_annotation(self):
+        """Test that journals are annotated with latest_entry date."""
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        journal1, _ = Journal.objects.get_or_create(character=self.char1)
+        # Add entries with different dates
+        earlier = timezone.now() - timezone.timedelta(days=5)
+        later = timezone.now()
+        JournalEntry.objects.create(journal=journal1, message="Earlier", date=earlier)
+        JournalEntry.objects.create(journal=journal1, message="Later", date=later)
+        response = self.client.get(reverse("game:journals"))
+        for journal in response.context["object_list"]:
+            if journal.pk == journal1.pk:
+                # latest_entry should be the most recent date
+                self.assertIsNotNone(journal.latest_entry)
+                # Should be close to 'later' date (within a second)
+                self.assertAlmostEqual(
+                    journal.latest_entry.timestamp(),
+                    later.timestamp(),
+                    delta=1,
+                )
+
+    def test_journal_list_optimized_queries(self):
+        """Test that journal list view uses optimized queries (not N+1)."""
+        from django.test.utils import CaptureQueriesContext
+        from django.db import connection
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        # Create multiple journals with entries
+        for i in range(5):
+            char = Human.objects.create(
+                name=f"Char {i}",
+                owner=self.user,
+                chronicle=self.chronicle,
+            )
+            journal, _ = Journal.objects.get_or_create(character=char)
+            for j in range(3):
+                JournalEntry.objects.create(
+                    journal=journal,
+                    message=f"Entry {j}",
+                    date=timezone.now(),
+                )
+        # Now fetch the page and count queries
+        with CaptureQueriesContext(connection) as context:
+            response = self.client.get(reverse("game:journals"))
+        self.assertEqual(response.status_code, 200)
+        # With 7 journals (2 from setUp + 5 new), N+1 would be ~15 queries
+        # Optimized should be much fewer (session, user, journals, pagination)
+        # Allow some queries for session/auth but should be < 10
+        self.assertLess(
+            len(context.captured_queries),
+            10,
+            f"Too many queries ({len(context.captured_queries)}): "
+            f"{[q['sql'][:100] for q in context.captured_queries]}",
+        )
 
 
 class TestJournalDetailView(TestCase):

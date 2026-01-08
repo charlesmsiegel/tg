@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
-from django.db.models import OuterRef, Subquery
+from django.db.models import Count, Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import datetime
@@ -456,7 +456,15 @@ class JournalListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related("character", "character__owner")
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("character", "character__owner")
+            .annotate(
+                entry_count=Count("entries"),
+                latest_entry=Max("entries__date"),
+            )
+        )
         # Filter by ownership if requested
         filter_by = self.request.GET.get("filter")
         if filter_by == "mine":
@@ -472,16 +480,6 @@ class JournalListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["current_filter"] = self.request.GET.get("filter", "all")
-        # Annotate journals with entry count
-        from django.db.models import Count, Max
-
-        journals_with_stats = {}
-        for journal in context["object_list"]:
-            journals_with_stats[journal.pk] = {
-                "entry_count": journal.entries.count(),
-                "latest_entry": journal.entries.aggregate(Max("date"))["date__max"],
-            }
-        context["journal_stats"] = journals_with_stats
         return context
 
 
