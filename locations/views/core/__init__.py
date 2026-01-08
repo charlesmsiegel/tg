@@ -207,14 +207,13 @@ class LocationIndexView(View):
         }
         chron_dict = {}
         for chron in list(Chronicle.objects.all()) + [None]:
-            if chron:
-                chron_dict[chron] = (
-                    LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
-                )
-            else:
-                chron_dict[chron] = (
-                    LocationModel.objects.top_level().filter(chronicle=chron).order_by("name")
-                )
+            # Include polymorphic_ctype for subclass-specific method calls in templates
+            chron_dict[chron] = (
+                LocationModel.objects.top_level()
+                .filter(chronicle=chron)
+                .with_polymorphic_ctype()
+                .order_by("name")
+            )
         context["form"] = LocationCreationForm(user=self.request.user)
         context["chrondict"] = chron_dict
         if self.request.user.is_authenticated:
