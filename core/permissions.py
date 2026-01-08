@@ -9,7 +9,6 @@ from enum import Enum
 from typing import Set
 
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Q
 
@@ -441,34 +440,31 @@ class PermissionManager:
         return Q(chronicle__in=player_chronicles, status="App")
 
     @staticmethod
-    def _get_observer_exists_subquery(user: User, model):
+    def _get_observer_filter(user: User, model) -> Q:
         """
-        Get Exists subquery for objects user is observing.
+        Get Q filter for objects user is observing.
 
-        Uses pk__in with subquery instead of Exists for polymorphic compatibility.
+        Leverages GenericRelation on PermissionMixin for cleaner lookups
+        without manual ContentType queries.
 
         Args:
             user: Django User instance
             model: Model class being filtered
 
         Returns:
-            Exists subquery for observer access
+            Q filter for observer access
         """
-        from core.models import Observer
-
-        ct = ContentType.objects.get_for_model(model)
-        # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        observed_ids = Observer.objects.filter(content_type=ct, user=user).values("object_id")
-        return Q(pk__in=observed_ids)
+        # Check if model has observers relation (from PermissionMixin)
+        if not PermissionManager._model_has_field(model, "observers"):
+            return Q(pk__in=[])  # No observer support, empty filter
+        return Q(observers__user=user)
 
     @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """
         Filter queryset to only objects user can view.
 
-        Refactored to use proper field checking and helper methods for maintainability.
-        Uses annotations for Exists-based filters to avoid issues with polymorphic
-        querysets (Exists objects cannot be wrapped in Q objects).
+        Uses Q-based filters and GenericRelation for observer access.
 
         Args:
             user: Django User instance
@@ -487,7 +483,7 @@ class PermissionManager:
         if user.is_superuser or user.is_staff:
             return queryset
 
-        # Build Q-based filters (these work correctly with polymorphic querysets)
+        # Build Q-based filters
         filters = Q()
 
         # 1. Objects user owns
@@ -498,30 +494,14 @@ class PermissionManager:
         if chronicle_model:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
-        # 3. Annotate with Exists subqueries for player chronicle and observer access
-        # (Exists cannot be wrapped in Q objects - causes AttributeError with polymorphic)
-        annotations = {}
-
-        player_chronicle_exists = PermissionManager._get_player_chronicle_exists_subquery(
+        # 3. Player chronicle access (approved character in same chronicle)
+        player_chronicle_filter = PermissionManager._get_player_chronicle_exists_subquery(
             user, queryset.model
         )
-        if player_chronicle_exists is not None:
-            annotations["_is_player_chronicle"] = player_chronicle_exists
+        if player_chronicle_filter is not None:
+            filters |= player_chronicle_filter
 
-        observer_exists = PermissionManager._get_observer_exists_subquery(user, queryset.model)
-        annotations["_is_observer"] = observer_exists
-
-        # Apply annotations
-        if annotations:
-            queryset = queryset.annotate(**annotations)
-
-        # Add Exists-based filters using the annotated fields
-        if player_chronicle_exists is not None:
-            # Player chronicle access: user has approved character in same chronicle
-            # and the object is also approved
-            filters |= Q(_is_player_chronicle=True, status="App")
-
-        # Observer access
-        filters |= Q(_is_observer=True)
+        # 4. Observer access via GenericRelation
+        filters |= PermissionManager._get_observer_filter(user, queryset.model)
 
         return queryset.filter(filters).distinct()
