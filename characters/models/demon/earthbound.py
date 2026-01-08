@@ -10,7 +10,6 @@ from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
 
-
 # Factory-created linked stat fields for Earthbound
 _eb_faith_fields = linked_stat_fields("faith", default=3, min_permanent=1, temporary_default=10)
 _eb_torment_fields = linked_stat_fields("torment", default=6, temporary_default=0)
@@ -89,9 +88,6 @@ class Earthbound(LoreBlock, DtFHuman):
 
     # FAITH AND TORMENT
     faith, temporary_faith, faith_stat = _eb_faith_fields
-    max_faith = models.IntegerField(
-        default=10, help_text="Maximum Faith pool from Hoard (10-35 for Earthbound)"
-    )
     torment, temporary_torment, torment_stat = _eb_torment_fields
 
     # VIRTUES (Earthbound still have these)
@@ -230,11 +226,9 @@ class Earthbound(LoreBlock, DtFHuman):
             return 2
 
     def get_max_faith_from_hoard(self):
-        """Calculate max Faith based on Hoard background"""
-        # This would reference the Hoard background rating
-        # 0=10, 1=15, 2=20, 3=25, 4=30, 5=35
-        # For now, return the stored value
-        return self.max_faith
+        """Calculate max Faith based on Hoard background (0=10, 1=15, 2=20, 3=25, 4=30, 5=35)."""
+        hoard = self.background_manager.total_background_rating("hoard")
+        return 10 + (hoard * 5)
 
     def calculate_reliquary_health(self):
         """Calculate reliquary health levels based on type"""

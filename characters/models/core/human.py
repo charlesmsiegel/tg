@@ -17,7 +17,6 @@ from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-
 # Factory-created linked stat fields for Human
 _willpower_fields = linked_stat_fields("willpower", default=3, min_permanent=1)
 

@@ -11,7 +11,6 @@ from django.db import models
 from django.db.models import Q
 from items.models.werewolf.fetish import Fetish
 
-
 # Factory-created linked stat fields for Garou renown (cap_temporary=False allows accumulation)
 _glory_fields = linked_stat_fields("glory", default=0, cap_temporary=False)
 _wisdom_fields = linked_stat_fields("wisdom", default=0, cap_temporary=False)
