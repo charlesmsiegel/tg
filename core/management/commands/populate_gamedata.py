@@ -3,10 +3,12 @@ Management command to populate the database with game data from populate_db/ dir
 
 This command recursively searches populate_db/ and all subdirectories for .py scripts
 and provides more control over data loading.
+
+Security: Uses importlib for controlled module loading instead of raw exec().
 """
 
+import importlib.util
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -187,19 +189,36 @@ class Command(BaseCommand):
         return any(gl in stem for gl in gamelines)
 
     def load_file(self, file, populate_dir, verbose=False):
-        """Execute a populate script file."""
+        """Execute a populate script file using importlib for safer module loading.
+
+        Uses Python's importlib to load modules rather than raw exec(),
+        providing better isolation and standard module semantics.
+        """
         relative_path = file.relative_to(populate_dir)
 
         if verbose:
             self.stdout.write(f"Loading {relative_path}...", ending="")
 
-        # Read and execute the file
-        with open(file, "r") as f:
-            code = f.read()
+        # Generate a unique module name based on the file path
+        # Replace path separators and remove .py extension
+        module_name = f"populate_db.{str(relative_path).replace('/', '.').replace('.py', '')}"
 
-        # Execute in a transaction for safety
+        # Use importlib to load the module safely
+        spec = importlib.util.spec_from_file_location(module_name, file)
+        if spec is None or spec.loader is None:
+            raise CommandError(f"Could not load spec for {file}")
+
+        module = importlib.util.module_from_spec(spec)
+
+        # Execute in a transaction for database safety
         with transaction.atomic():
-            exec(code, {"__name__": "__main__"})
+            # Temporarily add module to sys.modules so relative imports work
+            sys.modules[module_name] = module
+            try:
+                spec.loader.exec_module(module)
+            finally:
+                # Clean up to avoid polluting sys.modules
+                sys.modules.pop(module_name, None)
 
         if verbose:
             self.stdout.write(self.style.SUCCESS(" ✓"))

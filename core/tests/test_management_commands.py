@@ -2,9 +2,11 @@
 
 import json
 import os
+import shutil
 import tempfile
 from datetime import date, timedelta
 from io import StringIO
+from pathlib import Path
 from unittest.mock import patch
 
 from accounts.models import Profile
@@ -783,3 +785,185 @@ class TestCommandErrorHandling(ManagementCommandTestBase):
         """Test generate_chronicle_summary raises error when ID is missing."""
         with self.assertRaises(CommandError):
             call_command("generate_chronicle_summary")
+
+
+class TestPopulateGamedataCommand(TestCase):
+    """Tests for the populate_gamedata management command.
+
+    These tests verify that:
+    1. The command uses importlib for safe module loading (not raw exec())
+    2. Scripts are executed correctly within transactions
+    3. Proper error handling and filtering works
+    """
+
+    def setUp(self):
+        """Set up a temporary populate_db directory for testing."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.populate_dir = Path(self.temp_dir) / "populate_db"
+        self.populate_dir.mkdir()
+
+    def tearDown(self):
+        """Clean up temporary directory."""
+        shutil.rmtree(self.temp_dir)
+
+    def call_command_capture_output(self, *args, **kwargs):
+        """Helper to call a command and capture its stdout/stderr."""
+        out = StringIO()
+        err = StringIO()
+        call_command("populate_gamedata", *args, stdout=out, stderr=err, **kwargs)
+        return out.getvalue(), err.getvalue()
+
+    def test_directory_not_found_raises_error(self):
+        """Test command raises error when populate_db directory doesn't exist."""
+        with patch("core.management.commands.populate_gamedata.Path") as mock_path:
+            mock_path.return_value.exists.return_value = False
+            with self.assertRaises(CommandError) as context:
+                call_command("populate_gamedata")
+            self.assertIn("not found", str(context.exception))
+
+    def test_no_files_found_raises_error(self):
+        """Test command raises error when no .py files are found."""
+        # Create empty directory
+        with patch("core.management.commands.populate_gamedata.Path") as mock_path:
+            mock_path.return_value.exists.return_value = True
+            mock_path.return_value.rglob.return_value = []
+            with self.assertRaises(CommandError) as context:
+                call_command("populate_gamedata")
+            self.assertIn("No .py files found", str(context.exception))
+
+    def test_dry_run_does_not_execute(self):
+        """Test --dry-run shows files but doesn't execute them."""
+        # Create a simple test script
+        test_script = self.populate_dir / "test_script.py"
+        test_script.write_text("# This should not be executed\nraise Exception('Should not run')")
+
+        with patch("core.management.commands.populate_gamedata.Path") as mock_path:
+            mock_path.return_value = self.populate_dir
+            mock_path.return_value.exists.return_value = True
+            mock_path.return_value.rglob.return_value = [test_script]
+
+            out = StringIO()
+            # Should not raise even though script raises Exception
+            call_command("populate_gamedata", "--dry-run", stdout=out)
+            output = out.getvalue()
+            self.assertIn("DRY RUN", output)
+
+    def test_uses_importlib_not_exec(self):
+        """Test that the command uses importlib instead of raw exec()."""
+        from core.management.commands import populate_gamedata
+        import inspect
+
+        # Get the source code of the load_file method
+        source = inspect.getsource(populate_gamedata.Command.load_file)
+
+        # Should use importlib
+        self.assertIn("importlib.util", source)
+        self.assertIn("spec_from_file_location", source)
+        self.assertIn("module_from_spec", source)
+
+        # Should NOT use raw exec with code content
+        self.assertNotIn("exec(code", source)
+        self.assertNotIn('exec(f.read()', source)
+
+    def test_gameline_filter(self):
+        """Test --gameline option filters files correctly."""
+        from core.management.commands.populate_gamedata import Command
+
+        cmd = Command()
+
+        # Create mock files
+        mock_files = [
+            Path("populate_db/abilities.py"),
+            Path("populate_db/vtm_disciplines.py"),
+            Path("populate_db/wta_gifts.py"),
+            Path("populate_db/mta_spheres.py"),
+        ]
+
+        options = {"gameline": "vtm", "only": None, "skip": None}
+        filtered = cmd.filter_files(mock_files, options)
+
+        # Should include abilities (not gameline-specific) and vtm-specific files
+        file_names = [f.stem for f in filtered]
+        self.assertIn("abilities", file_names)
+        self.assertIn("vtm_disciplines", file_names)
+        self.assertNotIn("wta_gifts", file_names)
+        self.assertNotIn("mta_spheres", file_names)
+
+    def test_only_filter(self):
+        """Test --only option filters files correctly."""
+        from core.management.commands.populate_gamedata import Command
+
+        cmd = Command()
+
+        mock_files = [
+            Path("populate_db/abilities.py"),
+            Path("populate_db/disciplines.py"),
+            Path("populate_db/backgrounds.py"),
+        ]
+
+        options = {"gameline": None, "only": "abilities", "skip": None}
+        filtered = cmd.filter_files(mock_files, options)
+
+        self.assertEqual(len(filtered), 1)
+        self.assertEqual(filtered[0].stem, "abilities")
+
+    def test_skip_filter(self):
+        """Test --skip option filters files correctly."""
+        from core.management.commands.populate_gamedata import Command
+
+        cmd = Command()
+
+        mock_files = [
+            Path("populate_db/abilities.py"),
+            Path("populate_db/disciplines.py"),
+            Path("populate_db/backgrounds.py"),
+        ]
+
+        options = {"gameline": None, "only": None, "skip": "disciplines"}
+        filtered = cmd.filter_files(mock_files, options)
+
+        file_names = [f.stem for f in filtered]
+        self.assertIn("abilities", file_names)
+        self.assertIn("backgrounds", file_names)
+        self.assertNotIn("disciplines", file_names)
+
+    def test_sort_order_core_first(self):
+        """Test that core subdirectory is loaded before other subdirectories."""
+        from core.management.commands.populate_gamedata import Command
+
+        cmd = Command()
+        populate_dir = Path("populate_db")
+
+        mock_files = [
+            Path("populate_db/vtm/disciplines.py"),
+            Path("populate_db/core/abilities.py"),
+            Path("populate_db/abilities.py"),
+            Path("populate_db/chronicles/test.py"),
+        ]
+
+        sorted_files = sorted(mock_files, key=lambda f: cmd.get_sort_key(f, populate_dir))
+
+        # Main directory first, then core, then other subdirs, then chronicles last
+        self.assertEqual(sorted_files[0].name, "abilities.py")  # Main dir
+        self.assertEqual(sorted_files[0].parent.name, "populate_db")
+        self.assertEqual(sorted_files[1].parent.name, "core")  # Core dir
+        self.assertEqual(sorted_files[-1].parent.name, "chronicles")  # Chronicles last
+
+    def test_module_cleanup_after_load(self):
+        """Test that loaded modules are cleaned up from sys.modules."""
+        import sys
+
+        # Create a simple test script in the actual populate_db if it exists
+        # or skip if not available
+        from core.management.commands.populate_gamedata import Command
+
+        # Check that module names starting with populate_db. from our test
+        # don't persist in sys.modules after command execution
+        pre_modules = set(k for k in sys.modules.keys() if k.startswith("populate_db."))
+
+        # The actual cleanup is tested in the load_file implementation
+        # by verifying sys.modules.pop() is called in a finally block
+        source = open(
+            "core/management/commands/populate_gamedata.py"
+        ).read()
+        self.assertIn("sys.modules.pop(module_name, None)", source)

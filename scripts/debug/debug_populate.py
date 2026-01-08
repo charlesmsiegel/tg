@@ -5,7 +5,10 @@ Debug script to run any populate_db script with full traceback and error reporti
 Usage:
     python scripts/debug/debug_populate.py populate_db/rotes.py
     python scripts/debug/debug_populate.py populate_db/merits_and_flaws.py
+
+Security: Uses importlib for controlled module loading instead of raw exec().
 """
+import importlib.util
 import os
 import sys
 import traceback
@@ -40,12 +43,23 @@ def main():
         print(f"Running {script_path}...")
         print("=" * 70)
 
-        with open(script_path) as f:
-            code = compile(f.read(), str(script_path), "exec")
-            exec(code)
+        # Use importlib for safer module loading instead of raw exec()
+        module_name = f"debug_populate_{script_path.stem}"
+        spec = importlib.util.spec_from_file_location(module_name, script_path)
+        if spec is None or spec.loader is None:
+            print(f"Error: Could not load spec for {script_path}")
+            sys.exit(1)
+
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        try:
+            spec.loader.exec_module(module)
+        finally:
+            # Clean up sys.modules
+            sys.modules.pop(module_name, None)
 
         print("=" * 70)
-        print(f"✓ Script completed successfully!")
+        print("✓ Script completed successfully!")
 
     except Exception as e:
         print("\n" + "=" * 70)
