@@ -1266,3 +1266,90 @@ class DeleteMessageMixinTest(TestCase):
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "{invalid_field} deleted!")
+
+
+class ApprovalMixinTest(TestCase):
+    """Tests for ApprovalMixin._parse_request_id security fix."""
+
+    def setUp(self):
+        """Set up test data."""
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="testpass123"
+        )
+
+    def _create_mock_view(self):
+        """Create a minimal ApprovalMixin instance for testing."""
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+
+        return TestApprovalView()
+
+    def test_parse_request_id_valid_input(self):
+        """Test that valid input returns the correct ID."""
+        view = self._create_mock_view()
+        request = self.factory.post("/", data={"xp_request_123": "approve"})
+        result = view._parse_request_id(request, "approve")
+        self.assertEqual(result, 123)
+
+    def test_parse_request_id_no_matching_key_raises_validation_error(self):
+        """Test that missing matching key raises ValidationError instead of IndexError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # POST data has no key with value "approve"
+        request = self.factory.post("/", data={"some_key": "other_value"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_malformed_key_raises_validation_error(self):
+        """Test that key with insufficient underscore parts raises ValidationError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Key has only 2 parts separated by underscore (needs 3+)
+        request = self.factory.post("/", data={"malformed_key": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_non_numeric_id_raises_validation_error(self):
+        """Test that non-numeric ID part raises ValidationError instead of ValueError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Key has correct format but third part is not numeric
+        request = self.factory.post("/", data={"xp_request_abc": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_empty_post_raises_validation_error(self):
+        """Test that empty POST data raises ValidationError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        request = self.factory.post("/", data={})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_negative_id_is_valid(self):
+        """Test that negative IDs are rejected as invalid."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Negative ID should be rejected
+        request = self.factory.post("/", data={"xp_request_-5": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
