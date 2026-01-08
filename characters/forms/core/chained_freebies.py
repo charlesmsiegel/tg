@@ -268,20 +268,20 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def clean(self):
         cleaned_data = super().clean()
-        category = self.data.get("category")
+        category = cleaned_data.get("category")
 
         if category == "-----":
             raise forms.ValidationError("Must Choose Freebie Expenditure Type")
         elif category == "MeritFlaw" and (
-            self.data.get("example", "") == "" or self.data.get("value", "") == ""
+            not cleaned_data.get("example") or not cleaned_data.get("value")
         ):
             raise forms.ValidationError("Must Choose Merit/Flaw and rating")
         elif (
             category in ["Attribute", "Ability", "Background", "Sphere", "Tenet", "Practice"]
-            and self.data.get("example", "") == ""
+            and not cleaned_data.get("example")
         ):
             raise forms.ValidationError("Must Choose Trait")
-        elif category == "Resonance" and self.data.get("resonance", "") == "":
+        elif category == "Resonance" and not cleaned_data.get("resonance"):
             raise forms.ValidationError("Must Choose Resonance")
 
         return cleaned_data

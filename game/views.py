@@ -755,16 +755,8 @@ class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
         # Use atomic transaction to ensure all approvals succeed or all fail
         with transaction.atomic():
             for xp_request in pending_requests:
-                # Approve the request as-is (using submitted XP categories)
-                xp_request.approved = True
-
-                # Calculate and award XP
-                xp_increase = xp_request.total_xp()
-                # Get the real Character instance (xp is on Character, not CharacterModel)
-                character = xp_request.character.get_real_instance()
-                character.xp += xp_increase
-                character.save()
-                xp_request.save()
+                # Approve the request using model method
+                xp_increase = xp_request.approve()
 
                 approved_count += 1
                 total_xp += xp_increase

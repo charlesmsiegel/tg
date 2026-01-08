@@ -241,6 +241,63 @@ class TestPostForm(TestCase):
             scene=self.scene,
         )
         self.assertFalse(form.is_valid())
+        self.assertIn("message", form.errors)
+
+    def test_form_character_not_required_when_single_character(self):
+        """Test form accepts no character when user has only one character in scene."""
+        # User has only one character in the scene, so character is optional
+        form = PostForm(
+            data={
+                "character": "",
+                "display_name": "",
+                "message": "Hello!",
+            },
+            user=self.user,
+            scene=self.scene,
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_form_character_required_when_multiple_characters(self):
+        """Test form requires character when user has multiple characters in scene."""
+        # Add a second character for this user
+        second_char = Human.objects.create(
+            name="Second Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.scene.characters.add(second_char)
+
+        form = PostForm(
+            data={
+                "character": "",
+                "display_name": "",
+                "message": "Hello!",
+            },
+            user=self.user,
+            scene=self.scene,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("character", form.errors)
+
+    def test_form_valid_with_character_when_multiple(self):
+        """Test form accepts character selection when user has multiple in scene."""
+        second_char = Human.objects.create(
+            name="Second Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+        )
+        self.scene.characters.add(second_char)
+
+        form = PostForm(
+            data={
+                "character": self.character.pk,
+                "display_name": "",
+                "message": "Hello!",
+            },
+            user=self.user,
+            scene=self.scene,
+        )
+        self.assertTrue(form.is_valid())
 
 
 class TestStoryForm(TestCase):

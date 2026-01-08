@@ -1,7 +1,6 @@
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
 from django import forms
-from django.db import transaction
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,
@@ -366,7 +365,7 @@ class AddCharForm(forms.Form):
 
 class PostForm(forms.Form):
     character = forms.ModelChoiceField(
-        queryset=CharacterModel.objects.none(), empty_label="Character Select"
+        queryset=CharacterModel.objects.none(), empty_label="Character Select", required=False
     )
     display_name = forms.CharField(
         max_length=100,
@@ -378,26 +377,28 @@ class PostForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Message"}))
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user")
-        scene = kwargs.pop("scene")
+        self.user = kwargs.pop("user")
+        self.scene = kwargs.pop("scene")
         super().__init__(*args, **kwargs)
-        self.fields["character"].queryset = CharacterModel.objects.filter(
-            owner=user,
-            chronicle=scene.chronicle,
-            pk__in=scene.characters.all(),
+        self.character_queryset = CharacterModel.objects.filter(
+            owner=self.user,
+            chronicle=self.scene.chronicle,
+            pk__in=self.scene.characters.all(),
         )
+        self.fields["character"].queryset = self.character_queryset
 
     def clean(self):
         cleaned_data = super().clean()
-
-        if "character" in self.errors.keys():
-            del self.errors["character"]
-
         message = cleaned_data.get("message")
 
-        # Validate the message content (example: no prohibited words or empty message)
+        # Validate the message content
         if not message or len(message.strip()) == 0:
-            raise forms.ValidationError("The message cannot be empty.")
+            self.add_error("message", "The message cannot be empty.")
+
+        # Character is required only when user has multiple characters in the scene
+        if self.character_queryset.count() > 1 and not cleaned_data.get("character"):
+            self.add_error("character", "Please select a character.")
+
         return cleaned_data
 
 
@@ -484,32 +485,19 @@ class WeeklyXPRequestForm(forms.ModelForm):
             self.instance.save()
         return self.instance
 
-    @transaction.atomic
     def st_save(self, commit=True):
-        """Approve the XP request and award XP to the character atomically."""
-        # Directly modify the instance bound to the form
-        self.instance.approved = True
-        self.instance.finishing = self.cleaned_data["finishing"]
-        self.instance.learning = self.cleaned_data["learning"]
-        self.instance.rp = self.cleaned_data["rp"]
-        self.instance.focus = self.cleaned_data["focus"]
-        self.instance.standingout = self.cleaned_data["standingout"]
+        """Approve the XP request and award XP to the character.
 
-        # Update character XP based on the form fields
-        xp_increase = sum(
-            [
-                self.instance.finishing,
-                self.instance.learning,
-                self.instance.rp,
-                self.instance.focus,
-                self.instance.standingout,
-            ]
-        )
-        self.character.xp += xp_increase
-        self.character.save()
-
-        if commit:
-            self.instance.save()
+        Delegates to the model's approve() method for business logic.
+        """
+        xp_data = {
+            "finishing": self.cleaned_data["finishing"],
+            "learning": self.cleaned_data["learning"],
+            "rp": self.cleaned_data["rp"],
+            "focus": self.cleaned_data["focus"],
+            "standingout": self.cleaned_data["standingout"],
+        }
+        self.instance.approve(xp_data=xp_data)
         return self.instance
 
     def clean(self):

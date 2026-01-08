@@ -119,9 +119,9 @@ class ChainedMageFreebiesForm(ChainedHumanFreebiesForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        category = self.data.get("category")
+        category = cleaned_data.get("category")
 
-        if category == "Resonance" and self.data.get("resonance", "") == "":
+        if category == "Resonance" and not cleaned_data.get("resonance"):
             raise forms.ValidationError("Must Choose Resonance")
 
         return cleaned_data
