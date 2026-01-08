@@ -1,5 +1,4 @@
 {% extends "core/base.html" %}
-{% load json_filters %}
 {% block title %}
     Journals
 {% endblock title %}
@@ -46,18 +45,16 @@
                                     <div class="row text-center" style="font-size: 0.85rem;">
                                         <div class="col-6">
                                             <div style="color: var(--theme-text-secondary);">Entries</div>
-                                            <div style="font-weight: 600;">{{ journal_stats|get_item:obj.pk|get_item:"entry_count"|default:"0" }}</div>
+                                            <div style="font-weight: 600;">{{ obj.entry_count|default:"0" }}</div>
                                         </div>
                                         <div class="col-6">
                                             <div style="color: var(--theme-text-secondary);">Latest</div>
                                             <div style="font-weight: 600;">
-                                                {% with latest=journal_stats|get_item:obj.pk|get_item:"latest_entry" %}
-                                                    {% if latest %}
-                                                        {{ latest|date:"M j" }}
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                {% endwith %}
+                                                {% if obj.latest_entry %}
+                                                    {{ obj.latest_entry|date:"M j" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
