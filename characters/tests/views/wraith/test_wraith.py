@@ -1,6 +1,8 @@
 """Tests for wraith views module."""
 
+from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.guild import Guild
+from characters.models.wraith.passion import Passion
 from characters.models.wraith.wraith import Wraith
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
@@ -70,6 +72,57 @@ class TestWraithDetailView(TestCase):
         self.client.login(username="owner", password="password")
         response = self.client.get(self.wraith.get_absolute_url())
         self.assertIn("dark_arcanoi", response.context)
+
+    def test_detail_view_has_fetters_in_context(self):
+        """Test that fetters are in the context."""
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.wraith.get_absolute_url())
+        self.assertIn("fetters", response.context)
+
+    def test_detail_view_has_passions_in_context(self):
+        """Test that passions are in the context."""
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.wraith.get_absolute_url())
+        self.assertIn("passions", response.context)
+
+    def test_detail_view_displays_fetters(self):
+        """Test that fetters are displayed in the template."""
+        Fetter.objects.create(
+            wraith=self.wraith,
+            fetter_type="person",
+            description="My beloved wife",
+            rating=3,
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.wraith.get_absolute_url())
+        self.assertContains(response, "My beloved wife")
+        self.assertContains(response, "Fetters")
+
+    def test_detail_view_displays_passions(self):
+        """Test that passions are displayed in the template."""
+        Passion.objects.create(
+            wraith=self.wraith,
+            emotion="Rage",
+            description="Avenge my murder",
+            rating=4,
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.wraith.get_absolute_url())
+        self.assertContains(response, "Avenge my murder")
+        self.assertContains(response, "Passions")
+
+    def test_detail_view_displays_dark_passion_badge(self):
+        """Test that dark passions show the Dark badge."""
+        Passion.objects.create(
+            wraith=self.wraith,
+            emotion="Jealousy",
+            description="Destroy my rival",
+            rating=2,
+            is_dark_passion=True,
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.wraith.get_absolute_url())
+        self.assertContains(response, "Dark")
 
     def test_detail_view_unapproved_hidden_from_others(self):
         """Test that unapproved characters are hidden from non-owners."""

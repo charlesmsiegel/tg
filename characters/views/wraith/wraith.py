@@ -16,6 +16,8 @@ class WraithDetailView(XPApprovalMixin, HumanDetailView):
         context = super().get_context_data(**kwargs)
         context["arcanoi"] = self.object.get_arcanoi()
         context["dark_arcanoi"] = self.object.get_dark_arcanoi()
+        context["fetters"] = self.object.fetters.all()
+        context["passions"] = self.object.passions.all()
         return context
 
 
