@@ -7,10 +7,6 @@ from core.utils import add_dot, weighted_choice
 from django.db import models
 from django.utils.timezone import now
 
-# Factory-created linked stat fields for Changeling
-_banality_fields = linked_stat_fields("banality", default=3, temporary_default=0)
-_glamour_fields = linked_stat_fields("glamour", default=4)
-
 
 class Changeling(CtDHuman):
     type = "changeling"
@@ -73,8 +69,12 @@ class Changeling(CtDHuman):
     scene = models.IntegerField(default=0)
     time = models.IntegerField(default=0)
 
-    banality, temporary_banality, banality_stat = _banality_fields
-    glamour, temporary_glamour, glamour_stat = _glamour_fields
+    banality, temporary_banality, banality_stat = linked_stat_fields(
+        "banality", default=3, temporary_default=0, cap_temporary=False
+    )
+    glamour, temporary_glamour, glamour_stat = linked_stat_fields(
+        "glamour", default=4, cap_temporary=False
+    )
 
     MUSING_THRESHOLDS = [
         ("inspire_creativity", "Inspire Creativity"),

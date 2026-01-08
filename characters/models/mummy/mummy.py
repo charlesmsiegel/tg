@@ -48,7 +48,7 @@ class Mummy(MtRHuman):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text="Permanent spiritual energy capacity (derived from Sekhem + backgrounds)",
     )
-    ba_stat = LinkedStat("ka_rating", "ba")
+    ba_stat = LinkedStat("ka_rating", "ba", cap_temporary=False)
 
     # ========================================
     # VIRTUES (Mummy-specific)

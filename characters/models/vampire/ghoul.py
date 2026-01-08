@@ -39,7 +39,7 @@ class Ghoul(VtMHuman):
     # Blood pool (limited for ghouls)
     blood_pool = models.IntegerField(default=0)
     max_blood_pool = models.IntegerField(default=2)
-    blood = LinkedStat("max_blood_pool", "blood_pool")
+    blood = LinkedStat("max_blood_pool", "blood_pool", cap_temporary=False)
 
     # Potence (all ghouls get 1 dot of Potence automatically)
     potence = models.IntegerField(default=1)
