@@ -1,3 +1,5 @@
+from characters.views.changeling.cantrip import CantripListView
+from characters.views.changeling.chimera import ChimeraListView
 from characters.views.changeling.house import HouseListView
 from characters.views.changeling.house_faction import HouseFactionListView
 from characters.views.changeling.kith import KithListView
@@ -6,6 +8,16 @@ from characters.views.changeling.motley import MotleyListView
 from django.urls import path
 
 urls = [
+    path(
+        "cantrip/",
+        CantripListView.as_view(),
+        name="cantrip",
+    ),
+    path(
+        "chimera/",
+        ChimeraListView.as_view(),
+        name="chimera",
+    ),
     path(
         "kith/",
         KithListView.as_view(),

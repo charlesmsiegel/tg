@@ -1,0 +1,26 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Apocalyptic Form Trait{% else %}Create Apocalyptic Form Trait{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Cost</div>
+        <div class="col-sm">{{ form.cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">House</div>
+        <div class="col-sm">{{ form.house }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">High Torment Only</div>
+        <div class="col-sm">{{ form.high_torment_only }}</div>
+    </div>
+{% endblock contents %}
