@@ -86,8 +86,15 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
         "TEST": {"NAME": BASE_DIR / "db_test.sqlite3"},
+        "ATOMIC_REQUESTS": True,  # Wrap each request in a transaction
     }
 }
+
+# Upload Size Limits
+# ==================
+# Limit upload sizes to prevent denial-of-service attacks
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 # Password validation
@@ -148,8 +155,9 @@ EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "30"))
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@tellurian-games.com")
 SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
-# Password reset token expiration (in seconds, default 3 days = 259200)
-PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT", "259200"))
+# Password reset token expiration (in seconds, default 1 hour = 3600)
+# Reduced from 3 days for improved security - password reset links should be used promptly
+PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT", "3600"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
