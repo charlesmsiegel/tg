@@ -43,8 +43,8 @@ SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", "True") == "True"
 # Prevent browsers from guessing content types
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# Enable browser XSS protection
-SECURE_BROWSER_XSS_FILTER = True
+# Note: SECURE_BROWSER_XSS_FILTER was removed as it's deprecated in Django 4.0+
+# Modern browsers no longer respect the X-XSS-Protection header
 
 # Prevent site from being framed (clickjacking protection)
 X_FRAME_OPTIONS = "DENY"
@@ -91,6 +91,10 @@ SECURE_REFERRER_POLICY = "same-origin"
 # Override the SQLite database with PostgreSQL or MySQL for production
 # Uncomment and configure based on your database choice:
 
+# Enable connection pooling for base database configuration
+# This reuses database connections instead of opening new ones for each request
+DATABASES["default"]["CONN_MAX_AGE"] = int(os.environ.get("DB_CONN_MAX_AGE", "600"))  # noqa: F405
+
 # PostgreSQL example:
 # DATABASES = {
 #     "default": {
@@ -101,6 +105,7 @@ SECURE_REFERRER_POLICY = "same-origin"
 #         "HOST": os.environ.get("DB_HOST", "localhost"),
 #         "PORT": os.environ.get("DB_PORT", "5432"),
 #         "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "600")),
+#         "ATOMIC_REQUESTS": True,
 #         "OPTIONS": {
 #             "sslmode": os.environ.get("DB_SSLMODE", "require"),
 #         },
@@ -116,6 +121,8 @@ SECURE_REFERRER_POLICY = "same-origin"
 #         "PASSWORD": os.environ.get("DB_PASSWORD"),
 #         "HOST": os.environ.get("DB_HOST", "localhost"),
 #         "PORT": os.environ.get("DB_PORT", "3306"),
+#         "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "600")),
+#         "ATOMIC_REQUESTS": True,
 #         "OPTIONS": {
 #             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
 #             "charset": "utf8mb4",
