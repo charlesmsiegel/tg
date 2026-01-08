@@ -625,8 +625,6 @@ class TestChronicleModel(TestCase):
 
     def test_chronicle_players_property(self):
         """Test Chronicle players property returns users with characters."""
-        from characters.models.core import CharacterModel
-
         chronicle = Chronicle.objects.create(name="Test Chronicle")
 
         Human.objects.create(
@@ -635,9 +633,60 @@ class TestChronicleModel(TestCase):
             chronicle=chronicle,
         )
 
-        # The players property uses charactermodel__chronicle (not characters__chronicle)
-        # Test via direct query since the model property may have incorrect related_name
-        players = User.objects.filter(charactermodel__chronicle=chronicle).distinct()
+        # The players property should return users with characters in this chronicle
+        players = chronicle.players
+        self.assertIn(self.user, players)
+
+    def test_chronicle_players_property_is_cached(self):
+        """Test Chronicle players property is cached after first access."""
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+
+        Human.objects.create(
+            name="Player Character",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+
+        # First access - should populate cache
+        players1 = chronicle.players
+
+        # Create another character after first access
+        player2 = User.objects.create_user(
+            username="player2", email="player2@test.com", password="password"
+        )
+        Human.objects.create(
+            name="Second Character",
+            owner=player2,
+            chronicle=chronicle,
+        )
+
+        # Second access - should return cached result (player2 NOT in cached result)
+        players2 = chronicle.players
+
+        # Both should be the same cached queryset reference
+        self.assertEqual(list(players1), list(players2))
+        # The new player should NOT be in the cached result
+        self.assertNotIn(player2, players2)
+
+    def test_chronicle_players_property_multiple_characters_same_user(self):
+        """Test Chronicle players property returns distinct users."""
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+
+        # Create two characters for the same user
+        Human.objects.create(
+            name="Player Character 1",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+        Human.objects.create(
+            name="Player Character 2",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+
+        players = chronicle.players
+        # Should only have one entry for the user
+        self.assertEqual(players.count(), 1)
         self.assertIn(self.user, players)
 
     def test_chronicle_is_head_st(self):
