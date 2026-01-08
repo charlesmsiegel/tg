@@ -334,9 +334,11 @@ class Profile(models.Model):
                 missing_pairs.append((char_id, week_id))
 
         char_map = {c.pk: c for c in char_list}
-        all_weeks = {w.pk: w for w in Week.objects.all()}
+        # Only fetch weeks that are actually needed (not all weeks in the database)
+        week_ids = set(w for (c, w) in missing_pairs)
+        week_map = {w.pk: w for w in Week.objects.filter(pk__in=week_ids)}
 
-        results = [(char_map[c], all_weeks[w]) for (c, w) in missing_pairs]
+        results = [(char_map[c], week_map[w]) for (c, w) in missing_pairs]
         return [pair for pair in results if not pair[0].npc]
 
     def get_unfulfilled_weekly_xp_requests_to_approve(self):
@@ -365,8 +367,10 @@ class Profile(models.Model):
 
         result_pairs = list(unapproved_reqs)
         char_map = {c.pk: c for c in char_list}
-        all_weeks = {w.pk: w for w in Week.objects.all()}
-        return [(char_map[c], all_weeks[w]) for (c, w) in result_pairs]
+        # Only fetch weeks that are actually needed (not all weeks in the database)
+        week_ids = set(w for (c, w) in result_pairs)
+        week_map = {w.pk: w for w in Week.objects.filter(pk__in=week_ids)}
+        return [(char_map[c], week_map[w]) for (c, w) in result_pairs]
 
     def xp_spend_requests(self):
         """Get all characters waiting for XP spend approval.
