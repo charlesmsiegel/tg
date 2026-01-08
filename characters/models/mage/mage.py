@@ -224,7 +224,9 @@ class Mage(MtAHuman):
         for sphere_name, sphere_rating in self.get_spheres().items():
             if sphere_rating > self.arete:
                 raise ValidationError(
-                    {sphere_name: f"{sphere_name.title()} rating ({sphere_rating}) cannot exceed Arete ({self.arete})."}
+                    {
+                        sphere_name: f"{sphere_name.title()} rating ({sphere_rating}) cannot exceed Arete ({self.arete})."
+                    }
                 )
 
     def get_affinity_sphere_name(self):

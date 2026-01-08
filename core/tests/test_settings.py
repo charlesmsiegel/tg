@@ -45,8 +45,7 @@ class SettingsSecurityTest(TestCase):
         """Test that deprecated SECURE_BROWSER_XSS_FILTER is not set."""
         # This setting was deprecated in Django 4.0
         self.assertFalse(
-            hasattr(settings, "SECURE_BROWSER_XSS_FILTER")
-            and settings.SECURE_BROWSER_XSS_FILTER,
+            hasattr(settings, "SECURE_BROWSER_XSS_FILTER") and settings.SECURE_BROWSER_XSS_FILTER,
             "SECURE_BROWSER_XSS_FILTER should not be enabled (deprecated in Django 4.0)",
         )
 

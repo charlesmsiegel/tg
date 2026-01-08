@@ -154,7 +154,9 @@ class Wraith(WtOHuman):
         super().clean()
         # All wraiths have a Shadow, so permanent Angst must be at least 1
         if self.angst < 1:
-            raise ValidationError({"angst": "All wraiths have a Shadow. Permanent Angst must be at least 1."})
+            raise ValidationError(
+                {"angst": "All wraiths have a Shadow. Permanent Angst must be at least 1."}
+            )
 
     def get_absolute_url(self):
         return reverse("characters:wraith:wraith", kwargs={"pk": self.pk})

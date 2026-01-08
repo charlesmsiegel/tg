@@ -1154,12 +1154,8 @@ class TestJournalListView(TestCase):
         # Get the journal created by signal
         journal1, _ = Journal.objects.get_or_create(character=self.char1)
         # Add entries
-        JournalEntry.objects.create(
-            journal=journal1, message="Entry 1", date=timezone.now()
-        )
-        JournalEntry.objects.create(
-            journal=journal1, message="Entry 2", date=timezone.now()
-        )
+        JournalEntry.objects.create(journal=journal1, message="Entry 1", date=timezone.now())
+        JournalEntry.objects.create(journal=journal1, message="Entry 2", date=timezone.now())
         response = self.client.get(reverse("game:journals"))
         # Check that journals in object_list have entry_count annotation
         for journal in response.context["object_list"]:
@@ -1191,8 +1187,8 @@ class TestJournalListView(TestCase):
 
     def test_journal_list_optimized_queries(self):
         """Test that journal list view uses optimized queries (not N+1)."""
-        from django.test.utils import CaptureQueriesContext
         from django.db import connection
+        from django.test.utils import CaptureQueriesContext
         from django.utils import timezone
 
         self.client.login(username="testuser", password="password")

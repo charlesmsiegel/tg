@@ -93,6 +93,29 @@ class Profile(models.Model):
         """Check if user is a storyteller for any chronicle."""
         return STRelationship.objects.filter(user=self.user).exists()
 
+    def is_st_for(self, chronicle):
+        """Check if user is a storyteller for a specific chronicle.
+
+        Returns True if:
+        - User is the head_st of the chronicle, OR
+        - User has an STRelationship for the chronicle
+
+        Note: game_storytellers are view-only and cannot perform approval actions.
+
+        Args:
+            chronicle: The Chronicle object to check against
+
+        Returns:
+            bool: True if user can perform ST actions on this chronicle
+        """
+        if chronicle is None:
+            return False
+        # Check if user is head ST
+        if hasattr(chronicle, "head_st") and chronicle.head_st == self.user:
+            return True
+        # Check if user has an STRelationship for this chronicle
+        return STRelationship.objects.filter(user=self.user, chronicle=chronicle).exists()
+
     def st_relations(self):
         """Get all storyteller relationships organized by chronicle.
 

@@ -686,25 +686,19 @@ class ObserverFilterTest(TestCase):
 
     def test_filter_queryset_includes_observed_characters(self):
         """filter_queryset_for_user should include characters the user is observing."""
-        qs = PermissionManager.filter_queryset_for_user(
-            self.observer_user, Character.objects.all()
-        )
+        qs = PermissionManager.filter_queryset_for_user(self.observer_user, Character.objects.all())
         # Observer should see the character they're observing
         self.assertIn(self.character, qs)
 
     def test_filter_queryset_excludes_non_observed_characters(self):
         """filter_queryset_for_user should exclude characters the user is not observing."""
-        qs = PermissionManager.filter_queryset_for_user(
-            self.observer_user, Character.objects.all()
-        )
+        qs = PermissionManager.filter_queryset_for_user(self.observer_user, Character.objects.all())
         # Observer should NOT see the character they're not observing
         self.assertNotIn(self.character2, qs)
 
     def test_non_observer_cannot_see_private_characters(self):
         """Users who are not observers should not see characters via observer filter."""
-        qs = PermissionManager.filter_queryset_for_user(
-            self.non_observer, Character.objects.all()
-        )
+        qs = PermissionManager.filter_queryset_for_user(self.non_observer, Character.objects.all())
         # Non-observer should not see either character
         self.assertNotIn(self.character, qs)
         self.assertNotIn(self.character2, qs)
@@ -730,7 +724,5 @@ class ObserverFilterTest(TestCase):
         self.assertEqual(list(qs1), [self.character])
 
         # Second observer only sees second character
-        qs2 = PermissionManager.filter_queryset_for_user(
-            observer2, Character.objects.all()
-        )
+        qs2 = PermissionManager.filter_queryset_for_user(observer2, Character.objects.all())
         self.assertEqual(list(qs2), [self.character2])

@@ -276,10 +276,14 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
             not cleaned_data.get("example") or not cleaned_data.get("value")
         ):
             raise forms.ValidationError("Must Choose Merit/Flaw and rating")
-        elif (
-            category in ["Attribute", "Ability", "Background", "Sphere", "Tenet", "Practice"]
-            and not cleaned_data.get("example")
-        ):
+        elif category in [
+            "Attribute",
+            "Ability",
+            "Background",
+            "Sphere",
+            "Tenet",
+            "Practice",
+        ] and not cleaned_data.get("example"):
             raise forms.ValidationError("Must Choose Trait")
         elif category == "Resonance" and not cleaned_data.get("resonance"):
             raise forms.ValidationError("Must Choose Resonance")

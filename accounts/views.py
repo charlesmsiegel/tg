@@ -116,15 +116,36 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return context
 
     def _check_st_permission(self, request):
-        """Check if a storyteller-only action is being attempted by a non-ST."""
+        """Check if a storyteller-only action is being attempted by a non-ST.
+
+        Note: This is a preliminary check. Each handler must also verify
+        chronicle-specific permissions using _verify_st_for_chronicle().
+        """
         attempted_st_action = any(request.POST.get(action) for action in self.ST_ONLY_ACTIONS)
         if attempted_st_action and not request.user.profile.is_st():
             messages.error(request, "Only storytellers can perform approval actions.")
             raise PermissionDenied("Only storytellers can perform approval actions")
 
+    def _verify_st_for_chronicle(self, request, chronicle, action_description="this action"):
+        """Verify user is an ST for a specific chronicle.
+
+        Args:
+            request: The HTTP request
+            chronicle: The Chronicle object to check against
+            action_description: Description for error message
+
+        Raises:
+            PermissionDenied: If user is not an ST for the chronicle
+        """
+        if not request.user.profile.is_st_for(chronicle):
+            msg = f"You are not a storyteller for this chronicle. Cannot perform {action_description}."
+            messages.error(request, msg)
+            raise PermissionDenied(msg)
+
     def _handle_scene_xp(self, request, scene_id):
         """Handle scene XP award submission."""
         scene = get_object_or_404(Scene, pk=scene_id)
+        self._verify_st_for_chronicle(request, scene.chronicle, "scene XP award")
         form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
         if form.is_valid():
             form.save()
@@ -134,18 +155,31 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def _handle_object_approval(self, request, object_type, object_id):
         """Handle object (character/location/item/rote) approval."""
+        # Get the object first to verify chronicle permissions
+        model_class = ApprovalService.OBJECT_MODEL_MAP.get(object_type)
+        if model_class:
+            obj = get_object_or_404(model_class, pk=object_id)
+            chronicle = getattr(obj, "chronicle", None)
+            self._verify_st_for_chronicle(request, chronicle, f"{object_type} approval")
         _, msg = ApprovalService.approve_object(object_type, object_id)
         messages.success(request, msg)
 
     def _handle_image_approval(self, request, object_type, image_id):
         """Handle image approval for an object type."""
         parsed_id = ApprovalService.parse_image_id(image_id)
+        # Get the object first to verify chronicle permissions
+        model_class = ApprovalService.IMAGE_MODEL_MAP.get(object_type)
+        if model_class:
+            obj = get_object_or_404(model_class, pk=parsed_id)
+            chronicle = getattr(obj, "chronicle", None)
+            self._verify_st_for_chronicle(request, chronicle, f"{object_type} image approval")
         _, msg = ApprovalService.approve_image(object_type, parsed_id)
         messages.success(request, msg)
 
     def _handle_freebies(self, request, char_id):
         """Handle freebie award submission."""
         char = get_object_or_404(Character, pk=char_id)
+        self._verify_st_for_chronicle(request, char.chronicle, "freebie approval")
         form = FreebieAwardForm(request.POST, character=char)
         if form.is_valid():
             form.save()
@@ -175,6 +209,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         _, week_pk, _, char_pk = approval_id.split("-")
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=char_pk)
+        self._verify_st_for_chronicle(request, char.chronicle, "weekly XP approval")
         xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
         form = WeeklyXPRequestForm(request.POST, week=week, character=char, instance=xp_request)
         if form.is_valid():

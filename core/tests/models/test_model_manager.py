@@ -9,11 +9,10 @@ Tests verify that:
 See issue #1350: Polymorphic select_related on every query adds 20-30% overhead
 """
 
-from django.contrib.auth.models import User
-from django.test import TestCase
-
 from characters.models.core.character import Character
 from characters.models.core.human import Human
+from django.contrib.auth.models import User
+from django.test import TestCase
 from game.models import Chronicle
 
 

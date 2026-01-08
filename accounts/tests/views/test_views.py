@@ -630,9 +630,7 @@ class TestProfileViewIDORProtection(TestCase):
     def test_user_can_view_own_profile(self):
         """Test that users can view their own profile."""
         self.client.login(username="testuser", password="password")
-        response = self.client.get(
-            reverse("accounts:profile", kwargs={"pk": self.user.profile.pk})
-        )
+        response = self.client.get(reverse("accounts:profile", kwargs={"pk": self.user.profile.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_user_cannot_view_other_profile(self):
@@ -653,9 +651,7 @@ class TestProfileViewIDORProtection(TestCase):
 
     def test_unauthenticated_cannot_view_profile(self):
         """Test that unauthenticated users cannot view profiles."""
-        response = self.client.get(
-            reverse("accounts:profile", kwargs={"pk": self.user.profile.pk})
-        )
+        response = self.client.get(reverse("accounts:profile", kwargs={"pk": self.user.profile.pk}))
         # Should redirect to login
         self.assertEqual(response.status_code, 302)
 
@@ -734,6 +730,209 @@ class TestProfileUpdateViewIDORProtection(TestCase):
         self.assertEqual(response.status_code, 302)  # Redirect on success
         self.other_user.profile.refresh_from_db()
         self.assertEqual(self.other_user.profile.discord_id, "staff_update#1234")
+
+
+class TestCrossChroniclePermissionSecurity(TestCase):
+    """Security tests for cross-chronicle ST permission checks.
+
+    These tests verify that an ST for Chronicle A cannot perform approval
+    actions on objects in Chronicle B where they don't have ST privileges.
+    This addresses the security vulnerability where ST permission checks
+    were not scoped to specific chronicles.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.st_user_a = User.objects.create_user("st_a", "sta@test.com", "password")
+        self.st_user_b = User.objects.create_user("st_b", "stb@test.com", "password")
+
+        # Create two chronicles
+        self.chronicle_a = Chronicle.objects.create(name="Chronicle A")
+        self.chronicle_b = Chronicle.objects.create(name="Chronicle B")
+
+        # Create gamelines
+        self.gameline = Gameline.objects.create(name="Test Gameline")
+
+        # ST A is only an ST for Chronicle A
+        STRelationship.objects.create(
+            user=self.st_user_a, chronicle=self.chronicle_a, gameline=self.gameline
+        )
+        # ST B is only an ST for Chronicle B
+        STRelationship.objects.create(
+            user=self.st_user_b, chronicle=self.chronicle_b, gameline=self.gameline
+        )
+
+        # Create objects in Chronicle B (ST A should NOT be able to approve these)
+        self.char_b = Human.objects.create(
+            name="Character in Chronicle B",
+            owner=self.user,
+            chronicle=self.chronicle_b,
+            status="Sub",
+        )
+        self.location_b = LocationModel.objects.create(
+            name="Location in Chronicle B",
+            chronicle=self.chronicle_b,
+            status="Sub",
+        )
+        self.item_b = ItemModel.objects.create(
+            name="Item in Chronicle B",
+            chronicle=self.chronicle_b,
+            status="Sub",
+        )
+        self.location_for_scene = LocationModel.objects.create(
+            name="Scene Location", chronicle=self.chronicle_b
+        )
+        self.scene_b = Scene.objects.create(
+            name="Scene in Chronicle B",
+            chronicle=self.chronicle_b,
+            location=self.location_for_scene,
+            xp_given=False,
+        )
+        self.scene_b.characters.add(self.char_b)
+
+        # Create character with pending freebies in Chronicle B
+        self.char_freebies_b = Human.objects.create(
+            name="Freebie Character in Chronicle B",
+            owner=self.user,
+            chronicle=self.chronicle_b,
+            status="Sub",
+            freebies_approved=False,
+        )
+
+        # Create weekly XP request in Chronicle B
+        self.week = Week.objects.create(end_date=date.today())
+        self.week.characters.add(self.char_b)
+        self.xp_request_b = WeeklyXPRequest.objects.create(
+            character=self.char_b,
+            week=self.week,
+            rp_scene=self.scene_b,
+            learning_scene=self.scene_b,
+            standingout_scene=self.scene_b,
+            focus_scene=self.scene_b,
+            approved=False,
+        )
+
+    def test_st_cannot_approve_character_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot approve characters in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {"approve_character": self.char_b.id},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.char_b.refresh_from_db()
+        self.assertEqual(self.char_b.status, "Sub")
+
+    def test_st_cannot_approve_location_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot approve locations in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {"approve_location": self.location_b.id},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.location_b.refresh_from_db()
+        self.assertEqual(self.location_b.status, "Sub")
+
+    def test_st_cannot_approve_item_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot approve items in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {"approve_item": self.item_b.id},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.item_b.refresh_from_db()
+        self.assertEqual(self.item_b.status, "Sub")
+
+    def test_st_cannot_award_scene_xp_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot award scene XP in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {
+                "submit_scene": self.scene_b.id,
+                f"scene_{self.scene_b.pk}-{self.char_b.name}": "on",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.scene_b.refresh_from_db()
+        self.assertFalse(self.scene_b.xp_given)
+
+    def test_st_cannot_award_freebies_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot award freebies in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        initial_freebies = self.char_freebies_b.freebies
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {
+                "submit_freebies": self.char_freebies_b.id,
+                "backstory_freebies": 5,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.char_freebies_b.refresh_from_db()
+        self.assertEqual(self.char_freebies_b.freebies, initial_freebies)
+        self.assertFalse(self.char_freebies_b.freebies_approved)
+
+    def test_st_cannot_approve_weekly_xp_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot approve weekly XP in Chronicle B."""
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {
+                "submit_weekly_approval": f"week-{self.week.pk}-char-{self.char_b.pk}",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.xp_request_b.refresh_from_db()
+        self.assertFalse(self.xp_request_b.approved)
+
+    def test_st_cannot_approve_image_in_other_chronicle(self):
+        """Test that ST for Chronicle A cannot approve character images in Chronicle B."""
+        # Set up character with pending image
+        self.char_b.image_status = "sub"
+        self.char_b.status = "App"  # Must be approved to have image approval
+        self.char_b.save()
+
+        self.client.login(username="st_a", password="password")
+        response = self.client.post(
+            self.st_user_a.profile.get_absolute_url(),
+            {"approve_character_image": f"image-{self.char_b.id}"},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.char_b.refresh_from_db()
+        self.assertEqual(self.char_b.image_status, "sub")
+
+    def test_st_can_approve_character_in_own_chronicle(self):
+        """Test that ST for Chronicle B can approve characters in Chronicle B."""
+        self.client.login(username="st_b", password="password")
+        response = self.client.post(
+            self.st_user_b.profile.get_absolute_url(),
+            {"approve_character": self.char_b.id},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.char_b.refresh_from_db()
+        self.assertEqual(self.char_b.status, "App")
+
+    def test_head_st_can_approve_in_own_chronicle(self):
+        """Test that head ST can approve in their own chronicle."""
+        # Make st_user_b the head ST for Chronicle B
+        self.chronicle_b.head_st = self.st_user_b
+        self.chronicle_b.save()
+
+        # Reset character status
+        self.char_b.status = "Sub"
+        self.char_b.save()
+
+        self.client.login(username="st_b", password="password")
+        response = self.client.post(
+            self.st_user_b.profile.get_absolute_url(),
+            {"approve_character": self.char_b.id},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.char_b.refresh_from_db()
+        self.assertEqual(self.char_b.status, "App")
 
 
 class TestCustomLoginView(TestCase):
