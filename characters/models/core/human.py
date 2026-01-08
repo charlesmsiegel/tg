@@ -9,13 +9,17 @@ from characters.models.core.derangement import Derangement
 from characters.models.core.health_block import HealthBlock
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from core.models import Language
 from core.utils import add_dot, get_short_gameline_name
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import CheckConstraint, F, Q
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+
+# Factory-created linked stat fields for Human
+_willpower_fields = linked_stat_fields("willpower", default=3, min_permanent=1)
 
 
 class Human(
@@ -94,13 +98,7 @@ class Human(
     # Note: backgrounds are managed dynamically through BackgroundRating model
     # No direct fields needed here - see background_manager property
 
-    willpower = models.IntegerField(
-        default=3, validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
-    temporary_willpower = models.IntegerField(
-        default=3, validators=[MinValueValidator(0), MaxValueValidator(10)]
-    )
-    willpower_stat = LinkedStat("willpower", "temporary_willpower")
+    willpower, temporary_willpower, willpower_stat = _willpower_fields
 
     derangements = models.ManyToManyField("Derangement", blank=True)
 
@@ -125,24 +123,7 @@ class Human(
         verbose_name_plural = "Humans"
         ordering = ["name"]
         constraints = [
-            # Willpower must be between 1 and 10
-            CheckConstraint(
-                check=Q(willpower__gte=1, willpower__lte=10),
-                name="characters_human_willpower_range",
-                violation_error_message="Willpower must be between 1 and 10",
-            ),
-            # Temporary willpower must be between 0 and 10
-            CheckConstraint(
-                check=Q(temporary_willpower__gte=0, temporary_willpower__lte=10),
-                name="characters_human_temp_willpower_range",
-                violation_error_message="Temporary willpower must be between 0 and 10",
-            ),
-            # Temporary willpower cannot exceed permanent willpower
-            CheckConstraint(
-                check=Q(temporary_willpower__lte=F("willpower")),
-                name="characters_human_temp_not_exceeds_max",
-                violation_error_message="Temporary willpower cannot exceed permanent willpower",
-            ),
+            *_willpower_fields.constraints("characters_human_"),
             # Age must be reasonable if provided
             CheckConstraint(
                 check=Q(age__isnull=True) | Q(age__gte=0, age__lte=5000),

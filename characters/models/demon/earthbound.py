@@ -6,9 +6,14 @@ from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
-from core.linked_stat import LinkedStat
+from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
+
+
+# Factory-created linked stat fields for Earthbound
+_eb_faith_fields = linked_stat_fields("faith", default=3, min_permanent=1, temporary_default=10)
+_eb_torment_fields = linked_stat_fields("torment", default=6, temporary_default=0)
 
 
 class Earthbound(LoreBlock, DtFHuman):
@@ -83,21 +88,11 @@ class Earthbound(LoreBlock, DtFHuman):
     )
 
     # FAITH AND TORMENT
-    faith = models.IntegerField(default=3, help_text="Permanent Faith rating (1-10)")
-    temporary_faith = models.IntegerField(
-        default=10,
-        help_text="Temporary Faith pool (max determined by Hoard background)",
-    )
+    faith, temporary_faith, faith_stat = _eb_faith_fields
     max_faith = models.IntegerField(
         default=10, help_text="Maximum Faith pool from Hoard (10-35 for Earthbound)"
     )
-    faith_stat = LinkedStat("faith", "temporary_faith")
-
-    torment = models.IntegerField(
-        default=6, help_text="Permanent Torment rating (becomes 10 at Final Damnation)"
-    )
-    temporary_torment = models.IntegerField(default=0)
-    torment_stat = LinkedStat("torment", "temporary_torment")
+    torment, temporary_torment, torment_stat = _eb_torment_fields
 
     # VIRTUES (Earthbound still have these)
     conviction = models.IntegerField(default=1)
