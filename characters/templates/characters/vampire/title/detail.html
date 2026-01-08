@@ -1,0 +1,33 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title vtm_heading">Title Details</h5>
+    </div>
+    <div class="tg-card-body">
+        {% if sect %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Sect:</strong></div>
+            <div class="col-md-8"><a href="{{ sect.get_absolute_url }}">{{ sect.name }}</a></div>
+        </div>
+        {% endif %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Value:</strong></div>
+            <div class="col-md-8">{% if object.is_negative %}-{% endif %}{{ object.value }}</div>
+        </div>
+        {% if object.is_negative %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Type:</strong></div>
+            <div class="col-md-8">Negative Title</div>
+        </div>
+        {% endif %}
+        {% if object.powers %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Powers:</strong></div>
+            <div class="col-md-8">{{ object.powers|sanitize_html|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock contents %}

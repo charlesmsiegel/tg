@@ -1,0 +1,17 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title vtm_heading">Sect Details</h5>
+    </div>
+    <div class="tg-card-body">
+        {% if object.philosophy %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Philosophy:</strong></div>
+            <div class="col-md-8">{{ object.philosophy|sanitize_html|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock contents %}
