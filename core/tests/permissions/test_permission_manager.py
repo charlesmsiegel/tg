@@ -623,3 +623,114 @@ class HelperMethodsTest(TestCase):
         q_filter = PermissionManager._build_owner_filter(user, Chronicle)
         # Should return empty Q object
         self.assertEqual(str(q_filter), str(Q()))
+
+
+class ObserverFilterTest(TestCase):
+    """Tests for PermissionManager._get_observer_filter() and observer queryset filtering."""
+
+    def setUp(self):
+        """Set up test data."""
+        self.owner = User.objects.create_user(
+            username="observer_test_owner", email="owner@test.com", password="testpass123"
+        )
+        self.observer_user = User.objects.create_user(
+            username="observer_test_observer",
+            email="observer@test.com",
+            password="testpass123",
+        )
+        self.non_observer = User.objects.create_user(
+            username="observer_test_non_observer",
+            email="non_observer@test.com",
+            password="testpass123",
+        )
+
+        self.chronicle = Chronicle.objects.create(name="Observer Test Chronicle")
+
+        self.character = Character.objects.create(
+            name="Observer Test Character",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="App",
+        )
+
+        # Create a second character without observer
+        self.character2 = Character.objects.create(
+            name="Observer Test Character 2",
+            owner=self.owner,
+            chronicle=self.chronicle,
+            status="App",
+        )
+
+        # Add observer to first character only
+        Observer.objects.create(
+            content_object=self.character,
+            user=self.observer_user,
+            granted_by=self.owner,
+        )
+
+    def test_get_observer_filter_returns_q_object(self):
+        """_get_observer_filter should return a Q object."""
+        from django.db.models import Q
+
+        q_filter = PermissionManager._get_observer_filter(self.observer_user, Character)
+        self.assertIsInstance(q_filter, Q)
+
+    def test_get_observer_filter_for_model_without_observers(self):
+        """_get_observer_filter should return empty Q for models without observers relation."""
+        from django.db.models import Q
+
+        # Chronicle doesn't have observers field
+        q_filter = PermissionManager._get_observer_filter(self.observer_user, Chronicle)
+        # Should return Q(pk__in=[]) which filters nothing
+        self.assertEqual(str(q_filter), str(Q(pk__in=[])))
+
+    def test_filter_queryset_includes_observed_characters(self):
+        """filter_queryset_for_user should include characters the user is observing."""
+        qs = PermissionManager.filter_queryset_for_user(
+            self.observer_user, Character.objects.all()
+        )
+        # Observer should see the character they're observing
+        self.assertIn(self.character, qs)
+
+    def test_filter_queryset_excludes_non_observed_characters(self):
+        """filter_queryset_for_user should exclude characters the user is not observing."""
+        qs = PermissionManager.filter_queryset_for_user(
+            self.observer_user, Character.objects.all()
+        )
+        # Observer should NOT see the character they're not observing
+        self.assertNotIn(self.character2, qs)
+
+    def test_non_observer_cannot_see_private_characters(self):
+        """Users who are not observers should not see characters via observer filter."""
+        qs = PermissionManager.filter_queryset_for_user(
+            self.non_observer, Character.objects.all()
+        )
+        # Non-observer should not see either character
+        self.assertNotIn(self.character, qs)
+        self.assertNotIn(self.character2, qs)
+
+    def test_observer_filter_uses_generic_relation(self):
+        """Verify the observer filter works correctly via GenericRelation."""
+        # Create multiple observers
+        observer2 = User.objects.create_user(
+            username="observer_test_observer2",
+            email="observer2@test.com",
+            password="testpass123",
+        )
+        Observer.objects.create(
+            content_object=self.character2,
+            user=observer2,
+            granted_by=self.owner,
+        )
+
+        # First observer only sees first character
+        qs1 = PermissionManager.filter_queryset_for_user(
+            self.observer_user, Character.objects.all()
+        )
+        self.assertEqual(list(qs1), [self.character])
+
+        # Second observer only sees second character
+        qs2 = PermissionManager.filter_queryset_for_user(
+            observer2, Character.objects.all()
+        )
+        self.assertEqual(list(qs2), [self.character2])
