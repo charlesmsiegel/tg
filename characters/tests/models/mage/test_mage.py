@@ -12,6 +12,7 @@ from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from game.models import Chronicle
 from locations.models.mage.library import Library
@@ -93,6 +94,36 @@ class TestMage(TestCase):
         self.assertTrue(self.character.add_sphere("forces"))
         self.assertTrue(self.character.add_sphere("forces"))
         self.assertFalse(self.character.add_sphere("forces"))
+
+    def test_clean_sphere_exceeds_arete(self):
+        """Test that clean() raises ValidationError when sphere exceeds Arete."""
+        self.character.arete = 2
+        self.character.forces = 3  # Forces exceeds Arete
+        with self.assertRaises(ValidationError) as context:
+            self.character.clean()
+        self.assertIn("forces", context.exception.message_dict)
+
+    def test_clean_sphere_equals_arete(self):
+        """Test that clean() passes when sphere equals Arete."""
+        self.character.arete = 3
+        self.character.forces = 3  # Forces equals Arete
+        try:
+            self.character.clean()
+        except ValidationError:
+            self.fail("clean() raised ValidationError for sphere equal to Arete")
+
+    def test_clean_multiple_spheres_exceed_arete(self):
+        """Test that clean() catches multiple spheres exceeding Arete."""
+        self.character.arete = 2
+        self.character.forces = 5
+        self.character.mind = 4
+        with self.assertRaises(ValidationError) as context:
+            self.character.clean()
+        # Should fail on the first sphere that exceeds
+        self.assertTrue(
+            "forces" in context.exception.message_dict
+            or "mind" in context.exception.message_dict
+        )
 
     def test_batini_no_entropy(self):
         self.character.faction = MageFaction.objects.create(name="Ahl-i-Batin")
