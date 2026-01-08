@@ -7,8 +7,9 @@ from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
 from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q
+from django.db.models import CheckConstraint, Q
 from items.models.werewolf.fetish import Fetish
 
 
@@ -54,8 +55,21 @@ class Werewolf(WtAHuman):
     tribe = models.ForeignKey(Tribe, blank=True, null=True, on_delete=models.SET_NULL)
     camps = models.ManyToManyField(Camp, blank=True)
 
-    gnosis = models.IntegerField(default=0)
-    rage = models.IntegerField(default=0)
+    # All Garou must have at least 1 Gnosis and 1 Rage (W20 Core Rulebook)
+    gnosis = models.IntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1, message="All werewolves must have at least 1 Gnosis"),
+            MaxValueValidator(10),
+        ],
+    )
+    rage = models.IntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1, message="All werewolves must have at least 1 Rage"),
+            MaxValueValidator(10),
+        ],
+    )
 
     glory, temporary_glory, glory_renown = linked_stat_fields(
         "glory", default=0, cap_temporary=False
@@ -120,6 +134,30 @@ class Werewolf(WtAHuman):
     class Meta:
         verbose_name = "Werewolf"
         verbose_name_plural = "Werewolves"
+        constraints = [
+            CheckConstraint(
+                check=Q(gnosis__gte=1, gnosis__lte=10),
+                name="characters_werewolf_gnosis_range",
+                violation_error_message="Gnosis must be between 1 and 10",
+            ),
+            CheckConstraint(
+                check=Q(rage__gte=1, rage__lte=10),
+                name="characters_werewolf_rage_range",
+                violation_error_message="Rage must be between 1 and 10",
+            ),
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        errors = {}
+        if self.gnosis < 1:
+            errors["gnosis"] = "All werewolves must have at least 1 Gnosis."
+        if self.rage < 1:
+            errors["rage"] = "All werewolves must have at least 1 Rage."
+        if errors:
+            raise ValidationError(errors)
 
     def get_rank_name(self):
         return self.rank_names[self.rank]
