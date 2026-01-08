@@ -363,3 +363,184 @@ class TestProfileThemeMethods(TestCase):
         self.user.profile.save()
         path = self.user.profile.get_theme_css_path()
         self.assertEqual(path, "themes/dark.css")
+
+
+class TestUnfulfilledWeeklyXPRequests(TestCase):
+    """Test the get_unfulfilled_weekly_xp_requests methods.
+
+    These tests verify that the methods return correct results and that
+    the optimized queries only fetch relevant weeks from the database.
+    """
+
+    def setUp(self):
+        from datetime import date, timedelta
+
+        from game.models import Week, WeeklyXPRequest
+
+        self.player = User.objects.create_user("player", "player@test.com", "password")
+        self.st_user = User.objects.create_user("st", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Mage: the Ascension")
+
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+
+        # Create character owned by player
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.player,
+            chronicle=self.chronicle,
+            status="App",
+            npc=False,
+        )
+
+        # Create weeks
+        self.week1 = Week.objects.create(end_date=date.today())
+        self.week2 = Week.objects.create(end_date=date.today() - timedelta(days=7))
+        self.week_old = Week.objects.create(end_date=date.today() - timedelta(days=365))
+
+        # Associate character with week1 and week2 only
+        self.week1.characters.add(self.character)
+        self.week2.characters.add(self.character)
+
+    def test_unfulfilled_returns_pairs_without_requests(self):
+        """Test that method returns character/week pairs without XP requests."""
+        results = self.player.profile.get_unfulfilled_weekly_xp_requests()
+
+        # Should return tuples of (character, week)
+        self.assertEqual(len(results), 2)
+
+        # Both weeks should be in results
+        weeks_in_results = [week for (char, week) in results]
+        self.assertIn(self.week1, weeks_in_results)
+        self.assertIn(self.week2, weeks_in_results)
+
+        # Old week not associated with character should NOT be in results
+        self.assertNotIn(self.week_old, weeks_in_results)
+
+    def test_unfulfilled_excludes_pairs_with_existing_requests(self):
+        """Test that existing XP requests are excluded from results."""
+        from game.models import WeeklyXPRequest
+
+        # Create XP request for week1
+        WeeklyXPRequest.objects.create(
+            character=self.character, week=self.week1, approved=False
+        )
+
+        results = self.player.profile.get_unfulfilled_weekly_xp_requests()
+
+        # Only week2 should be in results now
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][1], self.week2)
+
+    def test_unfulfilled_excludes_npc_characters(self):
+        """Test that NPC characters are excluded from results."""
+        npc = Human.objects.create(
+            name="NPC Character",
+            owner=self.player,
+            chronicle=self.chronicle,
+            status="App",
+            npc=True,
+        )
+        self.week1.characters.add(npc)
+
+        results = self.player.profile.get_unfulfilled_weekly_xp_requests()
+
+        # NPC should not appear in results
+        chars_in_results = [char for (char, week) in results]
+        self.assertNotIn(npc, chars_in_results)
+
+    def test_unfulfilled_returns_empty_for_no_weeks(self):
+        """Test that method returns empty list if character has no weeks."""
+        other_player = User.objects.create_user("other", "other@test.com", "password")
+        other_char = Human.objects.create(
+            name="No Weeks Char",
+            owner=other_player,
+            chronicle=self.chronicle,
+            npc=False,
+        )
+
+        results = other_player.profile.get_unfulfilled_weekly_xp_requests()
+        self.assertEqual(len(results), 0)
+
+
+class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
+    """Test the get_unfulfilled_weekly_xp_requests_to_approve method."""
+
+    def setUp(self):
+        from datetime import date, timedelta
+
+        from game.models import Week, WeeklyXPRequest
+
+        self.player = User.objects.create_user("player", "player@test.com", "password")
+        self.st_user = User.objects.create_user("st", "st@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.gameline = Gameline.objects.create(name="Mage: the Ascension")
+
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+
+        self.character = Human.objects.create(
+            name="Test Character",
+            owner=self.player,
+            chronicle=self.chronicle,
+            status="App",
+        )
+
+        # Create weeks
+        self.week1 = Week.objects.create(end_date=date.today())
+        self.week2 = Week.objects.create(end_date=date.today() - timedelta(days=7))
+        self.week_old = Week.objects.create(end_date=date.today() - timedelta(days=365))
+
+        # Associate character with weeks
+        self.week1.characters.add(self.character)
+        self.week2.characters.add(self.character)
+
+    def test_returns_unapproved_requests(self):
+        """Test that method returns character/week pairs with unapproved requests."""
+        from game.models import WeeklyXPRequest
+
+        # Create unapproved request
+        WeeklyXPRequest.objects.create(
+            character=self.character, week=self.week1, approved=False
+        )
+
+        results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0][0], self.character)
+        self.assertEqual(results[0][1], self.week1)
+
+    def test_excludes_approved_requests(self):
+        """Test that approved requests are excluded."""
+        from game.models import WeeklyXPRequest
+
+        # Create approved request
+        WeeklyXPRequest.objects.create(
+            character=self.character, week=self.week1, approved=True
+        )
+        # Create unapproved request
+        WeeklyXPRequest.objects.create(
+            character=self.character, week=self.week2, approved=False
+        )
+
+        results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
+
+        # Only unapproved request should be in results
+        self.assertEqual(len(results), 1)
+        weeks_in_results = [week for (char, week) in results]
+        self.assertIn(self.week2, weeks_in_results)
+        self.assertNotIn(self.week1, weeks_in_results)
+
+    def test_returns_empty_when_no_unapproved_requests(self):
+        """Test that method returns empty list when all requests are approved."""
+        from game.models import WeeklyXPRequest
+
+        WeeklyXPRequest.objects.create(
+            character=self.character, week=self.week1, approved=True
+        )
+
+        results = self.st_user.profile.get_unfulfilled_weekly_xp_requests_to_approve()
+        self.assertEqual(len(results), 0)
