@@ -165,9 +165,9 @@ class TestMage(TestCase):
             self.character.set_corr_name("blah")
 
     def test_add_arete(self):
-        self.assertEqual(self.character.arete, 0)
+        self.assertEqual(self.character.arete, 1)  # Default is now 1
         self.assertTrue(self.character.add_arete())
-        self.assertEqual(self.character.arete, 1)
+        self.assertEqual(self.character.arete, 2)
         self.character.arete = 10
         self.assertFalse(self.character.add_arete())
 
@@ -883,3 +883,30 @@ class TestMageBasicsView(TestCase):
         self.assertEqual(Mage.objects.first().faction, self.faction)
         self.assertEqual(Mage.objects.first().subfaction, self.subfaction)
         self.assertEqual(Mage.objects.first().essence, "Dynamic")
+
+
+class TestMageAreteValidation(TestCase):
+    """Tests for Mage Arete minimum validation (issue #1361)."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="Player")
+        self.character = Mage.objects.create(name="Test Mage", owner=self.player)
+
+    def test_arete_default_is_one(self):
+        """Awakened mages should default to Arete of 1."""
+        self.assertEqual(self.character.arete, 1)
+
+    def test_arete_minimum_validation_in_clean(self):
+        """clean() raises ValidationError when arete is below 1."""
+        from django.core.exceptions import ValidationError
+
+        self.character.arete = 0
+        with self.assertRaises(ValidationError) as context:
+            self.character.clean()
+        self.assertIn("arete", context.exception.message_dict)
+
+    def test_arete_at_one_is_valid(self):
+        """clean() passes when arete is exactly 1."""
+        self.character.arete = 1
+        # Should not raise
+        self.character.clean()

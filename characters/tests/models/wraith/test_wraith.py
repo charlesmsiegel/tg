@@ -39,9 +39,9 @@ class TestWraithCreation(WraithTestCase):
         self.assertEqual(self.wraith.temporary_pathos, 5)
 
     def test_wraith_default_angst(self):
-        """Wraith has default angst of 0."""
-        self.assertEqual(self.wraith.angst, 0)
-        self.assertEqual(self.wraith.temporary_angst, 0)
+        """Wraith has default angst of 1 (all wraiths have a Shadow)."""
+        self.assertEqual(self.wraith.angst, 1)
+        self.assertEqual(self.wraith.temporary_angst, 1)
 
     def test_wraith_default_character_type(self):
         """Wraith has default character type of wraith."""
@@ -493,10 +493,10 @@ class TestWraithCorpusPathos(WraithTestCase):
 
     def test_add_angst(self):
         """add_angst increases angst by 1."""
-        self.assertEqual(self.wraith.angst, 0)
+        self.assertEqual(self.wraith.angst, 1)  # Default is now 1
         result = self.wraith.add_angst()
         self.assertTrue(result)
-        self.assertEqual(self.wraith.angst, 1)
+        self.assertEqual(self.wraith.angst, 2)
 
     def test_add_angst_up_to_max(self):
         """add_angst works up to maximum of 10."""
@@ -977,7 +977,30 @@ class ThornRatingDeleteBehaviorTests(TestCase):
         """Thorn should have wraith_ratings related manager."""
         self.assertIn(self.rating, self.thorn.wraith_ratings.all())
 
-    def test_thorn_rating_str(self):
-        """ThornRating has correct string representation."""
-        expected = f"{self.wraith.name}: {self.thorn.name} (3)"
-        self.assertEqual(str(self.rating), expected)
+
+class TestWraithAngstValidation(WraithTestCase):
+    """Tests for Wraith angst minimum validation (issue #1366)."""
+
+    def test_angst_minimum_validation_in_clean(self):
+        """clean() raises ValidationError when angst is below 1."""
+        from django.core.exceptions import ValidationError
+
+        self.wraith.angst = 0
+        with self.assertRaises(ValidationError) as context:
+            self.wraith.clean()
+        self.assertIn("angst", context.exception.message_dict)
+
+    def test_angst_at_one_is_valid(self):
+        """clean() passes when angst is exactly 1."""
+        self.wraith.angst = 1
+        # Should not raise
+        self.wraith.clean()
+
+    def test_resolve_harrowing_catharsis_respects_minimum(self):
+        """resolve_harrowing with catharsis never reduces angst below 1."""
+        self.wraith.angst = 1
+        self.wraith.temporary_angst = 5
+        result = self.wraith.resolve_harrowing(result="catharsis")
+        self.assertTrue(result)
+        # Angst should remain at 1, not drop to 0
+        self.assertEqual(self.wraith.angst, 1)

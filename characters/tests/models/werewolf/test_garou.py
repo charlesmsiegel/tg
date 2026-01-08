@@ -125,9 +125,9 @@ class TestWerewolf(TestCase):
         self.assertEqual(self.character.gnosis, 4)
 
     def test_add_gnosis(self):
-        self.assertEqual(self.character.gnosis, 0)
+        self.assertEqual(self.character.gnosis, 1)  # Default is now 1
         self.assertTrue(self.character.add_gnosis())
-        self.assertEqual(self.character.gnosis, 1)
+        self.assertEqual(self.character.gnosis, 2)
         self.character.gnosis = 10
         self.assertFalse(self.character.add_gnosis())
 
@@ -136,9 +136,9 @@ class TestWerewolf(TestCase):
         self.assertEqual(self.character.rage, 5)
 
     def test_add_rage(self):
-        self.assertEqual(self.character.rage, 0)
+        self.assertEqual(self.character.rage, 1)  # Default is now 1
         self.assertTrue(self.character.add_rage())
-        self.assertEqual(self.character.rage, 1)
+        self.assertEqual(self.character.rage, 2)
         self.character.rage = 10
         self.assertFalse(self.character.add_rage())
 
@@ -182,7 +182,7 @@ class TestWerewolf(TestCase):
         self.assertTrue(self.character.has_breed())
 
     def test_auspice_sets_rage(self):
-        self.assertEqual(self.character.rage, 0)
+        self.assertEqual(self.character.rage, 1)  # Default is now 1
         self.character.set_auspice("ragabash")
         self.assertEqual(self.character.rage, 1)
         self.character.set_auspice("theurge")
@@ -527,3 +527,51 @@ class TestWerewolfUpdateView(TestCase):
         response = self.client.post(self.url, data=self.valid_data)
         # Chargen workflow may return 200 (form re-render) or 302 (redirect)
         self.assertIn(response.status_code, [200, 302])
+
+
+class TestWerewolfGnosisRageValidation(TestCase):
+    """Tests for Werewolf Gnosis/Rage minimum validation (issue #1363)."""
+
+    def setUp(self):
+        self.player = User.objects.create_user(username="Player")
+        self.character = Werewolf.objects.create(name="Test Werewolf", owner=self.player)
+
+    def test_gnosis_default_is_one(self):
+        """Werewolves should default to gnosis of 1."""
+        self.assertEqual(self.character.gnosis, 1)
+
+    def test_rage_default_is_one(self):
+        """Werewolves should default to rage of 1."""
+        self.assertEqual(self.character.rage, 1)
+
+    def test_gnosis_minimum_validation_in_clean(self):
+        """clean() raises ValidationError when gnosis is below 1."""
+        from django.core.exceptions import ValidationError
+
+        self.character.gnosis = 0
+        with self.assertRaises(ValidationError) as context:
+            self.character.clean()
+        self.assertIn("gnosis", context.exception.message_dict)
+
+    def test_rage_minimum_validation_in_clean(self):
+        """clean() raises ValidationError when rage is below 1."""
+        from django.core.exceptions import ValidationError
+
+        self.character.rage = 0
+        with self.assertRaises(ValidationError) as context:
+            self.character.clean()
+        self.assertIn("rage", context.exception.message_dict)
+
+    def test_gnosis_at_one_is_valid(self):
+        """clean() passes when gnosis is exactly 1."""
+        self.character.gnosis = 1
+        self.character.rage = 1
+        # Should not raise
+        self.character.clean()
+
+    def test_rage_at_one_is_valid(self):
+        """clean() passes when rage is exactly 1."""
+        self.character.gnosis = 1
+        self.character.rage = 1
+        # Should not raise
+        self.character.clean()

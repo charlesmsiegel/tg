@@ -60,8 +60,10 @@ class Wraith(WtOHuman):
         "pathos", default=5, cap_temporary=False
     )
 
-    # Shadow Stats
-    angst, temporary_angst, angst_stat = linked_stat_fields("angst", default=0, cap_temporary=False)
+    # Shadow Stats - All wraiths have a Shadow, so minimum Angst is 1
+    angst, temporary_angst, angst_stat = linked_stat_fields(
+        "angst", default=1, min_permanent=1, cap_temporary=False
+    )
 
     # Arcanoi (Standard - 13 Greater Guilds)
     argos = models.IntegerField(default=0)
@@ -145,6 +147,14 @@ class Wraith(WtOHuman):
         verbose_name = "Wraith"
         verbose_name_plural = "Wraiths"
         ordering = ["name"]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        # All wraiths have a Shadow, so permanent Angst must be at least 1
+        if self.angst < 1:
+            raise ValidationError({"angst": "All wraiths have a Shadow. Permanent Angst must be at least 1."})
 
     def get_absolute_url(self):
         return reverse("characters:wraith:wraith", kwargs={"pk": self.pk})
@@ -420,8 +430,8 @@ class Wraith(WtOHuman):
             # Psyche loses to Shadow - becomes Spectre
             return self.become_spectre()
         elif result == "catharsis":
-            # Extraordinary success - reduce Angst
-            self.angst = max(0, self.angst - 1)
+            # Extraordinary success - reduce Angst (minimum 1, all wraiths have Shadow)
+            self.angst = max(1, self.angst - 1)
             self.temporary_angst = max(0, self.temporary_angst - 3)
         # Success - just survive
 
