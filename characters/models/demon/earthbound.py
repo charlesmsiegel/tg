@@ -10,10 +10,6 @@ from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
 
-# Factory-created linked stat fields for Earthbound
-_eb_faith_fields = linked_stat_fields("faith", default=3, min_permanent=1, temporary_default=10)
-_eb_torment_fields = linked_stat_fields("torment", default=6, temporary_default=0)
-
 
 class Earthbound(LoreBlock, DtFHuman):
     """
@@ -87,8 +83,12 @@ class Earthbound(LoreBlock, DtFHuman):
     )
 
     # FAITH AND TORMENT
-    faith, temporary_faith, faith_stat = _eb_faith_fields
-    torment, temporary_torment, torment_stat = _eb_torment_fields
+    faith, temporary_faith, faith_stat = linked_stat_fields(
+        "faith", default=3, min_permanent=1, temporary_default=10, cap_temporary=False
+    )
+    torment, temporary_torment, torment_stat = linked_stat_fields(
+        "torment", default=6, temporary_default=0, cap_temporary=False
+    )
 
     # VIRTUES (Earthbound still have these)
     conviction = models.IntegerField(default=1)

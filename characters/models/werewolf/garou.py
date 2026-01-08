@@ -11,11 +11,6 @@ from django.db import models
 from django.db.models import Q
 from items.models.werewolf.fetish import Fetish
 
-# Factory-created linked stat fields for Garou renown (cap_temporary=False allows accumulation)
-_glory_fields = linked_stat_fields("glory", default=0, cap_temporary=False)
-_wisdom_fields = linked_stat_fields("wisdom", default=0, cap_temporary=False)
-_honor_fields = linked_stat_fields("honor", default=0, cap_temporary=False)
-
 
 class Werewolf(WtAHuman):
     type = "werewolf"
@@ -62,9 +57,15 @@ class Werewolf(WtAHuman):
     gnosis = models.IntegerField(default=0)
     rage = models.IntegerField(default=0)
 
-    glory, temporary_glory, glory_renown = _glory_fields
-    wisdom, temporary_wisdom, wisdom_renown = _wisdom_fields
-    honor, temporary_honor, honor_renown = _honor_fields
+    glory, temporary_glory, glory_renown = linked_stat_fields(
+        "glory", default=0, cap_temporary=False
+    )
+    wisdom, temporary_wisdom, wisdom_renown = linked_stat_fields(
+        "wisdom", default=0, cap_temporary=False
+    )
+    honor, temporary_honor, honor_renown = linked_stat_fields(
+        "honor", default=0, cap_temporary=False
+    )
 
     renown_incidents = models.JSONField(default=list, blank=True)  # list is callable - safe
 

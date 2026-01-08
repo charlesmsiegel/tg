@@ -67,7 +67,7 @@ class Revenant(VtMHuman):
     # Blood pool (revenants produce vitae naturally)
     blood_pool = models.IntegerField(default=10)
     max_blood_pool = models.IntegerField(default=10)
-    blood = LinkedStat("max_blood_pool", "blood_pool")
+    blood = LinkedStat("max_blood_pool", "blood_pool", cap_temporary=False)
 
     # Pseudo-generation (typically 10-12)
     pseudo_generation = models.IntegerField(

@@ -13,10 +13,6 @@ from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-# Factory-created linked stat fields for Demon
-_faith_fields = linked_stat_fields("faith", default=3, min_permanent=1)
-_torment_fields = linked_stat_fields("torment", default=3, temporary_default=0)
-
 
 class Demon(LoreBlock, DtFHuman):
     """Main Demon character class."""
@@ -79,8 +75,12 @@ class Demon(LoreBlock, DtFHuman):
     )
 
     # Faith and Torment
-    faith, temporary_faith, faith_stat = _faith_fields
-    torment, temporary_torment, torment_stat = _torment_fields
+    faith, temporary_faith, faith_stat = linked_stat_fields(
+        "faith", default=3, min_permanent=1, cap_temporary=False
+    )
+    torment, temporary_torment, torment_stat = linked_stat_fields(
+        "torment", default=3, temporary_default=0, cap_temporary=False
+    )
 
     # Virtues (replaces some Human virtues with Demon-specific ones)
     conviction = models.IntegerField(default=1)  # 1-5

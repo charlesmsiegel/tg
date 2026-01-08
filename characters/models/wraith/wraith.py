@@ -11,10 +11,6 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-# Factory-created linked stat fields for Wraith
-_pathos_fields = linked_stat_fields("pathos", default=5)
-_angst_fields = linked_stat_fields("angst", default=0)
-
 
 class Wraith(WtOHuman):
     type = "wraith"
@@ -60,10 +56,12 @@ class Wraith(WtOHuman):
 
     # Core Wraith Stats
     corpus = models.IntegerField(default=10)
-    pathos, temporary_pathos, pathos_stat = _pathos_fields
+    pathos, temporary_pathos, pathos_stat = linked_stat_fields(
+        "pathos", default=5, cap_temporary=False
+    )
 
     # Shadow Stats
-    angst, temporary_angst, angst_stat = _angst_fields
+    angst, temporary_angst, angst_stat = linked_stat_fields("angst", default=0, cap_temporary=False)
 
     # Arcanoi (Standard - 13 Greater Guilds)
     argos = models.IntegerField(default=0)

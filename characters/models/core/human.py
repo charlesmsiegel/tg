@@ -17,8 +17,8 @@ from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
-# Factory-created linked stat fields for Human
-_willpower_fields = linked_stat_fields("willpower", default=3, min_permanent=1)
+# Module-level because Meta.constraints can't access class attributes
+_willpower = linked_stat_fields("willpower", default=3, min_permanent=1)
 
 
 class Human(
@@ -97,7 +97,9 @@ class Human(
     # Note: backgrounds are managed dynamically through BackgroundRating model
     # No direct fields needed here - see background_manager property
 
-    willpower, temporary_willpower, willpower_stat = _willpower_fields
+    willpower = _willpower.permanent
+    temporary_willpower = _willpower.temporary
+    willpower_stat = _willpower.descriptor
 
     derangements = models.ManyToManyField("Derangement", blank=True)
 
@@ -122,7 +124,7 @@ class Human(
         verbose_name_plural = "Humans"
         ordering = ["name"]
         constraints = [
-            *_willpower_fields.constraints("characters_human_"),
+            *_willpower.constraints("characters_human_"),
             # Age must be reasonable if provided
             CheckConstraint(
                 check=Q(age__isnull=True) | Q(age__gte=0, age__lte=5000),
