@@ -100,6 +100,61 @@
         </div>
     {% endif %}
 {% endblock powers %}
+{% block passions %}
+    {% if passions %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Passions</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% for passion in passions %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <strong>{{ passion.emotion }}:</strong> {{ passion.description }}
+                                            {% if passion.is_dark_passion %}<span class="tg-badge badge-dec">Dark</span>{% endif %}
+                                        </div>
+                                        <div class="col-4 dots">{{ passion.rating|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock passions %}
+{% block fetters %}
+    {% if fetters %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tg-card">
+                    <div class="tg-card-header">
+                        <h5 class="tg-card-title {{ object.get_heading }}">Fetters</h5>
+                    </div>
+                    <div class="tg-card-body">
+                        <div class="row">
+                            {% for fetter in fetters %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <strong>{{ fetter.get_fetter_type_display }}:</strong> {{ fetter.description }}
+                                        </div>
+                                        <div class="col-4 dots">{{ fetter.rating|dots }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock fetters %}
 {% block advantages %}
     <div class="row mb-3">
         <div class="col-12">
