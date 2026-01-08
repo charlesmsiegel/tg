@@ -113,24 +113,27 @@ class Profile(models.Model):
 
         Returns:
             QuerySet[Character]: Characters owned by this user, ordered by name.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return Character.objects.owned_by(self.user)
+        return Character.objects.owned_by(self.user).with_polymorphic_ctype()
 
     def my_locations(self):
         """Get all locations owned by this user.
 
         Returns:
             QuerySet[LocationModel]: Locations owned by this user, ordered by name.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return LocationModel.objects.owned_by(self.user)
+        return LocationModel.objects.owned_by(self.user).with_polymorphic_ctype()
 
     def my_items(self):
         """Get all items owned by this user.
 
         Returns:
             QuerySet[ItemModel]: Items owned by this user, ordered by name.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return ItemModel.objects.owned_by(self.user)
+        return ItemModel.objects.owned_by(self.user).with_polymorphic_ctype()
 
     def xp_requests(self):
         """Get scenes awaiting XP awards for this user's chronicles.
@@ -229,24 +232,39 @@ class Profile(models.Model):
 
         Returns:
             QuerySet[Character]: Characters with images awaiting ST approval.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return Character.objects.with_pending_images().for_user_chronicles(self.user)
+        return (
+            Character.objects.with_pending_images()
+            .for_user_chronicles(self.user)
+            .with_polymorphic_ctype()
+        )
 
     def location_images_to_approve(self):
         """Get locations with pending image uploads for this user's chronicles.
 
         Returns:
             QuerySet[LocationModel]: Locations with images awaiting ST approval.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return LocationModel.objects.with_pending_images().for_user_chronicles(self.user)
+        return (
+            LocationModel.objects.with_pending_images()
+            .for_user_chronicles(self.user)
+            .with_polymorphic_ctype()
+        )
 
     def item_images_to_approve(self):
         """Get items with pending image uploads for this user's chronicles.
 
         Returns:
             QuerySet[ItemModel]: Items with images awaiting ST approval.
+            Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        return ItemModel.objects.with_pending_images().for_user_chronicles(self.user)
+        return (
+            ItemModel.objects.with_pending_images()
+            .for_user_chronicles(self.user)
+            .with_polymorphic_ctype()
+        )
 
     @property
     def theme_list(self):

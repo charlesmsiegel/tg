@@ -69,7 +69,10 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         # Optimize queries with select_related
         scenes = self.object.xp_requests().select_related("chronicle", "location")
-        characters = self.object.freebies_to_approve().select_related("owner", "chronicle")
+        # Include polymorphic_ctype for subclass-specific method calls in templates
+        characters = self.object.freebies_to_approve().select_related(
+            "polymorphic_ctype", "owner", "chronicle"
+        )
 
         context["scenexp_forms"] = [SceneXP(scene=s, prefix=f"scene_{s.pk}") for s in scenes]
         context["freebie_forms"] = [

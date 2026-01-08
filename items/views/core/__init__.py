@@ -218,8 +218,11 @@ class ItemIndexView(View):
                 c = ItemModel.objects.filter(chronicle=chron).order_by("name")
             items = [x for x in c if x.type in game_items_types]
 
-            c = ItemModel.objects.filter(id__in=[x.id for x in items], chronicle=chron).order_by(
-                "name"
+            # Include polymorphic_ctype for subclass-specific method calls in templates
+            c = (
+                ItemModel.objects.filter(id__in=[x.id for x in items], chronicle=chron)
+                .with_polymorphic_ctype()
+                .order_by("name")
             )
             chron_dict[chron] = c
 

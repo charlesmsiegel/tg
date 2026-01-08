@@ -23,22 +23,39 @@ from polymorphic.query import PolymorphicQuerySet
 
 class ModelQuerySet(PolymorphicQuerySet):
     """
-    Base queryset for all polymorphic models with default ContentType optimization.
+    Base queryset for all polymorphic models.
 
-    Automatically applies select_related('polymorphic_ctype') to prevent
-    N+1 queries when resolving polymorphic types (e.g., determining if a
-    Character is VtMHuman, Mage, Garou, etc.).
+    Provides common queryset methods for Character, ItemModel, and LocationModel.
+    Use with_polymorphic_ctype() explicitly when iterating over results that need
+    polymorphic dispatch (e.g., calling get_absolute_url(), get_type(), etc.).
     """
+
+    def with_polymorphic_ctype(self):
+        """
+        Add select_related('polymorphic_ctype') for polymorphic dispatch.
+
+        Call this method when you need to iterate over results and access
+        subclass-specific methods like get_absolute_url(), get_type(),
+        get_heading(), or get_badge_class().
+
+        Not needed for:
+        - .count(), .exists(), .values(), .values_list()
+        - Queries that only access base model fields
+        - Queries filtered to a specific subclass
+        """
+        return self.select_related("polymorphic_ctype")
 
     def pending_approval_for_user(self, user):
         """
         Objects awaiting approval in user's chronicles (optimized).
         Default implementation uses status in ['Un', 'Sub'].
         Override in subclasses if different status logic is needed.
+
+        Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
         return (
             self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
-            .select_related("chronicle", "owner")
+            .select_related("polymorphic_ctype", "chronicle", "owner")
             .order_by("name")
         )
 
@@ -63,19 +80,24 @@ class ModelQuerySet(PolymorphicQuerySet):
         return self.filter(chronicle__in=user.chronicle_set.all())
 
 
-# Create custom manager with polymorphic_ctype optimization
+# Create custom manager with ModelQuerySet methods
 class ModelManager(PolymorphicManager.from_queryset(ModelQuerySet)):
     """
-    Manager for polymorphic models with automatic ContentType optimization.
+    Manager for polymorphic models.
 
-    Applies select_related('polymorphic_ctype') by default to prevent N+1 queries
-    when resolving polymorphic types. Uses Django's standard get_queryset() pattern
-    instead of fragile internal query manipulation.
+    Does NOT automatically apply select_related('polymorphic_ctype') to avoid
+    20-30% query overhead on operations that don't need polymorphic dispatch.
+
+    When iterating over results that need subclass-specific methods
+    (get_absolute_url, get_type, etc.), call .with_polymorphic_ctype() explicitly:
+
+        Character.objects.filter(...).with_polymorphic_ctype()
+
+    Not needed for .count(), .exists(), .values(), .values_list(), or queries
+    that only access base model fields.
     """
 
-    def get_queryset(self):
-        """Return queryset with polymorphic_ctype optimization applied."""
-        return super().get_queryset().select_related("polymorphic_ctype")
+    pass
 
 
 class Book(models.Model):
