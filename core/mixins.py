@@ -14,7 +14,30 @@ from django.http import Http404
 from django.views import View
 
 
-class PermissionRequiredMixin:
+class ObjectCachingMixin:
+    """
+    Mixin that caches the result of get_object() to avoid duplicate DB queries.
+
+    This is useful when dispatch() needs to access the object for permission
+    checking before the view's standard get_object() call in get()/post().
+
+    Without this caching, the same object would be fetched twice per request:
+    once during permission checking in dispatch(), and again when the view
+    prepares context data.
+
+    Usage:
+        class MyView(ObjectCachingMixin, DetailView):
+            model = MyModel
+    """
+
+    def get_object(self, queryset=None):
+        """Return the object, caching the result for subsequent calls."""
+        if not hasattr(self, "_cached_object"):
+            self._cached_object = super().get_object(queryset)
+        return self._cached_object
+
+
+class PermissionRequiredMixin(ObjectCachingMixin):
     """
     Mixin for CBVs requiring permission checks.
 
@@ -139,7 +162,7 @@ class VisibilityFilterMixin:
         return context
 
 
-class OwnerRequiredMixin:
+class OwnerRequiredMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to object owners only.
 
@@ -168,7 +191,7 @@ class OwnerRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class STRequiredMixin:
+class STRequiredMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to chronicle STs and admins only.
 
@@ -387,7 +410,7 @@ class StorytellerRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class CharacterOwnerOrSTMixin:
+class CharacterOwnerOrSTMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to character owners, storytellers, and admins.
 
