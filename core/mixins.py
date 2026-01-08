@@ -568,13 +568,43 @@ class ApprovalMixin:
         return getattr(self.object, self.spendings_related_name)
 
     def _parse_request_id(self, request, button_value):
-        """Parse the request ID from POST data matching the button value."""
-        request_key = [k for k, v in request.POST.items() if v == button_value][0]
-        return int(request_key.split("_")[2])
+        """Parse the request ID from POST data matching the button value.
+
+        Validates that:
+        - A matching POST key exists
+        - The key has at least 3 underscore-separated parts
+        - The third part is a positive integer
+
+        Raises:
+            ValidationError: If the POST data is malformed or missing required keys
+        """
+        from django.core.exceptions import ValidationError
+
+        # Find matching keys
+        matching_keys = [k for k, v in request.POST.items() if v == button_value]
+        if not matching_keys:
+            raise ValidationError("Invalid request: no matching action key found")
+
+        request_key = matching_keys[0]
+        parts = request_key.split("_")
+
+        # Validate key format (needs at least 3 parts: prefix_type_id)
+        if len(parts) < 3:
+            raise ValidationError("Invalid request: malformed action key format")
+
+        # Validate ID is a positive integer
+        try:
+            request_id = int(parts[2])
+            if request_id < 0:
+                raise ValidationError("Invalid request: ID must be a positive integer")
+            return request_id
+        except ValueError:
+            raise ValidationError("Invalid request: ID must be a valid integer")
 
     def post(self, request, *args, **kwargs):
         import logging
 
+        from django.core.exceptions import ValidationError
         from django.db import transaction
         from django.shortcuts import redirect
         from django.urls import reverse
@@ -584,7 +614,11 @@ class ApprovalMixin:
         request_model = self.get_request_model()
 
         if self.approve_button_value in request.POST.values():
-            request_id = self._parse_request_id(request, self.approve_button_value)
+            try:
+                request_id = self._parse_request_id(request, self.approve_button_value)
+            except ValidationError as e:
+                messages.error(request, str(e.message))
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
                 spending_request = self._get_spendings_manager().get(
@@ -617,7 +651,11 @@ class ApprovalMixin:
             return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
         if self.reject_button_value in request.POST.values():
-            request_id = self._parse_request_id(request, self.reject_button_value)
+            try:
+                request_id = self._parse_request_id(request, self.reject_button_value)
+            except ValidationError as e:
+                messages.error(request, str(e.message))
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
                 with transaction.atomic():
