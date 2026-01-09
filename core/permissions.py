@@ -411,60 +411,17 @@ class PermissionManager:
         return filters
 
     @staticmethod
-    def _get_player_chronicle_exists_subquery(user: User, model):
-        """
-        Get Exists subquery for objects in chronicles where user is a player.
-
-        Args:
-            user: Django User instance
-            model: Model class being filtered
-
-        Returns:
-            Exists subquery or None if not applicable
-        """
-        if not PermissionManager._model_has_field(model, "chronicle"):
-            return None
-
-        if not PermissionManager._model_has_field(model, "status"):
-            return None
-
-        from characters.models import Character
-
-        # User has an approved character in the same chronicle
-        # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        player_chronicles = (
-            Character.objects.filter(owner=user, status="App")
-            .exclude(chronicle__isnull=True)
-            .values("chronicle")
-        )
-        return Q(chronicle__in=player_chronicles, status="App")
-
-    @staticmethod
-    def _get_observer_filter(user: User, model) -> Q:
-        """
-        Get Q filter for objects user is observing.
-
-        Leverages GenericRelation on PermissionMixin for cleaner lookups
-        without manual ContentType queries.
-
-        Args:
-            user: Django User instance
-            model: Model class being filtered
-
-        Returns:
-            Q filter for observer access
-        """
-        # Check if model has observers relation (from PermissionMixin)
-        if not PermissionManager._model_has_field(model, "observers"):
-            return Q(pk__in=[])  # No observer support, empty filter
-        return Q(observers__user=user)
-
-    @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """
         Filter queryset to only objects user can view.
 
-        Uses Q-based filters and GenericRelation for observer access.
+        Uses a two-pass approach for performance:
+        1. Build Q filters for owner and ST access (efficient joins)
+        2. Fetch player chronicle IDs and observer IDs with simple queries
+        3. Combine all filters using pk__in for set-based lookups
+
+        This avoids adding subquery annotations to every queryset which
+        caused exponential query complexity when filter was called repeatedly.
 
         Args:
             user: Django User instance
@@ -483,25 +440,46 @@ class PermissionManager:
         if user.is_superuser or user.is_staff:
             return queryset
 
-        # Build Q-based filters
+        model = queryset.model
+
+        # Build Q-based filters for owner and ST access (these are efficient joins)
         filters = Q()
 
         # 1. Objects user owns
-        filters |= PermissionManager._build_owner_filter(user, queryset.model)
+        filters |= PermissionManager._build_owner_filter(user, model)
 
         # 2. Chronicle storyteller access
         chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
         if chronicle_model:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
-        # 3. Player chronicle access (approved character in same chronicle)
-        player_chronicle_filter = PermissionManager._get_player_chronicle_exists_subquery(
-            user, queryset.model
-        )
-        if player_chronicle_filter is not None:
-            filters |= player_chronicle_filter
+        # 3. Player chronicle access - fetch IDs once, then use pk__in
+        if (
+            PermissionManager._model_has_field(model, "chronicle")
+            and PermissionManager._model_has_field(model, "status")
+        ):
+            from characters.models import Character
 
-        # 4. Observer access via GenericRelation
-        filters |= PermissionManager._get_observer_filter(user, queryset.model)
+            # Get list of chronicle IDs where user has an approved character
+            player_chronicle_ids = list(
+                Character.objects.filter(owner=user, status="App")
+                .exclude(chronicle__isnull=True)
+                .values_list("chronicle_id", flat=True)
+            )
+            if player_chronicle_ids:
+                # User can see approved objects in chronicles where they're a player
+                filters |= Q(chronicle_id__in=player_chronicle_ids, status="App")
+
+        # 4. Observer access - fetch observed IDs directly instead of subquery
+        from core.models import Observer
+
+        ct = ContentType.objects.get_for_model(model)
+        observed_ids = list(
+            Observer.objects.filter(content_type=ct, user=user).values_list(
+                "object_id", flat=True
+            )
+        )
+        if observed_ids:
+            filters |= Q(pk__in=observed_ids)
 
         return queryset.filter(filters).distinct()
