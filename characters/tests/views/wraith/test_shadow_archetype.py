@@ -2,6 +2,7 @@
 
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -10,6 +11,7 @@ class TestShadowArchetypeDetailView(TestCase):
     """Test ShadowArchetypeDetailView permissions and functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -39,9 +41,14 @@ class TestShadowArchetypeListView(TestCase):
     """Test ShadowArchetypeListView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
+        )
+        # Create archetype in setUp to avoid caching issues
+        self.archetype = ShadowArchetype.objects.create(
+            name="The Pusher", point_cost=2, owner=self.user
         )
 
     def test_list_view_accessible_when_logged_in(self):
@@ -53,7 +60,6 @@ class TestShadowArchetypeListView(TestCase):
 
     def test_list_view_shows_archetypes(self):
         """Test that list view shows archetypes."""
-        archetype = ShadowArchetype.objects.create(name="The Pusher", point_cost=2, owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:shadow_archetype")
         response = self.client.get(url)

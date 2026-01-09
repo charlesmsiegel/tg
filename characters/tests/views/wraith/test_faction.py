@@ -2,6 +2,7 @@
 
 from characters.models.wraith.faction import WraithFaction
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -10,6 +11,7 @@ class TestWraithFactionDetailView(TestCase):
     """Test WraithFactionDetailView permissions and functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -50,9 +52,14 @@ class TestWraithFactionListView(TestCase):
     """Test WraithFactionListView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
+        )
+        # Create faction in setUp to avoid caching issues
+        self.faction = WraithFaction.objects.create(
+            name="Silent Legion", faction_type="legion", owner=self.user
         )
 
     def test_list_view_accessible_when_logged_in(self):
@@ -64,9 +71,6 @@ class TestWraithFactionListView(TestCase):
 
     def test_list_view_shows_factions(self):
         """Test that list view shows factions."""
-        faction = WraithFaction.objects.create(
-            name="Silent Legion", faction_type="legion", owner=self.user
-        )
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:faction")
         response = self.client.get(url)

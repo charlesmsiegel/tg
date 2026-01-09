@@ -2,6 +2,7 @@
 
 from characters.models.wraith.guild import Guild
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -10,6 +11,7 @@ class TestGuildDetailView(TestCase):
     """Test GuildDetailView permissions and functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -39,10 +41,13 @@ class TestGuildListView(TestCase):
     """Test GuildListView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        # Create guild in setUp to avoid caching issues
+        self.guild = Guild.objects.create(name="Masquers", guild_type="greater", owner=self.user)
 
     def test_list_view_accessible_when_logged_in(self):
         """Test that guild list view is accessible when logged in."""
@@ -53,7 +58,6 @@ class TestGuildListView(TestCase):
 
     def test_list_view_shows_guilds(self):
         """Test that list view shows guilds."""
-        guild = Guild.objects.create(name="Masquers", guild_type="greater", owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:guild")
         response = self.client.get(url)

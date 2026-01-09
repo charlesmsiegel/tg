@@ -3,6 +3,7 @@
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.house import DemonHouse
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -11,6 +12,7 @@ class TestApocalypticFormTraitDetailView(TestCase):
     """Test ApocalypticFormTraitDetailView permissions and functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -43,10 +45,13 @@ class TestApocalypticFormTraitListView(TestCase):
     """Test ApocalypticFormTraitListView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        # Create trait in setUp to avoid caching issues
+        self.trait = ApocalypticFormTrait.objects.create(name="Wings", cost=2, owner=self.user)
 
     def test_list_view_accessible_when_logged_in(self):
         """Test that trait list view is accessible when logged in."""
@@ -57,7 +62,6 @@ class TestApocalypticFormTraitListView(TestCase):
 
     def test_list_view_shows_traits(self):
         """Test that list view shows traits."""
-        trait = ApocalypticFormTrait.objects.create(name="Wings", cost=2, owner=self.user)
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:apocalyptic_trait")
         response = self.client.get(url)

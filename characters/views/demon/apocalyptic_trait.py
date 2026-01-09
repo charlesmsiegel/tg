@@ -1,8 +1,11 @@
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from core.mixins import MessageMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class ApocalypticFormTraitDetailView(DetailView):
     model = ApocalypticFormTrait
     template_name = "characters/demon/apocalyptic_trait/detail.html"
@@ -36,6 +39,7 @@ class ApocalypticFormTraitUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Apocalyptic Form Trait."
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class ApocalypticFormTraitListView(ListView):
     model = ApocalypticFormTrait
     ordering = ["cost", "name"]
