@@ -151,7 +151,7 @@ class TestCompanionMassAssignment(TestCase):
     def test_owner_cannot_change_status_via_form(self):
         """Test that owners cannot change status field via form submission."""
         self.client.login(username="owner", password="password")
-        url = reverse("characters:mage:update:companion", kwargs={"pk": self.companion.pk})
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         # Owner gets LimitedHumanEditForm which doesn't include status
         response = self.client.post(
@@ -173,7 +173,7 @@ class TestCompanionMassAssignment(TestCase):
     def test_owner_cannot_change_xp_via_form(self):
         """Test that owners cannot change xp field via form submission."""
         self.client.login(username="owner", password="password")
-        url = reverse("characters:mage:update:companion", kwargs={"pk": self.companion.pk})
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         original_xp = self.companion.xp
         response = self.client.post(
@@ -195,7 +195,7 @@ class TestCompanionMassAssignment(TestCase):
     def test_owner_cannot_change_owner_via_form(self):
         """Test that owners cannot change owner field via form submission."""
         self.client.login(username="owner", password="password")
-        url = reverse("characters:mage:update:companion", kwargs={"pk": self.companion.pk})
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         response = self.client.post(
             url,
@@ -216,7 +216,7 @@ class TestCompanionMassAssignment(TestCase):
     def test_owner_cannot_change_freebies_approved_via_form(self):
         """Test that owners cannot change freebies_approved field via form submission."""
         self.client.login(username="owner", password="password")
-        url = reverse("characters:mage:update:companion", kwargs={"pk": self.companion.pk})
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         response = self.client.post(
             url,
@@ -237,7 +237,7 @@ class TestCompanionMassAssignment(TestCase):
     def test_owner_cannot_change_st_notes_via_form(self):
         """Test that owners cannot change st_notes field via form submission."""
         self.client.login(username="owner", password="password")
-        url = reverse("characters:mage:update:companion", kwargs={"pk": self.companion.pk})
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
 
         response = self.client.post(
             url,
@@ -254,6 +254,85 @@ class TestCompanionMassAssignment(TestCase):
         self.companion.refresh_from_db()
         # st_notes should remain empty
         self.assertEqual(self.companion.st_notes, "")
+
+    def _get_st_form_data(self, **overrides):
+        """Helper to get base form data for ST edit tests."""
+        data = {
+            "name": self.companion.name,
+            "companion_type": self.companion.companion_type,
+            "status": self.companion.status,
+            "xp": self.companion.xp,
+            "willpower": self.companion.willpower,
+            "visibility": "PRI",  # Private visibility
+        }
+        data.update(overrides)
+        return data
+
+    def test_st_can_modify_status_field(self):
+        """Test that STs have access to status field via ST_EDIT_FIELDS."""
+        self.client.login(username="st", password="password")
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
+
+        # Test valid status transition: Un -> Sub
+        response = self.client.post(url, self._get_st_form_data(status="Sub"))
+
+        # Debug: check if form has errors
+        if response.status_code == 200 and hasattr(response, "context") and response.context:
+            form = response.context.get("form")
+            if form and form.errors:
+                self.fail(f"Form errors: {form.errors}")
+
+        self.assertEqual(response.status_code, 302, f"Expected redirect, got {response.status_code}")
+        self.companion.refresh_from_db()
+        self.assertEqual(self.companion.status, "Sub")
+
+    def test_st_can_modify_xp_field(self):
+        """Test that STs have access to xp field via ST_EDIT_FIELDS."""
+        self.client.login(username="st", password="password")
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
+
+        response = self.client.post(url, self._get_st_form_data(xp=100))
+
+        if response.status_code == 200 and hasattr(response, "context") and response.context:
+            form = response.context.get("form")
+            if form and form.errors:
+                self.fail(f"Form errors: {form.errors}")
+
+        self.assertEqual(response.status_code, 302)
+        self.companion.refresh_from_db()
+        self.assertEqual(self.companion.xp, 100)
+
+    def test_st_can_modify_freebies_approved_field(self):
+        """Test that STs have access to freebies_approved field via ST_EDIT_FIELDS."""
+        self.client.login(username="st", password="password")
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
+
+        response = self.client.post(url, self._get_st_form_data(freebies_approved=True))
+
+        if response.status_code == 200 and hasattr(response, "context") and response.context:
+            form = response.context.get("form")
+            if form and form.errors:
+                self.fail(f"Form errors: {form.errors}")
+
+        self.assertEqual(response.status_code, 302)
+        self.companion.refresh_from_db()
+        self.assertEqual(self.companion.freebies_approved, True)
+
+    def test_st_can_modify_st_notes_field(self):
+        """Test that STs have access to st_notes field via ST_EDIT_FIELDS."""
+        self.client.login(username="st", password="password")
+        url = reverse("characters:mage:update:companion_full", kwargs={"pk": self.companion.pk})
+
+        response = self.client.post(url, self._get_st_form_data(st_notes="ST notes for this character"))
+
+        if response.status_code == 200 and hasattr(response, "context") and response.context:
+            form = response.context.get("form")
+            if form and form.errors:
+                self.fail(f"Form errors: {form.errors}")
+
+        self.assertEqual(response.status_code, 302)
+        self.companion.refresh_from_db()
+        self.assertEqual(self.companion.st_notes, "ST notes for this character")
 
 
 class TestCharacterMassAssignment(TestCase):
