@@ -6,6 +6,10 @@ urls = [
     path("circles/", views.wraith.CircleListView.as_view(), name="circle"),
     path("factions/", views.wraith.WraithFactionListView.as_view(), name="faction"),
     path("guilds/", views.wraith.GuildListView.as_view(), name="guild"),
-    path("shadow_archetypes/", views.wraith.ShadowArchetypeListView.as_view(), name="shadow_archetype"),
+    path(
+        "shadow_archetypes/",
+        views.wraith.ShadowArchetypeListView.as_view(),
+        name="shadow_archetype",
+    ),
     path("thorns/", views.wraith.ThornListView.as_view(), name="thorn"),
 ]

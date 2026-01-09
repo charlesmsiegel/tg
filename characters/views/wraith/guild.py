@@ -1,5 +1,6 @@
 from characters.models.wraith.guild import Guild
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -8,7 +9,7 @@ class GuildDetailView(DetailView):
     template_name = "characters/wraith/guild/detail.html"
 
 
-class GuildCreateView(MessageMixin, CreateView):
+class GuildCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Guild
     fields = ["name", "description", "guild_type", "willpower"]
     template_name = "characters/wraith/guild/form.html"
@@ -16,7 +17,7 @@ class GuildCreateView(MessageMixin, CreateView):
     error_message = "There was an error creating the Guild."
 
 
-class GuildUpdateView(MessageMixin, UpdateView):
+class GuildUpdateView(LoginRequiredMixin, MessageMixin, UpdateView):
     model = Guild
     fields = ["name", "description", "guild_type", "willpower"]
     template_name = "characters/wraith/guild/form.html"

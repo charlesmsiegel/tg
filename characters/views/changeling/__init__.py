@@ -3,12 +3,22 @@ from .autumn_person import (
     AutumnPersonDetailView,
     AutumnPersonUpdateView,
 )
-from .cantrip import CantripCreateView, CantripDetailView, CantripListView, CantripUpdateView
+from .cantrip import (
+    CantripCreateView,
+    CantripDetailView,
+    CantripListView,
+    CantripUpdateView,
+)
 from .changeling import ChangelingCharacterCreationView
-from .chimera import ChimeraCreateView, ChimeraDetailView, ChimeraListView, ChimeraUpdateView
 from .changeling import ChangelingCreateView as ChangelingCharacterListView
 from .changeling import ChangelingDetailView as ChangelingCharacterDetailView
 from .changeling import ChangelingUpdateView as ChangelingCharacterUpdateView
+from .chimera import (
+    ChimeraCreateView,
+    ChimeraDetailView,
+    ChimeraListView,
+    ChimeraUpdateView,
+)
 from .ctdhuman import CtDHumanBasicsView, CtDHumanCharacterCreationView
 from .ctdhuman import CtDHumanCreateView as CtDHumanCharacterListView
 from .ctdhuman import CtDHumanDetailView as CtDHumanCharacterDetailView

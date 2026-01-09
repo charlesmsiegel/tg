@@ -1,4 +1,9 @@
-from .arcanos import ArcanosCreateView, ArcanosDetailView, ArcanosListView, ArcanosUpdateView
+from .arcanos import (
+    ArcanosCreateView,
+    ArcanosDetailView,
+    ArcanosListView,
+    ArcanosUpdateView,
+)
 from .circle import CircleCreateView, CircleDetailView, CircleListView, CircleUpdateView
 from .faction import (
     WraithFactionCreateView,
