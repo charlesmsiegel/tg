@@ -1,0 +1,42 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Shadow Archetype{% else %}Create Shadow Archetype{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Point Cost</div>
+        <div class="col-sm">{{ form.point_cost }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Core Function</div>
+        <div class="col-sm">{{ form.core_function }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Modus Operandi</div>
+        <div class="col-sm">{{ form.modus_operandi }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Dominance Behavior</div>
+        <div class="col-sm">{{ form.dominance_behavior }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Effect on Psyche</div>
+        <div class="col-sm">{{ form.effect_on_psyche }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Strengths</div>
+        <div class="col-sm">{{ form.strengths }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Weaknesses</div>
+        <div class="col-sm">{{ form.weaknesses }}</div>
+    </div>
+{% endblock contents %}

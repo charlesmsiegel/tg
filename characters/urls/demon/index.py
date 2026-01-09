@@ -1,4 +1,6 @@
 from characters.views.demon import (
+    ApocalypticFormTraitListView,
+    ConclaveListView,
     DemonFactionListView,
     DemonHouseListView,
     DemonListView,
@@ -13,6 +15,8 @@ from characters.views.demon import (
 from django.urls import path
 
 urls = [
+    path("apocalyptic_trait/", ApocalypticFormTraitListView.as_view(), name="apocalyptic_trait"),
+    path("conclave/", ConclaveListView.as_view(), name="conclave"),
     path("demon/", DemonListView.as_view(), name="demon"),
     path("dtfhuman/", DtFHumanListView.as_view(), name="dtfhuman"),
     path("thrall/", ThrallListView.as_view(), name="thrall"),

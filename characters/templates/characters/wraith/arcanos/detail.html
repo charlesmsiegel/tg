@@ -1,0 +1,70 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title wto_heading">Arcanos Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Type:</strong></div>
+            <div class="col-md-8">{{ object.get_arcanos_type_display }}</div>
+        </div>
+        {% if object.parent_arcanos %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Parent Arcanos:</strong></div>
+                <div class="col-md-8"><a href="{{ object.parent_arcanos.get_absolute_url }}">{{ object.parent_arcanos.name }}</a></div>
+            </div>
+        {% endif %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Level:</strong></div>
+            <div class="col-md-8">{{ object.level }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Pathos Cost:</strong></div>
+            <div class="col-md-8">{{ object.pathos_cost }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Angst Cost:</strong></div>
+            <div class="col-md-8">{{ object.angst_cost }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Difficulty:</strong></div>
+            <div class="col-md-8">{{ object.difficulty }}</div>
+        </div>
+    </div>
+</div>
+
+{% if levels %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title wto_heading">Levels</h5>
+    </div>
+    <div class="tg-card-body">
+        <table class="tg-table">
+            <thead>
+                <tr>
+                    <th>Level</th>
+                    <th>Name</th>
+                    <th>Pathos</th>
+                    <th>Angst</th>
+                    <th>Difficulty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for level in levels %}
+                    <tr>
+                        <td>{{ level.level }}</td>
+                        <td><a href="{{ level.get_absolute_url }}">{{ level.name }}</a></td>
+                        <td>{{ level.pathos_cost }}</td>
+                        <td>{{ level.angst_cost }}</td>
+                        <td>{{ level.difficulty }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock contents %}

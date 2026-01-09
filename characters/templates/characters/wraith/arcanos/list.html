@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% block title %}
+    Arcanoi
+{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="tg-card header-card mb-4" data-gameline="wto">
+            <div class="tg-card-header">
+                <h1 class="tg-card-title wto_heading">Arcanoi</h1>
+            </div>
+        </div>
+
+        <div class="tg-card">
+            <div class="tg-card-body">
+                <table class="tg-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                            <tr>
+                                <td><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></td>
+                                <td>{{ obj.get_arcanos_type_display }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center">No arcanoi found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

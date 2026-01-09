@@ -14,7 +14,30 @@ from django.http import Http404
 from django.views import View
 
 
-class PermissionRequiredMixin:
+class ObjectCachingMixin:
+    """
+    Mixin that caches the result of get_object() to avoid duplicate DB queries.
+
+    This is useful when dispatch() needs to access the object for permission
+    checking before the view's standard get_object() call in get()/post().
+
+    Without this caching, the same object would be fetched twice per request:
+    once during permission checking in dispatch(), and again when the view
+    prepares context data.
+
+    Usage:
+        class MyView(ObjectCachingMixin, DetailView):
+            model = MyModel
+    """
+
+    def get_object(self, queryset=None):
+        """Return the object, caching the result for subsequent calls."""
+        if not hasattr(self, "_cached_object"):
+            self._cached_object = super().get_object(queryset)
+        return self._cached_object
+
+
+class PermissionRequiredMixin(ObjectCachingMixin):
     """
     Mixin for CBVs requiring permission checks.
 
@@ -139,7 +162,7 @@ class VisibilityFilterMixin:
         return context
 
 
-class OwnerRequiredMixin:
+class OwnerRequiredMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to object owners only.
 
@@ -168,7 +191,7 @@ class OwnerRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class STRequiredMixin:
+class STRequiredMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to chronicle STs and admins only.
 
@@ -387,7 +410,7 @@ class StorytellerRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
-class CharacterOwnerOrSTMixin:
+class CharacterOwnerOrSTMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to character owners, storytellers, and admins.
 
@@ -568,13 +591,43 @@ class ApprovalMixin:
         return getattr(self.object, self.spendings_related_name)
 
     def _parse_request_id(self, request, button_value):
-        """Parse the request ID from POST data matching the button value."""
-        request_key = [k for k, v in request.POST.items() if v == button_value][0]
-        return int(request_key.split("_")[2])
+        """Parse the request ID from POST data matching the button value.
+
+        Validates that:
+        - A matching POST key exists
+        - The key has at least 3 underscore-separated parts
+        - The third part is a positive integer
+
+        Raises:
+            ValidationError: If the POST data is malformed or missing required keys
+        """
+        from django.core.exceptions import ValidationError
+
+        # Find matching keys
+        matching_keys = [k for k, v in request.POST.items() if v == button_value]
+        if not matching_keys:
+            raise ValidationError("Invalid request: no matching action key found")
+
+        request_key = matching_keys[0]
+        parts = request_key.split("_")
+
+        # Validate key format (needs at least 3 parts: prefix_type_id)
+        if len(parts) < 3:
+            raise ValidationError("Invalid request: malformed action key format")
+
+        # Validate ID is a positive integer
+        try:
+            request_id = int(parts[2])
+            if request_id < 0:
+                raise ValidationError("Invalid request: ID must be a positive integer")
+            return request_id
+        except ValueError:
+            raise ValidationError("Invalid request: ID must be a valid integer")
 
     def post(self, request, *args, **kwargs):
         import logging
 
+        from django.core.exceptions import ValidationError
         from django.db import transaction
         from django.shortcuts import redirect
         from django.urls import reverse
@@ -584,7 +637,11 @@ class ApprovalMixin:
         request_model = self.get_request_model()
 
         if self.approve_button_value in request.POST.values():
-            request_id = self._parse_request_id(request, self.approve_button_value)
+            try:
+                request_id = self._parse_request_id(request, self.approve_button_value)
+            except ValidationError as e:
+                messages.error(request, str(e))
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
                 spending_request = self._get_spendings_manager().get(
@@ -617,7 +674,11 @@ class ApprovalMixin:
             return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
         if self.reject_button_value in request.POST.values():
-            request_id = self._parse_request_id(request, self.reject_button_value)
+            try:
+                request_id = self._parse_request_id(request, self.reject_button_value)
+            except ValidationError as e:
+                messages.error(request, str(e))
+                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
                 with transaction.atomic():

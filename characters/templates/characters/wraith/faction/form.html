@@ -1,0 +1,22 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Wraith Faction{% else %}Create Wraith Faction{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Faction Type</div>
+        <div class="col-sm">{{ form.faction_type }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Parent Faction</div>
+        <div class="col-sm">{{ form.parent }}</div>
+    </div>
+{% endblock contents %}

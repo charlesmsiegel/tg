@@ -16,6 +16,7 @@ from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import BasePracticeRating, BaseResonanceRating
 from core.utils import add_dot, weighted_choice
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
@@ -134,7 +135,14 @@ class Mage(MtAHuman):
     practices = models.ManyToManyField(Practice, blank=True, through="PracticeRating")
     instruments = models.ManyToManyField(Instrument, blank=True)
 
-    arete = models.IntegerField(default=0)
+    # All awakened mages must have at least Arete 1 (M20 Core Rulebook)
+    arete = models.IntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1, message="All awakened mages must have at least Arete 1"),
+            MaxValueValidator(10),
+        ],
+    )
 
     affinity_sphere = models.ForeignKey(
         Sphere,
@@ -195,6 +203,29 @@ class Mage(MtAHuman):
         verbose_name = "Mage"
         verbose_name_plural = "Mages"
         ordering = ["name"]
+        constraints = [
+            CheckConstraint(
+                check=Q(arete__gte=1, arete__lte=10),
+                name="characters_mage_arete_range",
+                violation_error_message="Arete must be between 1 and 10",
+            ),
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        if self.arete < 1:
+            raise ValidationError({"arete": "All awakened mages must have at least Arete 1."})
+
+    def clean(self):
+        """Validate that no sphere rating exceeds Arete."""
+        super().clean()
+        for sphere_name, sphere_rating in self.get_spheres().items():
+            if sphere_rating > self.arete:
+                raise ValidationError(
+                    {sphere_name: f"{sphere_name.title()} rating ({sphere_rating}) cannot exceed Arete ({self.arete})."}
+                )
 
     def get_affinity_sphere_name(self):
         if self.affinity_sphere == Sphere.objects.get(name="Correspondence"):

@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
-from django.db.models import OuterRef, Subquery
+from django.db.models import Count, Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import datetime
@@ -89,26 +89,35 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         locations_by_gameline = ChronicleDataService.group_locations_by_gameline(top_locations)
 
         # --- Characters by status ---
+        # Use select_related to prevent N+1 queries when accessing owner.username
+        # and owner.profile in templates
         active_characters = (
             Character.objects.active()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         retired_characters = (
             Character.objects.retired()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         deceased_characters = (
             Character.objects.deceased()
             .player_characters()
             .with_group_ordering()
             .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
         npc_characters = (
-            Character.objects.active().npcs().with_group_ordering().filter(chronicle=chronicle)
+            Character.objects.active()
+            .npcs()
+            .with_group_ordering()
+            .filter(chronicle=chronicle)
+            .select_related("owner", "owner__profile")
         )
 
         # --- Items ---
@@ -456,7 +465,15 @@ class JournalListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related("character", "character__owner")
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("character", "character__owner")
+            .annotate(
+                entry_count=Count("entries"),
+                latest_entry=Max("entries__date"),
+            )
+        )
         # Filter by ownership if requested
         filter_by = self.request.GET.get("filter")
         if filter_by == "mine":
@@ -472,16 +489,6 @@ class JournalListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["current_filter"] = self.request.GET.get("filter", "all")
-        # Annotate journals with entry count
-        from django.db.models import Count, Max
-
-        journals_with_stats = {}
-        for journal in context["object_list"]:
-            journals_with_stats[journal.pk] = {
-                "entry_count": journal.entries.count(),
-                "latest_entry": journal.entries.aggregate(Max("date"))["date__max"],
-            }
-        context["journal_stats"] = journals_with_stats
         return context
 
 
@@ -755,16 +762,8 @@ class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
         # Use atomic transaction to ensure all approvals succeed or all fail
         with transaction.atomic():
             for xp_request in pending_requests:
-                # Approve the request as-is (using submitted XP categories)
-                xp_request.approved = True
-
-                # Calculate and award XP
-                xp_increase = xp_request.total_xp()
-                # Get the real Character instance (xp is on Character, not CharacterModel)
-                character = xp_request.character.get_real_instance()
-                character.xp += xp_increase
-                character.save()
-                xp_request.save()
+                # Approve the request using model method
+                xp_increase = xp_request.approve()
 
                 approved_count += 1
                 total_xp += xp_increase
