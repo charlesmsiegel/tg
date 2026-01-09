@@ -9,7 +9,7 @@ Detailed implementation patterns for the WoD permission system.
 from typing import Set
 from enum import Enum
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 class Role(Enum):
     OWNER = "owner"
@@ -96,13 +96,11 @@ class PermissionManager:
             if user.characters.filter(chronicle=obj.chronicle).exists():
                 roles.add(Role.PLAYER)
         
-        # Observer check
+        # Observer check (uses GenericRelation)
         if hasattr(obj, 'observers'):
-            ct = ContentType.objects.get_for_model(obj)
-            from core.models import Observer
-            if Observer.objects.filter(content_type=ct, object_id=obj.id, user=user).exists():
+            if obj.observers.filter(user=user).exists():
                 roles.add(Role.OBSERVER)
-        
+
         return roles
 ```
 
@@ -130,35 +128,28 @@ characters = Character.objects.select_related(
 ```python
 @staticmethod
 def filter_queryset_for_user(user: User, queryset):
-    from django.db.models import Q, Exists, OuterRef
-    
+    from django.db.models import Q
+
     if not user.is_authenticated:
         return queryset.filter(visibility='PUB')
-    
+
     if user.is_superuser or user.is_staff:
         return queryset.select_related('owner', 'chronicle')
-    
+
     model_class = queryset.model
-    ct = ContentType.objects.get_for_model(model_class)
-    
-    # Subquery for observer check
-    observer_subquery = Observer.objects.filter(
-        content_type=ct,
-        object_id=OuterRef('pk'),
-        user=user
-    )
-    
     filters = Q()
-    
+
     if hasattr(model_class, 'owner'):
         filters |= Q(owner=user)
-    
+
     if hasattr(model_class, 'chronicle'):
         filters |= Q(chronicle__storytellers=user)
         filters |= Q(chronicle__game_storytellers=user)
-    
-    filters |= Q(Exists(observer_subquery))
-    
+
+    # Observer access via GenericRelation (no ContentType lookup needed)
+    if hasattr(model_class, 'observers'):
+        filters |= Q(observers__user=user)
+
     return queryset.filter(filters).select_related(
         'owner', 'chronicle'
     ).distinct()

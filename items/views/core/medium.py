@@ -10,7 +10,7 @@ class MediumDetailView(DetailView):
 
 class MediumCreateView(MessageMixin, CreateView):
     model = Medium
-    fields = "__all__"
+    fields = ["name", "length_modifier_type", "length_modifier"]
     template_name = "items/core/medium/form.html"
     success_message = "Medium '{name}' created successfully!"
     error_message = "Failed to create Medium. Please correct the errors below."
@@ -23,7 +23,7 @@ class MediumCreateView(MessageMixin, CreateView):
 
 class MediumUpdateView(MessageMixin, UpdateView):
     model = Medium
-    fields = "__all__"
+    fields = ["name", "length_modifier_type", "length_modifier"]
     template_name = "items/core/medium/form.html"
     success_message = "Medium '{name}' updated successfully!"
     error_message = "Failed to update Medium. Please correct the errors below."

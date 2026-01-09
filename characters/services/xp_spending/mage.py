@@ -47,6 +47,16 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
 
+        # Check if sphere would exceed Arete
+        if new_value > self.character.arete:
+            return XPSpendResult(
+                success=False,
+                trait=trait,
+                cost=0,
+                message="",
+                error=f"Sphere rating cannot exceed Arete ({self.character.arete})",
+            )
+
         # Determine if affinity sphere (costs 7 instead of 8)
         is_affinity = (
             self.character.affinity_sphere
@@ -232,6 +242,15 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
     def _apply_sphere(self, xp_request, approver) -> XPApplyResult:
         """Apply approved sphere XP spending."""
         from characters.models.mage.sphere import Sphere
+
+        # Validate sphere rating doesn't exceed Arete
+        if xp_request.trait_value > self.character.arete:
+            return XPApplyResult(
+                success=False,
+                trait=xp_request.trait_name,
+                message="",
+                error=f"Sphere rating ({xp_request.trait_value}) cannot exceed Arete ({self.character.arete})",
+            )
 
         s = Sphere.objects.get(name=xp_request.trait_name)
         setattr(self.character, s.property_name, xp_request.trait_value)

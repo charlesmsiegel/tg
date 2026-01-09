@@ -625,8 +625,6 @@ class TestChronicleModel(TestCase):
 
     def test_chronicle_players_property(self):
         """Test Chronicle players property returns users with characters."""
-        from characters.models.core import CharacterModel
-
         chronicle = Chronicle.objects.create(name="Test Chronicle")
 
         Human.objects.create(
@@ -635,9 +633,60 @@ class TestChronicleModel(TestCase):
             chronicle=chronicle,
         )
 
-        # The players property uses charactermodel__chronicle (not characters__chronicle)
-        # Test via direct query since the model property may have incorrect related_name
-        players = User.objects.filter(charactermodel__chronicle=chronicle).distinct()
+        # The players property should return users with characters in this chronicle
+        players = chronicle.players
+        self.assertIn(self.user, players)
+
+    def test_chronicle_players_property_is_cached(self):
+        """Test Chronicle players property is cached after first access."""
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+
+        Human.objects.create(
+            name="Player Character",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+
+        # First access - should populate cache
+        players1 = chronicle.players
+
+        # Create another character after first access
+        player2 = User.objects.create_user(
+            username="player2", email="player2@test.com", password="password"
+        )
+        Human.objects.create(
+            name="Second Character",
+            owner=player2,
+            chronicle=chronicle,
+        )
+
+        # Second access - should return cached result (player2 NOT in cached result)
+        players2 = chronicle.players
+
+        # Both should be the same cached queryset reference
+        self.assertEqual(list(players1), list(players2))
+        # The new player should NOT be in the cached result
+        self.assertNotIn(player2, players2)
+
+    def test_chronicle_players_property_multiple_characters_same_user(self):
+        """Test Chronicle players property returns distinct users."""
+        chronicle = Chronicle.objects.create(name="Test Chronicle")
+
+        # Create two characters for the same user
+        Human.objects.create(
+            name="Player Character 1",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+        Human.objects.create(
+            name="Player Character 2",
+            owner=self.user,
+            chronicle=chronicle,
+        )
+
+        players = chronicle.players
+        # Should only have one entry for the user
+        self.assertEqual(players.count(), 1)
         self.assertIn(self.user, players)
 
     def test_chronicle_is_head_st(self):
@@ -1378,6 +1427,79 @@ class TestWeeklyXPRequestModel(TestCase):
             standingout=True,
         )
         self.assertEqual(request.total_xp(), 5)
+
+    def test_weekly_xp_request_approve_awards_xp(self):
+        """Test WeeklyXPRequest.approve() awards XP to the character."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+            learning=False,
+        )
+
+        initial_xp = self.character.xp
+        xp_awarded = request.approve()
+
+        request.refresh_from_db()
+        self.character.refresh_from_db()
+
+        self.assertTrue(request.approved)
+        self.assertEqual(xp_awarded, 1)  # finishing only
+        self.assertEqual(self.character.xp, initial_xp + 1)
+
+    def test_weekly_xp_request_approve_with_xp_data(self):
+        """Test WeeklyXPRequest.approve() with xp_data updates fields."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+        )
+
+        initial_xp = self.character.xp
+        xp_data = {
+            "finishing": True,
+            "learning": True,
+            "rp": True,
+            "focus": False,
+            "standingout": False,
+        }
+        xp_awarded = request.approve(xp_data=xp_data)
+
+        request.refresh_from_db()
+        self.character.refresh_from_db()
+
+        self.assertTrue(request.approved)
+        self.assertTrue(request.learning)
+        self.assertTrue(request.rp)
+        self.assertEqual(xp_awarded, 3)  # finishing + learning + rp
+        self.assertEqual(self.character.xp, initial_xp + 3)
+
+    def test_weekly_xp_request_approve_prevents_double_approval(self):
+        """Test WeeklyXPRequest.approve() raises error if already approved."""
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+            approved=True,
+        )
+
+        with self.assertRaises(ValueError) as context:
+            request.approve()
+        self.assertIn("already been approved", str(context.exception))
+
+    def test_weekly_xp_request_approve_is_atomic(self):
+        """Test WeeklyXPRequest.approve() uses atomic transaction."""
+        from django.db import transaction
+
+        request = WeeklyXPRequest.objects.create(
+            week=self.week,
+            character=self.character,
+            finishing=True,
+        )
+
+        # The approve method is decorated with @transaction.atomic
+        # Verify it has the atomic wrapper
+        self.assertTrue(hasattr(request.approve, "__wrapped__"))
 
 
 class TestStoryXPRequestModel(TestCase):

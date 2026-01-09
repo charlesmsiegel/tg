@@ -1,0 +1,32 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title wto_heading">Faction Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Type:</strong></div>
+            <div class="col-md-8">{{ object.get_faction_type_display }}</div>
+        </div>
+        {% if object.parent %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Parent Faction:</strong></div>
+                <div class="col-md-8"><a href="{{ object.parent.get_absolute_url }}">{{ object.parent.name }}</a></div>
+            </div>
+        {% endif %}
+        {% if object.subfactions.exists %}
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Subfactions:</strong></div>
+                <div class="col-md-8">
+                    {% for subfaction in object.subfactions.all %}
+                        <a href="{{ subfaction.get_absolute_url }}">{{ subfaction.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock contents %}

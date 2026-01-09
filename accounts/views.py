@@ -32,10 +32,30 @@ class SignUp(MessageMixin, CreateView):
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
-    """View for user profile. Requires authentication."""
+    """View for user profile. Requires authentication.
+
+    Security: Users can only view their own profile unless they are staff.
+    This prevents IDOR (Insecure Direct Object Reference) attacks.
+    """
 
     model = Profile
     template_name = "accounts/detail.html"
+
+    def get_object(self, queryset=None):
+        """Get profile object with authorization check.
+
+        Only the profile owner or staff members can view the profile.
+
+        Returns:
+            Profile: The requested profile if authorized.
+
+        Raises:
+            PermissionDenied: If user is not authorized to view this profile.
+        """
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user and not self.request.user.is_staff:
+            raise PermissionDenied("You can only view your own profile.")
+        return obj
 
     # POST actions that require storyteller privileges
     ST_ONLY_ACTIONS = frozenset(
@@ -221,13 +241,33 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
 
 class ProfileUpdateView(MessageMixin, LoginRequiredMixin, UpdateView):
-    """View for updating user profile. Requires authentication."""
+    """View for updating user profile. Requires authentication.
+
+    Security: Users can only update their own profile unless they are staff.
+    This prevents IDOR (Insecure Direct Object Reference) attacks.
+    """
 
     model = Profile
     form_class = ProfileUpdateForm
     template_name = "accounts/form.html"
     success_message = "Profile updated successfully!"
     error_message = "Failed to update profile. Please correct the errors below."
+
+    def get_object(self, queryset=None):
+        """Get profile object with authorization check.
+
+        Only the profile owner or staff members can update the profile.
+
+        Returns:
+            Profile: The requested profile if authorized.
+
+        Raises:
+            PermissionDenied: If user is not authorized to update this profile.
+        """
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user and not self.request.user.is_staff:
+            raise PermissionDenied("You can only update your own profile.")
+        return obj
 
 
 class CustomLoginView(LoginView):

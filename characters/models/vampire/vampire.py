@@ -1,5 +1,8 @@
+from core.constants import CharacterStatus
 from core.linked_stat import LinkedStat
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
 from .clan import VampireClan
@@ -117,14 +120,29 @@ class Vampire(VtMHuman):
         default=False, help_text="If True, uses Instinct; if False, uses Self-Control"
     )
 
-    # Virtues (Camarilla)
-    conscience = models.IntegerField(default=1)
-    self_control = models.IntegerField(default=1)
-    courage = models.IntegerField(default=1)
+    # Virtues (Camarilla) - All virtues start at minimum 1 (V20 Core Rulebook)
+    conscience = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    self_control = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    courage = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
 
-    # Virtues (Sabbat alternative)
-    conviction = models.IntegerField(default=0)
-    instinct = models.IntegerField(default=0)
+    # Virtues (Sabbat alternative) - All virtues start at minimum 1 (V20 Core Rulebook)
+    conviction = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    instinct = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
 
     # Morality
     humanity = models.IntegerField(default=7)
@@ -143,6 +161,75 @@ class Vampire(VtMHuman):
     class Meta:
         verbose_name = "Vampire"
         verbose_name_plural = "Vampires"
+        constraints = [
+            # All virtues must be 1-5
+            CheckConstraint(
+                check=Q(conscience__gte=1, conscience__lte=5),
+                name="characters_vampire_conscience_range",
+                violation_error_message="Conscience must be between 1 and 5",
+            ),
+            CheckConstraint(
+                check=Q(self_control__gte=1, self_control__lte=5),
+                name="characters_vampire_self_control_range",
+                violation_error_message="Self-Control must be between 1 and 5",
+            ),
+            CheckConstraint(
+                check=Q(courage__gte=1, courage__lte=5),
+                name="characters_vampire_courage_range",
+                violation_error_message="Courage must be between 1 and 5",
+            ),
+            CheckConstraint(
+                check=Q(conviction__gte=1, conviction__lte=5),
+                name="characters_vampire_conviction_range",
+                violation_error_message="Conviction must be between 1 and 5",
+            ),
+            CheckConstraint(
+                check=Q(instinct__gte=1, instinct__lte=5),
+                name="characters_vampire_instinct_range",
+                violation_error_message="Instinct must be between 1 and 5",
+            ),
+            # Humanity/Path can be 0-10 (degeneration allows going below 4)
+            CheckConstraint(
+                check=Q(humanity__gte=0, humanity__lte=10),
+                name="characters_vampire_humanity_range",
+                violation_error_message="Humanity must be between 0 and 10",
+            ),
+            CheckConstraint(
+                check=Q(path_rating__gte=0, path_rating__lte=10),
+                name="characters_vampire_path_rating_range",
+                violation_error_message="Path rating must be between 0 and 10",
+            ),
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        errors = {}
+
+        # Validate virtue minimums
+        for virtue in ["conscience", "self_control", "courage", "conviction", "instinct"]:
+            if getattr(self, virtue, 1) < 1:
+                errors[virtue] = f"{virtue.replace('_', ' ').title()} must be at least 1."
+
+        # Validate Humanity/Path during character creation (UNAPPROVED or SUBMITTED)
+        # Once approved, characters can have lower humanity due to degeneration
+        if self.status in [CharacterStatus.UNAPPROVED, CharacterStatus.SUBMITTED]:
+            # Validate humanity (if on humanity, not a path)
+            if not self.path:
+                if self.humanity < 4:
+                    errors["humanity"] = "Starting Humanity must be at least 4."
+                elif self.humanity > 10:
+                    errors["humanity"] = "Starting Humanity cannot exceed 10."
+            # Validate path_rating (if on a path)
+            else:
+                if self.path_rating < 4:
+                    errors["path_rating"] = "Starting Path rating must be at least 4."
+                elif self.path_rating > 10:
+                    errors["path_rating"] = "Starting Path rating cannot exceed 10."
+
+        if errors:
+            raise ValidationError(errors)
 
     def get_absolute_url(self):
         return reverse("characters:vampire:vampire", args=[str(self.id)])

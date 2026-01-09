@@ -1,0 +1,20 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title wto_heading">Guild Details</h5>
+    </div>
+    <div class="tg-card-body">
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Guild Type:</strong></div>
+            <div class="col-md-8">{{ object.get_guild_type_display }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Willpower:</strong></div>
+            <div class="col-md-8">{{ object.willpower }}</div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

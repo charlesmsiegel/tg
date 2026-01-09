@@ -1184,3 +1184,119 @@ class TestAvailableAppliers(TestCase):
         ]
         for app in expected:
             self.assertIn(app, appliers, f"Applier '{app}' not in available_appliers")
+
+
+class TestSphereAreteXPValidation(TestCase):
+    """Test that sphere XP spending respects Arete limits."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.forces = Sphere.objects.create(name="Forces", property_name="forces")
+        self.mage = Mage.objects.create(
+            name="Test Mage",
+            owner=self.user,
+            chronicle=self.chronicle,
+            status="App",
+            arete=2,  # Arete is 2
+            xp=50,
+            forces=2,  # Forces is already at Arete level
+        )
+
+    def test_sphere_cannot_exceed_arete_xp(self):
+        """Test that spending XP on a sphere that would exceed Arete fails."""
+        service = MageXPSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertFalse(result.success)
+        self.assertIn("cannot exceed Arete", result.error)
+
+    def test_sphere_at_arete_cannot_increase_xp(self):
+        """Test sphere exactly at Arete limit cannot be increased with XP."""
+        self.mage.forces = 2
+        self.mage.arete = 2
+        self.mage.save()
+
+        service = MageXPSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertFalse(result.success)
+        self.assertIn("cannot exceed Arete", result.error)
+
+    def test_sphere_below_arete_can_increase_xp(self):
+        """Test sphere below Arete limit can be increased with XP."""
+        self.mage.forces = 1
+        self.mage.arete = 3
+        self.mage.save()
+
+        service = MageXPSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertTrue(result.success)
+
+
+class TestApplySphereAreteValidation(TestCase):
+    """Test that applying sphere XP requests respects Arete limits."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.approver = User.objects.create_user(
+            username="approver", email="approver@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.forces = Sphere.objects.create(name="Forces", property_name="forces")
+        self.mage = Mage.objects.create(
+            name="Test Mage",
+            owner=self.user,
+            chronicle=self.chronicle,
+            status="App",
+            arete=2,
+            xp=50,
+            forces=1,
+        )
+
+    def test_apply_sphere_exceeds_arete_fails(self):
+        """Test that applying a sphere request that exceeds Arete fails."""
+        # Create a request that would exceed Arete
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Forces",
+            trait_type="sphere",
+            trait_value=3,  # Would exceed Arete of 2
+            cost=8,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertFalse(result.success)
+        self.assertIn("cannot exceed Arete", result.error)
+
+        # Verify sphere was NOT changed
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.forces, 1)
+
+    def test_apply_sphere_within_arete_succeeds(self):
+        """Test that applying a sphere request within Arete succeeds."""
+        xp_request = XPSpendingRequest.objects.create(
+            character=self.mage,
+            trait_name="Forces",
+            trait_type="sphere",
+            trait_value=2,  # Equals Arete of 2
+            cost=10,
+            approved="Pending",
+        )
+
+        service = MageXPSpendingService(self.mage)
+        result = service.apply(xp_request, self.approver)
+
+        self.assertTrue(result.success)
+
+        # Verify sphere was changed
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.forces, 2)

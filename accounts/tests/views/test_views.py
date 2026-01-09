@@ -613,6 +613,129 @@ class TestProfileEditPreferencesRedirect(TestCase):
         )
 
 
+class TestProfileViewIDORProtection(TestCase):
+    """Test IDOR (Insecure Direct Object Reference) protection for ProfileView.
+
+    Ensures users can only view their own profiles unless they are staff.
+    Addresses security issue #1342.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.staff_user = User.objects.create_user("staffuser", "staff@test.com", "password")
+        self.staff_user.is_staff = True
+        self.staff_user.save()
+
+    def test_user_can_view_own_profile(self):
+        """Test that users can view their own profile."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("accounts:profile", kwargs={"pk": self.user.profile.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_cannot_view_other_profile(self):
+        """Test that users cannot view another user's profile."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("accounts:profile", kwargs={"pk": self.other_user.profile.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_can_view_any_profile(self):
+        """Test that staff users can view any profile."""
+        self.client.login(username="staffuser", password="password")
+        response = self.client.get(
+            reverse("accounts:profile", kwargs={"pk": self.other_user.profile.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_unauthenticated_cannot_view_profile(self):
+        """Test that unauthenticated users cannot view profiles."""
+        response = self.client.get(
+            reverse("accounts:profile", kwargs={"pk": self.user.profile.pk})
+        )
+        # Should redirect to login
+        self.assertEqual(response.status_code, 302)
+
+
+class TestProfileUpdateViewIDORProtection(TestCase):
+    """Test IDOR (Insecure Direct Object Reference) protection for ProfileUpdateView.
+
+    Ensures users can only update their own profiles unless they are staff.
+    Addresses security issue #1343.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
+        self.staff_user = User.objects.create_user("staffuser", "staff@test.com", "password")
+        self.staff_user.is_staff = True
+        self.staff_user.save()
+
+    def test_user_can_access_own_profile_update(self):
+        """Test that users can access the update view for their own profile."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_cannot_access_other_profile_update(self):
+        """Test that users cannot access the update view for another user's profile."""
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(
+            reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_cannot_post_to_other_profile_update(self):
+        """Test that users cannot POST updates to another user's profile."""
+        self.client.login(username="testuser", password="password")
+        original_theme = self.other_user.profile.theme
+        response = self.client.post(
+            reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk}),
+            {
+                "preferred_heading": "mta_heading",
+                "theme": "dark",
+                "highlight_text": True,
+                "discord_id": "hacked#1234",
+                "lines": "",
+                "veils": "",
+                "discord_toggle": False,
+                "lines_toggle": False,
+                "veils_toggle": False,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.other_user.profile.refresh_from_db()
+        # Ensure the profile was not modified
+        self.assertEqual(self.other_user.profile.theme, original_theme)
+        self.assertNotEqual(self.other_user.profile.discord_id, "hacked#1234")
+
+    def test_staff_can_update_any_profile(self):
+        """Test that staff users can update any profile."""
+        self.client.login(username="staffuser", password="password")
+        response = self.client.post(
+            reverse("accounts:profile_update", kwargs={"pk": self.other_user.profile.pk}),
+            {
+                "preferred_heading": "mta_heading",
+                "theme": "dark",
+                "highlight_text": True,
+                "discord_id": "staff_update#1234",
+                "lines": "",
+                "veils": "",
+                "discord_toggle": False,
+                "lines_toggle": False,
+                "veils_toggle": False,
+            },
+        )
+        self.assertEqual(response.status_code, 302)  # Redirect on success
+        self.other_user.profile.refresh_from_db()
+        self.assertEqual(self.other_user.profile.discord_id, "staff_update#1234")
+
+
 class TestCustomLoginView(TestCase):
     """Test the custom login view."""
 

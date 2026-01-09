@@ -9,7 +9,6 @@ from enum import Enum
 from typing import Set
 
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Q
 
@@ -412,63 +411,17 @@ class PermissionManager:
         return filters
 
     @staticmethod
-    def _get_player_chronicle_exists_subquery(user: User, model):
-        """
-        Get Exists subquery for objects in chronicles where user is a player.
-
-        Args:
-            user: Django User instance
-            model: Model class being filtered
-
-        Returns:
-            Exists subquery or None if not applicable
-        """
-        if not PermissionManager._model_has_field(model, "chronicle"):
-            return None
-
-        if not PermissionManager._model_has_field(model, "status"):
-            return None
-
-        from characters.models import Character
-
-        # User has an approved character in the same chronicle
-        # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        player_chronicles = (
-            Character.objects.filter(owner=user, status="App")
-            .exclude(chronicle__isnull=True)
-            .values("chronicle")
-        )
-        return Q(chronicle__in=player_chronicles, status="App")
-
-    @staticmethod
-    def _get_observer_exists_subquery(user: User, model):
-        """
-        Get Exists subquery for objects user is observing.
-
-        Uses pk__in with subquery instead of Exists for polymorphic compatibility.
-
-        Args:
-            user: Django User instance
-            model: Model class being filtered
-
-        Returns:
-            Exists subquery for observer access
-        """
-        from core.models import Observer
-
-        ct = ContentType.objects.get_for_model(model)
-        # Use pk__in with subquery instead of Exists for polymorphic compatibility
-        observed_ids = Observer.objects.filter(content_type=ct, user=user).values("object_id")
-        return Q(pk__in=observed_ids)
-
-    @staticmethod
     def filter_queryset_for_user(user: User, queryset):
         """
         Filter queryset to only objects user can view.
 
-        Refactored to use proper field checking and helper methods for maintainability.
-        Uses annotations for Exists-based filters to avoid issues with polymorphic
-        querysets (Exists objects cannot be wrapped in Q objects).
+        Uses a two-pass approach for performance:
+        1. Build Q filters for owner and ST access (efficient joins)
+        2. Fetch player chronicle IDs and observer IDs with simple queries
+        3. Combine all filters using pk__in for set-based lookups
+
+        This avoids adding subquery annotations to every queryset which
+        caused exponential query complexity when filter was called repeatedly.
 
         Args:
             user: Django User instance
@@ -487,41 +440,46 @@ class PermissionManager:
         if user.is_superuser or user.is_staff:
             return queryset
 
-        # Build Q-based filters (these work correctly with polymorphic querysets)
+        model = queryset.model
+
+        # Build Q-based filters for owner and ST access (these are efficient joins)
         filters = Q()
 
         # 1. Objects user owns
-        filters |= PermissionManager._build_owner_filter(user, queryset.model)
+        filters |= PermissionManager._build_owner_filter(user, model)
 
         # 2. Chronicle storyteller access
         chronicle_model = PermissionManager._get_chronicle_related_model(queryset)
         if chronicle_model:
             filters |= PermissionManager._build_chronicle_st_filters(user, chronicle_model)
 
-        # 3. Annotate with Exists subqueries for player chronicle and observer access
-        # (Exists cannot be wrapped in Q objects - causes AttributeError with polymorphic)
-        annotations = {}
+        # 3. Player chronicle access - fetch IDs once, then use pk__in
+        if (
+            PermissionManager._model_has_field(model, "chronicle")
+            and PermissionManager._model_has_field(model, "status")
+        ):
+            from characters.models import Character
 
-        player_chronicle_exists = PermissionManager._get_player_chronicle_exists_subquery(
-            user, queryset.model
+            # Get list of chronicle IDs where user has an approved character
+            player_chronicle_ids = list(
+                Character.objects.filter(owner=user, status="App")
+                .exclude(chronicle__isnull=True)
+                .values_list("chronicle_id", flat=True)
+            )
+            if player_chronicle_ids:
+                # User can see approved objects in chronicles where they're a player
+                filters |= Q(chronicle_id__in=player_chronicle_ids, status="App")
+
+        # 4. Observer access - fetch observed IDs directly instead of subquery
+        from core.models import Observer
+
+        ct = ContentType.objects.get_for_model(model)
+        observed_ids = list(
+            Observer.objects.filter(content_type=ct, user=user).values_list(
+                "object_id", flat=True
+            )
         )
-        if player_chronicle_exists is not None:
-            annotations["_is_player_chronicle"] = player_chronicle_exists
-
-        observer_exists = PermissionManager._get_observer_exists_subquery(user, queryset.model)
-        annotations["_is_observer"] = observer_exists
-
-        # Apply annotations
-        if annotations:
-            queryset = queryset.annotate(**annotations)
-
-        # Add Exists-based filters using the annotated fields
-        if player_chronicle_exists is not None:
-            # Player chronicle access: user has approved character in same chronicle
-            # and the object is also approved
-            filters |= Q(_is_player_chronicle=True, status="App")
-
-        # Observer access
-        filters |= Q(_is_observer=True)
+        if observed_ids:
+            filters |= Q(pk__in=observed_ids)
 
         return queryset.filter(filters).distinct()

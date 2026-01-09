@@ -412,3 +412,64 @@ class TestUnknownCategory(TestCase):
 
         self.assertFalse(result.success)
         self.assertIn("Unknown freebie category", result.error)
+
+
+class TestSphereAreteFreebiValidation(TestCase):
+    """Test that sphere spending respects Arete limits."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        from characters.models.mage.sphere import Sphere
+
+        self.forces = Sphere.objects.filter(name="Forces").first()
+        if not self.forces:
+            self.forces = Sphere.objects.create(name="Forces", property_name="forces")
+        self.mage = Mage.objects.create(
+            name="Test Mage",
+            owner=self.user,
+            chronicle=self.chronicle,
+            arete=2,  # Arete is 2
+            freebies=30,
+            forces=2,  # Forces is already at Arete level
+        )
+
+    def test_sphere_cannot_exceed_arete(self):
+        """Test that spending freebies on a sphere that would exceed Arete fails."""
+        service = MageFreebieSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertFalse(result.success)
+        self.assertIn("cannot exceed Arete", result.error)
+
+        # Verify sphere was NOT increased
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.forces, 2)
+
+    def test_sphere_at_arete_cannot_increase(self):
+        """Test sphere exactly at Arete limit cannot be increased further."""
+        # Set Forces at Arete limit
+        self.mage.forces = 2
+        self.mage.arete = 2
+        self.mage.save()
+
+        service = MageFreebieSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertFalse(result.success)
+        self.assertIn("cannot exceed Arete", result.error)
+
+    def test_sphere_below_arete_can_increase(self):
+        """Test sphere below Arete limit can be increased."""
+        self.mage.forces = 1
+        self.mage.arete = 3  # Arete is 3, Forces is 1
+        self.mage.save()
+
+        service = MageFreebieSpendingService(self.mage)
+        result = service.spend("Sphere", self.forces)
+
+        self.assertTrue(result.success)
+        self.mage.refresh_from_db()
+        self.assertEqual(self.mage.forces, 2)

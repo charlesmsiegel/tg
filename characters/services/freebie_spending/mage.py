@@ -47,6 +47,16 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
 
+        # Check if sphere would exceed Arete
+        if new_value > self.character.arete:
+            return FreebieSpendResult(
+                success=False,
+                trait=trait,
+                cost=cost,
+                message="",
+                error=f"Sphere rating cannot exceed Arete ({self.character.arete})",
+            )
+
         if cost > self.character.freebies:
             return FreebieSpendResult(
                 success=False,
@@ -57,7 +67,14 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
             )
 
         # Apply the change
-        self.character.add_sphere(example.property_name)
+        if not self.character.add_sphere(example.property_name):
+            return FreebieSpendResult(
+                success=False,
+                trait=trait,
+                cost=cost,
+                message="",
+                error="Could not add sphere (may be at maximum or blocked)",
+            )
         self.character.save()
 
         # Record and deduct

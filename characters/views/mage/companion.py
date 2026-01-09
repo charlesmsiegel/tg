@@ -54,24 +54,83 @@ class CompanionDetailView(XPApprovalMixin, HumanDetailView):
     template_name = "characters/mage/companion/detail.html"
 
 
-class CompanionCreateView(MessageMixin, CreateView):
+class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+    """
+    Create view for companions (Mage: The Ascension).
+
+    Security: Uses explicit field whitelist to prevent mass assignment of
+    sensitive fields like status, xp, owner, freebies_approved, etc.
+
+    Note: For character creation workflow, use CompanionBasicsView instead.
+    """
+
     model = Companion
-    fields = "__all__"
+    fields = [
+        "name",
+        "concept",
+        "description",
+        "public_info",
+        "chronicle",
+        "companion_type",
+        "companion_of",
+        "npc",
+        "nature",
+        "demeanor",
+    ]
     template_name = "characters/mage/companion/form.html"
     success_message = "Companion created successfully."
     error_message = "There was an error creating the Companion."
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["affiliation"].queryset = MageFaction.objects.top_level()
-        form.fields["faction"].queryset = MageFaction.objects.none()
-        form.fields["subfaction"].queryset = MageFaction.objects.none()
         return form
+
+    def form_valid(self, form):
+        # Set owner to current user - authentication enforced by LoginRequiredMixin
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 class CompanionUpdateView(EditPermissionMixin, UpdateView):
+    """
+    Update view for companions.
+
+    - Chronicle Head STs can edit everything (via ST_EDIT_FIELDS)
+    - Owners can only edit limited fields (enforced by LimitedHumanEditForm)
+
+    Security: Uses explicit field whitelist to prevent mass assignment attacks.
+    """
+
     model = Companion
-    fields = "__all__"
+    # Fields available to STs with full edit permission
+    # Note: owners get LimitedHumanEditForm via get_form_class()
+    ST_EDIT_FIELDS = [
+        "name",
+        "concept",
+        "description",
+        "public_info",
+        "notes",
+        "history",
+        "goals",
+        "chronicle",
+        "npc",
+        "status",
+        "xp",
+        "image",
+        "st_notes",
+        "freebies_approved",
+        "display",
+        "visibility",
+        "nature",
+        "demeanor",
+        "companion_type",
+        "companion_of",
+        "willpower",
+        "age",
+        "apparent_age",
+        "date_of_birth",
+    ]
+    fields = ST_EDIT_FIELDS
     template_name = "characters/mage/companion/form.html"
     success_message = "Companion updated successfully."
     error_message = "There was an error updating the Companion."
@@ -80,7 +139,7 @@ class CompanionUpdateView(EditPermissionMixin, UpdateView):
         """
         Return different form based on user permissions.
         Owners get limited fields via LimitedHumanEditForm.
-        STs and admins get full access via the default form.
+        STs and admins get full access via the default form with ST_EDIT_FIELDS.
         """
         has_full_edit = PermissionManager.user_has_permission(
             self.request.user, self.get_object(), Permission.EDIT_FULL
