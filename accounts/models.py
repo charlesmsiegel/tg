@@ -333,6 +333,10 @@ class Profile(models.Model):
             if (char_id, week_id) not in existing_requests:
                 missing_pairs.append((char_id, week_id))
 
+        # Early return if no missing pairs
+        if not missing_pairs:
+            return []
+
         char_map = {c.pk: c for c in char_list}
         # Only fetch weeks that are actually needed (not all weeks in the database)
         week_ids = set(w for (c, w) in missing_pairs)
@@ -347,11 +351,12 @@ class Profile(models.Model):
         Returns a list of (character, week) tuples where:
         - A WeeklyXPRequest exists for the character/week combination
         - The request has not yet been approved
-        - The character is associated with the week
+        - The character is in a chronicle where this user is ST
 
         This is used by storytellers to review and approve pending weekly XP requests.
         """
-        char_list = Character.objects.all()
+        # Only fetch characters in chronicles where this user is ST
+        char_list = Character.objects.filter(chronicle__st_relationships__user=self.user)
 
         char_week_pairs = Week.characters.through.objects.filter(
             charactermodel_id__in=char_list
@@ -366,6 +371,11 @@ class Profile(models.Model):
         )
 
         result_pairs = list(unapproved_reqs)
+
+        # Early return if no unapproved requests
+        if not result_pairs:
+            return []
+
         char_map = {c.pk: c for c in char_list}
         # Only fetch weeks that are actually needed (not all weeks in the database)
         week_ids = set(w for (c, w) in result_pairs)
