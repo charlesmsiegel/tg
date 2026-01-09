@@ -2,6 +2,7 @@
 
 from characters.models.wraith.arcanos import Arcanos
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -10,6 +11,7 @@ class TestArcanosDetailView(TestCase):
     """Test ArcanosDetailView permissions and functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -53,9 +55,22 @@ class TestArcanosListView(TestCase):
     """Test ArcanosListView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
+        )
+        # Create arcanos in setUp to avoid caching issues
+        self.parent_arcanos = Arcanos.objects.create(
+            name="Inhabit", arcanos_type="standard", description="Control machines", owner=self.user
+        )
+        self.child_arcanos = Arcanos.objects.create(
+            name="Sense Gremlin",
+            arcanos_type="standard",
+            description="Sense machine spirits",
+            level=1,
+            parent_arcanos=self.parent_arcanos,
+            owner=self.user,
         )
 
     def test_list_view_accessible_when_logged_in(self):
@@ -67,27 +82,13 @@ class TestArcanosListView(TestCase):
 
     def test_list_view_shows_arcanoi(self):
         """Test that list view shows arcanoi."""
-        arcanos = Arcanos.objects.create(
-            name="Fatalism", arcanos_type="standard", description="Art of fate", owner=self.user
-        )
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:arcanos")
         response = self.client.get(url)
-        self.assertContains(response, "Fatalism")
+        self.assertContains(response, "Inhabit")
 
     def test_list_view_only_shows_parent_arcanoi(self):
         """Test that list view only shows parent arcanoi, not levels."""
-        parent = Arcanos.objects.create(
-            name="Inhabit", arcanos_type="standard", description="Control machines", owner=self.user
-        )
-        child = Arcanos.objects.create(
-            name="Sense Gremlin",
-            arcanos_type="standard",
-            description="Sense machine spirits",
-            level=1,
-            parent_arcanos=parent,
-            owner=self.user,
-        )
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:arcanos")
         response = self.client.get(url)

@@ -1,11 +1,17 @@
 from characters.models.wraith.faction import WraithFaction
 from core.mixins import MessageMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class WraithFactionDetailView(DetailView):
     model = WraithFaction
     template_name = "characters/wraith/faction/detail.html"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("subfactions")
 
 
 class WraithFactionCreateView(MessageMixin, CreateView):
@@ -24,6 +30,7 @@ class WraithFactionUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Wraith Faction."
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class WraithFactionListView(ListView):
     model = WraithFaction
     ordering = ["faction_type", "name"]

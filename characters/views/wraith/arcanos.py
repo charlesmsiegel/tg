@@ -1,17 +1,23 @@
 from characters.models.wraith.arcanos import Arcanos
 from core.mixins import MessageMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class ArcanosDetailView(DetailView):
     model = Arcanos
     template_name = "characters/wraith/arcanos/detail.html"
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("levels")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get related levels if this is a parent arcanos
+        # Get related levels if this is a parent arcanos (already prefetched)
         if self.object.parent_arcanos is None:
-            context["levels"] = Arcanos.objects.filter(parent_arcanos=self.object).order_by("level")
+            context["levels"] = self.object.levels.order_by("level")
         return context
 
 
@@ -49,6 +55,7 @@ class ArcanosUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Arcanos."
 
 
+@method_decorator(cache_page(60 * 15), name="dispatch")
 class ArcanosListView(ListView):
     model = Arcanos
     ordering = ["arcanos_type", "name", "level"]
