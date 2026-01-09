@@ -87,8 +87,51 @@ class AttributeBlock(models.Model):
             ),
         ]
 
-    def add_attribute(self, attribute, maximum=5):
+    def add_attribute(self, attribute, maximum=None):
+        """Add a dot to an attribute, respecting the character's maximum.
+
+        Args:
+            attribute: The attribute property name to increase
+            maximum: Override maximum (if None, uses get_attribute_max())
+        """
+        if maximum is None:
+            maximum = self.get_attribute_max()
         return add_dot(self, attribute, maximum)
+
+    def get_attribute_max(self):
+        """Return the maximum value for attributes.
+
+        Default is 5 for mortals. Subclasses should override this
+        to implement supernatural exceptions (e.g., low-generation vampires).
+        """
+        return 5
+
+    def get_attribute_min(self, attribute_name=None):
+        """Return the minimum value for an attribute.
+
+        Default is 1 for mortals. Subclasses should override this
+        to implement supernatural exceptions (e.g., Nosferatu Appearance 0).
+
+        Args:
+            attribute_name: Optional attribute name for attribute-specific minimums
+        """
+        return 1
+
+    def validate_attributes(self):
+        """Validate that all attributes meet minimum requirements.
+
+        Returns:
+            dict: Validation errors keyed by attribute name, empty if valid
+        """
+        errors = {}
+        attributes = self.get_attributes()
+        for attr_name, value in attributes.items():
+            minimum = self.get_attribute_min(attr_name)
+            if value < minimum:
+                errors[attr_name] = (
+                    f"{attr_name.title()} must be at least {minimum} (currently {value})"
+                )
+        return errors
 
     def get_attributes(self):
         return {

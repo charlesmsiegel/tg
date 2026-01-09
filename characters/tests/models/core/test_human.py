@@ -770,6 +770,36 @@ class TestHuman(TestCase):
         self.assertEqual(self.character.specialties.get(stat="strength").name, "strength focus")
         self.assertEqual(self.character.specialties.get(stat="charisma").name, "charisma focus")
 
+    def test_get_attribute_max_mortal(self):
+        """Test that mortals have attribute max of 5 (Issue #1376)."""
+        self.assertEqual(self.character.get_attribute_max(), 5)
+
+    def test_get_attribute_min_mortal(self):
+        """Test that mortals have attribute minimum of 1 (Issue #1117)."""
+        self.assertEqual(self.character.get_attribute_min("strength"), 1)
+        self.assertEqual(self.character.get_attribute_min("appearance"), 1)
+
+    def test_validate_attributes_valid(self):
+        """Test validation passes for valid mortal attributes (Issue #1117)."""
+        # All attributes default to 1, which is valid
+        errors = self.character.validate_attributes()
+        self.assertEqual(errors, {})
+
+    def test_validate_attributes_below_minimum(self):
+        """Test validation catches attributes below minimum (Issue #1117)."""
+        self.character.strength = 0
+        errors = self.character.validate_attributes()
+        self.assertIn("strength", errors)
+        self.assertIn("must be at least 1", errors["strength"])
+
+    def test_add_attribute_respects_max(self):
+        """Test that add_attribute respects get_attribute_max (Issue #1376)."""
+        self.character.strength = 5
+        # Should fail to add because max is 5 for mortals
+        result = self.character.add_attribute("strength")
+        self.assertFalse(result)
+        self.assertEqual(self.character.strength, 5)
+
 
 class TestHumanDetailView(TestCase):
     def setUp(self) -> None:
