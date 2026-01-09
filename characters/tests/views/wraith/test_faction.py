@@ -82,13 +82,7 @@ class TestWraithFactionCreateView(TestCase):
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_requires_login(self):
-        """Test that create view requires login."""
-        url = reverse("characters:wraith:create:faction")
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_create_view_accessible_when_logged_in(self):
+    def test_create_view_accessible(self):
         """Test that faction create view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:faction")
@@ -128,13 +122,7 @@ class TestWraithFactionUpdateView(TestCase):
             name="Iron Legion", faction_type="legion", owner=self.user
         )
 
-    def test_update_view_requires_login(self):
-        """Test that update view requires login."""
-        url = self.faction.get_update_url()
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_update_view_accessible_when_logged_in(self):
+    def test_update_view_accessible(self):
         """Test that faction update view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = self.faction.get_update_url()

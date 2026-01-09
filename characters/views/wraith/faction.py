@@ -1,6 +1,5 @@
 from characters.models.wraith.faction import WraithFaction
 from core.mixins import MessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -9,7 +8,7 @@ class WraithFactionDetailView(DetailView):
     template_name = "characters/wraith/faction/detail.html"
 
 
-class WraithFactionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+class WraithFactionCreateView(MessageMixin, CreateView):
     model = WraithFaction
     fields = ["name", "description", "faction_type", "parent"]
     template_name = "characters/wraith/faction/form.html"
@@ -17,7 +16,7 @@ class WraithFactionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     error_message = "There was an error creating the Wraith Faction."
 
 
-class WraithFactionUpdateView(LoginRequiredMixin, MessageMixin, UpdateView):
+class WraithFactionUpdateView(MessageMixin, UpdateView):
     model = WraithFaction
     fields = ["name", "description", "faction_type", "parent"]
     template_name = "characters/wraith/faction/form.html"
