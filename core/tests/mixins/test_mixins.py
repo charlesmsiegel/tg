@@ -1188,3 +1188,84 @@ class ApprovalMixinTest(TestCase):
         with self.assertRaises(ValidationError) as cm:
             view._parse_request_id(request, "approve")
         self.assertIn("Invalid request", str(cm.exception))
+
+    def test_post_approve_with_malformed_key_shows_error_message(self):
+        """Integration test: verify post() correctly handles ValidationError.
+
+        This test ensures that when _parse_request_id raises a ValidationError,
+        the post() method properly converts it to a user-facing error message
+        and redirects. This catches bugs like using e.message instead of str(e).
+        """
+        from unittest.mock import MagicMock, patch
+
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+            spending_type = "XP"
+
+            def get_object(self):
+                return MagicMock(pk=1)
+
+            def get_request_model(self):
+                return MagicMock()
+
+        view = TestApprovalView()
+        # Malformed key with only 2 parts - will trigger ValidationError
+        request = self.factory.post("/", data={"malformed_key": "approve"})
+        request.user = self.user
+
+        # Set up messages framework on the request
+        setattr(request, "session", "session")
+        messages_storage = FallbackStorage(request)
+        setattr(request, "_messages", messages_storage)
+
+        with patch("django.shortcuts.redirect") as mock_redirect:
+            mock_redirect.return_value = MagicMock()
+            view.post(request)
+
+        # Verify error message was added (not AttributeError from e.message)
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Invalid request", str(messages[0]))
+
+    def test_post_reject_with_malformed_key_shows_error_message(self):
+        """Integration test: verify post() reject path handles ValidationError.
+
+        Tests the reject button path to ensure both approve and reject
+        branches properly handle ValidationError without AttributeError.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+            spending_type = "XP"
+
+            def get_object(self):
+                return MagicMock(pk=1)
+
+            def get_request_model(self):
+                return MagicMock()
+
+        view = TestApprovalView()
+        # Malformed key with only 2 parts - will trigger ValidationError
+        request = self.factory.post("/", data={"malformed_key": "reject"})
+        request.user = self.user
+
+        # Set up messages framework on the request
+        setattr(request, "session", "session")
+        messages_storage = FallbackStorage(request)
+        setattr(request, "_messages", messages_storage)
+
+        with patch("django.shortcuts.redirect") as mock_redirect:
+            mock_redirect.return_value = MagicMock()
+            view.post(request)
+
+        # Verify error message was added (not AttributeError from e.message)
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Invalid request", str(messages[0]))

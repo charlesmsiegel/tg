@@ -617,7 +617,7 @@ class ApprovalMixin:
             try:
                 request_id = self._parse_request_id(request, self.approve_button_value)
             except ValidationError as e:
-                messages.error(request, str(e.message))
+                messages.error(request, str(e))
                 return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
@@ -654,7 +654,7 @@ class ApprovalMixin:
             try:
                 request_id = self._parse_request_id(request, self.reject_button_value)
             except ValidationError as e:
-                messages.error(request, str(e.message))
+                messages.error(request, str(e))
                 return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
 
             try:
