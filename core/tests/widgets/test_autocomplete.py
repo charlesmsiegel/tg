@@ -1,7 +1,6 @@
 """Tests for AutocompleteTextInput widget."""
 
 import json
-import re
 
 from django.test import TestCase
 
@@ -65,7 +64,10 @@ class AutocompleteTextInputTests(TestCase):
         html = widget.render('field"name', "")
         # The rendered HTML should not have unescaped quotes that break JS
         self.assertIn("<script>", html)
-        # Check that the name is properly escaped in JavaScript context
+        # Verify the field name is properly JSON-escaped (quote escaped with backslash)
+        # json.dumps('field"name') produces "field\"name" (with outer quotes)
+        self.assertIn(json.dumps('field"name'), html)
+        # Verify the broken unescaped selector is NOT present
         self.assertNotIn('input[name="field"name"]', html)
 
     def test_field_name_with_backslash_escaped(self):
@@ -75,8 +77,9 @@ class AutocompleteTextInputTests(TestCase):
 
         # Should not break the JavaScript
         self.assertIn("<script>", html)
-        # The backslash should be escaped in the JavaScript string
-        self.assertIn("\\\\", html)
+        # Verify the field name is properly JSON-escaped (backslash doubled)
+        # json.dumps("field\\name") produces "field\\name" (backslash escaped)
+        self.assertIn(json.dumps("field\\name"), html)
 
     def test_field_name_with_single_quotes_escaped(self):
         """Test that single quotes in field names are handled."""
@@ -84,6 +87,9 @@ class AutocompleteTextInputTests(TestCase):
         html = widget.render("field'name", "")
 
         self.assertIn("<script>", html)
+        # Single quotes don't need escaping in JSON strings, verify the field name is present
+        # json.dumps("field'name") produces "field'name" (with outer double quotes)
+        self.assertIn(json.dumps("field'name"), html)
 
     def test_get_context_includes_suggestions(self):
         """Test that get_context includes suggestions in widget context."""
