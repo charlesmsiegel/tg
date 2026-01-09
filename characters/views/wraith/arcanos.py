@@ -1,5 +1,6 @@
 from characters.models.wraith.arcanos import Arcanos
 from core.mixins import MessageMixin
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -11,13 +12,17 @@ class ArcanosDetailView(DetailView):
     template_name = "characters/wraith/arcanos/detail.html"
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related("levels")
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related(Prefetch("levels", queryset=Arcanos.objects.order_by("level")))
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get related levels if this is a parent arcanos (already prefetched)
+        # Get related levels if this is a parent arcanos (already prefetched with ordering)
         if self.object.parent_arcanos is None:
-            context["levels"] = self.object.levels.order_by("level")
+            context["levels"] = self.object.levels.all()
         return context
 
 

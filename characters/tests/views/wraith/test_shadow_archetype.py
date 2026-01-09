@@ -1,4 +1,7 @@
-"""Tests for ShadowArchetype views."""
+"""Tests for ShadowArchetype views.
+
+ShadowArchetype is a reference model (public game data) and should be accessible without login.
+"""
 
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from django.contrib.auth.models import User
@@ -24,15 +27,13 @@ class TestShadowArchetypeDetailView(TestCase):
             owner=self.user,
         )
 
-    def test_detail_view_accessible_when_logged_in(self):
-        """Test that archetype detail view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_detail_view_publicly_accessible(self):
+        """Test that archetype detail view is accessible without login (reference model)."""
         response = self.client.get(self.archetype.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         response = self.client.get(self.archetype.get_absolute_url())
         self.assertTemplateUsed(response, "characters/wraith/shadow_archetype/detail.html")
 
@@ -46,21 +47,18 @@ class TestShadowArchetypeListView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
-        # Create archetype in setUp to avoid caching issues
         self.archetype = ShadowArchetype.objects.create(
             name="The Pusher", point_cost=2, owner=self.user
         )
 
-    def test_list_view_accessible_when_logged_in(self):
-        """Test that archetype list view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_list_view_publicly_accessible(self):
+        """Test that archetype list view is accessible without login (reference model)."""
         url = reverse("characters:wraith:list:shadow_archetype")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_list_view_shows_archetypes(self):
         """Test that list view shows archetypes."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:shadow_archetype")
         response = self.client.get(url)
         self.assertContains(response, "The Pusher")
@@ -70,28 +68,26 @@ class TestShadowArchetypeCreateView(TestCase):
     """Test ShadowArchetypeCreateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_accessible(self):
-        """Test that archetype create view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_create_view_publicly_accessible(self):
+        """Test that archetype create view is accessible without login (reference model)."""
         url = reverse("characters:wraith:create:shadow_archetype")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:shadow_archetype")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/shadow_archetype/form.html")
 
     def test_create_archetype_successfully(self):
         """Test creating an archetype successfully."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:shadow_archetype")
         data = {
             "name": "The Martyr",
@@ -113,6 +109,7 @@ class TestShadowArchetypeUpdateView(TestCase):
     """Test ShadowArchetypeUpdateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
@@ -121,23 +118,20 @@ class TestShadowArchetypeUpdateView(TestCase):
             name="The Director", point_cost=2, owner=self.user
         )
 
-    def test_update_view_accessible(self):
-        """Test that archetype update view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_update_view_publicly_accessible(self):
+        """Test that archetype update view is accessible without login (reference model)."""
         url = self.archetype.get_update_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = self.archetype.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/shadow_archetype/form.html")
 
     def test_update_archetype_successfully(self):
         """Test updating an archetype successfully."""
-        self.client.login(username="user", password="password")
         url = self.archetype.get_update_url()
         data = {
             "name": "Updated Archetype",
@@ -160,14 +154,11 @@ class TestShadowArchetype404Handling(TestCase):
     """Test 404 error handling for archetype views."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
-        self.user = User.objects.create_user(
-            username="user", email="user@test.com", password="password"
-        )
 
     def test_archetype_detail_returns_404_for_invalid_pk(self):
         """Test that archetype detail returns 404 for non-existent archetype."""
-        self.client.login(username="user", password="password")
         response = self.client.get(
             reverse("characters:wraith:shadow_archetype", kwargs={"pk": 99999})
         )
@@ -175,7 +166,6 @@ class TestShadowArchetype404Handling(TestCase):
 
     def test_archetype_update_returns_404_for_invalid_pk(self):
         """Test that archetype update returns 404 for non-existent archetype."""
-        self.client.login(username="user", password="password")
         response = self.client.get(
             reverse("characters:wraith:update:shadow_archetype", kwargs={"pk": 99999})
         )
