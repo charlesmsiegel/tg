@@ -1,4 +1,7 @@
-"""Tests for ApocalypticFormTrait views."""
+"""Tests for ApocalypticFormTrait views.
+
+ApocalypticFormTrait is a reference model (public game data) and should be accessible without login.
+"""
 
 from characters.models.demon.apocalyptic_form import ApocalypticFormTrait
 from characters.models.demon.house import DemonHouse
@@ -28,15 +31,13 @@ class TestApocalypticFormTraitDetailView(TestCase):
             owner=self.user,
         )
 
-    def test_detail_view_accessible_when_logged_in(self):
-        """Test that trait detail view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_detail_view_publicly_accessible(self):
+        """Test that trait detail view is accessible without login (reference model)."""
         response = self.client.get(self.trait.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         response = self.client.get(self.trait.get_absolute_url())
         self.assertTemplateUsed(response, "characters/demon/apocalyptic_trait/detail.html")
 
@@ -53,16 +54,14 @@ class TestApocalypticFormTraitListView(TestCase):
         # Create trait in setUp to avoid caching issues
         self.trait = ApocalypticFormTrait.objects.create(name="Wings", cost=2, owner=self.user)
 
-    def test_list_view_accessible_when_logged_in(self):
-        """Test that trait list view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_list_view_publicly_accessible(self):
+        """Test that trait list view is accessible without login (reference model)."""
         url = reverse("characters:demon:list:apocalyptic_trait")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_list_view_shows_traits(self):
         """Test that list view shows traits."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:demon:list:apocalyptic_trait")
         response = self.client.get(url)
         self.assertContains(response, "Wings")
@@ -84,28 +83,26 @@ class TestApocalypticFormTraitCreateView(TestCase):
     """Test ApocalypticFormTraitCreateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_accessible(self):
-        """Test that trait create view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_create_view_publicly_accessible(self):
+        """Test that trait create view is accessible without login (reference model)."""
         url = reverse("characters:demon:create:apocalyptic_trait")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:demon:create:apocalyptic_trait")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/demon/apocalyptic_trait/form.html")
 
     def test_create_trait_successfully(self):
         """Test creating a trait successfully."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:demon:create:apocalyptic_trait")
         data = {
             "name": "Claws",
@@ -122,29 +119,27 @@ class TestApocalypticFormTraitUpdateView(TestCase):
     """Test ApocalypticFormTraitUpdateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
         self.trait = ApocalypticFormTrait.objects.create(name="Wings", cost=2, owner=self.user)
 
-    def test_update_view_accessible(self):
-        """Test that trait update view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_update_view_publicly_accessible(self):
+        """Test that trait update view is accessible without login (reference model)."""
         url = self.trait.get_update_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = self.trait.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/demon/apocalyptic_trait/form.html")
 
     def test_update_trait_successfully(self):
         """Test updating a trait successfully."""
-        self.client.login(username="user", password="password")
         url = self.trait.get_update_url()
         data = {
             "name": "Updated Wings",
@@ -162,14 +157,11 @@ class TestApocalypticFormTrait404Handling(TestCase):
     """Test 404 error handling for trait views."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
-        self.user = User.objects.create_user(
-            username="user", email="user@test.com", password="password"
-        )
 
     def test_trait_detail_returns_404_for_invalid_pk(self):
         """Test that trait detail returns 404 for non-existent trait."""
-        self.client.login(username="user", password="password")
         response = self.client.get(
             reverse("characters:demon:apocalyptic_trait", kwargs={"pk": 99999})
         )
@@ -177,7 +169,6 @@ class TestApocalypticFormTrait404Handling(TestCase):
 
     def test_trait_update_returns_404_for_invalid_pk(self):
         """Test that trait update returns 404 for non-existent trait."""
-        self.client.login(username="user", password="password")
         response = self.client.get(
             reverse("characters:demon:update:apocalyptic_trait", kwargs={"pk": 99999})
         )

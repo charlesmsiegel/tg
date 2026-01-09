@@ -1,4 +1,7 @@
-"""Tests for Guild views."""
+"""Tests for Guild views.
+
+Guild is a reference model (public game data) and should be accessible without login.
+"""
 
 from characters.models.wraith.guild import Guild
 from django.contrib.auth.models import User
@@ -24,15 +27,13 @@ class TestGuildDetailView(TestCase):
             owner=self.user,
         )
 
-    def test_detail_view_accessible_when_logged_in(self):
-        """Test that guild detail view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_detail_view_publicly_accessible(self):
+        """Test that guild detail view is accessible without login (reference model)."""
         response = self.client.get(self.guild.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         response = self.client.get(self.guild.get_absolute_url())
         self.assertTemplateUsed(response, "characters/wraith/guild/detail.html")
 
@@ -46,19 +47,16 @@ class TestGuildListView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
-        # Create guild in setUp to avoid caching issues
         self.guild = Guild.objects.create(name="Masquers", guild_type="greater", owner=self.user)
 
-    def test_list_view_accessible_when_logged_in(self):
-        """Test that guild list view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_list_view_publicly_accessible(self):
+        """Test that guild list view is accessible without login (reference model)."""
         url = reverse("characters:wraith:list:guild")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_list_view_shows_guilds(self):
         """Test that list view shows guilds."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:list:guild")
         response = self.client.get(url)
         self.assertContains(response, "Masquers")
@@ -68,28 +66,26 @@ class TestGuildCreateView(TestCase):
     """Test GuildCreateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_accessible(self):
-        """Test that guild create view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_create_view_publicly_accessible(self):
+        """Test that guild create view is accessible without login (reference model)."""
         url = reverse("characters:wraith:create:guild")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:guild")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/guild/form.html")
 
     def test_create_guild_successfully(self):
         """Test creating a guild successfully."""
-        self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:guild")
         data = {
             "name": "Mnemoi",
@@ -106,29 +102,27 @@ class TestGuildUpdateView(TestCase):
     """Test GuildUpdateView functionality."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
         self.guild = Guild.objects.create(name="Spooks", guild_type="lesser", owner=self.user)
 
-    def test_update_view_accessible(self):
-        """Test that guild update view is accessible when logged in."""
-        self.client.login(username="user", password="password")
+    def test_update_view_publicly_accessible(self):
+        """Test that guild update view is accessible without login (reference model)."""
         url = self.guild.get_update_url()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        self.client.login(username="user", password="password")
         url = self.guild.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/guild/form.html")
 
     def test_update_guild_successfully(self):
         """Test updating a guild successfully."""
-        self.client.login(username="user", password="password")
         url = self.guild.get_update_url()
         data = {
             "name": "Updated Guild",
@@ -146,19 +140,15 @@ class TestGuild404Handling(TestCase):
     """Test 404 error handling for guild views."""
 
     def setUp(self):
+        cache.clear()
         self.client = Client()
-        self.user = User.objects.create_user(
-            username="user", email="user@test.com", password="password"
-        )
 
     def test_guild_detail_returns_404_for_invalid_pk(self):
         """Test that guild detail returns 404 for non-existent guild."""
-        self.client.login(username="user", password="password")
         response = self.client.get(reverse("characters:wraith:guild", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
 
     def test_guild_update_returns_404_for_invalid_pk(self):
         """Test that guild update returns 404 for non-existent guild."""
-        self.client.login(username="user", password="password")
         response = self.client.get(reverse("characters:wraith:update:guild", kwargs={"pk": 99999}))
         self.assertEqual(response.status_code, 404)
