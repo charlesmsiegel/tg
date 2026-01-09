@@ -1,0 +1,55 @@
+{% extends "core/object.html" %}
+{% load sanitize_text %}
+{% block contents %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title vtm_heading">Clan Details</h5>
+    </div>
+    <div class="tg-card-body">
+        {% if object.nickname %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Nickname:</strong></div>
+            <div class="col-md-8">"{{ object.nickname }}"</div>
+        </div>
+        {% endif %}
+        {% if object.is_bloodline %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Type:</strong></div>
+            <div class="col-md-8">Bloodline</div>
+        </div>
+        {% endif %}
+        {% if parent_clan %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Parent Clan:</strong></div>
+            <div class="col-md-8"><a href="{{ parent_clan.get_absolute_url }}">{{ parent_clan.name }}</a></div>
+        </div>
+        {% endif %}
+        {% if disciplines %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Disciplines:</strong></div>
+            <div class="col-md-8">{{ disciplines }}</div>
+        </div>
+        {% endif %}
+        {% if object.weakness %}
+        <div class="row mb-2">
+            <div class="col-md-4"><strong>Weakness:</strong></div>
+            <div class="col-md-8">{{ object.weakness|sanitize_html|linebreaks }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% if bloodlines %}
+<div class="tg-card mb-4">
+    <div class="tg-card-header">
+        <h5 class="tg-card-title vtm_heading">Bloodlines</h5>
+    </div>
+    <div class="tg-card-body">
+        <ul>
+        {% for bloodline in bloodlines %}
+            <li><a href="{{ bloodline.get_absolute_url }}">{{ bloodline.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+{% endblock contents %}

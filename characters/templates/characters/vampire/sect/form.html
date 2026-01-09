@@ -1,0 +1,27 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit{% else %}Create{% endif %} Vampire Sect
+{% endblock creation_title %}
+{% block creation_title_2 %}
+    {% if object %}Edit{% else %}Create{% endif %} Vampire Sect
+{% endblock creation_title_2 %}
+{% block contents %}
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+        </div>
+        <div class="col-sm-9">{{ form.name }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.philosophy.id_for_label }}" class="form-label">Philosophy</label>
+        </div>
+        <div class="col-sm-9">{{ form.philosophy }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+        </div>
+        <div class="col-sm-9">{{ form.description }}</div>
+    </div>
+{% endblock contents %}
