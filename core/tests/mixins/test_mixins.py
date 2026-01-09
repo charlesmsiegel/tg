@@ -1,5 +1,7 @@
 """Tests for mixins in core/mixins.py."""
 
+from unittest.mock import patch
+
 from characters.models.core.character import Character
 from core.mixins import (
     CharacterOwnerOrSTMixin,
@@ -7,6 +9,7 @@ from core.mixins import (
     EditPermissionMixin,
     ErrorMessageMixin,
     MessageMixin,
+    ObjectCachingMixin,
     OwnerRequiredMixin,
     PermissionRequiredMixin,
     SpecialUserMixin,
@@ -27,6 +30,168 @@ from django.http import Http404
 from django.test import RequestFactory, TestCase
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from game.models import Chronicle, Gameline, STRelationship
+
+
+class ObjectCachingMixinTest(TestCase):
+    """Tests for ObjectCachingMixin - verifies get_object() is only called once."""
+
+    def setUp(self):
+        """Set up test data."""
+        self.factory = RequestFactory()
+        self.owner = User.objects.create_user(
+            username="owner", email="owner@test.com", password="testpass123"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.character = Character.objects.create(
+            name="Test Character", owner=self.owner, chronicle=self.chronicle, status="App"
+        )
+
+    def test_get_object_caches_result(self):
+        """Test that get_object() caches its result and returns cached object on subsequent calls."""
+
+        class TestView(ObjectCachingMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+
+        view = TestView()
+        view.request = self.factory.get("/")
+        view.request.user = self.owner
+        view.kwargs = {"pk": self.character.pk}
+
+        # First call should hit the database
+        obj1 = view.get_object()
+        self.assertEqual(obj1.pk, self.character.pk)
+        self.assertTrue(hasattr(view, "_cached_object"))
+
+        # Second call should return cached object
+        obj2 = view.get_object()
+        self.assertIs(obj1, obj2)  # Same object instance
+
+    def test_get_object_only_queries_once(self):
+        """Test that multiple get_object() calls result in only one database query."""
+
+        class TestView(ObjectCachingMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+
+        view = TestView()
+        view.request = self.factory.get("/")
+        view.request.user = self.owner
+        view.kwargs = {"pk": self.character.pk}
+
+        with self.assertNumQueries(1):
+            view.get_object()
+            view.get_object()
+            view.get_object()
+
+    def test_permission_mixin_caches_object(self):
+        """Test that PermissionRequiredMixin caches object during dispatch."""
+
+        class TestView(ViewPermissionMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {"pk": self.character.pk}
+        view.args = ()
+
+        # Manually call has_permission and get_object to simulate dispatch + get flow
+        # has_permission() calls get_object() internally
+        view.has_permission()
+
+        # Subsequent get_object() calls should use cache
+        with self.assertNumQueries(0):
+            view.get_object()
+
+    def test_owner_required_mixin_caches_object(self):
+        """Test that OwnerRequiredMixin caches object during dispatch."""
+
+        class TestView(OwnerRequiredMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {"pk": self.character.pk}
+        view.args = ()
+
+        # Call dispatch which calls get_object()
+        # Then simulate the view's get() calling get_object() again
+        with self.assertNumQueries(1):
+            # dispatch() calls get_object() once
+            try:
+                view.dispatch(request, pk=self.character.pk)
+            except Exception:
+                pass  # Template doesn't exist, but that's fine
+            # Subsequent calls should use cache
+            view.get_object()
+
+    def test_st_required_mixin_caches_object(self):
+        """Test that STRequiredMixin caches object during dispatch."""
+        head_st = User.objects.create_user(
+            username="head_st", email="head_st@test.com", password="testpass123"
+        )
+        chronicle = Chronicle.objects.create(name="ST Chronicle", head_st=head_st)
+        character = Character.objects.create(
+            name="ST Character", owner=self.owner, chronicle=chronicle, status="App"
+        )
+
+        class TestView(STRequiredMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = head_st
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {"pk": character.pk}
+        view.args = ()
+
+        # Call dispatch which calls get_object()
+        with self.assertNumQueries(1):
+            try:
+                view.dispatch(request, pk=character.pk)
+            except Exception:
+                pass
+            view.get_object()
+
+    def test_character_owner_or_st_mixin_caches_object(self):
+        """Test that CharacterOwnerOrSTMixin caches object during dispatch."""
+
+        class MockXPRequest:
+            def __init__(self, character):
+                self.character = character
+                self.pk = 1
+
+        class TestView(CharacterOwnerOrSTMixin, DetailView):
+            template_name = "test.html"
+
+            def get_object(self, queryset=None):
+                if not hasattr(self, "_cached_object"):
+                    self._cached_object = MockXPRequest(self.kwargs["character"])
+                return self._cached_object
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {"character": self.character}
+        view.args = ()
+
+        # First call
+        obj1 = view.get_object()
+        # Second call should return same instance
+        obj2 = view.get_object()
+        self.assertIs(obj1, obj2)
 
 
 class PermissionRequiredMixinTest(TestCase):
@@ -1101,3 +1266,171 @@ class DeleteMessageMixinTest(TestCase):
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "{invalid_field} deleted!")
+
+
+class ApprovalMixinTest(TestCase):
+    """Tests for ApprovalMixin._parse_request_id security fix."""
+
+    def setUp(self):
+        """Set up test data."""
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="testpass123"
+        )
+
+    def _create_mock_view(self):
+        """Create a minimal ApprovalMixin instance for testing."""
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+
+        return TestApprovalView()
+
+    def test_parse_request_id_valid_input(self):
+        """Test that valid input returns the correct ID."""
+        view = self._create_mock_view()
+        request = self.factory.post("/", data={"xp_request_123": "approve"})
+        result = view._parse_request_id(request, "approve")
+        self.assertEqual(result, 123)
+
+    def test_parse_request_id_no_matching_key_raises_validation_error(self):
+        """Test that missing matching key raises ValidationError instead of IndexError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # POST data has no key with value "approve"
+        request = self.factory.post("/", data={"some_key": "other_value"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_malformed_key_raises_validation_error(self):
+        """Test that key with insufficient underscore parts raises ValidationError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Key has only 2 parts separated by underscore (needs 3+)
+        request = self.factory.post("/", data={"malformed_key": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_non_numeric_id_raises_validation_error(self):
+        """Test that non-numeric ID part raises ValidationError instead of ValueError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Key has correct format but third part is not numeric
+        request = self.factory.post("/", data={"xp_request_abc": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_empty_post_raises_validation_error(self):
+        """Test that empty POST data raises ValidationError."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        request = self.factory.post("/", data={})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_parse_request_id_negative_id_is_valid(self):
+        """Test that negative IDs are rejected as invalid."""
+        from django.core.exceptions import ValidationError
+
+        view = self._create_mock_view()
+        # Negative ID should be rejected
+        request = self.factory.post("/", data={"xp_request_-5": "approve"})
+
+        with self.assertRaises(ValidationError) as cm:
+            view._parse_request_id(request, "approve")
+        self.assertIn("Invalid request", str(cm.exception))
+
+    def test_post_approve_with_malformed_key_shows_error_message(self):
+        """Integration test: verify post() correctly handles ValidationError.
+
+        This test ensures that when _parse_request_id raises a ValidationError,
+        the post() method properly converts it to a user-facing error message
+        and redirects. This catches bugs like using e.message instead of str(e).
+        """
+        from unittest.mock import MagicMock, patch
+
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+            spending_type = "XP"
+
+            def get_object(self):
+                return MagicMock(pk=1)
+
+            def get_request_model(self):
+                return MagicMock()
+
+        view = TestApprovalView()
+        # Malformed key with only 2 parts - will trigger ValidationError
+        request = self.factory.post("/", data={"malformed_key": "approve"})
+        request.user = self.user
+
+        # Set up messages framework on the request
+        setattr(request, "session", "session")
+        messages_storage = FallbackStorage(request)
+        setattr(request, "_messages", messages_storage)
+
+        with patch("django.shortcuts.redirect") as mock_redirect:
+            mock_redirect.return_value = MagicMock()
+            view.post(request)
+
+        # Verify error message was added (not AttributeError from e.message)
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Invalid request", str(messages[0]))
+
+    def test_post_reject_with_malformed_key_shows_error_message(self):
+        """Integration test: verify post() reject path handles ValidationError.
+
+        Tests the reject button path to ensure both approve and reject
+        branches properly handle ValidationError without AttributeError.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from core.mixins import ApprovalMixin
+
+        class TestApprovalView(ApprovalMixin):
+            approve_button_value = "approve"
+            reject_button_value = "reject"
+            spending_type = "XP"
+
+            def get_object(self):
+                return MagicMock(pk=1)
+
+            def get_request_model(self):
+                return MagicMock()
+
+        view = TestApprovalView()
+        # Malformed key with only 2 parts - will trigger ValidationError
+        request = self.factory.post("/", data={"malformed_key": "reject"})
+        request.user = self.user
+
+        # Set up messages framework on the request
+        setattr(request, "session", "session")
+        messages_storage = FallbackStorage(request)
+        setattr(request, "_messages", messages_storage)
+
+        with patch("django.shortcuts.redirect") as mock_redirect:
+            mock_redirect.return_value = MagicMock()
+            view.post(request)
+
+        # Verify error message was added (not AttributeError from e.message)
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn("Invalid request", str(messages[0]))

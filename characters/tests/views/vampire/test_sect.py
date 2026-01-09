@@ -112,3 +112,28 @@ class TestVampireSectUpdateView(TestCase):
         """Update view uses correct template."""
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/sect/form.html")
+
+
+class TestVampireSectCreateViewNegativeCases(TestCase):
+    """Test VampireSect create view with invalid data."""
+
+    def setUp(self):
+        self.client = Client()
+        self.url = VampireSect.get_creation_url()
+
+    def test_create_missing_name_fails(self):
+        """Create view POST with missing name fails."""
+        data = {"philosophy": "Test philosophy"}
+        response = self.client.post(self.url, data)
+        # Form should re-render with errors (200) rather than redirect (302)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireSect.objects.filter(philosophy="Test philosophy").count(), 0)
+        # Check that name field has errors (form validation + model clean)
+        self.assertTrue(response.context["form"].errors.get("name"))
+
+    def test_create_empty_data_fails(self):
+        """Create view POST with empty data fails."""
+        initial_count = VampireSect.objects.count()
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireSect.objects.count(), initial_count)

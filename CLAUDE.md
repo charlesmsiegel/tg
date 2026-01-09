@@ -108,6 +108,22 @@ from core.mixins import (
 
 See **tg-permissions** skill for complete mixin list and usage patterns.
 
+### Authentication Rules
+
+**Reference models** (game data like Clans, Disciplines, Guilds, Arcanos, Factions) should NOT require login - they are public game reference data.
+
+**Player-related models** (Coterie, Pack, Cabal, Motley, characters) SHOULD require login via `LoginRequiredMixin` or `ViewPermissionMixin` - they may contain player-specific information.
+
+```python
+# Reference model - NO login required
+class GuildDetailView(DetailView):
+    model = Guild
+
+# Player group - login required
+class CoterieDetailView(LoginRequiredMixin, DetailView):
+    model = Coterie
+```
+
 ### Preventing N+1 Queries
 
 Always use `select_related()` and `prefetch_related()`:

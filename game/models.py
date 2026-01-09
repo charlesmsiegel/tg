@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Max, OuterRef, Subquery
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.timezone import (  # ensure timezone-aware now if using TIME_ZONE settings
     make_aware,
     now,
@@ -214,12 +215,14 @@ class Chronicle(models.Model):
         self.save()
         return s
 
-    @property
+    @cached_property
     def players(self):
-        """Returns queryset of Users with characters in this chronicle."""
-        from characters.models import Character
+        """Returns queryset of Users with characters in this chronicle.
 
-        return User.objects.filter(characters__chronicle=self).distinct()
+        This property is cached after first access to avoid repeated database queries.
+        The cache persists for the lifetime of the Chronicle instance.
+        """
+        return User.objects.filter(charactermodel__chronicle=self).distinct()
 
     def is_head_st(self, user):
         """Check if user is head ST of this chronicle."""
@@ -1138,6 +1141,42 @@ class WeeklyXPRequest(models.Model):
     def total_xp(self):
         """Calculate total XP for this request."""
         return sum([self.finishing, self.learning, self.rp, self.focus, self.standingout])
+
+    @transaction.atomic
+    def approve(self, xp_data=None):
+        """
+        Approve this XP request and award XP to the character atomically.
+
+        Args:
+            xp_data: Optional dict with XP category values to update before approval.
+                     Keys can be: finishing, learning, rp, focus, standingout.
+
+        Returns:
+            The total XP awarded.
+
+        Raises:
+            ValueError: If the request is already approved.
+        """
+        if self.approved:
+            raise ValueError("This XP request has already been approved.")
+
+        # Update XP categories if provided
+        if xp_data:
+            for field in ["finishing", "learning", "rp", "focus", "standingout"]:
+                if field in xp_data:
+                    setattr(self, field, xp_data[field])
+
+        self.approved = True
+        xp_increase = self.total_xp()
+
+        # Award XP to the character
+        if self.character:
+            character = self.character.get_real_instance()
+            character.xp += xp_increase
+            character.save()
+
+        self.save()
+        return xp_increase
 
 
 class StoryXPRequest(models.Model):

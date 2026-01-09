@@ -6,6 +6,15 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 
+# URL helpers for Discipline (which extends Statistic, not Model)
+def get_discipline_create_url():
+    return reverse("characters:vampire:create:discipline")
+
+
+def get_discipline_list_url():
+    return reverse("characters:vampire:list:discipline")
+
+
 class TestDisciplineDetailView(TestCase):
     """Test Discipline detail view."""
 
@@ -74,7 +83,7 @@ class TestDisciplineCreateView(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.url = Discipline.get_creation_url()
+        self.url = get_discipline_create_url()
         self.valid_data = {
             "name": "Test Discipline",
             "property_name": "test_discipline",
@@ -124,3 +133,37 @@ class TestDisciplineUpdateView(TestCase):
         """Update view uses correct template."""
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/discipline/form.html")
+
+
+class TestDisciplineCreateViewNegativeCases(TestCase):
+    """Test Discipline create view with invalid data."""
+
+    def setUp(self):
+        self.client = Client()
+        self.url = get_discipline_create_url()
+
+    def test_create_missing_name_fails(self):
+        """Create view POST with missing name fails."""
+        data = {"property_name": "test_discipline"}
+        response = self.client.post(self.url, data)
+        # Form should re-render with errors (200) rather than redirect (302)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Discipline.objects.filter(property_name="test_discipline").count(), 0)
+        # Check that name field has errors (form validation + model clean)
+        self.assertTrue(response.context["form"].errors.get("name"))
+
+    def test_create_missing_property_name_fails(self):
+        """Create view POST with missing property_name fails."""
+        data = {"name": "Test Discipline"}
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Discipline.objects.filter(name="Test Discipline").count(), 0)
+        # Check that property_name field has errors
+        self.assertTrue(response.context["form"].errors.get("property_name"))
+
+    def test_create_empty_data_fails(self):
+        """Create view POST with empty data fails."""
+        initial_count = Discipline.objects.count()
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Discipline.objects.count(), initial_count)

@@ -144,3 +144,58 @@ class TestVampireTitleNegativeStatus(TestCase):
         response = self.client.get(self.negative_title.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Negative Title")
+
+
+class TestVampireTitleCreateViewNegativeCases(TestCase):
+    """Test VampireTitle create view with invalid data."""
+
+    def setUp(self):
+        self.client = Client()
+        self.url = VampireTitle.get_creation_url()
+
+    def test_create_missing_name_fails(self):
+        """Create view POST with missing name fails."""
+        data = {"value": 5, "is_negative": False}
+        response = self.client.post(self.url, data)
+        # Form should re-render with errors (200) rather than redirect (302)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireTitle.objects.filter(value=5).count(), 0)
+        # Check that name field has errors (form validation + model clean)
+        self.assertTrue(response.context["form"].errors.get("name"))
+
+    def test_create_empty_data_fails(self):
+        """Create view POST with empty data fails."""
+        initial_count = VampireTitle.objects.count()
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireTitle.objects.count(), initial_count)
+
+    def test_create_invalid_sect_fails(self):
+        """Create view POST with invalid sect ID fails."""
+        data = {
+            "name": "Test Title",
+            "value": 3,
+            "sect": 99999,  # Non-existent ID
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireTitle.objects.filter(name="Test Title").count(), 0)
+
+
+class TestVampireTitleDetailViewNoSect(TestCase):
+    """Test VampireTitle detail view when sect is None."""
+
+    def setUp(self):
+        self.client = Client()
+        self.title = VampireTitle.objects.create(
+            name="Independent Title",
+            value=2,
+            sect=None,
+        )
+
+    def test_detail_view_handles_no_sect(self):
+        """Detail view handles title without sect gracefully."""
+        response = self.client.get(self.title.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        # sect context variable should be None
+        self.assertIsNone(response.context["sect"])

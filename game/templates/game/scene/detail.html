@@ -50,7 +50,7 @@
                         <p class="post mb-0" style="line-height: 1.6;">
                             <strong {% if post.character.owner.profile.is_st %}class="st"{% elif post.character.owner == request.user %}class="highlight"{% endif %}>
                                 <a href="{{ post.character.get_absolute_url }}" style="font-weight: 600;">{{ post.display_name }}</a>
-                            </strong>: {{ post.message|quote_tag|sanitize_html }}
+                            </strong>: {{ post.message|quote_tag }}
                         </p>
                     </div>
                 {% empty %}

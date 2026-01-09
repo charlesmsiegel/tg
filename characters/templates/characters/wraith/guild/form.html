@@ -1,0 +1,22 @@
+{% extends "core/form.html" %}
+{% block creation_title %}
+    {% if object %}Edit Guild{% else %}Create Guild{% endif %}
+{% endblock creation_title %}
+{% block contents %}
+    <div class="row">
+        <div class="col-sm">Name</div>
+        <div class="col-sm">{{ form.name }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Description</div>
+        <div class="col-sm">{{ form.description }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Guild Type</div>
+        <div class="col-sm">{{ form.guild_type }}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm">Willpower</div>
+        <div class="col-sm">{{ form.willpower }}</div>
+    </div>
+{% endblock contents %}

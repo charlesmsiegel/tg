@@ -9,6 +9,8 @@ from game.models import (
     Chronicle,
     FreebieSpendingRecord,
     Gameline,
+    Journal,
+    JournalEntry,
     ObjectType,
     Scene,
     Story,
@@ -1144,6 +1146,84 @@ class TestJournalListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["current_filter"], "st")
 
+    def test_journal_list_has_entry_count_annotation(self):
+        """Test that journals are annotated with entry_count."""
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        # Get the journal created by signal
+        journal1, _ = Journal.objects.get_or_create(character=self.char1)
+        # Add entries
+        JournalEntry.objects.create(
+            journal=journal1, message="Entry 1", date=timezone.now()
+        )
+        JournalEntry.objects.create(
+            journal=journal1, message="Entry 2", date=timezone.now()
+        )
+        response = self.client.get(reverse("game:journals"))
+        # Check that journals in object_list have entry_count annotation
+        for journal in response.context["object_list"]:
+            if journal.pk == journal1.pk:
+                self.assertEqual(journal.entry_count, 2)
+
+    def test_journal_list_has_latest_entry_annotation(self):
+        """Test that journals are annotated with latest_entry date."""
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        journal1, _ = Journal.objects.get_or_create(character=self.char1)
+        # Add entries with different dates
+        earlier = timezone.now() - timezone.timedelta(days=5)
+        later = timezone.now()
+        JournalEntry.objects.create(journal=journal1, message="Earlier", date=earlier)
+        JournalEntry.objects.create(journal=journal1, message="Later", date=later)
+        response = self.client.get(reverse("game:journals"))
+        for journal in response.context["object_list"]:
+            if journal.pk == journal1.pk:
+                # latest_entry should be the most recent date
+                self.assertIsNotNone(journal.latest_entry)
+                # Should be close to 'later' date (within a second)
+                self.assertAlmostEqual(
+                    journal.latest_entry.timestamp(),
+                    later.timestamp(),
+                    delta=1,
+                )
+
+    def test_journal_list_optimized_queries(self):
+        """Test that journal list view uses optimized queries (not N+1)."""
+        from django.test.utils import CaptureQueriesContext
+        from django.db import connection
+        from django.utils import timezone
+
+        self.client.login(username="testuser", password="password")
+        # Create multiple journals with entries
+        for i in range(5):
+            char = Human.objects.create(
+                name=f"Char {i}",
+                owner=self.user,
+                chronicle=self.chronicle,
+            )
+            journal, _ = Journal.objects.get_or_create(character=char)
+            for j in range(3):
+                JournalEntry.objects.create(
+                    journal=journal,
+                    message=f"Entry {j}",
+                    date=timezone.now(),
+                )
+        # Now fetch the page and count queries
+        with CaptureQueriesContext(connection) as context:
+            response = self.client.get(reverse("game:journals"))
+        self.assertEqual(response.status_code, 200)
+        # With 7 journals (2 from setUp + 5 new), N+1 would be ~15 queries
+        # Optimized should be much fewer (session, user, journals, pagination)
+        # Allow some queries for session/auth but should be < 10
+        self.assertLess(
+            len(context.captured_queries),
+            10,
+            f"Too many queries ({len(context.captured_queries)}): "
+            f"{[q['sql'][:100] for q in context.captured_queries]}",
+        )
+
 
 class TestJournalDetailView(TestCase):
     """Test the JournalDetailView."""
@@ -1555,6 +1635,60 @@ class TestSceneDetailViewPost(TestCase):
         input_text = "\u201cHello\u201d \u2018World\u2019"
         result = SceneDetailView.straighten_quotes(input_text)
         self.assertEqual(result, "\"Hello\" 'World'")
+
+
+class TestChronicleDetailViewQueryOptimization(TestCase):
+    """Test that ChronicleDetailView uses optimized queries for characters."""
+
+    def setUp(self):
+        from django.db import connection
+        from django.test import Client
+        from django.test.utils import CaptureQueriesContext
+
+        self.CaptureQueriesContext = CaptureQueriesContext
+        self.connection = connection
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username="testuser", email="test@test.com", password="password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+
+        # Create multiple characters with different owners to trigger N+1 if not optimized
+        for i in range(5):
+            owner = User.objects.create_user(
+                username=f"owner{i}", email=f"owner{i}@test.com", password="password"
+            )
+            Human.objects.create(
+                name=f"Character {i}",
+                owner=owner,
+                chronicle=self.chronicle,
+                concept="Test",
+                status="App",
+            )
+
+    def test_chronicle_detail_query_count_is_bounded(self):
+        """Test that chronicle detail query count doesn't scale with number of characters.
+
+        Without select_related, accessing character.owner.username and
+        character.owner.profile for each character causes N+1 queries.
+        With optimization, query count should be bounded regardless of character count.
+        """
+        self.client.login(username="testuser", password="password")
+
+        with self.CaptureQueriesContext(self.connection) as context:
+            response = self.client.get(f"/game/chronicle/{self.chronicle.pk}/")
+
+        self.assertEqual(response.status_code, 200)
+        query_count = len(context.captured_queries)
+        # Base overhead includes session, user/profile, polymorphic lookups, etc.
+        # Without optimization, this would be 30+ queries (5 chars * 2 relations + overhead)
+        # With optimization, should be under 30 queries
+        self.assertLessEqual(
+            query_count,
+            30,
+            f"Too many queries ({query_count}). Chronicle detail view may have N+1 issue for characters.",
+        )
 
 
 class TestChronicleListView(TestCase):

@@ -105,6 +105,9 @@ class TestVampireCreation(VampireModelTestCase):
         self.assertEqual(vampire.conscience, 1)
         self.assertEqual(vampire.self_control, 1)
         self.assertEqual(vampire.courage, 1)
+        # Alternate virtues also default to 1 (issue #1120)
+        self.assertEqual(vampire.conviction, 1)
+        self.assertEqual(vampire.instinct, 1)
         self.assertEqual(vampire.humanity, 7)
 
     def test_vampire_can_have_clan(self):
@@ -681,3 +684,97 @@ class TestVampireFreebieStep(VampireModelTestCase):
         """Test that vampires have freebie_step of 7."""
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         self.assertEqual(vampire.freebie_step, 7)
+
+
+class TestVampireVirtueValidation(VampireModelTestCase):
+    """Tests for Vampire virtue and humanity validation (issues #1358, #1120)."""
+
+    def test_alternate_virtues_default_to_one(self):
+        """Conviction and Instinct should default to 1 (issue #1120)."""
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        self.assertEqual(vampire.conviction, 1)
+        self.assertEqual(vampire.instinct, 1)
+
+    def test_virtue_minimum_validation_in_clean(self):
+        """clean() raises ValidationError when virtues are below 1."""
+        from django.core.exceptions import ValidationError
+
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        vampire.conscience = 0
+        with self.assertRaises(ValidationError) as context:
+            vampire.clean()
+        self.assertIn("conscience", context.exception.message_dict)
+
+    def test_humanity_minimum_validation_during_creation(self):
+        """clean() raises ValidationError when humanity is below 4 during creation."""
+        from core.constants import CharacterStatus
+        from django.core.exceptions import ValidationError
+
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        vampire.status = CharacterStatus.UNAPPROVED
+        vampire.humanity = 3
+        with self.assertRaises(ValidationError) as context:
+            vampire.clean()
+        self.assertIn("humanity", context.exception.message_dict)
+
+    def test_humanity_at_four_is_valid_during_creation(self):
+        """clean() passes when humanity is 4 during creation."""
+        from core.constants import CharacterStatus
+
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        vampire.status = CharacterStatus.UNAPPROVED
+        vampire.humanity = 4
+        # Should not raise
+        vampire.clean()
+
+    def test_humanity_above_ten_is_invalid(self):
+        """clean() raises ValidationError when humanity exceeds 10 during creation."""
+        from core.constants import CharacterStatus
+        from django.core.exceptions import ValidationError
+
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        vampire.status = CharacterStatus.UNAPPROVED
+        vampire.humanity = 11
+        with self.assertRaises(ValidationError) as context:
+            vampire.clean()
+        self.assertIn("humanity", context.exception.message_dict)
+
+    def test_humanity_can_be_low_after_approval(self):
+        """Approved vampires can have humanity below 4 (degeneration)."""
+        from core.constants import CharacterStatus
+
+        vampire = Vampire.objects.create(name="Test", owner=self.user)
+        vampire.status = CharacterStatus.APPROVED
+        vampire.humanity = 2
+        # Should not raise - approved characters can have low humanity
+        vampire.clean()
+
+    def test_path_rating_minimum_validation_during_creation(self):
+        """clean() raises ValidationError when path_rating is below 4 during creation."""
+        from core.constants import CharacterStatus
+        from django.core.exceptions import ValidationError
+
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            path=self.path_of_caine,
+        )
+        vampire.status = CharacterStatus.UNAPPROVED
+        vampire.path_rating = 3
+        with self.assertRaises(ValidationError) as context:
+            vampire.clean()
+        self.assertIn("path_rating", context.exception.message_dict)
+
+    def test_path_rating_at_four_is_valid(self):
+        """clean() passes when path_rating is 4 during creation."""
+        from core.constants import CharacterStatus
+
+        vampire = Vampire.objects.create(
+            name="Test",
+            owner=self.user,
+            path=self.path_of_caine,
+        )
+        vampire.status = CharacterStatus.UNAPPROVED
+        vampire.path_rating = 4
+        # Should not raise
+        vampire.clean()

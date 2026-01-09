@@ -126,3 +126,71 @@ class TestVampireClanUpdateView(TestCase):
         """Update view uses correct template."""
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/clan/form.html")
+
+
+class TestVampireClanCreateViewNegativeCases(TestCase):
+    """Test VampireClan create view with invalid data."""
+
+    def setUp(self):
+        self.client = Client()
+        self.url = VampireClan.get_creation_url()
+
+    def test_create_missing_name_fails(self):
+        """Create view POST with missing name fails."""
+        data = {"nickname": "Test Nickname", "is_bloodline": False}
+        response = self.client.post(self.url, data)
+        # Form should re-render with errors (200) rather than redirect (302)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireClan.objects.filter(nickname="Test Nickname").count(), 0)
+        # Check that name field has errors (form validation + model clean)
+        self.assertTrue(response.context["form"].errors.get("name"))
+
+    def test_create_empty_data_fails(self):
+        """Create view POST with empty data fails."""
+        initial_count = VampireClan.objects.count()
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireClan.objects.count(), initial_count)
+
+    def test_create_invalid_parent_clan_fails(self):
+        """Create view POST with invalid parent_clan ID fails."""
+        data = {
+            "name": "Test Bloodline",
+            "is_bloodline": True,
+            "parent_clan": 99999,  # Non-existent ID
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VampireClan.objects.filter(name="Test Bloodline").count(), 0)
+
+
+class TestVampireClanBloodlineEdgeCases(TestCase):
+    """Test edge cases for bloodline handling."""
+
+    def setUp(self):
+        self.client = Client()
+        self.parent_clan = VampireClan.objects.create(name="Ventrue", nickname="Blue Bloods")
+        self.url = VampireClan.get_creation_url()
+
+    def test_bloodline_with_parent_clan_succeeds(self):
+        """Bloodline with valid parent_clan is created successfully."""
+        data = {
+            "name": "Tremere antitribu",
+            "is_bloodline": True,
+            "parent_clan": self.parent_clan.pk,
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(VampireClan.objects.filter(name="Tremere antitribu").count(), 1)
+        bloodline = VampireClan.objects.get(name="Tremere antitribu")
+        self.assertTrue(bloodline.is_bloodline)
+        self.assertEqual(bloodline.parent_clan, self.parent_clan)
+
+    def test_bloodline_without_parent_clan_still_valid(self):
+        """Bloodline without parent_clan is allowed (orphan bloodline)."""
+        data = {
+            "name": "Orphan Bloodline",
+            "is_bloodline": True,
+        }
+        response = self.client.post(self.url, data)
+        # This should succeed - parent_clan is optional even for bloodlines
+        self.assertEqual(VampireClan.objects.filter(name="Orphan Bloodline").count(), 1)
