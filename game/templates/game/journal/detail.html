@@ -98,7 +98,7 @@
                                         <small class="text-muted">{{ form.entry.datetime_created|date:"g:i A" }}</small>
                                     </div>
                                     <div style="padding: 16px; border-radius: 8px; background-color: rgba(0,0,0,0.02); line-height: 1.6;">
-                                        {{ form.entry.message|quote_tag|sanitize_html }}
+                                        {{ form.entry.message|quote_tag }}
                                     </div>
                                 </div>
 
@@ -109,7 +109,7 @@
                                             <h6 class="st" style="font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
                                                 ST Response
                                             </h6>
-                                            <div class="st" style="line-height: 1.6;">{{ form.entry.st_message|quote_tag|sanitize_html }}</div>
+                                            <div class="st" style="line-height: 1.6;">{{ form.entry.st_message|quote_tag }}</div>
                                         </div>
                                     {% else %}
                                         <div class="text-muted small">

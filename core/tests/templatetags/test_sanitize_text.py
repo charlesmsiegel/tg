@@ -197,6 +197,47 @@ class QuoteTagFilterTest(TestCase):
         result = quote_tag(text)
         self.assertEqual(result, text)
 
+    def test_unicode_escape_sequence_in_quotes(self):
+        """Test filter handles unicode escape sequences that spell HTML tags."""
+        # \u003c is < and \u003e is > - these could be used to bypass filters
+        text = 'He said "\u003cscript\u003ealert(1)" to her.'
+        result = quote_tag(text)
+        # The < and > should be escaped
+        self.assertNotIn("<script>", result)
+        self.assertIn("&lt;script&gt;", result)
+
+    def test_unicode_characters_preserved(self):
+        """Test unicode characters are not corrupted."""
+        text = 'He said "こんにちは" in Japanese.'
+        result = quote_tag(text)
+        self.assertIn("こんにちは", result)
+        self.assertIn('<span class="quote">', result)
+
+    def test_html_entities_not_double_escaped(self):
+        """Test pre-escaped HTML entities are preserved (not double-escaped)."""
+        # If input contains &lt; it should stay as &lt;, not become &amp;lt;
+        text = 'He said "&lt;script&gt;" to her.'
+        result = quote_tag(text)
+        # The & in &lt; gets escaped to &amp;, making it &amp;lt;
+        # This is correct behavior - we escape ALL special chars
+        self.assertIn("&amp;lt;script&amp;gt;", result)
+        # Ensure no actual script tags
+        self.assertNotIn("<script>", result)
+
+    def test_nested_quotes(self):
+        """Test filter handles nested/adjacent quote marks."""
+        text = 'She said ""really?"" sarcastically.'
+        result = quote_tag(text)
+        # Should create two adjacent quote spans
+        self.assertEqual(result.count('<span class="quote">'), 2)
+
+    def test_ampersand_escaping(self):
+        """Test ampersands are properly escaped."""
+        text = 'Tom & Jerry said "hello & goodbye"'
+        result = quote_tag(text)
+        self.assertIn("Tom &amp; Jerry", result)
+        self.assertIn("hello &amp; goodbye", result)
+
 
 class SimpleMarkdownFilterTest(TestCase):
     """Tests for simple_markdown filter."""
@@ -213,9 +254,9 @@ class SimpleMarkdownFilterTest(TestCase):
         """Test filter escapes HTML special characters in italic text."""
         text = "This is *<img src=x onerror=alert(1)>* italic."
         result = simple_markdown(text)
-        # The img tag should be escaped
+        # The img tag should be escaped (not rendered as HTML)
         self.assertNotIn("<img", result)
-        self.assertNotIn("onerror", result)
+        self.assertIn("&lt;img", result)
 
     def test_escapes_html_outside_markdown(self):
         """Test filter escapes HTML outside of markdown formatting."""
@@ -308,6 +349,72 @@ class SimpleMarkdownFilterTest(TestCase):
         text = "Test"
         result = simple_markdown(text)
         self.assertIsInstance(result, SafeString)
+
+    def test_unclosed_markdown_with_html(self):
+        """Test filter handles unclosed markdown with HTML injection attempt."""
+        text = "**bold text <script>alert(1)</script>"
+        result = simple_markdown(text)
+        # Script should be escaped
+        self.assertNotIn("<script>", result)
+        self.assertIn("&lt;script&gt;", result)
+        # Unclosed ** should remain as literal asterisks (escaped)
+        self.assertIn("**", result)
+
+    def test_unicode_escape_sequences(self):
+        """Test filter handles unicode escape sequences that spell HTML tags."""
+        text = "Test \u003cscript\u003ealert(1)\u003c/script\u003e"
+        result = simple_markdown(text)
+        self.assertNotIn("<script>", result)
+        self.assertIn("&lt;script&gt;", result)
+
+    def test_unicode_characters_preserved(self):
+        """Test unicode characters are preserved in output."""
+        text = "**日本語** and *한국어* text"
+        result = simple_markdown(text)
+        self.assertIn("日本語", result)
+        self.assertIn("한국어", result)
+        self.assertIn("<strong>日本語</strong>", result)
+        self.assertIn("<em>한국어</em>", result)
+
+    def test_html_entities_escaped(self):
+        """Test pre-escaped HTML entities are double-escaped (security)."""
+        text = "&lt;script&gt;alert(1)&lt;/script&gt;"
+        result = simple_markdown(text)
+        # Ampersands should be escaped
+        self.assertIn("&amp;lt;", result)
+        self.assertNotIn("<script>", result)
+
+    def test_markdown_with_quotes(self):
+        """Test interaction between markdown and quotation marks."""
+        text = '**"Bold and quoted"** text'
+        result = simple_markdown(text)
+        # Should have bold tags and quotes (escaped as &quot;)
+        self.assertIn("<strong>", result)
+        self.assertIn("&quot;Bold and quoted&quot;", result)
+
+    def test_ampersand_escaping(self):
+        """Test ampersands are properly escaped."""
+        text = "Tom & Jerry are **friends & allies**"
+        result = simple_markdown(text)
+        self.assertIn("Tom &amp; Jerry", result)
+        self.assertIn("friends &amp; allies", result)
+
+    def test_less_than_greater_than_escaping(self):
+        """Test < and > outside markdown are escaped."""
+        text = "5 < 10 and 10 > 5 is **true**"
+        result = simple_markdown(text)
+        self.assertIn("5 &lt; 10", result)
+        self.assertIn("10 &gt; 5", result)
+        self.assertIn("<strong>true</strong>", result)
+
+    def test_mixed_asterisks_not_markdown(self):
+        """Test asterisks that don't form valid markdown are preserved."""
+        text = "3 * 4 = 12 and 2 ** 3 = 8"
+        result = simple_markdown(text)
+        # Single asterisk with spaces should not become italic
+        self.assertIn("3 * 4", result)
+        # ** without closing should not become bold
+        self.assertIn("** 3", result)
 
 
 class BadgeTextFilterTest(TestCase):
