@@ -54,7 +54,7 @@ class CompanionDetailView(XPApprovalMixin, HumanDetailView):
     template_name = "characters/mage/companion/detail.html"
 
 
-class CompanionCreateView(MessageMixin, CreateView):
+class CompanionCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """
     Create view for companions (Mage: The Ascension).
 
@@ -86,9 +86,8 @@ class CompanionCreateView(MessageMixin, CreateView):
         return form
 
     def form_valid(self, form):
-        # Set owner to current user - not exposed in form for security
-        if self.request.user.is_authenticated:
-            form.instance.owner = self.request.user
+        # Set owner to current user - authentication enforced by LoginRequiredMixin
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
