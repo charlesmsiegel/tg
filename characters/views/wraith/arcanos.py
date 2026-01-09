@@ -1,5 +1,6 @@
 from characters.models.wraith.arcanos import Arcanos
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -15,7 +16,7 @@ class ArcanosDetailView(DetailView):
         return context
 
 
-class ArcanosCreateView(MessageMixin, CreateView):
+class ArcanosCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Arcanos
     fields = [
         "name",
@@ -32,7 +33,7 @@ class ArcanosCreateView(MessageMixin, CreateView):
     error_message = "There was an error creating the Arcanos."
 
 
-class ArcanosUpdateView(MessageMixin, UpdateView):
+class ArcanosUpdateView(LoginRequiredMixin, MessageMixin, UpdateView):
     model = Arcanos
     fields = [
         "name",

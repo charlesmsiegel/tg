@@ -1,5 +1,6 @@
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from core.mixins import MessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
@@ -8,7 +9,7 @@ class ShadowArchetypeDetailView(DetailView):
     template_name = "characters/wraith/shadow_archetype/detail.html"
 
 
-class ShadowArchetypeCreateView(MessageMixin, CreateView):
+class ShadowArchetypeCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = ShadowArchetype
     fields = [
         "name",
@@ -26,7 +27,7 @@ class ShadowArchetypeCreateView(MessageMixin, CreateView):
     error_message = "There was an error creating the Shadow Archetype."
 
 
-class ShadowArchetypeUpdateView(MessageMixin, UpdateView):
+class ShadowArchetypeUpdateView(LoginRequiredMixin, MessageMixin, UpdateView):
     model = ShadowArchetype
     fields = [
         "name",
