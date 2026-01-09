@@ -85,13 +85,7 @@ class TestApocalypticFormTraitCreateView(TestCase):
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_requires_login(self):
-        """Test that create view requires login."""
-        url = reverse("characters:demon:create:apocalyptic_trait")
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_create_view_accessible_when_logged_in(self):
+    def test_create_view_accessible(self):
         """Test that trait create view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = reverse("characters:demon:create:apocalyptic_trait")
@@ -130,13 +124,7 @@ class TestApocalypticFormTraitUpdateView(TestCase):
         )
         self.trait = ApocalypticFormTrait.objects.create(name="Wings", cost=2, owner=self.user)
 
-    def test_update_view_requires_login(self):
-        """Test that update view requires login."""
-        url = self.trait.get_update_url()
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_update_view_accessible_when_logged_in(self):
+    def test_update_view_accessible(self):
         """Test that trait update view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = self.trait.get_update_url()

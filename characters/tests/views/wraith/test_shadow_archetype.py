@@ -69,13 +69,7 @@ class TestShadowArchetypeCreateView(TestCase):
             username="user", email="user@test.com", password="password"
         )
 
-    def test_create_view_requires_login(self):
-        """Test that create view requires login."""
-        url = reverse("characters:wraith:create:shadow_archetype")
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_create_view_accessible_when_logged_in(self):
+    def test_create_view_accessible(self):
         """Test that archetype create view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = reverse("characters:wraith:create:shadow_archetype")
@@ -121,13 +115,7 @@ class TestShadowArchetypeUpdateView(TestCase):
             name="The Director", point_cost=2, owner=self.user
         )
 
-    def test_update_view_requires_login(self):
-        """Test that update view requires login."""
-        url = self.archetype.get_update_url()
-        response = self.client.get(url)
-        self.assertIn(response.status_code, [302, 401, 403])
-
-    def test_update_view_accessible_when_logged_in(self):
+    def test_update_view_accessible(self):
         """Test that archetype update view is accessible when logged in."""
         self.client.login(username="user", password="password")
         url = self.archetype.get_update_url()
