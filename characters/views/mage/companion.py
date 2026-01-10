@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -373,7 +374,7 @@ class CompanionFreebiesView(SpecialUserMixin, UpdateView):
         trait_type = form.data["category"].lower()
         if "background" in trait_type:
             trait_type = "background"
-        cost = self.object.freebie_cost(trait_type)
+        cost = get_freebie_cost(trait_type)
         if cost == "rating":
             cost = int(form.data["value"])
         if cost > self.object.freebies:

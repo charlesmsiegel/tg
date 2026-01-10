@@ -133,16 +133,6 @@ class Revenant(VtMHuman):
         }
         return {k: v for k, v in disciplines.items() if v > 0}
 
-    def freebie_cost(self, trait_type):
-        """Return freebie point cost for revenant-specific traits."""
-        revenant_costs = {
-            "discipline": 7,  # In-family disciplines
-            "out_of_family_discipline": 10,  # Out-of-family disciplines
-        }
-        if trait_type in revenant_costs.keys():
-            return revenant_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def get_family_disciplines(self):
         """Return list of disciplines from the revenant's family."""
         if self.family:

@@ -1,5 +1,6 @@
 """Tests for Wraith model."""
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.guild import Guild
@@ -815,22 +816,22 @@ class TestWraithXPCosts(WraithTestCase):
 
     def test_xp_cost_arcanos(self):
         """xp_cost returns correct cost for arcanoi."""
-        cost = self.wraith.xp_cost("arcanos", 3)
-        self.assertEqual(cost, 30)  # 10 * 3
+        cost = get_xp_cost("arcanos") * 3
+        self.assertEqual(cost, 9)  # 3 * 3
 
     def test_xp_cost_pathos(self):
         """xp_cost returns correct cost for pathos."""
-        cost = self.wraith.xp_cost("pathos", 2)
+        cost = get_xp_cost("pathos") * 2
         self.assertEqual(cost, 4)  # 2 * 2
 
     def test_xp_cost_corpus(self):
         """xp_cost returns correct cost for corpus."""
-        cost = self.wraith.xp_cost("corpus", 3)
+        cost = get_xp_cost("corpus") * 3
         self.assertEqual(cost, 3)  # 1 * 3
 
     def test_xp_cost_angst(self):
         """xp_cost returns correct cost for angst."""
-        cost = self.wraith.xp_cost("angst", 4)
+        cost = get_xp_cost("angst") * 4
         self.assertEqual(cost, 4)  # 1 * 4
 
     def test_xp_frequencies(self):
@@ -845,37 +846,35 @@ class TestWraithFreebieCosts(WraithTestCase):
 
     def test_freebie_cost_arcanos(self):
         """freebie_cost returns correct cost for arcanoi."""
-        cost = self.wraith.freebie_cost("arcanos")
-        self.assertEqual(cost, 7)
+        cost = get_freebie_cost("arcanos")
+        self.assertEqual(cost, 5)
 
     def test_freebie_cost_pathos(self):
         """freebie_cost returns correct cost for pathos."""
-        cost = self.wraith.freebie_cost("pathos")
-        self.assertEqual(cost, 1)
+        cost = get_freebie_cost("pathos")
+        self.assertEqual(cost, 0.5)
 
     def test_freebie_cost_passion(self):
         """freebie_cost returns correct cost for passion."""
-        cost = self.wraith.freebie_cost("passion")
+        cost = get_freebie_cost("passion")
         self.assertEqual(cost, 2)
 
     def test_freebie_cost_fetter(self):
         """freebie_cost returns correct cost for fetter."""
-        cost = self.wraith.freebie_cost("fetter")
+        cost = get_freebie_cost("fetter")
         self.assertEqual(cost, 1)
 
-    def test_freebie_cost_corpus(self):
-        """freebie_cost returns correct cost for corpus."""
-        cost = self.wraith.freebie_cost("corpus")
-        self.assertEqual(cost, 1)
+    def test_freebie_cost_wraith_willpower(self):
+        """freebie_cost returns correct cost for wraith willpower."""
+        cost = get_freebie_cost("wraith_willpower")
+        self.assertEqual(cost, 2)
 
     def test_freebie_costs(self):
-        """freebie_costs returns correct dictionary."""
-        costs = self.wraith.freebie_costs()
-        self.assertEqual(costs["arcanos"], 7)
-        self.assertEqual(costs["pathos"], 1)
-        self.assertEqual(costs["passion"], 2)
-        self.assertEqual(costs["fetter"], 1)
-        self.assertEqual(costs["corpus"], 1)
+        """Test centralized freebie costs for wraith traits."""
+        self.assertEqual(get_freebie_cost("arcanos"), 5)
+        self.assertEqual(get_freebie_cost("pathos"), 0.5)
+        self.assertEqual(get_freebie_cost("passion"), 2)
+        self.assertEqual(get_freebie_cost("fetter"), 1)
 
     def test_freebie_frequencies(self):
         """freebie_frequencies returns correct distribution."""

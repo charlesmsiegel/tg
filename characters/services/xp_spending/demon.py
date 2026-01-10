@@ -98,13 +98,16 @@ class DemonXPSpendingService(DtFHumanXPSpendingService):
             else False
         )
 
-        # Calculate cost: new=10, house=5×current, other=7×current
+        # Calculate cost: new=7 (own house) or 10 (other), existing=5×current
         if current_value == 0:
-            cost = 10  # New lore
-        elif is_house:
-            cost = get_xp_cost("lore") * current_value  # 5×current (house)
+            # New lore: 7 for own house, 10 for other house
+            if is_house:
+                cost = get_xp_cost("new_lore")
+            else:
+                cost = get_xp_cost("new_other_lore")
         else:
-            cost = 7 * current_value  # 7×current (other lore)
+            # Existing lore: 5× current for all lores
+            cost = get_xp_cost("lore") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,

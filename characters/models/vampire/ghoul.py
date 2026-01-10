@@ -87,15 +87,6 @@ class Ghoul(VtMHuman):
         }
         return {k: v for k, v in disciplines.items() if v > 0}
 
-    def freebie_cost(self, trait_type):
-        """Return freebie point cost for ghoul-specific traits."""
-        ghoul_costs = {
-            "discipline": 7,  # Physical disciplines easier for ghouls
-        }
-        if trait_type in ghoul_costs.keys():
-            return ghoul_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def get_available_disciplines(self):
         """Return list of disciplines the ghoul can learn."""
         if self.domitor and self.domitor.clan:

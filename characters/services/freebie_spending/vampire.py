@@ -8,6 +8,7 @@ This module provides freebie spending services for Vampire: The Masquerade chara
 - RevenantFreebieSpendingService - Born ghouls with family Disciplines
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -35,7 +36,7 @@ class VtMHumanFreebieSpendingService(HumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("virtue")
+        cost = get_freebie_cost("virtue")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -123,7 +124,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
 
         # Determine if this is a clan discipline or out-of-clan
         is_clan = self.character.is_clan_discipline(example)
-        cost = self.character.freebie_cost("discipline" if is_clan else "out_of_clan_discipline")
+        cost = get_freebie_cost("discipline" if is_clan else "out_of_clan_discipline")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -162,7 +163,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
     def _handle_humanity(self, **kwargs) -> FreebieSpendResult:
         """Handle Humanity freebie spending."""
         trait = "Humanity"
-        cost = self.character.freebie_cost("humanity")
+        cost = get_freebie_cost("humanity")
         current_value = self.character.humanity
         new_value = current_value + 1
 
@@ -212,7 +213,7 @@ class VampireFreebieSpendingService(VtMHumanFreebieSpendingService):
             )
 
         trait = f"Path of {self.character.path.name}"
-        cost = self.character.freebie_cost("path_rating")
+        cost = get_freebie_cost("path_rating")
         current_value = self.character.path_rating
         new_value = current_value + 1
 

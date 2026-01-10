@@ -3,7 +3,37 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+from characters.costs import get_meritflaw_xp_cost, get_xp_cost
 from characters.forms.core.limited_edit import LimitedHumanEditForm
+
+
+def _calculate_xp_cost(trait_type, current_value):
+    """Calculate XP cost for raising a trait, handling new trait costs."""
+    if current_value == 0:
+        new_key = f"new_{trait_type}"
+        new_cost = get_xp_cost(new_key)
+        if new_cost != 10000:  # Not blocked
+            return new_cost
+    return get_xp_cost(trait_type) * current_value
+
+
+def _mage_sphere_xp_cost(character, sphere):
+    """Calculate XP cost for raising a sphere."""
+    current = getattr(character, sphere.property_name, 0)
+    if current == 0:
+        return get_xp_cost("new_sphere")
+    trait_type = character.sphere_to_trait_type(sphere.property_name)
+    return get_xp_cost(trait_type) * current
+
+
+def _mage_practice_xp_cost(character, practice):
+    """Calculate XP cost for raising a practice."""
+    current = character.practice_rating(practice)
+    if current == 0:
+        return get_xp_cost("new_practice")
+    return get_xp_cost("practice") * current
+
+
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.chained_freebies import ChainedMageFreebiesForm
@@ -99,10 +129,7 @@ class LoadXPExamplesView(View):
             filtered_for_xp_cost = [
                 x
                 for x in filtered_attributes
-                if self.character.xp_cost(
-                    "attribute",
-                    getattr(self.character, x.property_name),
-                )
+                if _calculate_xp_cost("attribute", getattr(self.character, x.property_name))
                 <= self.character.xp
             ]
             examples = filtered_for_xp_cost
@@ -119,10 +146,7 @@ class LoadXPExamplesView(View):
             filtered_for_xp_cost = [
                 x
                 for x in filtered_abilities
-                if self.character.xp_cost(
-                    "ability",
-                    getattr(self.character, x.property_name),
-                )
+                if _calculate_xp_cost("ability", getattr(self.character, x.property_name))
                 <= self.character.xp
             ]
             examples = filtered_for_xp_cost
@@ -133,13 +157,7 @@ class LoadXPExamplesView(View):
         elif category_choice == "Existing Background":
             bgs = self.character.backgrounds.filter(rating__lt=5)
             filtered_for_xp_cost = [
-                x
-                for x in bgs
-                if self.character.xp_cost(
-                    "background",
-                    x.rating,
-                )
-                <= self.character.xp
+                x for x in bgs if _calculate_xp_cost("background", x.rating) <= self.character.xp
             ]
             examples = filtered_for_xp_cost
         elif category_choice == "MeritFlaw":
@@ -151,11 +169,10 @@ class LoadXPExamplesView(View):
             examples = [
                 x
                 for x in examples
-                if (
+                if get_meritflaw_xp_cost(
                     min([y for y in x.get_ratings() if y > self.character.mf_rating(x)])
                     - self.character.mf_rating(x)
                 )
-                * 3
                 <= self.character.xp
             ]
         elif category_choice == "Sphere":
@@ -167,11 +184,7 @@ class LoadXPExamplesView(View):
             filtered_for_xp_cost = [
                 x
                 for x in filtered_spheres
-                if self.character.xp_cost(
-                    self.character.sphere_to_trait_type(x.property_name),
-                    getattr(self.character, x.property_name),
-                )
-                <= self.character.xp
+                if _mage_sphere_xp_cost(self.character, x) <= self.character.xp
             ]
             examples = filtered_for_xp_cost
         elif category_choice == "Tenet":
@@ -210,11 +223,7 @@ class LoadXPExamplesView(View):
             examples = [
                 x
                 for x in filtered_practices
-                if self.character.xp_cost(
-                    "practice",
-                    self.character.practice_rating(x),
-                )
-                <= self.character.xp
+                if _mage_practice_xp_cost(self.character, x) <= self.character.xp
             ]
             examples = [
                 x

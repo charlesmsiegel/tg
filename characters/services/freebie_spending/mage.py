@@ -8,6 +8,7 @@ This module provides freebie spending services for Mage: The Ascension character
 - CompanionFreebieSpendingService - Consors (unawakened helpers)
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -43,7 +44,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_sphere(self, example, **kwargs) -> FreebieSpendResult:
         """Handle sphere freebie spending."""
         trait = example.name
-        cost = self.character.freebie_cost("sphere")
+        cost = get_freebie_cost("sphere")
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
 
@@ -91,7 +92,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     @handler("Arete")
     def _handle_arete(self, example=None, **kwargs) -> FreebieSpendResult:
         """Handle Arete freebie spending."""
-        cost = self.character.freebie_cost("arete")
+        cost = get_freebie_cost("arete")
         current_value = self.character.arete
         new_value = current_value + 1
 
@@ -141,7 +142,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
         """Handle resonance freebie spending."""
         from characters.models.mage.resonance import Resonance
 
-        cost = self.character.freebie_cost("resonance")
+        cost = get_freebie_cost("resonance")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -177,7 +178,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_tenet(self, example, **kwargs) -> FreebieSpendResult:
         """Handle tenet freebie spending (free during character creation)."""
         trait = example.name
-        cost = self.character.freebie_cost("tenet")  # Usually 0
+        cost = get_freebie_cost("tenet")  # Usually 0
 
         # Apply the change
         self.character.add_tenet(example)
@@ -199,7 +200,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_practice(self, example, **kwargs) -> FreebieSpendResult:
         """Handle practice freebie spending."""
         trait = example.name
-        cost = self.character.freebie_cost("practice")
+        cost = get_freebie_cost("practice")
         current_value = self.character.practice_rating(example)
         new_value = current_value + 1
 
@@ -231,7 +232,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_rote_points(self, **kwargs) -> FreebieSpendResult:
         """Handle rote points freebie spending."""
         trait = "Rote Points"
-        cost = self.character.freebie_cost("rotes")
+        cost = get_freebie_cost("rotes")
         new_value = self.character.rote_points + 4
 
         if cost > self.character.freebies:
@@ -262,7 +263,7 @@ class MageFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_quintessence(self, **kwargs) -> FreebieSpendResult:
         """Handle quintessence freebie spending."""
         trait = "Quintessence"
-        cost = self.character.freebie_cost("quintessence")
+        cost = get_freebie_cost("quintessence")
         new_value = self.character.quintessence + 4
 
         if cost > self.character.freebies:
@@ -510,7 +511,7 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
         ability = kwargs.get("ability")
 
         trait = example.name
-        cost = self.character.freebie_cost("path")
+        cost = get_freebie_cost("path")
         current_value = self.character.path_rating(example)
         new_value = current_value + 1
 
@@ -546,7 +547,7 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_select_ritual(self, example, **kwargs) -> FreebieSpendResult:
         """Handle selecting an existing sorcerer ritual."""
         trait = example.name
-        cost = self.character.freebie_cost("ritual")
+        cost = get_freebie_cost("ritual")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -594,7 +595,7 @@ class SorcererFreebieSpendingService(MtAHumanFreebieSpendingService):
                 error="Ritual name and path are required",
             )
 
-        cost = self.character.freebie_cost("ritual")
+        cost = get_freebie_cost("ritual")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -738,7 +739,7 @@ class CompanionFreebieSpendingService(MtAHumanFreebieSpendingService):
     def _handle_charm(self, example, **kwargs) -> FreebieSpendResult:
         """Handle Spirit Charm freebie spending."""
         trait = example.name
-        cost = self.character.freebie_cost("charms")
+        cost = get_freebie_cost("charms")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(

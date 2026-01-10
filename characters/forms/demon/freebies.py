@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.demon.lore import Lore
 from django import forms
@@ -31,7 +32,7 @@ class DtFHumanFreebiesForm(HumanFreebiesForm):
     def validator(self, trait_type):
         """Check if the character can afford this trait type."""
         trait_type_lower = trait_type.lower().replace(" ", "_")
-        cost = self.instance.freebie_cost(trait_type_lower)
+        cost = get_freebie_cost(trait_type_lower)
 
         if not isinstance(cost, int):
             return True
@@ -59,7 +60,7 @@ class ThrallFreebiesForm(HumanFreebiesForm):
     def validator(self, trait_type):
         """Check if the character can afford this trait type."""
         trait_type_lower = trait_type.lower().replace(" ", "_")
-        cost = self.instance.freebie_cost(trait_type_lower)
+        cost = get_freebie_cost(trait_type_lower)
 
         if not isinstance(cost, int):
             return True
@@ -91,7 +92,7 @@ class DemonFreebiesForm(HumanFreebiesForm):
     def validator(self, trait_type):
         """Check if the character can afford this trait type."""
         trait_type_lower = trait_type.lower().replace(" ", "_")
-        cost = self.instance.freebie_cost(trait_type_lower)
+        cost = get_freebie_cost(trait_type_lower)
 
         if not isinstance(cost, int):
             return True

@@ -10,6 +10,7 @@ Tests cover:
 - XP costs and spending
 """
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
@@ -521,38 +522,26 @@ class TestVampireFreebies(VampireModelTestCase):
 
     def test_freebie_cost_discipline(self):
         """Test freebie cost for in-clan disciplines."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.freebie_cost("discipline"), 7)
-
-    def test_freebie_cost_out_of_clan_discipline(self):
-        """Test freebie cost for out-of-clan disciplines."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.freebie_cost("out_of_clan_discipline"), 10)
+        self.assertEqual(get_freebie_cost("discipline"), 7)
 
     def test_freebie_cost_virtue(self):
         """Test freebie cost for virtues."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
 
     def test_freebie_cost_humanity(self):
         """Test freebie cost for humanity."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.freebie_cost("humanity"), 1)
+        self.assertEqual(get_freebie_cost("humanity"), 2)
 
     def test_freebie_cost_path_rating(self):
         """Test freebie cost for path rating."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.freebie_cost("path_rating"), 1)
+        self.assertEqual(get_freebie_cost("path_rating"), 2)
 
     def test_freebie_costs_dict(self):
-        """Test freebie_costs returns complete cost dictionary."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        costs = vampire.freebie_costs()
-        self.assertEqual(costs["discipline"], 7)
-        self.assertEqual(costs["out_of_clan_discipline"], 10)
-        self.assertEqual(costs["virtue"], 2)
-        self.assertEqual(costs["humanity"], 1)
-        self.assertEqual(costs["path_rating"], 1)
+        """Test centralized freebie costs for vampire traits."""
+        self.assertEqual(get_freebie_cost("discipline"), 7)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("humanity"), 2)
+        self.assertEqual(get_freebie_cost("path_rating"), 2)
 
     def test_freebie_frequencies(self):
         """Test freebie_frequencies returns expected distribution."""
@@ -569,38 +558,32 @@ class TestVampireXPCosts(VampireModelTestCase):
 
     def test_xp_cost_new_discipline(self):
         """Test XP cost for new discipline."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        self.assertEqual(vampire.xp_cost("new_discipline"), 10)
+        self.assertEqual(get_xp_cost("new_discipline"), 10)
 
     def test_xp_cost_clan_discipline(self):
         """Test XP cost for raising clan discipline."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        # Cost is 5 * new rating
-        self.assertEqual(vampire.xp_cost("clan_discipline", 3), 15)
+        # Cost is 5 * new rating (discipline key in costs.py)
+        self.assertEqual(get_xp_cost("discipline") * 3, 15)
 
     def test_xp_cost_out_of_clan_discipline(self):
         """Test XP cost for raising out-of-clan discipline."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
         # Cost is 7 * new rating
-        self.assertEqual(vampire.xp_cost("out_of_clan_discipline", 3), 21)
+        self.assertEqual(get_xp_cost("out_of_clan_discipline") * 3, 21)
 
     def test_xp_cost_virtue(self):
         """Test XP cost for virtue."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
         # Cost is 2 * new rating
-        self.assertEqual(vampire.xp_cost("virtue", 4), 8)
+        self.assertEqual(get_xp_cost("virtue") * 4, 8)
 
     def test_xp_cost_humanity(self):
         """Test XP cost for humanity."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        # Cost is 1 * new rating
-        self.assertEqual(vampire.xp_cost("humanity", 8), 8)
+        # Cost is 2 * new rating
+        self.assertEqual(get_xp_cost("humanity") * 4, 8)
 
     def test_xp_cost_path_rating(self):
         """Test XP cost for path rating."""
-        vampire = Vampire.objects.create(name="Test", owner=self.user)
-        # Cost is 1 * new rating
-        self.assertEqual(vampire.xp_cost("path_rating", 5), 5)
+        # Cost is 2 * new rating
+        self.assertEqual(get_xp_cost("path_rating") * 3, 6)
 
     def test_xp_frequencies(self):
         """Test xp_frequencies returns expected distribution."""

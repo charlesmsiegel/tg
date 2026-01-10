@@ -6,6 +6,7 @@ This module provides freebie spending services for Mummy: The Resurrection chara
 - MummyFreebieSpendingService - Reborn mummies with Hekau, Sekhem, Balance
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -44,7 +45,7 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("hekau")
+        cost = get_freebie_cost("hekau")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -83,7 +84,7 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _handle_sekhem(self, **kwargs) -> FreebieSpendResult:
         """Handle Sekhem freebie spending."""
         trait = "Sekhem"
-        cost = self.character.freebie_cost("sekhem")
+        cost = get_freebie_cost("sekhem")
         current_value = self.character.sekhem
         new_value = current_value + 1
 
@@ -124,7 +125,7 @@ class MummyFreebieSpendingService(MtRHumanFreebieSpendingService):
     def _handle_balance(self, **kwargs) -> FreebieSpendResult:
         """Handle Balance freebie spending."""
         trait = "Balance"
-        cost = self.character.freebie_cost("balance")
+        cost = get_freebie_cost("balance")
         current_value = self.character.balance
         new_value = current_value + 1
 

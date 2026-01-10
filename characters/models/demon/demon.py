@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
@@ -355,7 +356,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Faith
         if trait == "faith":
-            cost = demon.xp_cost("faith") * demon.faith
+            cost = get_xp_cost("faith") * demon.faith
             if cost <= demon.xp:
                 if demon.add_faith():
                     demon.xp -= cost
@@ -370,9 +371,9 @@ class Demon(LoreBlock, DtFHuman):
             if demon.house and trait in [
                 f"lore_of_{lore.property_name}" for lore in demon.house.lores.all()
             ]:
-                cost = demon.xp_cost("house_lore") * (current_rating + 1)
+                cost = get_xp_cost("house_lore") * (current_rating + 1)
             else:
-                cost = demon.xp_cost("other_lore") * (current_rating + 1)
+                cost = get_xp_cost("other_lore") * (current_rating + 1)
 
             if cost <= demon.xp:
                 if demon.add_lore(trait):
@@ -384,7 +385,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = demon.xp_cost("virtue") * getattr(demon, trait)
+            cost = get_xp_cost("virtue") * getattr(demon, trait)
             if cost <= demon.xp:
                 if add_dot(demon, trait, 5):
                     demon.xp -= cost
@@ -395,7 +396,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Torment reduction
         if trait == "reduce_torment":
-            cost = demon.xp_cost("reduce_torment")
+            cost = get_xp_cost("reduce_torment")
             if cost <= demon.xp:
                 if demon.reduce_torment():
                     demon.xp -= cost
@@ -405,24 +406,6 @@ class Demon(LoreBlock, DtFHuman):
             return False
 
         return trait
-
-    def xp_cost(self, trait):
-        """Get XP cost for a specific trait."""
-        cost = super().xp_cost(trait)
-        if cost != 10000:
-            return cost
-
-        costs = defaultdict(
-            lambda: 10000,
-            {
-                "faith": 10,
-                "house_lore": 5,
-                "other_lore": 7,
-                "virtue": 2,
-                "reduce_torment": 10,
-            },
-        )
-        return costs[trait]
 
     def freebie_frequencies(self):
         """Freebie spending frequencies for random spending."""
@@ -438,20 +421,6 @@ class Demon(LoreBlock, DtFHuman):
             "temporary_faith": 3,
         }
 
-    def freebie_costs(self):
-        """Get freebie costs for various traits."""
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "lore": 7,
-                "other_lore": 10,
-                "faith": 7,
-                "virtue": 2,
-                "temporary_faith": 1,
-            }
-        )
-        return costs
-
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""
         output = super().spend_freebies(trait)
@@ -463,9 +432,9 @@ class Demon(LoreBlock, DtFHuman):
             if self.house and trait in [
                 f"lore_of_{lore.property_name}" for lore in self.house.lores.all()
             ]:
-                cost = self.freebie_cost("lore")
+                cost = get_freebie_cost("lore")
             else:
-                cost = self.freebie_cost("other_lore")
+                cost = get_freebie_cost("other_lore")
 
             if cost <= self.freebies:
                 if self.add_lore(trait):
@@ -475,7 +444,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Faith
         if trait == "faith":
-            cost = self.freebie_cost("faith")
+            cost = get_freebie_cost("faith")
             if cost <= self.freebies:
                 if self.add_faith():
                     self.freebies -= cost
@@ -484,7 +453,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Temporary Faith pool
         if trait == "temporary_faith":
-            cost = self.freebie_cost("temporary_faith")
+            cost = get_freebie_cost("temporary_faith")
             if cost <= self.freebies:
                 self.temporary_faith += 1
                 self.freebies -= cost
@@ -494,7 +463,7 @@ class Demon(LoreBlock, DtFHuman):
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = self.freebie_cost("virtue")
+            cost = get_freebie_cost("virtue")
             if cost <= self.freebies:
                 if add_dot(self, trait, 5):
                     self.freebies -= cost
@@ -502,19 +471,6 @@ class Demon(LoreBlock, DtFHuman):
             return False
 
         return trait
-
-    def freebie_cost(self, trait_type):
-        """Get freebie cost for a specific trait type."""
-        demon_costs = {
-            "lore": 7,
-            "other_lore": 10,
-            "faith": 7,
-            "virtue": 2,
-            "temporary_faith": 1,
-        }
-        if trait_type in demon_costs:
-            return demon_costs[trait_type]
-        return super().freebie_cost(trait_type)
 
     def lore_freebies(self, form):
         """Spend freebies on lores."""

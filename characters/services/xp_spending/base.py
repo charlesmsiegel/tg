@@ -352,11 +352,9 @@ class HumanXPSpendingService(XPSpendingService):
         current_value = getattr(self.character, example.property_name)
         new_value = current_value + 1
 
-        # Calculate cost: multiplier × current value (new attribute = 10)
-        if current_value == 0:
-            cost = 10  # New attribute
-        else:
-            cost = get_xp_cost("attribute") * current_value
+        # Calculate cost: multiplier × current value
+        # Note: Attributes should never be 0 in WoD; formula handles edge case
+        cost = get_xp_cost("attribute") * current_value
 
         self.character.spend_xp(
             trait_name=example.property_name,
@@ -382,7 +380,7 @@ class HumanXPSpendingService(XPSpendingService):
 
         # Calculate cost: multiplier × current value (new ability = 3)
         if current_value == 0:
-            cost = 3  # New ability
+            cost = get_xp_cost("new_ability")
         else:
             cost = get_xp_cost("ability") * current_value
 
@@ -421,9 +419,9 @@ class HumanXPSpendingService(XPSpendingService):
                 trait = example.name
             new_value = 1
 
-            # New background base cost = 5, apply background multiplier
+            # New background base cost, apply background multiplier
             multiplier = example.multiplier if hasattr(example, "multiplier") else 1
-            cost = 5 * multiplier
+            cost = get_xp_cost("new_background") * multiplier
 
             self.character.spend_xp(
                 trait_name="",

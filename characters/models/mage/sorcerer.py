@@ -126,32 +126,9 @@ class Sorcerer(MtAHuman):
 
     background_points = 5
 
-    def freebie_costs(self):
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "path": 7,
-                "ritual": 3,
-            }
-        )
-        return costs
-
     class Meta:
         verbose_name = "Sorcerer"
         verbose_name_plural = "Sorcerers"
-
-    def freebie_cost(self, trait):
-        cost = super().freebie_cost(trait)
-        if cost != 10000:
-            return cost
-        costs = defaultdict(
-            lambda: 10000,
-            {
-                "path": 7,
-                "ritual": 3,
-            },
-        )
-        return costs[trait]
 
     def path_rating(self, path):
         ratings = PathRating.objects.filter(path=path, character=self)
@@ -176,19 +153,6 @@ class Sorcerer(MtAHuman):
 
     def get_quintessence_wheel(self):
         return list(range(10))
-
-    def xp_cost(self, trait_type, trait_value):
-        """XP costs for Sorcerer-specific traits."""
-        sorcerer_costs = {
-            "path": 7,  # 7 XP per existing path level
-            "new_path": 10,  # 10 XP for new path at rating 1
-            "ritual": 2,  # 2 XP per ritual level
-        }
-        if trait_type == "path" and trait_value == 0:
-            return sorcerer_costs["new_path"]
-        if trait_type in sorcerer_costs:
-            return sorcerer_costs[trait_type] * trait_value
-        return super().xp_cost(trait_type, trait_value)
 
 
 class PathRating(models.Model):

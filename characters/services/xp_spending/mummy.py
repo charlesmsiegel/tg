@@ -46,11 +46,13 @@ class MummyXPSpendingService(MtRHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Calculate cost: new=10, existing=5×current (web-favored)
+        # Calculate cost: new=7, favored=4×current, other=6×current
+        # TODO: Add favored hekau detection based on character's tem-akh
         if current_value == 0:
-            cost = 10  # New hekau
+            cost = get_xp_cost("new_hekau")
         else:
-            cost = get_xp_cost("hekau") * current_value
+            # Default to favored_hekau cost; should check character.is_favored_hekau()
+            cost = get_xp_cost("favored_hekau") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,

@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.managers import BackgroundManager, MeritFlawManager
 from characters.models.core.ability_block import Ability, AbilityBlock
 from characters.models.core.archetype import Archetype
@@ -438,45 +439,22 @@ class Human(
         # Check if all required stats have specialties
         return specialty_stats == required_stats
 
-    def freebie_costs(self):
-        return {
-            "attribute": 5,
-            "ability": 2,
-            "background": 1,
-            "new background": 1,
-            "existing background": 1,
-            "willpower": 1,
-            "meritflaw": "rating",
-        }
-
-    def freebie_cost(self, trait_type):
-        costs = self.freebie_costs()
-        if trait_type not in costs.keys():
-            return 10000
-        return costs[trait_type]
-
     def freebie_spend_record(self, trait, trait_type, value, cost=None):
+        """Create a record of a freebie point expenditure.
+
+        Args:
+            trait: The trait name
+            trait_type: The type of trait (attribute, ability, etc.)
+            value: The new value of the trait
+            cost: The cost in freebies (if None, will be calculated)
+        """
         if cost is None:
-            cost = self.freebie_cost(trait_type)
+            cost = get_freebie_cost(trait_type)
         return {
             "trait": trait,
             "value": value,
             "cost": cost,
         }
-
-    def xp_cost(self, trait_type, trait_value):
-        costs = {
-            "new_ability": 3,
-            "attribute": 4,
-            "ability": 2,
-            "background": 3,
-            "new background": 5,
-            "willpower": 1,
-            "meritflaw": 3,
-        }
-        if trait_type == "ability" and trait_value == 0:
-            return costs["new_ability"]
-        return costs[trait_type] * trait_value
 
     def willpower_freebies(self, form):
         trait = "Willpower"
@@ -727,7 +705,7 @@ class Human(
                 attribute = Attribute.objects.filter(property_name=trait).first()
                 if attribute and hasattr(self, trait):
                     current_value = getattr(self, trait)
-                    cost = self.xp_cost("attribute", current_value + 1)
+                    cost = get_xp_cost("attribute") * (current_value + 1)
 
                     if cost <= self.xp:
                         if self.add_attribute(trait):
@@ -747,9 +725,9 @@ class Human(
                     current_value = getattr(self, trait)
 
                     if current_value == 0:
-                        cost = self.xp_cost("new_ability", 0)
+                        cost = get_xp_cost("new_ability")
                     else:
-                        cost = self.xp_cost("ability", current_value + 1)
+                        cost = get_xp_cost("ability") * (current_value + 1)
 
                     if cost <= self.xp:
                         if self.add_ability(trait):
@@ -766,9 +744,9 @@ class Human(
             current_value = getattr(self, trait)
 
             if current_value == 0:
-                cost = self.xp_cost("new background", 0)
+                cost = get_xp_cost("new_background")
             else:
-                cost = self.xp_cost("background", current_value + 1)
+                cost = get_xp_cost("background") * (current_value + 1)
 
             if cost <= self.xp:
                 if self.add_background(trait):
@@ -780,7 +758,7 @@ class Human(
 
         # Handle willpower
         if trait == "willpower":
-            cost = self.xp_cost("willpower", self.willpower + 1)
+            cost = get_xp_cost("willpower") * (self.willpower + 1)
             if cost <= self.xp:
                 if self.add_willpower():
                     self.xp -= cost
@@ -809,7 +787,7 @@ class Human(
             try:
                 attribute = Attribute.objects.filter(property_name=trait).first()
                 if attribute and hasattr(self, trait):
-                    cost = self.freebie_cost("attribute")
+                    cost = get_freebie_cost("attribute")
                     if cost <= self.freebies:
                         if self.add_attribute(trait):
                             self.freebies -= cost
@@ -824,7 +802,7 @@ class Human(
             try:
                 ability = Ability.objects.filter(property_name=trait).first()
                 if ability and hasattr(self, trait):
-                    cost = self.freebie_cost("ability")
+                    cost = get_freebie_cost("ability")
                     if cost <= self.freebies:
                         if self.add_ability(trait):
                             self.freebies -= cost
@@ -836,7 +814,7 @@ class Human(
 
         # Check if trait is a background
         if trait in self.allowed_backgrounds:
-            cost = self.freebie_cost("background")
+            cost = get_freebie_cost("background")
             if cost <= self.freebies:
                 if self.add_background(trait):
                     self.freebies -= cost
@@ -846,7 +824,7 @@ class Human(
 
         # Handle willpower
         if trait == "willpower":
-            cost = self.freebie_cost("willpower")
+            cost = get_freebie_cost("willpower")
             if cost <= self.freebies:
                 if self.add_willpower():
                     self.freebies -= cost

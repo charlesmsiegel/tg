@@ -1,5 +1,6 @@
 """Comprehensive tests for mage model - additional methods not covered in test_mage.py."""
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.specialty import Specialty
@@ -246,15 +247,18 @@ class TestMageXPMethods(TestCase):
 
     def test_xp_cost_arete(self):
         """Test XP cost for arete."""
-        self.assertEqual(self.mage.xp_cost("arete", 3), 24)
+        # Arete costs 8 * current rating
+        self.assertEqual(get_xp_cost("arete") * 3, 24)
 
     def test_xp_cost_sphere(self):
         """Test XP cost for sphere."""
-        self.assertEqual(self.mage.xp_cost("sphere", 2), 16)
+        # Sphere costs 8 * current rating
+        self.assertEqual(get_xp_cost("sphere") * 2, 16)
 
     def test_xp_cost_new_sphere(self):
         """Test XP cost for new sphere."""
-        self.assertEqual(self.mage.xp_cost("sphere", 0), 10)
+        # New sphere costs 10 XP
+        self.assertEqual(get_xp_cost("new_sphere"), 10)
 
     def test_spend_xp_on_arete(self):
         """Test spending XP on arete."""
@@ -281,20 +285,18 @@ class TestMageFreebiesMethods(TestCase):
         self.assertIn("resonance", freq)
 
     def test_freebie_costs(self):
-        """Test freebie_costs method."""
-        costs = self.mage.freebie_costs()
-        self.assertIn("sphere", costs)
-        self.assertEqual(costs["sphere"], 7)
-        self.assertEqual(costs["arete"], 4)
+        """Test centralized freebie costs for mage traits."""
+        self.assertEqual(get_freebie_cost("sphere"), 7)
+        self.assertEqual(get_freebie_cost("arete"), 4)
 
     def test_freebie_cost_sphere(self):
         """Test freebie_cost for sphere."""
-        cost = self.mage.freebie_cost("sphere")
+        cost = get_freebie_cost("sphere")
         self.assertEqual(cost, 7)
 
     def test_freebie_cost_arete(self):
         """Test freebie_cost for arete."""
-        cost = self.mage.freebie_cost("arete")
+        cost = get_freebie_cost("arete")
         self.assertEqual(cost, 4)
 
     def test_spend_freebies_on_sphere(self):

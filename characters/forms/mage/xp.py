@@ -1,3 +1,4 @@
+from characters.costs import get_xp_cost
 from characters.forms.core.xp import CATEGORY_CHOICES, XPForm
 from characters.models.mage.focus import Practice, SpecializedPractice, Tenet
 from characters.models.mage.mage import PracticeRating
@@ -5,6 +6,29 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from core.widgets import AutocompleteTextInput
 from django import forms
+
+
+def _mage_sphere_xp_cost(character, sphere):
+    """Calculate XP cost for raising a sphere."""
+    current = getattr(character, sphere.property_name, 0)
+    if current == 0:
+        return get_xp_cost("new_sphere")
+    trait_type = character.sphere_to_trait_type(sphere.property_name)
+    return get_xp_cost(trait_type) * current
+
+
+def _mage_practice_xp_cost(character, practice):
+    """Calculate XP cost for raising a practice."""
+    current = character.practice_rating(practice)
+    if current == 0:
+        return get_xp_cost("new_practice")
+    return get_xp_cost("practice") * current
+
+
+def _mage_arete_xp_cost(character):
+    """Calculate XP cost for raising arete."""
+    return get_xp_cost("arete") * character.arete
+
 
 MAGE_CATEGORY_CHOICES = CATEGORY_CHOICES + [
     ("Sphere", "Sphere"),
@@ -86,11 +110,7 @@ class MageXPForm(XPForm):
                     sphere
                     for sphere in Sphere.objects.all()
                     if getattr(char, sphere.property_name) < char.arete
-                    and char.xp_cost(
-                        char.sphere_to_trait_type(sphere.property_name),
-                        getattr(char, sphere.property_name),
-                    )
-                    <= char.xp
+                    and _mage_sphere_xp_cost(char, sphere) <= char.xp
                 ]
                 example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
             elif cat_value == "Tenet":
@@ -112,11 +132,7 @@ class MageXPForm(XPForm):
                     "practice__id", flat=True
                 )
                 examples = examples.exclude(pk__in=ids).order_by("name")
-                examples = [
-                    x
-                    for x in examples
-                    if char.xp_cost("practice", char.practice_rating(x)) <= char.xp
-                ]
+                examples = [x for x in examples if _mage_practice_xp_cost(char, x) <= char.xp]
                 example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
 
         return example_choices_map
@@ -130,11 +146,7 @@ class MageXPForm(XPForm):
         filtered_for_xp_cost = [
             x
             for x in filtered_spheres
-            if self.character.xp_cost(
-                self.character.sphere_to_trait_type(x.property_name),
-                getattr(self.character, x.property_name),
-            )
-            <= self.character.xp
+            if _mage_sphere_xp_cost(self.character, x) <= self.character.xp
         ]
         return len(filtered_for_xp_cost) > 0
 
@@ -172,17 +184,13 @@ class MageXPForm(XPForm):
         filtered_for_xp_cost = [
             x
             for x in filtered_practices
-            if self.character.xp_cost(
-                "practice",
-                self.character.practice_rating(x),
-            )
-            <= self.character.xp
+            if _mage_practice_xp_cost(self.character, x) <= self.character.xp
         ]
         return len(filtered_for_xp_cost) > 0
 
     def arete_valid(self):
         return (
-            self.character.xp_cost("arete", self.character.arete) <= self.character.xp
+            _mage_arete_xp_cost(self.character) <= self.character.xp
             and self.character.arete <= self.character.other_tenets.count() + 3
         )
 

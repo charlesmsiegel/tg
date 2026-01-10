@@ -46,9 +46,9 @@ class WraithXPSpendingService(WtOHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Calculate cost: 10 × current (new = 10)
+        # Calculate cost: 3 × current (new = 7)
         if current_value == 0:
-            cost = 10  # New arcanos
+            cost = get_xp_cost("new_arcanos")
         else:
             cost = get_xp_cost("arcanos") * current_value
 

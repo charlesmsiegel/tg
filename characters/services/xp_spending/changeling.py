@@ -48,9 +48,9 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Calculate cost: 8 × current value (new art = 8)
+        # Calculate cost: 4 × current value (new art = 7)
         if current_value == 0:
-            cost = 8  # New art
+            cost = get_xp_cost("new_art")
         else:
             cost = get_xp_cost("art") * current_value
 
@@ -77,9 +77,9 @@ class ChangelingXPSpendingService(CtDHumanXPSpendingService):
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
 
-        # Calculate cost: 5 × current value (new realm = 5)
+        # Calculate cost: 3 × current value (new realm = 5)
         if current_value == 0:
-            cost = 5  # New realm
+            cost = get_xp_cost("new_realm")
         else:
             cost = get_xp_cost("realm") * current_value
 

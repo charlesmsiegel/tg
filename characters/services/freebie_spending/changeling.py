@@ -8,6 +8,7 @@ This module provides freebie spending services for Changeling: The Dreaming char
 - NunnehiFreebieSpendingService - Nunnehi (Native American fae)
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -46,7 +47,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("art")
+        cost = get_freebie_cost("art")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -88,7 +89,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("realm")
+        cost = get_freebie_cost("realm")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -127,7 +128,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _handle_glamour(self, **kwargs) -> FreebieSpendResult:
         """Handle Glamour freebie spending."""
         trait = "Glamour"
-        cost = self.character.freebie_cost("glamour")
+        cost = get_freebie_cost("glamour")
         current_value = self.character.glamour
         new_value = current_value + 1
 
@@ -169,7 +170,7 @@ class ChangelingFreebieSpendingService(CtDHumanFreebieSpendingService):
     def _handle_banality_reduction(self, **kwargs) -> FreebieSpendResult:
         """Handle Banality reduction freebie spending."""
         trait = "Banality Reduction"
-        cost = self.character.freebie_cost("banality_reduction")
+        cost = get_freebie_cost("banality_reduction")
         current_value = self.character.banality
         new_value = current_value - 1
 

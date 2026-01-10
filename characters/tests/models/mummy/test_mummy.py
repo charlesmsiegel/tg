@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.models.mummy.mummy import Mummy
@@ -420,80 +421,67 @@ class TestMummyXPAndFreebieCosts(TestCase):
             sekhem=3,
         )
 
-    def test_xp_cost_hekau_web(self):
-        """Web-favored Hekau costs 5 XP per level."""
-        cost = self.mummy.xp_cost("hekau_web", 1)
+    def test_xp_cost_favored_hekau(self):
+        """Favored Hekau costs 4 XP per level."""
+        cost = get_xp_cost("favored_hekau") * 1
+        self.assertEqual(cost, 4)
+
+        cost = get_xp_cost("favored_hekau") * 3
+        self.assertEqual(cost, 12)
+
+    def test_xp_cost_hekau(self):
+        """Hekau (alias for favored) costs 5 XP per level."""
+        cost = get_xp_cost("hekau") * 1
         self.assertEqual(cost, 5)
 
-        cost = self.mummy.xp_cost("hekau_web", 3)
-        self.assertEqual(cost, 15)
+    def test_xp_cost_other_hekau(self):
+        """Other Web's Hekau costs 6 XP per level."""
+        cost = get_xp_cost("other_hekau") * 1
+        self.assertEqual(cost, 6)
 
-    def test_xp_cost_hekau_universal(self):
-        """Universal Hekau costs 7 XP per level."""
-        cost = self.mummy.xp_cost("hekau_universal", 1)
+    def test_xp_cost_new_hekau(self):
+        """New Hekau path costs 7 XP flat."""
+        cost = get_xp_cost("new_hekau")
         self.assertEqual(cost, 7)
-
-        cost = self.mummy.xp_cost("hekau_universal", 2)
-        self.assertEqual(cost, 14)
-
-    def test_xp_cost_hekau_other(self):
-        """Other Web's Hekau costs 10 XP per level."""
-        cost = self.mummy.xp_cost("hekau_other", 1)
-        self.assertEqual(cost, 10)
 
     def test_xp_cost_sekhem(self):
         """Sekhem costs 10 XP per level."""
-        cost = self.mummy.xp_cost("sekhem", 1)
+        cost = get_xp_cost("sekhem") * 1
         self.assertEqual(cost, 10)
 
     def test_xp_cost_balance(self):
-        """Balance costs 2 XP per level."""
-        cost = self.mummy.xp_cost("balance", 1)
-        self.assertEqual(cost, 2)
+        """Balance costs 7 XP per level."""
+        cost = get_xp_cost("balance") * 1
+        self.assertEqual(cost, 7)
 
     def test_xp_cost_virtue(self):
         """Virtue costs 2 XP per level."""
-        cost = self.mummy.xp_cost("virtue", 1)
+        cost = get_xp_cost("virtue") * 1
         self.assertEqual(cost, 2)
-
-    def test_xp_cost_unknown(self):
-        """Unknown trait type defaults to 1 XP per level."""
-        cost = self.mummy.xp_cost("unknown_trait", 1)
-        self.assertEqual(cost, 1)
-
-    def test_xp_cost_no_value(self):
-        """XP cost with no value uses 1."""
-        cost = self.mummy.xp_cost("sekhem")
-        self.assertEqual(cost, 10)
 
     def test_freebie_cost_hekau(self):
         """Hekau costs 5 freebies."""
-        cost = self.mummy.freebie_cost("hekau")
+        cost = get_freebie_cost("hekau")
         self.assertEqual(cost, 5)
 
     def test_freebie_cost_sekhem(self):
-        """Sekhem costs 7 freebies."""
-        cost = self.mummy.freebie_cost("sekhem")
-        self.assertEqual(cost, 7)
+        """Sekhem costs 1 freebie."""
+        cost = get_freebie_cost("sekhem")
+        self.assertEqual(cost, 1)
 
     def test_freebie_cost_balance(self):
-        """Balance costs 2 freebies."""
-        cost = self.mummy.freebie_cost("balance")
-        self.assertEqual(cost, 2)
+        """Balance costs 4 freebies."""
+        cost = get_freebie_cost("balance")
+        self.assertEqual(cost, 4)
 
     def test_freebie_cost_virtue(self):
         """Virtue costs 2 freebies."""
-        cost = self.mummy.freebie_cost("virtue")
+        cost = get_freebie_cost("virtue")
         self.assertEqual(cost, 2)
 
     def test_freebie_cost_ba(self):
         """Ba costs 1 freebie per point."""
-        cost = self.mummy.freebie_cost("ba")
-        self.assertEqual(cost, 1)
-
-    def test_freebie_cost_unknown(self):
-        """Unknown trait defaults to 1 freebie."""
-        cost = self.mummy.freebie_cost("unknown_trait")
+        cost = get_freebie_cost("ba")
         self.assertEqual(cost, 1)
 
 

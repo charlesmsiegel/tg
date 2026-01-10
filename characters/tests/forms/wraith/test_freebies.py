@@ -1,5 +1,6 @@
 """Tests for WraithFreebiesForm."""
 
+from characters.costs import get_freebie_cost
 from characters.forms.wraith.freebies import WraithFreebiesForm
 from characters.models.wraith.wraith import Wraith
 from django.contrib.auth.models import User
@@ -97,30 +98,30 @@ class TestWraithFreebiesFormSave(WraithFreebiesFormTestCase):
 class TestWraithFreebiesFormCostCalculations(WraithFreebiesFormTestCase):
     """Tests for wraith-specific freebie cost calculations."""
 
-    def test_arcanos_cost_is_seven(self):
-        """Arcanos costs 7 freebies."""
-        cost = self.wraith.freebie_cost("arcanos")
-        self.assertEqual(cost, 7)
+    def test_arcanos_cost_is_five(self):
+        """Arcanos costs 5 freebies."""
+        cost = get_freebie_cost("arcanos")
+        self.assertEqual(cost, 5)
 
-    def test_pathos_cost_is_one(self):
-        """Pathos costs 1 freebie."""
-        cost = self.wraith.freebie_cost("pathos")
-        self.assertEqual(cost, 1)
+    def test_pathos_cost_is_half(self):
+        """Pathos costs 0.5 freebie (1 per 2 dots)."""
+        cost = get_freebie_cost("pathos")
+        self.assertEqual(cost, 0.5)
 
     def test_passion_cost_is_two(self):
         """Passion costs 2 freebies."""
-        cost = self.wraith.freebie_cost("passion")
+        cost = get_freebie_cost("passion")
         self.assertEqual(cost, 2)
 
     def test_fetter_cost_is_one(self):
         """Fetter costs 1 freebie."""
-        cost = self.wraith.freebie_cost("fetter")
+        cost = get_freebie_cost("fetter")
         self.assertEqual(cost, 1)
 
-    def test_corpus_cost_is_one(self):
-        """Corpus costs 1 freebie."""
-        cost = self.wraith.freebie_cost("corpus")
-        self.assertEqual(cost, 1)
+    def test_wraith_willpower_cost_is_two(self):
+        """Wraith willpower costs 2 freebies."""
+        cost = get_freebie_cost("wraith_willpower")
+        self.assertEqual(cost, 2)
 
 
 class TestWraithFreebiesFormEdgeCases(WraithFreebiesFormTestCase):

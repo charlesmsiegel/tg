@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.demon.dtf_human import DtFHuman
 from core.utils import add_dot
 from django.db import models, transaction
@@ -133,7 +134,7 @@ class Thrall(DtFHuman):
 
         # Faith Potential
         if trait == "faith_potential":
-            cost = thrall.xp_cost("faith_potential") * thrall.faith_potential
+            cost = get_xp_cost("faith_potential") * thrall.faith_potential
             if cost <= thrall.xp:
                 if thrall.add_faith_potential():
                     thrall.xp -= cost
@@ -145,7 +146,7 @@ class Thrall(DtFHuman):
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = thrall.xp_cost("virtue") * getattr(thrall, trait)
+            cost = get_xp_cost("virtue") * getattr(thrall, trait)
             if cost <= thrall.xp:
                 if add_dot(thrall, trait, 5):
                     thrall.xp -= cost
@@ -155,23 +156,6 @@ class Thrall(DtFHuman):
             return False
 
         return trait
-
-    def xp_cost(self, trait):
-        """Get XP cost for a specific trait."""
-        cost = super().xp_cost(trait)
-        if cost != 10000:
-            return cost
-
-        from collections import defaultdict
-
-        costs = defaultdict(
-            lambda: 10000,
-            {
-                "faith_potential": 10,
-                "virtue": 2,
-            },
-        )
-        return costs[trait]
 
     def freebie_frequencies(self):
         """Freebie spending frequencies for random spending."""
@@ -185,17 +169,6 @@ class Thrall(DtFHuman):
             "virtue": 5,
         }
 
-    def freebie_costs(self):
-        """Get freebie costs for various traits."""
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "faith_potential": 7,
-                "virtue": 2,
-            }
-        )
-        return costs
-
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""
         output = super().spend_freebies(trait)
@@ -204,7 +177,7 @@ class Thrall(DtFHuman):
 
         # Faith Potential
         if trait == "faith_potential":
-            cost = self.freebie_cost("faith_potential")
+            cost = get_freebie_cost("faith_potential")
             if cost <= self.freebies:
                 if self.add_faith_potential():
                     self.freebies -= cost
@@ -214,7 +187,7 @@ class Thrall(DtFHuman):
 
         # Virtues
         if trait in ["conviction", "courage", "conscience"]:
-            cost = self.freebie_cost("virtue")
+            cost = get_freebie_cost("virtue")
             if cost <= self.freebies:
                 if add_dot(self, trait, 5):
                     self.freebies -= cost
@@ -222,16 +195,6 @@ class Thrall(DtFHuman):
             return False
 
         return trait
-
-    def freebie_cost(self, trait_type):
-        """Get freebie cost for a specific trait type."""
-        thrall_costs = {
-            "faith_potential": 7,
-            "virtue": 2,
-        }
-        if trait_type in thrall_costs:
-            return thrall_costs[trait_type]
-        return super().freebie_cost(trait_type)
 
     def faith_potential_freebies(self, form):
         """Spend freebies on Faith Potential."""

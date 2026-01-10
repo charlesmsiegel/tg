@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.vampire.discipline import Discipline
 from django import forms
@@ -28,7 +29,7 @@ class VampireFreebiesForm(HumanFreebiesForm):
     def validator(self, trait_type):
         """Check if the character can afford this trait type."""
         trait_type_lower = trait_type.lower().replace(" ", "_")
-        cost = self.instance.freebie_cost(trait_type_lower)
+        cost = get_freebie_cost(trait_type_lower)
 
         if not isinstance(cost, int):
             return True
@@ -60,7 +61,7 @@ class GhoulFreebiesForm(HumanFreebiesForm):
     def validator(self, trait_type):
         """Check if the character can afford this trait type."""
         trait_type_lower = trait_type.lower().replace(" ", "_")
-        cost = self.instance.freebie_cost(trait_type_lower)
+        cost = get_freebie_cost(trait_type_lower)
 
         if not isinstance(cost, int):
             return True

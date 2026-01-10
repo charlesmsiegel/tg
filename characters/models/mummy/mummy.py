@@ -306,29 +306,6 @@ class Mummy(MtRHuman):
         """Does this mummy know any Hekau?"""
         return self.total_hekau() > 0
 
-    def xp_cost(self, trait_type, trait_value=None):
-        """Calculate XP cost for raising a trait"""
-        costs = {
-            "hekau_web": 5,  # Web-favored Hekau
-            "hekau_universal": 7,  # Universal Hekau
-            "hekau_other": 10,  # Other Web's Hekau
-            "sekhem": 10,  # Primary power stat
-            "balance": 2,  # Humanity equivalent
-            "virtue": 2,  # Conviction/Restraint
-        }
-        return costs.get(trait_type, 1) * (trait_value or 1)
-
-    def freebie_cost(self, trait_type):
-        """Calculate freebie point cost"""
-        costs = {
-            "hekau": 5,
-            "sekhem": 7,
-            "balance": 2,
-            "virtue": 2,
-            "ba": 1,  # Per point
-        }
-        return costs.get(trait_type, 1)
-
     def spend_ba(self, amount):
         """Spend Ba for magic"""
         if self.ba >= amount:

@@ -9,6 +9,7 @@ Tests cover:
 - Independent ghoul mechanics
 """
 
+from characters.costs import get_freebie_cost
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
@@ -227,8 +228,7 @@ class TestGhoulFreebies(GhoulModelTestCase):
 
     def test_freebie_cost_discipline(self):
         """Test freebie cost for disciplines."""
-        ghoul = Ghoul.objects.create(name="Test", owner=self.user)
-        self.assertEqual(ghoul.freebie_cost("discipline"), 7)
+        self.assertEqual(get_freebie_cost("discipline"), 7)
 
     def test_freebie_step(self):
         """Test that ghouls have freebie_step of 6."""

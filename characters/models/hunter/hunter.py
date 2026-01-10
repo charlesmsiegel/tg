@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
@@ -159,35 +160,6 @@ class Hunter(HtRHuman):
             return self.creed.primary_virtue
         return self.primary_virtue
 
-    def freebie_cost(self, trait_type):
-        """Override for Hunter-specific freebie costs"""
-        costs = {
-            "attribute": 5,
-            "ability": 2,
-            "background": 1,
-            "virtue": 2,  # Conviction/Vision/Zeal
-            "edge": 3,  # All Edges cost 3 freebies per dot
-            "willpower": 1,
-        }
-        if trait_type in costs:
-            return costs[trait_type]
-        return super().freebie_cost(trait_type)
-
-    def xp_cost(self, trait_type, value):
-        """Override for Hunter-specific XP costs"""
-        costs = {
-            "new ability": 3,
-            "ability": value * 2,
-            "new background": 3,
-            "background": value * 2,
-            "virtue": value * 2,  # Conviction/Vision/Zeal
-            "edge": value * 3,  # Edges cost current rating x3
-            "willpower": value,
-        }
-        if trait_type in costs:
-            return costs[trait_type]
-        return super().xp_cost(trait_type, value)
-
     def spend_xp(self, trait):
         """Handle Hunter-specific XP spending"""
         result = super().spend_xp(trait)
@@ -219,7 +191,8 @@ class Hunter(HtRHuman):
 
         if trait in edge_names:
             current_value = getattr(self, trait, 0)
-            cost = self.xp_cost("edge", current_value + 1)
+            # Edges cost current rating x3 XP
+            cost = (current_value + 1) * 3
             return {"success": True, "cost": cost, "trait": trait}
 
         return result
@@ -230,7 +203,7 @@ class Hunter(HtRHuman):
 
         # Custom logic for Virtues
         if trait in ["conviction", "vision", "zeal"]:
-            return {"success": True, "cost": self.freebie_cost("virtue")}
+            return {"success": True, "cost": get_freebie_cost("virtue")}
 
         # Custom logic for Edges
         edge_names = [
@@ -258,7 +231,8 @@ class Hunter(HtRHuman):
         ]
 
         if trait in edge_names:
-            return {"success": True, "cost": self.freebie_cost("edge")}
+            # Edge freebie cost: 7 freebies per dot
+            return {"success": True, "cost": 7}
 
         return result
 

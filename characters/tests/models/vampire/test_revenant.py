@@ -10,6 +10,7 @@ Tests cover:
 - Family flaw tracking
 """
 
+from characters.costs import get_freebie_cost
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.revenant import Revenant, RevenantFamily
 from django.contrib.auth.models import User
@@ -226,13 +227,7 @@ class TestRevenantFreebies(RevenantModelTestCase):
 
     def test_freebie_cost_discipline(self):
         """Test freebie cost for in-family disciplines."""
-        revenant = Revenant.objects.create(name="Test", owner=self.user)
-        self.assertEqual(revenant.freebie_cost("discipline"), 7)
-
-    def test_freebie_cost_out_of_family_discipline(self):
-        """Test freebie cost for out-of-family disciplines."""
-        revenant = Revenant.objects.create(name="Test", owner=self.user)
-        self.assertEqual(revenant.freebie_cost("out_of_family_discipline"), 10)
+        self.assertEqual(get_freebie_cost("discipline"), 7)
 
     def test_freebie_step(self):
         """Test that revenants have freebie_step of 6."""

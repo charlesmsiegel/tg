@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
@@ -604,7 +605,7 @@ class Mage(MtAHuman):
         mage = Mage.objects.select_for_update().get(pk=self.pk)
 
         if trait == "arete":
-            cost = mage.xp_cost("arete", getattr(mage, trait))
+            cost = get_xp_cost("arete") * getattr(mage, trait)
             if cost <= mage.xp:
                 if mage.add_arete():
                     mage.xp -= cost
@@ -613,12 +614,13 @@ class Mage(MtAHuman):
                 return False
             return False
         if trait in mage.get_spheres():
-            if mage.affinity_sphere == trait:
-                cost = mage.xp_cost("affinity_sphere", getattr(mage, trait))
+            current_value = getattr(mage, trait)
+            if current_value == 0:
+                cost = get_xp_cost("new_sphere")
+            elif mage.affinity_sphere == trait:
+                cost = get_xp_cost("affinity_sphere") * current_value
             else:
-                cost = mage.xp_cost("sphere", getattr(mage, trait))
-            if cost == 0:
-                cost = 10
+                cost = get_xp_cost("sphere") * current_value
             if mage.merits_and_flaws.filter(name=f"Sphere Natural - {trait.title()}").exists():
                 cost *= 0.7
                 if cost % 1 != 0:
@@ -637,7 +639,7 @@ class Mage(MtAHuman):
                 return False
             return False
         if trait == "rote points":
-            cost = mage.xp_cost("rotes", 1)
+            cost = get_xp_cost("rotes")
             if cost <= mage.xp:
                 mage.rote_points += 3
                 mage.xp -= cost
@@ -660,25 +662,12 @@ class Mage(MtAHuman):
             "resonance": 10,
         }
 
-    def freebie_costs(self):
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "sphere": 7,
-                "arete": 4,
-                "quintessence": 1,
-                "rote points": 1,
-                "resonance": 3,
-            }
-        )
-        return costs
-
     def spend_freebies(self, trait):
         output = super().spend_freebies(trait)
         if output in [True, False]:
             return output
         if trait in self.get_spheres():
-            cost = self.freebie_cost("sphere")
+            cost = get_freebie_cost("sphere")
             if cost <= self.freebies:
                 if self.add_sphere(trait):
                     self.freebies -= cost
@@ -686,7 +675,7 @@ class Mage(MtAHuman):
                 return False
             return False
         if trait == "arete":
-            cost = self.freebie_cost("arete")
+            cost = get_freebie_cost("arete")
             if cost <= self.freebies:
                 if self.add_arete(freebies=True):
                     self.freebies -= cost
@@ -694,7 +683,7 @@ class Mage(MtAHuman):
                 return False
             return False
         if trait == "quintessence":
-            cost = self.freebie_cost("quintessence")
+            cost = get_freebie_cost("quintessence")
             if cost <= self.freebies:
                 if self.quintessence < 17:
                     self.quintessence += 4
@@ -703,14 +692,14 @@ class Mage(MtAHuman):
                 return False
             return False
         if trait == "rote points":
-            cost = self.freebie_cost("rote points")
+            cost = get_freebie_cost("rotes")
             if cost <= self.freebies:
                 self.rote_points += 4
                 self.freebies -= cost
                 return True
             return False
         if Resonance.objects.filter(name=trait).exists():
-            cost = self.freebie_cost("resonance") * (self.total_resonance())
+            cost = get_freebie_cost("resonance") * (self.total_resonance())
             if cost <= self.freebies:
                 if self.add_resonance(trait):
                     self.freebies -= cost
@@ -725,48 +714,10 @@ class Mage(MtAHuman):
     def has_node(self):
         return sum([x.rank for x in Node.objects.filter(owned_by=self)]) == self.node
 
-    def freebie_cost(self, trait_type):
-        mage_costs = {
-            "sphere": 7,
-            "arete": 4,
-            "quintessence": 1,
-            "tenet": 0,
-            "practice": 1,
-            "rotes": 1,
-            "resonance": 3,
-        }
-        if trait_type in mage_costs.keys():
-            return mage_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def sphere_to_trait_type(self, trait_name):
         if self.affinity_sphere and trait_name == self.affinity_sphere.property_name:
             return "affinity_sphere"
         return "sphere"
-
-    def xp_cost(self, trait_type, trait_value):
-        mage_costs = {
-            "new_sphere": 10,
-            "affinity_sphere": 7,
-            "sphere": 8,
-            "arete": 8,
-            "tenet": 0,
-            "remove tenet": 1,
-            "new_practice": 3,
-            "practice": 1,
-            "rotes": 1,
-            "resonance": 3,
-            "new_resonance": 5,
-        }
-        if trait_type == "sphere" and trait_value == 0:
-            return mage_costs["new_sphere"]
-        if trait_type == "practice" and trait_value == 0:
-            return mage_costs["new_practice"]
-        if trait_type == "resonance" and trait_value == 0:
-            return mage_costs["new_resonance"]
-        elif trait_type in mage_costs.keys():
-            return mage_costs[trait_type] * trait_value
-        return super().xp_cost(trait_type, trait_value)
 
     def add_tenet(self, tenet):
         if tenet.tenet_type not in ["met", "asc", "per"]:

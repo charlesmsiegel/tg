@@ -117,16 +117,6 @@ class Companion(MtAHuman):
         verbose_name = "Companion"
         verbose_name_plural = "Companions"
 
-    def freebie_costs(self):
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "advantage": "rating",
-                "charms": 1,
-            }
-        )
-        return costs
-
     def add_advantage(self, advantage, rating):
         if rating in advantage.get_ratings():
             ar, _ = AdvantageRating.objects.get_or_create(character=self, advantage=advantage)
@@ -148,16 +138,6 @@ class Companion(MtAHuman):
             return False
         self.charms.add(trait)
         return True
-
-    def xp_cost(self, trait_type, trait_value):
-        """XP costs for Companion-specific traits."""
-        companion_costs = {
-            "advantage": 3,  # 3 XP per rating point difference
-            "charm": 5,  # 5 XP per charm
-        }
-        if trait_type in companion_costs:
-            return companion_costs[trait_type] * trait_value
-        return super().xp_cost(trait_type, trait_value)
 
 
 class AdvantageRating(models.Model):

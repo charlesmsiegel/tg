@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.wraith.arcanos import Arcanos
 from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
@@ -330,19 +331,6 @@ class Wraith(WtOHuman):
             "corpus": 5,
         }
 
-    def freebie_costs(self):
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "arcanos": 7,
-                "pathos": 1,
-                "passion": 2,
-                "fetter": 1,
-                "corpus": 1,
-            }
-        )
-        return costs
-
     # Catharsis and Harrowing Mechanics
 
     def check_catharsis_trigger(self):
@@ -592,27 +580,6 @@ class Wraith(WtOHuman):
             "willpower": self.willpower,
         }
 
-    def xp_cost(self, trait_type, trait_value=None):
-        """Return XP cost for wraith-specific traits."""
-        from collections import defaultdict
-
-        costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
-            {
-                "arcanos": 10,
-                "pathos": 2,
-                "corpus": 1,
-                "angst": 1,
-            },
-        )
-
-        if trait_type in ["arcanos", "pathos", "corpus", "angst"]:
-            if trait_value is not None:
-                return costs[trait_type] * trait_value
-            return costs[trait_type]
-
-        return costs[trait_type]
-
     def spend_xp(self, trait):
         """Spend XP on a trait."""
         output = super().spend_xp(trait)
@@ -624,7 +591,7 @@ class Wraith(WtOHuman):
 
         if trait in arcanoi_list:
             current_value = getattr(self, trait)
-            cost = self.xp_cost("arcanos", current_value + 1)
+            cost = get_xp_cost("arcanos") * (current_value + 1)
 
             if cost <= self.xp:
                 if self.add_arcanos(trait):
@@ -636,7 +603,7 @@ class Wraith(WtOHuman):
 
         # Handle pathos
         if trait == "pathos":
-            cost = self.xp_cost("pathos", self.pathos + 1)
+            cost = get_xp_cost("pathos") * (self.pathos + 1)
             if cost <= self.xp:
                 if self.add_pathos():
                     self.xp -= cost
@@ -648,7 +615,7 @@ class Wraith(WtOHuman):
 
         # Handle corpus
         if trait == "corpus":
-            cost = self.xp_cost("corpus", self.corpus + 1)
+            cost = get_xp_cost("corpus") * (self.corpus + 1)
             if cost <= self.xp:
                 if self.add_corpus():
                     self.xp -= cost
@@ -659,7 +626,7 @@ class Wraith(WtOHuman):
 
         # Handle angst
         if trait == "angst":
-            cost = self.xp_cost("angst", self.angst + 1)
+            cost = get_xp_cost("angst") * (self.angst + 1)
             if cost <= self.xp:
                 if self.add_angst():
                     self.xp -= cost
@@ -671,19 +638,6 @@ class Wraith(WtOHuman):
 
         return trait
 
-    def freebie_cost(self, trait_type):
-        """Return freebie cost for wraith-specific traits."""
-        wraith_costs = {
-            "arcanos": 7,
-            "pathos": 1,
-            "passion": 2,
-            "fetter": 1,
-            "corpus": 1,
-        }
-        if trait_type in wraith_costs.keys():
-            return wraith_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""
         output = super().spend_freebies(trait)
@@ -694,7 +648,7 @@ class Wraith(WtOHuman):
         arcanoi_list = list(self.get_arcanoi().keys()) + list(self.get_dark_arcanoi().keys())
 
         if trait in arcanoi_list:
-            cost = self.freebie_cost("arcanos")
+            cost = get_freebie_cost("arcanos")
             if cost <= self.freebies:
                 if self.add_arcanos(trait):
                     self.freebies -= cost
@@ -704,7 +658,7 @@ class Wraith(WtOHuman):
 
         # Handle pathos
         if trait == "pathos":
-            cost = self.freebie_cost("pathos")
+            cost = get_freebie_cost("pathos")
             if cost <= self.freebies:
                 if self.add_pathos():
                     self.freebies -= cost
@@ -715,7 +669,7 @@ class Wraith(WtOHuman):
 
         # Handle corpus
         if trait == "corpus":
-            cost = self.freebie_cost("corpus")
+            cost = get_freebie_cost("corpus")
             if cost <= self.freebies:
                 if self.add_corpus():
                     self.freebies -= cost

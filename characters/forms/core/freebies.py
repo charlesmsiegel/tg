@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
@@ -57,11 +58,12 @@ class HumanFreebiesForm(forms.Form):
 
     def validator(self, trait_type):
         trait_type = trait_type.lower().split(" ")[-1]
-        if not isinstance(self.instance.freebie_cost(trait_type), int):
+        cost = get_freebie_cost(trait_type)
+        if not isinstance(cost, int):
             return True
-        if self.instance.freebie_cost(trait_type) == 10000:
+        if cost == 10000:
             return True
-        if self.instance.freebie_cost(trait_type) <= self.instance.freebies:
+        if cost <= self.instance.freebies:
             return True
         return False
 

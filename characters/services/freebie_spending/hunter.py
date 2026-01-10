@@ -6,6 +6,7 @@ This module provides freebie spending services for Hunter: The Reckoning charact
 - HunterFreebieSpendingService - Imbued hunters with Edges
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -33,7 +34,7 @@ class HtRHumanFreebieSpendingService(HumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("virtue")
+        cost = get_freebie_cost("virtue")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -115,7 +116,7 @@ class HunterFreebieSpendingService(HtRHumanFreebieSpendingService):
         """Handle Edge freebie spending."""
         trait = example.name
         edge_level = example.level if hasattr(example, "level") else 1
-        cost = self.character.freebie_cost("edge") * edge_level
+        cost = get_freebie_cost("edge") * edge_level
 
         if cost > self.character.freebies:
             return FreebieSpendResult(

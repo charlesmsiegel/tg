@@ -1,5 +1,6 @@
 """Tests for Thrall model."""
 
+from characters.costs import get_freebie_cost
 from characters.models.demon import Demon
 from characters.models.demon.pact import Pact
 from characters.models.demon.thrall import Thrall
@@ -247,18 +248,17 @@ class ThrallFreebieTests(TestCase):
         self.assertIn("virtue", freq)
 
     def test_freebie_costs_returns_dict(self):
-        """freebie_costs returns correct costs."""
-        costs = self.thrall.freebie_costs()
-        self.assertEqual(costs["faith_potential"], 7)
-        self.assertEqual(costs["virtue"], 2)
+        """Test centralized freebie costs for thrall traits."""
+        self.assertEqual(get_freebie_cost("faith_potential"), 7)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
 
     def test_freebie_cost_faith_potential(self):
         """freebie_cost returns correct cost for faith_potential."""
-        self.assertEqual(self.thrall.freebie_cost("faith_potential"), 7)
+        self.assertEqual(get_freebie_cost("faith_potential"), 7)
 
     def test_freebie_cost_virtue(self):
         """freebie_cost returns correct cost for virtue."""
-        self.assertEqual(self.thrall.freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
 
     def test_spend_freebies_faith_potential(self):
         """spend_freebies increases faith_potential and deducts freebies."""

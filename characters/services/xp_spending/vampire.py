@@ -97,11 +97,11 @@ class VampireXPSpendingService(VtMHumanXPSpendingService):
 
         # Calculate cost: new=10, clan=5×current, out-of-clan=7×current
         if current_value == 0:
-            cost = 10  # New discipline
+            cost = get_xp_cost("new_discipline")
         elif is_clan:
             cost = get_xp_cost("discipline") * current_value  # 5×current (clan)
         else:
-            cost = 7 * current_value  # 7×current (out-of-clan)
+            cost = get_xp_cost("out_of_clan_discipline") * current_value
 
         self.character.spend_xp(
             trait_name=property_name,

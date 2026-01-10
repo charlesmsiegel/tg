@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
@@ -467,33 +468,33 @@ class TestChangelingXPMethods(TestCase):
 
     def test_xp_cost_art(self):
         """Test XP cost calculation for arts."""
-        self.assertEqual(self.character.xp_cost("art", 1), 8)
-        self.assertEqual(self.character.xp_cost("art", 2), 16)
-        self.assertEqual(self.character.xp_cost("art", 3), 24)
-        # Test without value
-        self.assertEqual(self.character.xp_cost("art"), 8)
+        self.assertEqual(get_xp_cost("art") * 1, 4)
+        self.assertEqual(get_xp_cost("art") * 2, 8)
+        self.assertEqual(get_xp_cost("art") * 3, 12)
+
+    def test_xp_cost_new_art(self):
+        """Test XP cost for new art (7 XP)."""
+        self.assertEqual(get_xp_cost("new_art"), 7)
 
     def test_xp_cost_realm(self):
         """Test XP cost calculation for realms."""
-        self.assertEqual(self.character.xp_cost("realm", 1), 5)
-        self.assertEqual(self.character.xp_cost("realm", 2), 10)
-        self.assertEqual(self.character.xp_cost("realm", 3), 15)
-        # Test without value
-        self.assertEqual(self.character.xp_cost("realm"), 5)
+        self.assertEqual(get_xp_cost("realm") * 1, 3)
+        self.assertEqual(get_xp_cost("realm") * 2, 6)
+        self.assertEqual(get_xp_cost("realm") * 3, 9)
+
+    def test_xp_cost_new_realm(self):
+        """Test XP cost for new realm (5 XP)."""
+        self.assertEqual(get_xp_cost("new_realm"), 5)
 
     def test_xp_cost_glamour(self):
         """Test XP cost calculation for glamour."""
-        self.assertEqual(self.character.xp_cost("glamour", 5), 15)
-        self.assertEqual(self.character.xp_cost("glamour", 6), 18)
-        # Test without value
-        self.assertEqual(self.character.xp_cost("glamour"), 3)
+        self.assertEqual(get_xp_cost("glamour") * 5, 15)
+        self.assertEqual(get_xp_cost("glamour") * 6, 18)
 
     def test_xp_cost_banality(self):
         """Test XP cost calculation for banality."""
-        self.assertEqual(self.character.xp_cost("banality", 4), 8)
-        self.assertEqual(self.character.xp_cost("banality", 5), 10)
-        # Test without value
-        self.assertEqual(self.character.xp_cost("banality"), 2)
+        self.assertEqual(get_xp_cost("banality") * 4, 8)
+        self.assertEqual(get_xp_cost("banality") * 5, 10)
 
     def test_spend_xp_unknown_trait(self):
         """Test spending XP on unknown trait returns trait name."""
@@ -526,32 +527,27 @@ class TestChangelingFreebieMethods(TestCase):
         self.assertEqual(frequencies["banality"], 1)
 
     def test_freebie_costs(self):
-        """Test that freebie_costs returns correct costs."""
-        costs = self.character.freebie_costs()
-        self.assertIn("art", costs)
-        self.assertIn("realm", costs)
-        self.assertIn("glamour", costs)
-        self.assertIn("banality", costs)
-        self.assertEqual(costs["art"], 5)
-        self.assertEqual(costs["realm"], 3)
-        self.assertEqual(costs["glamour"], 3)
-        self.assertEqual(costs["banality"], 2)
+        """Test centralized freebie costs for changeling traits."""
+        self.assertEqual(get_freebie_cost("art"), 5)
+        self.assertEqual(get_freebie_cost("realm"), 2)
+        self.assertEqual(get_freebie_cost("glamour"), 3)
+        self.assertEqual(get_freebie_cost("banality"), 2)
 
     def test_freebie_cost_art(self):
         """Test freebie cost for arts."""
-        self.assertEqual(self.character.freebie_cost("art"), 5)
+        self.assertEqual(get_freebie_cost("art"), 5)
 
     def test_freebie_cost_realm(self):
         """Test freebie cost for realms."""
-        self.assertEqual(self.character.freebie_cost("realm"), 3)
+        self.assertEqual(get_freebie_cost("realm"), 2)
 
     def test_freebie_cost_glamour(self):
         """Test freebie cost for glamour."""
-        self.assertEqual(self.character.freebie_cost("glamour"), 3)
+        self.assertEqual(get_freebie_cost("glamour"), 3)
 
     def test_freebie_cost_banality(self):
         """Test freebie cost for banality."""
-        self.assertEqual(self.character.freebie_cost("banality"), 2)
+        self.assertEqual(get_freebie_cost("banality"), 2)
 
     def test_spend_freebies_unknown_trait(self):
         """Test spending freebies on unknown trait returns trait name."""

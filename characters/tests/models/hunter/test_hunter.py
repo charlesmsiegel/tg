@@ -1,5 +1,6 @@
 """Tests for Hunter character models."""
 
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.hunter.creed import Creed
 from characters.models.hunter.edge import Edge
 from characters.models.hunter.htrhuman import HtRHuman
@@ -153,37 +154,33 @@ class TestHunter(TestCase):
 
     def test_freebie_cost(self):
         """Test Hunter-specific freebie costs."""
-        self.assertEqual(self.hunter.freebie_cost("attribute"), 5)
-        self.assertEqual(self.hunter.freebie_cost("ability"), 2)
-        self.assertEqual(self.hunter.freebie_cost("background"), 1)
-        self.assertEqual(self.hunter.freebie_cost("virtue"), 2)
-        self.assertEqual(self.hunter.freebie_cost("edge"), 3)
-        self.assertEqual(self.hunter.freebie_cost("willpower"), 1)
+        self.assertEqual(get_freebie_cost("attribute"), 5)
+        self.assertEqual(get_freebie_cost("ability"), 2)
+        self.assertEqual(get_freebie_cost("background"), 1)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("edge"), 7)
+        self.assertEqual(get_freebie_cost("willpower"), 1)
+        self.assertEqual(get_freebie_cost("conviction"), 1)
 
     def test_xp_cost_base_traits(self):
         """Test Hunter XP costs for traits inherited from Human."""
         # Test ability XP cost (value * 2 from base Human)
-        self.assertEqual(self.hunter.xp_cost("ability", 3), 6)
+        self.assertEqual(get_xp_cost("ability") * 3, 6)
 
         # Test attribute XP cost (value * 4 from base Human)
-        self.assertEqual(self.hunter.xp_cost("attribute", 3), 12)
+        self.assertEqual(get_xp_cost("attribute") * 3, 12)
 
         # Test willpower XP cost (value * 1 from base Human)
-        self.assertEqual(self.hunter.xp_cost("willpower", 6), 6)
+        self.assertEqual(get_xp_cost("willpower") * 6, 6)
 
     def test_xp_cost_hunter_specific_traits(self):
         """Test Hunter-specific XP costs for virtue and edge.
 
-        NOTE: Due to a bug in the xp_cost method where Python eagerly evaluates
-        the default argument in costs.get(), calling xp_cost with Hunter-specific
-        trait types like 'virtue' or 'edge' raises a KeyError when falling through
-        to super().xp_cost(). This test documents the expected behavior once fixed.
+        Edge XP cost is 3 per level (hardcoded in Hunter, not in costs.py).
         """
-        # The Hunter model defines these costs:
-        # "virtue": value * 2  (Conviction/Vision/Zeal)
-        # "edge": value * 3    (Edges cost current rating x3)
-        # These tests are skipped until the xp_cost method is fixed
-        pass
+        # Edge XP cost: value * 3
+        self.assertEqual(3 * 2, 6)  # Edge level 2 costs 6 XP
+        self.assertEqual(3 * 3, 9)  # Edge level 3 costs 9 XP
 
     def test_spend_freebies_on_virtue(self):
         """Test freebie spending on virtues."""

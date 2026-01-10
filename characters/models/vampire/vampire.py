@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from core.constants import CharacterStatus
 from core.linked_stat import LinkedStat
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -398,19 +399,6 @@ class Vampire(VtMHuman):
             return list(self.clan.disciplines.all())
         return []
 
-    def freebie_cost(self, trait_type):
-        """Return freebie point cost for vampire-specific traits."""
-        vampire_costs = {
-            "discipline": 7,  # In-clan disciplines
-            "out_of_clan_discipline": 10,
-            "virtue": 2,
-            "humanity": 1,
-            "path_rating": 1,
-        }
-        if trait_type in vampire_costs.keys():
-            return vampire_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def is_clan_discipline(self, discipline):
         """Check if a discipline is in-clan."""
         if not self.clan:
@@ -519,36 +507,6 @@ class Vampire(VtMHuman):
             "path_rating": 1,
         }
 
-    def xp_cost(self, trait_type, trait_value=None):
-        """Return XP cost for vampire-specific traits."""
-        from collections import defaultdict
-
-        costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
-            {
-                "new_discipline": 10,
-                "clan_discipline": 5,
-                "out_of_clan_discipline": 7,
-                "virtue": 2,
-                "humanity": 1,
-                "path_rating": 1,
-            },
-        )
-
-        # Handle discipline trait types
-        if trait_type in ["discipline", "clan_discipline", "out_of_clan_discipline"]:
-            if trait_value is not None:
-                return costs[trait_type] * trait_value
-            return costs[trait_type]
-
-        # Handle virtue/morality traits
-        if trait_type in ["virtue", "humanity", "path_rating"]:
-            if trait_value is not None:
-                return costs[trait_type] * trait_value
-            return costs[trait_type]
-
-        return costs[trait_type]
-
     def spend_xp(self, trait):
         """Spend XP on a trait."""
         output = super().spend_xp(trait)
@@ -595,11 +553,11 @@ class Vampire(VtMHuman):
                 is_clan = self.is_clan_discipline(discipline_obj)
 
                 if current_value == 0:
-                    cost = self.xp_cost("new_discipline")
+                    cost = get_xp_cost("new_discipline")
                 elif is_clan:
-                    cost = self.xp_cost("clan_discipline", current_value + 1)
+                    cost = get_xp_cost("clan_discipline") * (current_value + 1)
                 else:
-                    cost = self.xp_cost("out_of_clan_discipline", current_value + 1)
+                    cost = get_xp_cost("out_of_clan_discipline") * (current_value + 1)
 
                 if cost <= self.xp:
                     from core.utils import add_dot
@@ -617,7 +575,7 @@ class Vampire(VtMHuman):
         # Handle virtues
         if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
             current_value = getattr(self, trait)
-            cost = self.xp_cost("virtue", current_value + 1)
+            cost = get_xp_cost("virtue") * (current_value + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
 
@@ -630,7 +588,7 @@ class Vampire(VtMHuman):
 
         # Handle humanity
         if trait == "humanity":
-            cost = self.xp_cost("humanity", self.humanity + 1)
+            cost = get_xp_cost("humanity") * (self.humanity + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
 
@@ -643,7 +601,7 @@ class Vampire(VtMHuman):
 
         # Handle path rating
         if trait == "path_rating":
-            cost = self.xp_cost("path_rating", self.path_rating + 1)
+            cost = get_xp_cost("path_rating") * (self.path_rating + 1)
             if cost <= self.xp:
                 from core.utils import add_dot
 
@@ -669,20 +627,6 @@ class Vampire(VtMHuman):
             "humanity": 4,
             "path_rating": 4,
         }
-
-    def freebie_costs(self):
-        """Return a dictionary of freebie costs for vampire traits."""
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "discipline": 7,
-                "out_of_clan_discipline": 10,
-                "virtue": 2,
-                "humanity": 1,
-                "path_rating": 1,
-            }
-        )
-        return costs
 
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""
@@ -741,7 +685,7 @@ class Vampire(VtMHuman):
 
         # Handle virtues
         if trait in ["conscience", "conviction", "self_control", "instinct", "courage"]:
-            cost = self.freebie_cost("virtue")
+            cost = get_freebie_cost("virtue")
             if cost <= self.freebies:
                 from core.utils import add_dot
 
@@ -753,7 +697,7 @@ class Vampire(VtMHuman):
 
         # Handle humanity
         if trait == "humanity":
-            cost = self.freebie_cost("humanity")
+            cost = get_freebie_cost("humanity")
             if cost <= self.freebies:
                 from core.utils import add_dot
 
@@ -765,7 +709,7 @@ class Vampire(VtMHuman):
 
         # Handle path rating
         if trait == "path_rating":
-            cost = self.freebie_cost("path_rating")
+            cost = get_freebie_cost("path_rating")
             if cost <= self.freebies:
                 from core.utils import add_dot
 

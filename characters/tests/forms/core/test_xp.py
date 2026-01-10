@@ -10,6 +10,7 @@ Tests cover:
 - Edge cases (zero XP, maxed stats, etc.)
 """
 
+from characters.costs import get_xp_cost
 from characters.forms.core.xp import CATEGORY_CHOICES, XPForm
 from characters.models.core import Human, MeritFlaw
 from characters.models.core.ability_block import Ability
@@ -757,45 +758,42 @@ class TestXPCostCalculations(TestCase):
     def test_attribute_xp_cost(self):
         """Test XP cost for attributes (current rating * 4)."""
         # Attribute XP cost is current rating * 4
-        self.assertEqual(self.character.xp_cost("attribute", 1), 4)
-        self.assertEqual(self.character.xp_cost("attribute", 2), 8)
-        self.assertEqual(self.character.xp_cost("attribute", 3), 12)
-        self.assertEqual(self.character.xp_cost("attribute", 4), 16)
-        self.assertEqual(self.character.xp_cost("attribute", 5), 20)
+        self.assertEqual(get_xp_cost("attribute") * 1, 4)
+        self.assertEqual(get_xp_cost("attribute") * 2, 8)
+        self.assertEqual(get_xp_cost("attribute") * 3, 12)
+        self.assertEqual(get_xp_cost("attribute") * 4, 16)
+        self.assertEqual(get_xp_cost("attribute") * 5, 20)
 
     def test_ability_xp_cost(self):
         """Test XP cost for abilities (current rating * 2)."""
         # Ability XP cost is current rating * 2
-        self.assertEqual(self.character.xp_cost("ability", 1), 2)
-        self.assertEqual(self.character.xp_cost("ability", 2), 4)
-        self.assertEqual(self.character.xp_cost("ability", 3), 6)
-        self.assertEqual(self.character.xp_cost("ability", 4), 8)
-        self.assertEqual(self.character.xp_cost("ability", 5), 10)
+        self.assertEqual(get_xp_cost("ability") * 1, 2)
+        self.assertEqual(get_xp_cost("ability") * 2, 4)
+        self.assertEqual(get_xp_cost("ability") * 3, 6)
+        self.assertEqual(get_xp_cost("ability") * 4, 8)
+        self.assertEqual(get_xp_cost("ability") * 5, 10)
 
     def test_new_ability_xp_cost(self):
         """Test XP cost for new abilities (3 XP)."""
-        self.assertEqual(self.character.xp_cost("ability", 0), 3)
+        self.assertEqual(get_xp_cost("new_ability"), 3)
 
     def test_background_xp_cost(self):
         """Test XP cost for backgrounds (current rating * 3)."""
-        self.assertEqual(self.character.xp_cost("background", 1), 3)
-        self.assertEqual(self.character.xp_cost("background", 2), 6)
-        self.assertEqual(self.character.xp_cost("background", 3), 9)
+        self.assertEqual(get_xp_cost("background") * 1, 3)
+        self.assertEqual(get_xp_cost("background") * 2, 6)
+        self.assertEqual(get_xp_cost("background") * 3, 9)
 
     def test_new_background_xp_cost(self):
-        """Test XP cost for new backgrounds (5 XP * rating)."""
-        # The cost formula is: costs["new background"] * trait_value = 5 * trait_value
-        self.assertEqual(self.character.xp_cost("new background", 1), 5)
-        self.assertEqual(self.character.xp_cost("new background", 2), 10)
-        self.assertEqual(self.character.xp_cost("new background", 3), 15)
+        """Test XP cost for new backgrounds (5 XP flat)."""
+        self.assertEqual(get_xp_cost("new_background"), 5)
 
     def test_willpower_xp_cost(self):
         """Test XP cost for willpower (current rating * 1)."""
-        self.assertEqual(self.character.xp_cost("willpower", 1), 1)
-        self.assertEqual(self.character.xp_cost("willpower", 5), 5)
-        self.assertEqual(self.character.xp_cost("willpower", 10), 10)
+        self.assertEqual(get_xp_cost("willpower") * 1, 1)
+        self.assertEqual(get_xp_cost("willpower") * 5, 5)
+        self.assertEqual(get_xp_cost("willpower") * 10, 10)
 
     def test_meritflaw_xp_cost(self):
         """Test XP cost for merits/flaws (rating change * 3)."""
-        self.assertEqual(self.character.xp_cost("meritflaw", 1), 3)
-        self.assertEqual(self.character.xp_cost("meritflaw", 2), 6)
+        self.assertEqual(get_xp_cost("meritflaw") * 1, 3)
+        self.assertEqual(get_xp_cost("meritflaw") * 2, 6)

@@ -9,6 +9,7 @@ This module provides freebie spending services for Werewolf: The Apocalypse char
 - Per-breed services for each Fera type
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -46,7 +47,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_gift(self, example, **kwargs) -> FreebieSpendResult:
         """Handle gift freebie spending."""
         trait = example.name
-        cost = self.character.freebie_cost("gift")
+        cost = get_freebie_cost("gift")
         gift_level = example.rank if hasattr(example, "rank") else 1
 
         if cost > self.character.freebies:
@@ -79,7 +80,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
         trait = example.name
         # Rite cost is typically per level
         rite_level = example.level if hasattr(example, "level") else 1
-        cost = self.character.freebie_cost("rite") * rite_level
+        cost = get_freebie_cost("rite") * rite_level
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -109,7 +110,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_rage(self, **kwargs) -> FreebieSpendResult:
         """Handle Rage freebie spending."""
         trait = "Rage"
-        cost = self.character.freebie_cost("rage")
+        cost = get_freebie_cost("rage")
         current_value = self.character.rage
         new_value = current_value + 1
 
@@ -150,7 +151,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_gnosis(self, **kwargs) -> FreebieSpendResult:
         """Handle Gnosis freebie spending."""
         trait = "Gnosis"
-        cost = self.character.freebie_cost("gnosis")
+        cost = get_freebie_cost("gnosis")
         current_value = self.character.gnosis
         new_value = current_value + 1
 
@@ -191,7 +192,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_glory(self, **kwargs) -> FreebieSpendResult:
         """Handle Glory (temporary renown) freebie spending."""
         trait = "Glory"
-        cost = self.character.freebie_cost("glory")
+        cost = get_freebie_cost("glory")
         current_value = self.character.temporary_glory
         new_value = current_value + 1
 
@@ -223,7 +224,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_honor(self, **kwargs) -> FreebieSpendResult:
         """Handle Honor (temporary renown) freebie spending."""
         trait = "Honor"
-        cost = self.character.freebie_cost("honor")
+        cost = get_freebie_cost("honor")
         current_value = self.character.temporary_honor
         new_value = current_value + 1
 
@@ -255,7 +256,7 @@ class GarouFreebieSpendingService(WtAHumanFreebieSpendingService):
     def _handle_wisdom(self, **kwargs) -> FreebieSpendResult:
         """Handle Wisdom (temporary renown) freebie spending."""
         trait = "Wisdom"
-        cost = self.character.freebie_cost("wisdom")
+        cost = get_freebie_cost("wisdom")
         current_value = self.character.temporary_wisdom
         new_value = current_value + 1
 

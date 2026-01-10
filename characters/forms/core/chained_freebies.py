@@ -6,6 +6,7 @@ without manual AJAX. Choices are computed at form initialization
 and embedded in the page JavaScript.
 """
 
+from characters.costs import get_freebie_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
@@ -126,7 +127,7 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
     def _can_afford_category(self, category):
         """Check if character can afford this category type."""
         trait_type = category.lower().split(" ")[-1]
-        cost = self.instance.freebie_cost(trait_type)
+        cost = get_freebie_cost(trait_type)
 
         if not isinstance(cost, int):
             return True

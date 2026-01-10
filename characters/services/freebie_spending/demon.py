@@ -8,6 +8,7 @@ This module provides freebie spending services for Demon: The Fallen characters:
 - EarthboundFreebieSpendingService - Ancient demons bound to relics
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -35,7 +36,7 @@ class DtFHumanFreebieSpendingService(HumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("virtue")
+        cost = get_freebie_cost("virtue")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -119,7 +120,7 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
         property_name = example.property_name
         current_value = getattr(self.character, property_name)
         new_value = current_value + 1
-        cost = self.character.freebie_cost("lore")
+        cost = get_freebie_cost("lore")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -158,7 +159,7 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _handle_faith(self, **kwargs) -> FreebieSpendResult:
         """Handle Faith freebie spending."""
         trait = "Faith"
-        cost = self.character.freebie_cost("faith")
+        cost = get_freebie_cost("faith")
         current_value = self.character.faith
         new_value = current_value + 1
 
@@ -199,7 +200,7 @@ class DemonFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _handle_torment_reduction(self, **kwargs) -> FreebieSpendResult:
         """Handle Torment reduction freebie spending."""
         trait = "Torment Reduction"
-        cost = self.character.freebie_cost("torment_reduction")
+        cost = get_freebie_cost("torment_reduction")
         current_value = self.character.torment
         new_value = current_value - 1
 
@@ -330,7 +331,7 @@ class ThrallFreebieSpendingService(DtFHumanFreebieSpendingService):
     def _handle_faith_potential(self, **kwargs) -> FreebieSpendResult:
         """Handle Faith Potential freebie spending."""
         trait = "Faith Potential"
-        cost = self.character.freebie_cost("faith_potential")
+        cost = get_freebie_cost("faith_potential")
         current_value = (
             self.character.faith_potential if hasattr(self.character, "faith_potential") else 0
         )

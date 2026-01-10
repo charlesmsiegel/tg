@@ -1,3 +1,4 @@
+from characters.costs import get_meritflaw_xp_cost, get_xp_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
@@ -5,6 +6,18 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from core.models import Number
 from django import forms
 from widgets import ChainedChoiceField, ChainedSelectMixin
+
+
+def _calculate_xp_cost(trait_type, current_value):
+    """Calculate XP cost for raising a trait, handling new trait costs."""
+    if current_value == 0:
+        # Check for new trait cost
+        new_key = f"new_{trait_type}"
+        new_cost = get_xp_cost(new_key)
+        if new_cost != 10000:  # Found a new trait cost
+            return new_cost
+    return get_xp_cost(trait_type) * current_value
+
 
 CATEGORY_CHOICES = [
     ("-----", "-----"),
@@ -67,7 +80,8 @@ class XPForm(ChainedSelectMixin, forms.Form):
                     attr
                     for attr in Attribute.objects.all()
                     if getattr(char, attr.property_name) < 5
-                    and char.xp_cost("attribute", getattr(char, attr.property_name)) <= char.xp
+                    and _calculate_xp_cost("attribute", getattr(char, attr.property_name))
+                    <= char.xp
                 ]
                 example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
             elif cat_value == "Ability":
@@ -77,7 +91,8 @@ class XPForm(ChainedSelectMixin, forms.Form):
                         property_name__in=char.talents + char.skills + char.knowledges
                     )
                     if getattr(char, ability.property_name) < 5
-                    and char.xp_cost("ability", getattr(char, ability.property_name)) <= char.xp
+                    and _calculate_xp_cost("ability", getattr(char, ability.property_name))
+                    <= char.xp
                 ]
                 example_choices_map[cat_value] = [(str(x.pk), str(x)) for x in examples]
             elif cat_value == "Background":
@@ -91,7 +106,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
                 existing_bg_choices = [
                     (f"br_{x.pk}", f"{x}")
                     for x in existing_bgs
-                    if char.xp_cost("background", x.rating) <= char.xp
+                    if _calculate_xp_cost("background", x.rating) <= char.xp
                 ]
                 example_choices_map[cat_value] = new_bg_choices + existing_bg_choices
             elif cat_value == "MeritFlaw":
@@ -109,7 +124,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
                     current_rating = char.mf_rating(mf)
                     ratings = mf.get_ratings()
                     for rating in ratings:
-                        cost = 3 * abs(rating - current_rating)
+                        cost = get_meritflaw_xp_cost(current_rating, rating)
                         if cost <= char.xp and rating != current_rating:
                             affordable_mfs.append(mf.id)
                             break
@@ -132,7 +147,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
                 ratings = mf.get_ratings()
                 affordable_ratings = []
                 for rating in ratings:
-                    cost = 3 * abs(rating - current_rating)
+                    cost = get_meritflaw_xp_cost(current_rating, rating)
                     if cost <= char.xp and rating != current_rating:
                         affordable_ratings.append(rating)
                 value_choices_map[mf_pk] = [(str(r), str(r)) for r in affordable_ratings]
@@ -154,10 +169,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
         filtered_for_xp_cost = [
             x
             for x in filtered_attributes
-            if self.character.xp_cost(
-                "attribute",
-                getattr(self.character, x.property_name),
-            )
+            if _calculate_xp_cost("attribute", getattr(self.character, x.property_name))
             <= self.character.xp
         ]
         return len(filtered_for_xp_cost) > 0
@@ -175,10 +187,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
         filtered_for_xp_cost = [
             x
             for x in filtered_abilities
-            if self.character.xp_cost(
-                "ability",
-                getattr(self.character, x.property_name),
-            )
+            if _calculate_xp_cost("ability", getattr(self.character, x.property_name))
             <= self.character.xp
         ]
         return len(filtered_for_xp_cost) > 0
@@ -186,23 +195,17 @@ class XPForm(ChainedSelectMixin, forms.Form):
     def background_valid(self):
         """Check if any background (new or existing) is affordable."""
         # Check if new background is affordable (minimum 5 XP)
-        if self.character.xp >= 5:
+        if self.character.xp >= get_xp_cost("new_background"):
             return True
         # Check if any existing background can be increased
         bgs = self.character.backgrounds.filter(rating__lt=5)
         filtered_for_xp_cost = [
-            x
-            for x in bgs
-            if self.character.xp_cost(
-                "background",
-                x.rating,
-            )
-            <= self.character.xp
+            x for x in bgs if _calculate_xp_cost("background", x.rating) <= self.character.xp
         ]
         return len(filtered_for_xp_cost) > 0
 
     def willpower_valid(self):
-        return self.character.xp_cost("willpower", self.character.willpower) <= self.character.xp
+        return _calculate_xp_cost("willpower", self.character.willpower) <= self.character.xp
 
     def mf_valid(self):
         # Check if character has any affordable merit/flaws
@@ -223,8 +226,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
             ratings = mf.get_ratings()
 
             for rating in ratings:
-                # Calculate cost: 3 × |new_rating - current_rating|
-                cost = 3 * abs(rating - current_rating)
+                cost = get_meritflaw_xp_cost(current_rating, rating)
                 if cost <= self.character.xp and rating != current_rating:
                     return True
 

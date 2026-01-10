@@ -1,5 +1,6 @@
 """Tests for Demon model."""
 
+from characters.costs import get_freebie_cost
 from characters.models.demon import Demon
 from characters.models.demon.apocalyptic_form import (
     ApocalypticForm,
@@ -649,33 +650,27 @@ class DemonFreebieTests(TestCase):
         self.assertIn("temporary_faith", freq)
 
     def test_freebie_costs_returns_dict(self):
-        """freebie_costs returns correct costs."""
-        costs = self.demon.freebie_costs()
-        self.assertEqual(costs["lore"], 7)
-        self.assertEqual(costs["other_lore"], 10)
-        self.assertEqual(costs["faith"], 7)
-        self.assertEqual(costs["virtue"], 2)
-        self.assertEqual(costs["temporary_faith"], 1)
+        """Test centralized freebie costs for demon traits."""
+        self.assertEqual(get_freebie_cost("lore"), 7)
+        self.assertEqual(get_freebie_cost("faith"), 6)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("temporary_faith"), 1)
 
     def test_freebie_cost_lore(self):
         """freebie_cost returns correct cost for lore."""
-        self.assertEqual(self.demon.freebie_cost("lore"), 7)
-
-    def test_freebie_cost_other_lore(self):
-        """freebie_cost returns correct cost for non-house lore."""
-        self.assertEqual(self.demon.freebie_cost("other_lore"), 10)
+        self.assertEqual(get_freebie_cost("lore"), 7)
 
     def test_freebie_cost_faith(self):
         """freebie_cost returns correct cost for faith."""
-        self.assertEqual(self.demon.freebie_cost("faith"), 7)
+        self.assertEqual(get_freebie_cost("faith"), 6)
 
     def test_freebie_cost_virtue(self):
         """freebie_cost returns correct cost for virtue."""
-        self.assertEqual(self.demon.freebie_cost("virtue"), 2)
+        self.assertEqual(get_freebie_cost("virtue"), 2)
 
     def test_freebie_cost_temporary_faith(self):
         """freebie_cost returns correct cost for temporary_faith."""
-        self.assertEqual(self.demon.freebie_cost("temporary_faith"), 1)
+        self.assertEqual(get_freebie_cost("temporary_faith"), 1)
 
     def test_spend_freebies_faith(self):
         """spend_freebies increases faith and deducts freebies."""

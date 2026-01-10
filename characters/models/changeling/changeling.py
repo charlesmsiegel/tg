@@ -1,3 +1,4 @@
+from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
@@ -353,27 +354,6 @@ class Changeling(CtDHuman):
             "banality": 1,
         }
 
-    def xp_cost(self, trait_type, trait_value=None):
-        """Return XP cost for changeling-specific traits."""
-        from collections import defaultdict
-
-        costs = defaultdict(
-            lambda: super().xp_cost(trait_type, trait_value) if trait_value is not None else 10000,
-            {
-                "art": 8,
-                "realm": 5,
-                "glamour": 3,
-                "banality": 2,
-            },
-        )
-
-        if trait_type in ["art", "realm", "glamour", "banality"]:
-            if trait_value is not None:
-                return costs[trait_type] * trait_value
-            return costs[trait_type]
-
-        return costs[trait_type]
-
     def spend_xp(self, trait):
         """Spend XP on a trait."""
         output = super().spend_xp(trait)
@@ -385,7 +365,7 @@ class Changeling(CtDHuman):
 
         if trait in arts_list:
             current_value = getattr(self, trait)
-            cost = self.xp_cost("art", current_value + 1)
+            cost = get_xp_cost("art") * (current_value + 1)
 
             if cost <= self.xp:
                 if self.add_art(trait):
@@ -400,7 +380,7 @@ class Changeling(CtDHuman):
 
         if trait in realms_list:
             current_value = getattr(self, trait)
-            cost = self.xp_cost("realm", current_value + 1)
+            cost = get_xp_cost("realm") * (current_value + 1)
 
             if cost <= self.xp:
                 if self.add_realm(trait):
@@ -412,7 +392,7 @@ class Changeling(CtDHuman):
 
         # Handle glamour
         if trait == "glamour":
-            cost = self.xp_cost("glamour", self.glamour + 1)
+            cost = get_xp_cost("glamour") * (self.glamour + 1)
             if cost <= self.xp:
                 if self.add_glamour():
                     self.xp -= cost
@@ -423,7 +403,7 @@ class Changeling(CtDHuman):
 
         # Handle banality
         if trait == "banality":
-            cost = self.xp_cost("banality", self.banality + 1)
+            cost = get_xp_cost("banality") * (self.banality + 1)
             if cost <= self.xp:
                 if self.add_banality():
                     self.xp -= cost
@@ -448,31 +428,6 @@ class Changeling(CtDHuman):
             "banality": 1,
         }
 
-    def freebie_costs(self):
-        """Return a dictionary of freebie costs for changeling traits."""
-        costs = super().freebie_costs()
-        costs.update(
-            {
-                "art": 5,
-                "realm": 3,
-                "glamour": 3,
-                "banality": 2,
-            }
-        )
-        return costs
-
-    def freebie_cost(self, trait_type):
-        """Return freebie cost for changeling-specific traits."""
-        changeling_costs = {
-            "art": 5,
-            "realm": 3,
-            "glamour": 3,
-            "banality": 2,
-        }
-        if trait_type in changeling_costs.keys():
-            return changeling_costs[trait_type]
-        return super().freebie_cost(trait_type)
-
     def spend_freebies(self, trait):
         """Spend freebie points on a trait."""
         output = super().spend_freebies(trait)
@@ -483,7 +438,7 @@ class Changeling(CtDHuman):
         arts_list = list(self.get_arts().keys())
 
         if trait in arts_list:
-            cost = self.freebie_cost("art")
+            cost = get_freebie_cost("art")
             if cost <= self.freebies:
                 if self.add_art(trait):
                     self.freebies -= cost
@@ -495,7 +450,7 @@ class Changeling(CtDHuman):
         realms_list = list(self.get_realms().keys())
 
         if trait in realms_list:
-            cost = self.freebie_cost("realm")
+            cost = get_freebie_cost("realm")
             if cost <= self.freebies:
                 if self.add_realm(trait):
                     self.freebies -= cost
@@ -505,7 +460,7 @@ class Changeling(CtDHuman):
 
         # Handle glamour
         if trait == "glamour":
-            cost = self.freebie_cost("glamour")
+            cost = get_freebie_cost("glamour")
             if cost <= self.freebies:
                 if self.add_glamour():
                     self.freebies -= cost
@@ -515,7 +470,7 @@ class Changeling(CtDHuman):
 
         # Handle banality
         if trait == "banality":
-            cost = self.freebie_cost("banality")
+            cost = get_freebie_cost("banality")
             if cost <= self.freebies:
                 if self.add_banality():
                     self.freebies -= cost

@@ -6,6 +6,7 @@ This module provides freebie spending services for Wraith: The Oblivion characte
 - WraithFreebieSpendingService - Wraiths with Arcanoi, Pathos, etc.
 """
 
+from characters.costs import get_freebie_cost
 from django.utils import timezone
 
 from .base import (
@@ -51,7 +52,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
             if hasattr(self.character, "is_guild_arcanos")
             else False
         )
-        cost = self.character.freebie_cost("guild_arcanos" if is_guild else "arcanos")
+        cost = get_freebie_cost("guild_arcanos" if is_guild else "arcanos")
 
         if cost > self.character.freebies:
             return FreebieSpendResult(
@@ -90,7 +91,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _handle_pathos(self, **kwargs) -> FreebieSpendResult:
         """Handle Pathos freebie spending."""
         trait = "Pathos"
-        cost = self.character.freebie_cost("pathos")
+        cost = get_freebie_cost("pathos")
         current_value = self.character.pathos
         new_value = current_value + 1
 
@@ -131,7 +132,7 @@ class WraithFreebieSpendingService(WtOHumanFreebieSpendingService):
     def _handle_corpus(self, **kwargs) -> FreebieSpendResult:
         """Handle Corpus freebie spending."""
         trait = "Corpus"
-        cost = self.character.freebie_cost("corpus")
+        cost = get_freebie_cost("corpus")
         current_value = self.character.corpus
         new_value = current_value + 1
 

@@ -65,9 +65,9 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
 
         # Calculate cost: new=10, affinity=7×current, regular=8×current
         if current_value == 0:
-            cost = 10  # New sphere
+            cost = get_xp_cost("new_sphere")
         elif is_affinity:
-            cost = 7 * current_value  # Affinity sphere
+            cost = get_xp_cost("affinity_sphere") * current_value
         else:
             cost = get_xp_cost("sphere") * current_value  # Regular sphere (8×)
 
@@ -120,7 +120,7 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
 
         # Calculate cost: new=3, existing=1×current
         if current_value == 0:
-            cost = 3  # New practice
+            cost = get_xp_cost("new_practice")
         else:
             cost = get_xp_cost("practice") * current_value
 
@@ -193,7 +193,7 @@ class MageXPSpendingService(MtAHumanXPSpendingService):
 
         # Calculate cost: new=5, existing=3×current
         if current_value == 0:
-            cost = 5  # New resonance
+            cost = get_xp_cost("new_resonance")
         else:
             cost = get_xp_cost("resonance") * current_value
 
@@ -414,7 +414,7 @@ class SorcererXPSpendingService(MtAHumanXPSpendingService):
 
         # Calculate cost: new=10, existing=7×current
         if current_value == 0:
-            cost = 10  # New path
+            cost = get_xp_cost("new_path")
         else:
             cost = get_xp_cost("path") * current_value
 
@@ -522,7 +522,7 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
         new_value = value if value is not None else current_value + 1
 
         # Advantage cost: 3 per rating difference
-        cost = 3 * abs(new_value - current_value)
+        cost = get_xp_cost("advantage") * abs(new_value - current_value)
 
         self.character.spend_xp(
             trait_name="",
@@ -543,7 +543,7 @@ class CompanionXPSpendingService(MtAHumanXPSpendingService):
     def _handle_charm(self, example, **kwargs) -> XPSpendResult:
         """Handle Spirit Charm XP spending."""
         trait = example.name
-        cost = 5  # 5 XP per charm
+        cost = get_xp_cost("charm")
 
         self.character.spend_xp(
             trait_name="",
