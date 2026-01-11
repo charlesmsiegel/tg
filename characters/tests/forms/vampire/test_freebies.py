@@ -154,11 +154,11 @@ class TestVampireFreebiesFormValidator(VampireFreebiesFormTestCase):
 
     def test_validator_returns_true_for_affordable_path_rating(self):
         """Validator returns True when vampire can afford path rating."""
-        self.vampire.freebies = 1
+        self.vampire.freebies = 2
         self.vampire.save()
 
         form = VampireFreebiesForm(instance=self.vampire)
-        # Path Rating costs 1, should be affordable with 1 freebie
+        # Path Rating costs 2, should be affordable with 2 freebies
         self.assertTrue(form.validator("Path Rating"))
 
 

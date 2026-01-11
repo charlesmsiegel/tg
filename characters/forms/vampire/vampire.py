@@ -46,6 +46,9 @@ class VampireCreationForm(forms.ModelForm):
         instance = super().save(commit=False)
         if self.user:
             instance.owner = self.user
+        # Set path_rating if a path is selected
+        if instance.path and instance.path_rating < 4:
+            instance.path_rating = 4
         if commit:
             instance.save()
         return instance

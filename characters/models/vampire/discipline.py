@@ -1,5 +1,6 @@
 from characters.models.core.statistic import Statistic
 from django.db import models
+from django.urls import reverse
 
 
 class Discipline(Statistic):
@@ -17,3 +18,9 @@ class Discipline(Statistic):
     class Meta:
         verbose_name = "Discipline"
         verbose_name_plural = "Disciplines"
+
+    def get_absolute_url(self):
+        return reverse("characters:vampire:discipline", args=[str(self.id)])
+
+    def get_update_url(self):
+        return reverse("characters:vampire:update:discipline", args=[str(self.pk)])

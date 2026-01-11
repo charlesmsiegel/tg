@@ -91,7 +91,7 @@ class TestRoteCreationFormInit(TestCase):
 
 
 class TestRoteCreationFormPracticeFiltering(TestCase):
-    """Test practice queryset filtering in RoteCreationForm."""
+    """Test practice choice filtering in RoteCreationForm."""
 
     def setUp(self):
         mage_setup()
@@ -118,28 +118,28 @@ class TestRoteCreationFormPracticeFiltering(TestCase):
         PracticeRating.objects.create(mage=self.mage, practice=self.parent_practice, rating=2)
         PracticeRating.objects.create(mage=self.mage, practice=self.specialized, rating=3)
 
-    def test_practice_queryset_includes_mage_practices(self):
-        """Test that practice queryset includes mage's practices."""
+    def test_practice_choices_includes_mage_practices(self):
+        """Test that practice choices include mage's practices."""
         form = RoteCreationForm(instance=self.mage)
-        practice_queryset = form.fields["practice"].queryset
+        practice_values = [pk for pk, _ in form.fields["practice"].choices]
 
-        self.assertIn(self.parent_practice, practice_queryset)
+        self.assertIn(str(self.parent_practice.pk), practice_values)
 
-    def test_practice_queryset_excludes_specialized_in_favor_of_parent(self):
+    def test_practice_choices_excludes_specialized_in_favor_of_parent(self):
         """Test that specialized practices are mapped to their parents."""
         form = RoteCreationForm(instance=self.mage)
-        practice_queryset = form.fields["practice"].queryset
+        practice_values = [pk for pk, _ in form.fields["practice"].choices]
 
-        # The parent practice should be in the queryset
-        self.assertIn(self.parent_practice, practice_queryset)
+        # The parent practice should be in the choices
+        self.assertIn(str(self.parent_practice.pk), practice_values)
 
-    def test_practice_queryset_ordered_by_name(self):
-        """Test that practice queryset is ordered by name."""
+    def test_practice_choices_ordered_by_name(self):
+        """Test that practice choices are ordered by name."""
         form = RoteCreationForm(instance=self.mage)
-        practice_queryset = form.fields["practice"].queryset
+        # Skip the empty placeholder at index 0
+        practice_labels = [label for pk, label in form.fields["practice"].choices if pk]
 
-        names = list(practice_queryset.values_list("name", flat=True))
-        self.assertEqual(names, sorted(names))
+        self.assertEqual(practice_labels, sorted(practice_labels))
 
 
 class TestRoteCreationFormSphereConstraints(TestCase):
@@ -151,7 +151,7 @@ class TestRoteCreationFormSphereConstraints(TestCase):
         self.mage = Mage.objects.create(
             name="Test Mage",
             owner=self.user,
-            arete=3,
+            arete=4,
             forces=4,
             mind=2,
             life=1,
@@ -468,7 +468,7 @@ class TestRoteCreationFormValidation(TestCase):
         mage_low_points = Mage.objects.create(
             name="Low Points Mage",
             owner=self.user,
-            arete=3,
+            arete=5,
             forces=5,
             rote_points=2,  # Only 2 rote points
         )

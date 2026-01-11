@@ -49,26 +49,7 @@ class NodeCreateView(LoginRequiredMixin, MessageMixin, FormView):
 
 class NodeUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
     model = Node
-    fields = [
-        "name",
-        "contained_within",
-        "reality_zone",
-        "description",
-        "rank",
-        "size",
-        "quintessence_per_week",
-        "quintessence_form",
-        "tass_per_week",
-        "tass_form",
-        "merits_and_flaws",
-        "resonance",
-    ]
+    form_class = NodeForm
     template_name = "locations/mage/node/form.html"
     success_message = "Node '{name}' updated successfully!"
     error_message = "Failed to update node. Please correct the errors below."
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields["name"].widget.attrs.update({"placeholder": "Enter name here"})
-        form.fields["description"].widget.attrs.update({"placeholder": "Enter description here"})
-        return form

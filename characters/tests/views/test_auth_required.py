@@ -56,47 +56,33 @@ class TestCharacterViewAuthenticationRequirements(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_discipline_detail_requires_auth(self):
-        """DisciplineDetailView should require authentication."""
+    def test_discipline_detail_is_public(self):
+        """DisciplineDetailView should be publicly accessible - it's reference data."""
         url = reverse("characters:vampire:discipline", args=[self.discipline.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        # Disciplines are reference data, should be publicly accessible
+        self.assertEqual(response.status_code, 200)
 
     def test_discipline_detail_accessible_when_authenticated(self):
-        """DisciplineDetailView should be accessible when authenticated (or raise template error)."""
+        """DisciplineDetailView should be accessible when authenticated."""
         self.client.login(username="testuser", password="testpass123")
         url = reverse("characters:vampire:discipline", args=[self.discipline.pk])
-        try:
-            response = self.client.get(url)
-            # If template exists, should return 200
-            self.assertEqual(response.status_code, 200)
-        except Exception as e:
-            # Template doesn't exist, but authentication passed
-            self.assertIn("TemplateDoesNotExist", str(type(e).__name__))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
-    def test_path_detail_requires_auth(self):
-        """PathDetailView should require authentication."""
+    def test_path_detail_publicly_accessible(self):
+        """PathDetailView should be publicly accessible - it's reference data."""
         url = reverse("characters:vampire:path", args=[self.path.pk])
         response = self.client.get(url)
-        # 302 = redirect to login, 401 = unauthorized, 403 = forbidden
-        self.assertIn(response.status_code, [302, 401, 403])
-        if response.status_code == 302:
-            self.assertIn("/accounts/login/", response.url)
+        # Paths are reference data, should be publicly accessible
+        self.assertEqual(response.status_code, 200)
 
     def test_path_detail_accessible_when_authenticated(self):
-        """PathDetailView should be accessible when authenticated (or raise template error)."""
+        """PathDetailView should be accessible when authenticated."""
         self.client.login(username="testuser", password="testpass123")
         url = reverse("characters:vampire:path", args=[self.path.pk])
-        try:
-            response = self.client.get(url)
-            # If template exists, should return 200
-            self.assertEqual(response.status_code, 200)
-        except Exception as e:
-            # Template doesn't exist, but authentication passed
-            self.assertIn("TemplateDoesNotExist", str(type(e).__name__))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_specialty_detail_requires_auth(self):
         """SpecialtyDetailView should require authentication."""

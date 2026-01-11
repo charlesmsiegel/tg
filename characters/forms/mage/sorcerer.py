@@ -77,6 +77,29 @@ class SorcererBasicsForm(ChainedSelectMixin, forms.ModelForm):
         # Re-run chain setup after choices are configured
         self._setup_chains()
 
+    def clean_fellowship(self):
+        """Convert fellowship ID string to SorcererFellowship instance."""
+        fellowship = self.cleaned_data.get("fellowship")
+        if fellowship and fellowship != "":
+            return SorcererFellowship.objects.get(pk=fellowship)
+        return None
+
+    def clean_casting_attribute(self):
+        """Convert casting_attribute ID string to Attribute instance."""
+        from characters.models.core.attribute_block import Attribute
+
+        casting_attribute = self.cleaned_data.get("casting_attribute")
+        if casting_attribute and casting_attribute != "":
+            return Attribute.objects.get(pk=casting_attribute)
+        return None
+
+    def clean_affinity_path(self):
+        """Convert affinity_path ID string to LinearMagicPath instance."""
+        affinity_path = self.cleaned_data.get("affinity_path")
+        if affinity_path and affinity_path != "":
+            return LinearMagicPath.objects.get(pk=affinity_path)
+        return None
+
 
 class SorcererForm(forms.ModelForm):
     """Full edit form for Sorcerer characters (ST use)."""

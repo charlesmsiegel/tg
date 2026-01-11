@@ -370,7 +370,7 @@ class MageDetailView(HumanDetailView):
                             context["rote_form"] = rote_form
                             return render(request, self.template_name, context)
             else:
-                print("errors", form.errors)
+                pass
         if "Approve" in form.data.values():
             # Parse xp_request_<id>_approve format
             request_key = [x for x in form.data.keys() if form.data[x] == "Approve"][0]
@@ -896,9 +896,6 @@ class MageRoteView(SpecialUserMixin, CreateView):
 
     def form_invalid(self, form):
         errors = form.errors
-        print(errors)
-        # if "ability" in errors:
-        #     del errors["ability"]
         if not errors:
             return self.form_valid(form)
         return super().form_invalid(form)

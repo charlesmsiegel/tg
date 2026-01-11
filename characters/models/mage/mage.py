@@ -213,15 +213,12 @@ class Mage(MtAHuman):
         ]
 
     def clean(self):
+        """Validate arete minimum and that no sphere rating exceeds Arete."""
         from django.core.exceptions import ValidationError
 
         super().clean()
         if self.arete < 1:
             raise ValidationError({"arete": "All awakened mages must have at least Arete 1."})
-
-    def clean(self):
-        """Validate that no sphere rating exceeds Arete."""
-        super().clean()
         for sphere_name, sphere_rating in self.get_spheres().items():
             if sphere_rating > self.arete:
                 raise ValidationError(

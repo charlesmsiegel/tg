@@ -830,8 +830,8 @@ class TestChangelingSpendXP(TestCase):
         result = self.character.spend_xp("wayfare")
         self.assertTrue(result)
         self.assertEqual(self.character.wayfare, 2)
-        # Cost should be 8 * new_value (2) = 16
-        self.assertEqual(self.character.xp, initial_xp - 16)
+        # Cost should be 4 * new_value (2) = 8
+        self.assertEqual(self.character.xp, initial_xp - 8)
 
     def test_spend_xp_on_art_at_max(self):
         """Test spending XP on art that is at maximum fails."""
@@ -855,8 +855,8 @@ class TestChangelingSpendXP(TestCase):
         result = self.character.spend_xp("actor")
         self.assertTrue(result)
         self.assertEqual(self.character.actor, 2)
-        # Cost should be 5 * new_value (2) = 10
-        self.assertEqual(self.character.xp, initial_xp - 10)
+        # Cost should be 3 * new_value (2) = 6
+        self.assertEqual(self.character.xp, initial_xp - 6)
 
     def test_spend_xp_on_realm_at_max(self):
         """Test spending XP on realm that is at maximum fails."""
@@ -1002,8 +1002,8 @@ class TestChangelingSpendFreebies(TestCase):
         result = self.character.spend_freebies("actor")
         self.assertTrue(result)
         self.assertEqual(self.character.actor, 2)
-        # Realm cost is 3 freebies
-        self.assertEqual(self.character.freebies, initial_freebies - 3)
+        # Realm cost is 2 freebies
+        self.assertEqual(self.character.freebies, initial_freebies - 2)
 
     def test_spend_freebies_on_realm_at_max(self):
         """Test spending freebies on realm at maximum fails."""

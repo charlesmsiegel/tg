@@ -394,11 +394,19 @@ class TestPathFollowers(PathModelTestCase):
             name="Follower 1",
             owner=self.user,
             path=path,
+            path_rating=4,
+            conscience=1,
+            self_control=1,
+            courage=1,
         )
         vampire2 = Vampire.objects.create(
             name="Follower 2",
             owner=self.user,
             path=path,
+            path_rating=4,
+            conscience=1,
+            self_control=1,
+            courage=1,
         )
 
         followers = list(path.followers.all())

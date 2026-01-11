@@ -93,7 +93,7 @@ class ModelQuerySetMethodsTests(TestCase):
             name="Test Character",
             owner=cls.user,
             chronicle=cls.chronicle,
-            status="Un",  # Pending approval
+            status="Sub",  # Submitted for approval (Character uses Sub, not Un)
         )
 
     def test_pending_approval_includes_polymorphic_ctype(self):

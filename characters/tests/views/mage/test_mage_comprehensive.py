@@ -139,6 +139,7 @@ class TestMageDetailViewPost(TestCase):
     def test_specialties_submission(self):
         """Test submitting specialties from detail view."""
         self.client.login(username="owner", password="password")
+        self.mage.arete = 4  # Must be >= sphere ratings
         self.mage.forces = 4  # Needs specialty
         self.mage.save()
 

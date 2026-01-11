@@ -135,6 +135,10 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
+        # Set widget ids
+        self.fields["gameline"].widget.attrs["id"] = "id_gameline"
+        self.fields["char_type"].widget.attrs["id"] = "id_char_type"
+
         if user and user.is_authenticated:
             if user.profile.is_st():
                 # For STs, show all gamelines and character types
@@ -165,6 +169,13 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
 
                 # Assign choices_map to the char_type field
                 self.fields["char_type"].choices_map = choices_map
+
+                # Pre-populate initial char_type choices from first gameline
+                if gameline_choices:
+                    first_gameline = gameline_choices[0][0]
+                    if first_gameline in choices_map:
+                        initial_choices = [("", "---------")] + choices_map[first_gameline]
+                        self.fields["char_type"].choices = initial_choices
             else:
                 # For regular users, only show mage gameline
                 self.fields["gameline"].choices = [("mta", "Mage: the Ascension")]
@@ -180,6 +191,11 @@ class CharacterCreationForm(ChainedSelectMixin, forms.Form):
                     )
                 }
                 self.fields["char_type"].choices_map = choices_map
+
+                # Pre-populate initial char_type choices from mta gameline
+                if "mta" in choices_map:
+                    initial_choices = [("", "---------")] + choices_map["mta"]
+                    self.fields["char_type"].choices = initial_choices
 
             # Re-run chain setup after choices are configured
             self._setup_chains()

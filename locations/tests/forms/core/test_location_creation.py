@@ -101,25 +101,20 @@ class TestLocationCreationFormSTBehavior(TestLocationCreationFormSetup):
         self.assertIn("ctd", gameline_values)
 
     def test_st_sees_all_location_types(self):
-        """Test that ST users see all location types."""
+        """Test that ST users see all location types in choices_map."""
         form = LocationCreationForm(user=self.st_user)
 
-        # Check data-types-by-gameline contains all types
-        types_json = form.fields["loc_type"].widget.attrs.get("data-types-by-gameline")
-        self.assertIsNotNone(types_json)
-
-        import json
-
-        types_by_gameline = json.loads(types_json)
+        # ChainedChoiceField stores choices in choices_map
+        choices_map = form.fields["loc_type"].choices_map
 
         # Check MtA types
-        mta_type_values = [t["value"] for t in types_by_gameline.get("mta", [])]
+        mta_type_values = [t[0] for t in choices_map.get("mta", [])]
         self.assertIn("node", mta_type_values)
         self.assertIn("chantry", mta_type_values)
         self.assertIn("sanctum", mta_type_values)
 
         # Check VtM types
-        vtm_type_values = [t["value"] for t in types_by_gameline.get("vtm", [])]
+        vtm_type_values = [t[0] for t in choices_map.get("vtm", [])]
         self.assertIn("domain", vtm_type_values)
         self.assertIn("haven", vtm_type_values)
 
@@ -149,31 +144,31 @@ class TestLocationCreationFormRegularUserBehavior(TestLocationCreationFormSetup)
         self.assertNotIn("ctd", gameline_values)
 
     def test_regular_user_sees_only_mage_locations(self):
-        """Test that regular users only see mage location types."""
+        """Test that regular users only see mage location types in choices_map."""
         form = LocationCreationForm(user=self.regular_user)
 
-        loc_type_values = [choice[0] for choice in form.fields["loc_type"].choices]
+        # ChainedChoiceField stores choices in choices_map
+        choices_map = form.fields["loc_type"].choices_map
+        mta_loc_values = [t[0] for t in choices_map.get("mta", [])]
 
-        self.assertIn("node", loc_type_values)
-        self.assertIn("chantry", loc_type_values)
-        self.assertIn("sanctum", loc_type_values)
-        self.assertNotIn("domain", loc_type_values)
-        self.assertNotIn("haven", loc_type_values)
+        self.assertIn("node", mta_loc_values)
+        self.assertIn("chantry", mta_loc_values)
+        self.assertIn("sanctum", mta_loc_values)
 
-    def test_regular_user_types_by_gameline_data(self):
-        """Test that regular users have types-by-gameline data."""
+        # Should not have non-mage gamelines in choices_map
+        self.assertNotIn("vtm", choices_map)
+        self.assertNotIn("ctd", choices_map)
+
+    def test_regular_user_choices_map_only_mage(self):
+        """Test that regular users have only mage gameline in choices_map."""
         form = LocationCreationForm(user=self.regular_user)
 
-        types_json = form.fields["loc_type"].widget.attrs.get("data-types-by-gameline")
-        self.assertIsNotNone(types_json)
-
-        import json
-
-        types_by_gameline = json.loads(types_json)
+        # ChainedChoiceField stores choices in choices_map
+        choices_map = form.fields["loc_type"].choices_map
 
         # Should only have mta
-        self.assertIn("mta", types_by_gameline)
-        self.assertEqual(len(types_by_gameline), 1)
+        self.assertIn("mta", choices_map)
+        self.assertEqual(len(choices_map), 1)
 
 
 class TestLocationCreationFormLabelFormatting(TestLocationCreationFormSetup):
@@ -206,10 +201,12 @@ class TestLocationCreationFormValidation(TestLocationCreationFormSetup):
 
     def test_valid_form_data(self):
         """Test that form validates with valid data."""
-        # Get the first available gameline and loc_type
+        # Get the first available gameline and first loc_type from choices_map
         form = LocationCreationForm(user=self.st_user)
-        first_gameline = form.fields["gameline"].choices[0][0]
-        first_loc_type = form.fields["loc_type"].choices[0][0]
+        gameline_choices = [c for c in form.fields["gameline"].choices if c[0]]
+        first_gameline = gameline_choices[0][0]
+        choices_map = form.fields["loc_type"].choices_map
+        first_loc_type = choices_map[first_gameline][0][0]
 
         form_data = {
             "gameline": first_gameline,
@@ -224,10 +221,12 @@ class TestLocationCreationFormValidation(TestLocationCreationFormSetup):
 
     def test_valid_form_without_name(self):
         """Test that form validates without name (not required)."""
-        # Get the first available gameline and loc_type
+        # Get the first available gameline and first loc_type from choices_map
         form = LocationCreationForm(user=self.st_user)
-        first_gameline = form.fields["gameline"].choices[0][0]
-        first_loc_type = form.fields["loc_type"].choices[0][0]
+        gameline_choices = [c for c in form.fields["gameline"].choices if c[0]]
+        first_gameline = gameline_choices[0][0]
+        choices_map = form.fields["loc_type"].choices_map
+        first_loc_type = choices_map[first_gameline][0][0]
 
         form_data = {
             "gameline": first_gameline,
@@ -241,10 +240,12 @@ class TestLocationCreationFormValidation(TestLocationCreationFormSetup):
 
     def test_invalid_rank_too_high(self):
         """Test that rank > 5 is invalid."""
-        # Get the first available gameline and loc_type
+        # Get the first available gameline and first loc_type from choices_map
         form = LocationCreationForm(user=self.st_user)
-        first_gameline = form.fields["gameline"].choices[0][0]
-        first_loc_type = form.fields["loc_type"].choices[0][0]
+        gameline_choices = [c for c in form.fields["gameline"].choices if c[0]]
+        first_gameline = gameline_choices[0][0]
+        choices_map = form.fields["loc_type"].choices_map
+        first_loc_type = choices_map[first_gameline][0][0]
 
         form_data = {
             "gameline": first_gameline,
@@ -259,10 +260,12 @@ class TestLocationCreationFormValidation(TestLocationCreationFormSetup):
 
     def test_valid_rank_at_max(self):
         """Test that rank = 5 is valid."""
-        # Get the first available gameline and loc_type
+        # Get the first available gameline and first loc_type from choices_map
         form = LocationCreationForm(user=self.st_user)
-        first_gameline = form.fields["gameline"].choices[0][0]
-        first_loc_type = form.fields["loc_type"].choices[0][0]
+        gameline_choices = [c for c in form.fields["gameline"].choices if c[0]]
+        first_gameline = gameline_choices[0][0]
+        choices_map = form.fields["loc_type"].choices_map
+        first_loc_type = choices_map[first_gameline][0][0]
 
         form_data = {
             "gameline": first_gameline,
@@ -279,15 +282,19 @@ class TestLocationCreationFormAnonymous(TestLocationCreationFormSetup):
     """Test LocationCreationForm behavior for anonymous users."""
 
     def test_anonymous_user_empty_choices(self):
-        """Test that anonymous users get empty choices."""
+        """Test that anonymous users get only the empty placeholder choice."""
         form = LocationCreationForm(user=None)
 
-        self.assertEqual(len(form.fields["gameline"].choices), 0)
-        self.assertEqual(len(form.fields["loc_type"].choices), 0)
+        # ChainedSelect widget adds empty label, so we expect just that one choice
+        gameline_choices = list(form.fields["gameline"].choices)
+        self.assertEqual(len(gameline_choices), 1)
+        self.assertEqual(gameline_choices[0][0], "")  # Empty placeholder
 
     def test_no_user_empty_choices(self):
-        """Test that form without user gets empty choices."""
+        """Test that form without user gets only the empty placeholder choice."""
         form = LocationCreationForm()
 
-        self.assertEqual(len(form.fields["gameline"].choices), 0)
-        self.assertEqual(len(form.fields["loc_type"].choices), 0)
+        # ChainedSelect widget adds empty label, so we expect just that one choice
+        gameline_choices = list(form.fields["gameline"].choices)
+        self.assertEqual(len(gameline_choices), 1)
+        self.assertEqual(gameline_choices[0][0], "")  # Empty placeholder

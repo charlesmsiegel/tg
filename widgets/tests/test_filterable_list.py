@@ -85,8 +85,10 @@ class TestFilterableListTemplateTag(TestCase):
             "{% filterable_list_script %}"
         )
         html = template.render(Context({}))
-        # Should have two script tags
-        self.assertEqual(html.count("FilterableListManager"), 2)
+        # Should have two script tags, each containing "FilterableListManager" twice
+        # (once in class declaration, once in window assignment)
+        self.assertEqual(html.count("<script"), 2)
+        self.assertEqual(html.count("FilterableListManager"), 4)
 
 
 class TestFilterableListDocumentation(TestCase):

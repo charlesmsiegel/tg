@@ -1160,9 +1160,19 @@ class WeeklyXPRequest(models.Model):
         if self.approved:
             raise ValueError("This XP request has already been approved.")
 
-        # Update XP categories if provided
+        # Update XP categories and scene fields if provided
         if xp_data:
-            for field in ["finishing", "learning", "rp", "focus", "standingout"]:
+            for field in [
+                "finishing",
+                "learning",
+                "learning_scene",
+                "rp",
+                "rp_scene",
+                "focus",
+                "focus_scene",
+                "standingout",
+                "standingout_scene",
+            ]:
                 if field in xp_data:
                     setattr(self, field, xp_data[field])
 

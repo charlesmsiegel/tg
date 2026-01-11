@@ -2,7 +2,7 @@
 
 from characters.models.vampire.discipline import Discipline
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 
@@ -30,10 +30,10 @@ class TestDisciplineDetailView(TestCase):
         )
         self.url = self.discipline.get_absolute_url()
 
-    def test_detail_view_requires_login(self):
-        """Detail view requires authentication."""
+    def test_detail_view_publicly_accessible(self):
+        """Detail view is publicly accessible - Disciplines are reference data."""
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)  # Redirect to login
+        self.assertEqual(response.status_code, 200)
 
     def test_detail_view_status_code(self):
         """Detail view is accessible when logged in."""
@@ -48,6 +48,7 @@ class TestDisciplineDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/vampire/discipline/detail.html")
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestDisciplineListView(TestCase):
     """Test Discipline list view."""
 

@@ -85,9 +85,12 @@ class TestCharacterCreationFormInitialization(CharacterCreationFormTestCase):
         """Form initializes correctly without a user (anonymous)."""
         form = CharacterCreationForm()
 
-        # Should have empty choices for anonymous users
-        self.assertEqual(len(form.fields["gameline"].choices), 0)
-        self.assertEqual(len(form.fields["char_type"].choices), 0)
+        # Should have only the empty placeholder choice for anonymous users
+        # ChainedChoiceField always adds an empty choice ("", "---------")
+        self.assertEqual(len(form.fields["gameline"].choices), 1)
+        self.assertEqual(form.fields["gameline"].choices[0][0], "")
+        self.assertEqual(len(form.fields["char_type"].choices), 1)
+        self.assertEqual(form.fields["char_type"].choices[0][0], "")
 
     def test_form_initializes_for_regular_user(self):
         """Form initializes correctly for regular (non-ST) user."""
@@ -246,55 +249,52 @@ class TestLabelFormatting(CharacterCreationFormTestCase):
 
 
 class TestDataAttributesForJavaScript(CharacterCreationFormTestCase):
-    """Test data attributes added for JavaScript filtering."""
+    """Test choices_map configuration for JavaScript filtering.
 
-    def test_char_type_has_data_attribute(self):
-        """char_type field has data-types-by-gameline attribute."""
+    Note: ChainedSelect uses choices_map on the field and embeds the tree as JSON
+    in a script tag, rather than using data attributes on the widget.
+    """
+
+    def test_char_type_has_choices_map(self):
+        """char_type field has choices_map configured."""
         form = CharacterCreationForm(user=self.st_user)
 
-        data_attr = form.fields["char_type"].widget.attrs.get("data-types-by-gameline")
-        self.assertIsNotNone(data_attr)
+        choices_map = form.fields["char_type"].choices_map
+        self.assertIsNotNone(choices_map)
+        self.assertIsInstance(choices_map, dict)
 
-    def test_data_attribute_is_valid_json(self):
-        """data-types-by-gameline is valid JSON."""
-        import json
-
+    def test_choices_map_is_valid(self):
+        """choices_map contains valid gameline mappings."""
         form = CharacterCreationForm(user=self.st_user)
 
-        data_attr = form.fields["char_type"].widget.attrs.get("data-types-by-gameline")
+        choices_map = form.fields["char_type"].choices_map
 
-        # Should not raise JSONDecodeError
-        parsed = json.loads(data_attr)
-        self.assertIsInstance(parsed, dict)
+        # Should be a non-empty dict
+        self.assertIsInstance(choices_map, dict)
+        self.assertGreater(len(choices_map), 0)
 
-    def test_data_attribute_structure(self):
-        """data-types-by-gameline has correct structure."""
-        import json
-
+    def test_choices_map_structure(self):
+        """choices_map has correct structure."""
         form = CharacterCreationForm(user=self.st_user)
 
-        data_attr = form.fields["char_type"].widget.attrs.get("data-types-by-gameline")
-        parsed = json.loads(data_attr)
+        choices_map = form.fields["char_type"].choices_map
 
-        # Each gameline should have a list of dicts with 'value' and 'label'
-        for gameline, types in parsed.items():
+        # Each gameline should have a list of tuples with (value, label)
+        for gameline, types in choices_map.items():
             self.assertIsInstance(types, list)
             for type_info in types:
-                self.assertIn("value", type_info)
-                self.assertIn("label", type_info)
+                self.assertIsInstance(type_info, tuple)
+                self.assertEqual(len(type_info), 2)
 
     def test_types_sorted_by_label(self):
         """Character types are sorted alphabetically by label."""
-        import json
-
         form = CharacterCreationForm(user=self.st_user)
 
-        data_attr = form.fields["char_type"].widget.attrs.get("data-types-by-gameline")
-        parsed = json.loads(data_attr)
+        choices_map = form.fields["char_type"].choices_map
 
         # Check each gameline's types are sorted by label
-        for gameline, types in parsed.items():
-            labels = [t["label"] for t in types]
+        for gameline, types in choices_map.items():
+            labels = [t[1] for t in types]
             self.assertEqual(labels, sorted(labels))
 
 
@@ -349,10 +349,14 @@ class TestFormValidation(CharacterCreationFormTestCase):
         gameline_choices = form_unbound.fields["gameline"].choices
         char_type_choices = form_unbound.fields["char_type"].choices
 
-        if gameline_choices and char_type_choices:
-            # Use the first available gameline and char_type
-            first_gameline = gameline_choices[0][0]
-            first_char_type = char_type_choices[0][0]
+        # Filter out empty placeholder choices
+        valid_gamelines = [c for c in gameline_choices if c[0]]
+        valid_char_types = [c for c in char_type_choices if c[0]]
+
+        if valid_gamelines and valid_char_types:
+            # Use the first available gameline and char_type (skip empty placeholder)
+            first_gameline = valid_gamelines[0][0]
+            first_char_type = valid_char_types[0][0]
 
             form = CharacterCreationForm(
                 data={
@@ -370,8 +374,11 @@ class TestFormValidation(CharacterCreationFormTestCase):
         form_unbound = CharacterCreationForm(user=self.regular_user)
         char_type_choices = form_unbound.fields["char_type"].choices
 
-        if char_type_choices:
-            first_char_type = char_type_choices[0][0]
+        # Filter out empty placeholder choices
+        valid_char_types = [c for c in char_type_choices if c[0]]
+
+        if valid_char_types:
+            first_char_type = valid_char_types[0][0]
 
             form = CharacterCreationForm(
                 data={

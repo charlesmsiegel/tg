@@ -507,6 +507,7 @@ class TestVampirePathIntegration(VampireModelTestCase):
         self.assertFalse(vampire.has_instinct)
 
         vampire.path = self.path_of_caine
+        vampire.path_rating = 4  # Required when on a path
         vampire.save()
         vampire.refresh_from_db()
 
@@ -836,7 +837,7 @@ class TestVampireBloodPoolMechanics(VampireModelTestCase):
         vampire = Vampire.objects.create(
             name="Test",
             owner=self.user,
-            generation_rating=13,
+            generation_rating=8,  # Allows 3 blood per turn
         )
         vampire.blood_pool = 2
         vampire.save()
@@ -998,7 +999,11 @@ class TestVampireVirtueValidation(VampireModelTestCase):
         from core.constants import CharacterStatus
 
         vampire = Vampire.objects.create(name="Test", owner=self.user)
+        # Properly transition through status workflow
+        vampire.status = CharacterStatus.SUBMITTED
+        vampire.save()
         vampire.status = CharacterStatus.APPROVED
+        vampire.save()
         vampire.humanity = 2
         # Should not raise - approved characters can have low humanity
         vampire.clean()
@@ -1008,12 +1013,15 @@ class TestVampireVirtueValidation(VampireModelTestCase):
         from core.constants import CharacterStatus
         from django.core.exceptions import ValidationError
 
+        # Create a valid vampire first
         vampire = Vampire.objects.create(
             name="Test",
             owner=self.user,
             path=self.path_of_caine,
+            path_rating=4,
         )
         vampire.status = CharacterStatus.UNAPPROVED
+        # Now modify to an invalid path_rating and test clean()
         vampire.path_rating = 3
         with self.assertRaises(ValidationError) as context:
             vampire.clean()
@@ -1027,8 +1035,8 @@ class TestVampireVirtueValidation(VampireModelTestCase):
             name="Test",
             owner=self.user,
             path=self.path_of_caine,
+            path_rating=4,
         )
         vampire.status = CharacterStatus.UNAPPROVED
-        vampire.path_rating = 4
         # Should not raise
         vampire.clean()
