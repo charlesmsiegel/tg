@@ -59,10 +59,12 @@ class CharacterQuerySet(ModelQuerySet):
 
         Overrides base ModelQuerySet implementation to use stricter status filter.
         Characters use status='Sub' only, while Items/Locations use ['Un', 'Sub'].
+
+        Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
         return (
             self.filter(status="Sub", chronicle__in=user.chronicle_set.all())
-            .select_related("chronicle", "owner")
+            .select_related("polymorphic_ctype", "chronicle", "owner")
             .order_by("name")
         )
 

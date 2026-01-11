@@ -487,6 +487,7 @@ class TestVampireVirtuesView(VampireChargenTestCase):
             clan=self.brujah,
             creation_status=5,
             path=self.path_of_caine,
+            path_rating=4,  # Minimum required by validation
             has_conviction=True,
             has_instinct=True,
         )
@@ -797,40 +798,25 @@ class TestVampireClanSpecificDisciplines(VampireChargenTestCase):
 
 
 class TestVampireFreebiesFormTemplateStaticJS(TestCase):
-    """Test that vampire freebies form template includes static JavaScript file."""
+    """Test that vampire freebies form template uses conditional JS."""
 
-    def test_freebies_form_loads_static_vampire_freebies_js(self):
-        """Vampire freebies_form.html loads vampire-freebies-form.js from static files."""
-        from django.template import loader
-
-        template = loader.get_template("characters/vampire/vampire/freebies_form.html")
-
-        # Verify the template source contains the static file reference
-        template_source = template.template.source
-        self.assertIn("js/vampire-freebies-form.js", template_source)
-        self.assertIn("{% static", template_source)
-
-    def test_freebies_form_has_data_attributes(self):
-        """Vampire freebies_form.html has data attributes for JavaScript configuration."""
+    def test_freebies_form_uses_conditional_js(self):
+        """Vampire freebies_form.html uses form.conditional_js for JavaScript."""
         from django.template import loader
 
         template = loader.get_template("characters/vampire/vampire/freebies_form.html")
         template_source = template.template.source
 
-        # The template should use data attributes for URLs
-        self.assertIn("data-load-examples-url", template_source)
-        self.assertIn("data-load-values-url", template_source)
-        self.assertIn("data-object-id", template_source)
-        self.assertIn("data-is-group-member", template_source)
+        # The template uses conditional_js from the form
+        self.assertIn("form.conditional_js", template_source)
 
-    def test_freebies_form_does_not_contain_inline_script(self):
-        """Vampire freebies_form.html does not contain inline AJAX URLs."""
+    def test_freebies_form_does_not_contain_inline_ajax(self):
+        """Vampire freebies_form.html does not contain inline AJAX calls."""
         from django.template import loader
 
         template = loader.get_template("characters/vampire/vampire/freebies_form.html")
         template_source = template.template.source
 
-        # The template should not have AJAX URLs embedded in JavaScript
-        # This pattern was the problematic code we extracted
+        # The template should not have inline AJAX code
         self.assertNotIn("$.ajax({", template_source)
         self.assertNotIn("url: '{% url", template_source)

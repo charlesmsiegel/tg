@@ -96,8 +96,14 @@ class NewUserTest(FunctionalTest):
 
     def test_homepage_has_login(self):
         self.browser.get(self.live_server_url)
+        # Click the Account dropdown to expand it
+        account_dropdown = self.browser.find_element("id", "userDropdown")
+        account_dropdown.click()
+        # Wait briefly for dropdown to expand
+        time.sleep(0.2)
+        # Now get links
         links = self.browser.find_elements("tag name", "a")
-        links = [(self.clean_url(link.get_attribute("href")), link.text) for link in links]
+        links = [(self.clean_url(link.get_attribute("href")), link.text.strip()) for link in links]
 
         self.assertIn(("accounts/login/", "Log In"), links)
         self.assertIn(("accounts/signup/", "Sign Up"), links)
@@ -158,8 +164,14 @@ class TestHomepage(FunctionalTest):
 
         self.assertIn("Tellurium Games", self.browser.title)
 
+        # Click the Account dropdown to expand it
+        account_dropdown = self.browser.find_element("id", "userDropdown")
+        account_dropdown.click()
+        # Wait briefly for dropdown to expand
+        time.sleep(0.2)
+        # Now get links
         links = self.browser.find_elements("tag name", "a")
-        links = [(self.clean_url(link.get_attribute("href")), link.text) for link in links]
+        links = [(self.clean_url(link.get_attribute("href")), link.text.strip()) for link in links]
 
         self.assertIn(("accounts/login/", "Log In"), links)
         self.assertIn(("accounts/signup/", "Sign Up"), links)

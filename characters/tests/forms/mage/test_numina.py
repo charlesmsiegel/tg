@@ -70,28 +70,28 @@ class TestNuminaPathFormInit(TestCase):
         self.assertEqual(form.fields["rating"].min_value, 0)
         self.assertEqual(form.fields["rating"].max_value, 5)
 
-    def test_practice_queryset_excludes_specialized(self):
-        """Test that practice queryset excludes specialized practices."""
+    def test_practice_choices_excludes_specialized(self):
+        """Test that practice choices exclude specialized practices."""
         parent = Practice.objects.first()
         specialized = SpecializedPractice.objects.create(
             name="Specialized Test", parent_practice=parent
         )
 
         form = NuminaPathForm()
-        practice_queryset = form.fields["practice"].queryset
+        practice_values = [pk for pk, _ in form.fields["practice"].choices]
 
-        self.assertNotIn(specialized, practice_queryset)
-        self.assertIn(parent, practice_queryset)
+        self.assertNotIn(str(specialized.pk), practice_values)
+        self.assertIn(str(parent.pk), practice_values)
 
-    def test_practice_queryset_excludes_corrupted(self):
-        """Test that practice queryset excludes corrupted practices."""
+    def test_practice_choices_excludes_corrupted(self):
+        """Test that practice choices exclude corrupted practices."""
         parent = Practice.objects.first()
         corrupted = CorruptedPractice.objects.create(name="Corrupted Test", parent_practice=parent)
 
         form = NuminaPathForm()
-        practice_queryset = form.fields["practice"].queryset
+        practice_values = [pk for pk, _ in form.fields["practice"].choices]
 
-        self.assertNotIn(corrupted, practice_queryset)
+        self.assertNotIn(str(corrupted.pk), practice_values)
 
 
 class TestPsychicPathFormInit(TestCase):
@@ -132,17 +132,17 @@ class TestPsychicPathFormInit(TestCase):
         self.assertEqual(form.fields["rating"].min_value, 0)
         self.assertEqual(form.fields["rating"].max_value, 5)
 
-    def test_practice_queryset_excludes_specialized(self):
-        """Test that practice queryset excludes specialized practices."""
+    def test_practice_choices_excludes_specialized(self):
+        """Test that practice choices exclude specialized practices."""
         parent = Practice.objects.first()
         specialized = SpecializedPractice.objects.create(
             name="Specialized Test", parent_practice=parent
         )
 
         form = PsychicPathForm()
-        practice_queryset = form.fields["practice"].queryset
+        practice_values = [pk for pk, _ in form.fields["practice"].choices]
 
-        self.assertNotIn(specialized, practice_queryset)
+        self.assertNotIn(str(specialized.pk), practice_values)
 
 
 class TestNuminaPathRatingFormSet(TestCase):

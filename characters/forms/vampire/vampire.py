@@ -42,6 +42,37 @@ class VampireCreationForm(forms.ModelForm):
         if self.is_bound:
             self.fields["sire"].queryset = Vampire.objects.all()
 
+    def _post_clean(self):
+        """Override to set path_rating before model validation runs."""
+        from django.forms.models import construct_instance
+
+        opts = self._meta
+        exclude = self._get_validation_exclusions()
+
+        # Construct instance first
+        try:
+            self.instance = construct_instance(
+                self, self.instance, opts.fields, opts.exclude
+            )
+        except ValueError as e:
+            self._update_errors(e)
+            return
+
+        # Set path_rating if a path is selected
+        if self.instance.path and self.instance.path_rating < 4:
+            self.instance.path_rating = 4
+
+        # Now run model validation
+        try:
+            self.instance.full_clean(exclude=exclude, validate_unique=False)
+        except forms.ValidationError as e:
+            self._update_errors(e)
+
+        try:
+            self.validate_unique()
+        except forms.ValidationError as e:
+            self._update_errors(e)
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:

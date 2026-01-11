@@ -905,7 +905,7 @@ class TestWraithSpendFreebies(WraithTestCase):
 
     def test_spend_freebies_on_arcanos_insufficient(self):
         """spend_freebies fails when insufficient freebies."""
-        self.wraith.freebies = 5
+        self.wraith.freebies = 4  # Arcanos costs 5, so 4 is insufficient
         result = self.wraith.spend_freebies("argos")
         self.assertFalse(result)
         self.assertEqual(self.wraith.argos, 0)

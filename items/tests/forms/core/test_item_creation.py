@@ -81,17 +81,21 @@ class TestItemCreationFormBasics(TestItemCreationFormSetup):
 
         self.assertEqual(form.fields["rank"].max_value, 5)
 
-    def test_gameline_field_widget_id(self):
-        """Test that gameline field has correct widget id attribute."""
+    def test_gameline_field_uses_chained_select(self):
+        """Test that gameline field uses ChainedSelect widget."""
+        from widgets.widgets.chained import ChainedSelect
+
         form = ItemCreationForm(user=self.regular_user)
 
-        self.assertEqual(form.fields["gameline"].widget.attrs.get("id"), "id_item_gameline")
+        self.assertIsInstance(form.fields["gameline"].widget, ChainedSelect)
 
-    def test_item_type_field_widget_id(self):
-        """Test that item_type field has correct widget id attribute."""
+    def test_item_type_field_uses_chained_select(self):
+        """Test that item_type field uses ChainedSelect widget."""
+        from widgets.widgets.chained import ChainedSelect
+
         form = ItemCreationForm(user=self.regular_user)
 
-        self.assertEqual(form.fields["item_type"].widget.attrs.get("id"), "id_item_type")
+        self.assertIsInstance(form.fields["item_type"].widget, ChainedSelect)
 
 
 class TestItemCreationFormLabelFormatting(TestItemCreationFormSetup):
@@ -158,19 +162,21 @@ class TestItemCreationFormRegularUser(TestItemCreationFormSetup):
         self.assertEqual(gameline_labels.get("mta"), "Mage: the Ascension")
 
     def test_item_type_choices_only_mage_items(self):
-        """Test that regular users only see Mage item types."""
+        """Test that regular users only see Mage item types in choices_map."""
         form = ItemCreationForm(user=self.regular_user)
 
-        item_type_values = [choice[0] for choice in form.fields["item_type"].choices]
+        # ChainedChoiceField stores choices in choices_map, not choices
+        choices_map = form.fields["item_type"].choices_map
+        mage_item_values = [choice[0] for choice in choices_map.get("mta", [])]
 
         # Should include mage items
-        self.assertIn("periapt", item_type_values)
-        self.assertIn("talisman", item_type_values)
-        self.assertIn("sorcerer_artifact", item_type_values)
+        self.assertIn("periapt", mage_item_values)
+        self.assertIn("talisman", mage_item_values)
+        self.assertIn("sorcerer_artifact", mage_item_values)
 
-        # Should NOT include vampire or werewolf items
-        self.assertNotIn("vampire_artifact", item_type_values)
-        self.assertNotIn("fetish", item_type_values)
+        # Should NOT include vampire or werewolf items (no such keys in map)
+        self.assertNotIn("vtm", choices_map)
+        self.assertNotIn("wta", choices_map)
 
     def test_item_types_sorted_by_label(self):
         """Test that item types are sorted alphabetically by label."""
@@ -180,18 +186,16 @@ class TestItemCreationFormRegularUser(TestItemCreationFormSetup):
 
         self.assertEqual(item_type_labels, sorted(item_type_labels))
 
-    def test_data_types_by_gameline_attribute(self):
-        """Test that data-types-by-gameline is set for JavaScript access."""
+    def test_choices_tree_contains_mage_items(self):
+        """Test that the choices tree contains mage item types for JavaScript access."""
         form = ItemCreationForm(user=self.regular_user)
 
-        data_attr = form.fields["item_type"].widget.attrs.get("data-types-by-gameline")
+        # ChainedSelectMixin embeds choices in the root widget's choices_tree
+        choices_tree = form.fields["gameline"].widget.choices_tree
 
-        self.assertIsNotNone(data_attr)
-        # Should be valid JSON
-        import json
-
-        parsed = json.loads(data_attr)
-        self.assertIn("mta", parsed)
+        self.assertIsNotNone(choices_tree)
+        # Should contain item_type choices keyed by parent value
+        self.assertIn("item_type:mta", choices_tree)
 
 
 class TestItemCreationFormSTUser(TestItemCreationFormSetup):
@@ -222,42 +226,29 @@ class TestItemCreationFormSTUser(TestItemCreationFormSetup):
         # At least one item should be present
         self.assertGreater(len(item_type_values), 0)
 
-    def test_data_types_by_gameline_contains_all(self):
-        """Test that data-types-by-gameline contains all gamelines."""
-        form = ItemCreationForm(user=self.st_user)
-
-        import json
-
-        data_attr = form.fields["item_type"].widget.attrs.get("data-types-by-gameline")
-        parsed = json.loads(data_attr)
-
-        self.assertIn("mta", parsed)
-        self.assertIn("vtm", parsed)
-        self.assertIn("wta", parsed)
-
     def test_each_gameline_types_sorted(self):
         """Test that each gameline's item types are sorted by label."""
         form = ItemCreationForm(user=self.st_user)
 
-        import json
-
-        data_attr = form.fields["item_type"].widget.attrs.get("data-types-by-gameline")
-        parsed = json.loads(data_attr)
-
-        for gameline, types in parsed.items():
-            labels = [t["label"] for t in types]
+        # Check that choices_map for item_type has sorted labels for each gameline
+        choices_map = form.fields["item_type"].choices_map
+        for gameline, choices in choices_map.items():
+            labels = [label for _, label in choices]
             self.assertEqual(labels, sorted(labels), f"Types for {gameline} not sorted")
 
 
 class TestItemCreationFormUnauthenticated(TestCase):
     """Test ItemCreationForm with no user or unauthenticated user."""
 
-    def test_form_without_user_has_empty_choices(self):
-        """Test that form without user has empty gameline choices."""
+    def test_form_without_user_has_only_empty_choice(self):
+        """Test that form without user has only the empty placeholder choice."""
         form = ItemCreationForm()
 
-        # Without user, choices should be empty
-        self.assertEqual(list(form.fields["gameline"].choices), [])
+        # Without user, only the empty placeholder choice should be present
+        choices = list(form.fields["gameline"].choices)
+        # ChainedSelect widget adds an empty label choice
+        self.assertEqual(len(choices), 1)
+        self.assertEqual(choices[0][0], "")
 
     def test_form_with_none_user(self):
         """Test that form with user=None doesn't crash."""

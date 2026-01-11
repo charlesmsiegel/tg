@@ -42,6 +42,10 @@ class LocationCreationForm(ChainedSelectMixin, forms.Form):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
+        # Set widget ids
+        self.fields["gameline"].widget.attrs["id"] = "id_loc_gameline"
+        self.fields["loc_type"].widget.attrs["id"] = "id_loc_type"
+
         if user and user.is_authenticated:
             if user.profile.is_st():
                 # For STs, show all gamelines and location types

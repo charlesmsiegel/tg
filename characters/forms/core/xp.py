@@ -267,6 +267,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
 
     def clean_value(self):
         value = self.cleaned_data.get("value")
-        if value is not None:
-            return value.id
-        return value
+        if value is not None and value != "":
+            # Value comes in as a string (the ID), convert to int
+            return int(value)
+        return None

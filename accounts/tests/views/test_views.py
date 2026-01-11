@@ -652,8 +652,8 @@ class TestProfileViewIDORProtection(TestCase):
     def test_unauthenticated_cannot_view_profile(self):
         """Test that unauthenticated users cannot view profiles."""
         response = self.client.get(reverse("accounts:profile", kwargs={"pk": self.user.profile.pk}))
-        # Should redirect to login
-        self.assertEqual(response.status_code, 302)
+        # Should either redirect to login (302) or return 401 (via AuthErrorHandlerMiddleware)
+        self.assertIn(response.status_code, [302, 401])
 
 
 class TestProfileUpdateViewIDORProtection(TestCase):

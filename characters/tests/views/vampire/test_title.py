@@ -2,10 +2,12 @@
 
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.title import VampireTitle
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 
+# Disable caching for template assertion tests
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestVampireTitleDetailView(TestCase):
     """Test VampireTitle detail view."""
 
@@ -38,6 +40,7 @@ class TestVampireTitleDetailView(TestCase):
         self.assertEqual(response.context["sect"], self.sect)
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestVampireTitleListView(TestCase):
     """Test VampireTitle list view."""
 
@@ -128,6 +131,7 @@ class TestVampireTitleUpdateView(TestCase):
         self.assertTemplateUsed(response, "characters/vampire/title/form.html")
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestVampireTitleNegativeStatus(TestCase):
     """Test negative title handling in views."""
 

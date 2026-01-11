@@ -1,10 +1,12 @@
 """Tests for VampireSect views and templates."""
 
 from characters.models.vampire.sect import VampireSect
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 
+# Disable caching for template assertion tests
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestVampireSectDetailView(TestCase):
     """Test VampireSect detail view."""
 
@@ -27,6 +29,7 @@ class TestVampireSectDetailView(TestCase):
         self.assertTemplateUsed(response, "characters/vampire/sect/detail.html")
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestVampireSectListView(TestCase):
     """Test VampireSect list view."""
 

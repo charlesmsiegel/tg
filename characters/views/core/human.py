@@ -511,9 +511,7 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
         return super().form_invalid(form)
 
     def form_invalid(self, form):
-        response = super().form_invalid(form)
-        print(form.errors)
-        return response
+        return super().form_invalid(form)
 
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
