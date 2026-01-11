@@ -24,7 +24,10 @@ if file_path:
     )
     # Exit code 0 means the file IS ignored
     if result.returncode == 0:
-        print(f"Error: Attempted to write to a gitignored file: {file_path}", file=sys.stderr)
+        print("----------------------------------------------------", file=sys.stderr)
+        print(f"ERROR: Cannot write to gitignored file: {file_path}", file=sys.stderr)
+        print("This file is excluded by .gitignore patterns.", file=sys.stderr)
+        print("----------------------------------------------------", file=sys.stderr)
         sys.exit(2)
 
 # Exit code 0 allows the tool execution to proceed

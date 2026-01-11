@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 
@@ -14,7 +15,7 @@ tool_input = context.get('tool_input', {})
 # Only check for Bash commands containing git commit
 if tool_name == 'Bash':
     command = tool_input.get('command', '')
-    if 'git commit' in command:
+    if re.search(r'\bgit\s+commit\b', command):
         # Check current branch
         result = subprocess.run(
             ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
