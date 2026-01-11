@@ -1,3 +1,6 @@
+from django import forms
+from django.db.models import Q
+
 from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.core.ability_block import Ability
@@ -10,8 +13,6 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
 from characters.models.mage.sphere import Sphere
 from core.widgets import AutocompleteTextInput
-from django import forms
-from django.db.models import Q
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin
 

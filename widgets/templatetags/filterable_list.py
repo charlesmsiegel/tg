@@ -9,6 +9,7 @@ This loads the JavaScript needed for client-side list filtering.
 """
 
 from django import template
+
 from widgets.widgets.filterable import render_filterable_list_script
 
 register = template.Library()

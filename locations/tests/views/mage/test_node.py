@@ -1,11 +1,12 @@
 """Tests for node views."""
 
-from characters.models.core import MeritFlaw
-from characters.models.mage.resonance import Resonance
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
+
+from characters.models.core import MeritFlaw
+from characters.models.mage.resonance import Resonance
 from game.models import ObjectType
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 

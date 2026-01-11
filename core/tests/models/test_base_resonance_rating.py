@@ -5,10 +5,11 @@ Verifies that all concrete implementations inherit the shared functionality
 correctly and maintain database constraints.
 """
 
-from characters.models.mage.mage import Mage, ResRating
-from characters.models.mage.resonance import Resonance
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+
+from characters.models.mage.mage import Mage, ResRating
+from characters.models.mage.resonance import Resonance
 from items.models.mage.wonder import Wonder, WonderResonanceRating
 from items.models.mummy.relic import MummyRelic, RelicResonanceRating
 from locations.models.mage.node import Node, NodeResonanceRating

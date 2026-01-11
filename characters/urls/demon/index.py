@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.demon import (
     ApocalypticFormTraitListView,
     ConclaveListView,
@@ -12,7 +14,6 @@ from characters.views.demon import (
     ThrallListView,
     VisageListView,
 )
-from django.urls import path
 
 urls = [
     path("apocalyptic_trait/", ApocalypticFormTraitListView.as_view(), name="apocalyptic_trait"),

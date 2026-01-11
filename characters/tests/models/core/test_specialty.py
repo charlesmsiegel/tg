@@ -1,6 +1,7 @@
-from characters.models.core import Specialty
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core import Specialty
 
 
 class TestSpecialtyDetailView(TestCase):

@@ -19,7 +19,7 @@ class AutocompleteTextInput(TextInput):
         suggestions_js = json.dumps(self.suggestions)
         # Use json.dumps for the name to properly escape for JavaScript context
         name_js = json.dumps(name)
-        autocomplete_js = """
+        autocomplete_js = f"""
             <script>
             $(function() {{
                 var suggestions = {suggestions_js};
@@ -30,7 +30,5 @@ class AutocompleteTextInput(TextInput):
                 }});
             }});
             </script>
-        """.format(
-            name_js=name_js, suggestions_js=suggestions_js
-        )
+        """
         return mark_safe(html + autocomplete_js)

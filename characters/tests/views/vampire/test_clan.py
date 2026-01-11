@@ -1,10 +1,10 @@
 """Tests for VampireClan views and templates."""
 
-from characters.models.vampire.clan import VampireClan
-from characters.models.vampire.discipline import Discipline
-from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.vampire.clan import VampireClan
+from characters.models.vampire.discipline import Discipline
 
 
 class TestVampireClanDetailView(TestCase):

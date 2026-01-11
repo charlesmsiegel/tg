@@ -2,6 +2,7 @@
 
 from django.template import Context, Template
 from django.test import TestCase
+
 from items.templatetags.item_filters import replace_underscore
 
 

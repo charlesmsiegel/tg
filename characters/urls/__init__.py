@@ -1,8 +1,9 @@
 from importlib import import_module
 
+from django.urls import include, path
+
 from characters import views
 from core.constants import GameLine
-from django.urls import include, path
 
 from .core import ajax, create, detail, index, update
 

@@ -45,8 +45,9 @@ class BackgroundManager:
         Returns:
             int: Sum of all ratings for this background type
         """
-        from characters.models.core.background_block import BackgroundRating
         from django.db.models import Sum
+
+        from characters.models.core.background_block import BackgroundRating
 
         result = BackgroundRating.objects.filter(
             bg__property_name=bg_name, char=self.character

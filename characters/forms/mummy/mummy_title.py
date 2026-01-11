@@ -1,5 +1,6 @@
-from characters.models.mummy.mummy_title import MummyTitle
 from django import forms
+
+from characters.models.mummy.mummy_title import MummyTitle
 
 
 class MummyTitleForm(forms.ModelForm):

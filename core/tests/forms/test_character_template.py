@@ -1,13 +1,14 @@
 """Tests for character_template forms module."""
 
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase
+
 from core.forms.character_template import (
     CharacterTemplateForm,
     CharacterTemplateImportForm,
 )
 from core.models import CharacterTemplate
-from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
 from game.models import Chronicle, Gameline, STRelationship
 
 User = get_user_model()

@@ -1,11 +1,12 @@
-from characters.models.core.character import Character
-from characters.models.mage.mage import Mage
-from characters.models.mage.rote import Rote
-from core.constants import HeadingChoices, ThemeChoices
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core.character import Character
+from characters.models.mage.mage import Mage
+from characters.models.mage.rote import Rote
+from core.constants import HeadingChoices, ThemeChoices
 from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
 from items.models.core.item import ItemModel
 from locations.models.core.location import LocationModel

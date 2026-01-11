@@ -1,12 +1,13 @@
 """Tests for MageFaction views."""
 
+from django.db import connection
+from django.test import Client, TestCase
+from django.test.utils import CaptureQueriesContext
+
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Paradigm, Practice
 from characters.models.mage.sphere import Sphere
 from core.models import Language
-from django.db import connection
-from django.test import Client, TestCase
-from django.test.utils import CaptureQueriesContext
 from items.models.core.material import Material
 from items.models.core.medium import Medium
 

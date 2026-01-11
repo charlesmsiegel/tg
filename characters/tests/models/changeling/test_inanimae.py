@@ -1,8 +1,9 @@
 """Tests for Inanimae model."""
 
-from characters.models.changeling.inanimae import Inanimae
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.changeling.inanimae import Inanimae
 
 
 class TestInanimae(TestCase):

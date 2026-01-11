@@ -7,13 +7,13 @@ Tests cover:
 - FamiliarForm save functionality
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.familiar import FamiliarForm
 from characters.models.core.archetype import Archetype
 from characters.models.mage.companion import Companion
-from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestFamiliarFormInit(TestCase):

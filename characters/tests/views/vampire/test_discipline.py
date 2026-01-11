@@ -1,9 +1,10 @@
 """Tests for Discipline views and templates."""
 
-from characters.models.vampire.discipline import Discipline
 from django.contrib.auth.models import User
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+
+from characters.models.vampire.discipline import Discipline
 
 
 # URL helpers for Discipline (which extends Statistic, not Model)

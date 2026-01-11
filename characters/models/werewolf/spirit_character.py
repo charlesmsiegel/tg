@@ -1,7 +1,8 @@
-from characters.models.core.character import Character
-from characters.models.werewolf.charm import SpiritCharm
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core.character import Character
+from characters.models.werewolf.charm import SpiritCharm
 
 
 class SpiritCharacter(Character):

@@ -1,7 +1,8 @@
-from characters.models.vampire import Coterie, Vampire, VampireClan
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.vampire import Coterie, Vampire, VampireClan
 
 
 class TestCoterieDetailView(TestCase):

@@ -12,6 +12,9 @@ Tests cover:
 - Ritual selection and creation workflow
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.numina import (
     NuminaPathForm,
     NuminaPathRatingFormSet,
@@ -27,8 +30,6 @@ from characters.models.mage.focus import (
 )
 from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestNuminaPathFormInit(TestCase):

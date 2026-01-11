@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.hunter import (
     CreedUpdateView,
     EdgeUpdateView,
@@ -5,7 +7,6 @@ from characters.views.hunter import (
     HunterOrganizationUpdateView,
     HunterUpdateView,
 )
-from django.urls import path
 
 urls = [
     path("hunter/<int:pk>/", HunterUpdateView.as_view(), name="hunter"),

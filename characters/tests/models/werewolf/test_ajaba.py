@@ -1,9 +1,9 @@
 """Tests for Ajaba (werehyena) module."""
 
-from characters.models.werewolf.ajaba import Ajaba
-from characters.models.werewolf.gift import GiftPermission
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.ajaba import Ajaba
 
 
 class TestAjaba(TestCase):

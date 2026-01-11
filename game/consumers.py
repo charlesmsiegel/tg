@@ -5,12 +5,11 @@ WebSocket consumers for real-time scene chat.
 import json
 import logging
 
-from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+
 from characters.models.core import CharacterModel
-from django.utils import timezone
-from game.models import Post, Scene
+from game.models import Scene
 
 logger = logging.getLogger(__name__)
 

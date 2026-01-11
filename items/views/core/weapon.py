@@ -1,5 +1,6 @@
-from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import MessageMixin
 from items.models.core import Weapon
 
 

@@ -2,9 +2,10 @@
 
 from unittest.mock import MagicMock
 
-from characters.templatetags.get_specialty import get_specialty
 from django.template import Context, Template
 from django.test import TestCase
+
+from characters.templatetags.get_specialty import get_specialty
 
 
 class GetSpecialtyFilterTest(TestCase):

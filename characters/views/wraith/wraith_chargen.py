@@ -1,5 +1,12 @@
 from typing import Any
 
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views.generic import FormView, UpdateView
+
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.wraith.fetter import FetterForm
@@ -22,19 +29,10 @@ from characters.views.wraith.wraith import WraithDetailView
 from characters.views.wraith.wtohuman import WtOHumanAbilityView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    EditPermissionMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
 from core.models import Language
-from django import forms
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import FormView, UpdateView
 
 
 class WraithBasicsView(LoginRequiredMixin, FormView):

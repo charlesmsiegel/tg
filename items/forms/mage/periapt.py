@@ -1,7 +1,8 @@
+from django import forms
+
 from characters.forms.mage.effect import EffectCreateOrSelectFormSet
 from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
-from django import forms
 from items.models.mage.periapt import Periapt
 from items.models.mage.wonder import WonderResonanceRating
 

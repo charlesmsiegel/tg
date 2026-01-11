@@ -1,12 +1,12 @@
+from django.db import models
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
 from core.linked_stat import linked_stat_fields
-from core.utils import add_dot, weighted_choice
-from django.db import models
-from django.utils.timezone import now
+from core.utils import add_dot
 
 
 class Changeling(CtDHuman):

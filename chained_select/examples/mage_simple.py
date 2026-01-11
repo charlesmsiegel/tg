@@ -5,8 +5,9 @@ This shows the simplest possible usage. Just define the form fields and you're d
 No AJAX endpoints, no URL configuration, no extra JavaScript setup.
 """
 
-from chained_select import ChainedChoiceField, ChainedSelectMixin
 from django import forms
+
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 
 # =============================================================================
 # Just define your form - that's it!

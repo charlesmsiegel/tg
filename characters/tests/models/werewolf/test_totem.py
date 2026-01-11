@@ -1,5 +1,6 @@
-from characters.models.werewolf.totem import Totem
 from django.test import TestCase
+
+from characters.models.werewolf.totem import Totem
 
 
 class TestTotemDetailView(TestCase):

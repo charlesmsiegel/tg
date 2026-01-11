@@ -1,5 +1,9 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import CheckConstraint, Q
+from django.urls import reverse
+
 from characters.costs import get_freebie_cost, get_xp_cost
-from characters.models.wraith.arcanos import Arcanos
 from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.shadow_archetype import ShadowArchetype
@@ -7,10 +11,6 @@ from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wtohuman import WtOHuman
 from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
-from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 
 class Wraith(WtOHuman):
@@ -434,8 +434,9 @@ class Wraith(WtOHuman):
         Shadow becomes dominant, Psyche is suppressed.
         Changes character type and converts Passions to Dark Passions.
         """
-        from characters.models.wraith.passion import Passion
         from django.utils import timezone
+
+        from characters.models.wraith.passion import Passion
 
         if self.character_type == "spectre":
             return False  # Already a Spectre
@@ -520,8 +521,8 @@ class Wraith(WtOHuman):
         psyche_successes: Number of successes on Psyche's roll
         shadow_successes: Number of successes on Shadow's roll
         """
+
         from characters.models.wraith.passion import Passion
-        from django.utils import timezone
 
         if psyche_successes > shadow_successes:
             # Redemption successful - Psyche regains control

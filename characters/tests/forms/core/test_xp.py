@@ -10,15 +10,16 @@ Tests cover:
 - Edge cases (zero XP, maxed stats, etc.)
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_xp_cost
-from characters.forms.core.xp import CATEGORY_CHOICES, XPForm
+from characters.forms.core.xp import XPForm
 from characters.models.core import Human, MeritFlaw
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from core.models import Number
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import ObjectType
 
 

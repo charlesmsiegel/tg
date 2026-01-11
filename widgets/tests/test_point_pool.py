@@ -4,6 +4,7 @@ Tests for the widgets app point pool functionality.
 
 from django import forms
 from django.test import TestCase
+
 from widgets import (
     DistributionPoolMixin,
     PointPoolInput,

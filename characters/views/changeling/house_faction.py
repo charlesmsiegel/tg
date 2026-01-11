@@ -1,7 +1,8 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.forms.changeling.house_faction import HouseFactionForm
 from characters.models.changeling.house_faction import HouseFaction
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class HouseFactionDetailView(DetailView):

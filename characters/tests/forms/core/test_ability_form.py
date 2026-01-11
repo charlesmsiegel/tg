@@ -2,8 +2,9 @@
 Tests for the AbilityForm with PointPoolWidget integration.
 """
 
-from characters.forms.core.ability_form import AbilityForm, HumanAbilityForm
 from django.test import TestCase
+
+from characters.forms.core.ability_form import AbilityForm, HumanAbilityForm
 
 
 class TestAbilityForm(TestCase):

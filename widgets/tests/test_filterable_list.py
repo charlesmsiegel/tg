@@ -7,6 +7,7 @@ The JavaScript behavior would be tested via browser/integration tests.
 
 from django.template import Context, Template
 from django.test import TestCase
+
 from widgets import get_filterable_list_js, render_filterable_list_script
 
 

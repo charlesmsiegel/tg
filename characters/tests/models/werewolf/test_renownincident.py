@@ -1,5 +1,6 @@
-from characters.models.werewolf.renownincident import RenownIncident
 from django.test import TestCase
+
+from characters.models.werewolf.renownincident import RenownIncident
 
 
 class TestRenownIncidentDetailView(TestCase):

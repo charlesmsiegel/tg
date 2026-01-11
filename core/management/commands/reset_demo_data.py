@@ -86,10 +86,9 @@ class Command(BaseCommand):
 
     def load_demo_data(self):
         """Load demo data."""
-        from datetime import date
 
         from django.contrib.auth.models import User
-        from django.core.management import call_command
+
         from game.models import Chronicle
 
         self.stdout.write("Loading demo data...")

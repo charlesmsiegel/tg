@@ -9,6 +9,7 @@ Reports on:
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+
 from game.models import Chronicle, STRelationship
 
 
@@ -132,7 +133,7 @@ class Command(BaseCommand):
         discord_visible = profiles.filter(discord_toggle=True).count()
 
         self.stdout.write(f"Total Profiles: {total}")
-        self.stdout.write(f"\nSafety Tools:")
+        self.stdout.write("\nSafety Tools:")
         self.stdout.write(
             f"  Lines set: {with_lines} ({with_lines/total*100 if total > 0 else 0:.1f}%)"
         )
@@ -141,7 +142,7 @@ class Command(BaseCommand):
             f"  Veils set: {with_veils} ({with_veils/total*100 if total > 0 else 0:.1f}%)"
         )
         self.stdout.write(f"  Veils visible: {veils_visible}")
-        self.stdout.write(f"\nContact Info:")
+        self.stdout.write("\nContact Info:")
         self.stdout.write(
             f"  Discord ID set: {with_discord} ({with_discord/total*100 if total > 0 else 0:.1f}%)"
         )

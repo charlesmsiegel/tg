@@ -1,4 +1,7 @@
-from datetime import date
+
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.utils.timezone import now
 
 from characters.models.core import (
     Archetype,
@@ -11,9 +14,6 @@ from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.specialty import Specialty
 from characters.tests.utils import human_setup
 from core.models import Language, Number
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.utils.timezone import now
 from game.models import Chronicle, ObjectType
 
 

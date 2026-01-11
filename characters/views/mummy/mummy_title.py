@@ -1,7 +1,8 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.forms.mummy.mummy_title import MummyTitleForm
 from characters.models.mummy.mummy_title import MummyTitle
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class MummyTitleDetailView(DetailView):

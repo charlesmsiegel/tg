@@ -1,5 +1,6 @@
-from characters.models.werewolf import SpiritCharm
 from django.test import TestCase
+
+from characters.models.werewolf import SpiritCharm
 
 
 class TestSpiritCharmDetailView(TestCase):

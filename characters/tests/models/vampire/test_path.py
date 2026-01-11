@@ -9,10 +9,11 @@ Tests cover:
 - Virtue display methods
 """
 
-from characters.models.vampire.path import Path
-from characters.models.vampire.vampire import Vampire
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.vampire.path import Path
+from characters.models.vampire.vampire import Vampire
 
 
 class PathModelTestCase(TestCase):

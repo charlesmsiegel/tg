@@ -7,14 +7,15 @@ Tests cover:
 - SorcererForm save functionality
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.sorcerer import SorcererForm
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

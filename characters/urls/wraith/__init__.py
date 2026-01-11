@@ -1,5 +1,6 @@
-from characters import views
 from django.urls import include, path
+
+from characters import views
 
 from . import ajax, create, detail, index, update
 

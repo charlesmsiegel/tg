@@ -1,9 +1,10 @@
 """Tests for Ritual model."""
 
+from django.test import TestCase
+
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
-from django.test import TestCase
 
 
 class RitualModelTests(TestCase):

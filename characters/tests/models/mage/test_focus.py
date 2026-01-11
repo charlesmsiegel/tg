@@ -1,3 +1,6 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.ability_block import Ability
 from characters.models.mage.focus import (
     CorruptedPractice,
@@ -8,8 +11,6 @@ from characters.models.mage.focus import (
     Tenet,
 )
 from characters.models.mage.mage import Mage, PracticeRating
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestPractice(TestCase):

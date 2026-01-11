@@ -1,7 +1,8 @@
-from characters.models.werewolf.wtahuman import WtAHuman
-from characters.tests.utils import werewolf_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.wtahuman import WtAHuman
+from characters.tests.utils import werewolf_setup
 from game.models import Chronicle
 
 

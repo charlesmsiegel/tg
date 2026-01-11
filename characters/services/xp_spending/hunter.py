@@ -6,8 +6,9 @@ This module provides XP spending services for Hunter: The Reckoning characters:
 - HunterXPSpendingService - Imbued hunters with Edges
 """
 
-from characters.costs import get_xp_cost
 from django.utils import timezone
+
+from characters.costs import get_xp_cost
 
 from .base import (
     HumanXPSpendingService,

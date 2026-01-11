@@ -6,6 +6,7 @@ eliminates the need for custom JavaScript in the template.
 """
 
 from django import forms
+
 from widgets import DistributionPoolMixin
 
 

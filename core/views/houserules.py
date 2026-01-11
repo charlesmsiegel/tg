@@ -1,8 +1,9 @@
 from typing import Any
 
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from core.mixins import MessageMixin
 from core.models import HouseRule
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class HouseRulesIndexView(ListView):

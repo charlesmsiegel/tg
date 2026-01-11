@@ -9,13 +9,14 @@ Tests cover:
 - Independent ghoul mechanics
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
 from characters.models.vampire.vampire import Vampire
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

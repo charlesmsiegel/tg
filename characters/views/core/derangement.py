@@ -1,8 +1,9 @@
-from characters.models.core import Derangement
-from core.mixins import MessageMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.models.core import Derangement
+from core.mixins import MessageMixin
 
 
 @method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes

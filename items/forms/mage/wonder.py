@@ -1,8 +1,9 @@
+from django import forms
+
 from characters.forms.mage.effect import EffectCreateOrSelectFormSet
 from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
 from core.widgets import AutocompleteTextInput
-from django import forms
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm
 from items.models.mage.talisman import Talisman

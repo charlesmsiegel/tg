@@ -1,3 +1,12 @@
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView
+
 from accounts.forms import (
     CustomAuthenticationForm,
     CustomUserCreationForm,
@@ -9,14 +18,6 @@ from accounts.models import Profile
 from characters.models.core import Character
 from core.mixins import MessageMixin
 from core.services import ApprovalService
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
-from django.core.exceptions import PermissionDenied
-from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView
 from game.forms import WeeklyXPRequestForm
 from game.models import Scene, UserSceneReadStatus, Week, WeeklyXPRequest
 

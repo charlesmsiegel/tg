@@ -1,7 +1,8 @@
-from characters.models.werewolf.fera import Fera
-from characters.models.werewolf.gift import GiftPermission
 from django.db import models
 from django.urls import reverse
+
+from characters.models.werewolf.fera import Fera
+from characters.models.werewolf.gift import GiftPermission
 
 
 class Bastet(Fera):

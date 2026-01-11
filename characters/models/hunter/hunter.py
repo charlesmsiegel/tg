@@ -1,7 +1,8 @@
-from characters.costs import get_freebie_cost, get_xp_cost
-from core.linked_stat import linked_stat_fields
 from django.db import models
 from django.urls import reverse
+
+from characters.costs import get_freebie_cost
+from core.linked_stat import linked_stat_fields
 
 from .creed import Creed
 from .htrhuman import HtRHuman

@@ -1,8 +1,9 @@
 # game/signals.py
-from characters.models.core.character import CharacterModel
 from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from characters.models.core.character import CharacterModel
 from game.models import Journal
 
 

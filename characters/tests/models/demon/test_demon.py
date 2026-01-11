@@ -1,5 +1,8 @@
 """Tests for Demon model."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost
 from characters.models.demon import Demon
 from characters.models.demon.apocalyptic_form import (
@@ -14,8 +17,6 @@ from characters.models.demon.pact import Pact
 from characters.models.demon.ritual import Ritual
 from characters.models.demon.thrall import Thrall
 from characters.models.demon.visage import Visage
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class DemonModelTests(TestCase):

@@ -1,6 +1,7 @@
 """Tests for WraithRelic model."""
 
 from django.test import TestCase
+
 from items.models.wraith.relic import WraithRelic
 
 

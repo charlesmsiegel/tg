@@ -1,7 +1,8 @@
+from django.views.generic import CreateView, DetailView, UpdateView
+
 from characters.forms.werewolf.septposition import SeptPositionForm
 from characters.models.werewolf.septposition import SeptPosition
 from core.mixins import MessageMixin, ViewPermissionMixin
-from django.views.generic import CreateView, DetailView, UpdateView
 
 
 class SeptPositionDetailView(ViewPermissionMixin, DetailView):

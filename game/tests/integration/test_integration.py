@@ -10,15 +10,12 @@ Tests cover the testing checklist from VIEW_TEMPLATE_MIGRATION_GUIDE.md:
 - No regressions in existing functionality
 """
 
-from datetime import datetime
+
+from django.contrib.auth.models import User
+from django.test import TestCase
 
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.db import transaction
-from django.test import TestCase
-from django.utils import timezone
 from game.models import Chronicle, FreebieSpendingRecord, XPSpendingRequest
 
 

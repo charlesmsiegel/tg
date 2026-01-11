@@ -9,6 +9,9 @@ Tests cover:
 - Form validation for different categories
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.vampire.freebies import (
     VAMPIRE_CATEGORY_CHOICES,
     GhoulFreebiesForm,
@@ -18,8 +21,6 @@ from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
 from characters.models.vampire.vampire import Vampire
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class VampireFreebiesFormTestCase(TestCase):

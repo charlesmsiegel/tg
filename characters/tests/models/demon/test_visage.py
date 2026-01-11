@@ -1,10 +1,11 @@
 """Tests for Visage model."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.demon.apocalyptic_form import ApocalypticForm
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class VisageModelTests(TestCase):

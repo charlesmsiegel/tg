@@ -1,8 +1,9 @@
 """Tests for field template tags."""
 
-from core.templatetags.field import add_attr, add_class, field
 from django import forms
 from django.test import TestCase
+
+from core.templatetags.field import add_attr, add_class, field
 
 
 class MockForm(forms.Form):

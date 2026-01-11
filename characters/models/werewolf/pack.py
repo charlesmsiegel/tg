@@ -1,8 +1,8 @@
-from characters.models.core.group import Group
-from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.totem import Totem
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core.group import Group
+from characters.models.werewolf.totem import Totem
 
 
 class Pack(Group):

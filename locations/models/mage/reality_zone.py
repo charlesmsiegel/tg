@@ -1,9 +1,10 @@
-from characters.models.mage.focus import Practice
-from core.models import BasePracticeRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+from characters.models.mage.focus import Practice
+from core.models import BasePracticeRating
 
 
 class ZoneRating(BasePracticeRating):

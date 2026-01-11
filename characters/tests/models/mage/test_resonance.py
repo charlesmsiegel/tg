@@ -1,5 +1,6 @@
-from characters.models.mage import Resonance
 from django.test import TestCase
+
+from characters.models.mage import Resonance
 
 
 class TestResonanceDetailView(TestCase):

@@ -1,21 +1,20 @@
 from typing import Any
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views import View
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
+
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.core.background_block import Background
 from characters.views.core.generic_background import GenericBackgroundView
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.views.generic import DictView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.views import View
-from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from locations.forms.mage.chantry import (
     ChantryCreateForm,
     ChantryEffectsForm,

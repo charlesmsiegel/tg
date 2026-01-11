@@ -1,5 +1,6 @@
-from characters import views
 from django.urls import path
+
+from characters import views
 
 urls = [
     path("arcanoi/", views.wraith.ArcanosListView.as_view(), name="arcanos"),

@@ -1,9 +1,9 @@
-from characters.models.core import CharacterModel
-from core.models import Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core import CharacterModel
+from core.models import Model, ModelManager, ModelQuerySet
 from locations.models.core import LocationModel
-from polymorphic.managers import PolymorphicManager
 
 
 class ItemQuerySet(ModelQuerySet):

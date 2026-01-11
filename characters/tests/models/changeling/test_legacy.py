@@ -1,5 +1,6 @@
-from characters.models.changeling.legacy import Legacy
 from django.test import TestCase
+
+from characters.models.changeling.legacy import Legacy
 
 
 class TestLegacyDetailView(TestCase):

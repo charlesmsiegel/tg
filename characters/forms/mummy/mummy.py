@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mummy import Mummy
-from django import forms
 
 
 class MummyCreationForm(forms.ModelForm):

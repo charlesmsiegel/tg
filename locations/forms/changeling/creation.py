@@ -4,6 +4,7 @@ Each step corresponds to a stage in the creation process from Book of Freeholds.
 """
 
 from django import forms
+
 from locations.models.changeling import Freehold
 
 

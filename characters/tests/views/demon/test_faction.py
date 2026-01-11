@@ -1,9 +1,10 @@
 """Tests for DemonFaction views."""
 
-from characters.models.demon.faction import DemonFaction
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.demon.faction import DemonFaction
 
 
 class TestFactionDetailView(TestCase):

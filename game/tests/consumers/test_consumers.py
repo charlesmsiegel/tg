@@ -5,13 +5,11 @@ These tests cover the SceneChatConsumer for real-time scene chat functionality.
 """
 
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
 
-from channels.db import database_sync_to_async
-from channels.testing import WebsocketCommunicator
-from characters.models.core import Human
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, TransactionTestCase
+
+from characters.models.core import Human
 from game.consumers import SceneChatConsumer
 from game.models import Chronicle, Scene
 from locations.models.core import LocationModel

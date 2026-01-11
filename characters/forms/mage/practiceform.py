@@ -1,7 +1,8 @@
-from characters.models.mage.focus import Practice, SpecializedPractice
-from characters.models.mage.mage import Mage, PracticeRating
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
+
+from characters.models.mage.focus import Practice, SpecializedPractice
+from characters.models.mage.mage import Mage, PracticeRating
 
 
 class PracticeRatingForm(forms.ModelForm):

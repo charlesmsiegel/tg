@@ -5,17 +5,15 @@ import os
 import tempfile
 from datetime import date, timedelta
 from io import StringIO
-from unittest.mock import patch
 
-from accounts.models import Profile
-from characters.models.core.character import CharacterModel
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import TestCase, TransactionTestCase
-from django.utils import timezone
-from game.models import Chronicle, Scene, Story, STRelationship, Week, WeeklyXPRequest
+from django.test import TestCase
+
+from accounts.models import Profile
+from characters.models.core.human import Human
+from game.models import Chronicle, Scene, Week
 
 
 class ManagementCommandTestBase(TestCase):
@@ -166,7 +164,7 @@ class TestExportChronicleCommand(ManagementCommandTestBase):
             self.assertTrue(os.path.exists(output_file))
 
             # Verify JSON content
-            with open(output_file, "r") as f:
+            with open(output_file) as f:
                 data = json.load(f)
             self.assertIn("chronicle", data)
             self.assertIn("characters", data)
@@ -187,7 +185,7 @@ class TestExportChronicleCommand(ManagementCommandTestBase):
                 output_file,
                 "--pretty",
             )
-            with open(output_file, "r") as f:
+            with open(output_file) as f:
                 content = f.read()
             # Pretty print should have newlines and indentation
             self.assertIn("\n", content)
@@ -208,7 +206,7 @@ class TestExportChronicleCommand(ManagementCommandTestBase):
                 output_file,
                 "--exclude-scenes",
             )
-            with open(output_file, "r") as f:
+            with open(output_file) as f:
                 data = json.load(f)
             self.assertNotIn("scenes", data)
         finally:
@@ -494,7 +492,7 @@ class TestGenerateSTReportCommand(ManagementCommandTestBase):
                 "generate_st_report", "--output", output_file
             )
             self.assertTrue(os.path.exists(output_file))
-            with open(output_file, "r") as f:
+            with open(output_file) as f:
                 content = f.read()
             self.assertIn("ST REPORT", content)
         finally:

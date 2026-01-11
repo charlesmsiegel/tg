@@ -9,12 +9,13 @@ Tests cover:
 - Owner assignment on save
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.vampire.revenant import RevenantCreationForm
 from characters.models.core.archetype import Archetype
 from characters.models.vampire.discipline import Discipline
-from characters.models.vampire.revenant import Revenant, RevenantFamily
-from django.contrib.auth.models import User
-from django.test import TestCase
+from characters.models.vampire.revenant import RevenantFamily
 from game.models import Chronicle
 
 

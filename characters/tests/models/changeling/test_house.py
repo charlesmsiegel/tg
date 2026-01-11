@@ -1,5 +1,6 @@
-from characters.models.changeling.house import House
 from django.test import TestCase
+
+from characters.models.changeling.house import House
 
 
 class TestHouseDetailView(TestCase):

@@ -1,5 +1,8 @@
 """Tests for background_block module."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.background_block import (
     Background,
     BackgroundRating,
@@ -7,8 +10,6 @@ from characters.models.core.background_block import (
 )
 from characters.models.core.group import Group
 from characters.models.core.human import Human
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class BackgroundBlockQueryTests(TestCase):

@@ -1,6 +1,7 @@
-from characters.models.mage import Resonance
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.mage import Resonance
 from game.models import Chronicle
 from items.models.mage import Wonder
 

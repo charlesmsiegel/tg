@@ -1,5 +1,8 @@
 """Tests for Wraith model."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.fetter import Fetter
@@ -8,9 +11,6 @@ from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import ThornRating, Wraith
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.utils import timezone
 
 
 class WraithTestCase(TestCase):

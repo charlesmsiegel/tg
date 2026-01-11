@@ -2,6 +2,10 @@ import datetime
 import math
 import random
 
+from django.db import models
+from django.db.models import Q
+from django.urls import reverse
+
 from characters.models.core.ability_block import Ability
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Instrument, Practice
@@ -10,9 +14,6 @@ from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import Language, Noun
 from core.utils import weighted_choice
-from django.db import models
-from django.db.models import Q
-from django.urls import reverse
 from items.models.core.material import Material
 from items.models.core.medium import Medium
 from items.models.mage.wonder import Wonder

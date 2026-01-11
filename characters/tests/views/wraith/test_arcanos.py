@@ -3,11 +3,12 @@
 Arcanos is a reference model (public game data) and should be accessible without login.
 """
 
-from characters.models.wraith.arcanos import Arcanos
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.wraith.arcanos import Arcanos
 
 
 class TestArcanosDetailView(TestCase):

@@ -1,5 +1,6 @@
-from characters import views
 from django.urls import path
+
+from characters import views
 
 urls = [
     path("mtrhuman/", views.mummy.MtRHumanListView.as_view(), name="mtrhuman"),

@@ -5,8 +5,7 @@ This middleware provides per-user caching support for views, ensuring that
 cached content respects user permissions and authentication status.
 """
 
-from django.core.cache import cache
-from django.utils.cache import get_cache_key, learn_cache_key, patch_response_headers
+from django.utils.cache import patch_response_headers
 from django.utils.deprecation import MiddlewareMixin
 
 

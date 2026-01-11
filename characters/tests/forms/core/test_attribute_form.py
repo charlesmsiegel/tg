@@ -2,8 +2,9 @@
 Tests for the AttributeForm with PointPoolWidget integration.
 """
 
-from characters.forms.core.attribute_form import AttributeForm, HumanAttributeForm
 from django.test import TestCase
+
+from characters.forms.core.attribute_form import AttributeForm, HumanAttributeForm
 
 
 class TestAttributeForm(TestCase):

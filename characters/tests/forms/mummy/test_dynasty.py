@@ -8,9 +8,10 @@ Tests cover:
 - Form save functionality
 """
 
+from django.test import TestCase
+
 from characters.forms.mummy.dynasty import DynastyForm
 from characters.models.mummy.dynasty import Dynasty
-from django.test import TestCase
 
 
 class TestDynastyFormInitialization(TestCase):

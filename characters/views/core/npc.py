@@ -1,10 +1,10 @@
-from characters.forms.core.npc_profile import NPCProfileForm
-from characters.models.core import Character
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.views import View
+
+from characters.forms.core.npc_profile import NPCProfileForm
+from characters.models.core import Character
 
 
 class NPCProfileCreateView(LoginRequiredMixin, View):

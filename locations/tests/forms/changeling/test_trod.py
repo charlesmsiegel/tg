@@ -1,6 +1,7 @@
 """Tests for Trod form."""
 
 from django.test import TestCase
+
 from locations.forms.changeling import TrodForm
 from locations.models.changeling import Trod
 

@@ -1,4 +1,7 @@
-from typing import Any
+
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
@@ -32,16 +35,10 @@ from characters.views.werewolf.wtahuman import WtAHumanAbilityView
 from core.mixins import (
     EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
-from items.models.werewolf.fetish import Fetish
 
 
 class FeraDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -537,7 +534,7 @@ class FeraHistoryView(SpecialUserMixin, UpdateView):
         form = super().get_form(form_class)
         form.fields["first_change"].widget.attrs.update(
             {
-                "placeholder": f"Describe your character's First Change. Include where they were, what triggered it, and how they dealt with the immediate aftermath."
+                "placeholder": "Describe your character's First Change. Include where they were, what triggered it, and how they dealt with the immediate aftermath."
             }
         )
         form.fields["first_change"].help_text = (

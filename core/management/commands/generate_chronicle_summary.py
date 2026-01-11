@@ -10,7 +10,8 @@ Generates:
 """
 
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count, Q, Sum
+from django.db.models import Count
+
 from game.models import Chronicle, Scene
 
 

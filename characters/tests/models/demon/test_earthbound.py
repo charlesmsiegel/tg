@@ -1,5 +1,8 @@
 """Tests for Earthbound model."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.demon.apocalyptic_form import (
     ApocalypticForm,
     ApocalypticFormTrait,
@@ -7,8 +10,6 @@ from characters.models.demon.apocalyptic_form import (
 from characters.models.demon.earthbound import Earthbound
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class EarthboundModelTests(TestCase):

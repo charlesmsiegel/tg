@@ -9,8 +9,9 @@ database queries and view rendering. It includes:
 - Model-based cache invalidation hooks
 """
 
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Optional
+from typing import Any
 
 from django.core.cache import cache
 from django.db.models import Model, QuerySet
@@ -260,7 +261,7 @@ CACHE_TIMEOUT_DAY = 86400  # 24 hours
 
 # Example usage functions
 def get_cached_queryset(
-    model_class: type[Model], filters: Optional[dict] = None, timeout: int = CACHE_TIMEOUT_MEDIUM
+    model_class: type[Model], filters: dict | None = None, timeout: int = CACHE_TIMEOUT_MEDIUM
 ) -> QuerySet:
     """
     Helper function to get a cached queryset for a model.

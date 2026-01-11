@@ -1,8 +1,9 @@
 """Tests for Mokole (weresaurian) module."""
 
-from characters.models.werewolf.mokole import Mokole
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.mokole import Mokole
 
 
 class TestMokole(TestCase):

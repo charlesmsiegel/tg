@@ -1,5 +1,6 @@
-from characters.models.demon.dtf_human import DtFHuman
 from django import forms
+
+from characters.models.demon.dtf_human import DtFHuman
 
 
 class DtFHumanCreationForm(forms.ModelForm):

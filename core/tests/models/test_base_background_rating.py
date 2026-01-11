@@ -5,6 +5,9 @@ Verifies that all concrete implementations inherit the shared functionality
 correctly and maintain database constraints.
 """
 
+from django.core.exceptions import ValidationError
+from django.test import TestCase
+
 from characters.models.core.background_block import (
     Background,
     BackgroundRating,
@@ -12,8 +15,6 @@ from characters.models.core.background_block import (
 )
 from characters.models.core.group import Group
 from characters.models.core.human import Human
-from django.core.exceptions import ValidationError
-from django.test import TestCase
 from locations.models.mage.chantry import Chantry, ChantryBackgroundRating
 
 

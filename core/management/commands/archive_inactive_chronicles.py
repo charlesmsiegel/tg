@@ -11,8 +11,8 @@ import logging
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
-from django.db.models import Max, Q
 from django.utils.timezone import now
+
 from game.models import Chronicle, Scene
 
 logger = logging.getLogger(__name__)

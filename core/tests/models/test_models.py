@@ -10,9 +10,10 @@ Tests cover:
 from unittest import mock
 from unittest.mock import Mock
 
+from django.test import TestCase
+
 from characters.models.core import Human
 from core.utils import dice, filepath, weighted_choice
-from django.test import TestCase
 
 
 class TestDiceUtils(TestCase):

@@ -1,13 +1,13 @@
-from characters.costs import get_freebie_cost, get_xp_cost
-from core.constants import CharacterStatus
-from core.linked_stat import LinkedStat
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 
+from characters.costs import get_freebie_cost, get_xp_cost
+from core.constants import CharacterStatus
+from core.linked_stat import LinkedStat
+
 from .clan import VampireClan
-from .discipline import Discipline
 from .path import Path
 from .sect import VampireSect
 from .title import VampireTitle

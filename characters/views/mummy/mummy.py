@@ -1,5 +1,7 @@
 from typing import Any
 
+from django.views.generic import CreateView, ListView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.mummy.mummy import MummyCreationForm
 from characters.models.mummy.mummy import Mummy
@@ -11,7 +13,6 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django.views.generic import CreateView, ListView, UpdateView
 
 
 class MummyDetailView(XPApprovalMixin, HumanDetailView):

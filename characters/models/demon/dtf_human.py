@@ -1,6 +1,7 @@
-from characters.models.core.human import Human
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core.human import Human
 
 
 class DtFHuman(Human):

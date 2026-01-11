@@ -1,16 +1,15 @@
 from collections import defaultdict
 
+from django.db import models
+from django.urls import reverse
+
 from characters.models.core.background_block import (
     BackgroundRating,
     PooledBackgroundRating,
 )
 from characters.models.core.character import Character
-from characters.models.core.human import Human
 from core.models import Model
 from core.utils import CharacterOrganizationRegistry
-from django.contrib.auth.models import User
-from django.db import models
-from django.urls import reverse
 
 
 class Group(Model):

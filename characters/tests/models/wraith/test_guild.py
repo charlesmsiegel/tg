@@ -1,7 +1,8 @@
 """Tests for Guild model."""
 
-from characters.models.wraith.guild import Guild
 from django.test import TestCase
+
+from characters.models.wraith.guild import Guild
 
 
 class TestGuildModel(TestCase):
@@ -72,17 +73,17 @@ class TestGuildUrls(TestCase):
     def test_get_absolute_url_method_exists(self):
         """Guild has get_absolute_url method."""
         self.assertTrue(hasattr(self.guild, "get_absolute_url"))
-        self.assertTrue(callable(getattr(self.guild, "get_absolute_url")))
+        self.assertTrue(callable(self.guild.get_absolute_url))
 
     def test_get_update_url_method_exists(self):
         """Guild has get_update_url method."""
         self.assertTrue(hasattr(self.guild, "get_update_url"))
-        self.assertTrue(callable(getattr(self.guild, "get_update_url")))
+        self.assertTrue(callable(self.guild.get_update_url))
 
     def test_get_creation_url_method_exists(self):
         """Guild has get_creation_url class method."""
         self.assertTrue(hasattr(Guild, "get_creation_url"))
-        self.assertTrue(callable(getattr(Guild, "get_creation_url")))
+        self.assertTrue(callable(Guild.get_creation_url))
 
     def test_get_heading(self):
         """Guild returns correct heading class."""

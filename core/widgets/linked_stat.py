@@ -135,7 +135,7 @@ class LinkedStatWidget(forms.MultiWidget):
 
         # Render each sub-widget
         widgets_html = []
-        for i, (widget, val) in enumerate(zip(self.widgets, values)):
+        for i, (widget, val) in enumerate(zip(self.widgets, values, strict=False)):
             widget_name = f"{name}_{i}"
             widget_id = f"{attrs.get('id', name)}_{i}"
             widget_attrs = {**attrs, "id": widget_id}

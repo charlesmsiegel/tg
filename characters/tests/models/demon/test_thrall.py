@@ -1,11 +1,12 @@
 """Tests for Thrall model."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost
 from characters.models.demon import Demon
 from characters.models.demon.pact import Pact
 from characters.models.demon.thrall import Thrall
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class ThrallModelTests(TestCase):

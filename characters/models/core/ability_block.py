@@ -1,9 +1,10 @@
-from characters.models.core.statistic import Statistic
-from core.constants import AbilityFields
-from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
+
+from characters.models.core.statistic import Statistic
+from core.constants import AbilityFields
+from core.utils import add_dot
 
 
 class Ability(Statistic):
@@ -254,7 +255,7 @@ class AbilityBlock(models.Model):
             secondary_skills.append(("", 0, ""))
         for _ in range(m - num_sec_kno):
             secondary_knowledges.append(("", 0, ""))
-        return list(zip(secondary_talents, secondary_skills, secondary_knowledges))
+        return list(zip(secondary_talents, secondary_skills, secondary_knowledges, strict=False))
 
     def ability_freebies(self, form):
         cost = 2

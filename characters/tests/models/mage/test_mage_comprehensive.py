@@ -1,19 +1,16 @@
 """Comprehensive tests for mage model - additional methods not covered in test_mage.py."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost, get_xp_cost
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
 from characters.models.core.specialty import Specialty
-from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Practice, Tenet
 from characters.models.mage.mage import Mage, PracticeRating, ResRating
 from characters.models.mage.resonance import Resonance
-from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestMageAffinitySphereName(TestCase):

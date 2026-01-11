@@ -1,8 +1,9 @@
 """Tests for startswith template tag filter."""
 
-from characters.templatetags.startswith import startswith
 from django.template import Context, Template
 from django.test import TestCase
+
+from characters.templatetags.startswith import startswith
 
 
 class StartsWithFilterTest(TestCase):

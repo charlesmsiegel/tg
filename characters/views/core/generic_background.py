@@ -1,14 +1,11 @@
-from characters.models.core.human import Human
-from core.mixins import (
-    EditPermissionMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
-)
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
+
+from characters.models.core.human import Human
+from core.mixins import (
+    SpendFreebiesPermissionMixin,
+)
 
 
 class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):

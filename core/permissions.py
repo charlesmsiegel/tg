@@ -6,7 +6,6 @@ characters, items, locations, and other game objects.
 """
 
 from enum import Enum
-from typing import Set
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -101,7 +100,7 @@ class PermissionManager:
     }
 
     @staticmethod
-    def get_user_roles(user: User, obj) -> Set[Role]:
+    def get_user_roles(user: User, obj) -> set[Role]:
         """
         Determine all roles the user has for this object.
 
@@ -207,7 +206,7 @@ class PermissionManager:
 
     @staticmethod
     def _check_status_restrictions(
-        user: User, obj, permission: Permission, roles: Set[Role]
+        user: User, obj, permission: Permission, roles: set[Role]
     ) -> bool:
         """Apply status-based permission restrictions."""
         status = obj.status

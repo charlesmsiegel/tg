@@ -1,5 +1,6 @@
-from characters import views as char_views
 from django.urls import include, path
+
+from characters import views as char_views
 from game import views
 
 app_name = "game"

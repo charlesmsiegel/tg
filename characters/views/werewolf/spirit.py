@@ -1,13 +1,11 @@
+from django.views.generic import CreateView, DetailView, UpdateView
+
 from characters.models.werewolf.spirit_character import SpiritCharacter
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, UpdateView
 
 
 class SpiritDetailView(ViewPermissionMixin, DetailView):

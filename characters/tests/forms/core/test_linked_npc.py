@@ -9,6 +9,9 @@ Tests cover:
 - Gameline-specific field handling
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
@@ -32,8 +35,6 @@ from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class LinkedNPCFormInitializationTestCase(TestCase):

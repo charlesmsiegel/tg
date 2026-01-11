@@ -1,9 +1,10 @@
 """Tests for Fetter model."""
 
-from characters.models.wraith.fetter import Fetter
-from characters.models.wraith.wraith import Wraith
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.wraith.fetter import Fetter
+from characters.models.wraith.wraith import Wraith
 
 
 class FetterTestCase(TestCase):

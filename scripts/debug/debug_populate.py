@@ -45,7 +45,7 @@ def main():
             exec(code)
 
         print("=" * 70)
-        print(f"✓ Script completed successfully!")
+        print("✓ Script completed successfully!")
 
     except Exception as e:
         print("\n" + "=" * 70)

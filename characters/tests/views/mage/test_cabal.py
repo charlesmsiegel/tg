@@ -1,11 +1,12 @@
 """Tests for cabal module."""
 
-from characters.models.core.human import Human
-from characters.models.mage.cabal import Cabal
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
+
+from characters.models.core.human import Human
+from characters.models.mage.cabal import Cabal
 from game.models import Chronicle
 
 

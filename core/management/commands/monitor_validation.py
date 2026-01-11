@@ -16,13 +16,14 @@ Usage:
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from characters.models.core.character import Character
-from characters.models.core.human import Human
 from django.core.management.base import BaseCommand
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
+
+from characters.models.core.character import Character
+from characters.models.core.human import Human
 from game.models import Scene
 
 

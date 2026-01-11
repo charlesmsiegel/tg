@@ -10,8 +10,10 @@ Tests cover:
 - Practice queryset method
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.practiceform import (
-    BasePracticeRatingFormSet,
     PracticeRatingForm,
     PracticeRatingFormSet,
 )
@@ -23,8 +25,6 @@ from characters.models.mage.focus import (
 )
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestPracticeRatingFormInit(TestCase):

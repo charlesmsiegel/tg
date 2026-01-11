@@ -1,6 +1,7 @@
-from characters.models.core import Character
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core import Character
 from locations.models.core import City
 
 

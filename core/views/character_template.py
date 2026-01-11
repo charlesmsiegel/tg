@@ -1,16 +1,10 @@
 import json
 import logging
 
-from core.forms.character_template import (
-    CharacterTemplateForm,
-    CharacterTemplateImportForm,
-)
-from core.mixins import MessageMixin
-from core.models import CharacterTemplate
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -22,6 +16,13 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+
+from core.forms.character_template import (
+    CharacterTemplateForm,
+    CharacterTemplateImportForm,
+)
+from core.mixins import MessageMixin
+from core.models import CharacterTemplate
 
 logger = logging.getLogger(__name__)
 

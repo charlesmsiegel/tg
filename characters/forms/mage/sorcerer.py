@@ -1,10 +1,10 @@
 """Forms for Sorcerer character type."""
 
+from django import forms
+
 from characters.models.core.archetype import Archetype
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
-from django import forms
-from game.models import Chronicle
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 

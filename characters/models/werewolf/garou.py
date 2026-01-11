@@ -1,5 +1,8 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import CheckConstraint, Q
+
 from characters.costs import get_freebie_cost, get_xp_cost
-from characters.models.werewolf.battlescar import BattleScar
 from characters.models.werewolf.camp import Camp
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.renownincident import RenownIncident
@@ -8,9 +11,6 @@ from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
 from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
-from django.db.models import CheckConstraint, Q
 from items.models.werewolf.fetish import Fetish
 
 

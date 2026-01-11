@@ -5,8 +5,9 @@ Uses the PointPoolWidget for real-time constraint validation and
 distribution mode for talents/skills/knowledges categories.
 """
 
-from core.constants import AbilityFields
 from django import forms
+
+from core.constants import AbilityFields
 from widgets import DistributionPoolMixin
 
 

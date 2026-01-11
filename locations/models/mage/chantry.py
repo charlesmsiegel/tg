@@ -1,11 +1,12 @@
-from characters.models.core.background_block import Background, BackgroundBlock
+from django.db import models
+from django.db.models import CheckConstraint, Q
+from django.urls import reverse
+
+from characters.models.core.background_block import BackgroundBlock
 from characters.models.core.human import Human
 from characters.models.mage.effect import Effect
 from core.models import BaseBackgroundRating
 from core.utils import CharacterOrganizationRegistry
-from django.db import models
-from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 from locations.models.core.location import LocationModel
 
 

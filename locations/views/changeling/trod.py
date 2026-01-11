@@ -1,6 +1,7 @@
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from locations.forms.changeling.trod import TrodForm
 from locations.models.changeling import Trod
 

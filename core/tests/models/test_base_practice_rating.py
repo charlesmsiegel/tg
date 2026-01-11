@@ -5,10 +5,11 @@ Verifies that all concrete implementations inherit the shared functionality
 correctly and maintain database constraints.
 """
 
-from characters.models.mage.focus import Practice
-from characters.models.mage.mage import Mage, PracticeRating
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+
+from characters.models.mage.focus import Practice
+from characters.models.mage.mage import Mage, PracticeRating
 from locations.models.mage.reality_zone import RealityZone, ZoneRating
 
 

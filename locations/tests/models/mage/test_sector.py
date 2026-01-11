@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from game.models import Chronicle
 from locations.models.mage.reality_zone import RealityZone
 from locations.models.mage.sector import Sector

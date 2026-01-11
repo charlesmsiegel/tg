@@ -1,8 +1,9 @@
-from characters.models.core import MeritFlaw
-from characters.models.core.merit_flaw_block import MeritFlawRating
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
+
+from characters.models.core import MeritFlaw
+from characters.models.core.merit_flaw_block import MeritFlawRating
 from game.models import ObjectType
 
 
@@ -105,7 +106,6 @@ class TestMeritFlawRatingRelatedNames(TestCase):
 
     def setUp(self):
         from characters.models.core import Human
-        from characters.models.core.merit_flaw_block import MeritFlawRating
 
         self.user = User.objects.create_user(
             username="testuser", email="test@test.com", password="password"

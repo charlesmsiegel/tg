@@ -1,7 +1,8 @@
-from characters.models.changeling.house_faction import HouseFaction
-from core.models import Model
 from django.db import models
 from django.urls import reverse
+
+from characters.models.changeling.house_faction import HouseFaction
+from core.models import Model
 
 
 class House(Model):

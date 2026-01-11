@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.vampire.vtmhuman import VtMHuman
 from characters.tests.utils import vampire_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

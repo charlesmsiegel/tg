@@ -1,8 +1,9 @@
 """Tests for VampireSect views and templates."""
 
-from characters.models.vampire.sect import VampireSect
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+
+from characters.models.vampire.sect import VampireSect
 
 
 # Disable caching for template assertion tests

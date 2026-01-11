@@ -1,6 +1,7 @@
 """Tests for DreamRealm form."""
 
 from django.test import TestCase
+
 from locations.forms.changeling import DreamRealmForm
 from locations.models.changeling import DreamRealm
 

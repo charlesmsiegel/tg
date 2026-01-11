@@ -1,7 +1,8 @@
+from django import forms
+
 from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.vampire.discipline import Discipline
-from django import forms
 
 VAMPIRE_CATEGORY_CHOICES = CATEGORY_CHOICES + [
     ("Discipline", "Discipline"),

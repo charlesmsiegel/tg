@@ -1,6 +1,7 @@
+from django import forms
+
 from core.models import Language
 from core.widgets import AutocompleteTextInput
-from django import forms
 
 
 class HumanLanguageForm(forms.Form):

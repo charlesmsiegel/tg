@@ -8,8 +8,8 @@ This module provides XP spending services for Vampire: The Masquerade characters
 - RevenantXPSpendingService - Born ghouls with family Disciplines
 """
 
+
 from characters.costs import get_xp_cost
-from django.utils import timezone
 
 from .base import (
     HumanXPSpendingService,

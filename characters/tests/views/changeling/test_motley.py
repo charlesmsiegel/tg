@@ -1,12 +1,13 @@
 """Tests for motley module."""
 
-from characters.models.changeling.motley import Motley
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+
+from characters.models.changeling.motley import Motley
+from characters.models.core.human import Human
 from game.models import Chronicle
 
 

@@ -16,8 +16,9 @@ Usage in templates:
     {% endif %}
 """
 
-from core.permissions import Permission, PermissionManager, Role, VisibilityTier
 from django import template
+
+from core.permissions import Permission, PermissionManager, VisibilityTier
 
 register = template.Library()
 

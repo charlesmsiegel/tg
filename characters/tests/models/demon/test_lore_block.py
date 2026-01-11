@@ -1,8 +1,9 @@
 """Tests for LoreBlock mixin."""
 
-from characters.models.demon import Demon
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.demon import Demon
 
 
 class LoreBlockTests(TestCase):

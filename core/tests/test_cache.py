@@ -1,6 +1,10 @@
 """Tests for cache utilities in core/cache.py."""
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
+
+from django.core.cache import cache
+from django.db.models import Model
+from django.test import TestCase
 
 from core.cache import (
     CACHE_TIMEOUT_DAY,
@@ -15,9 +19,6 @@ from core.cache import (
     get_cached_queryset,
     invalidate_cache_on_save,
 )
-from django.core.cache import cache
-from django.db.models import Model
-from django.test import TestCase, override_settings
 
 
 # Define FakeModel once at module level to avoid re-registration warnings

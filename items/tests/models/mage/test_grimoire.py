@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from django.test import TestCase
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage import Effect
@@ -9,7 +11,6 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import Language, Noun
-from django.test import TestCase
 from items.models.core.material import Material
 from items.models.core.medium import Medium
 from items.models.mage.grimoire import Grimoire

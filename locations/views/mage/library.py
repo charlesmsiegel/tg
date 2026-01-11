@@ -1,6 +1,7 @@
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.forms.mage.library import LibraryForm
 from locations.models.mage.library import Library
 

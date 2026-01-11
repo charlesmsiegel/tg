@@ -9,11 +9,11 @@ Usage:
     python manage.py validate_data_integrity        # Report only
 """
 
-from accounts.models import Profile
+from django.core.management.base import BaseCommand
+from django.db.models import F
+
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from django.core.management.base import BaseCommand
-from django.db.models import F, Q
 from game.models import Scene, STRelationship
 
 
@@ -287,7 +287,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with willpower < 1"))
             if fix:
                 low_wp.update(willpower=1)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 1)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 1)"))
 
         if high_wp.exists():
             count = high_wp.count()
@@ -295,7 +295,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with willpower > 10"))
             if fix:
                 high_wp.update(willpower=10)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 10)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 10)"))
 
         # Temporary willpower range (0-10)
         low_temp = Human.objects.filter(temporary_willpower__lt=0)
@@ -309,7 +309,7 @@ class Command(BaseCommand):
             )
             if fix:
                 low_temp.update(temporary_willpower=0)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 0)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 0)"))
 
         if high_temp.exists():
             count = high_temp.count()
@@ -319,7 +319,7 @@ class Command(BaseCommand):
             )
             if fix:
                 high_temp.update(temporary_willpower=10)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 10)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 10)"))
 
         # Temp <= permanent
         temp_exceeds = Human.objects.filter(temporary_willpower__gt=F("willpower"))
@@ -334,7 +334,7 @@ class Command(BaseCommand):
                 for human in temp_exceeds:
                     human.temporary_willpower = human.willpower
                     human.save()
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set temp = permanent)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set temp = permanent)"))
 
         if total_issues == 0:
             self.stdout.write(self.style.SUCCESS("   ✓ All willpower values valid"))
@@ -357,7 +357,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with negative age"))
             if fix:
                 negative_age.update(age=None)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to NULL)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to NULL)"))
 
         if excessive_age.exists():
             count = excessive_age.count()
@@ -365,7 +365,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"   ✗ {count} characters with age > 500"))
             if fix:
                 excessive_age.update(age=500)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 500)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 500)"))
 
         # Apparent age (0-200)
         negative_apparent = Human.objects.filter(apparent_age__lt=0)
@@ -379,7 +379,7 @@ class Command(BaseCommand):
             )
             if fix:
                 negative_apparent.update(apparent_age=None)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to NULL)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to NULL)"))
 
         if excessive_apparent.exists():
             count = excessive_apparent.count()
@@ -389,7 +389,7 @@ class Command(BaseCommand):
             )
             if fix:
                 excessive_apparent.update(apparent_age=200)
-                self.stdout.write(self.style.SUCCESS(f"     → Fixed (set to 200)"))
+                self.stdout.write(self.style.SUCCESS("     → Fixed (set to 200)"))
 
         if total_issues == 0:
             self.stdout.write(self.style.SUCCESS("   ✓ All age values valid"))

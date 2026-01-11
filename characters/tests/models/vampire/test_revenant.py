@@ -10,11 +10,12 @@ Tests cover:
 - Family flaw tracking
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.revenant import Revenant, RevenantFamily
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

@@ -8,8 +8,9 @@ This module provides freebie spending services for Mage: The Ascension character
 - CompanionFreebieSpendingService - Consors (unawakened helpers)
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

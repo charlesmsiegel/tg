@@ -1,6 +1,7 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.models.demon import Lore
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class LoreDetailView(DetailView):

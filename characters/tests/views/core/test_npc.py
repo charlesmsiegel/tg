@@ -9,11 +9,12 @@ Tests cover:
 - Form validation and error handling
 """
 
-from characters.models.core.human import Human
-from characters.models.vampire.vtmhuman import VtMHuman
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.human import Human
+from characters.models.vampire.vtmhuman import VtMHuman
 from game.models import Chronicle
 
 

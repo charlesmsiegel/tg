@@ -1,9 +1,8 @@
-from characters.models.core import Group
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
-from characters.tests.utils import human_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core import Group
+from characters.models.core.human import Human
 
 
 class TestGroupDetailView(TestCase):

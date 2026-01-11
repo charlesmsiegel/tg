@@ -1,11 +1,12 @@
 from typing import Any
 
+from django.views.generic import CreateView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.wraith.wraith import Wraith
 from characters.views.core.human import HumanDetailView
 from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
 from core.permissions import Permission, PermissionManager
-from django.views.generic import CreateView, UpdateView
 
 
 class WraithDetailView(XPApprovalMixin, HumanDetailView):

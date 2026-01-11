@@ -1,7 +1,8 @@
 """Tests for Sphere views."""
 
-from characters.models.mage import Sphere
 from django.test import TestCase
+
+from characters.models.mage import Sphere
 
 
 class TestSphereModel(TestCase):

@@ -10,11 +10,12 @@ XP spending requests.
 """
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
-from characters.costs import get_meritflaw_xp_cost, get_xp_cost
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
+from characters.costs import get_meritflaw_xp_cost, get_xp_cost
 
 
 @dataclass
@@ -25,7 +26,7 @@ class XPSpendResult:
     trait: str
     cost: int
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
@@ -35,7 +36,7 @@ class XPApplyResult:
     success: bool
     trait: str
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 def handler(category: str):
@@ -160,7 +161,7 @@ class XPSpendingService(metaclass=XPSpendingServiceMeta):
         self,
         category: str,
         example: Any = None,
-        value: Optional[int] = None,
+        value: int | None = None,
         note: str = "",
         **kwargs,
     ) -> XPSpendResult:
@@ -407,7 +408,7 @@ class HumanXPSpendingService(XPSpendingService):
         - Background model = new background (will create BackgroundRating)
         - BackgroundRating model = existing background (increase rating)
         """
-        from characters.models.core.background_block import Background, BackgroundRating
+        from characters.models.core.background_block import Background
 
         is_new = isinstance(example, Background)
 

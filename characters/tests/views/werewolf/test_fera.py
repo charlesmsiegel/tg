@@ -12,10 +12,11 @@ Note: Uses Corax for most tests since it's the simplest Fera type
 triggering model validation for type-specific fields.
 """
 
-from characters.models.werewolf.corax import Corax
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.werewolf.corax import Corax
 from game.models import Chronicle
 
 

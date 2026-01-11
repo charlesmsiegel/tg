@@ -1,5 +1,6 @@
-from characters.models.werewolf.gift import Gift
 from django.test import TestCase
+
+from characters.models.werewolf.gift import Gift
 
 
 class TestGift(TestCase):

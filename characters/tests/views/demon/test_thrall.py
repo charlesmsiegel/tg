@@ -1,9 +1,10 @@
 """Tests for Thrall views."""
 
-from characters.models.demon.thrall import Thrall
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.demon.thrall import Thrall
 from game.models import Chronicle
 
 

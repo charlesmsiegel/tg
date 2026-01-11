@@ -1,11 +1,11 @@
 """Tests for wonder views."""
 
-from characters.models.mage.resonance import Resonance
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
-from django.urls import reverse
+
+from characters.models.mage.resonance import Resonance
 from items.models.mage import Wonder, WonderResonanceRating
 
 

@@ -1,4 +1,3 @@
-from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore import Lore
 from populate_db.demon.demon_houses import (
     defilers,

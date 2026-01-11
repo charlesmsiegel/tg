@@ -1,13 +1,14 @@
 """Tests for authentication requirements on views (Issue #1051)."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
 from characters.models.core import Group, Specialty
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mummy_title import MummyTitle
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
 
 
 class TestCharacterViewAuthenticationRequirements(TestCase):

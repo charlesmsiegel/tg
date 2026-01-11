@@ -22,11 +22,12 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
 django.setup()
 
+from django.contrib.auth.models import User
+from django.db import transaction
+
 from characters.models.core.character import Character
 from core.models import Observer
 from core.permissions import Permission, PermissionManager, VisibilityTier
-from django.contrib.auth.models import User
-from django.db import transaction
 from game.models import Chronicle
 
 
@@ -115,7 +116,7 @@ class PermissionsTestSuite:
             )
             print(f"   ✓ Created character: {self.characters['owner_char'].name}")
             print(f"      Owner: {self.users['owner'].username}")
-            print(f"      Status: Approved")
+            print("      Status: Approved")
 
             self.characters["player_char"] = Character.objects.create(
                 name="Player's Character",
@@ -125,7 +126,7 @@ class PermissionsTestSuite:
             )
             print(f"   ✓ Created character: {self.characters['player_char'].name}")
             print(f"      Owner: {self.users['player'].username}")
-            print(f"      Status: Approved")
+            print("      Status: Approved")
 
             # Add observer
             print("\n4. Adding observer...")

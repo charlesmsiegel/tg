@@ -1,12 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from locations.models.wraith.haunt import Haunt
 
 

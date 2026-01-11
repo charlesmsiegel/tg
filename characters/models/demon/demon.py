@@ -1,4 +1,8 @@
-from collections import defaultdict
+
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models, transaction
+from django.db.models import CheckConstraint, Q
+from django.urls import reverse
 
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.demon.dtf_human import DtFHuman
@@ -9,10 +13,6 @@ from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
 from core.linked_stat import linked_stat_fields
 from core.utils import add_dot
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, transaction
-from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 
 class Demon(LoreBlock, DtFHuman):

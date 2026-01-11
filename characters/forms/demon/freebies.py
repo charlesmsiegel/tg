@@ -1,7 +1,8 @@
+from django import forms
+
 from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
 from characters.models.demon.lore import Lore
-from django import forms
 
 DTFHUMAN_CATEGORY_CHOICES = CATEGORY_CHOICES
 

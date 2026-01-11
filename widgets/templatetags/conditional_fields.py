@@ -61,9 +61,7 @@ def conditional_wrap(bound_field, label_prefix="", css_class="col-sm"):
 
     # Add error display if present
     if bound_field.errors:
-        errors_html = '<div class="text-danger" style="font-size: 0.875rem;">{}</div>'.format(
-            bound_field.errors
-        )
+        errors_html = f'<div class="text-danger" style="font-size: 0.875rem;">{bound_field.errors}</div>'
         content += errors_html
 
     return format_html(

@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.changeling.house import House
 from characters.models.changeling.house_faction import HouseFaction
-from django import forms
 
 
 class HouseFactionForm(forms.ModelForm):

@@ -12,15 +12,16 @@ Tests cover:
 - VampireCharacterCreationView - Workflow routing
 """
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.core.archetype import Archetype
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

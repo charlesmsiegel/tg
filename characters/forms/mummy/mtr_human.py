@@ -1,5 +1,6 @@
-from characters.models.mummy.mtr_human import MtRHuman
 from django import forms
+
+from characters.models.mummy.mtr_human import MtRHuman
 
 
 class MtRHumanCreationForm(forms.ModelForm):

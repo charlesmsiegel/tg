@@ -3,10 +3,11 @@ Tests for Freehold creation, both multi-step and direct.
 Tests cover the complete creation workflow from Book of Freeholds.
 """
 
-from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core import Human
 from locations.models.changeling import Freehold
 
 

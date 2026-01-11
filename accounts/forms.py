@@ -1,8 +1,9 @@
-from accounts.models import Profile
-from characters.models.core.human import Human
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+
+from accounts.models import Profile
+from characters.models.core.human import Human
 
 
 class CustomAuthenticationForm(AuthenticationForm):

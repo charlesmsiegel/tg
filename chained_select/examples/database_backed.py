@@ -5,9 +5,10 @@ For dynamic data stored in the database, just use a choices_callback.
 No URL configuration needed - the AJAX endpoint is auto-registered!
 """
 
-from chained_select import ChainedChoiceField, ChainedSelectMixin
 from django import forms
 from django.db import models
+
+from chained_select import ChainedChoiceField, ChainedSelectMixin
 
 # =============================================================================
 # Models

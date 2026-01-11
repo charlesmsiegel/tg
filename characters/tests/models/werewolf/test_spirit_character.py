@@ -1,6 +1,7 @@
-from characters.models.werewolf.spirit_character import SpiritCharacter
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.spirit_character import SpiritCharacter
 from game.models import Chronicle
 
 

@@ -5,6 +5,7 @@ Includes both full edit form for STs/admins and limited edit form for owners.
 """
 
 from django import forms
+
 from items.models.vampire import VampireArtifact
 
 

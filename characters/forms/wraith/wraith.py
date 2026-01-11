@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
-from django import forms
 
 
 class WraithCreationForm(forms.ModelForm):

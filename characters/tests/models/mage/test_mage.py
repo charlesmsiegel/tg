@@ -1,5 +1,7 @@
-from unittest import mock
-from unittest.mock import Mock
+
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.test import TestCase
 
 from characters.models.core.archetype import Archetype
 from characters.models.core.specialty import Specialty
@@ -11,9 +13,6 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.test import TestCase
 from game.models import Chronicle
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node

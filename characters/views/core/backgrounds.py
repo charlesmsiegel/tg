@@ -1,15 +1,12 @@
+from django.shortcuts import get_object_or_404
+from django.views.generic import FormView
+
 from characters.forms.core.backgroundform import BackgroundRatingFormSet
 from characters.models.core.background_block import Background
 from characters.models.core.human import Human
 from core.mixins import (
-    EditPermissionMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.views.generic import FormView
 
 
 class HumanBackgroundsView(SpendFreebiesPermissionMixin, FormView):

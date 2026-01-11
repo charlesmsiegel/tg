@@ -1,7 +1,8 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.forms.mummy.dynasty import DynastyForm
 from characters.models.mummy.dynasty import Dynasty
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class DynastyDetailView(DetailView):

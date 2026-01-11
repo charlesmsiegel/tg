@@ -1,9 +1,10 @@
 """Tests for Passion model."""
 
-from characters.models.wraith.passion import Passion
-from characters.models.wraith.wraith import Wraith
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.wraith.passion import Passion
+from characters.models.wraith.wraith import Wraith
 
 
 class PassionTestCase(TestCase):

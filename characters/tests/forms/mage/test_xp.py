@@ -9,17 +9,17 @@ Tests cover:
 - XP cost calculations for mage-specific stats
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_xp_cost
-from characters.forms.mage.xp import CATEGORY_CHOICES, MageXPForm
+from characters.forms.mage.xp import MageXPForm
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Practice, Tenet
-from characters.models.mage.mage import Mage, PracticeRating
-from characters.models.mage.resonance import Resonance
+from characters.models.mage.mage import Mage
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
 from core.models import Number
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestMageXPFormBasics(TestCase):

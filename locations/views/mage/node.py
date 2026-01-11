@@ -1,9 +1,10 @@
 from typing import Any
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.forms.mage.node import NodeForm
 from locations.models.mage import Node, NodeMeritFlawRating, NodeResonanceRating
 

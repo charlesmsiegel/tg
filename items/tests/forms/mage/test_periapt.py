@@ -10,9 +10,10 @@ Tests cover:
 - Save behavior with formsets
 """
 
+from django.test import TestCase
+
 from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
-from django.test import TestCase
 from items.forms.mage.periapt import (
     PeriaptForm,
     PeriaptResonanceRatingFormSet,

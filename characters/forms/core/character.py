@@ -1,5 +1,6 @@
-from characters.models.core import Character
 from django import forms
+
+from characters.models.core import Character
 
 
 class LimitedCharacterForm(forms.ModelForm):

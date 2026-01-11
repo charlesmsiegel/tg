@@ -8,8 +8,9 @@ This module provides freebie spending services for Vampire: The Masquerade chara
 - RevenantFreebieSpendingService - Born ghouls with family Disciplines
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

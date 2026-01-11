@@ -1,5 +1,8 @@
 """Tests for accounts forms."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from accounts.forms import (
     CustomAuthenticationForm,
     CustomUserCreationForm,
@@ -9,8 +12,6 @@ from accounts.forms import (
     StoryXP,
 )
 from characters.models.core.human import Human
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle, Scene, Story
 from locations.models.core import LocationModel
 

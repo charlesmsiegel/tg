@@ -1,5 +1,6 @@
-from core.utils import get_short_gameline_name
 from django.urls import reverse
+
+from core.utils import get_short_gameline_name
 
 
 class HumanUrlBlock:

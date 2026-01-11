@@ -1,6 +1,7 @@
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from items.models.mummy.relic import MummyRelic
 from items.models.mummy.ushabti import Ushabti
 from items.models.mummy.vessel import Vessel

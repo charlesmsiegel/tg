@@ -1,5 +1,6 @@
-from characters.models.werewolf.wtahuman import WtAHuman
 from django import forms
+
+from characters.models.werewolf.wtahuman import WtAHuman
 
 
 class WtAHumanCreationForm(forms.ModelForm):

@@ -1,6 +1,7 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from core.mixins import MessageMixin
 from core.models import Language
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class LanguageDetailView(DetailView):

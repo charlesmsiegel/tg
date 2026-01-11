@@ -1,8 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, FormView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.werewolf.drone import DroneCreationForm
 from characters.models.werewolf.drone import Drone
 from characters.views.core.backgrounds import HumanBackgroundsView
-from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
@@ -13,8 +15,6 @@ from characters.views.werewolf.wtahuman import (
 )
 from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from core.permissions import Permission, PermissionManager
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
 
 
 class DroneDetailView(ViewPermissionMixin, DetailView):

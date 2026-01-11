@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.hunter import (
     CreedListView,
     EdgeListView,
@@ -5,7 +7,6 @@ from characters.views.hunter import (
     HunterListView,
     HunterOrganizationListView,
 )
-from django.urls import path
 
 urls = [
     path("hunter/", HunterListView.as_view(), name="hunter"),

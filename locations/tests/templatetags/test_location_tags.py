@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock
 
 from django.test import TestCase
+
 from locations.templatetags.location_tags import show_location
 
 

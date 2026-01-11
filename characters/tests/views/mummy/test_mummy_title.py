@@ -1,9 +1,10 @@
 """Tests for MummyTitle views."""
 
-from characters.models.mummy.mummy_title import MummyTitle
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.mummy.mummy_title import MummyTitle
 
 
 class TestMummyTitleDetailView(TestCase):

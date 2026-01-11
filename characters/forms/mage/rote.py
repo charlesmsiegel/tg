@@ -1,11 +1,12 @@
+from django import forms
+from django.db.models import Q
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
-from django import forms
-from django.db.models import Q
 from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.fields.create_or_select import CreateOrSelectField
 
@@ -67,15 +68,15 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
             abilities = practice.abilities.all().order_by("name")
             ability_choices_map[str(practice.pk)] = [(str(a.pk), str(a)) for a in abilities]
         self.fields["ability"].choices_map = ability_choices_map
-        self.fields["correspondence"].widget.attrs["max"] = getattr(self.instance, "correspondence")
-        self.fields["time"].widget.attrs["max"] = getattr(self.instance, "time")
-        self.fields["spirit"].widget.attrs["max"] = getattr(self.instance, "spirit")
-        self.fields["matter"].widget.attrs["max"] = getattr(self.instance, "matter")
-        self.fields["life"].widget.attrs["max"] = getattr(self.instance, "life")
-        self.fields["forces"].widget.attrs["max"] = getattr(self.instance, "forces")
-        self.fields["entropy"].widget.attrs["max"] = getattr(self.instance, "entropy")
-        self.fields["mind"].widget.attrs["max"] = getattr(self.instance, "mind")
-        self.fields["prime"].widget.attrs["max"] = getattr(self.instance, "prime")
+        self.fields["correspondence"].widget.attrs["max"] = self.instance.correspondence
+        self.fields["time"].widget.attrs["max"] = self.instance.time
+        self.fields["spirit"].widget.attrs["max"] = self.instance.spirit
+        self.fields["matter"].widget.attrs["max"] = self.instance.matter
+        self.fields["life"].widget.attrs["max"] = self.instance.life
+        self.fields["forces"].widget.attrs["max"] = self.instance.forces
+        self.fields["entropy"].widget.attrs["max"] = self.instance.entropy
+        self.fields["mind"].widget.attrs["max"] = self.instance.mind
+        self.fields["prime"].widget.attrs["max"] = self.instance.prime
 
         # Query spheres once and reuse
         spheres = list(Sphere.objects.all())
@@ -90,8 +91,8 @@ class RoteCreationForm(ChainedSelectMixin, forms.Form):
                 self.instance, sphere.property_name
             )
 
-        rote_filter_dict["effect__rote_cost__lte"] = getattr(self.instance, "rote_points")
-        effect_filter_dict["rote_cost__lte"] = getattr(self.instance, "rote_points")
+        rote_filter_dict["effect__rote_cost__lte"] = self.instance.rote_points
+        effect_filter_dict["rote_cost__lte"] = self.instance.rote_points
 
         rote_filter_dict["practice__in"] = list(self.instance.practices.all()) + [
             getattr(x, "parent_practice", None)

@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from items.models.werewolf.fetish import Fetish
 
 

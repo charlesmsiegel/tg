@@ -1,7 +1,8 @@
 from importlib import import_module
 
-from core.constants import GameLine
 from django.urls import include, path
+
+from core.constants import GameLine
 from items import views
 
 from .core import create, detail, index, update

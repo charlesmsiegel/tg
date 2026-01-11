@@ -1,6 +1,7 @@
-from characters.models.mage.faction import MageFaction
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.mage.faction import MageFaction
 from game.models import Chronicle
 from items.models.mage.grimoire import Grimoire
 from locations.models.mage.library import Library

@@ -9,6 +9,7 @@ Tests cover:
 """
 
 from django.test import TestCase
+
 from items.forms.mage.sorcerer_artifact import (
     ArtifactCreateOrSelectForm,
     SorcererArtifactForm,

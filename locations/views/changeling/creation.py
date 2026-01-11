@@ -3,13 +3,12 @@ Multi-step views for Freehold creation.
 Follows the pattern from character creation (DictView).
 """
 
-from typing import Any
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, UpdateView
 
 from core.mixins import SpendFreebiesPermissionMixin
 from core.views.generic import DictView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, UpdateView
 from locations.forms.changeling.creation import (
     FreeholdBasicsForm,
     FreeholdDetailsForm,

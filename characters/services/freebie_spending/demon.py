@@ -8,8 +8,9 @@ This module provides freebie spending services for Demon: The Fallen characters:
 - EarthboundFreebieSpendingService - Ancient demons bound to relics
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

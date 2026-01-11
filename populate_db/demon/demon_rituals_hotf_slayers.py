@@ -4,9 +4,8 @@ Populate database with Slayer (Halaku) rituals from Houses of the Fallen.
 
 from characters.models.demon.ritual import Ritual
 from populate_db.demon.demon_houses import slayers
-from populate_db.demon.demon_lores import lore_of_death
+from populate_db.demon.demon_lores import lore_of_death, lore_of_storms
 from populate_db.demon.demon_lores import lore_of_portals as lore_portals
-from populate_db.demon.demon_lores import lore_of_storms
 from populate_db.demon.demon_lores import lore_of_the_earth as lore_earth
 from populate_db.demon.demon_lores import lore_of_the_realms as lore_realms
 from populate_db.demon.demon_lores import lore_of_the_spirit as lore_spirit

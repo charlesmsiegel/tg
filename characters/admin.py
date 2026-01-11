@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from characters.models.changeling import (
     Changeling,
     CtDHuman,
@@ -112,7 +114,6 @@ from characters.models.wraith.passion import Passion
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import ThornRating, Wraith
-from django.contrib import admin
 
 admin.site.register(CharacterModel)
 

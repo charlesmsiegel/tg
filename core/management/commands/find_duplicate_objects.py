@@ -18,7 +18,6 @@ Works with all objects that inherit from core.models.Model including:
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
-from django.db.models import Count, Q
 
 
 class Command(BaseCommand):

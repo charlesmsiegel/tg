@@ -8,9 +8,10 @@ Ensures that Retired/Deceased characters are properly removed from:
 - Active scenes
 """
 
-from characters.models.core.character import CharacterModel
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
+from characters.models.core.character import CharacterModel
 
 
 class Command(BaseCommand):

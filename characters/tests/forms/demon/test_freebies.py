@@ -1,5 +1,8 @@
 """Tests for Demon freebie forms."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.demon.freebies import (
     DEMON_CATEGORY_CHOICES,
     DTFHUMAN_CATEGORY_CHOICES,
@@ -11,8 +14,6 @@ from characters.forms.demon.freebies import (
 from characters.models.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.thrall import Thrall
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class DtFHumanFreebiesFormTests(TestCase):

@@ -4,17 +4,18 @@ from collections import Counter
 from unittest import mock
 from unittest.mock import Mock
 
-from characters.models.core import CharacterModel, Human
-from core.constants import CharacterStatus, ImageStatus
-from core.models import Language, NewsItem
-from core.templatetags.dots import dots
-from core.utils import dice, filepath
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import LiveServerTestCase, TestCase
 from django.utils.timezone import now
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+
+from characters.models.core import CharacterModel, Human
+from core.constants import CharacterStatus, ImageStatus
+from core.models import Language, NewsItem
+from core.templatetags.dots import dots
+from core.utils import dice, filepath
 
 os.environ["MOZ_HEADLESS"] = "1"
 

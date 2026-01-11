@@ -5,6 +5,7 @@ Tests for the FormsetManager widget and template tags.
 from django import forms
 from django.template import Context, Template
 from django.test import TestCase
+
 from widgets.templatetags.formset_tags import (
     formset_add_btn,
     formset_container,

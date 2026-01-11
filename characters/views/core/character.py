@@ -1,16 +1,16 @@
 from typing import Any
 
-from characters.forms.core import LimitedCharacterForm
-from characters.forms.core.limited_edit import LimitedCharacterEditForm
-from characters.models.core import Character
-from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
-from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
-from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.forms.core.limited_edit import LimitedCharacterEditForm
+from characters.models.core import Character
+from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
+from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
+from core.permissions import Permission, PermissionManager
 from game.models import Scene
 
 

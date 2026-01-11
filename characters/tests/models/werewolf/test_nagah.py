@@ -1,8 +1,9 @@
 """Tests for Nagah (wereserpent) module."""
 
-from characters.models.werewolf.nagah import Nagah
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.nagah import Nagah
 
 
 class TestNagah(TestCase):

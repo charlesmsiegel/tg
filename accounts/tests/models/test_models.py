@@ -1,8 +1,9 @@
 """Tests for accounts models (Profile)."""
 
-from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core import Human
 from game.models import Chronicle, Gameline, STRelationship
 
 
@@ -410,7 +411,7 @@ class TestUnfulfilledWeeklyXPRequests(TestCase):
     def setUp(self):
         from datetime import date, timedelta
 
-        from game.models import Week, WeeklyXPRequest
+        from game.models import Week
 
         self.player = User.objects.create_user("player", "player@test.com", "password")
         self.st_user = User.objects.create_user("st", "st@test.com", "password")
@@ -504,7 +505,7 @@ class TestUnfulfilledWeeklyXPRequestsToApprove(TestCase):
     def setUp(self):
         from datetime import date, timedelta
 
-        from game.models import Week, WeeklyXPRequest
+        from game.models import Week
 
         self.player = User.objects.create_user("player", "player@test.com", "password")
         self.st_user = User.objects.create_user("st", "st@test.com", "password")

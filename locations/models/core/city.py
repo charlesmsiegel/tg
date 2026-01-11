@@ -1,6 +1,7 @@
-from characters.models.core import Character
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core import Character
 
 from .location import LocationModel
 

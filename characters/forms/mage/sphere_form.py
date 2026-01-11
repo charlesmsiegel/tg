@@ -6,6 +6,7 @@ Sphere maximum is dynamically capped at the character's Arete rating.
 """
 
 from django import forms
+
 from widgets import SimplePoolMixin
 
 

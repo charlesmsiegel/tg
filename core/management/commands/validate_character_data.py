@@ -9,9 +9,9 @@ Checks for:
 - Polymorphic relationship integrity
 """
 
-from characters.models.core.character import Character, CharacterModel
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+
+from characters.models.core.character import CharacterModel
 
 
 class Command(BaseCommand):

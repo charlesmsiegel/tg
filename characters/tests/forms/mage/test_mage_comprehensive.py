@@ -1,5 +1,8 @@
 """Comprehensive tests for mage forms."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.mage import MageCreationForm, MageSpheresForm
 from characters.models.core.archetype import Archetype
 from characters.models.mage.faction import MageFaction
@@ -7,8 +10,6 @@ from characters.models.mage.mage import Mage
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestMageCreationForm(TestCase):

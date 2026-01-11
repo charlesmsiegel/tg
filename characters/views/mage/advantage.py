@@ -1,5 +1,6 @@
-from characters.models.mage.companion import Advantage
 from django.views.generic import DetailView
+
+from characters.models.mage.companion import Advantage
 
 
 class AdvantageDetailView(DetailView):

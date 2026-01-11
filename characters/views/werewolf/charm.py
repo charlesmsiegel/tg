@@ -1,6 +1,7 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.models.werewolf.charm import SpiritCharm
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class SpiritCharmDetailView(DetailView):

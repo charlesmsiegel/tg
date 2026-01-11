@@ -1,10 +1,11 @@
 """Tests for Wraith forms."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.wraith.wraith import WraithCreationForm
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

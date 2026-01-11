@@ -11,10 +11,10 @@ Checks for:
 
 from datetime import timedelta
 
-from characters.models.core.character import CharacterModel
 from django.core.management.base import BaseCommand
-from django.utils.timezone import now
-from game.models import StoryXPRequest, Week, WeeklyXPRequest
+
+from characters.models.core.character import CharacterModel
+from game.models import StoryXPRequest, WeeklyXPRequest
 
 
 class Command(BaseCommand):

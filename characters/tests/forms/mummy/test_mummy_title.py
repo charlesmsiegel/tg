@@ -8,9 +8,10 @@ Tests cover:
 - Form save functionality
 """
 
+from django.test import TestCase
+
 from characters.forms.mummy.mummy_title import MummyTitleForm
 from characters.models.mummy.mummy_title import MummyTitle
-from django.test import TestCase
 
 
 class TestMummyTitleFormInitialization(TestCase):

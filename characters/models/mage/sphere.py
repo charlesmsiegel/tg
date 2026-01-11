@@ -1,5 +1,6 @@
-from characters.models.core.statistic import Statistic
 from django.urls import reverse
+
+from characters.models.core.statistic import Statistic
 
 
 class Sphere(Statistic):

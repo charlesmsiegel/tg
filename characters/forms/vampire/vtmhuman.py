@@ -1,5 +1,6 @@
-from characters.models.vampire.vtmhuman import VtMHuman
 from django import forms
+
+from characters.models.vampire.vtmhuman import VtMHuman
 
 
 class VtMHumanCreationForm(forms.ModelForm):

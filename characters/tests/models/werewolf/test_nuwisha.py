@@ -1,8 +1,9 @@
 """Tests for Nuwisha (werecoyote) module."""
 
-from characters.models.werewolf.nuwisha import Nuwisha
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.nuwisha import Nuwisha
 
 
 class TestNuwisha(TestCase):

@@ -1,7 +1,8 @@
-from characters.models.wraith.thorn import Thorn
-from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.models.wraith.thorn import Thorn
+from core.mixins import MessageMixin
 
 
 class ThornDetailView(DetailView):

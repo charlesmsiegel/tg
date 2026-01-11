@@ -1,12 +1,13 @@
 """Tests for wraith views module."""
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.wraith.fetter import Fetter
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.passion import Passion
 from characters.models.wraith.wraith import Wraith
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

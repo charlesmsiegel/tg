@@ -1,10 +1,11 @@
 """Tests for WraithFreebiesForm."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost
 from characters.forms.wraith.freebies import WraithFreebiesForm
 from characters.models.wraith.wraith import Wraith
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class WraithFreebiesFormTestCase(TestCase):

@@ -2,7 +2,10 @@
 
 from unittest.mock import Mock, patch
 
-from core.permissions import Permission, Role, VisibilityTier
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
+
+from core.permissions import Role, VisibilityTier
 from core.templatetags.permissions import (
     is_full,
     is_game_st,
@@ -18,8 +21,6 @@ from core.templatetags.permissions import (
     user_roles,
     visibility_tier,
 )
-from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase
 
 
 class MockObject:

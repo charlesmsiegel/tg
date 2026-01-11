@@ -1,7 +1,8 @@
-from characters.models.changeling.ctdhuman import CtDHuman
-from core.utils import add_dot
 from django.db import models
 from django.urls import reverse
+
+from characters.models.changeling.ctdhuman import CtDHuman
+from core.utils import add_dot
 
 
 class Nunnehi(CtDHuman):

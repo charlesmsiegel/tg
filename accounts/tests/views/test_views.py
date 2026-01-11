@@ -2,12 +2,13 @@
 
 from datetime import date
 
-from characters.models.core import Human
-from characters.models.core.human import Human
-from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.core import Human
+from characters.models.core.human import Human
+from characters.models.mage.rote import Rote
 from game.models import (
     Chronicle,
     Gameline,

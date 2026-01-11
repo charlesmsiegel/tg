@@ -8,9 +8,10 @@ Tests cover:
 - Label formatting
 """
 
-from accounts.models import Profile
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from accounts.models import Profile
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
 

@@ -1,7 +1,8 @@
-from characters.models.core.statistic import Statistic
-from core.models import BaseBackgroundRating
 from django.db import models
 from django.db.models import CheckConstraint, Q, Sum
+
+from characters.models.core.statistic import Statistic
+from core.models import BaseBackgroundRating
 
 
 class Background(Statistic):

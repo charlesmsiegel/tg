@@ -1,10 +1,10 @@
-from typing import Any
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.freebies import ThrallFreebiesForm
 from characters.forms.demon.thrall import ThrallCreationForm
-from characters.models.core.specialty import Specialty
 from characters.models.demon.thrall import Thrall
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -17,17 +17,8 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from core.mixins import (
-    EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, FormView, UpdateView
 
 
 class ThrallBasicsView(LoginRequiredMixin, FormView):

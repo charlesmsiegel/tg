@@ -1,13 +1,14 @@
 """Tests for wraith_chargen views module."""
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.core.archetype import Archetype
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

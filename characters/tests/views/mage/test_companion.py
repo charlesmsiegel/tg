@@ -1,11 +1,11 @@
 """Tests for companion views module."""
 
-from characters.models.core.archetype import Archetype
-from characters.models.mage.companion import Companion
-from characters.models.mage.faction import MageFaction
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.archetype import Archetype
+from characters.models.mage.companion import Companion
 from game.models import Chronicle
 
 

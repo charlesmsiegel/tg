@@ -1,8 +1,9 @@
+from django import forms
+
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
-from characters.models.changeling.legacy import Legacy
 from characters.models.demon.demon import Demon
 from characters.models.demon.dtf_human import DtFHuman
 from characters.models.demon.faction import DemonFaction
@@ -24,7 +25,6 @@ from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from django import forms
 from game.models import Chronicle
 from widgets import ConditionalFieldsMixin
 

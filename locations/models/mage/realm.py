@@ -1,11 +1,12 @@
-from characters.models.core import MeritFlaw
-from characters.models.core.merit_flaw_block import MeritFlawBlock
-from characters.models.mage.resonance import Resonance
-from core.models import BaseMeritFlawRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+from characters.models.core import MeritFlaw
+from characters.models.core.merit_flaw_block import MeritFlawBlock
+from characters.models.mage.resonance import Resonance
+from core.models import BaseMeritFlawRating
 from locations.models.core.location import LocationModel
 from locations.models.mage.reality_zone import RealityZone
 

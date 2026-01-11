@@ -1,13 +1,13 @@
-from unittest.mock import patch
+
+from django.contrib.auth.models import User
+from django.test import TestCase
 
 from characters.models.core.derangement import Derangement
 from characters.models.core.merit_flaw_block import MeritFlaw
-from characters.models.werewolf.gift import Gift, GiftPermission
+from characters.models.werewolf.gift import Gift
 from characters.models.werewolf.kinfolk import Kinfolk
 from characters.models.werewolf.tribe import Tribe
 from characters.tests.utils import werewolf_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 from items.models.werewolf.fetish import Fetish
 

@@ -1,5 +1,6 @@
-from characters.models.wraith.wtohuman import WtOHuman
 from django import forms
+
+from characters.models.wraith.wtohuman import WtOHuman
 
 
 class WtOHumanCreationForm(forms.ModelForm):

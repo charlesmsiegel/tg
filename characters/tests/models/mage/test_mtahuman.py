@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.mage.mtahuman import MtAHuman
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

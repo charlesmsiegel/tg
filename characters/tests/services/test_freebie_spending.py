@@ -1,9 +1,11 @@
 """Tests for Freebie spending service."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.mage import Mage
 from characters.models.vampire.vampire import Vampire
 from characters.services.freebie_spending import (
@@ -14,8 +16,6 @@ from characters.services.freebie_spending import (
     MageFreebieSpendingService,
     VampireFreebieSpendingService,
 )
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle, FreebieSpendingRecord
 
 

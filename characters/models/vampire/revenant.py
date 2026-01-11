@@ -1,6 +1,7 @@
-from core.linked_stat import LinkedStat
 from django.db import models
 from django.urls import reverse
+
+from core.linked_stat import LinkedStat
 
 from .vtmhuman import VtMHuman
 

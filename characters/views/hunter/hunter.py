@@ -1,3 +1,5 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.hunter import Hunter
 from core.mixins import (
@@ -8,7 +10,6 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class HunterDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):

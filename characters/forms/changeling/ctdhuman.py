@@ -1,5 +1,6 @@
-from characters.models.changeling.ctdhuman import CtDHuman
 from django import forms
+
+from characters.models.changeling.ctdhuman import CtDHuman
 
 
 class CtDHumanCreationForm(forms.ModelForm):

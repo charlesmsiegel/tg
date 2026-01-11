@@ -1,9 +1,10 @@
+from django.views.generic import CreateView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.changeling.inanimae import Inanimae
 from characters.views.core.human import HumanDetailView
 from core.mixins import EditPermissionMixin, MessageMixin, XPApprovalMixin
 from core.permissions import Permission, PermissionManager
-from django.views.generic import CreateView, UpdateView
 
 
 class InanimaeDetailView(XPApprovalMixin, HumanDetailView):

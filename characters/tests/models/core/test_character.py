@@ -9,9 +9,10 @@ Tests cover:
 - Freebie points calculation
 """
 
-from characters.models.core import Character, Human
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core import Character, Human
 from game.models import Chronicle
 
 

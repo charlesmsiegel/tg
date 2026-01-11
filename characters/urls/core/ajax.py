@@ -1,5 +1,6 @@
-from characters.views.core.human import LoadExamplesView, LoadValuesView
 from django.urls import path
+
+from characters.views.core.human import LoadExamplesView, LoadValuesView
 
 app_name = "characters:ajax"
 urls = [

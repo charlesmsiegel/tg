@@ -1,5 +1,6 @@
-from characters.models.werewolf.tribe import Tribe
 from django.test import TestCase
+
+from characters.models.werewolf.tribe import Tribe
 
 
 class TestTribeDetailView(TestCase):

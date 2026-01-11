@@ -1,10 +1,11 @@
+from django import forms
+
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
 from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
 from core.widgets import AutocompleteTextInput
-from django import forms
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
 from items.models.mage.artifact import Artifact

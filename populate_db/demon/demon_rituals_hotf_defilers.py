@@ -9,10 +9,10 @@ from populate_db.demon.demon_lores import (
     lore_of_longing,
     lore_of_patterns,
     lore_of_storms,
+    lore_of_transfiguration,
 )
 from populate_db.demon.demon_lores import lore_of_the_flesh as lore_flesh
 from populate_db.demon.demon_lores import lore_of_the_fundament as lore_fundament
-from populate_db.demon.demon_lores import lore_of_transfiguration
 
 # =============================================================================
 # DEFILER RITUALS - HOUSES OF THE FALLEN

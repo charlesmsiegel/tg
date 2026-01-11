@@ -6,12 +6,13 @@ without manual AJAX. Choices are computed at form initialization
 and embedded in the page JavaScript.
 """
 
+from django import forms
+
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.models.mage.focus import Practice, Tenet
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from core.widgets import AutocompleteTextInput
-from django import forms
 
 
 class ChainedMageFreebiesForm(ChainedHumanFreebiesForm):

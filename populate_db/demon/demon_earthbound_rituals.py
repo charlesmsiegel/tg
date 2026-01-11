@@ -7,7 +7,6 @@ Unlike normal demon rituals, Earthbound rituals do not have low-Torment effects.
 """
 
 from characters.models.demon.ritual import Ritual
-from populate_db.demon.demon_earthbound_lores import lore_of_chaos as lore_chaos
 from populate_db.demon.demon_earthbound_lores import (
     lore_of_contamination as lore_contamination,
 )

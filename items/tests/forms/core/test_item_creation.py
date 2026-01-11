@@ -11,6 +11,7 @@ Tests cover:
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from game.models import Chronicle, Gameline, ObjectType, STRelationship
 from items.forms.core.item_creation import ItemCreationForm
 

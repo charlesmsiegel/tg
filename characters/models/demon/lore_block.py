@@ -1,5 +1,6 @@
-from core.utils import add_dot
 from django.db import models
+
+from core.utils import add_dot
 
 
 class LoreBlock(models.Model):

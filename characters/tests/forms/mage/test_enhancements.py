@@ -12,19 +12,18 @@ Tests cover:
 - Form save functionality for all enhancement types
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.enhancements import EnhancementForm
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
+from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.effect import Effect
 from characters.models.mage.mage import Mage
 from characters.models.mage.resonance import Resonance
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import ObjectType
-from items.models.mage.artifact import Artifact
-from items.models.mage.talisman import Talisman
 from items.models.mage.wonder import Wonder
 
 

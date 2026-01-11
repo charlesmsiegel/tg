@@ -1,12 +1,13 @@
 """Tests for sanitize_text template tags."""
 
+from django.test import TestCase
+
 from core.templatetags.sanitize_text import (
     badge_text,
     quote_tag,
     sanitize_html,
     simple_markdown,
 )
-from django.test import TestCase
 
 
 class SanitizeHTMLFilterTest(TestCase):

@@ -1,4 +1,5 @@
 from django import forms
+
 from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
 
 

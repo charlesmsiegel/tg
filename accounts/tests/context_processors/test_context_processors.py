@@ -2,16 +2,16 @@
 
 from datetime import date
 
-from accounts.context_processors import notification_count, theme_context
-from characters.models.core.human import Human
-from characters.models.mage.rote import Rote
 from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
+
+from accounts.context_processors import notification_count, theme_context
+from characters.models.core.human import Human
+from characters.models.mage.rote import Rote
 from game.models import (
     Chronicle,
     Gameline,
-    Journal,
     JournalEntry,
     Scene,
     STRelationship,

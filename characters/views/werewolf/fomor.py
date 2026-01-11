@@ -1,11 +1,16 @@
 from typing import Any
 
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, DetailView, FormView, UpdateView
+
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.fomor import FomorCreationForm
-from characters.models.core import Human
 from characters.models.core.specialty import Specialty
 from characters.models.werewolf.fomor import Fomor
 from characters.models.werewolf.fomoripower import FomoriPower
@@ -22,17 +27,10 @@ from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
 )
 from core.models import Language
 from core.permissions import Permission, PermissionManager
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
 class FomorDetailView(ViewPermissionMixin, DetailView):

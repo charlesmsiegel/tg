@@ -1,6 +1,7 @@
-from characters.models.changeling.ctdhuman import CtDHuman
 from django.db import models
 from django.urls import reverse
+
+from characters.models.changeling.ctdhuman import CtDHuman
 
 
 class Inanimae(CtDHuman):

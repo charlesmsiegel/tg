@@ -1,10 +1,11 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.pack import Pack
 from characters.models.werewolf.totem import Totem
 from characters.tests.utils import werewolf_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
 
 
 class TestPack(TestCase):

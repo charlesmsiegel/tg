@@ -1,3 +1,5 @@
+from django import forms
+
 from characters.costs import get_xp_cost
 from characters.forms.core.xp import CATEGORY_CHOICES, XPForm
 from characters.models.mage.focus import Practice, SpecializedPractice, Tenet
@@ -5,7 +7,6 @@ from characters.models.mage.mage import PracticeRating
 from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from core.widgets import AutocompleteTextInput
-from django import forms
 
 
 def _mage_sphere_xp_cost(character, sphere):

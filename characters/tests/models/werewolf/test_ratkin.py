@@ -1,8 +1,9 @@
 """Tests for Ratkin (wererat) module."""
 
-from characters.models.werewolf.ratkin import Ratkin
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.ratkin import Ratkin
 
 
 class TestRatkin(TestCase):

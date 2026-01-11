@@ -1,8 +1,9 @@
 """Tests for DtFHuman model."""
 
-from characters.models.demon.dtf_human import DtFHuman
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.demon.dtf_human import DtFHuman
 
 
 class DtFHumanModelTests(TestCase):

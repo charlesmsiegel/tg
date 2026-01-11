@@ -1,6 +1,7 @@
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.models.mummy.cult_temple import CultTemple
 from locations.models.mummy.sanctuary import UndergroundSanctuary
 from locations.models.mummy.tomb import Tomb

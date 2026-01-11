@@ -1,7 +1,8 @@
-from core.models import BaseMeritFlawRating, Model, Number
 from django.db import models
 from django.db.models import CheckConstraint, F, Q
 from django.urls import reverse
+
+from core.models import BaseMeritFlawRating, Model, Number
 from game.models import ObjectType
 
 

@@ -2,10 +2,10 @@
 Tests for the ConditionalFieldsMixin.
 """
 
-import json
 
 from django import forms
 from django.test import TestCase
+
 from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
 

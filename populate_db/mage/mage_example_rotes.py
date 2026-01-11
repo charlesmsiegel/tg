@@ -1,21 +1,16 @@
 # Example Rotes from Mage Sourcebooks
 # Tradition-specific and common rotes
 
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
-from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 from populate_db.abilities import (
     athletics,
     awareness,
     brawl,
     cosmology,
-    crafts,
     expression,
     medicine,
     occult,
     science,
-    subterfuge,
     technology,
 )
 from populate_db.attributes import (
@@ -24,7 +19,6 @@ from populate_db.attributes import (
     manipulation,
     perception,
     stamina,
-    wits,
 )
 from populate_db.mage.effects_INC import (
     effect_alchemical_transmutation,

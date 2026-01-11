@@ -1,8 +1,9 @@
+from django.db import models
+
 from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.tribe import Tribe
 from characters.models.werewolf.wtahuman import WtAHuman
-from django.db import models
 from items.models.werewolf.fetish import Fetish
 
 

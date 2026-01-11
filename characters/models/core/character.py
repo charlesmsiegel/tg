@@ -1,11 +1,11 @@
-from core.models import Model, ModelManager, ModelQuerySet
-from core.utils import CharacterOrganizationRegistry
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import CheckConstraint, OuterRef, Q, Subquery
 from django.urls import reverse
 from django.utils import timezone
-from polymorphic.managers import PolymorphicManager
+
+from core.models import Model, ModelManager, ModelQuerySet
+from core.utils import CharacterOrganizationRegistry
 
 
 class CharacterQuerySet(ModelQuerySet):
@@ -362,7 +362,6 @@ class Character(CharacterModel):
         Raises:
             ValidationError: If request invalid or already processed
         """
-        from django.utils import timezone
         from game.models import XPSpendingRequest
 
         char = Character.objects.select_for_update().get(pk=self.pk)
@@ -443,7 +442,6 @@ class Character(CharacterModel):
         Returns:
             XPSpendingRequest instance
         """
-        from django.utils import timezone
 
         request = self.xp_spendings.get(id=request_id, approved="Pending")
         request.approved = "Approved"
@@ -462,7 +460,6 @@ class Character(CharacterModel):
         Returns:
             XPSpendingRequest instance
         """
-        from django.utils import timezone
 
         request = self.xp_spendings.get(id=request_id, approved="Pending")
         request.approved = "Denied"

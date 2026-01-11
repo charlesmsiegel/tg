@@ -4,6 +4,7 @@ Tests for the OptionMetadataSelect widget.
 
 from django import forms
 from django.test import TestCase
+
 from widgets import OptionMetadataSelect, OptionMetadataSelectMultiple
 from widgets.utils import normalize_choices
 
@@ -159,7 +160,7 @@ class TestChainedSelectWithMetadata(TestCase):
 
     def test_chained_select_with_metadata_choices(self):
         """Test ChainedSelectMixin handles 3-tuple choices correctly."""
-        from widgets import ChainedChoiceField, ChainedSelect, ChainedSelectMixin
+        from widgets import ChainedChoiceField, ChainedSelectMixin
 
         class TestForm(ChainedSelectMixin, forms.Form):
             category = ChainedChoiceField(choices=[("bg", "Background"), ("mf", "Merit/Flaw")])

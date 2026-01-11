@@ -1,3 +1,6 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.demon import Earthbound
 from core.mixins import (
@@ -8,8 +11,6 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class EarthboundDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):

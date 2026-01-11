@@ -3,15 +3,16 @@
 
 from characters.models.mage.companion import Companion
 from characters.models.werewolf.charm import SpiritCharm
-from populate_db.advantages import alacrity, armor
-from populate_db.advantages import claws_fangs_or_horns as claws
 from populate_db.advantages import (
+    alacrity,
+    armor,
     empathic_bond,
     flexibility,
     human_speech,
     nightsight,
     wings,
 )
+from populate_db.advantages import claws_fangs_or_horns as claws
 from populate_db.archetypes import caregiver, guru, loner, thrill_seeker, trickster
 
 # Configure advantages

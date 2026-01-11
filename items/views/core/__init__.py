@@ -1,10 +1,11 @@
 from collections import defaultdict
 
-from core.utils import get_gameline_name
-from core.views.generic import DictView
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
+
+from core.utils import get_gameline_name
+from core.views.generic import DictView
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
 

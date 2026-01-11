@@ -7,9 +7,10 @@ Tests cover:
 - sanitize_html filter
 """
 
+from django.test import TestCase
+
 from core.templatetags.dots import boxes, dots
 from core.templatetags.sanitize_text import sanitize_html
-from django.test import TestCase
 
 
 class TestDotsFilter(TestCase):

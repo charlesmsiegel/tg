@@ -1,8 +1,9 @@
-from core.utils import get_gameline_name, level_name, tree_sort
-from core.views.generic import DictView
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
+
+from core.utils import get_gameline_name, level_name, tree_sort
+from core.views.generic import DictView
 from game.models import Chronicle, ObjectType
 from locations.forms.core.location_creation import LocationCreationForm
 

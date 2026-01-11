@@ -6,8 +6,9 @@ This module provides freebie spending services for Hunter: The Reckoning charact
 - HunterFreebieSpendingService - Imbued hunters with Edges
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

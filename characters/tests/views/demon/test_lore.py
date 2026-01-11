@@ -1,9 +1,10 @@
 """Tests for Lore views."""
 
-from characters.models.demon.lore import Lore
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.demon.lore import Lore
 
 
 class TestLoreDetailView(TestCase):

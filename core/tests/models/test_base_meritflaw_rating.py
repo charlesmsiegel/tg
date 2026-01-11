@@ -5,13 +5,13 @@ Verifies that all concrete implementations inherit the shared functionality
 correctly and maintain database constraints.
 """
 
-from characters.models.core import MeritFlaw
-from characters.models.core.human import Human
-from characters.models.core.merit_flaw_block import MeritFlawRating
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
-from game.models import ObjectType
+
+from characters.models.core import MeritFlaw
+from characters.models.core.human import Human
+from characters.models.core.merit_flaw_block import MeritFlawRating
 from locations.models.mage import Node, NodeMeritFlawRating
 from locations.models.mummy import Tomb, TombMeritFlawRating
 from locations.models.vampire import Haven, HavenMeritFlawRating

@@ -1,5 +1,6 @@
-from characters.models.vampire.revenant import Revenant, RevenantFamily
 from django import forms
+
+from characters.models.vampire.revenant import Revenant, RevenantFamily
 
 
 class RevenantCreationForm(forms.ModelForm):

@@ -1,8 +1,8 @@
 """Tests for Sector forms."""
 
 from django.test import TestCase
+
 from locations.forms.mage.sector import SectorForm
-from locations.models.mage.sector import Sector
 
 
 class TestSectorFormFields(TestCase):

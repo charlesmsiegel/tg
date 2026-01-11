@@ -1,6 +1,6 @@
+
 from characters.costs import get_freebie_cost
 from characters.forms.core.freebies import HumanFreebiesForm
-from django import forms
 
 
 class WraithFreebiesForm(HumanFreebiesForm):

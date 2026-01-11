@@ -1,10 +1,10 @@
-from characters.models.core import CharacterModel
-from core.models import Model, ModelManager, ModelQuerySet
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core import CharacterModel
+from core.models import Model, ModelManager, ModelQuerySet
 from game.models import Scene
-from polymorphic.managers import PolymorphicManager
 
 
 class LocationQuerySet(ModelQuerySet):

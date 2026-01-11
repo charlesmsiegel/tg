@@ -2,12 +2,13 @@
 
 import unittest
 
-from characters.forms.core.limited_edit import LimitedHumanEditForm
-from characters.models.mummy.dynasty import Dynasty
-from characters.models.mummy.mummy import Mummy
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.forms.core.limited_edit import LimitedHumanEditForm
+from characters.models.mummy.dynasty import Dynasty
+from characters.models.mummy.mummy import Mummy
 from game.models import Chronicle
 
 

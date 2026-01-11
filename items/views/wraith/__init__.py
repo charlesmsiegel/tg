@@ -1,4 +1,5 @@
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from items.models.wraith import WraithArtifact, WraithRelic
 
 

@@ -1,8 +1,9 @@
-from characters.models.core import MeritFlaw
-from core.models import BaseMeritFlawRating
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+from characters.models.core import MeritFlaw
+from core.models import BaseMeritFlawRating
 from locations.models.core import LocationModel
 
 

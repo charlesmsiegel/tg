@@ -1,10 +1,11 @@
+from django.db import models
+from django.urls import reverse
+
 from characters.models.core import Ability, Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from core.models import Model
 from core.utils import weighted_choice
-from django.db import models
-from django.urls import reverse
 
 
 class Rote(Model):

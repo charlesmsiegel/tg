@@ -1,9 +1,10 @@
 """Tests for characters URL routing configuration."""
 
-from characters import urls as characters_urls
-from core.constants import GameLine
 from django.test import SimpleTestCase, TestCase
 from django.urls import NoReverseMatch, resolve, reverse
+
+from characters import urls as characters_urls
+from core.constants import GameLine
 
 
 class CharactersUrlPatternsTest(SimpleTestCase):

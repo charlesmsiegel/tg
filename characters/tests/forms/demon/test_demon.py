@@ -1,12 +1,13 @@
 """Tests for Demon creation form."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.demon.demon import DemonCreationForm
 from characters.models.core.archetype import Archetype
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

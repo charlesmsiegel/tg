@@ -1,9 +1,9 @@
+from django.db import models
+
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.wtahuman import WtAHuman
 from core.utils import add_dot
-from django.db import models
-from django.urls import reverse
 from items.models.werewolf.fetish import Fetish
 
 

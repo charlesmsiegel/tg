@@ -1,9 +1,10 @@
-from core.linked_stat import (
-    LinkedStat,  # Using LinkedStat for non-standard ka_rating/ba naming
-)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+
+from core.linked_stat import (
+    LinkedStat,  # Using LinkedStat for non-standard ka_rating/ba naming
+)
 
 from .mtr_human import MtRHuman
 

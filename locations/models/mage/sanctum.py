@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+
 from locations.models.core.location import LocationModel
 from locations.models.mage.reality_zone import RealityZone
 

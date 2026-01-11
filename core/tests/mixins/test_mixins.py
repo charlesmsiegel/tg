@@ -1,6 +1,13 @@
 """Tests for mixins in core/mixins.py."""
 
-from unittest.mock import patch
+
+from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.test import RequestFactory, TestCase
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 
 from characters.models.core.character import Character
 from core.mixins import (
@@ -21,14 +28,7 @@ from core.mixins import (
     ViewPermissionMixin,
     VisibilityFilterMixin,
 )
-from core.permissions import Permission, PermissionManager, VisibilityTier
-from django.contrib.auth.models import User
-from django.contrib.messages import get_messages
-from django.contrib.messages.storage.fallback import FallbackStorage
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
-from django.test import RequestFactory, TestCase
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from core.permissions import Permission, VisibilityTier
 from game.models import Chronicle, Gameline, STRelationship
 
 
@@ -1070,9 +1070,9 @@ class SuccessMessageMixinTest(TestCase):
 
     def _add_messages_middleware(self, request):
         """Add messages middleware to request."""
-        setattr(request, "session", "session")
+        request.session = "session"
         messages = FallbackStorage(request)
-        setattr(request, "_messages", messages)
+        request._messages = messages
         return request
 
     def test_get_success_message(self):
@@ -1152,9 +1152,9 @@ class ErrorMessageMixinTest(TestCase):
 
     def _add_messages_middleware(self, request):
         """Add messages middleware to request."""
-        setattr(request, "session", "session")
+        request.session = "session"
         messages = FallbackStorage(request)
-        setattr(request, "_messages", messages)
+        request._messages = messages
         return request
 
     def test_form_invalid_shows_error_message(self):
@@ -1214,9 +1214,9 @@ class DeleteMessageMixinTest(TestCase):
 
     def _add_messages_middleware(self, request):
         """Add messages middleware to request."""
-        setattr(request, "session", "session")
+        request.session = "session"
         messages = FallbackStorage(request)
-        setattr(request, "_messages", messages)
+        request._messages = messages
         return request
 
     def test_delete_shows_success_message(self):
@@ -1363,7 +1363,7 @@ class ApprovalMixinTest(TestCase):
         the post() method properly converts it to a user-facing error message
         and redirects. This catches bugs like using e.message instead of str(e).
         """
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from core.mixins import ApprovalMixin
 
@@ -1384,9 +1384,9 @@ class ApprovalMixinTest(TestCase):
         request.user = self.user
 
         # Set up messages framework on the request
-        setattr(request, "session", "session")
+        request.session = "session"
         messages_storage = FallbackStorage(request)
-        setattr(request, "_messages", messages_storage)
+        request._messages = messages_storage
 
         with patch("django.shortcuts.redirect") as mock_redirect:
             mock_redirect.return_value = MagicMock()
@@ -1403,7 +1403,7 @@ class ApprovalMixinTest(TestCase):
         Tests the reject button path to ensure both approve and reject
         branches properly handle ValidationError without AttributeError.
         """
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from core.mixins import ApprovalMixin
 
@@ -1424,9 +1424,9 @@ class ApprovalMixinTest(TestCase):
         request.user = self.user
 
         # Set up messages framework on the request
-        setattr(request, "session", "session")
+        request.session = "session"
         messages_storage = FallbackStorage(request)
-        setattr(request, "_messages", messages_storage)
+        request._messages = messages_storage
 
         with patch("django.shortcuts.redirect") as mock_redirect:
             mock_redirect.return_value = MagicMock()

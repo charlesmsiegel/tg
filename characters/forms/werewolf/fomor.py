@@ -1,5 +1,6 @@
-from characters.models.werewolf.fomor import Fomor
 from django import forms
+
+from characters.models.werewolf.fomor import Fomor
 
 
 class FomorCreationForm(forms.ModelForm):

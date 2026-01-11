@@ -1,10 +1,10 @@
 """Tests for AJAX utility functions in core.ajax module."""
 
 import json
-from collections import namedtuple
+
+from django.test import SimpleTestCase
 
 from core.ajax import dropdown_options_response, simple_values_response
-from django.test import SimpleTestCase
 
 
 class MockObject:

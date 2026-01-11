@@ -1,5 +1,6 @@
-from characters.models.werewolf.fomoripower import FomoriPower
 from django.test import TestCase
+
+from characters.models.werewolf.fomoripower import FomoriPower
 
 
 class TestFomoriPowerDetailView(TestCase):

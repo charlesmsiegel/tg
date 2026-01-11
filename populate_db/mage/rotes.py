@@ -625,12 +625,10 @@ from populate_db.abilities import (
     awareness,
     brawl,
     cosmology,
-    crafts,
     expression,
     medicine,
     occult,
     science,
-    subterfuge,
     technology,
 )
 
@@ -641,7 +639,6 @@ from populate_db.attributes import (
     manipulation,
     perception,
     stamina,
-    wits,
 )
 from populate_db.mage.practices_INC import (
     alchemy,

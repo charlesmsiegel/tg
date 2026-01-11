@@ -3,6 +3,8 @@ Unified NPC/linked character creation form for all background types.
 This single form handles Allies, Mentors, Contacts, Retainers, and Followers.
 """
 
+from django import forms
+
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
 from characters.models.core.archetype import Archetype
@@ -24,7 +26,6 @@ from characters.models.werewolf.spirit_character import SpiritCharacter
 from characters.models.werewolf.wtahuman import WtAHuman
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from django import forms
 
 
 class LinkedNPCForm(forms.Form):

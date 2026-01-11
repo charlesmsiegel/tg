@@ -9,6 +9,9 @@ Tests cover:
 - Chronicle and role management
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.core.npc_profile import NPCProfileForm
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.ctdhuman import CtDHuman
@@ -36,8 +39,6 @@ from characters.models.wraith.faction import WraithFaction
 from characters.models.wraith.guild import Guild
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

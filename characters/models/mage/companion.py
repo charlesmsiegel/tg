@@ -1,11 +1,12 @@
-from characters.models.core.human import Human
-from characters.models.mage.mtahuman import MtAHuman
-from characters.models.werewolf.charm import SpiritCharm
-from core.models import Model, Number
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.urls import reverse
+
+from characters.models.core.human import Human
+from characters.models.mage.mtahuman import MtAHuman
+from characters.models.werewolf.charm import SpiritCharm
+from core.models import Model, Number
 
 
 class Advantage(Model):

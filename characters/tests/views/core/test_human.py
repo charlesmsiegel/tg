@@ -1,11 +1,12 @@
 """Tests for human views module."""
 
-from characters.models.core.human import Human
-from characters.models.core.merit_flaw_block import MeritFlaw
-from core.models import Number
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.human import Human
+from characters.models.core.merit_flaw_block import MeritFlaw
+from core.models import Number
 from game.models import ObjectType
 
 

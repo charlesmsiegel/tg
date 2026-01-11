@@ -1,4 +1,5 @@
 from django import forms
+
 from items.models.mage import SorcererArtifact
 from widgets import CreateOrSelectField, CreateOrSelectMixin
 

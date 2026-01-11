@@ -4,7 +4,6 @@ Point Pool Form Mixin
 Mixin for forms with point pool fields that require constraint validation.
 """
 
-from itertools import permutations
 
 from django.core.exceptions import ValidationError
 

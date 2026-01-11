@@ -5,6 +5,7 @@ Tests for the widgets app create-or-select functionality.
 from django import forms
 from django.db import models
 from django.test import TestCase
+
 from widgets import (
     CreateOrSelectField,
     CreateOrSelectMixin,

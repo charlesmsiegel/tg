@@ -1,7 +1,8 @@
 """Tests for game URL routing configuration."""
 
 from django.test import SimpleTestCase, TestCase
-from django.urls import resolve, reverse
+from django.urls import reverse
+
 from game import urls as game_urls
 
 

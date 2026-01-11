@@ -1,6 +1,7 @@
-from characters.models.werewolf.wtahuman import WtAHuman
 from django.db import models
 from django.urls import reverse
+
+from characters.models.werewolf.wtahuman import WtAHuman
 
 
 class Drone(WtAHuman):

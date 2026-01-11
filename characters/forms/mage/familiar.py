@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.core.archetype import Archetype
 from characters.models.mage.companion import Companion
-from django import forms
 
 
 class FamiliarForm(forms.ModelForm):

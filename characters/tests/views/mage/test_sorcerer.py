@@ -1,11 +1,12 @@
 """Tests for sorcerer views module."""
 
-from characters.models.core.archetype import Archetype
-from characters.models.mage.fellowship import SorcererFellowship
-from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.archetype import Archetype
+from characters.models.mage.fellowship import SorcererFellowship
+from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
 from game.models import Chronicle
 
 

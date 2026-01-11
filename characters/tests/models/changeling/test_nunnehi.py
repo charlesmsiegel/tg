@@ -1,8 +1,9 @@
 """Tests for Nunnehi model."""
 
-from characters.models.changeling.nunnehi import Nunnehi
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.changeling.nunnehi import Nunnehi
 
 
 class TestNunnehi(TestCase):

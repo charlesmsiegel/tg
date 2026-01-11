@@ -1,8 +1,9 @@
 """Tests for Gurahl (werebear) module."""
 
-from characters.models.werewolf.gurahl import Gurahl
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.gurahl import Gurahl
 
 
 class TestGurahl(TestCase):

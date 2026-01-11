@@ -1,12 +1,13 @@
 """Tests for ApocalypticForm and ApocalypticFormTrait models."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.demon.apocalyptic_form import (
     ApocalypticForm,
     ApocalypticFormTrait,
 )
 from characters.models.demon.house import DemonHouse
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class ApocalypticFormTraitModelTests(TestCase):

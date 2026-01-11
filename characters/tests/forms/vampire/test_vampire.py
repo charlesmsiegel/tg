@@ -9,6 +9,9 @@ Tests cover:
 - Owner assignment on save
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.vampire.vampire import VampireCreationForm
 from characters.models.core.archetype import Archetype
 from characters.models.vampire.clan import VampireClan
@@ -16,8 +19,6 @@ from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

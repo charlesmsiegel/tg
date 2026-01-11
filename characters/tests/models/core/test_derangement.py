@@ -1,7 +1,8 @@
-from characters.models.core import Derangement
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
+
+from characters.models.core import Derangement
 
 
 class TestDerangementDetailView(TestCase):

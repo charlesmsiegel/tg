@@ -8,7 +8,6 @@ from populate_db.demon.demon_lores import lore_of_awakening as lore_awakening
 from populate_db.demon.demon_lores import (
     lore_of_humanity,
     lore_of_patterns,
-    lore_of_storms,
 )
 from populate_db.demon.demon_lores import lore_of_the_fundament as lore_fundament
 from populate_db.demon.demon_lores import lore_of_the_winds as lore_winds

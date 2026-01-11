@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.vampire.ghoul import Ghoul
 from characters.models.vampire.vampire import Vampire
-from django import forms
 
 
 class GhoulCreationForm(forms.ModelForm):

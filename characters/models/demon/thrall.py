@@ -1,8 +1,9 @@
+from django.db import models, transaction
+from django.urls import reverse
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.demon.dtf_human import DtFHuman
 from core.utils import add_dot
-from django.db import models, transaction
-from django.urls import reverse
 
 
 class Thrall(DtFHuman):

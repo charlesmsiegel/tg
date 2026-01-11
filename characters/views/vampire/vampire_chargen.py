@@ -1,14 +1,13 @@
-from typing import Any
+
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.chained_freebies import ChainedVampireFreebiesForm
-from characters.forms.vampire.freebies import VampireFreebiesForm
 from characters.forms.vampire.vampire import VampireCreationForm
-from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
-from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.vampire import Vampire
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -20,22 +19,9 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from core.models import Language
-from django import forms
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
 class VampireBasicsView(LoginRequiredMixin, FormView):
@@ -179,7 +165,7 @@ class VampireDisciplinesView(SpecialUserMixin, UpdateView):
             for field in self.fields:
                 rating = form.cleaned_data.get(field, 0)
                 if rating > 0 and field not in clan_discipline_properties:
-                    form.add_error(field, f"You can only spend starting dots on clan Disciplines.")
+                    form.add_error(field, "You can only spend starting dots on clan Disciplines.")
                     messages.error(
                         self.request,
                         "You can only allocate starting dots to your clan's Disciplines.",

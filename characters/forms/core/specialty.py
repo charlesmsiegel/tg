@@ -1,7 +1,8 @@
+from django import forms
+
 from characters.models.core.specialty import Specialty
 from characters.models.core.statistic import Statistic
 from core.widgets import AutocompleteTextInput
-from django import forms
 
 
 class SpecialtiesForm(forms.Form):

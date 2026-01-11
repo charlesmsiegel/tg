@@ -1,7 +1,8 @@
-from characters.models.werewolf.gift import Gift, GiftPermission
-from core.models import Model
 from django.db import models
 from django.urls import reverse
+
+from characters.models.werewolf.gift import Gift, GiftPermission
+from core.models import Model
 
 
 class Tribe(Model):

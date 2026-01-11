@@ -6,9 +6,9 @@ without manual AJAX. Choices are computed at form initialization
 and embedded in the page JavaScript.
 """
 
+
 from characters.forms.core.chained_freebies import ChainedHumanFreebiesForm
 from characters.models.core.statistic import Statistic
-from django import forms
 
 
 class ChainedChangelingFreebiesForm(ChainedHumanFreebiesForm):

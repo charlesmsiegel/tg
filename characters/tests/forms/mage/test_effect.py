@@ -10,6 +10,8 @@ Tests cover:
 - EffectCreateOrSelectFormSet behavior
 """
 
+from django.test import TestCase
+
 from characters.forms.mage.effect import (
     EffectCreateOrSelectForm,
     EffectCreateOrSelectFormSet,
@@ -17,7 +19,6 @@ from characters.forms.mage.effect import (
 )
 from characters.models.mage.effect import Effect
 from characters.tests.utils import mage_setup
-from django.test import TestCase
 
 
 class TestEffectFormInit(TestCase):

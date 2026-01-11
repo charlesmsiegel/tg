@@ -1,3 +1,7 @@
+from django.db.models import OuterRef, Subquery
+from django.shortcuts import redirect, render
+from django.views.generic import ListView
+
 from characters.forms.core.character_creation import CharacterCreationForm
 from characters.forms.core.group_creation import GroupCreationForm
 
@@ -127,9 +131,6 @@ from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
 from core.views.generic import DictView
-from django.db.models import OuterRef, Subquery
-from django.shortcuts import redirect, render
-from django.views.generic import ListView
 from game.models import Chronicle, ObjectType
 
 from .group import GroupDetailView

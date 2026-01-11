@@ -1,5 +1,6 @@
-from characters.models.mummy.dynasty import Dynasty
 from django import forms
+
+from characters.models.mummy.dynasty import Dynasty
 
 
 class DynastyForm(forms.ModelForm):

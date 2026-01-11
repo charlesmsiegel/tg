@@ -17,12 +17,11 @@ from datetime import date, datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.serializers import serialize
-from django.db.models import Q
+
 from game.models import (
     Chronicle,
     Journal,
     Scene,
-    Story,
     StoryXPRequest,
     WeeklyXPRequest,
 )

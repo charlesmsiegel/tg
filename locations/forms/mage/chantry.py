@@ -1,7 +1,8 @@
+from django import forms
+
 from characters.forms.mage.effect import EffectCreateOrSelectForm
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
-from django import forms
 from locations.models.mage import Chantry
 from locations.models.mage.chantry import ChantryBackgroundRating
 from widgets import (

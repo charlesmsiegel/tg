@@ -3,7 +3,8 @@ Tests for the widgets app chained select functionality.
 """
 
 from django import forms
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
+
 from widgets import (
     ChainedChoiceField,
     ChainedModelChoiceField,
@@ -316,7 +317,6 @@ class TestWidgetsImports(TestCase):
         """Test all expected exports are available from widgets package."""
         from widgets import (
             ChainedChoiceField,
-            ChainedModelChoiceField,
             ChainedSelect,
             ChainedSelectAjaxView,
             ChainedSelectMixin,

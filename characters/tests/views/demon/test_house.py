@@ -1,9 +1,10 @@
 """Tests for DemonHouse views."""
 
-from characters.models.demon.house import DemonHouse
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.demon.house import DemonHouse
 
 
 class TestHouseDetailView(TestCase):

@@ -3,8 +3,6 @@ import logging
 from core.constants import CharacterStatus, GameLine, ImageStatus
 
 logger = logging.getLogger(__name__)
-from core.utils import filepath
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -12,13 +10,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import CheckConstraint, Q
 from django.urls import reverse
 from django.utils import timezone
-from game.models import Chronicle
 from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
+
+from core.utils import filepath
+from game.models import Chronicle
 
 
 class ModelQuerySet(PolymorphicQuerySet):

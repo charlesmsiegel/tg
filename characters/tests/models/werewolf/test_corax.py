@@ -1,8 +1,9 @@
 """Tests for Corax (wereraven) module."""
 
-from characters.models.werewolf.corax import Corax
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.corax import Corax
 
 
 class TestCorax(TestCase):

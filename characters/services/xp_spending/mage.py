@@ -8,8 +8,9 @@ This module provides XP spending services for Mage: The Ascension characters:
 - CompanionXPSpendingService - Consors (unawakened helpers)
 """
 
-from characters.costs import get_xp_cost
 from django.utils import timezone
+
+from characters.costs import get_xp_cost
 
 from .base import (
     HumanXPSpendingService,

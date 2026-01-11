@@ -1,4 +1,8 @@
-from collections import defaultdict
+
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import CheckConstraint, Q
+from django.urls import reverse
 
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
@@ -6,10 +10,6 @@ from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.mtahuman import MtAHuman
 from core.models import Model
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
-from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 
 class LinearMagicPath(Model):

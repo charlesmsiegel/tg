@@ -1,7 +1,8 @@
-from characters.models.werewolf.garou import Werewolf
-from characters.models.werewolf.gift import GiftPermission
 from django import forms
 from django.core.exceptions import ValidationError
+
+from characters.models.werewolf.garou import Werewolf
+from characters.models.werewolf.gift import GiftPermission
 
 
 class WerewolfCreationForm(forms.ModelForm):

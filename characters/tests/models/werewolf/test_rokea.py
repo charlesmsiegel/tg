@@ -1,8 +1,9 @@
 """Tests for Rokea (wereshark) module."""
 
-from characters.models.werewolf.rokea import Rokea
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.rokea import Rokea
 
 
 class TestRokea(TestCase):

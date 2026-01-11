@@ -1,5 +1,6 @@
-from characters.models.werewolf.kinfolk import Kinfolk
 from django import forms
+
+from characters.models.werewolf.kinfolk import Kinfolk
 
 
 class KinfolkCreationForm(forms.ModelForm):

@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from core.models import (
     Book,
     BookReference,
@@ -7,7 +9,6 @@ from core.models import (
     NewsItem,
     TemplateApplication,
 )
-from django.contrib import admin
 
 admin.site.register(NewsItem)
 

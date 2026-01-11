@@ -1,6 +1,7 @@
 """Tests for Demon Relic model."""
 
 from django.test import TestCase
+
 from items.models.demon.relic import Relic
 
 

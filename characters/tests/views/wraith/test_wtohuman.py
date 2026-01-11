@@ -1,10 +1,11 @@
 """Tests for wtohuman views module."""
 
-from characters.models.core.archetype import Archetype
-from characters.models.wraith.wtohuman import WtOHuman
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.archetype import Archetype
+from characters.models.wraith.wtohuman import WtOHuman
 from game.models import Chronicle
 
 

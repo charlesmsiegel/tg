@@ -1,12 +1,13 @@
 """Tests for Demon views."""
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.demon import Demon
 from characters.models.demon.faction import DemonFaction
 from characters.models.demon.house import DemonHouse
 from characters.models.demon.visage import Visage
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

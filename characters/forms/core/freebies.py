@@ -1,10 +1,9 @@
+from django import forms
+
 from characters.costs import get_freebie_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background
 from characters.models.core.merit_flaw_block import MeritFlaw
-from core.models import Number
-from django import forms
 
 CATEGORY_CHOICES = [
     ("-----", "-----"),

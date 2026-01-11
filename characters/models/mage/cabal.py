@@ -1,8 +1,8 @@
+from django.urls import reverse
+
 from characters.models.core.group import Group
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
-from core.utils import weighted_choice
-from django.urls import reverse
 
 
 class Cabal(Group):

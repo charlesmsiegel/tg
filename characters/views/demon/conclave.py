@@ -1,8 +1,9 @@
+from django import forms
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.models.core.human import Human
 from characters.models.demon.conclave import Conclave
 from core.mixins import MessageMixin
-from django import forms
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class ConclaveDetailView(DetailView):

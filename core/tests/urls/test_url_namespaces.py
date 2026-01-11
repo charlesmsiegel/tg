@@ -1,6 +1,6 @@
 """Tests for URL namespace configuration."""
 
-from django.test import SimpleTestCase, TestCase
+from django.test import TestCase
 from django.urls import resolve, reverse
 
 

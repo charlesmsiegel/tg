@@ -57,7 +57,7 @@ class CreateOrSelectField(forms.BooleanField):
         self.select_field = select_field
         self.required_if_selecting = required_if_selecting
         self.create_error_message = create_error_message or (
-            f"You must either select an existing item or choose to create a new one."
+            "You must either select an existing item or choose to create a new one."
         )
         self.group_name = group_name
 

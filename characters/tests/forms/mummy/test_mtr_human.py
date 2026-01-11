@@ -8,10 +8,10 @@ Tests cover:
 - Required/optional field handling
 """
 
-from characters.forms.mummy.mtr_human import MtRHumanCreationForm
-from characters.models.mummy.mtr_human import MtRHuman
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.forms.mummy.mtr_human import MtRHumanCreationForm
 from game.models import Chronicle
 
 

@@ -1,5 +1,9 @@
 """Tests for Hunter character models."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.hunter.creed import Creed
 from characters.models.hunter.edge import Edge
@@ -7,9 +11,6 @@ from characters.models.hunter.htrhuman import HtRHuman
 from characters.models.hunter.hunter import Hunter
 from characters.models.hunter.organization import HunterOrganization
 from core.models import Book
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

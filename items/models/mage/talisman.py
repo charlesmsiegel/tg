@@ -1,6 +1,7 @@
-from characters.models.mage.effect import Effect
 from django.db import models
 from django.urls import reverse
+
+from characters.models.mage.effect import Effect
 from items.models.mage.wonder import Wonder
 
 

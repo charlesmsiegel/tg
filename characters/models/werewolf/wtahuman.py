@@ -1,5 +1,6 @@
-from characters.models.core.human import Human
 from django.db import models
+
+from characters.models.core.human import Human
 
 
 class WtAHuman(Human):

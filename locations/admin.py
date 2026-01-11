@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from locations.models.changeling import Freehold
 from locations.models.core import City, LocationModel
 from locations.models.demon import Bastion, Reliquary

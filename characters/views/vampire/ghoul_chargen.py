@@ -1,14 +1,11 @@
-from typing import Any
+
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.vampire.chained_freebies import ChainedGhoulFreebiesForm
-from characters.forms.vampire.freebies import GhoulFreebiesForm
 from characters.forms.vampire.ghoul import GhoulCreationForm
-from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
-from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -20,20 +17,9 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from characters.views.vampire.vtmhuman import VtMHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
-    EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from core.models import Language
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 
 class GhoulBasicsView(LoginRequiredMixin, FormView):

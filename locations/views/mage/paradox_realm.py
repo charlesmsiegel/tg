@@ -1,9 +1,10 @@
 from typing import Any
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormView
+
+from core.mixins import EditPermissionMixin, ViewPermissionMixin
 from locations.forms.mage.paradox_realm import ParadoxRealmForm
 from locations.models.mage import ParadoxAtmosphere, ParadoxObstacle, ParadoxRealm
 

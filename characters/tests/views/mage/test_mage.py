@@ -1,14 +1,14 @@
 """Tests for mage views module."""
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.core.archetype import Archetype
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import Tenet
 from characters.models.mage.mage import Mage
-from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

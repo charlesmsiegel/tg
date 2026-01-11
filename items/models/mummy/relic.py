@@ -1,7 +1,8 @@
-from core.models import BaseResonanceRating
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+
+from core.models import BaseResonanceRating
 from items.models.core.item import ItemModel
 
 

@@ -10,9 +10,10 @@ Tests cover:
 - Form validation for valid/invalid group types
 """
 
-from characters.forms.core.group_creation import GroupCreationForm
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.forms.core.group_creation import GroupCreationForm
 from game.models import Chronicle, Gameline, ObjectType, STRelationship
 
 

@@ -2,11 +2,12 @@
 
 import unittest
 
-from characters.forms.core.limited_edit import LimitedHumanEditForm
-from characters.models.hunter import HtRHuman
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.forms.core.limited_edit import LimitedHumanEditForm
+from characters.models.hunter import HtRHuman
 from game.models import Chronicle
 
 

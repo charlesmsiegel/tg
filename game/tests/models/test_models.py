@@ -11,10 +11,11 @@ Tests cover:
 
 from datetime import date, timedelta
 
-from characters.models.core import Human
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.timezone import now
+
+from characters.models.core import Human
 from game.models import (
     Chronicle,
     Gameline,
@@ -585,7 +586,6 @@ class TestChronicleModel(TestCase):
 
     def test_chronicle_add_setting_element(self):
         """Test Chronicle add_setting_element creates and adds element."""
-        from game.models import SettingElement
 
         chronicle = Chronicle.objects.create(name="Test Chronicle")
         chronicle.add_setting_element("The Camarilla", "A secretive sect of vampires")
@@ -796,7 +796,6 @@ class TestSceneModel(TestCase):
 
     def test_scene_most_recent_post(self):
         """Test Scene most_recent_post returns latest post."""
-        from game.models import Post
 
         scene = Scene.objects.create(
             name="Test Scene",
@@ -1343,6 +1342,7 @@ class TestSTRelationshipModel(TestCase):
     def test_st_relationship_unique_constraint(self):
         """Test STRelationship unique constraint."""
         from django.core.exceptions import ValidationError
+
         from game.models import STRelationship
 
         STRelationship.objects.create(
@@ -1362,6 +1362,7 @@ class TestSTRelationshipModel(TestCase):
     def test_st_relationship_validation_missing_user(self):
         """Test STRelationship validation requires user."""
         from django.core.exceptions import ValidationError
+
         from game.models import STRelationship
 
         rel = STRelationship(
@@ -1481,7 +1482,6 @@ class TestWeeklyXPRequestModel(TestCase):
 
     def test_weekly_xp_request_approve_is_atomic(self):
         """Test WeeklyXPRequest.approve() uses atomic transaction."""
-        from django.db import transaction
 
         request = WeeklyXPRequest.objects.create(
             week=self.week,

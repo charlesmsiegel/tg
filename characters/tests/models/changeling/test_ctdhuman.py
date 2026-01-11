@@ -1,11 +1,12 @@
 import unittest
 
-from characters.models.changeling.changeling import Changeling
-from characters.models.changeling.ctdhuman import CtDHuman
-from characters.tests.utils import changeling_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.changeling.changeling import Changeling
+from characters.models.changeling.ctdhuman import CtDHuman
+from characters.tests.utils import changeling_setup
 from game.models import Chronicle
 
 

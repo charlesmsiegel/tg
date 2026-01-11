@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.demon.demon import Demon
 from characters.models.demon.thrall import Thrall
-from django import forms
 
 
 class ThrallCreationForm(forms.ModelForm):

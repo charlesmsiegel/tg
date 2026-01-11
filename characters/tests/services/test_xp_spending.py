@@ -1,12 +1,14 @@
 """Tests for XP spending service."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.merit_flaw_block import MeritFlaw, MeritFlawRating
+from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.focus import Practice, Tenet
 from characters.models.mage.mage import Mage, PracticeRating
-from characters.models.mage.resonance import Resonance
 from characters.models.mage.sphere import Sphere
 from characters.services.xp_spending import (
     MageXPSpendingService,
@@ -14,9 +16,6 @@ from characters.services.xp_spending import (
     XPSpendingServiceFactory,
     XPSpendResult,
 )
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from django.test import TestCase
 from game.models import Chronicle, ObjectType, XPSpendingRequest
 
 
@@ -476,7 +475,6 @@ class TestXPSpendingServiceFactory(TestCase):
     """Test XPSpendingServiceFactory returns correct services."""
 
     def setUp(self):
-        from characters.services.xp_spending import XPSpendingServiceFactory
 
         self.factory = XPSpendingServiceFactory
         self.user = User.objects.create_user(

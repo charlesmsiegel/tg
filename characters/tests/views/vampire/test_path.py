@@ -1,8 +1,9 @@
 """Tests for Path views and templates."""
 
-from characters.models.vampire.path import Path
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+
+from characters.models.vampire.path import Path
 
 
 # Disable caching for template assertion tests

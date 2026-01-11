@@ -1,3 +1,6 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, FormView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.werewolf.kinfolk import KinfolkCreationForm
@@ -8,7 +11,6 @@ from characters.views.core.generic_background import GenericBackgroundView
 from characters.views.core.human import HumanAttributeView, HumanCharacterCreationView
 from characters.views.werewolf.wtahuman import (
     WtAHumanAbilityView,
-    WtAHumanAlliesView,
     WtAHumanExtrasView,
     WtAHumanFreebiesView,
     WtAHumanLanguagesView,
@@ -17,15 +19,10 @@ from characters.views.werewolf.wtahuman import (
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
 )
 from core.permissions import Permission, PermissionManager
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
-from game.models import ObjectType
 
 
 class KinfolkDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):

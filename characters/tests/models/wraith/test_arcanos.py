@@ -1,7 +1,8 @@
 """Tests for Arcanos model."""
 
-from characters.models.wraith.arcanos import Arcanos
 from django.test import TestCase
+
+from characters.models.wraith.arcanos import Arcanos
 
 
 class TestArcanosModel(TestCase):
@@ -95,7 +96,7 @@ class TestArcanosUrls(TestCase):
     def test_get_absolute_url_method_exists(self):
         """Arcanos has get_absolute_url method."""
         self.assertTrue(hasattr(self.arcanos, "get_absolute_url"))
-        self.assertTrue(callable(getattr(self.arcanos, "get_absolute_url")))
+        self.assertTrue(callable(self.arcanos.get_absolute_url))
 
     def test_get_heading(self):
         """Arcanos returns correct heading class."""

@@ -1,5 +1,6 @@
-from characters.models.werewolf.septposition import SeptPosition
 from django import forms
+
+from characters.models.werewolf.septposition import SeptPosition
 
 
 class SeptPositionForm(forms.ModelForm):

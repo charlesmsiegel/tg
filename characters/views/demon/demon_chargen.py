@@ -1,11 +1,13 @@
-from typing import Any
+
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.demon import DemonCreationForm
 from characters.forms.demon.freebies import DemonFreebiesForm
-from characters.models.core.specialty import Specialty
-from characters.models.core.statistic import Statistic
 from characters.models.demon.apocalyptic_form import (
     ApocalypticForm,
     ApocalypticFormTrait,
@@ -25,15 +27,7 @@ from characters.views.core.human import (
 from core.mixins import (
     EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, FormView, UpdateView
 
 
 class DemonBasicsView(LoginRequiredMixin, FormView):

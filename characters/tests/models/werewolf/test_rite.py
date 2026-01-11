@@ -1,5 +1,6 @@
-from characters.models.werewolf.rite import Rite
 from django.test import TestCase
+
+from characters.models.werewolf.rite import Rite
 
 
 class TestRiteDetailView(TestCase):

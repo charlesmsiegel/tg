@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.changeling.autumn_person import AutumnPersonUpdateView
 from characters.views.changeling.cantrip import CantripUpdateView
 from characters.views.changeling.changeling import ChangelingUpdateView
@@ -10,7 +12,6 @@ from characters.views.changeling.kith import KithUpdateView
 from characters.views.changeling.legacy import LegacyUpdateView
 from characters.views.changeling.motley import MotleyUpdateView
 from characters.views.changeling.nunnehi import NunnehiUpdateView
-from django.urls import path
 
 urls = [
     path(

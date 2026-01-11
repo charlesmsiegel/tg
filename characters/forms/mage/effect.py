@@ -1,6 +1,7 @@
-from characters.models.mage.effect import Effect
 from django import forms
 from django.forms import modelformset_factory
+
+from characters.models.mage.effect import Effect
 from widgets import CreateOrSelectField, CreateOrSelectMixin
 
 

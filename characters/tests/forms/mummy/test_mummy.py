@@ -9,11 +9,11 @@ Tests cover:
 - Required/optional field handling
 """
 
-from characters.forms.mummy.mummy import MummyCreationForm
-from characters.models.mummy.dynasty import Dynasty
-from characters.models.mummy.mummy import Mummy
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.forms.mummy.mummy import MummyCreationForm
+from characters.models.mummy.dynasty import Dynasty
 from game.models import Chronicle
 
 

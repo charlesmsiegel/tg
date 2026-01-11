@@ -1,3 +1,6 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.werewolf.battlescar import BattleScar
 from characters.models.werewolf.camp import Camp
 from characters.models.werewolf.garou import Werewolf
@@ -6,8 +9,6 @@ from characters.models.werewolf.renownincident import RenownIncident
 from characters.models.werewolf.rite import Rite
 from characters.models.werewolf.tribe import Tribe
 from characters.tests.utils import werewolf_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 from items.models.werewolf.fetish import Fetish
 

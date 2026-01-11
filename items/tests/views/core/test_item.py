@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from game.models import ObjectType
 from items.models.core.item import ItemModel
 

@@ -1,9 +1,9 @@
 """Tests for Chimera model."""
 
-from characters.models.changeling.chimera import Chimera
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.urls import reverse
+
+from characters.models.changeling.chimera import Chimera
 from game.models import Chronicle
 
 

@@ -5,7 +5,6 @@ Provides ChainedChoiceField and ChainedModelChoiceField that automatically
 configure themselves. Just define the fields and add the mixin.
 """
 
-import uuid
 
 from django import forms
 from django.core.exceptions import ValidationError

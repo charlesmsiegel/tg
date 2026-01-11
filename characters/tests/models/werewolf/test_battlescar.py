@@ -1,5 +1,6 @@
-from characters.models.werewolf.battlescar import BattleScar
 from django.test import TestCase
+
+from characters.models.werewolf.battlescar import BattleScar
 
 
 class TestBattleScarDetailView(TestCase):

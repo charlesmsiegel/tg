@@ -34,6 +34,16 @@ def _mage_practice_xp_cost(character, practice):
     return get_xp_cost("practice") * current
 
 
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views import View
+from django.views.generic import CreateView, FormView, UpdateView
+
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.mage.chained_freebies import ChainedMageFreebiesForm
@@ -67,32 +77,15 @@ from characters.views.core.human import (
 )
 from characters.views.mage.background_views import MtAEnhancementView
 from characters.views.mage.mtahuman import MtAHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     JsonListView,
     MessageMixin,
     SimpleValuesView,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
-from core.models import Language
 from core.permissions import Permission, PermissionManager
 from core.widgets import AutocompleteTextInput
-from django import forms
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ValidationError
-from django.db import transaction
-from django.db.models import Q
-from django.forms import ValidationError
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from django.views import View
-from django.views.generic import CreateView, FormView, UpdateView
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
 from items.models.core.item import ItemModel

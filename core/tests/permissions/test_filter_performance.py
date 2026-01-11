@@ -5,12 +5,13 @@ These tests verify that the filter_queryset_for_user method:
 2. Does not create unnecessary subquery annotations
 """
 
+from django.contrib.auth.models import AnonymousUser, User
+from django.db import reset_queries
+from django.test import TestCase, override_settings
+
 from characters.models.core.character import Character
 from core.models import Observer
 from core.permissions import PermissionManager
-from django.contrib.auth.models import AnonymousUser, User
-from django.db import connection, reset_queries
-from django.test import TestCase, override_settings
 from game.models import Chronicle
 
 

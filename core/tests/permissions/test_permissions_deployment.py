@@ -8,6 +8,9 @@ Run with: python manage.py test core.tests.permissions.test_permissions_deployme
 Expected: 37 tests passing
 """
 
+from django.contrib.auth.models import AnonymousUser, User
+from django.test import TestCase
+
 from characters.models.core.character import Character
 from core.mixins import (
     EditPermissionMixin,
@@ -18,10 +21,7 @@ from core.mixins import (
     ViewPermissionMixin,
     VisibilityFilterMixin,
 )
-from core.models import Observer
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import RequestFactory, TestCase
 from game.models import Chronicle
 
 

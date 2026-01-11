@@ -1,9 +1,10 @@
-from characters.models.vampire.discipline import Discipline
-from core.mixins import MessageMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.models.vampire.discipline import Discipline
+from core.mixins import MessageMixin
 
 
 @method_decorator([vary_on_cookie, cache_page(60 * 15)], name="dispatch")

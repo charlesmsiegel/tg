@@ -1,11 +1,12 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.mummy.dynasty import Dynasty
 from characters.models.mummy.mtr_human import MtRHuman
 from characters.models.mummy.mummy import Mummy
 from characters.models.mummy.mummy_title import MummyTitle
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
 from game.models import Chronicle
 
 

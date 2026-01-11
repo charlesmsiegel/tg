@@ -1,9 +1,10 @@
-from characters.models.mage.cabal import Cabal
-from characters.models.mage.mage import Mage
-from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.mage.cabal import Cabal
+from characters.models.mage.mage import Mage
+from characters.tests.utils import mage_setup
 
 
 class TestCabal(TestCase):

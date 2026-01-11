@@ -10,21 +10,21 @@ Tests cover:
 - Form save functionality for different scenarios
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.rote import RoteCreationForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.mage.effect import Effect
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import (
-    CorruptedPractice,
     Practice,
     SpecializedPractice,
 )
 from characters.models.mage.mage import Mage, PracticeRating
 from characters.models.mage.rote import Rote
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestRoteCreationFormInit(TestCase):

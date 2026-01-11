@@ -1,6 +1,6 @@
-from core.models import CharacterTemplate
 from django import forms
-from django.conf import settings
+
+from core.models import CharacterTemplate
 
 
 class CharacterTemplateForm(forms.ModelForm):

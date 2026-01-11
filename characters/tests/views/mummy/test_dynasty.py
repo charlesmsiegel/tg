@@ -1,8 +1,9 @@
 """Tests for Dynasty views."""
 
-from characters.models.mummy.dynasty import Dynasty
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.mummy.dynasty import Dynasty
 
 
 class TestDynastyDetailView(TestCase):

@@ -1,11 +1,10 @@
 """Tests for Django settings configuration."""
 
 import os
-from importlib import reload
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 
 class SettingsSecurityTest(TestCase):
@@ -58,7 +57,6 @@ class SettingsEnvironmentTest(TestCase):
         with patch.dict(os.environ, {"DJANGO_ENVIRONMENT": ""}, clear=False):
             # We need to test the __init__.py logic directly
             # by simulating the import process
-            from tg.settings import __init__ as settings_init
 
             # Save original environment and clear it
             original_env = os.environ.get("DJANGO_ENVIRONMENT")

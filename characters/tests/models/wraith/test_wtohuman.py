@@ -1,7 +1,8 @@
-from characters.models.wraith.wtohuman import WtOHuman
-from characters.tests.utils import wraith_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.wraith.wtohuman import WtOHuman
+from characters.tests.utils import wraith_setup
 from game.models import Chronicle
 
 

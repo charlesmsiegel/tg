@@ -1,14 +1,15 @@
 """Tests for generic module."""
 
+from django import forms
+from django.contrib.auth import get_user_model
+from django.forms import formset_factory
+from django.http import Http404, HttpResponse
+from django.test import RequestFactory, TestCase
+from django.views.generic import CreateView, TemplateView
+
 from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from core.views.generic import DictView, MultipleFormsetsMixin
-from django import forms
-from django.contrib.auth import get_user_model
-from django.forms import formset_factory, inlineformset_factory
-from django.http import Http404, HttpResponse
-from django.test import RequestFactory, TestCase
-from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 from game.models import Chronicle
 
 User = get_user_model()

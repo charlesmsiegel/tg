@@ -1,6 +1,7 @@
 """Tests for Treasure model."""
 
 from django.test import TestCase
+
 from items.models.changeling.treasure import Treasure
 
 

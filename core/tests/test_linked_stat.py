@@ -10,9 +10,9 @@ Tests cover:
 
 from unittest.mock import Mock
 
-import pytest
-from core.linked_stat import LinkedStat, LinkedStatAccessor, linked_stat_constraints
 from django.db.models import CheckConstraint
+
+from core.linked_stat import LinkedStat, LinkedStatAccessor, linked_stat_constraints
 
 
 class TestLinkedStatAccessor:

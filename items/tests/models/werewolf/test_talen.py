@@ -1,6 +1,7 @@
 """Tests for Talen model."""
 
 from django.test import TestCase
+
 from items.models.werewolf.talen import Talen
 
 

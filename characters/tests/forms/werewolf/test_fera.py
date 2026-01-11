@@ -7,6 +7,9 @@ Tests cover:
 - Fera type to model class mapping
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.werewolf.fera import FeraCreationForm
 from characters.models.werewolf.bastet import Bastet
 from characters.models.werewolf.corax import Corax
@@ -14,8 +17,6 @@ from characters.models.werewolf.gurahl import Gurahl
 from characters.models.werewolf.mokole import Mokole
 from characters.models.werewolf.nuwisha import Nuwisha
 from characters.models.werewolf.ratkin import Ratkin
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

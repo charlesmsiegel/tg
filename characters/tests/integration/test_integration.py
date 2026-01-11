@@ -13,15 +13,15 @@ check constraints properly, so these tests are skipped on SQLite.
 
 from unittest import skipIf
 
-from characters.models.core.ability_block import Ability
-from characters.models.core.attribute_block import Attribute
-from characters.models.core.character import Character
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
 from django.test import TestCase
-from game.models import Chronicle, Gameline, ObjectType, Scene, STRelationship
+
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.character import Character
+from characters.models.core.human import Human
+from game.models import Chronicle, Gameline, Scene, STRelationship
 
 # Check if using SQLite (which doesn't enforce check constraints)
 USING_SQLITE = connection.vendor == "sqlite"

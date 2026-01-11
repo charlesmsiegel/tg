@@ -1,20 +1,18 @@
 """Comprehensive tests for mage freebie forms."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.mage.freebies import (
     CompanionFreebiesForm,
     MageFreebiesForm,
     SorcererFreebiesForm,
 )
-from characters.models.core.ability_block import Ability
 from characters.models.mage.companion import Companion
-from characters.models.mage.focus import Practice
 from characters.models.mage.mage import Mage
-from characters.models.mage.resonance import Resonance
-from characters.models.mage.sorcerer import LinearMagicPath, Sorcerer
+from characters.models.mage.sorcerer import Sorcerer
 from characters.models.mage.sphere import Sphere
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestMageFreebiesForm(TestCase):

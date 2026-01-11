@@ -1,8 +1,9 @@
 from typing import Any
 
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.models.vampire import (
     Barrens,
     Domain,

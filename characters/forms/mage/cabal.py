@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
-from django import forms
 
 
 class CabalForm(forms.ModelForm):

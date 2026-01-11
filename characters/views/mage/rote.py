@@ -1,9 +1,9 @@
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.models.core import Ability, Attribute
-from characters.models.mage.effect import Effect
 from characters.models.mage.focus import Practice
 from characters.models.mage.rote import Rote
 from core.mixins import MessageMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class RoteDetailView(DetailView):

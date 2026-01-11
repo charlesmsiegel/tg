@@ -1,4 +1,6 @@
-from characters.models.core.ability_block import Ability
+from django import forms
+from django.db.models import Q
+
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
     LinearMagicPath,
@@ -6,8 +8,6 @@ from characters.models.mage.sorcerer import (
     PathRating,
     Sorcerer,
 )
-from django import forms
-from django.db.models import Q
 from widgets import ChainedChoiceField, ChainedSelectMixin
 from widgets.fields.create_or_select import CreateOrSelectField
 

@@ -1,5 +1,6 @@
-from characters.models.changeling.kith import Kith
 from django.test import TestCase
+
+from characters.models.changeling.kith import Kith
 
 
 class TestKithDetailView(TestCase):

@@ -10,11 +10,12 @@ during character creation.
 """
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
-from characters.costs import get_freebie_cost, get_meritflaw_freebie_cost
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost, get_meritflaw_freebie_cost
 
 
 @dataclass
@@ -25,7 +26,7 @@ class FreebieSpendResult:
     trait: str
     cost: int
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
@@ -35,7 +36,7 @@ class FreebieApplyResult:
     success: bool
     trait: str
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 def handler(category: str):
@@ -159,7 +160,7 @@ class FreebieSpendingService(metaclass=FreebieSpendingServiceMeta):
         self,
         category: str,
         example: Any = None,
-        value: Optional[int] = None,
+        value: int | None = None,
         note: str = "",
         pooled: bool = False,
         **kwargs,

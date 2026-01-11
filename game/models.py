@@ -1,8 +1,6 @@
 import re
 from datetime import date, datetime, timedelta
 
-from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
-from core.utils import dice
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -13,6 +11,9 @@ from django.utils.timezone import (  # ensure timezone-aware now if using TIME_Z
     make_aware,
     now,
 )
+
+from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
+from core.utils import dice
 
 
 class ObjectType(models.Model):
@@ -1021,11 +1022,11 @@ def rolls(num_rolls, num_dice, difficulty, specialty):
         if success_count < 0:
             break
     join_list = []
-    for roll, suxx, diff in zip(roll_list, successes, difficulties):
+    for roll, suxx, diff in zip(roll_list, successes, difficulties, strict=False):
         join_list.append(f"{roll}: <b>{suxx}</b>")
         if suxx == 0:
             join_list[-1] = join_list[-1] + f": difficulty increased to {diff + 1}"
-    return "Rolls:<br>" + f"<br>".join(join_list)
+    return "Rolls:<br>" + "<br>".join(join_list)
 
 
 def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max_rolls=100):
@@ -1066,7 +1067,7 @@ def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max
     # Build output
     join_list = []
     running_total = 0
-    for i, (roll, suxx) in enumerate(zip(roll_list, successes_per_roll), 1):
+    for i, (roll, suxx) in enumerate(zip(roll_list, successes_per_roll, strict=False), 1):
         running_total += suxx
         join_list.append(f"Roll {i}: {roll}: <b>{suxx}</b> (Total: {running_total})")
 
@@ -1074,7 +1075,7 @@ def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max
 
     # Add final status
     if botched:
-        result += f"<br><b>BOTCH! Extended action failed catastrophically.</b>"
+        result += "<br><b>BOTCH! Extended action failed catastrophically.</b>"
     elif cumulative_successes >= target_successes:
         result += (
             f"<br><b>SUCCESS! Target of {target_successes} reached in {len(roll_list)} rolls.</b>"

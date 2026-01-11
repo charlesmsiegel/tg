@@ -1,7 +1,8 @@
 from collections import namedtuple
 
-from characters.models.mage import Effect
 from django.test import TestCase
+
+from characters.models.mage import Effect
 
 
 class TestEffect(TestCase):

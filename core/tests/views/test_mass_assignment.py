@@ -5,12 +5,13 @@ These tests verify that views with explicit field whitelists properly
 reject attempts to modify fields not included in the whitelist.
 """
 
-from characters.models.core.human import Human
-from characters.models.mage.companion import Companion
-from core.models import Language, NewsItem
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.core.human import Human
+from characters.models.mage.companion import Companion
+from core.models import Language, NewsItem
 from game.models import Chronicle
 from items.models.core import Material, Medium
 

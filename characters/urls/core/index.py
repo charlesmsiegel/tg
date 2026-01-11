@@ -1,8 +1,9 @@
+from django.urls import path
+
 from characters.views.core.archetype import ArchetypeListView
 from characters.views.core.derangement import DerangementListView
 from characters.views.core.meritflaw import MeritFlawListView
 from characters.views.core.specialty import SpecialtyListView
-from django.urls import path
 
 app_name = "characters:list"
 urls = [

@@ -1,9 +1,9 @@
 """Tests for Cantrip model."""
 
-from characters.models.changeling.cantrip import Cantrip
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.urls import reverse
+
+from characters.models.changeling.cantrip import Cantrip
 from game.models import Chronicle
 
 

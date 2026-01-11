@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.demon.earthbound import Earthbound
 from characters.models.demon.house import DemonHouse
-from django import forms
 
 
 class EarthboundCreationForm(forms.ModelForm):

@@ -1,11 +1,12 @@
 """Tests for human_url_block module."""
 
-from characters.models.core.human import Human
-from characters.models.core.human_url_block import HumanUrlBlock
-from characters.tests.utils import human_setup
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.core.human import Human
+from characters.models.core.human_url_block import HumanUrlBlock
+from characters.tests.utils import human_setup
 
 
 class TestGetGamelineForUrl(TestCase):

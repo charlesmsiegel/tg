@@ -1,4 +1,5 @@
 from django.db import models
+
 from items.models.core.weapon import Weapon
 
 

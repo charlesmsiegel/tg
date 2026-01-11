@@ -1,26 +1,19 @@
 """Tests for character_template views module."""
 
 import json
-from io import BytesIO
 
-from core.models import CharacterTemplate
-from core.views.character_template import (
-    CharacterTemplateCreateView,
-    CharacterTemplateDeleteView,
-    CharacterTemplateDetailView,
-    CharacterTemplateExportView,
-    CharacterTemplateImportView,
-    CharacterTemplateListView,
-    CharacterTemplateQuickNPCView,
-    CharacterTemplateUpdateView,
-    STRequiredMixin,
-)
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+
+from core.models import CharacterTemplate
+from core.views.character_template import (
+    CharacterTemplateQuickNPCView,
+    STRequiredMixin,
+)
 from game.models import Chronicle, Gameline, STRelationship
 
 User = get_user_model()
@@ -79,9 +72,9 @@ class STRequiredMixinTest(TestCase):
         request = self.factory.get("/")
         request.user = self.regular_user
         # Add message support
-        setattr(request, "session", "session")
+        request.session = "session"
         messages = FallbackStorage(request)
-        setattr(request, "_messages", messages)
+        request._messages = messages
 
         mixin = STRequiredMixin()
         mixin.request = request

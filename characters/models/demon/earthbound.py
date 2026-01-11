@@ -1,3 +1,6 @@
+from django.db import models
+from django.urls import reverse
+
 from characters.models.demon.apocalyptic_form import (
     ApocalypticForm,
     ApocalypticFormTrait,
@@ -7,8 +10,6 @@ from characters.models.demon.house import DemonHouse
 from characters.models.demon.lore_block import LoreBlock
 from characters.models.demon.visage import Visage
 from core.linked_stat import linked_stat_fields
-from django.db import models
-from django.urls import reverse
 
 
 class Earthbound(LoreBlock, DtFHuman):

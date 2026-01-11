@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.legacy import Legacy
-from django import forms
 
 
 class ChangelingCreationForm(forms.ModelForm):

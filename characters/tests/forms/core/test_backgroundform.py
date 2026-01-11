@@ -1,15 +1,15 @@
 """Tests for backgroundform module."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.forms.core.backgroundform import (
     BackgroundRatingForm,
     BackgroundRatingFormSet,
-    BaseBackgroundRatingFormSet,
 )
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.tests.utils import human_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 
 
 class TestBackgroundRatingForm(TestCase):

@@ -1,6 +1,7 @@
+from django.db import models
+
 from characters.models.werewolf.fomoripower import FomoriPower
 from characters.models.werewolf.wtahuman import WtAHuman
-from django.db import models
 
 
 class Fomor(WtAHuman):

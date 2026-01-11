@@ -2,8 +2,9 @@
 Tests for the SphereForm with PointPoolWidget integration.
 """
 
-from characters.forms.mage.sphere_form import SphereForm
 from django.test import TestCase
+
+from characters.forms.mage.sphere_form import SphereForm
 
 
 class MockCharacter:

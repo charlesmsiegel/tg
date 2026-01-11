@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from locations.forms.mage.sanctum import SanctumForm
 from locations.models.mage.reality_zone import RealityZone
 from locations.models.mage.sanctum import Sanctum

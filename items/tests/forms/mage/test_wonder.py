@@ -1,8 +1,9 @@
 """Tests for WonderForm forms."""
 
+from django.test import TestCase
+
 from characters.models.mage.effect import Effect
 from characters.models.mage.resonance import Resonance
-from django.test import TestCase
 from items.forms.mage.wonder import WonderForm, WonderResonanceRatingForm
 from items.models.mage.artifact import Artifact
 from items.models.mage.charm import Charm

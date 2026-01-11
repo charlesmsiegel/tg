@@ -1,3 +1,5 @@
+from django import forms
+
 from characters.models.werewolf.bastet import Bastet
 from characters.models.werewolf.corax import Corax
 from characters.models.werewolf.fera import Fera
@@ -5,7 +7,6 @@ from characters.models.werewolf.gurahl import Gurahl
 from characters.models.werewolf.mokole import Mokole
 from characters.models.werewolf.nuwisha import Nuwisha
 from characters.models.werewolf.ratkin import Ratkin
-from django import forms
 
 
 class FeraCreationForm(forms.ModelForm):

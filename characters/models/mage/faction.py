@@ -1,7 +1,8 @@
-from characters.models.mage.sphere import Sphere
-from core.models import Language, Model, ModelManager, ModelQuerySet
 from django.db import models
 from django.urls import reverse
+
+from characters.models.mage.sphere import Sphere
+from core.models import Language, Model, ModelManager, ModelQuerySet
 from items.models.core.material import Material
 from items.models.core.medium import Medium
 

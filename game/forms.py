@@ -1,6 +1,7 @@
+from django import forms
+
 from characters.models.core import CharacterModel
 from core.constants import GameLine, XPApprovalStatus
-from django import forms
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,

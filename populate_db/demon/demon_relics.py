@@ -1,12 +1,8 @@
-from characters.models.demon.house import DemonHouse
 from items.models.demon.relic import Relic
 from populate_db.demon.demon_houses import (
-    defilers,
     devils,
-    devourers,
     malefactors,
     scourges,
-    slayers,
 )
 
 # Devil House Relics

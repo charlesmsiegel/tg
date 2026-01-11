@@ -1,11 +1,12 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.changeling.changeling import Changeling
 from characters.models.changeling.house import House
 from characters.models.changeling.kith import Kith
 from characters.models.changeling.legacy import Legacy
 from characters.tests.utils import changeling_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 

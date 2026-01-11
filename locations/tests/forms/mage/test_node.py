@@ -1,8 +1,9 @@
 """Tests for NodeForm forms."""
 
+from django.test import TestCase
+
 from characters.models.mage.focus import Practice
 from characters.models.mage.resonance import Resonance
-from django.test import TestCase
 from locations.forms.mage.node import NodeForm, NodeResonanceRatingForm
 
 

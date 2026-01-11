@@ -1,10 +1,11 @@
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.human import Human
 from characters.models.mage.cabal import Cabal
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 from items.models.mage.grimoire import Grimoire
 from locations.models.mage.chantry import Chantry

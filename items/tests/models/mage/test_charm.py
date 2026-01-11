@@ -1,7 +1,6 @@
-from characters.models.mage import Effect
-from characters.models.mage.resonance import Resonance
-from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.mage import Effect
 from items.models.mage import Charm
 
 

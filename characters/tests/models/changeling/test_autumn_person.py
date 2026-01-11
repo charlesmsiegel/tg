@@ -1,8 +1,9 @@
 """Tests for Autumn Person model."""
 
-from characters.models.changeling.autumn_person import AutumnPerson
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.changeling.autumn_person import AutumnPerson
 
 
 class TestAutumnPerson(TestCase):

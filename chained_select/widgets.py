@@ -8,7 +8,6 @@ Just render the field in your template - no {{ form.media }} needed.
 import json
 
 from django import forms
-from django.utils.html import escapejs, format_html
 from django.utils.safestring import mark_safe
 
 # The JavaScript code, embedded directly so no static files or {{ form.media }} needed

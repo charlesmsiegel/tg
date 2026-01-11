@@ -1,9 +1,10 @@
 """Tests for Earthbound views."""
 
-from characters.models.demon.earthbound import Earthbound
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.demon.earthbound import Earthbound
 from game.models import Chronicle
 
 

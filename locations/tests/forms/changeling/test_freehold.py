@@ -9,8 +9,9 @@ Tests cover:
 - Holdings requirement calculation
 """
 
-from characters.tests.utils import changeling_setup
 from django.test import TestCase
+
+from characters.tests.utils import changeling_setup
 from locations.forms.changeling.freehold import FreeholdForm
 from locations.models.changeling.freehold import Freehold
 

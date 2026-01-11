@@ -9,7 +9,6 @@ import logging
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
-from django.core.serializers import deserialize
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -45,7 +44,7 @@ class Command(BaseCommand):
 
         # Load import file
         try:
-            with open(filename, "r") as f:
+            with open(filename) as f:
                 import_data = json.load(f)
         except FileNotFoundError:
             raise CommandError(f"File not found: {filename}")
@@ -59,7 +58,7 @@ class Command(BaseCommand):
         # Load user remapping if provided
         user_map = {}
         if options["remap_users"]:
-            with open(options["remap_users"], "r") as f:
+            with open(options["remap_users"]) as f:
                 user_map = json.load(f)
 
         # Display summary

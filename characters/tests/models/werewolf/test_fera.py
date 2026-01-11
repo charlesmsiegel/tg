@@ -1,10 +1,11 @@
 """Tests for Fera base class module."""
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.werewolf.fera import Fera
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.models.werewolf.rite import Rite
-from django.contrib.auth.models import User
-from django.test import TestCase
 from items.models.werewolf.fetish import Fetish
 
 

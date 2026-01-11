@@ -2,17 +2,16 @@
 
 import unittest
 
-from characters.models.core.ability_block import Ability
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.core.archetype import Archetype
-from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.companion import Advantage, Companion
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 from game.models import Chronicle, ObjectType
 
 

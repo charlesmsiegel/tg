@@ -1,9 +1,10 @@
-from characters.models.core.human import Human
-from characters.models.wraith.circle import Circle
-from core.mixins import MessageMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.models.core.human import Human
+from characters.models.wraith.circle import Circle
+from core.mixins import MessageMixin
 
 
 class CircleDetailView(DetailView):

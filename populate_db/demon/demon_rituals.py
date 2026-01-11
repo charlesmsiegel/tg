@@ -2,8 +2,6 @@
 Populate database with Demon rituals from Demon Players Guide Chapter 6.
 """
 
-from characters.models.demon.house import DemonHouse
-from characters.models.demon.lore import Lore
 from characters.models.demon.ritual import Ritual
 from populate_db.demon.demon_houses import (
     defilers,

@@ -1,5 +1,6 @@
-from core.constants import GameLine
 from django import forms
+
+from core.constants import GameLine
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin
 

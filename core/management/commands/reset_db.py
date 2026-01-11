@@ -5,7 +5,6 @@ This is useful for completely resetting the database during development.
 CAUTION: This will delete all data!
 """
 
-import os
 from pathlib import Path
 
 from django.conf import settings

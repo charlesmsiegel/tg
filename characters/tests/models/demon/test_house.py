@@ -1,8 +1,9 @@
 """Tests for DemonHouse model."""
 
-from characters.models.demon.house import DemonHouse
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.demon.house import DemonHouse
 
 
 class DemonHouseModelTests(TestCase):

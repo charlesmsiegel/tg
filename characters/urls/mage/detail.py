@@ -1,9 +1,10 @@
+from django.urls import path
+
 from characters import views
 from characters.views.mage import (
     MtAHumanCharacterCreationView,
     MtAHumanTemplateSelectView,
 )
-from django.urls import path
 
 app_name = "mage:detail"
 urls = [

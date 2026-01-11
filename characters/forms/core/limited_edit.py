@@ -14,9 +14,10 @@ Usage:
       used directly with any Human subclass (e.g., form = LimitedHumanEditForm(instance=mage))
 """
 
+from django import forms
+
 from characters.models.core.character import Character
 from characters.models.core.human import Human
-from django import forms
 
 
 class LimitedCharacterEditForm(forms.ModelForm):

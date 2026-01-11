@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 from django.test import TestCase
+
 from locations.models.mage.paradox_realm import (
     FinalObstacleTypeChoices,
     ParadigmChoices,

@@ -1,5 +1,11 @@
 from typing import Any
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views import View
+from django.views.generic import CreateView, FormView, UpdateView
+
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.specialty import SpecialtiesForm
 from characters.models.core import Human
@@ -21,11 +27,6 @@ from core.mixins import (
 )
 from core.models import Language
 from core.views.generic import DictView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.views import View
-from django.views.generic import CreateView, FormView, UpdateView
 from game.models import ObjectType
 
 
@@ -331,7 +332,6 @@ class HumanFreebieFormPopulationView(View):
     primary_class = Human
 
     def get(self, request, *args, **kwargs):
-        from django.http import JsonResponse
 
         category_choice = request.GET.get("category")
         self.character = get_object_or_404(self.primary_class, pk=request.GET.get("object"))

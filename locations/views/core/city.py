@@ -1,5 +1,6 @@
-from core.mixins import MessageMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import MessageMixin
 from locations.models.core import City
 
 

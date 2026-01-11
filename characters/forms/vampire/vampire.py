@@ -1,8 +1,9 @@
+from django import forms
+
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.path import Path
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
-from django import forms
 
 
 class VampireCreationForm(forms.ModelForm):

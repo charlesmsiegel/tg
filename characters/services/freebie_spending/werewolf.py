@@ -9,8 +9,9 @@ This module provides freebie spending services for Werewolf: The Apocalypse char
 - Per-breed services for each Fera type
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

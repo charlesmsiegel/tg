@@ -1,6 +1,10 @@
 """Tests for permission decorators in core/decorators.py."""
 
-from unittest.mock import Mock, patch
+
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.test import RequestFactory, TestCase
 
 from characters.models.core.character import Character
 from core.decorators import (
@@ -12,10 +16,6 @@ from core.decorators import (
     require_view_permission,
 )
 from core.permissions import Permission
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
-from django.test import RequestFactory, TestCase
 from game.models import Chronicle
 
 

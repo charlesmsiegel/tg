@@ -1,8 +1,9 @@
 """Tests for Ananasi (werespider) module."""
 
-from characters.models.werewolf.ananasi import Ananasi
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.ananasi import Ananasi
 
 
 class TestAnanasi(TestCase):

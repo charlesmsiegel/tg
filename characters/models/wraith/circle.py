@@ -1,5 +1,6 @@
-from characters.models.core.group import Group
 from django.urls import reverse
+
+from characters.models.core.group import Group
 
 
 class Circle(Group):

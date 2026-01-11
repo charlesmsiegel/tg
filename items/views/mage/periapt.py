@@ -1,8 +1,9 @@
 from typing import Any
 
-from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from core.mixins import MessageMixin
 from items.models.mage import Periapt, WonderResonanceRating
 
 

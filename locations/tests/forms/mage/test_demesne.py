@@ -8,9 +8,10 @@ Tests cover:
 - Positive ratings summing to demesne rank
 """
 
+from django.test import TestCase
+
 from characters.models.mage.focus import Practice
 from characters.tests.utils import mage_setup
-from django.test import TestCase
 from locations.forms.mage.demesne import DemesneForm
 from locations.models.mage.demesne import Demesne
 from locations.models.mage.reality_zone import RealityZone, ZoneRating

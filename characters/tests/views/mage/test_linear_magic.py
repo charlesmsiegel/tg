@@ -1,9 +1,10 @@
 """Tests for LinearMagicPath and LinearMagicRitual views."""
 
-from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.mage.sorcerer import LinearMagicPath, LinearMagicRitual
 
 
 class TestPathListView(TestCase):

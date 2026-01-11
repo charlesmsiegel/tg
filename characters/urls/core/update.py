@@ -1,4 +1,5 @@
-from characters import views
+from django.urls import path
+
 from characters.views.core.archetype import ArchetypeUpdateView
 from characters.views.core.character import CharacterUpdateView
 from characters.views.core.derangement import DerangementUpdateView
@@ -6,7 +7,6 @@ from characters.views.core.group import GroupUpdateView
 from characters.views.core.human import HumanCharacterCreationView, HumanUpdateView
 from characters.views.core.meritflaw import MeritFlawUpdateView
 from characters.views.core.specialty import SpecialtyUpdateView
-from django.urls import path
 
 app_name = "characters:update"
 urls = [

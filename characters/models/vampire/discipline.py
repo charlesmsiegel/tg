@@ -1,6 +1,7 @@
-from characters.models.core.statistic import Statistic
 from django.db import models
 from django.urls import reverse
+
+from characters.models.core.statistic import Statistic
 
 
 class Discipline(Statistic):

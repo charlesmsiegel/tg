@@ -6,8 +6,6 @@ and provides more control over data loading.
 """
 
 import logging
-import os
-import sys
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
@@ -194,7 +192,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Loading {relative_path}...", ending="")
 
         # Read and execute the file
-        with open(file, "r") as f:
+        with open(file) as f:
             code = f.read()
 
         # Execute in a transaction for safety

@@ -1,10 +1,11 @@
 """Tests for PermissionManager in core/permissions.py."""
 
+from django.contrib.auth.models import AnonymousUser, User
+from django.test import TestCase
+
 from characters.models.core.character import Character
 from core.models import Observer
 from core.permissions import Permission, PermissionManager, Role, VisibilityTier
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import TestCase
 from game.models import Chronicle
 
 

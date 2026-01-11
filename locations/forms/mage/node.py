@@ -1,8 +1,9 @@
+from django import forms
+
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.mage.resonance import Resonance
 from core.models import Number
 from core.widgets import AutocompleteTextInput
-from django import forms
 from game.models import ObjectType
 from locations.forms.mage.reality_zone import RealityZonePracticeRatingFormSet
 from locations.models.mage import Node

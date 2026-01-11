@@ -1,6 +1,7 @@
+from django.urls import include, path
+
 from characters import views
 from characters.urls.mage import ajax, create, detail, index, update
-from django.urls import include, path
 
 urls = [
     path("ajax/", include((ajax.urls, "mage_ajax"), namespace="ajax")),

@@ -1,8 +1,9 @@
-from characters.models.core.statistic import Statistic
-from core.utils import add_dot
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
+
+from characters.models.core.statistic import Statistic
+from core.utils import add_dot
 
 
 class Attribute(Statistic):

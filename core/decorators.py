@@ -4,10 +4,11 @@ Permission decorators for function-based views.
 
 from functools import wraps
 
-from core.permissions import Permission, PermissionManager
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+
+from core.permissions import Permission, PermissionManager
 
 
 def require_permission(permission: Permission, lookup="pk", raise_404=True):

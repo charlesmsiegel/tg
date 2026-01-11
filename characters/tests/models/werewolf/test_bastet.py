@@ -1,8 +1,9 @@
 """Tests for Bastet (werecat) module."""
 
-from characters.models.werewolf.bastet import Bastet
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.bastet import Bastet
 
 
 class TestBastet(TestCase):

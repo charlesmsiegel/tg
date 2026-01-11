@@ -1,9 +1,10 @@
 """Tests for AutumnPerson views."""
 
-from characters.models.changeling.autumn_person import AutumnPerson
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from characters.models.changeling.autumn_person import AutumnPerson
 from game.models import Chronicle
 
 

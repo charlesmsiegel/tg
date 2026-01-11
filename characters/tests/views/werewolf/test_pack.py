@@ -1,12 +1,13 @@
 """Tests for pack module."""
 
-from characters.models.core.human import Human
-from characters.models.werewolf.pack import Pack
-from characters.models.werewolf.totem import Totem
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test import Client, TestCase
 from django.test.utils import CaptureQueriesContext
+
+from characters.models.core.human import Human
+from characters.models.werewolf.pack import Pack
+from characters.models.werewolf.totem import Totem
 from game.models import Chronicle
 
 

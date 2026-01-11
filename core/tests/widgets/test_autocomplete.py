@@ -2,8 +2,9 @@
 
 import json
 
-from core.widgets import AutocompleteTextInput
 from django.test import TestCase
+
+from core.widgets import AutocompleteTextInput
 
 
 class AutocompleteTextInputTests(TestCase):

@@ -1,8 +1,9 @@
 """Tests for Grondr (wereboar) module."""
 
-from characters.models.werewolf.grondr import Grondr
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.grondr import Grondr
 
 
 class TestGrondr(TestCase):

@@ -1,7 +1,8 @@
-from characters.models.core import Group
-from core.mixins import MessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
+
+from characters.models.core import Group
+from core.mixins import MessageMixin
 
 
 class GroupDetailView(LoginRequiredMixin, DetailView):

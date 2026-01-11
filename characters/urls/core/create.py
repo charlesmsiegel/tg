@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.core.archetype import ArchetypeCreateView
 from characters.views.core.character import CharacterCreateView
 from characters.views.core.derangement import DerangementCreateView
@@ -6,7 +8,6 @@ from characters.views.core.human import HumanBasicsView, HumanCreateView
 from characters.views.core.meritflaw import MeritFlawCreateView
 from characters.views.core.npc import NPCProfileCreateView
 from characters.views.core.specialty import SpecialtyCreateView
-from django.urls import path
 
 app_name = "characters:create"
 urls = [

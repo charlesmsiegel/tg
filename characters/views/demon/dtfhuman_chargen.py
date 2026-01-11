@@ -1,10 +1,14 @@
-from typing import Any
+
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.views.generic import DetailView, FormView, UpdateView
 
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.demon.dtfhuman import DtFHumanCreationForm
 from characters.forms.demon.freebies import DtFHumanFreebiesForm
-from characters.models.core.specialty import Specialty
 from characters.models.demon.dtf_human import DtFHuman
 from characters.views.core.backgrounds import HumanBackgroundsView
 from characters.views.core.generic_background import GenericBackgroundView
@@ -17,20 +21,9 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from core.mixins import (
-    EditPermissionMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
 )
 from core.models import CharacterTemplate
-from django import forms
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
-from django.views.generic import DetailView, FormView, UpdateView
 
 
 class DtFHumanBasicsView(LoginRequiredMixin, FormView):

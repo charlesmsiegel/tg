@@ -2,23 +2,20 @@
 
 import unittest
 
-from characters.models.core.ability_block import Ability
-from characters.models.core.archetype import Archetype
-from characters.models.core.attribute_block import Attribute
-from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.merit_flaw_block import MeritFlaw
-from characters.models.mage.effect import Effect
-from characters.models.mage.faction import MageFaction
-from characters.models.mage.focus import Practice, Tenet
-from characters.models.mage.mage import Mage, PracticeRating
-from characters.models.mage.resonance import Resonance
-from characters.models.mage.rote import Rote
-from characters.models.mage.sphere import Sphere
-from characters.tests.utils import mage_setup
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
-from game.models import Chronicle, ObjectType
+
+from characters.models.core.ability_block import Ability
+from characters.models.core.archetype import Archetype
+from characters.models.core.attribute_block import Attribute
+from characters.models.core.merit_flaw_block import MeritFlaw
+from characters.models.mage.faction import MageFaction
+from characters.models.mage.focus import Practice, Tenet
+from characters.models.mage.mage import Mage
+from characters.models.mage.sphere import Sphere
+from characters.tests.utils import mage_setup
+from game.models import Chronicle
 
 
 class TestMageDetailViewPost(TestCase):

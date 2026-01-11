@@ -8,6 +8,7 @@ Only Chronicle Head STs and Admins can directly edit mechanical fields.
 """
 
 from django import forms
+
 from locations.models.core.location import LocationModel
 
 

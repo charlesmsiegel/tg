@@ -1,4 +1,8 @@
-from datetime import date, timedelta
+
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models, transaction
+from django.db.models import CheckConstraint, Q
+from django.urls import reverse
 
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.managers import BackgroundManager, MeritFlawManager
@@ -6,17 +10,12 @@ from characters.models.core.ability_block import Ability, AbilityBlock
 from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute, AttributeBlock
 from characters.models.core.character import Character
-from characters.models.core.derangement import Derangement
 from characters.models.core.health_block import HealthBlock
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from core.linked_stat import linked_stat_fields
 from core.models import Language
 from core.utils import add_dot, get_short_gameline_name
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, transaction
-from django.db.models import CheckConstraint, Q
-from django.urls import reverse
 
 # Module-level because Meta.constraints can't access class attributes
 _willpower = linked_stat_fields("willpower", default=3, min_permanent=1)

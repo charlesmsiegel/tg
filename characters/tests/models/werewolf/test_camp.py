@@ -1,5 +1,6 @@
-from characters.models.werewolf.camp import Camp
 from django.test import TestCase
+
+from characters.models.werewolf.camp import Camp
 
 
 class TestCampDetailView(TestCase):

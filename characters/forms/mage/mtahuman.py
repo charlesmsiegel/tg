@@ -1,7 +1,6 @@
-from characters.models.mage.faction import MageFaction
-from characters.models.mage.mage import Mage
-from characters.models.mage.mtahuman import MtAHuman
 from django import forms
+
+from characters.models.mage.mtahuman import MtAHuman
 
 
 class MtAHumanCreationForm(forms.ModelForm):

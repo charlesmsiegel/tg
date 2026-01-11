@@ -1,7 +1,8 @@
 """Tests for json_filters template tags."""
 
-from core.templatetags.json_filters import get_item, pprint
 from django.test import TestCase
+
+from core.templatetags.json_filters import get_item, pprint
 
 
 class PPrintFilterTest(TestCase):

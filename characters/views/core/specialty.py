@@ -1,11 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from characters.models.core import Specialty
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
 from characters.models.core.statistic import Statistic
 from core.mixins import MessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class SpecialtyDetailView(LoginRequiredMixin, DetailView):

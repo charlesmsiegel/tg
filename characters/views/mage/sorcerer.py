@@ -1,6 +1,13 @@
 from typing import Any
 
-from characters.forms.core.backgroundform import BackgroundRatingFormSet
+from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.views import View
+from django.views.generic import CreateView, FormView, UpdateView
+
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.forms.core.specialty import SpecialtiesForm
@@ -13,13 +20,11 @@ from characters.forms.mage.numina import (
 )
 from characters.forms.mage.sorcerer import SorcererBasicsForm, SorcererForm
 from characters.models.core.ability_block import Ability
-from characters.models.core.archetype import Archetype
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.human import Human
 from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
-from characters.models.mage.companion import Advantage
 from characters.models.mage.fellowship import SorcererFellowship
 from characters.models.mage.focus import Practice
 from characters.models.mage.sorcerer import (
@@ -46,20 +51,11 @@ from core.mixins import (
     MessageMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
-    ViewPermissionMixin,
     XPApprovalMixin,
 )
 from core.models import Language
 from core.permissions import Permission, PermissionManager
 from core.views.generic import MultipleFormsetsMixin
-from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.views import View
-from django.views.generic import CreateView, FormView, UpdateView
 from game.models import ObjectType
 from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm

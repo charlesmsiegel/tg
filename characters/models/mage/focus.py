@@ -1,8 +1,9 @@
+from django.db import models
+from django.urls import reverse
+
 from characters.models.core.ability_block import Ability
 from characters.models.mage.resonance import Resonance
 from core.models import Model
-from django.db import models
-from django.urls import reverse
 
 
 class Instrument(Model):

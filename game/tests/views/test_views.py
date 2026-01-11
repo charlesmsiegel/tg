@@ -1,10 +1,10 @@
-from characters.models.core import CharacterModel
-from characters.models.core.character import Character
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
+
+from characters.models.core import CharacterModel
+from characters.models.core.human import Human
 from game.models import (
     Chronicle,
     FreebieSpendingRecord,

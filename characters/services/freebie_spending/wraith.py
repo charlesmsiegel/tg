@@ -6,8 +6,9 @@ This module provides freebie spending services for Wraith: The Oblivion characte
 - WraithFreebieSpendingService - Wraiths with Arcanoi, Pathos, etc.
 """
 
-from characters.costs import get_freebie_cost
 from django.utils import timezone
+
+from characters.costs import get_freebie_cost
 
 from .base import (
     FreebieApplyResult,

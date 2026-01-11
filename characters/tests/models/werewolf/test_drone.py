@@ -1,8 +1,9 @@
 """Tests for Drone (Bane-possessed human) module."""
 
-from characters.models.werewolf.drone import Drone
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.werewolf.drone import Drone
 
 
 class TestDrone(TestCase):

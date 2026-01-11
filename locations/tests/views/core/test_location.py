@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from game.models import Chronicle, ObjectType
 from locations.models.core.location import LocationModel
 

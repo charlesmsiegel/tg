@@ -1,7 +1,8 @@
-from characters.models.werewolf.tribe import Tribe
-from core.models import Model
 from django.db import models
 from django.urls import reverse
+
+from characters.models.werewolf.tribe import Tribe
+from core.models import Model
 
 
 class Camp(Model):

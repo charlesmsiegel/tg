@@ -39,7 +39,7 @@ class HealthBlock(models.Model):
         return zip(
             self.get_health_level_names(),
             self.get_wound_penalty_list(),
-            self.get_health_levels(),
+            self.get_health_levels(), strict=False,
         )
 
     def get_wound_penalty(self):

@@ -1,7 +1,8 @@
-from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
-from core.permissions import Permission, PermissionManager
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, UpdateView
+
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
+from core.permissions import Permission, PermissionManager
 from locations.forms.core.limited_edit import LimitedLocationEditForm
 from locations.models import LocationModel
 

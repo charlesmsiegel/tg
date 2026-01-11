@@ -1,9 +1,10 @@
 """Tests for Lore model."""
 
-from characters.models.demon.house import DemonHouse
-from characters.models.demon.lore import Lore
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.demon.house import DemonHouse
+from characters.models.demon.lore import Lore
 
 
 class LoreModelTests(TestCase):

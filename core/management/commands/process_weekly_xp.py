@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils.timezone import now
+
 from game.models import Week, WeeklyXPRequest, get_next_sunday
 
 
@@ -91,8 +92,9 @@ class Command(BaseCommand):
             characters = week.weekly_characters()
         else:
             # For dry run or new week, calculate from scratch
-            from characters.models.core.human import Human
             from django.db.models import Max, OuterRef, Subquery
+
+            from characters.models.core.human import Human
             from game.models import Post, Scene
 
             week_start = week_ending - timedelta(days=7)

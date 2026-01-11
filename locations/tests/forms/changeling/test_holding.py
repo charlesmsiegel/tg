@@ -1,6 +1,7 @@
 """Tests for Holding form."""
 
 from django.test import TestCase
+
 from locations.forms.changeling import HoldingForm
 from locations.models.changeling import Holding
 

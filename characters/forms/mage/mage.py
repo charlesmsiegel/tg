@@ -1,7 +1,8 @@
-from characters.models.mage.faction import MageFaction
-from characters.models.mage.mage import Mage
 from django import forms
 from django.core.exceptions import ValidationError
+
+from characters.models.mage.faction import MageFaction
+from characters.models.mage.mage import Mage
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 

@@ -10,14 +10,15 @@ Tests cover:
 - XP costs and spending
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
 from characters.models.vampire.sect import VampireSect
 from characters.models.vampire.vampire import Vampire
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 
 
@@ -962,8 +963,9 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_minimum_validation_during_creation(self):
         """clean() raises ValidationError when humanity is below 4 during creation."""
-        from core.constants import CharacterStatus
         from django.core.exceptions import ValidationError
+
+        from core.constants import CharacterStatus
 
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.status = CharacterStatus.UNAPPROVED
@@ -984,8 +986,9 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_humanity_above_ten_is_invalid(self):
         """clean() raises ValidationError when humanity exceeds 10 during creation."""
-        from core.constants import CharacterStatus
         from django.core.exceptions import ValidationError
+
+        from core.constants import CharacterStatus
 
         vampire = Vampire.objects.create(name="Test", owner=self.user)
         vampire.status = CharacterStatus.UNAPPROVED
@@ -1010,8 +1013,9 @@ class TestVampireVirtueValidation(VampireModelTestCase):
 
     def test_path_rating_minimum_validation_during_creation(self):
         """clean() raises ValidationError when path_rating is below 4 during creation."""
-        from core.constants import CharacterStatus
         from django.core.exceptions import ValidationError
+
+        from core.constants import CharacterStatus
 
         # Create a valid vampire first
         vampire = Vampire.objects.create(

@@ -40,7 +40,7 @@ class TestSceneDetailTemplateTgCardClasses(SimpleTestCase):
         self.assertEqual(
             len(bootstrap_card_matches),
             0,
-            f"Found Bootstrap card classes instead of tg-card in scene/detail.html:\n"
+            "Found Bootstrap card classes instead of tg-card in scene/detail.html:\n"
             + "\n".join(bootstrap_card_matches),
         )
 
@@ -87,6 +87,6 @@ class TestWonderFormTemplateTgCardClasses(SimpleTestCase):
         self.assertEqual(
             len(bootstrap_card_matches),
             0,
-            f"Found Bootstrap card classes instead of tg-card in wonder/form_include.html:\n"
+            "Found Bootstrap card classes instead of tg-card in wonder/form_include.html:\n"
             + "\n".join(bootstrap_card_matches),
         )

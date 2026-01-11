@@ -5,13 +5,12 @@ These tests verify that atomic transactions properly protect data consistency
 when operations span multiple models or require multiple database saves.
 """
 
-from unittest.mock import patch
 
-from characters.models.core.character import CharacterModel
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
-from django.db import IntegrityError, transaction
-from django.test import TestCase, TransactionTestCase
+from django.db import transaction
+from django.test import TransactionTestCase
+
+from characters.models.core.human import Human
 from game.models import Chronicle, Journal, Week, WeeklyXPRequest
 
 

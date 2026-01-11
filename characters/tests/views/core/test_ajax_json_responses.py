@@ -10,13 +10,14 @@ appropriate error responses for unauthenticated users.
 
 import json
 
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
 from characters.models.core.merit_flaw_block import MeritFlaw
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
 
 
 class TestLoadExamplesJsonResponse(TestCase):

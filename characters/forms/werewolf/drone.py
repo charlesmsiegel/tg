@@ -1,5 +1,6 @@
-from characters.models.werewolf.drone import Drone
 from django import forms
+
+from characters.models.werewolf.drone import Drone
 
 
 class DroneCreationForm(forms.ModelForm):

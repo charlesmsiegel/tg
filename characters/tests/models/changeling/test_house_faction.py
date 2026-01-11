@@ -1,6 +1,7 @@
+from django.test import TestCase
+
 from characters.models.changeling.house import House
 from characters.models.changeling.house_faction import HouseFaction
-from django.test import TestCase
 
 
 class TestHouseFactionDetailView(TestCase):

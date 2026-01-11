@@ -10,10 +10,11 @@ Usage:
     python manage.py migrate_jsonfield_to_models --dry-run  # Preview changes without saving
 """
 
-from characters.models.core.character import Character
-from characters.models.core.human import Human
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
+from characters.models.core.character import Character
+from characters.models.core.human import Human
 from game.models import FreebieSpendingRecord, XPSpendingRequest
 
 

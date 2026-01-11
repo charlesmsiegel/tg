@@ -8,12 +8,13 @@ Tests cover:
 - ChantrySelectOrCreateForm: Selecting existing or creating new chantry
 """
 
+from django.contrib.auth.models import User
+from django.test import TestCase
+
 from characters.models.core.background_block import Background
 from characters.models.mage.effect import Effect
 from characters.models.mage.mage import Mage
 from characters.tests.utils import mage_setup
-from django.contrib.auth.models import User
-from django.test import TestCase
 from game.models import Chronicle
 from locations.forms.mage.chantry import (
     ChantryCreateForm,

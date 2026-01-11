@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import resolve, reverse
+from django.urls import reverse
 
 
 class AuthErrorHandlerMiddleware:

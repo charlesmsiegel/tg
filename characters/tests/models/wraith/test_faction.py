@@ -1,7 +1,8 @@
 """Tests for WraithFaction model."""
 
-from characters.models.wraith.faction import WraithFaction
 from django.test import TestCase
+
+from characters.models.wraith.faction import WraithFaction
 
 
 class TestWraithFactionModel(TestCase):
@@ -136,17 +137,17 @@ class TestWraithFactionUrls(TestCase):
     def test_get_absolute_url_method_exists(self):
         """WraithFaction has get_absolute_url method."""
         self.assertTrue(hasattr(self.faction, "get_absolute_url"))
-        self.assertTrue(callable(getattr(self.faction, "get_absolute_url")))
+        self.assertTrue(callable(self.faction.get_absolute_url))
 
     def test_get_update_url_method_exists(self):
         """WraithFaction has get_update_url method."""
         self.assertTrue(hasattr(self.faction, "get_update_url"))
-        self.assertTrue(callable(getattr(self.faction, "get_update_url")))
+        self.assertTrue(callable(self.faction.get_update_url))
 
     def test_get_creation_url_method_exists(self):
         """WraithFaction has get_creation_url class method."""
         self.assertTrue(hasattr(WraithFaction, "get_creation_url"))
-        self.assertTrue(callable(getattr(WraithFaction, "get_creation_url")))
+        self.assertTrue(callable(WraithFaction.get_creation_url))
 
     def test_get_heading(self):
         """WraithFaction returns correct heading class."""

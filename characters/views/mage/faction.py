@@ -1,7 +1,8 @@
 from typing import Any
 
-from characters.models.mage.faction import MageFaction
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from characters.models.mage.faction import MageFaction
 
 
 class MageFactionDetailView(DetailView):

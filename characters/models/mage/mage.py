@@ -1,5 +1,10 @@
 from collections import defaultdict
 
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models, transaction
+from django.db.models import CheckConstraint, Q
+
 from characters.costs import get_freebie_cost, get_xp_cost
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
@@ -8,7 +13,6 @@ from characters.models.mage.faction import MageFaction
 from characters.models.mage.focus import (
     Instrument,
     Practice,
-    SpecializedPractice,
     Tenet,
 )
 from characters.models.mage.mtahuman import MtAHuman
@@ -16,11 +20,7 @@ from characters.models.mage.resonance import Resonance
 from characters.models.mage.rote import Rote
 from characters.models.mage.sphere import Sphere
 from core.models import BasePracticeRating, BaseResonanceRating
-from core.utils import add_dot, weighted_choice
-from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, transaction
-from django.db.models import CheckConstraint, Q
+from core.utils import add_dot
 from items.models.core.item import ItemModel
 from locations.models.mage.library import Library
 from locations.models.mage.node import Node
@@ -214,7 +214,6 @@ class Mage(MtAHuman):
 
     def clean(self):
         """Validate arete minimum and that no sphere rating exceeds Arete."""
-        from django.core.exceptions import ValidationError
 
         super().clean()
         if self.arete < 1:
@@ -804,7 +803,7 @@ class Mage(MtAHuman):
         prac = form.cleaned_data["example"]
         trait = f"Arete ({prac.name})"
         cost = 4
-        value = getattr(self, "arete") + 1
+        value = self.arete + 1
         self.add_practice(prac)
         self.add_arete()
         self.freebies -= cost

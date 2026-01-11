@@ -3,9 +3,10 @@
 Tests cover signal handlers and cross-component interactions.
 """
 
-from accounts.models import Profile
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from accounts.models import Profile
 
 
 class TestProfileSignal(TestCase):

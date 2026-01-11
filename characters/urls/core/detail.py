@@ -1,9 +1,10 @@
+from django.urls import path
+
 from characters.views.core import GenericCharacterDetailView, GenericGroupDetailView
 from characters.views.core.archetype import ArchetypeDetailView
 from characters.views.core.derangement import DerangementDetailView
 from characters.views.core.meritflaw import MeritFlawDetailView
 from characters.views.core.specialty import SpecialtyDetailView
-from django.urls import path
 
 app_name = "characters:detail"
 urls = [

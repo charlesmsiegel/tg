@@ -19,10 +19,9 @@ from .chimera import (
     ChimeraListView,
     ChimeraUpdateView,
 )
-from .ctdhuman import CtDHumanBasicsView, CtDHumanCharacterCreationView
+from .ctdhuman import CtDHumanBasicsView, CtDHumanCharacterCreationView, CtDHumanTemplateSelectView
 from .ctdhuman import CtDHumanCreateView as CtDHumanCharacterListView
 from .ctdhuman import CtDHumanDetailView as CtDHumanCharacterDetailView
-from .ctdhuman import CtDHumanTemplateSelectView
 from .ctdhuman import CtDHumanUpdateView as CtDHumanCharacterUpdateView
 from .house import HouseCreateView as ChangelingHouseCreateView
 from .house import HouseDetailView as ChangelingHouseDetailView

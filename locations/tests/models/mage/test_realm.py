@@ -1,8 +1,8 @@
-from characters.models.mage.resonance import Resonance
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.test import TestCase
+
+from characters.models.mage.resonance import Resonance
 from game.models import Chronicle
 from locations.models.mage.realm import (
     EnvironmentChoices,

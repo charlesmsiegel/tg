@@ -1,15 +1,11 @@
 from characters.models.vampire.clan import VampireClan
-from characters.models.vampire.discipline import Discipline
 from populate_db.vampire.vampire_clans import (
     brujah,
     gangrel,
     giovanni,
     lasombra,
-    malkavian,
-    nosferatu,
     toreador,
     tzimisce,
-    ventrue,
 )
 from populate_db.vampire.vampire_disciplines import (
     animalism,

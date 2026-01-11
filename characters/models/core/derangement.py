@@ -1,5 +1,6 @@
-from core.models import Model
 from django.urls import reverse
+
+from core.models import Model
 
 
 class Derangement(Model):

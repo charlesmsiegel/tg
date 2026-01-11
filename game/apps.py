@@ -6,4 +6,4 @@ class GameConfig(AppConfig):
     name = "game"
 
     def ready(self):
-        import game.signals
+        pass

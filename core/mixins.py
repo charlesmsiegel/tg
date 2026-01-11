@@ -7,11 +7,12 @@ This module consolidates all view mixins used throughout the application:
 - User verification mixins: For checking special user status
 """
 
-from core.permissions import Permission, PermissionManager, VisibilityTier
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.views import View
+
+from core.permissions import Permission, PermissionManager, VisibilityTier
 
 
 class ObjectCachingMixin:

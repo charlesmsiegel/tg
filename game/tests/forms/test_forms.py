@@ -2,10 +2,10 @@
 
 from datetime import date
 
-from characters.models.core import CharacterModel
-from characters.models.core.human import Human
 from django.contrib.auth.models import User
 from django.test import TestCase
+
+from characters.models.core.human import Human
 from game.forms import (
     AddCharForm,
     JournalEntryForm,
@@ -430,6 +430,7 @@ class TestWeeklyXPRequestForm(TestCase):
         self.scene.characters.add(self.character)
         # Need to add a post so the scene counts as finished for the week
         from django.utils.timezone import now
+
         from game.models import Post
 
         Post.objects.create(

@@ -1,3 +1,5 @@
+from django.urls import path
+
 from characters.views.demon import (
     ApocalypticFormTraitUpdateView,
     ConclaveUpdateView,
@@ -12,7 +14,6 @@ from characters.views.demon import (
     ThrallUpdateView,
     VisageUpdateView,
 )
-from django.urls import path
 
 urls = [
     path(

@@ -1,6 +1,7 @@
 """Tests for ParadoxRealm forms."""
 
 from django.test import TestCase
+
 from locations.forms.mage.paradox_realm import (
     ParadoxAtmosphereForm,
     ParadoxAtmosphereFormSet,
@@ -10,8 +11,6 @@ from locations.forms.mage.paradox_realm import (
 )
 from locations.models.mage.paradox_realm import (
     ParadigmChoices,
-    ParadoxAtmosphere,
-    ParadoxObstacle,
     ParadoxRealm,
     SphereChoices,
 )

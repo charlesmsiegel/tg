@@ -1,17 +1,18 @@
-from typing import Any
+
+from django import forms
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.forms.core.linked_npc import LinkedNPCForm
-from characters.forms.core.specialty import SpecialtiesForm
 from characters.forms.werewolf.garou import (
     WerewolfCreationForm,
     WerewolfGiftsForm,
     WerewolfHistoryForm,
 )
 from characters.models.core.background_block import Background, BackgroundRating
-from characters.models.core.human import Human
-from characters.models.core.specialty import Specialty
 from characters.models.werewolf.garou import Werewolf
 from characters.models.werewolf.gift import Gift, GiftPermission
 from characters.views.core.backgrounds import HumanBackgroundsView
@@ -25,25 +26,14 @@ from characters.views.core.human import (
     HumanSpecialtiesView,
 )
 from characters.views.werewolf.wtahuman import WtAHumanAbilityView
-from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
     SpecialUserMixin,
-    SpendFreebiesPermissionMixin,
-    SpendXPPermissionMixin,
     ViewPermissionMixin,
     XPApprovalMixin,
 )
-from core.models import Language
 from core.permissions import Permission, PermissionManager
-from django import forms
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
-from items.models.werewolf.fetish import Fetish
 
 
 class WerewolfDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
