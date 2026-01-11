@@ -3,6 +3,8 @@ import re
 import subprocess
 import sys
 
+PROTECTED_BRANCHES = ('main', 'master', 'mainline')
+
 # Load the tool call context from stdin
 try:
     context = json.loads(sys.stdin.read())
@@ -26,7 +28,7 @@ if tool_name == 'Bash':
             sys.exit(0)
         branch = result.stdout.strip()
 
-        if branch in ('main', 'master'):
+        if branch in PROTECTED_BRANCHES:
             print("----------------------------------------------------", file=sys.stderr)
             print(f"ERROR: You cannot commit directly to the {branch} branch.", file=sys.stderr)
             print("Please create a new branch using 'git checkout -b <new-branch-name>'", file=sys.stderr)
