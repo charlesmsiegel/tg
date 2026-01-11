@@ -1,19 +1,17 @@
 """Tests for Path views and templates."""
 
 from characters.models.vampire.path import Path
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 
+# Disable caching for template assertion tests
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestPathDetailView(TestCase):
     """Test Path detail view."""
 
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@test.com", password="password"
-        )
         self.path = Path.objects.create(
             name="Path of Caine",
             requires_conviction=True,
@@ -22,24 +20,18 @@ class TestPathDetailView(TestCase):
         )
         self.url = self.path.get_absolute_url()
 
-    def test_detail_view_requires_login(self):
-        """Detail view requires authentication."""
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)  # Redirect to login
-
-    def test_detail_view_status_code(self):
-        """Detail view is accessible when logged in."""
-        self.client.login(username="testuser", password="password")
+    def test_detail_view_public_access(self):
+        """Detail view is publicly accessible (Path is reference data)."""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_detail_view_template(self):
         """Detail view uses correct template."""
-        self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/path/detail.html")
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}})
 class TestPathListView(TestCase):
     """Test Path list view."""
 

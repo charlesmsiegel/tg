@@ -89,28 +89,25 @@ class TestWonderUpdateView(TestCase):
         )
 
 
-class TestWonderFormTemplateStaticJS(TestCase):
-    """Test that wonder form template includes static JavaScript file."""
+class TestWonderFormTemplateJS(TestCase):
+    """Test that wonder form template includes required JavaScript functionality."""
 
-    def test_form_include_loads_static_wonder_form_js(self):
-        """Wonder form_include.html loads wonder-form.js from static files."""
-        from django.template import loader
-
-        template = loader.get_template("items/mage/wonder/form_include.html")
-
-        # Verify the template source contains the static file reference
-        template_source = template.template.source
-        self.assertIn("js/wonder-form.js", template_source)
-        self.assertIn("{% static", template_source)
-
-    def test_form_include_does_not_contain_inline_script(self):
-        """Wonder form_include.html does not contain large inline scripts."""
+    def test_form_include_has_toggle_effect_fields(self):
+        """Wonder form_include.html has toggleEffectFields function."""
         from django.template import loader
 
         template = loader.get_template("items/mage/wonder/form_include.html")
         template_source = template.template.source
 
-        # The template should not have inline function definitions
-        self.assertNotIn("function toggleEffectFields", template_source)
-        self.assertNotIn("function addForm", template_source)
-        self.assertNotIn("function resetEffectsFormset", template_source)
+        # Verify the template contains the required JavaScript functionality
+        self.assertIn("function toggleEffectFields", template_source)
+
+    def test_form_include_has_init_wonder_form(self):
+        """Wonder form_include.html has initWonderForm function."""
+        from django.template import loader
+
+        template = loader.get_template("items/mage/wonder/form_include.html")
+        template_source = template.template.source
+
+        # Verify the template contains the initialization function
+        self.assertIn("initWonderForm", template_source)

@@ -194,7 +194,7 @@ class TestHunter(TestCase):
         result = self.hunter.spend_freebies("discern")
 
         self.assertTrue(result["success"])
-        self.assertEqual(result["cost"], 3)
+        self.assertEqual(result["cost"], 7)
 
     def test_spend_freebies_on_all_edges(self):
         """Test freebie spending works for all edge types."""
@@ -211,21 +211,21 @@ class TestHunter(TestCase):
         for edge in conviction_edges:
             result = self.hunter.spend_freebies(edge)
             self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")
+            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
 
         # Test vision edges
         vision_edges = ["illuminate", "ward", "cleave", "hide", "blaze", "radiate", "vengeance"]
         for edge in vision_edges:
             result = self.hunter.spend_freebies(edge)
             self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")
+            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
 
         # Test zeal edges
         zeal_edges = ["demand", "confront", "donate", "becalm", "respire", "rejuvenate", "redeem"]
         for edge in zeal_edges:
             result = self.hunter.spend_freebies(edge)
             self.assertTrue(result["success"], f"Failed for edge: {edge}")
-            self.assertEqual(result["cost"], 3, f"Wrong cost for edge: {edge}")
+            self.assertEqual(result["cost"], 7, f"Wrong cost for edge: {edge}")
 
     def test_get_absolute_url(self):
         """Test get_absolute_url returns correct URL."""

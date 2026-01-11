@@ -1,6 +1,5 @@
 from characters.models.vampire.discipline import Discipline
 from core.mixins import MessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
@@ -8,7 +7,9 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 @method_decorator([vary_on_cookie, cache_page(60 * 15)], name="dispatch")
-class DisciplineDetailView(LoginRequiredMixin, DetailView):
+class DisciplineDetailView(DetailView):
+    """Detail view for Disciplines - public reference data, no login required."""
+
     model = Discipline
     template_name = "characters/vampire/discipline/detail.html"
 

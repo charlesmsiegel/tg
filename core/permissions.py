@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Set
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Q
 

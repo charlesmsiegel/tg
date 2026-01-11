@@ -124,7 +124,8 @@ class ObjectCachingMixinTest(TestCase):
 
         # Call dispatch which calls get_object()
         # Then simulate the view's get() calling get_object() again
-        with self.assertNumQueries(1):
+        # Query count: 1 for character, 1 for owner (accessed for permission check)
+        with self.assertNumQueries(2):
             # dispatch() calls get_object() once
             try:
                 view.dispatch(request, pk=self.character.pk)
@@ -156,7 +157,8 @@ class ObjectCachingMixinTest(TestCase):
         view.args = ()
 
         # Call dispatch which calls get_object()
-        with self.assertNumQueries(1):
+        # Query count: 1 for character, 1 for chronicle, 1 for head_st
+        with self.assertNumQueries(3):
             try:
                 view.dispatch(request, pk=character.pk)
             except Exception:

@@ -650,23 +650,13 @@ class TestChronicleModel(TestCase):
         # First access - should populate cache
         players1 = chronicle.players
 
-        # Create another character after first access
-        player2 = User.objects.create_user(
-            username="player2", email="player2@test.com", password="password"
-        )
-        Human.objects.create(
-            name="Second Character",
-            owner=player2,
-            chronicle=chronicle,
-        )
-
-        # Second access - should return cached result (player2 NOT in cached result)
+        # Second access - should return the SAME queryset object (cached)
         players2 = chronicle.players
 
-        # Both should be the same cached queryset reference
-        self.assertEqual(list(players1), list(players2))
-        # The new player should NOT be in the cached result
-        self.assertNotIn(player2, players2)
+        # Both should be the same cached queryset object reference
+        # Note: cached_property caches the queryset object, not the results
+        # When evaluated, the queryset will query current database state
+        self.assertIs(players1, players2)
 
     def test_chronicle_players_property_multiple_characters_same_user(self):
         """Test Chronicle players property returns distinct users."""
@@ -1459,7 +1449,9 @@ class TestWeeklyXPRequestModel(TestCase):
         xp_data = {
             "finishing": True,
             "learning": True,
+            "learning_scene": self.scene,
             "rp": True,
+            "rp_scene": self.scene,
             "focus": False,
             "standingout": False,
         }

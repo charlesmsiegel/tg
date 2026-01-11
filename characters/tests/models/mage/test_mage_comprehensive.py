@@ -314,7 +314,7 @@ class TestMageSpecialtiesMethods(TestCase):
         mage_setup()
         self.player = User.objects.create_user(username="Test")
         self.mage = Mage.objects.create(name="Test Mage", owner=self.player)
-        self.mage.arete = 3
+        self.mage.arete = 4  # Must be >= sphere ratings
         self.mage.occult = 4  # Requires specialty
         self.mage.forces = 4  # Requires specialty
         self.mage.save()

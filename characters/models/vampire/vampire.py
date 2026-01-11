@@ -121,28 +121,28 @@ class Vampire(VtMHuman):
         default=False, help_text="If True, uses Instinct; if False, uses Self-Control"
     )
 
-    # Virtues (Camarilla) - All virtues start at minimum 1 (V20 Core Rulebook)
+    # Virtues (Camarilla) - Can be 0 when using alternative virtues (Conviction/Instinct)
     conscience = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
     self_control = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
     courage = models.IntegerField(
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(5)],
     )
 
-    # Virtues (Sabbat alternative) - All virtues start at minimum 1 (V20 Core Rulebook)
+    # Virtues (Sabbat alternative) - Can be 0 when using standard virtues (Conscience/Self-Control)
     conviction = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
     instinct = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
 
     # Morality
@@ -163,16 +163,16 @@ class Vampire(VtMHuman):
         verbose_name = "Vampire"
         verbose_name_plural = "Vampires"
         constraints = [
-            # All virtues must be 1-5
+            # Virtue pairs can be 0 when using alternative (Conviction vs Conscience, Instinct vs Self-Control)
             CheckConstraint(
-                check=Q(conscience__gte=1, conscience__lte=5),
+                check=Q(conscience__gte=0, conscience__lte=5),
                 name="characters_vampire_conscience_range",
-                violation_error_message="Conscience must be between 1 and 5",
+                violation_error_message="Conscience must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(self_control__gte=1, self_control__lte=5),
+                check=Q(self_control__gte=0, self_control__lte=5),
                 name="characters_vampire_self_control_range",
-                violation_error_message="Self-Control must be between 1 and 5",
+                violation_error_message="Self-Control must be between 0 and 5",
             ),
             CheckConstraint(
                 check=Q(courage__gte=1, courage__lte=5),
@@ -180,14 +180,14 @@ class Vampire(VtMHuman):
                 violation_error_message="Courage must be between 1 and 5",
             ),
             CheckConstraint(
-                check=Q(conviction__gte=1, conviction__lte=5),
+                check=Q(conviction__gte=0, conviction__lte=5),
                 name="characters_vampire_conviction_range",
-                violation_error_message="Conviction must be between 1 and 5",
+                violation_error_message="Conviction must be between 0 and 5",
             ),
             CheckConstraint(
-                check=Q(instinct__gte=1, instinct__lte=5),
+                check=Q(instinct__gte=0, instinct__lte=5),
                 name="characters_vampire_instinct_range",
-                violation_error_message="Instinct must be between 1 and 5",
+                violation_error_message="Instinct must be between 0 and 5",
             ),
             # Humanity/Path can be 0-10 (degeneration allows going below 4)
             CheckConstraint(
@@ -208,10 +208,26 @@ class Vampire(VtMHuman):
         super().clean()
         errors = {}
 
-        # Validate virtue minimums
-        for virtue in ["conscience", "self_control", "courage", "conviction", "instinct"]:
-            if getattr(self, virtue, 1) < 1:
-                errors[virtue] = f"{virtue.replace('_', ' ').title()} must be at least 1."
+        # Validate virtue minimums based on which virtues the character uses
+        # Courage is always required
+        if self.courage < 1:
+            errors["courage"] = "Courage must be at least 1."
+
+        # Validate first virtue pair (Conviction vs Conscience)
+        if self.has_conviction:
+            if self.conviction < 1:
+                errors["conviction"] = "Conviction must be at least 1."
+        else:
+            if self.conscience < 1:
+                errors["conscience"] = "Conscience must be at least 1."
+
+        # Validate second virtue pair (Instinct vs Self-Control)
+        if self.has_instinct:
+            if self.instinct < 1:
+                errors["instinct"] = "Instinct must be at least 1."
+        else:
+            if self.self_control < 1:
+                errors["self_control"] = "Self Control must be at least 1."
 
         # Validate Humanity/Path during character creation (UNAPPROVED or SUBMITTED)
         # Once approved, characters can have lower humanity due to degeneration

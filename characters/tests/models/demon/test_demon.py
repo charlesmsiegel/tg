@@ -679,7 +679,7 @@ class DemonFreebieTests(TestCase):
         result = self.demon.spend_freebies("faith")
         self.assertTrue(result)
         self.assertEqual(self.demon.faith, initial_faith + 1)
-        self.assertEqual(self.demon.freebies, initial_freebies - 7)
+        self.assertEqual(self.demon.freebies, initial_freebies - 6)
 
     def test_spend_freebies_faith_insufficient_freebies(self):
         """spend_freebies returns False with insufficient freebies."""

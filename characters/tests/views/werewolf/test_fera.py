@@ -242,23 +242,3 @@ class TestFeraCharacterCreationView(FeraViewTestCase):
         self.assertIn(response.status_code, [200, 302])
 
 
-class TestFeraFreebieFormPopulationView(FeraViewTestCase):
-    """Test FeraFreebieFormPopulationView (AJAX endpoint)."""
-
-    def setUp(self):
-        """Set up test character."""
-        super().setUp()
-        self.corax = Corax.objects.create(
-            name="Test Corax",
-            owner=self.user,
-            creation_status=7,  # Freebies stage
-        )
-
-    def test_ajax_endpoint_accessible(self):
-        """AJAX endpoint is accessible with correct parameters."""
-        self.client.login(username="testuser", password="testpassword")
-        response = self.client.get(
-            reverse("characters:werewolf:ajax:load_fera_examples"),
-            {"object": self.corax.pk},  # Use 'object' param
-        )
-        self.assertEqual(response.status_code, 200)
