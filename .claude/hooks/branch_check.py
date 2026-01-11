@@ -4,7 +4,11 @@ import subprocess
 import sys
 
 # Load the tool call context from stdin
-context = json.loads(sys.stdin.read())
+try:
+    context = json.loads(sys.stdin.read())
+except json.JSONDecodeError:
+    sys.exit(0)
+
 tool_name = context.get('tool_name', '')
 tool_input = context.get('tool_input', {})
 
@@ -18,6 +22,8 @@ if tool_name == 'Bash':
             capture_output=True,
             text=True
         )
+        if result.returncode != 0:
+            sys.exit(0)
         branch = result.stdout.strip()
 
         if branch in ('main', 'master'):

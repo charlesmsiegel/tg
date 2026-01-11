@@ -4,14 +4,18 @@ import subprocess
 import sys
 
 # Load the tool call context from stdin
-context = json.loads(sys.stdin.read())
+try:
+    context = json.loads(sys.stdin.read())
+except json.JSONDecodeError:
+    sys.exit(0)
+
 tool_name = context.get('tool_name', '')
 tool_input = context.get('tool_input', {})
 
 # Determine the file path the tool is trying to access
 file_path = None
-if tool_name in ['Write', 'Edit', 'Append']:
-    file_path = tool_input.get('file_path')
+if tool_name in ['Write', 'Edit', 'Update', 'NotebookEdit']:
+    file_path = tool_input.get('file_path') or tool_input.get('notebook_path')
 
 if file_path:
     # Use git check-ignore to see if the file is ignored
