@@ -1,5 +1,6 @@
 """Tests for mixins in core/mixins.py."""
 
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
@@ -1363,7 +1364,6 @@ class ApprovalMixinTest(TestCase):
         the post() method properly converts it to a user-facing error message
         and redirects. This catches bugs like using e.message instead of str(e).
         """
-        from unittest.mock import MagicMock
 
         from core.mixins import ApprovalMixin
 
@@ -1403,7 +1403,6 @@ class ApprovalMixinTest(TestCase):
         Tests the reject button path to ensure both approve and reject
         branches properly handle ValidationError without AttributeError.
         """
-        from unittest.mock import MagicMock
 
         from core.mixins import ApprovalMixin
 
