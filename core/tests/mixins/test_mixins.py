@@ -679,6 +679,275 @@ class OwnerRequiredMixinTest(TestCase):
         # Should not raise - passes through to super().dispatch()
 
 
+class OwnerRequiredMixinURLBasedTest(TestCase):
+    """Tests for OwnerRequiredMixin URL-based ownership checking."""
+
+    def setUp(self):
+        """Set up test data."""
+        self.factory = RequestFactory()
+        self.owner = User.objects.create_user(
+            username="owner", email="owner@test.com", password="testpass123"
+        )
+        self.other = User.objects.create_user(
+            username="other", email="other@test.com", password="testpass123"
+        )
+        self.admin = User.objects.create_user(
+            username="admin",
+            email="admin@test.com",
+            password="testpass123",
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.staff = User.objects.create_user(
+            username="staff",
+            email="staff@test.com",
+            password="testpass123",
+            is_staff=True,
+            is_superuser=False,
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.character = Character.objects.create(
+            name="Test Character", owner=self.owner, chronicle=self.chronicle, status="App"
+        )
+
+    def test_url_based_owner_can_access(self):
+        """Test that owner can access via URL-based lookup."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch - should not raise
+        try:
+            view.dispatch(request, character_pk=self.character.pk)
+        except Exception as e:
+            # Template doesn't exist, but that's fine - we're testing permission
+            if "PermissionDenied" in str(type(e)):
+                self.fail("Owner should be able to access")
+
+    def test_url_based_non_owner_denied(self):
+        """Test that non-owner is denied access via URL-based lookup."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            owner_check_message = "Custom denial message"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.other
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        with self.assertRaises(PermissionDenied) as cm:
+            view.dispatch(request, character_pk=self.character.pk)
+        self.assertEqual(str(cm.exception), "Custom denial message")
+
+    def test_url_based_admin_can_access(self):
+        """Test that admin can access via URL-based lookup."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.admin
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch - should not raise PermissionDenied
+        try:
+            view.dispatch(request, character_pk=self.character.pk)
+        except PermissionDenied:
+            self.fail("Admin should be able to access")
+        except Exception:
+            pass  # Template doesn't exist, but that's fine
+
+    def test_url_based_staff_can_access(self):
+        """Test that staff can access via URL-based lookup."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.staff
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch - should not raise PermissionDenied
+        try:
+            view.dispatch(request, character_pk=self.character.pk)
+        except PermissionDenied:
+            self.fail("Staff should be able to access")
+        except Exception:
+            pass  # Template doesn't exist, but that's fine
+
+    def test_url_based_sets_attribute(self):
+        """Test that URL-based lookup sets the correct attribute on the view."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "my_character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch
+        try:
+            view.dispatch(request, character_pk=self.character.pk)
+        except Exception:
+            pass  # Template doesn't exist
+
+        # Verify attribute was set
+        self.assertTrue(hasattr(view, "my_character"))
+        self.assertEqual(view.my_character.pk, self.character.pk)
+
+    def test_url_based_with_user_attribute(self):
+        """Test ownership via 'user' attribute instead of 'owner'."""
+
+        class UserOwnedModel:
+            """Mock model with 'user' attribute instead of 'owner'."""
+            def __init__(self, user):
+                self.user = user
+                self.pk = 999
+
+            @classmethod
+            def _default_manager(cls):
+                pass
+
+        # Create a mock manager that returns our test object
+        from unittest.mock import MagicMock, patch
+
+        from django.views.generic import CreateView
+
+        mock_obj = UserOwnedModel(self.owner)
+        mock_manager = MagicMock()
+        mock_manager.get.return_value = mock_obj
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = UserOwnedModel
+            owner_check_kwarg = "obj_pk"
+            owner_check_attr = "owned_obj"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Patch get_object_or_404 to return our mock object
+        with patch("core.mixins.get_object_or_404", return_value=mock_obj):
+            try:
+                view.dispatch(request, obj_pk=999)
+            except PermissionDenied:
+                self.fail("User should be able to access their own object via 'user' attribute")
+            except Exception:
+                pass  # Template doesn't exist
+
+        # Verify attribute was set
+        self.assertTrue(hasattr(view, "owned_obj"))
+        self.assertEqual(view.owned_obj.pk, 999)
+
+    def test_url_based_missing_kwarg_raises_404(self):
+        """Test that missing URL kwarg raises Http404."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch without the required kwarg - should raise 404
+        with self.assertRaises(Http404):
+            view.dispatch(request)  # No character_pk kwarg
+
+    def test_url_based_invalid_pk_raises_404(self):
+        """Test that invalid PK raises Http404."""
+        from django.views.generic import CreateView
+
+        class TestView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            template_name = "test.html"
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView()
+        view.request = request
+        view.kwargs = {}
+        view.args = ()
+
+        # Call dispatch with non-existent PK
+        with self.assertRaises(Http404):
+            view.dispatch(request, character_pk=99999)
+
+    def test_standard_check_still_works(self):
+        """Test that standard get_object() path still works when owner_check_model is None."""
+
+        class TestView(OwnerRequiredMixin, DetailView):
+            model = Character
+            template_name = "test.html"
+            # owner_check_model is None by default, so should use standard path
+
+        request = self.factory.get("/")
+        request.user = self.owner
+
+        view = TestView.as_view()
+        response = view(request, pk=self.character.pk)
+        self.assertEqual(response.status_code, 200)
+
+
 class STRequiredMixinTest(TestCase):
     """Tests for STRequiredMixin."""
 

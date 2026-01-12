@@ -10,6 +10,7 @@ This module consolidates all view mixins used throughout the application:
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.views import View
 
 from core.permissions import Permission, PermissionManager, VisibilityTier
@@ -173,16 +174,20 @@ class OwnerRequiredMixin(ObjectCachingMixin):
 
     URL-based Character Lookup (checks a character from URL kwargs):
         class WeeklyXPRequestCreateView(OwnerRequiredMixin, CreateView):
-            owner_check_model = Character
+            owner_check_model = CharacterModel
             owner_check_kwarg = "character_pk"
             owner_check_attr = "character"
             owner_check_message = "You can only submit requests for your own characters."
 
         After dispatch, self.character will contain the looked-up character.
+
+    URL pattern requirements:
+        The URL must include the specified kwarg. Example:
+        path('xp/<int:character_pk>/', view, name='create')
     """
 
     # URL-based ownership check configuration
-    owner_check_model = None  # Set to model class (e.g., Character) to look up from URL
+    owner_check_model = None  # Set to model class (e.g., CharacterModel) to look up from URL
     owner_check_kwarg = "character_pk"  # URL kwarg containing the PK
     owner_check_attr = "character"  # Attribute name to store the looked-up object
     owner_check_message = "You can only access your own characters."
@@ -207,7 +212,6 @@ class OwnerRequiredMixin(ObjectCachingMixin):
             is_admin = request.user.is_superuser or request.user.is_staff
 
             if not (is_owner or is_admin):
-                messages.error(request, self.owner_check_message)
                 raise PermissionDenied(self.owner_check_message)
 
             return super().dispatch(request, *args, **kwargs)
