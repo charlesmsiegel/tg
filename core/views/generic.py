@@ -1,5 +1,43 @@
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
+from django.views.generic import DetailView, ListView
+
+from core.cache import CACHE_TIMEOUT_LONG
+
+
+@method_decorator(cache_page(CACHE_TIMEOUT_LONG), name="dispatch")
+class CachedDetailView(DetailView):
+    """DetailView with 15-minute caching for reference data.
+
+    Use this for read-only detail views of reference models (Clan, Tribe,
+    Sphere, etc.) that don't change during normal gameplay.
+
+    Example:
+        class SphereDetailView(CachedDetailView):
+            model = Sphere
+            template_name = "characters/mage/sphere/detail.html"
+    """
+
+    pass
+
+
+@method_decorator(cache_page(CACHE_TIMEOUT_LONG), name="dispatch")
+class CachedListView(ListView):
+    """ListView with 15-minute caching for reference data.
+
+    Use this for read-only list views of reference models (Clan, Tribe,
+    Sphere, etc.) that don't change during normal gameplay.
+
+    Example:
+        class SphereListView(CachedListView):
+            model = Sphere
+            ordering = ["name"]
+            template_name = "characters/mage/sphere/list.html"
+    """
+
+    pass
 
 
 class DictView(View):

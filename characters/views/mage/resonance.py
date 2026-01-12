@@ -1,10 +1,11 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.mage import Resonance
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-class ResonanceDetailView(DetailView):
+class ResonanceDetailView(CachedDetailView):
     model = Resonance
     template_name = "characters/mage/resonance/detail.html"
 
@@ -47,7 +48,7 @@ class ResonanceUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Resonance."
 
 
-class ResonanceListView(ListView):
+class ResonanceListView(CachedListView):
     model = Resonance
     ordering = ["name"]
     template_name = "characters/mage/resonance/list.html"
