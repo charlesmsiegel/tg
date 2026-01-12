@@ -1,14 +1,11 @@
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.vampire.discipline import Discipline
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-@method_decorator([vary_on_cookie, cache_page(60 * 15)], name="dispatch")
-class DisciplineDetailView(DetailView):
+class DisciplineDetailView(CachedDetailView):
     """Detail view for Disciplines - public reference data, no login required."""
 
     model = Discipline
@@ -37,8 +34,7 @@ class DisciplineUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Discipline."
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
-class DisciplineListView(ListView):
+class DisciplineListView(CachedListView):
     model = Discipline
     ordering = ["name"]
     template_name = "characters/vampire/discipline/list.html"
