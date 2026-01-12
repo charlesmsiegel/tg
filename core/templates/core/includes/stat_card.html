@@ -8,27 +8,29 @@ Required context:
     heading_class: CSS class for the header (e.g., object.get_heading)
 
 Optional context:
+    content: Pre-rendered HTML content to display in the card body
     card_id: ID for collapse functionality
     collapsed: Set to true to start collapsed (default: false)
     h_level: Heading level - "5" or "6" (default: "6")
+    full_height: Set to true to make card full height (adds h-100 class)
 
 Usage:
-    {% include "core/includes/stat_card.html" with title="Talents" heading_class=object.get_heading %}
-        <div class="row mb-2">... stat content ...</div>
-    {% endinclude %}
+    Since Django's include tag doesn't support nested content blocks,
+    you must pass the content as a pre-rendered string or use the
+    tg-card classes directly in your template.
 
-Note: This is a wrapper template. For the content, you typically use
-stat_row.html includes within the card body.
+    Option 1: Use tg-card classes directly (recommended for most cases):
+        <div class="tg-card">
+            <div class="tg-card-header {{ object.get_heading }}">
+                <h6 class="tg-card-title mb-0">Talents</h6>
+            </div>
+            <div class="tg-card-body">
+                {% include "core/includes/stat_row.html" with name="Alertness" value=object.alertness %}
+            </div>
+        </div>
 
-For simple cases, you can just use the tg-card classes directly:
-    <div class="tg-card">
-        <div class="tg-card-header {{ heading_class }}">
-            <h6 class="tg-card-title mb-0">{{ title }}</h6>
-        </div>
-        <div class="tg-card-body">
-            {% include "core/includes/stat_row.html" with ... %}
-        </div>
-    </div>
+    Option 2: Use this include for simple cards with pre-rendered content:
+        {% include "core/includes/stat_card.html" with title="Talents" heading_class=object.get_heading content=rendered_content %}
 {% endcomment %}
 <div class="tg-card{% if full_height %} h-100{% endif %}">
     <div class="tg-card-header {{ heading_class }}{% if card_id %} pointer" data-toggle="collapse" data-target="#{{ card_id }}" aria-expanded="{{ collapsed|yesno:'false,true' }}" aria-controls="{{ card_id }}{% endif %}">
