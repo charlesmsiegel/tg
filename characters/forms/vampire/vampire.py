@@ -60,9 +60,12 @@ class VampireCreationForm(forms.ModelForm):
         except ValidationError as e:
             self._update_errors(e)
 
-        # Set path_rating to 4 if a path is selected (before model validation)
-        if self.instance.path and self.instance.path_rating < 4:
-            self.instance.path_rating = 4
+        # Set path_rating to minimum if a path is selected (before model validation)
+        if (
+            self.instance.path
+            and self.instance.path_rating < Vampire.MIN_STARTING_PATH_RATING
+        ):
+            self.instance.path_rating = Vampire.MIN_STARTING_PATH_RATING
 
         try:
             self.instance.full_clean(exclude=exclude, validate_unique=False)

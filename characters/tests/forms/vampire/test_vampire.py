@@ -315,7 +315,9 @@ class TestVampireCreationFormSave(VampireCreationFormTestCase):
         self.assertEqual(vampire.owner, self.user)
 
     def test_save_with_path_sets_path_rating(self):
-        """Saving form with a path sets path_rating to 4."""
+        """Saving form with a path sets path_rating to minimum."""
+        from characters.models.vampire.vampire import Vampire
+
         form = VampireCreationForm(
             data={
                 "name": "Test Vampire",
@@ -332,4 +334,23 @@ class TestVampireCreationFormSave(VampireCreationFormTestCase):
         self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
         vampire = form.save()
         self.assertEqual(vampire.path, self.path_of_caine)
-        self.assertEqual(vampire.path_rating, 4)
+        self.assertEqual(vampire.path_rating, Vampire.MIN_STARTING_PATH_RATING)
+
+    def test_save_without_path_leaves_path_rating_at_default(self):
+        """Saving form without a path does not modify path_rating."""
+        form = VampireCreationForm(
+            data={
+                "name": "Test Vampire",
+                "nature": str(self.survivor.pk),
+                "demeanor": str(self.bravo.pk),
+                "concept": "Warrior",
+                "clan": str(self.brujah.pk),
+                "sect": str(self.camarilla.pk),
+                "chronicle": str(self.chronicle.pk),
+            },
+            user=self.user,
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        vampire = form.save()
+        self.assertIsNone(vampire.path)
+        self.assertEqual(vampire.path_rating, 0)  # Default, unchanged

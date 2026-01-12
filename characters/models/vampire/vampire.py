@@ -22,6 +22,10 @@ class Vampire(VtMHuman):
     type = "vampire"
     freebie_step = 7
 
+    # Minimum starting values for morality traits (V20 rules)
+    MIN_STARTING_PATH_RATING = 4
+    MIN_STARTING_HUMANITY = 4
+
     allowed_backgrounds = [
         "contacts",
         "mentor",
@@ -234,14 +238,19 @@ class Vampire(VtMHuman):
         if self.status in [CharacterStatus.UNAPPROVED, CharacterStatus.SUBMITTED]:
             # Validate humanity (if on humanity, not a path)
             if not self.path:
-                if self.humanity < 4:
-                    errors["humanity"] = "Starting Humanity must be at least 4."
+                if self.humanity < self.MIN_STARTING_HUMANITY:
+                    errors["humanity"] = (
+                        f"Starting Humanity must be at least {self.MIN_STARTING_HUMANITY}."
+                    )
                 elif self.humanity > 10:
                     errors["humanity"] = "Starting Humanity cannot exceed 10."
             # Validate path_rating (if on a path)
             else:
-                if self.path_rating < 4:
-                    errors["path_rating"] = "Starting Path rating must be at least 4."
+                if self.path_rating < self.MIN_STARTING_PATH_RATING:
+                    errors["path_rating"] = (
+                        f"Starting Path rating must be at least "
+                        f"{self.MIN_STARTING_PATH_RATING}."
+                    )
                 elif self.path_rating > 10:
                     errors["path_rating"] = "Starting Path rating cannot exceed 10."
 
