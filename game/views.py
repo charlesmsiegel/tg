@@ -19,6 +19,7 @@ from characters.models.core.character import Character
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
+    OwnerRequiredMixin,
     SpecialUserMixin,
     StorytellerRequiredMixin,
     ViewPermissionMixin,
