@@ -16,15 +16,6 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
-CATEGORY_CHOICES = [
-    ("-----", "-----"),
-    ("Attribute", "Attribute"),
-    ("Ability", "Ability"),
-    ("Background", "Background"),
-    ("Willpower", "Willpower"),
-    ("MeritFlaw", "MeritFlaw"),
-]
-
 # Base conditional visibility rules for freebies forms
 # Subclasses can extend via _get_conditional_fields()
 BASE_CONDITIONAL_FIELDS = {
@@ -64,7 +55,7 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
     eliminating the need for custom JavaScript in templates.
     """
 
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES)
+    category = forms.ChoiceField(choices=BASE_CATEGORY_CHOICES)
     example = ChainedChoiceField(
         parent_field="category",
         required=False,
@@ -106,7 +97,7 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _get_base_categories(self):
         """Return base category choices. Override to customize."""
-        return list(CATEGORY_CHOICES)
+        return list(BASE_CATEGORY_CHOICES)
 
     def _get_additional_categories(self):
         """Override in subclasses to add gameline-specific categories."""

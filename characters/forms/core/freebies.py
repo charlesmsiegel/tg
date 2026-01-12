@@ -1,22 +1,14 @@
 from django import forms
 
 from characters.costs import get_freebie_cost
+from characters.forms.constants import BASE_CATEGORY_CHOICES
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.merit_flaw_block import MeritFlaw
 
-CATEGORY_CHOICES = [
-    ("-----", "-----"),
-    ("Attribute", "Attribute"),
-    ("Ability", "Ability"),
-    ("Background", "Background"),
-    ("Willpower", "Willpower"),
-    ("MeritFlaw", "MeritFlaw"),
-]
-
 
 class HumanFreebiesForm(forms.Form):
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES)
+    category = forms.ChoiceField(choices=BASE_CATEGORY_CHOICES)
     example = forms.ModelChoiceField(queryset=Attribute.objects.none(), required=False)
     value = forms.ChoiceField(choices=[], required=False)
     note = forms.CharField(max_length=300, required=False)

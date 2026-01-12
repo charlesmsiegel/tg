@@ -19,17 +19,6 @@ def _calculate_xp_cost(trait_type, current_value):
     return get_xp_cost(trait_type) * current_value
 
 
-CATEGORY_CHOICES = [
-    ("-----", "-----"),
-    ("Image", "Image"),
-    ("Attribute", "Attribute"),
-    ("Ability", "Ability"),
-    ("Background", "Background"),
-    ("Willpower", "Willpower"),
-    ("MeritFlaw", "MeritFlaw"),
-]
-
-
 class XPForm(ChainedSelectMixin, forms.Form):
     category = ChainedChoiceField(choices=[])
     example = ChainedChoiceField(parent_field="category", choices_map={}, required=False)
@@ -43,7 +32,7 @@ class XPForm(ChainedSelectMixin, forms.Form):
         super().__init__(*args, **kwargs)
 
         # Build category choices based on what's valid for the character
-        category_choices = list(CATEGORY_CHOICES)
+        category_choices = list(XP_CATEGORY_CHOICES)
         if not self.image_valid():
             category_choices = [x for x in category_choices if x[0] != "Image"]
         if not self.attribute_valid():
