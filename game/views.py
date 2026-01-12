@@ -652,31 +652,22 @@ class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
         return context
 
 
-class WeeklyXPRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+class WeeklyXPRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageMixin, CreateView):
     model = WeeklyXPRequest
     form_class = WeeklyXPRequestForm
     template_name = "game/weekly_xp_request/form.html"
     success_message = "Weekly XP request submitted successfully!"
     error_message = "Failed to submit XP request. Please correct the errors below."
 
-    def dispatch(self, request, *args, **kwargs):
-        """Check that user owns the character before allowing access."""
-        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
-
-        # Allow admins and staff
-        if request.user.is_superuser or request.user.is_staff:
-            return super().dispatch(request, *args, **kwargs)
-
-        # Check that user owns the character
-        if character.owner != request.user:
-            messages.error(request, "You can only submit requests for your own characters.")
-            raise PermissionDenied("You can only submit requests for your own characters")
-
-        return super().dispatch(request, *args, **kwargs)
+    # URL-based character ownership check
+    owner_check_model = CharacterModel
+    owner_check_kwarg = "character_pk"
+    owner_check_attr = "character"
+    owner_check_message = "You can only submit requests for your own characters."
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        kwargs["character"] = self.character  # Set by OwnerRequiredMixin
         kwargs["week"] = get_object_or_404(Week, pk=self.kwargs["week_pk"])
         return kwargs
 
@@ -894,31 +885,22 @@ class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
         return context
 
 
-class XPSpendingRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
+class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageMixin, CreateView):
     model = XPSpendingRequest
     form_class = XPSpendingRequestForm
     template_name = "game/xp_spending_request/form.html"
     success_message = "XP spending request submitted successfully!"
     error_message = "Failed to submit XP spending request. Please correct the errors below."
 
-    def dispatch(self, request, *args, **kwargs):
-        """Check that user owns the character before allowing access."""
-        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
-
-        # Allow admins and staff
-        if request.user.is_superuser or request.user.is_staff:
-            return super().dispatch(request, *args, **kwargs)
-
-        # Check that user owns the character
-        if character.owner != request.user:
-            messages.error(request, "You can only submit requests for your own characters.")
-            raise PermissionDenied("You can only submit requests for your own characters")
-
-        return super().dispatch(request, *args, **kwargs)
+    # URL-based character ownership check
+    owner_check_model = CharacterModel
+    owner_check_kwarg = "character_pk"
+    owner_check_attr = "character"
+    owner_check_message = "You can only submit requests for your own characters."
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        kwargs["character"] = self.character  # Set by OwnerRequiredMixin
         return kwargs
 
     def get_success_url(self):
@@ -926,7 +908,7 @@ class XPSpendingRequestCreateView(LoginRequiredMixin, MessageMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        context["character"] = self.character  # Set by OwnerRequiredMixin
         return context
 
 

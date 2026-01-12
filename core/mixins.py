@@ -167,13 +167,52 @@ class OwnerRequiredMixin(ObjectCachingMixin):
     """
     Mixin that restricts access to object owners only.
 
-    Usage:
+    Basic Usage (checks self.get_object()):
         class CharacterDeleteView(OwnerRequiredMixin, DeleteView):
             model = Character
+
+    URL-based Character Lookup (checks a character from URL kwargs):
+        class WeeklyXPRequestCreateView(OwnerRequiredMixin, CreateView):
+            owner_check_model = Character
+            owner_check_kwarg = "character_pk"
+            owner_check_attr = "character"
+            owner_check_message = "You can only submit requests for your own characters."
+
+        After dispatch, self.character will contain the looked-up character.
     """
+
+    # URL-based ownership check configuration
+    owner_check_model = None  # Set to model class (e.g., Character) to look up from URL
+    owner_check_kwarg = "character_pk"  # URL kwarg containing the PK
+    owner_check_attr = "character"  # Attribute name to store the looked-up object
+    owner_check_message = "You can only access your own characters."
 
     def dispatch(self, request, *args, **kwargs):
         """Check if user is owner before dispatching."""
+        # URL-based ownership check
+        if self.owner_check_model is not None:
+            obj = get_object_or_404(
+                self.owner_check_model, pk=kwargs.get(self.owner_check_kwarg)
+            )
+            setattr(self, self.owner_check_attr, obj)
+
+            # Check ownership
+            is_owner = False
+            if hasattr(obj, "owner") and obj.owner == request.user:
+                is_owner = True
+            elif hasattr(obj, "user") and obj.user == request.user:
+                is_owner = True
+
+            # Also allow admins
+            is_admin = request.user.is_superuser or request.user.is_staff
+
+            if not (is_owner or is_admin):
+                messages.error(request, self.owner_check_message)
+                raise PermissionDenied(self.owner_check_message)
+
+            return super().dispatch(request, *args, **kwargs)
+
+        # Standard ownership check on self.get_object()
         obj = self.get_object()
 
         # Check if user is owner
