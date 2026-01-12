@@ -83,21 +83,25 @@ class CacheInvalidator:
     @staticmethod
     def invalidate_model_cache(model_class: type[Model]) -> None:
         """
-        Invalidate all cached querysets for a specific model.
+        Invalidate all cached data for a specific model.
+
+        This invalidates both queryset caches and reference_list caches
+        to ensure data consistency when models are updated.
 
         Args:
             model_class: The model class whose cache should be invalidated
         """
-        # Use pattern matching to delete all keys for this model
-        pattern = f"{CacheKeyGenerator.PREFIX}:queryset:{model_class.__name__}:*"
-        try:
-            cache.delete_pattern(pattern)
-        except AttributeError:
-            # Fallback for cache backends that don't support delete_pattern
-            # In development with LocMemCache, we can't use patterns
-            # so we'll just clear the entire cache for that model's base key
-            base_key = CacheKeyGenerator.make_model_key(model_class)
-            cache.delete(base_key)
+        # Invalidate both queryset and reference_list caches
+        for category in ["queryset", "reference_list"]:
+            pattern = f"{CacheKeyGenerator.PREFIX}:{category}:{model_class.__name__}:*"
+            try:
+                cache.delete_pattern(pattern)
+            except AttributeError:
+                # Fallback for cache backends that don't support delete_pattern
+                # In development with LocMemCache, we can't use patterns
+                # so we'll just clear the entire cache for that model's base key
+                base_key = CacheKeyGenerator.make_key(category, model_class.__name__)
+                cache.delete(base_key)
 
     @staticmethod
     def invalidate_related_caches(model_instance: Model) -> None:
@@ -309,9 +313,16 @@ def get_cached_reference_list(
     caches the resulting list. This is useful for forms that iterate over
     reference data multiple times, as it avoids repeated database queries.
 
+    This function is designed for small reference tables (typically <100 records)
+    like Attributes, Abilities, Backgrounds, etc. For larger datasets, consider
+    using get_cached_queryset() instead to avoid high memory usage.
+
     Args:
         model_class: The model class to query (e.g., Attribute, Ability)
-        ordering: Optional field name to order by (default: "name")
+        ordering: Field name to order by, or None for no ordering. Default is
+            "name", which assumes the model has a `name` field. For models
+            without a `name` field, explicitly pass the correct field name
+            or None.
         filters: Optional dictionary of filters to apply
         timeout: Cache timeout in seconds (default: 15 minutes)
 
@@ -321,16 +332,18 @@ def get_cached_reference_list(
     Note:
         Cached data will persist for the timeout duration even if the underlying
         database records change. This is appropriate for reference data that
-        changes infrequently (e.g., Attributes, Abilities). If immediate
-        consistency is required after updates, manually invalidate the cache
-        using CacheInvalidator.invalidate_model_cache().
+        changes infrequently. CacheInvalidator.invalidate_model_cache() will
+        clear both queryset and reference_list caches for a model.
 
     Example:
         from core.cache import get_cached_reference_list
         from characters.models.core.attribute import Attribute
 
-        # In form __init__ or method:
-        all_attributes = get_cached_reference_list(Attribute)
+        # For models with a "name" field (uses default ordering):
+        all_abilities = get_cached_reference_list(Ability)
+
+        # For models without a "name" field, specify ordering:
+        all_attributes = get_cached_reference_list(Attribute, ordering=None)
 
         # Then filter in memory:
         attrs = [a for a in all_attributes if getattr(instance, a.property_name, 0) < 5]
