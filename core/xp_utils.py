@@ -34,6 +34,7 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
         >>> xp_map = {char1: 3, char2: 2, char3: 0}
         >>> count = award_xp_atomically(Story, story.pk, xp_map)
     """
+    # Import here to avoid circular dependency with game.models
     from django.core.exceptions import ValidationError
 
     from characters.models import Character
@@ -43,7 +44,7 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
 
     if parent.xp_given:
         raise ValidationError(
-            f"XP has already been awarded for this {parent_model.__name__.lower()}",
+            f"XP has already been awarded for this {parent._meta.verbose_name}",
             code="xp_already_given"
         )
 
@@ -51,7 +52,8 @@ def award_xp_atomically(parent_model, parent_pk, character_xp_map):
     awarded_count = 0
     for char, xp_amount in character_xp_map.items():
         if xp_amount > 0:
-            # Lock each character row to prevent race conditions
+            # Re-fetch and lock each character to ensure fresh data and prevent
+            # race conditions with concurrent XP awards from other sources
             locked_char = Character.objects.select_for_update().get(pk=char.pk)
             locked_char.xp += xp_amount
             locked_char.save(update_fields=["xp"])
