@@ -1,12 +1,13 @@
 from django.db import models
-from django.urls import reverse
 
-from core.models import Model
+from core.models import Model, URLMethodsMixin
 
 
-class Resonance(Model):
+class Resonance(URLMethodsMixin, Model):
     type = "resonance"
     gameline = "mta"
+    url_namespace = "characters:mage"
+    url_name = "resonance"
 
     correspondence = models.BooleanField(default=False)
     time = models.BooleanField(default=False)
@@ -21,16 +22,6 @@ class Resonance(Model):
     class Meta:
         verbose_name = "Resonance"
         verbose_name_plural = "Resonances"
-
-    def get_absolute_url(self):
-        return reverse("characters:mage:resonance", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("characters:mage:update:resonance", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("characters:mage:create:resonance")
 
     def __str__(self):
         return self.name.title()

@@ -101,6 +101,77 @@ class ModelManager(PolymorphicManager.from_queryset(ModelQuerySet)):
     pass
 
 
+class URLMethodsMixin:
+    """Mixin that auto-generates URL methods from class attributes.
+
+    Reduces boilerplate for models that follow standard URL patterns.
+    Set class attributes to configure the URL generation.
+
+    Class Attributes:
+        url_namespace: The URL namespace prefix (e.g., "characters:vampire", "characters", "game")
+        url_name: The URL name suffix (defaults to lowercase class name)
+
+    Example:
+        class VampireClan(URLMethodsMixin, models.Model):
+            url_namespace = "characters:vampire"
+            url_name = "clan"  # Optional, defaults to "vampireclan"
+
+            # Automatically provides:
+            # get_absolute_url() -> reverse("characters:vampire:clan", kwargs={"pk": self.pk})
+            # get_update_url() -> reverse("characters:vampire:update:clan", kwargs={"pk": self.pk})
+            # get_creation_url() -> reverse("characters:vampire:create:clan")
+
+        class Archetype(URLMethodsMixin, models.Model):
+            url_namespace = "characters"
+            url_name = "archetype"
+
+            # Automatically provides:
+            # get_absolute_url() -> reverse("characters:archetype", kwargs={"pk": self.pk})
+            # get_update_url() -> reverse("characters:update:archetype", kwargs={"pk": self.pk})
+            # get_creation_url() -> reverse("characters:create:archetype")
+    """
+
+    url_namespace = None
+    url_name = None
+
+    def _get_url_name(self):
+        """Get the URL name, defaulting to lowercase class name."""
+        return self.url_name or self.__class__.__name__.lower()
+
+    @classmethod
+    def _get_url_name_cls(cls):
+        """Get the URL name for class methods."""
+        return cls.url_name or cls.__name__.lower()
+
+    def get_absolute_url(self):
+        """Return the detail URL for this object."""
+        if not self.url_namespace:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} must set url_namespace to use URLMethodsMixin"
+            )
+        name = self._get_url_name()
+        return reverse(f"{self.url_namespace}:{name}", kwargs={"pk": self.pk})
+
+    def get_update_url(self):
+        """Return the update URL for this object."""
+        if not self.url_namespace:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} must set url_namespace to use URLMethodsMixin"
+            )
+        name = self._get_url_name()
+        return reverse(f"{self.url_namespace}:update:{name}", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_creation_url(cls):
+        """Return the creation URL for this model."""
+        if not cls.url_namespace:
+            raise NotImplementedError(
+                f"{cls.__name__} must set url_namespace to use URLMethodsMixin"
+            )
+        name = cls._get_url_name_cls()
+        return reverse(f"{cls.url_namespace}:create:{name}")
+
+
 class Book(ValidatedSaveMixin, models.Model):
     name = models.TextField(default="")
     url = models.CharField(max_length=200, null=True, blank=True)
