@@ -16,6 +16,7 @@ from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
 
+from core.base import ValidatedSaveMixin
 from core.utils import filepath
 from game.models import Chronicle
 
@@ -99,7 +100,7 @@ class ModelManager(PolymorphicManager.from_queryset(ModelQuerySet)):
     pass
 
 
-class Book(models.Model):
+class Book(ValidatedSaveMixin, models.Model):
     name = models.TextField(default="")
     url = models.CharField(max_length=200, null=True, blank=True)
     edition = models.CharField(
@@ -153,13 +154,8 @@ class Book(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class BookReference(models.Model):
+class BookReference(ValidatedSaveMixin, models.Model):
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
     page = models.IntegerField(default=0)
 
@@ -182,13 +178,8 @@ class BookReference(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class Observer(models.Model):
+class Observer(ValidatedSaveMixin, models.Model):
     """
     Grants specific users observer access to any object.
     Uses generic foreign key to support Characters, Items, Locations, etc.
@@ -261,11 +252,6 @@ class Observer(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class PermissionMixin(models.Model):
@@ -497,7 +483,7 @@ class Model(PermissionMixin, PolymorphicModel):
         super().save(*args, **kwargs)
 
 
-class NewsItem(models.Model):
+class NewsItem(ValidatedSaveMixin, models.Model):
     title = models.CharField(default="", max_length=100)
     content = models.TextField(default="")
     date = models.DateField(default=timezone.now)
@@ -535,13 +521,8 @@ class NewsItem(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class Language(models.Model):
+class Language(ValidatedSaveMixin, models.Model):
     """Class managing Language data"""
 
     name = models.CharField(max_length=100)
@@ -579,11 +560,6 @@ class Language(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class Number(models.Model):
@@ -656,7 +632,7 @@ class BaseBackgroundRating(models.Model):
         return f"{self.bg} ({self.note})"
 
 
-class Noun(models.Model):
+class Noun(ValidatedSaveMixin, models.Model):
     name = models.TextField(default="")
 
     class Meta:
@@ -678,13 +654,8 @@ class Noun(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class HouseRule(models.Model):
+class HouseRule(ValidatedSaveMixin, models.Model):
     name = models.CharField(default="", max_length=100)
     sources = models.ManyToManyField(BookReference, blank=True)
     description = models.TextField(default="", blank=True)
@@ -725,11 +696,6 @@ class HouseRule(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class CharacterTemplate(Model):

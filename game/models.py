@@ -12,11 +12,12 @@ from django.utils.timezone import (  # ensure timezone-aware now if using TIME_Z
     now,
 )
 
+from core.base import ValidatedSaveMixin
 from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
 from core.utils import dice
 
 
-class ObjectType(models.Model):
+class ObjectType(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     type = models.CharField(
         default="",
@@ -61,13 +62,8 @@ class ObjectType(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class SettingElement(models.Model):
+class SettingElement(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     description = models.TextField(default="")
     gameline = models.CharField(
@@ -96,13 +92,8 @@ class SettingElement(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class Gameline(models.Model):
+class Gameline(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
 
     def __str__(self):
@@ -120,13 +111,8 @@ class Gameline(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
-
-class Chronicle(models.Model):
+class Chronicle(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     storytellers = models.ManyToManyField(User, blank=True, through="STRelationship")
 
@@ -249,11 +235,6 @@ class Chronicle(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
-
 
 class STRelationshipManager(models.Manager):
     """Custom manager for STRelationship with optimized queries."""
@@ -326,7 +307,7 @@ class STRelationship(models.Model):
         super().save(*args, **kwargs)
 
 
-class Story(models.Model):
+class Story(ValidatedSaveMixin, models.Model):
     name = models.CharField(max_length=100, default="")
     xp_given = models.BooleanField(default=False)
 
@@ -347,11 +328,6 @@ class Story(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     @transaction.atomic
     def award_xp(self, character_awards):
@@ -407,7 +383,7 @@ class Story(models.Model):
         return awarded_count
 
 
-class Week(models.Model):
+class Week(ValidatedSaveMixin, models.Model):
     end_date = models.DateField()
     characters = models.ManyToManyField("characters.CharacterModel", blank=True)
 
@@ -469,11 +445,6 @@ class Week(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class SceneQuerySet(models.QuerySet):
