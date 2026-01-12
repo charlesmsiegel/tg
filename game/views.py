@@ -689,7 +689,7 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageM
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["character"] = get_object_or_404(CharacterModel, pk=self.kwargs["character_pk"])
+        context["character"] = self.character  # Set by OwnerRequiredMixin
         context["week"] = get_object_or_404(Week, pk=self.kwargs["week_pk"])
         return context
 
