@@ -43,21 +43,20 @@ class ObjectType(ValidatedSaveMixin, models.Model):
         super().clean()
         errors = {}
 
-        # Validate name is not empty
-        if not self.name or not self.name.strip():
-            errors["name"] = "Object type name is required"
+        try:
+            validate_non_empty_name(self.name, "Object type name")
+        except ValidationError as e:
+            errors["name"] = e.message
 
-        # Validate type is in valid choices
+        # Validate type is in valid choices (ObjectType-specific)
         valid_types = ["char", "loc", "obj"]
         if self.type not in valid_types:
             errors["type"] = f"Invalid type '{self.type}'. Must be one of: {', '.join(valid_types)}"
 
-        # Validate gameline is in valid choices (use GameLine constants)
-        valid_gamelines = [code for code, _ in GameLine.CHOICES]
-        if self.gameline not in valid_gamelines:
-            errors["gameline"] = (
-                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
-            )
+        try:
+            validate_gameline(self.gameline)
+        except ValidationError as e:
+            errors["gameline"] = e.message
 
         if errors:
             raise ValidationError(errors)
