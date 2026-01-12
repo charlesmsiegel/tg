@@ -1,22 +1,12 @@
-from django.urls import reverse
-
-from core.models import Model
+from core.models import Model, URLMethodsMixin
 
 
-class Derangement(Model):
+class Derangement(URLMethodsMixin, Model):
     type = "derangement"
     gameline = "wod"
+    url_namespace = "characters"
+    url_name = "derangement"
 
     class Meta:
         verbose_name = "Derangement"
         verbose_name_plural = "Derangements"
-
-    def get_absolute_url(self):
-        return reverse("characters:derangement", args=[str(self.id)])
-
-    def get_update_url(self):
-        return reverse("characters:update:derangement", args=[str(self.id)])
-
-    @classmethod
-    def get_creation_url(cls):
-        return reverse("characters:create:derangement")
