@@ -20,8 +20,8 @@ def validate_non_empty_name(value, field_name="Name"):
     Raises:
         ValidationError: If the value is empty or whitespace-only
     """
-    if not value or not value.strip():
-        raise ValidationError(f"{field_name} is required")
+    if value is None or not str(value).strip():
+        raise ValidationError(f"{field_name} is required", code="required")
 
 
 def validate_gameline(value):
@@ -37,5 +37,6 @@ def validate_gameline(value):
     valid_gamelines = [code for code, _ in settings.GAMELINE_CHOICES]
     if value not in valid_gamelines:
         raise ValidationError(
-            f"Invalid gameline '{value}'. Must be one of: {', '.join(valid_gamelines)}"
+            f"Invalid gameline '{value}'. Must be one of: {', '.join(valid_gamelines)}",
+            code="invalid_choice",
         )
