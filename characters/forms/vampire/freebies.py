@@ -1,10 +1,11 @@
 from django import forms
 
 from characters.costs import get_freebie_cost
-from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
+from characters.forms.constants import BASE_CATEGORY_CHOICES
+from characters.forms.core.freebies import HumanFreebiesForm
 from characters.models.vampire.discipline import Discipline
 
-VAMPIRE_CATEGORY_CHOICES = CATEGORY_CHOICES + [
+VAMPIRE_CATEGORY_CHOICES = BASE_CATEGORY_CHOICES + [
     ("Discipline", "Discipline"),
     ("Virtue", "Virtue"),
     ("Humanity", "Humanity"),
@@ -45,7 +46,7 @@ class VampireFreebiesForm(HumanFreebiesForm):
 
 
 class GhoulFreebiesForm(HumanFreebiesForm):
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES + [("Discipline", "Discipline")])
+    category = forms.ChoiceField(choices=BASE_CATEGORY_CHOICES + [("Discipline", "Discipline")])
 
     def __init__(self, *args, suggestions=None, **kwargs):
         super().__init__(*args, **kwargs)
