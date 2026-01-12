@@ -43,13 +43,19 @@ class VampireCreationForm(forms.ModelForm):
         if self.is_bound:
             self.fields["sire"].queryset = Vampire.objects.all()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        # If a path is selected, set path_rating to 4 to satisfy model validation.
+        # This must be done here (before _post_clean runs model validation)
+        # because path_rating is not a form field.
+        if cleaned_data.get("path") and self.instance.path_rating < 4:
+            self.instance.path_rating = 4
+        return cleaned_data
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:
             instance.owner = self.user
-        # Set path_rating if a path is selected
-        if instance.path and instance.path_rating < 4:
-            instance.path_rating = 4
         if commit:
             instance.save()
         return instance
