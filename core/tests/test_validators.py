@@ -92,6 +92,8 @@ class ValidateGamelineTests(TestCase):
                 validate_gameline("")
 
     def test_none_gameline(self):
-        """None should raise ValidationError."""
-        with self.assertRaises(ValidationError):
+        """None should raise ValidationError with 'required' code."""
+        with self.assertRaises(ValidationError) as context:
             validate_gameline(None)
+        self.assertEqual(context.exception.code, "required")
+        self.assertIn("required", str(context.exception).lower())
