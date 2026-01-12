@@ -116,6 +116,17 @@ class TestStatCardInclude(TestCase):
         self.assertIn("mta_heading", result)
         self.assertIn('class="tg-card-title mb-0"', result)
 
+    def test_stat_card_without_card_id_has_closed_class_attribute(self):
+        """Test that class attribute is properly closed when card_id not provided."""
+        template = Template(
+            '{% include "core/includes/stat_card.html" with title="Test" heading_class="test_heading" %}'
+        )
+        result = template.render(Context({}))
+        # Verify the class attribute is properly closed (ends with ">", not with unclosed quote)
+        self.assertIn('class="tg-card-header test_heading">', result)
+        # Should NOT have data-toggle when card_id is not provided
+        self.assertNotIn("data-toggle", result)
+
     def test_stat_card_with_content(self):
         """Test stat card with content variable."""
         template = Template(

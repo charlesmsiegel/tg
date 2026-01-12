@@ -23,8 +23,8 @@ Or with pre-computed specialty:
 Or without specialties:
     {% include "core/includes/stat_row.html" with name="Strength" value=object.strength %}
 
-Note: This template loads get_specialty from core.templatetags. The same filter is also
-available in characters.templatetags for backwards compatibility with existing templates.
+Note: This template loads get_specialty from core.templatetags. The original filter in
+characters.templatetags remains available for existing templates that already use it.
 {% endcomment %}
 {% load dots %}
 {% load get_specialty %}

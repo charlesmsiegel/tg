@@ -33,7 +33,7 @@ Usage:
         {% include "core/includes/stat_card.html" with title="Talents" heading_class=object.get_heading content=rendered_content %}
 {% endcomment %}
 <div class="tg-card{% if full_height %} h-100{% endif %}">
-    <div class="tg-card-header {{ heading_class }}{% if card_id %} pointer" data-toggle="collapse" data-target="#{{ card_id }}" aria-expanded="{{ collapsed|yesno:'false,true' }}" aria-controls="{{ card_id }}{% endif %}">
+    <div class="tg-card-header {{ heading_class }}{% if card_id %} pointer{% endif %}"{% if card_id %} data-toggle="collapse" data-target="#{{ card_id }}" aria-expanded="{{ collapsed|yesno:'false,true' }}" aria-controls="{{ card_id }}"{% endif %}>
         <h{{ h_level|default:"6" }} class="tg-card-title mb-0">{{ title }}</h{{ h_level|default:"6" }}>
     </div>
     {% if card_id %}
