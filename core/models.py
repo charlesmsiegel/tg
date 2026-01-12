@@ -131,19 +131,19 @@ class URLMethodsMixin:
             # get_creation_url() -> reverse("characters:create:archetype")
     """
 
-    url_namespace = None
-    url_name = None
+    url_namespace: str | None = None
+    url_name: str | None = None
 
-    def _get_url_name(self):
+    def _get_url_name(self) -> str:
         """Get the URL name, defaulting to lowercase class name."""
         return self.url_name or self.__class__.__name__.lower()
 
     @classmethod
-    def _get_url_name_cls(cls):
+    def _get_url_name_cls(cls) -> str:
         """Get the URL name for class methods."""
         return cls.url_name or cls.__name__.lower()
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """Return the detail URL for this object."""
         if not self.url_namespace:
             raise NotImplementedError(
@@ -152,7 +152,7 @@ class URLMethodsMixin:
         name = self._get_url_name()
         return reverse(f"{self.url_namespace}:{name}", kwargs={"pk": self.pk})
 
-    def get_update_url(self):
+    def get_update_url(self) -> str:
         """Return the update URL for this object."""
         if not self.url_namespace:
             raise NotImplementedError(
@@ -162,7 +162,7 @@ class URLMethodsMixin:
         return reverse(f"{self.url_namespace}:update:{name}", kwargs={"pk": self.pk})
 
     @classmethod
-    def get_creation_url(cls):
+    def get_creation_url(cls) -> str:
         """Return the creation URL for this model."""
         if not cls.url_namespace:
             raise NotImplementedError(
