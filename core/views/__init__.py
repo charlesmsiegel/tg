@@ -32,3 +32,4 @@ from .newsitem import (
     NewsItemListView,
     NewsItemUpdateView,
 )
+from .reference import ReferenceViewSet, create_reference_views
