@@ -1,0 +1,33 @@
+{% comment %}
+Stat Row Include
+
+Displays a single stat row with name, optional specialty, and dot rating.
+
+Required context:
+    name: Display name of the stat (e.g., "Alertness")
+    value: Numeric value for the dots (e.g., 3)
+
+Optional context:
+    property_name: Property name for specialty lookup (e.g., "alertness")
+    object: The object to get specialty from (if property_name provided)
+    specialty: Pre-computed specialty string (alternative to property_name)
+    max_dots: Maximum dots to display (default: 5)
+    col_ratio: Column ratio for name/dots (default: "6")
+
+Usage:
+    {% include "core/includes/stat_row.html" with name="Alertness" value=object.alertness property_name="alertness" object=object %}
+
+Or with pre-computed specialty:
+    {% include "core/includes/stat_row.html" with name="Alertness" value=3 specialty="Combat" %}
+
+Or without specialties:
+    {% include "core/includes/stat_row.html" with name="Strength" value=object.strength %}
+{% endcomment %}
+{% load dots %}
+{% load get_specialty %}
+<div class="row mb-2">
+    <div class="col-{{ col_ratio|default:"6" }}">
+        {{ name }}{% if specialty %} ({{ specialty }}){% elif property_name and object %}{% with spec=object|get_specialty:property_name %}{% if spec %} ({{ spec }}){% endif %}{% endwith %}{% endif %}
+    </div>
+    <div class="col-{{ col_ratio|default:"6" }} dots">{{ value|dots:max_dots|default:5 }}</div>
+</div>

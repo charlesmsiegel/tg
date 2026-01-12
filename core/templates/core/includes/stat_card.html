@@ -1,0 +1,46 @@
+{% comment %}
+Stat Card Include
+
+Displays a tg-card with a header and stats content.
+
+Required context:
+    title: Title for the card header (e.g., "Talents")
+    heading_class: CSS class for the header (e.g., object.get_heading)
+
+Optional context:
+    card_id: ID for collapse functionality
+    collapsed: Set to true to start collapsed (default: false)
+    h_level: Heading level - "5" or "6" (default: "6")
+
+Usage:
+    {% include "core/includes/stat_card.html" with title="Talents" heading_class=object.get_heading %}
+        <div class="row mb-2">... stat content ...</div>
+    {% endinclude %}
+
+Note: This is a wrapper template. For the content, you typically use
+stat_row.html includes within the card body.
+
+For simple cases, you can just use the tg-card classes directly:
+    <div class="tg-card">
+        <div class="tg-card-header {{ heading_class }}">
+            <h6 class="tg-card-title mb-0">{{ title }}</h6>
+        </div>
+        <div class="tg-card-body">
+            {% include "core/includes/stat_row.html" with ... %}
+        </div>
+    </div>
+{% endcomment %}
+<div class="tg-card{% if full_height %} h-100{% endif %}">
+    <div class="tg-card-header {{ heading_class }}{% if card_id %} pointer" data-toggle="collapse" data-target="#{{ card_id }}" aria-expanded="{{ collapsed|yesno:'false,true' }}" aria-controls="{{ card_id }}{% endif %}">
+        <h{{ h_level|default:"6" }} class="tg-card-title mb-0">{{ title }}</h{{ h_level|default:"6" }}>
+    </div>
+    {% if card_id %}
+    <div id="{{ card_id }}" class="collapse{% if not collapsed %} show{% endif %} multi-collapse">
+    {% endif %}
+        <div class="tg-card-body">
+            {{ content }}
+        </div>
+    {% if card_id %}
+    </div>
+    {% endif %}
+</div>
