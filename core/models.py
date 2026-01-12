@@ -18,6 +18,7 @@ from polymorphic.query import PolymorphicQuerySet
 
 from core.base import ValidatedSaveMixin
 from core.utils import filepath
+from core.validators import validate_gameline, validate_non_empty_name
 from game.models import Chronicle
 
 
@@ -143,12 +144,12 @@ class Book(ValidatedSaveMixin, models.Model):
         try:
             validate_non_empty_name(self.name, "Book name")
         except ValidationError as e:
-            errors["name"] = e.message
+            errors["name"] = e.messages[0]
 
         try:
             validate_gameline(self.gameline)
         except ValidationError as e:
-            errors["gameline"] = e.message
+            errors["gameline"] = e.messages[0]
 
         if errors:
             raise ValidationError(errors)
@@ -685,12 +686,12 @@ class HouseRule(ValidatedSaveMixin, models.Model):
         try:
             validate_non_empty_name(self.name, "House rule name")
         except ValidationError as e:
-            errors["name"] = e.message
+            errors["name"] = e.messages[0]
 
         try:
             validate_gameline(self.gameline)
         except ValidationError as e:
-            errors["gameline"] = e.message
+            errors["gameline"] = e.messages[0]
 
         if errors:
             raise ValidationError(errors)

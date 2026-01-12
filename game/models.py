@@ -15,6 +15,7 @@ from django.utils.timezone import (  # ensure timezone-aware now if using TIME_Z
 from core.base import ValidatedSaveMixin
 from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
 from core.utils import dice
+from core.validators import validate_gameline, validate_non_empty_name
 
 
 class ObjectType(ValidatedSaveMixin, models.Model):
@@ -46,7 +47,7 @@ class ObjectType(ValidatedSaveMixin, models.Model):
         try:
             validate_non_empty_name(self.name, "Object type name")
         except ValidationError as e:
-            errors["name"] = e.message
+            errors["name"] = e.messages[0]
 
         # Validate type is in valid choices (ObjectType-specific)
         valid_types = ["char", "loc", "obj"]
@@ -56,7 +57,7 @@ class ObjectType(ValidatedSaveMixin, models.Model):
         try:
             validate_gameline(self.gameline)
         except ValidationError as e:
-            errors["gameline"] = e.message
+            errors["gameline"] = e.messages[0]
 
         if errors:
             raise ValidationError(errors)
