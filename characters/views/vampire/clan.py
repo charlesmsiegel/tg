@@ -1,15 +1,13 @@
 from typing import Any
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.vampire.clan import VampireClan
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
-class VampireClanDetailView(DetailView):
+class VampireClanDetailView(CachedDetailView):
     model = VampireClan
     template_name = "characters/vampire/clan/detail.html"
 
@@ -54,8 +52,7 @@ class VampireClanUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Vampire Clan."
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")  # Cache for 15 minutes
-class VampireClanListView(ListView):
+class VampireClanListView(CachedListView):
     model = VampireClan
     ordering = ["name"]
     template_name = "characters/vampire/clan/list.html"
