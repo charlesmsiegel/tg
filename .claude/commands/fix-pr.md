@@ -21,3 +21,5 @@ If $ARGUMENTS is empty, first run `gh pr view` to detect the current branch's PR
 5. **Verify changes**: Run any relevant tests or linters to ensure fixes don't introduce new problems.
 
 6. **Summarize**: Provide a brief summary of what was fixed and flag anything that needs my input.
+
+7. **Push**: Commit and push
