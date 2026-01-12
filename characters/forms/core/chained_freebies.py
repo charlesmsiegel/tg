@@ -129,18 +129,22 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _setup_example_choices(self):
         """Build the category->example choices map."""
+        from core.cache import get_cached_reference_list
+
         example_map = {}
 
-        # Attributes - filter to those below 5
+        # Attributes - filter to those below 5 (using cached list)
+        all_attributes = get_cached_reference_list(Attribute, ordering=None)
         attrs = [
-            x for x in Attribute.objects.all() if getattr(self.instance, x.property_name, 0) < 5
+            x for x in all_attributes if getattr(self.instance, x.property_name, 0) < 5
         ]
         example_map["Attribute"] = [(str(a.pk), str(a)) for a in attrs]
 
-        # Abilities - filter to those below 5 and that character has
+        # Abilities - filter to those below 5 and that character has (using cached list)
+        all_abilities = get_cached_reference_list(Ability, ordering="name")
         abilities = [
             x
-            for x in Ability.objects.order_by("name")
+            for x in all_abilities
             if getattr(self.instance, x.property_name, 0) < 5
             and hasattr(self.instance, x.property_name)
         ]

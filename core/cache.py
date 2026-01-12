@@ -294,3 +294,55 @@ def get_cached_queryset(
     cache.set(cache_key, queryset, timeout)
 
     return queryset
+
+
+def get_cached_reference_list(
+    model_class: type[Model],
+    ordering: str | None = "name",
+    filters: dict | None = None,
+    timeout: int = CACHE_TIMEOUT_LONG,
+) -> list:
+    """
+    Get a cached list of reference model objects.
+
+    Unlike get_cached_queryset, this evaluates the queryset immediately and
+    caches the resulting list. This is useful for forms that iterate over
+    reference data multiple times, as it avoids repeated database queries.
+
+    Args:
+        model_class: The model class to query (e.g., Attribute, Ability)
+        ordering: Optional field name to order by (default: "name")
+        filters: Optional dictionary of filters to apply
+        timeout: Cache timeout in seconds (default: 15 minutes)
+
+    Returns:
+        List of model instances
+
+    Example:
+        from core.cache import get_cached_reference_list
+        from characters.models.core.attribute import Attribute
+
+        # In form __init__ or method:
+        all_attributes = get_cached_reference_list(Attribute)
+
+        # Then filter in memory:
+        attrs = [a for a in all_attributes if getattr(instance, a.property_name, 0) < 5]
+    """
+    filters = filters or {}
+    cache_key = CacheKeyGenerator.make_model_key(
+        model_class, ordering=ordering or "none", **filters
+    )
+
+    # Try to get from cache
+    cached_result = cache.get(cache_key)
+    if cached_result is not None:
+        return cached_result
+
+    # Query database, evaluate to list, and cache result
+    queryset = model_class.objects.filter(**filters)
+    if ordering:
+        queryset = queryset.order_by(ordering)
+    result = list(queryset)
+    cache.set(cache_key, result, timeout)
+
+    return result
