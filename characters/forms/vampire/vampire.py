@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.forms.models import construct_instance
 
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.path import Path
@@ -43,14 +45,29 @@ class VampireCreationForm(forms.ModelForm):
         if self.is_bound:
             self.fields["sire"].queryset = Vampire.objects.all()
 
-    def clean(self):
-        cleaned_data = super().clean()
-        # If a path is selected, set path_rating to 4 to satisfy model validation.
-        # This must be done here (before _post_clean runs model validation)
-        # because path_rating is not a form field.
-        if cleaned_data.get("path") and self.instance.path_rating < 4:
+    def _post_clean(self):
+        # Override _post_clean to set path_rating after instance is constructed
+        # but before model validation runs. This is necessary because path_rating
+        # is not a form field, but the model validates it must be >= 4 when a path
+        # is selected.
+        opts = self._meta
+        exclude = self._get_validation_exclusions()
+
+        try:
+            self.instance = construct_instance(
+                self, self.instance, opts.fields, exclude
+            )
+        except ValidationError as e:
+            self._update_errors(e)
+
+        # Set path_rating to 4 if a path is selected (before model validation)
+        if self.instance.path and self.instance.path_rating < 4:
             self.instance.path_rating = 4
-        return cleaned_data
+
+        try:
+            self.instance.full_clean(exclude=exclude, validate_unique=False)
+        except ValidationError as e:
+            self._update_errors(e)
 
     def save(self, commit=True):
         instance = super().save(commit=False)
