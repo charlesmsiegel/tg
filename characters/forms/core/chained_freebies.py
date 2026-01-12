@@ -14,6 +14,7 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
+from core.cache import get_cached_reference_list
 from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
 # Base conditional visibility rules for freebies forms
@@ -129,7 +130,6 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _setup_example_choices(self):
         """Build the category->example choices map."""
-        from core.cache import get_cached_reference_list
 
         example_map = {}
 

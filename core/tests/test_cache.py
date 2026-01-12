@@ -17,6 +17,7 @@ from core.cache import (
     cache_function,
     cache_queryset,
     get_cached_queryset,
+    get_cached_reference_list,
     invalidate_cache_on_save,
 )
 
@@ -420,6 +421,99 @@ class GetCachedQuerysetTest(TestCase):
 
         result = get_cached_queryset(User, timeout=600)
         self.assertIsNotNone(result)
+
+
+class GetCachedReferenceListTest(TestCase):
+    """Tests for get_cached_reference_list function."""
+
+    def setUp(self):
+        """Clear cache before each test."""
+        cache.clear()
+
+    def test_returns_list_not_queryset(self):
+        """Test that function returns an evaluated list, not a queryset."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="test", password="test123")
+
+        # User model doesn't have a "name" field, so specify ordering
+        result = get_cached_reference_list(User, ordering="username")
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+
+    def test_uses_cache_on_second_call(self):
+        """Test that second call uses cached result."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="test", password="test123")
+
+        # First call (User model doesn't have "name" field)
+        result1 = get_cached_reference_list(User, ordering="username")
+        count1 = len(result1)
+        self.assertEqual(count1, 1)
+
+        # Create new record after caching
+        User.objects.create_user(username="test2", password="test123")
+
+        # Second call should return cached list (without new record)
+        result2 = get_cached_reference_list(User, ordering="username")
+        self.assertEqual(len(result2), count1)  # Should not include new record
+
+    def test_ordering_parameter(self):
+        """Test that ordering parameter works correctly."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="zebra", password="test123")
+        User.objects.create_user(username="alpha", password="test123")
+
+        result = get_cached_reference_list(User, ordering="username")
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0].username, "alpha")
+        self.assertEqual(result[1].username, "zebra")
+
+    def test_ordering_none(self):
+        """Test that ordering=None works (no ordering applied)."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="test", password="test123")
+
+        result = get_cached_reference_list(User, ordering=None)
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+
+    def test_filters_parameter(self):
+        """Test that filters parameter works correctly."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="active", password="test123", is_active=True)
+        User.objects.create_user(username="inactive", password="test123", is_active=False)
+
+        # User model doesn't have "name" field, so specify ordering
+        result = get_cached_reference_list(
+            User, ordering="username", filters={"is_active": True}
+        )
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].username, "active")
+
+    def test_different_filters_use_different_cache_keys(self):
+        """Test that different filters create separate cache entries."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="active", password="test123", is_active=True)
+        User.objects.create_user(username="inactive", password="test123", is_active=False)
+
+        # User model doesn't have "name" field, so specify ordering
+        result_active = get_cached_reference_list(
+            User, ordering="username", filters={"is_active": True}
+        )
+        result_inactive = get_cached_reference_list(
+            User, ordering="username", filters={"is_active": False}
+        )
+
+        self.assertEqual(len(result_active), 1)
+        self.assertEqual(result_active[0].username, "active")
+        self.assertEqual(len(result_inactive), 1)
+        self.assertEqual(result_inactive[0].username, "inactive")
 
 
 class CacheTimeoutConstantsTest(TestCase):

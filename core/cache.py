@@ -318,6 +318,13 @@ def get_cached_reference_list(
     Returns:
         List of model instances
 
+    Note:
+        Cached data will persist for the timeout duration even if the underlying
+        database records change. This is appropriate for reference data that
+        changes infrequently (e.g., Attributes, Abilities). If immediate
+        consistency is required after updates, manually invalidate the cache
+        using CacheInvalidator.invalidate_model_cache().
+
     Example:
         from core.cache import get_cached_reference_list
         from characters.models.core.attribute import Attribute
@@ -329,8 +336,10 @@ def get_cached_reference_list(
         attrs = [a for a in all_attributes if getattr(instance, a.property_name, 0) < 5]
     """
     filters = filters or {}
-    cache_key = CacheKeyGenerator.make_model_key(
-        model_class, ordering=ordering or "none", **filters
+    # Use "reference_list" category instead of "queryset" to avoid cache key collisions
+    # with get_cached_queryset, which caches QuerySets rather than evaluated lists
+    cache_key = CacheKeyGenerator.make_key(
+        "reference_list", model_class.__name__, ordering=ordering or "none", **filters
     )
 
     # Try to get from cache
