@@ -100,14 +100,9 @@ class XPForm(ChainedSelectMixin, forms.Form):
                 ]
                 example_choices_map[cat_value] = new_bg_choices + existing_bg_choices
             elif cat_value == "MeritFlaw":
-                from game.models import ObjectType
+                from characters.utils import get_character_object_type
 
-                char_type = char.type
-                if "human" in char_type:
-                    char_type = "human"
-                chartype, _ = ObjectType.objects.get_or_create(
-                    name=char_type, defaults={"type": "char", "gameline": "wod"}
-                )
+                chartype = get_character_object_type(char.type)
                 filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
                 affordable_mfs = []
                 for mf in filtered_mfs:
@@ -199,15 +194,9 @@ class XPForm(ChainedSelectMixin, forms.Form):
 
     def mf_valid(self):
         # Check if character has any affordable merit/flaws
-        from game.models import ObjectType
+        from characters.utils import get_character_object_type
 
-        char_type = self.character.type
-        if "human" in char_type:
-            char_type = "human"
-
-        chartype, _ = ObjectType.objects.get_or_create(
-            name=char_type, defaults={"type": "char", "gameline": "wod"}
-        )
+        chartype = get_character_object_type(self.character.type)
         filtered_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
         # Check if any merit/flaw has an affordable rating
