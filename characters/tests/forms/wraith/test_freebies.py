@@ -54,11 +54,12 @@ class TestWraithFreebiesFormValidator(WraithFreebiesFormTestCase):
         # Arcanos costs 7, should not be affordable with 3 freebies
         self.assertFalse(form.validator("arcanos"))
 
-    def test_validator_returns_false_for_unknown_trait(self):
-        """Validator returns False for unknown traits (cost 10000)."""
+    def test_validator_returns_true_for_unknown_trait(self):
+        """Validator returns True for unknown traits to allow custom handling."""
         form = WraithFreebiesForm(instance=self.wraith)
-        # Unknown traits have cost 10000 which is treated as blocked
-        self.assertFalse(form.validator("unknown_trait_type"))
+        # Unknown traits (cost 10000) return True to allow forms with
+        # special handling (e.g., Companion advantages) to process them
+        self.assertTrue(form.validator("unknown_trait_type"))
 
     def test_validator_handles_different_costs(self):
         """Validator handles different freebie costs correctly."""
@@ -79,11 +80,12 @@ class TestWraithFreebiesFormValidator(WraithFreebiesFormTestCase):
         # Arcanos costs 5, should not be affordable with 4 freebies
         self.assertFalse(form2.validator("arcanos"))
 
-    def test_validator_returns_false_for_blocked_category(self):
-        """Validator returns False for blocked categories (cost 10000)."""
+    def test_validator_returns_true_for_placeholder_category(self):
+        """Validator returns True for placeholder category (clean() handles rejection)."""
         form = WraithFreebiesForm(instance=self.wraith)
-        # Default blocked category
-        self.assertFalse(form.validator("-----"))
+        # Placeholder "-----" has cost 10000 but validator returns True.
+        # The form's clean() method rejects this with a ValidationError.
+        self.assertTrue(form.validator("-----"))
 
 
 class TestWraithFreebiesFormSave(WraithFreebiesFormTestCase):
