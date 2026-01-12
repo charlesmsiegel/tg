@@ -338,44 +338,15 @@ class Story(ValidatedSaveMixin, models.Model):
         Raises:
             ValidationError: If XP has already been awarded for this story
         """
-        from django.core.exceptions import ValidationError
+        from core.xp_utils import award_xp_atomically, calculate_story_xp
 
-        # Lock the story to prevent concurrent awards
-        story = Story.objects.select_for_update().get(pk=self.pk)
+        # Convert category dicts to XP amounts
+        character_xp_map = {
+            char: calculate_story_xp(xp_categories)
+            for char, xp_categories in character_awards.items()
+        }
 
-        if story.xp_given:
-            raise ValidationError(
-                "XP has already been awarded for this story", code="xp_already_given"
-            )
-
-        # Award to all characters atomically
-        from characters.models import Character
-
-        awarded_count = 0
-        for char, xp_categories in character_awards.items():
-            # Calculate total XP for this character
-            total_gain = xp_categories.get("duration", 0)
-            if xp_categories.get("success", False):
-                total_gain += 1
-            if xp_categories.get("danger", False):
-                total_gain += 1
-            if xp_categories.get("growth", False):
-                total_gain += 1
-            if xp_categories.get("drama", False):
-                total_gain += 1
-
-            if total_gain > 0:
-                # Lock each character row to prevent race conditions
-                locked_char = Character.objects.select_for_update().get(pk=char.pk)
-                locked_char.xp += total_gain
-                locked_char.save(update_fields=["xp"])
-                awarded_count += 1
-
-        # Mark story as complete
-        story.xp_given = True
-        story.save(update_fields=["xp_given"])
-
-        return awarded_count
+        return award_xp_atomically(Story, self.pk, character_xp_map)
 
 
 class Week(ValidatedSaveMixin, models.Model):
@@ -590,7 +561,6 @@ class Scene(models.Model):
     def most_recent_post(self):
         return Post.objects.filter(scene=self).order_by("-datetime_created").first()
 
-    @transaction.atomic
     def award_xp(self, character_awards):
         """Award XP to characters based on dict of {character: bool}.
 
@@ -603,33 +573,15 @@ class Scene(models.Model):
         Raises:
             ValidationError: If XP has already been awarded for this scene
         """
-        from django.core.exceptions import ValidationError
+        from core.xp_utils import award_xp_atomically
 
-        # Lock the scene to prevent concurrent awards
-        scene = Scene.objects.select_for_update().get(pk=self.pk)
+        # Convert bool dict to XP amounts (1 XP per character if True)
+        character_xp_map = {
+            char: 1 if should_award else 0
+            for char, should_award in character_awards.items()
+        }
 
-        if scene.xp_given:
-            raise ValidationError(
-                "XP has already been awarded for this scene", code="xp_already_given"
-            )
-
-        # Award to all characters atomically
-        from characters.models import Character
-
-        awarded_count = 0
-        for char, should_award in character_awards.items():
-            if should_award:
-                # Lock each character row to prevent race conditions
-                locked_char = Character.objects.select_for_update().get(pk=char.pk)
-                locked_char.xp += 1
-                locked_char.save(update_fields=["xp"])
-                awarded_count += 1
-
-        # Mark scene as complete
-        scene.xp_given = True
-        scene.save(update_fields=["xp_given"])
-
-        return awarded_count
+        return award_xp_atomically(Scene, self.pk, character_xp_map)
 
 
 class UserSceneReadStatus(models.Model):
