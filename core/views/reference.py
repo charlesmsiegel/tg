@@ -43,12 +43,11 @@ Or using class-based configuration:
     SphereUpdateView = SphereViews.update_view
 """
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.cache import CACHE_TIMEOUT_LONG
 from core.mixins import MessageMixin
+from core.views.generic import CachedDetailView, CachedListView
 
 
 def create_reference_views(
@@ -94,6 +93,10 @@ def create_reference_views(
     # Build extra context
     context = extra_context or {}
 
+    # Select base classes based on caching preference
+    detail_base = CachedDetailView if cached else DetailView
+    list_base = CachedListView if cached else ListView
+
     # Create DetailView
     detail_attrs = {
         "model": model,
@@ -102,11 +105,7 @@ def create_reference_views(
     if context:
         detail_attrs["extra_context"] = context
 
-    detail_class = type(f"{model.__name__}DetailView", (DetailView,), detail_attrs)
-    if cached:
-        detail_class = method_decorator(
-            cache_page(CACHE_TIMEOUT_LONG), name="dispatch"
-        )(detail_class)
+    detail_class = type(f"{model.__name__}DetailView", (detail_base,), detail_attrs)
 
     # Create ListView
     list_attrs = {
@@ -117,40 +116,40 @@ def create_reference_views(
     if context:
         list_attrs["extra_context"] = context
 
-    list_class = type(f"{model.__name__}ListView", (ListView,), list_attrs)
-    if cached:
-        list_class = method_decorator(
-            cache_page(CACHE_TIMEOUT_LONG), name="dispatch"
-        )(list_class)
+    list_class = type(f"{model.__name__}ListView", (list_base,), list_attrs)
 
-    # Create CreateView
+    # Create CreateView with LoginRequiredMixin for security
     create_attrs = {
         "model": model,
         "fields": fields,
         "template_name": form_tpl,
-        "success_message": f"{verbose_name} created successfully.",
+        "success_message": f"{verbose_name.capitalize()} created successfully.",
         "error_message": f"There was an error creating the {verbose_name}.",
     }
     if context:
         create_attrs["extra_context"] = context
 
     create_class = type(
-        f"{model.__name__}CreateView", (MessageMixin, CreateView), create_attrs
+        f"{model.__name__}CreateView",
+        (LoginRequiredMixin, MessageMixin, CreateView),
+        create_attrs,
     )
 
-    # Create UpdateView
+    # Create UpdateView with LoginRequiredMixin for security
     update_attrs = {
         "model": model,
         "fields": fields,
         "template_name": form_tpl,
-        "success_message": f"{verbose_name} updated successfully.",
+        "success_message": f"{verbose_name.capitalize()} updated successfully.",
         "error_message": f"There was an error updating the {verbose_name}.",
     }
     if context:
         update_attrs["extra_context"] = context
 
     update_class = type(
-        f"{model.__name__}UpdateView", (MessageMixin, UpdateView), update_attrs
+        f"{model.__name__}UpdateView",
+        (LoginRequiredMixin, MessageMixin, UpdateView),
+        update_attrs,
     )
 
     return {
@@ -175,11 +174,25 @@ class ReferenceViewSetMeta(type):
         if not hasattr(cls, "model") or cls.model is None:
             return cls  # Allow incomplete subclasses
 
+        # Validate app_prefix is set
+        app_prefix = getattr(cls, "app_prefix", "")
+        if not app_prefix:
+            raise ValueError(
+                f"{name} must define 'app_prefix' (e.g., 'characters/mage')"
+            )
+
+        # Validate fields is set and non-empty
+        fields = getattr(cls, "fields", [])
+        if not fields:
+            raise ValueError(
+                f"{name} must define 'fields' list for create/update forms"
+            )
+
         # Generate views
         views = create_reference_views(
             model=cls.model,
-            app_prefix=getattr(cls, "app_prefix", ""),
-            fields=getattr(cls, "fields", []),
+            app_prefix=app_prefix,
+            fields=fields,
             model_name=getattr(cls, "model_name", None),
             ordering=getattr(cls, "ordering", None),
             cached=getattr(cls, "cached", True),
