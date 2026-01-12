@@ -118,23 +118,32 @@ class CacheInvalidatorTest(TestCase):
         # Set some cache values
         cache.set("tg:queryset:FakeModel:status=App", "value1")
         cache.set("tg:queryset:FakeModel:status=Un", "value2")
+        cache.set("tg:reference_list:FakeModel:ordering=name", "value3")
 
         # Use create=True to allow patching non-existent attribute
         with patch.object(cache, "delete_pattern", create=True) as mock_delete_pattern:
             CacheInvalidator.invalidate_model_cache(FakeModel)
-            mock_delete_pattern.assert_called_once_with("tg:queryset:FakeModel:*")
+            # Should be called twice: once for queryset, once for reference_list
+            self.assertEqual(mock_delete_pattern.call_count, 2)
+            mock_delete_pattern.assert_any_call("tg:queryset:FakeModel:*")
+            mock_delete_pattern.assert_any_call("tg:reference_list:FakeModel:*")
 
     def test_invalidate_model_cache_fallback_without_delete_pattern(self):
         """Test invalidate_model_cache falls back when delete_pattern not supported."""
-        # Set a cache value
-        cache_key = CacheKeyGenerator.make_model_key(FakeModel)
-        cache.set(cache_key, "test_value")
+        # Set cache values for both categories
+        queryset_key = CacheKeyGenerator.make_model_key(FakeModel)
+        reference_list_key = CacheKeyGenerator.make_key("reference_list", FakeModel.__name__)
+        cache.set(queryset_key, "test_value1")
+        cache.set(reference_list_key, "test_value2")
 
         # Mock delete_pattern to raise AttributeError (create=True for non-existent attribute)
         with patch.object(cache, "delete_pattern", side_effect=AttributeError, create=True):
             with patch.object(cache, "delete") as mock_delete:
                 CacheInvalidator.invalidate_model_cache(FakeModel)
-                mock_delete.assert_called_once_with(cache_key)
+                # Should be called twice: once for queryset, once for reference_list
+                self.assertEqual(mock_delete.call_count, 2)
+                mock_delete.assert_any_call(queryset_key)
+                mock_delete.assert_any_call(reference_list_key)
 
     def test_invalidate_related_caches(self):
         """Test invalidate_related_caches calls invalidate_model_cache."""
@@ -514,6 +523,37 @@ class GetCachedReferenceListTest(TestCase):
         self.assertEqual(result_active[0].username, "active")
         self.assertEqual(len(result_inactive), 1)
         self.assertEqual(result_inactive[0].username, "inactive")
+
+    def test_cache_invalidation_clears_reference_list(self):
+        """Test that CacheInvalidator.invalidate_model_cache clears reference lists."""
+        from django.contrib.auth.models import User
+
+        User.objects.create_user(username="test", password="test123")
+
+        # First call - cache it
+        result1 = get_cached_reference_list(User, ordering="username")
+        self.assertEqual(len(result1), 1)
+
+        # Create new record
+        User.objects.create_user(username="test2", password="test123")
+
+        # Before invalidation - should still return cached result
+        result2 = get_cached_reference_list(User, ordering="username")
+        self.assertEqual(len(result2), 1)  # Still cached
+
+        # Mock delete_pattern to simulate Redis cache behavior (which supports patterns)
+        # LocMemCache doesn't support delete_pattern, so we need to mock it
+        with patch.object(cache, "delete_pattern", create=True) as mock_delete_pattern:
+            CacheInvalidator.invalidate_model_cache(User)
+            # Verify delete_pattern was called for reference_list category
+            mock_delete_pattern.assert_any_call("tg:reference_list:User:*")
+
+        # Manually clear cache to simulate what delete_pattern would do
+        cache.clear()
+
+        # After invalidation - should get fresh data
+        result3 = get_cached_reference_list(User, ordering="username")
+        self.assertEqual(len(result3), 2)  # Should include new record
 
 
 class CacheTimeoutConstantsTest(TestCase):
