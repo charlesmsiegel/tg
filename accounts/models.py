@@ -6,13 +6,14 @@ from django.urls import reverse
 from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
+from core.base import ValidatedSaveMixin
 from core.constants import HeadingChoices, ThemeChoices
 from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
 from items.models.core.item import ItemModel
 from locations.models.core.location import LocationModel
 
 
-class Profile(models.Model):
+class Profile(ValidatedSaveMixin, models.Model):
     """User profile extending Django's default User model.
 
     Architecture Decision: This project uses Django's default User model with a
@@ -326,11 +327,6 @@ class Profile(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username
