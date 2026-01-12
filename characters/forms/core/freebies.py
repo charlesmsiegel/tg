@@ -17,19 +17,12 @@ class HumanFreebiesForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop("instance", None)
         super().__init__(*args, **kwargs)
-        CATEGORY_CHOICES = [
-            ("-----", "-----"),
-            ("Attribute", "Attribute"),
-            ("Ability", "Ability"),
-            ("Background", "Background"),
-            ("Willpower", "Willpower"),
-            ("MeritFlaw", "MeritFlaw"),
-        ]
+        category_choices = list(BASE_CATEGORY_CHOICES)
         if self.instance.freebies < 5:
-            CATEGORY_CHOICES = [x for x in CATEGORY_CHOICES if x[0] != "Attribute"]
+            category_choices = [x for x in category_choices if x[0] != "Attribute"]
         if self.instance.freebies < 2:
-            CATEGORY_CHOICES = [x for x in CATEGORY_CHOICES if x[0] != "Ability"]
-        self.fields["category"].choices = CATEGORY_CHOICES
+            category_choices = [x for x in category_choices if x[0] != "Ability"]
+        self.fields["category"].choices = category_choices
         self.fields["category"].choices = [
             x for x in self.fields["category"].choices if self.validator(x[0])
         ]

@@ -1,7 +1,8 @@
 from django import forms
 
 from characters.costs import get_xp_cost
-from characters.forms.core.xp import CATEGORY_CHOICES, XPForm
+from characters.forms.constants import XP_CATEGORY_CHOICES
+from characters.forms.core.xp import XPForm
 from characters.models.mage.focus import Practice, SpecializedPractice, Tenet
 from characters.models.mage.mage import PracticeRating
 from characters.models.mage.resonance import Resonance
@@ -31,7 +32,7 @@ def _mage_arete_xp_cost(character):
     return get_xp_cost("arete") * character.arete
 
 
-MAGE_CATEGORY_CHOICES = CATEGORY_CHOICES + [
+MAGE_CATEGORY_CHOICES = XP_CATEGORY_CHOICES + [
     ("Sphere", "Sphere"),
     ("Rote Points", "Rote Points"),
     ("Resonance", "Resonance"),

@@ -13,7 +13,8 @@ Tests cover:
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
+from characters.forms.constants import BASE_CATEGORY_CHOICES
+from characters.forms.core.freebies import HumanFreebiesForm
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background
@@ -392,11 +393,11 @@ class TestHumanFreebiesFormFieldAttributes(HumanFreebiesFormTestCase):
 
 
 class TestCategoryChoicesConstant(TestCase):
-    """Test the CATEGORY_CHOICES constant."""
+    """Test the BASE_CATEGORY_CHOICES constant."""
 
     def test_category_choices_contains_expected_options(self):
-        """CATEGORY_CHOICES contains all expected options."""
-        category_values = [choice[0] for choice in CATEGORY_CHOICES]
+        """BASE_CATEGORY_CHOICES contains all expected options."""
+        category_values = [choice[0] for choice in BASE_CATEGORY_CHOICES]
 
         self.assertIn("-----", category_values)
         self.assertIn("Attribute", category_values)
@@ -406,7 +407,7 @@ class TestCategoryChoicesConstant(TestCase):
         self.assertIn("MeritFlaw", category_values)
 
     def test_category_choices_has_correct_format(self):
-        """CATEGORY_CHOICES has correct tuple format."""
-        for choice in CATEGORY_CHOICES:
+        """BASE_CATEGORY_CHOICES has correct tuple format."""
+        for choice in BASE_CATEGORY_CHOICES:
             self.assertEqual(len(choice), 2)
             self.assertEqual(choice[0], choice[1])  # Value equals display name

@@ -1,6 +1,7 @@
 from django import forms
 
 from characters.costs import get_meritflaw_xp_cost, get_xp_cost
+from characters.forms.constants import XP_CATEGORY_CHOICES
 from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating

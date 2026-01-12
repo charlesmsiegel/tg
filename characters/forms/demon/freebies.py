@@ -1,17 +1,18 @@
 from django import forms
 
 from characters.costs import get_freebie_cost
-from characters.forms.core.freebies import CATEGORY_CHOICES, HumanFreebiesForm
+from characters.forms.constants import BASE_CATEGORY_CHOICES
+from characters.forms.core.freebies import HumanFreebiesForm
 from characters.models.demon.lore import Lore
 
-DTFHUMAN_CATEGORY_CHOICES = CATEGORY_CHOICES
+DTFHUMAN_CATEGORY_CHOICES = BASE_CATEGORY_CHOICES
 
-THRALL_CATEGORY_CHOICES = CATEGORY_CHOICES + [
+THRALL_CATEGORY_CHOICES = BASE_CATEGORY_CHOICES + [
     ("Faith Potential", "Faith Potential"),
     ("Virtue", "Virtue"),
 ]
 
-DEMON_CATEGORY_CHOICES = CATEGORY_CHOICES + [
+DEMON_CATEGORY_CHOICES = BASE_CATEGORY_CHOICES + [
     ("Lore", "Lore"),
     ("Faith", "Faith"),
     ("Virtue", "Virtue"),

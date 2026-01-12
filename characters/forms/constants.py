@@ -25,22 +25,3 @@ XP_CATEGORY_CHOICES = [
     ("Willpower", "Willpower"),
     ("MeritFlaw", "MeritFlaw"),
 ]
-
-# Base conditional visibility rules for freebies/XP forms
-# Subclasses can extend via _get_conditional_fields()
-BASE_CONDITIONAL_FIELDS = {
-    "example": {
-        "hidden_when": {
-            "category": {"value_in": ["-----", "Willpower", "Quintessence", "Rotes", "Resonance"]}
-        },
-    },
-    "value": {
-        "hidden_when": {"category": {"value_in": ["-----", "Willpower", "Quintessence", "Rotes"]}},
-    },
-    "note": {
-        "hidden_when": {"category": {"value_in": ["-----"]}},
-    },
-    "pooled": {
-        "hidden_when": {"category": {"value_not_in": ["Background"]}},
-    },
-}
