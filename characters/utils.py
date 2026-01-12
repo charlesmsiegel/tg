@@ -27,7 +27,9 @@ def get_character_object_type(character_type, gameline="wod"):
     from game.models import ObjectType
 
     # Normalize human types (vtm_human, mta_human, etc. all become "human")
-    if "human" in character_type:
+    # Use endswith("_human") or exact match to avoid false positives with
+    # strings like "inhuman" or "superhuman"
+    if character_type.endswith("_human") or character_type == "human":
         character_type = "human"
 
     obj_type, _ = ObjectType.objects.get_or_create(
