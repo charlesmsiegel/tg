@@ -12,7 +12,7 @@ from .character_template import (
     CharacterTemplateQuickNPCView,
     CharacterTemplateUpdateView,
 )
-from .generic import DictView, MultipleFormsetsMixin
+from .generic import CachedDetailView, CachedListView, DictView, MultipleFormsetsMixin
 from .home import HomeListView
 from .houserules import (
     HouseRuleCreateView,

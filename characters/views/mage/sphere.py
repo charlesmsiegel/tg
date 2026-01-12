@@ -1,10 +1,11 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.mage import Sphere
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-class SphereDetailView(DetailView):
+class SphereDetailView(CachedDetailView):
     model = Sphere
     template_name = "characters/mage/sphere/detail.html"
 
@@ -25,7 +26,7 @@ class SphereUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Sphere."
 
 
-class SphereListView(ListView):
+class SphereListView(CachedListView):
     model = Sphere
     ordering = ["name"]
     template_name = "characters/mage/sphere/list.html"

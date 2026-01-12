@@ -1,10 +1,11 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.werewolf.tribe import Tribe
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-class TribeDetailView(DetailView):
+class TribeDetailView(CachedDetailView):
     model = Tribe
     template_name = "characters/werewolf/tribe/detail.html"
 
@@ -29,7 +30,7 @@ class TribeUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Tribe."
 
 
-class TribeListView(ListView):
+class TribeListView(CachedListView):
     model = Tribe
     ordering = ["name"]
     template_name = "characters/werewolf/tribe/list.html"

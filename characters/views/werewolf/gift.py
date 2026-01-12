@@ -1,10 +1,11 @@
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from characters.models.werewolf.gift import Gift, GiftPermission
 from core.mixins import MessageMixin
+from core.views import CachedDetailView, CachedListView
 
 
-class GiftDetailView(DetailView):
+class GiftDetailView(CachedDetailView):
     model = Gift
     template_name = "characters/werewolf/gift/detail.html"
 
@@ -25,7 +26,7 @@ class GiftUpdateView(MessageMixin, UpdateView):
     error_message = "There was an error updating the Gift."
 
 
-class GiftListView(ListView):
+class GiftListView(CachedListView):
     model = Gift
     ordering = ["name"]
     template_name = "characters/werewolf/gift/list.html"
