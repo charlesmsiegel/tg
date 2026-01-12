@@ -313,3 +313,23 @@ class TestVampireCreationFormSave(VampireCreationFormTestCase):
         self.assertEqual(vampire.clan, self.brujah)
         self.assertEqual(vampire.sect, self.camarilla)
         self.assertEqual(vampire.owner, self.user)
+
+    def test_save_with_path_sets_path_rating(self):
+        """Saving form with a path sets path_rating to 4."""
+        form = VampireCreationForm(
+            data={
+                "name": "Test Vampire",
+                "nature": str(self.survivor.pk),
+                "demeanor": str(self.bravo.pk),
+                "concept": "Warrior",
+                "clan": str(self.brujah.pk),
+                "sect": str(self.sabbat.pk),
+                "path": str(self.path_of_caine.pk),
+                "chronicle": str(self.chronicle.pk),
+            },
+            user=self.user,
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        vampire = form.save()
+        self.assertEqual(vampire.path, self.path_of_caine)
+        self.assertEqual(vampire.path_rating, 4)
