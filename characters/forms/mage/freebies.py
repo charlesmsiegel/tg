@@ -1,7 +1,6 @@
 from django import forms
 from django.db.models import Q
 
-from characters.costs import get_freebie_cost
 from characters.forms.constants import BASE_CATEGORY_CHOICES
 from characters.forms.core.freebies import HumanFreebiesForm
 from characters.models.core.ability_block import Ability
@@ -17,7 +16,7 @@ from core.widgets import AutocompleteTextInput
 from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
-CATEGORY_CHOICES = BASE_CATEGORY_CHOICES + [
+MAGE_CATEGORY_CHOICES = BASE_CATEGORY_CHOICES + [
     ("Sphere", "Sphere"),
     ("Rotes", "Rotes"),
     ("Resonance", "Resonance"),
@@ -39,7 +38,7 @@ class CompanionFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
             suggestions = [x.name.title() for x in Resonance.objects.order_by("name")]
 
         # Build category choices
-        base_cats = list(CATEGORY_CHOICES)
+        base_cats = list(MAGE_CATEGORY_CHOICES)
         additional_cats = [("Advantage", "Advantage")]
         if self.instance.companion_type == "familiar":
             additional_cats.append(("Charms", "Charms"))
@@ -116,9 +115,6 @@ class CompanionFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
         # Re-run chain setup after choices configured
         self._setup_chains()
 
-    def save(self, *args, **kwargs):
-        return self.instance
-
 
 class SorcererFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
     category = ChainedChoiceField(choices=[])
@@ -134,7 +130,7 @@ class SorcererFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
         m = self.instance
 
         # Build category choices
-        base_cats = list(CATEGORY_CHOICES)
+        base_cats = list(MAGE_CATEGORY_CHOICES)
         additional_cats = [("Existing Path", "Existing Path"), ("New Path", "New Path")]
         if m.sorcerer_type == "hedge_mage":
             additional_cats.append(("Create Ritual", "Create Ritual"))
@@ -239,23 +235,9 @@ class SorcererFreebiesForm(ChainedSelectMixin, HumanFreebiesForm):
         # Re-run chain setup after choices configured
         self._setup_chains()
 
-    def validator(self, trait_type):
-        trait_type = trait_type.lower().split(" ")[-1]
-        cost = get_freebie_cost(trait_type)
-        if not isinstance(cost, int):
-            return True
-        if cost == 10000:
-            return True
-        if cost <= self.instance.freebies:
-            return True
-        return False
-
-    def save(self, *args, **kwargs):
-        return self.instance
-
 
 class MageFreebiesForm(HumanFreebiesForm):
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES)
+    category = forms.ChoiceField(choices=MAGE_CATEGORY_CHOICES)
     resonance = forms.CharField(required=False, widget=AutocompleteTextInput(suggestions=[]))
 
     def __init__(self, *args, suggestions=None, **kwargs):
@@ -295,6 +277,3 @@ class MageFreebiesForm(HumanFreebiesForm):
                 self.fields["example"].queryset = Tenet.objects.all()
             if self.data["category"] == "Practice" or self.data["category"] == "Arete":
                 self.fields["example"].queryset = Practice.objects.all()
-
-    def save(self, *args, **kwargs):
-        return self.instance
