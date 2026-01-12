@@ -1,0 +1,26 @@
+{% comment %}
+Property Row Include
+
+Displays a simple label/value row for properties.
+
+Required context:
+    label: Display label (e.g., "Nature:")
+    value: Value to display
+
+Optional context:
+    url: URL to link the value to
+    col_ratio: Column ratio (default: "6")
+    label_class: Additional CSS class for label
+
+Usage:
+    {% include "core/includes/property_row.html" with label="Nature:" value=object.nature url=object.nature.get_absolute_url %}
+
+Or without link:
+    {% include "core/includes/property_row.html" with label="Concept:" value=object.concept %}
+{% endcomment %}
+<div class="row mb-2">
+    <div class="col-{{ col_ratio|default:"6" }}{% if label_class %} {{ label_class }}{% endif %}">{{ label }}</div>
+    <div class="col-{{ col_ratio|default:"6" }}">
+        {% if url %}<a href="{{ url }}">{{ value }}</a>{% else %}{{ value }}{% endif %}
+    </div>
+</div>
