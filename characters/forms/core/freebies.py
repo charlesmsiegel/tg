@@ -6,6 +6,9 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.merit_flaw_block import MeritFlaw
 
+# Re-export for backwards compatibility (some modules import from here)
+CATEGORY_CHOICES = BASE_CATEGORY_CHOICES
+
 
 class HumanFreebiesForm(forms.Form):
     category = forms.ChoiceField(choices=BASE_CATEGORY_CHOICES)
@@ -41,15 +44,25 @@ class HumanFreebiesForm(forms.Form):
                 self.fields["value"].choices = [(x, x) for x in range(-100, 101)]
 
     def validator(self, trait_type):
-        trait_type = trait_type.lower().split(" ")[-1]
-        cost = get_freebie_cost(trait_type)
+        """Check if the character can afford this trait type.
+
+        Converts trait type to cost key (e.g., 'Path Rating' -> 'path_rating')
+        and checks against the character's available freebies.
+        """
+        trait_type_lower = trait_type.lower().replace(" ", "_")
+        cost = get_freebie_cost(trait_type_lower)
         if not isinstance(cost, int):
             return True
-        if cost == 10000:
-            return True
-        if cost <= self.instance.freebies:
-            return True
-        return False
+        if cost == 10000:  # Blocked category
+            return False
+        return cost <= self.instance.freebies
+
+    def save(self, *args, **kwargs):
+        """Return the instance without modifying it.
+
+        Freebie spending is handled by the view, not the form.
+        """
+        return self.instance
 
     def clean(self):
         cleaned_data = super().clean()
