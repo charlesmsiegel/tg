@@ -32,8 +32,11 @@ def validate_gameline(value):
         value: The gameline code to validate
 
     Raises:
-        ValidationError: If the gameline is not valid
+        ValidationError: If the gameline is None or not a valid choice
     """
+    if value is None:
+        raise ValidationError("Gameline is required", code="required")
+
     valid_gamelines = [code for code, _ in settings.GAMELINE_CHOICES]
     if value not in valid_gamelines:
         raise ValidationError(
