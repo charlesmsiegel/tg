@@ -48,13 +48,17 @@ class HumanFreebiesForm(forms.Form):
 
         Converts trait type to cost key (e.g., 'Path Rating' -> 'path_rating')
         and checks against the character's available freebies.
+
+        Returns True for unknown categories (cost 10000) to allow forms with
+        special handling (e.g., Companion advantages, Sorcerer paths) to
+        process them with custom logic.
         """
         trait_type_lower = trait_type.lower().replace(" ", "_")
         cost = get_freebie_cost(trait_type_lower)
         if not isinstance(cost, int):
             return True
-        if cost == 10000:  # Blocked category
-            return False
+        if cost == 10000:  # Unknown category - allow for custom handling
+            return True
         return cost <= self.instance.freebies
 
     def save(self, *args, **kwargs):
