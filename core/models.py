@@ -897,7 +897,7 @@ class CharacterTemplate(Model):
     # Note: save() method inherited from Model base class already calls full_clean()
 
 
-class TemplateApplication(models.Model):
+class TemplateApplication(ValidatedSaveMixin, models.Model):
     """
     Tracks when a template is applied to a character.
     Used for statistics and auditing.
@@ -934,11 +934,6 @@ class TemplateApplication(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class BasePracticeRating(models.Model):
