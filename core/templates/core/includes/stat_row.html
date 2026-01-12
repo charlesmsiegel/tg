@@ -22,6 +22,9 @@ Or with pre-computed specialty:
 
 Or without specialties:
     {% include "core/includes/stat_row.html" with name="Strength" value=object.strength %}
+
+Note: This template loads get_specialty from core.templatetags. The same filter is also
+available in characters.templatetags for backwards compatibility with existing templates.
 {% endcomment %}
 {% load dots %}
 {% load get_specialty %}
@@ -29,5 +32,5 @@ Or without specialties:
     <div class="col-{{ col_ratio|default:"6" }}">
         {{ name }}{% if specialty %} ({{ specialty }}){% elif property_name and object %}{% with spec=object|get_specialty:property_name %}{% if spec %} ({{ spec }}){% endif %}{% endwith %}{% endif %}
     </div>
-    <div class="col-{{ col_ratio|default:"6" }} dots">{{ value|dots:max_dots|default:5 }}</div>
+    <div class="col-{{ col_ratio|default:"6" }} dots">{% with max_value=max_dots|default:5 %}{{ value|dots:max_value }}{% endwith %}</div>
 </div>
