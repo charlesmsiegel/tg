@@ -140,16 +140,15 @@ class Book(ValidatedSaveMixin, models.Model):
         super().clean()
         errors = {}
 
-        # Validate name is not empty
-        if not self.name or not self.name.strip():
-            errors["name"] = "Book name is required"
+        try:
+            validate_non_empty_name(self.name, "Book name")
+        except ValidationError as e:
+            errors["name"] = e.message
 
-        # Validate gameline is in valid choices
-        valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
-        if self.gameline not in valid_gamelines:
-            errors["gameline"] = (
-                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
-            )
+        try:
+            validate_gameline(self.gameline)
+        except ValidationError as e:
+            errors["gameline"] = e.message
 
         if errors:
             raise ValidationError(errors)
@@ -683,16 +682,15 @@ class HouseRule(ValidatedSaveMixin, models.Model):
         super().clean()
         errors = {}
 
-        # Validate name is not empty
-        if not self.name or not self.name.strip():
-            errors["name"] = "House rule name is required"
+        try:
+            validate_non_empty_name(self.name, "House rule name")
+        except ValidationError as e:
+            errors["name"] = e.message
 
-        # Validate gameline is in valid choices
-        valid_gamelines = [choice[0] for choice in settings.GAMELINE_CHOICES]
-        if self.gameline not in valid_gamelines:
-            errors["gameline"] = (
-                f"Invalid gameline '{self.gameline}'. Must be one of: {', '.join(valid_gamelines)}"
-            )
+        try:
+            validate_gameline(self.gameline)
+        except ValidationError as e:
+            errors["gameline"] = e.message
 
         if errors:
             raise ValidationError(errors)
