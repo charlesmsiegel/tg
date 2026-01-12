@@ -244,7 +244,7 @@ class STRelationshipManager(models.Manager):
         return self.filter(user=user).select_related("chronicle", "gameline")
 
 
-class STRelationship(models.Model):
+class STRelationship(ValidatedSaveMixin, models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -300,11 +300,6 @@ class STRelationship(models.Model):
 
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 
 class Story(ValidatedSaveMixin, models.Model):
@@ -1057,7 +1052,7 @@ def extended_roll(num_dice, target_successes, difficulty=6, specialty=False, max
     return result
 
 
-class WeeklyXPRequest(models.Model):
+class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
     week = models.ForeignKey(Week, on_delete=models.SET_NULL, null=True)
     character = models.ForeignKey("characters.CharacterModel", on_delete=models.SET_NULL, null=True)
     finishing = models.BooleanField(default=True)
@@ -1104,11 +1099,6 @@ class WeeklyXPRequest(models.Model):
             )
         if errors:
             raise ValidationError(errors)
-
-    def save(self, *args, **kwargs):
-        """Ensure validation runs on save."""
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def total_xp(self):
         """Calculate total XP for this request."""

@@ -75,6 +75,7 @@ See **model-standards** skill for implementation patterns.
 |------|---------|
 | `tg/settings.py` | Django config, gameline settings |
 | `core/models.py` | Base polymorphic models |
+| `core/base.py` | ValidatedSaveMixin for non-polymorphic models |
 | `core/mixins.py` | All view mixins |
 | `core/permissions.py` | PermissionManager |
 | `accounts/models.py` | Profile with ST logic |
