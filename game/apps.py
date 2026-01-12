@@ -6,4 +6,4 @@ class GameConfig(AppConfig):
     name = "game"
 
     def ready(self):
-        pass
+        import game.signals  # noqa: F401 - Register signal handlers
