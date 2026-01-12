@@ -27,7 +27,6 @@ from core.mixins import (
 )
 from core.models import Language
 from core.views.generic import DictView
-from game.models import ObjectType
 
 
 class HumanDetailView(CharacterDetailView):
@@ -413,12 +412,9 @@ class HumanFreebieFormPopulationView(View):
         return []
 
     def meritflaw_options(self):
-        char_type = self.primary_class.type
-        if "human" in char_type:
-            char_type = "human"
-        chartype, _ = ObjectType.objects.get_or_create(
-            name=char_type, defaults={"type": "char", "gameline": "wod"}
-        )
+        from characters.utils import get_character_object_type
+
+        chartype = get_character_object_type(self.primary_class.type)
         examples = MeritFlaw.objects.filter(allowed_types=chartype)
 
         # Filter to only show merit/flaws with at least one affordable rating

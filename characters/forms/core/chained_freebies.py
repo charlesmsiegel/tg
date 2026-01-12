@@ -14,7 +14,6 @@ from characters.models.core.ability_block import Ability
 from characters.models.core.attribute_block import Attribute
 from characters.models.core.background_block import Background, BackgroundRating
 from characters.models.core.merit_flaw_block import MeritFlaw
-from game.models import ObjectType
 from widgets import ChainedChoiceField, ChainedSelectMixin, ConditionalFieldsMixin
 
 # Base conditional visibility rules for freebies forms
@@ -184,13 +183,9 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _get_meritflaw_choices(self):
         """Get affordable merit/flaw choices for this character type."""
-        char_type = self.instance.type
-        if "human" in char_type:
-            char_type = "human"
+        from characters.utils import get_character_object_type
 
-        chartype, _ = ObjectType.objects.get_or_create(
-            name=char_type, defaults={"type": "char", "gameline": "wod"}
-        )
+        chartype = get_character_object_type(self.instance.type)
         all_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
         # Filter to only show merit/flaws with at least one affordable rating
@@ -225,16 +220,12 @@ class ChainedHumanFreebiesForm(ConditionalFieldsMixin, ChainedSelectMixin, forms
 
     def _setup_value_choices(self):
         """Build the example->value choices map for merit/flaws."""
+        from characters.utils import get_character_object_type
+
         value_map = {}
 
         # Get all merit/flaws that might be selected
-        char_type = self.instance.type
-        if "human" in char_type:
-            char_type = "human"
-
-        chartype, _ = ObjectType.objects.get_or_create(
-            name=char_type, defaults={"type": "char", "gameline": "wod"}
-        )
+        chartype = get_character_object_type(self.instance.type)
         all_mfs = MeritFlaw.objects.filter(allowed_types=chartype)
 
         current_flaws = self.instance.total_flaws()
