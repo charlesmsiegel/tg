@@ -4,14 +4,13 @@ Analyze class coupling and cohesion metrics.
 Finds: Feature Envy, Low Cohesion (LCOM), Message Chains, Middle Man.
 """
 
-import ast
-import sys
-import json
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator, Set
+import ast
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -34,15 +33,15 @@ class ClassAnalyzer(ast.NodeVisitor):
         self.current_class = None
         self.current_method = None
         self.class_methods: dict[str, list[str]] = defaultdict(list)
-        self.class_attributes: dict[str, Set[str]] = defaultdict(set)
-        self.method_accesses_self: dict[str, Set[str]] = defaultdict(set)
+        self.class_attributes: dict[str, set[str]] = defaultdict(set)
+        self.method_accesses_self: dict[str, set[str]] = defaultdict(set)
         self.method_accesses_other: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
         self.method_calls: dict[str, list[str]] = defaultdict(list)
 
     def visit_ClassDef(self, node: ast.ClassDef):
         old_class = self.current_class
         self.current_class = node.name
-        
+
         for item in node.body:
             if isinstance(item, ast.FunctionDef) and item.name == '__init__':
                 for stmt in ast.walk(item):
@@ -51,7 +50,7 @@ class ClassAnalyzer(ast.NodeVisitor):
                             if isinstance(target, ast.Attribute):
                                 if isinstance(target.value, ast.Name) and target.value.id == 'self':
                                     self.class_attributes[node.name].add(target.attr)
-        
+
         self.generic_visit(node)
         self._analyze_class(node)
         self.current_class = old_class
@@ -73,11 +72,11 @@ class ClassAnalyzer(ast.NodeVisitor):
                     self.method_accesses_self[self.current_method].add(node.attr)
                 else:
                     self.method_accesses_other[self.current_method][node.value.id] += 1
-            
+
             chain_length = self._get_chain_length(node)
             if chain_length >= 3:
                 self.method_calls[self.current_method].append(f"chain_{chain_length}")
-        
+
         self.generic_visit(node)
 
     def _get_chain_length(self, node: ast.Attribute) -> int:
@@ -92,20 +91,20 @@ class ClassAnalyzer(ast.NodeVisitor):
         class_name = node.name
         methods = self.class_methods[class_name]
         attrs = self.class_attributes[class_name]
-        
+
         if not methods or len(methods) < 2:
             return
-        
+
         # LCOM calculation
         method_attrs = {}
         for method in methods:
             full_name = f"{class_name}.{method}"
             method_attrs[method] = self.method_accesses_self.get(full_name, set())
-        
+
         pairs_sharing = 0
         pairs_not_sharing = 0
         method_list = list(method_attrs.keys())
-        
+
         for i in range(len(method_list)):
             for j in range(i + 1, len(method_list)):
                 m1, m2 = method_list[i], method_list[j]
@@ -113,7 +112,7 @@ class ClassAnalyzer(ast.NodeVisitor):
                     pairs_sharing += 1
                 else:
                     pairs_not_sharing += 1
-        
+
         lcom = max(0, pairs_not_sharing - pairs_sharing)
         if lcom > len(methods):
             self.issues.append(CouplingIssue(
@@ -124,13 +123,13 @@ class ClassAnalyzer(ast.NodeVisitor):
                 suggestion="Methods don't share attributes - consider splitting class",
                 severity="medium" if lcom < len(methods) * 2 else "high"
             ))
-        
+
         # Feature Envy
         for method in methods:
             full_name = f"{class_name}.{method}"
             self_accesses = len(self.method_accesses_self.get(full_name, set()))
             other_accesses = self.method_accesses_other.get(full_name, {})
-            
+
             for other_obj, count in other_accesses.items():
                 if count > self_accesses and count >= 3:
                     self.issues.append(CouplingIssue(
@@ -142,7 +141,7 @@ class ClassAnalyzer(ast.NodeVisitor):
                         suggestion=f"Consider moving method to {other_obj}'s class",
                         severity="medium"
                     ))
-        
+
         # Message Chains
         for method in methods:
             full_name = f"{class_name}.{method}"
@@ -159,7 +158,7 @@ class ClassAnalyzer(ast.NodeVisitor):
                         suggestion="Add delegate method or restructure",
                         severity="low" if max_chain < 5 else "medium"
                     ))
-        
+
         # Middle Man
         non_dunder_methods = [m for m in methods if not m.startswith('_')]
         if non_dunder_methods:
@@ -171,7 +170,7 @@ class ClassAnalyzer(ast.NodeVisitor):
                 len(self.method_accesses_self.get(f"{class_name}.{m}", set()))
                 for m in non_dunder_methods
             )
-            
+
             if total_delegation > total_self * 3 and total_delegation > 5:
                 self.issues.append(CouplingIssue(
                     file=self.filename, line=node.lineno,
@@ -208,34 +207,34 @@ def main():
     parser = argparse.ArgumentParser(description="Analyze class coupling and cohesion")
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
-    
+
     args = parser.parse_args()
-    
+
     all_issues = []
     for filepath in find_python_files(Path(args.path)):
         all_issues.extend(analyze_file(filepath))
-    
+
     all_issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps([asdict(i) for i in all_issues], indent=2))
     else:
         if not all_issues:
             print("✅ No coupling/cohesion issues found!")
             return
-        
+
         by_type = defaultdict(int)
         for issue in all_issues:
             by_type[issue.issue_type] += 1
-        
+
         print(f"Found {len(all_issues)} coupling/cohesion issue(s):\n")
         print("Summary:")
         for t, c in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {t}: {c}")
         print()
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
-        
+
         for issue in all_issues:
             icon = severity_icons[issue.severity]
             print(f"{icon} [{issue.severity.upper()}] {issue.file}:{issue.line}")

@@ -4,14 +4,13 @@ Detect Django-specific over-engineering patterns.
 Finds: unnecessary abstractions, premature patterns, over-architected code.
 """
 
-import ast
-import sys
-import json
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
+import ast
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -63,7 +62,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Merge into concrete model until you need multiple",
                     severity="medium"
                 ))
-        
+
         # Unused abstract models
         for name, info in self.models.items():
             if info.get('is_abstract') and name not in self.model_implementations:
@@ -74,7 +73,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Remove unused abstraction (YAGNI)",
                     severity="high"
                 ))
-        
+
         # Simple custom managers
         for name, info in self.custom_managers.items():
             non_dunder = [m for m in info.get('methods', []) if not m.startswith('_')]
@@ -86,7 +85,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Use QuerySet.as_manager() or model methods",
                     severity="low"
                 ))
-        
+
         # Signals for simple save logic
         for signal in self.signal_receivers:
             if signal.get('simple_save_signal'):
@@ -97,7 +96,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Override model.save() instead",
                     severity="medium"
                 ))
-        
+
         # Single-use mixins
         for name, info in self.mixins.items():
             if self.mixin_usages.get(name, 0) <= 1:
@@ -108,7 +107,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Inline the code until reuse is needed",
                     severity="low"
                 ))
-        
+
         # Deep inheritance
         for name, info in {**self.serializers, **self.forms}.items():
             depth = info.get('inheritance_depth', 0)
@@ -121,7 +120,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Flatten hierarchy, use composition",
                     severity="medium"
                 ))
-        
+
         # Simple middleware
         for mw in self.middleware:
             if mw.get('simple'):
@@ -132,7 +131,7 @@ class DjangoProjectAnalyzer:
                     suggestion="Use decorator or context processor",
                     severity="low"
                 ))
-        
+
         # Simple service layer
         for svc in self.service_classes:
             if svc.get('simple_crud'):
@@ -154,7 +153,7 @@ class DjangoOverEngineeringVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         bases = self._get_bases(node)
         methods = [n.name for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-        
+
         # Models
         if any('Model' in b for b in bases) and not any('Manager' in b for b in bases):
             is_abstract = self._is_abstract_model(node)
@@ -167,13 +166,13 @@ class DjangoOverEngineeringVisitor(ast.NodeVisitor):
             for base in bases:
                 if base in self.analyzer.abstract_models or 'Abstract' in base or base.startswith('Base'):
                     self.analyzer.model_implementations[base].append(node.name)
-        
+
         # Managers
         if any('Manager' in b for b in bases):
             self.analyzer.custom_managers[node.name] = {
                 'file': self.filename, 'line': node.lineno, 'methods': methods
             }
-        
+
         # Mixins
         if 'Mixin' in node.name:
             self.analyzer.mixins[node.name] = {
@@ -182,28 +181,28 @@ class DjangoOverEngineeringVisitor(ast.NodeVisitor):
         for base in bases:
             if 'Mixin' in base:
                 self.analyzer.mixin_usages[base] += 1
-        
+
         # Serializers
         if any('Serializer' in b for b in bases):
             depth = sum(1 for b in bases if any(x in b for x in ['Base', 'Abstract', 'Serializer']))
             self.analyzer.serializers[node.name] = {
                 'file': self.filename, 'line': node.lineno, 'inheritance_depth': depth
             }
-        
+
         # Forms
         if any('Form' in b for b in bases):
             depth = sum(1 for b in bases if any(x in b for x in ['Base', 'Abstract', 'Form']))
             self.analyzer.forms[node.name] = {
                 'file': self.filename, 'line': node.lineno, 'inheritance_depth': depth
             }
-        
+
         # Middleware
         if any('Middleware' in b for b in bases) or 'Middleware' in node.name:
             self.analyzer.middleware.append({
                 'file': self.filename, 'line': node.lineno,
                 'name': node.name, 'simple': len(methods) <= 2
             })
-        
+
         # Service classes
         if 'Service' in node.name:
             crud_names = {'create', 'get', 'update', 'delete', 'list', 'retrieve'}
@@ -213,7 +212,7 @@ class DjangoOverEngineeringVisitor(ast.NodeVisitor):
                 'file': self.filename, 'line': node.lineno,
                 'name': node.name, 'simple_crud': is_simple
             })
-        
+
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
@@ -275,17 +274,17 @@ def main():
     parser = argparse.ArgumentParser(description="Detect Django over-engineering")
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
-    
+
     args = parser.parse_args()
-    
+
     analyzer = DjangoProjectAnalyzer()
     for filepath in find_python_files(Path(args.path)):
         analyzer.analyze_file(filepath)
     analyzer.detect_issues()
-    
+
     issues = analyzer.issues
     issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps({
             'issues': [asdict(i) for i in issues],
@@ -302,18 +301,18 @@ def main():
             print("✅ No Django over-engineering issues found!")
             print(f"\nStats: {len(analyzer.models)} models, {len(analyzer.abstract_models)} abstract")
             return
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
         by_type = defaultdict(int)
         for issue in issues:
             by_type[issue.issue_type] += 1
-        
+
         print(f"Found {len(issues)} Django over-engineering issue(s):\n")
         print("Summary:")
         for t, c in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {t}: {c}")
         print()
-        
+
         for issue in issues:
             icon = severity_icons[issue.severity]
             print(f"{icon} [{issue.severity.upper()}] {issue.file}:{issue.line}")

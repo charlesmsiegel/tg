@@ -5,14 +5,13 @@ Finds: YAGNI violations, speculative generality, premature abstraction,
        single-implementation interfaces, excessive layering, thin wrappers.
 """
 
-import ast
-import sys
-import json
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
+import ast
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -59,7 +58,7 @@ class ProjectAnalyzer:
                     suggestion="Merge abstract and implementation or wait until you need abstraction",
                     severity="medium"
                 ))
-        
+
         # Unused abstract classes
         for cls in self.abstract_classes:
             if cls not in self.implementations or len(self.implementations[cls]) == 0:
@@ -72,7 +71,7 @@ class ProjectAnalyzer:
                     suggestion="Remove unused abstraction (YAGNI)",
                     severity="high"
                 ))
-        
+
         # Unnecessary factories
         for name, file, line in self.factory_classes:
             self.issues.append(OverEngineeringIssue(
@@ -83,7 +82,7 @@ class ProjectAnalyzer:
                 suggestion="Use direct instantiation unless you need runtime polymorphism",
                 severity="low"
             ))
-        
+
         # Unnecessary builders
         for name, file, line in self.builder_classes:
             info = self.classes.get(name, {})
@@ -96,7 +95,7 @@ class ProjectAnalyzer:
                     suggestion="Use dataclass with defaults or simple constructor",
                     severity="low"
                 ))
-        
+
         # Thin wrappers
         for name, file, line, wrapped in self.thin_wrappers:
             self.issues.append(OverEngineeringIssue(
@@ -107,7 +106,7 @@ class ProjectAnalyzer:
                 suggestion="Use the wrapped class directly unless abstraction is needed",
                 severity="low"
             ))
-        
+
         # Premature strategy pattern
         for name, file, line in self.strategy_classes:
             self.issues.append(OverEngineeringIssue(
@@ -133,14 +132,14 @@ class ClassCollector(ast.NodeVisitor):
                 bases.append(base.id)
             elif isinstance(base, ast.Attribute):
                 bases.append(base.attr)
-        
+
         methods = [n.name for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-        
+
         is_abstract = False
         for base in bases:
             if 'ABC' in base or 'Abstract' in base:
                 is_abstract = True
-        
+
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 for decorator in item.decorator_list:
@@ -148,35 +147,35 @@ class ClassCollector(ast.NodeVisitor):
                         is_abstract = True
                     elif isinstance(decorator, ast.Attribute) and decorator.attr == 'abstractmethod':
                         is_abstract = True
-        
+
         self.analyzer.classes[node.name] = {
             'bases': bases, 'methods': methods,
             'file': self.filename, 'line': node.lineno, 'is_abstract': is_abstract
         }
-        
+
         if is_abstract:
             self.analyzer.abstract_classes.add(node.name)
-        
+
         for base in bases:
             self.analyzer.implementations[base].append(node.name)
-        
+
         # Factory pattern
         if 'Factory' in node.name or any('create' in m.lower() for m in methods):
             create_methods = [m for m in methods if 'create' in m.lower()]
             if create_methods and len(methods) <= 3:
                 self.analyzer.factory_classes.append((node.name, self.filename, node.lineno))
-        
+
         # Builder pattern
         if 'Builder' in node.name:
             self.analyzer.builder_classes.append((node.name, self.filename, node.lineno))
-        
+
         # Strategy pattern
         if is_abstract and len(methods) == 1 and ('Strategy' in node.name or 'Policy' in node.name):
             self.analyzer.strategy_classes.append((node.name, self.filename, node.lineno))
-        
+
         # Thin wrapper detection
         self._check_thin_wrapper(node)
-        
+
         self.generic_visit(node)
 
     def _check_thin_wrapper(self, node: ast.ClassDef):
@@ -185,10 +184,10 @@ class ClassCollector(ast.NodeVisitor):
             if isinstance(item, ast.FunctionDef) and item.name == '__init__':
                 init_method = item
                 break
-        
+
         if not init_method:
             return
-        
+
         stored_attrs = []
         for stmt in ast.walk(init_method):
             if isinstance(stmt, ast.Assign):
@@ -196,11 +195,11 @@ class ClassCollector(ast.NodeVisitor):
                     if isinstance(target, ast.Attribute):
                         if isinstance(target.value, ast.Name) and target.value.id == 'self':
                             stored_attrs.append(target.attr)
-        
+
         if len(stored_attrs) == 1:
             wrapped_attr = stored_attrs[0]
             methods = [n for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name != '__init__']
-            
+
             if methods:
                 delegate_count = 0
                 for method in methods:
@@ -210,7 +209,7 @@ class ClassCollector(ast.NodeVisitor):
                                 if stmt.value.attr == wrapped_attr:
                                     delegate_count += 1
                                     break
-                
+
                 if delegate_count >= len(methods) * 0.7 and len(methods) > 1:
                     self.analyzer.thin_wrappers.append((node.name, self.filename, node.lineno, wrapped_attr))
 
@@ -228,17 +227,17 @@ def main():
     parser = argparse.ArgumentParser(description="Detect over-engineering patterns")
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
-    
+
     args = parser.parse_args()
-    
+
     analyzer = ProjectAnalyzer()
     for filepath in find_python_files(Path(args.path)):
         analyzer.analyze_file(filepath)
     analyzer.detect_issues()
-    
+
     issues = analyzer.issues
     issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps({
             'issues': [asdict(i) for i in issues],
@@ -252,18 +251,18 @@ def main():
             print("✅ No over-engineering issues found!")
             print(f"\nStats: {len(analyzer.classes)} classes, {len(analyzer.abstract_classes)} abstract")
             return
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
         by_type = defaultdict(int)
         for issue in issues:
             by_type[issue.issue_type] += 1
-        
+
         print(f"Found {len(issues)} over-engineering issue(s):\n")
         print("Summary:")
         for t, c in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {t}: {c}")
         print()
-        
+
         for issue in issues:
             icon = severity_icons[issue.severity]
             print(f"{icon} [{issue.severity.upper()}] {issue.file}:{issue.line}")

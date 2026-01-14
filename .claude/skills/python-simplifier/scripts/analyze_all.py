@@ -3,20 +3,19 @@
 Comprehensive Python code analyzer - runs all checks and produces unified report.
 """
 
-import sys
-import json
 import argparse
+import json
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
-from collections import defaultdict
+from pathlib import Path
 
 
 def run_analyzer(script_name: str, path: str) -> dict:
     script_path = Path(__file__).parent / script_name
     if not script_path.exists():
         return {'issues': [], 'error': f'Script not found: {script_name}'}
-    
+
     cmd = [sys.executable, str(script_path), path, '--format', 'json']
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
@@ -33,30 +32,30 @@ def run_analyzer(script_name: str, path: str) -> dict:
 
 def generate_report(path: str, skip_duplicates: bool = False) -> dict:
     results = {}
-    
+
     print("🔍 Analyzing complexity...", file=sys.stderr)
     results['complexity'] = run_analyzer('analyze_complexity.py', path)
-    
+
     print("🔍 Finding code smells...", file=sys.stderr)
     results['code_smells'] = run_analyzer('find_code_smells.py', path)
-    
+
     print("🔍 Detecting over-engineering...", file=sys.stderr)
     oe_result = run_analyzer('find_overengineering.py', path)
     results['overengineering'] = oe_result.get('issues', []) if isinstance(oe_result, dict) else oe_result
-    
+
     print("🔍 Finding dead code...", file=sys.stderr)
     results['dead_code'] = run_analyzer('find_dead_code.py', path)
-    
+
     print("🔍 Detecting unpythonic patterns...", file=sys.stderr)
     results['unpythonic'] = run_analyzer('find_unpythonic.py', path)
-    
+
     print("🔍 Analyzing coupling/cohesion...", file=sys.stderr)
     results['coupling'] = run_analyzer('find_coupling_issues.py', path)
-    
+
     if not skip_duplicates:
         print("🔍 Finding duplicates...", file=sys.stderr)
         results['duplicates'] = run_analyzer('find_duplicates.py', path)
-    
+
     report = {
         'meta': {
             'analyzed_path': path,
@@ -70,7 +69,7 @@ def generate_report(path: str, skip_duplicates: bool = False) -> dict:
         },
         'categories': {}
     }
-    
+
     for category, data in results.items():
         issues = []
         if isinstance(data, list):
@@ -78,7 +77,7 @@ def generate_report(path: str, skip_duplicates: bool = False) -> dict:
         elif isinstance(data, dict):
             if 'issues' in data:
                 issues = data['issues']
-        
+
         normalized = []
         for issue in issues:
             if isinstance(issue, dict):
@@ -90,62 +89,62 @@ def generate_report(path: str, skip_duplicates: bool = False) -> dict:
                         issue['severity'] = 'medium'
                 issue['category'] = category
                 normalized.append(issue)
-        
+
         report['categories'][category] = {'issues': normalized, 'count': len(normalized)}
         report['summary']['total_issues'] += len(normalized)
         report['summary']['by_category'][category] = len(normalized)
-        
+
         for issue in normalized:
             sev = issue.get('severity', 'medium')
             if sev in report['summary']['by_severity']:
                 report['summary']['by_severity'][sev] += 1
-    
+
     return report
 
 
 def print_text_report(report: dict):
     meta = report['meta']
     summary = report['summary']
-    
+
     print("\n" + "=" * 70)
     print("📊 PYTHON CODE ANALYSIS REPORT")
     print("=" * 70)
     print(f"Path: {meta['analyzed_path']}")
     print(f"Time: {meta['timestamp']}")
     print()
-    
+
     print("📈 SUMMARY")
     print("-" * 40)
     print(f"Total issues found: {summary['total_issues']}")
     print()
-    
+
     severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
     print("By severity:")
     for sev, count in summary['by_severity'].items():
         if count > 0:
             print(f"  {severity_icons[sev]} {sev.upper()}: {count}")
     print()
-    
+
     print("By category:")
     for cat, count in sorted(summary['by_category'].items(), key=lambda x: -x[1]):
         if count > 0:
             print(f"  {cat}: {count}")
     print()
-    
+
     if summary['total_issues'] == 0:
         print("✅ No issues found! Your code looks great!")
         return
-    
+
     print("=" * 70)
     print("🔴 HIGH SEVERITY ISSUES")
     print("=" * 70)
-    
+
     high_issues = []
     for cat, data in report['categories'].items():
         for issue in data['issues']:
             if issue.get('severity') == 'high':
                 high_issues.append(issue)
-    
+
     if not high_issues:
         print("None found!")
     else:
@@ -157,15 +156,15 @@ def print_text_report(report: dict):
                 print(f"   {issue['description']}")
             if 'suggestion' in issue:
                 print(f"   → {issue['suggestion']}")
-        
+
         if len(high_issues) > 20:
             print(f"\n... and {len(high_issues) - 20} more high severity issues")
-    
+
     print()
     print("=" * 70)
     print("💡 RECOMMENDATIONS")
     print("=" * 70)
-    
+
     recommendations = []
     if summary['by_category'].get('complexity', 0) > 5:
         recommendations.append("• Reduce function complexity - extract methods, use early returns")
@@ -179,10 +178,10 @@ def print_text_report(report: dict):
         recommendations.append("• Extract duplicate code into shared functions")
     if summary['by_category'].get('coupling', 0) > 3:
         recommendations.append("• Improve class design - increase cohesion, reduce coupling")
-    
+
     if not recommendations:
         recommendations.append("• Your code is in good shape! Consider minor improvements.")
-    
+
     for rec in recommendations:
         print(rec)
     print()
@@ -212,10 +211,10 @@ Examples:
     parser.add_argument('--format', choices=['text', 'json'], default='text')
     parser.add_argument('--skip-duplicates', action='store_true')
     parser.add_argument('--output', '-o', type=str, help='Output file')
-    
+
     args = parser.parse_args()
     report = generate_report(args.path, skip_duplicates=args.skip_duplicates)
-    
+
     if args.format == 'json':
         output = json.dumps(report, indent=2)
     else:
@@ -225,7 +224,7 @@ Examples:
         print_text_report(report)
         output = sys.stdout.getvalue()
         sys.stdout = old_stdout
-    
+
     if args.output:
         Path(args.output).write_text(output)
         print(f"Report saved to {args.output}", file=sys.stderr)

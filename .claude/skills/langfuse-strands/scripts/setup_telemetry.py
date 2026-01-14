@@ -18,15 +18,14 @@ Usage:
     agent = Agent(...)
 """
 
-import os
 import base64
-from typing import Optional
+import os
 
 
 def setup_langfuse_telemetry(
-    public_key: Optional[str] = None,
-    secret_key: Optional[str] = None,
-    base_url: Optional[str] = None,
+    public_key: str | None = None,
+    secret_key: str | None = None,
+    base_url: str | None = None,
 ) -> "StrandsTelemetry":
     """
     Configure Langfuse OTEL exporter for Strands agents.
@@ -46,36 +45,36 @@ def setup_langfuse_telemetry(
     public_key = public_key or os.environ.get("LANGFUSE_PUBLIC_KEY")
     secret_key = secret_key or os.environ.get("LANGFUSE_SECRET_KEY")
     base_url = base_url or os.environ.get("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
-    
+
     if not public_key or not secret_key:
         raise ValueError(
             "Langfuse credentials required. Set LANGFUSE_PUBLIC_KEY and "
             "LANGFUSE_SECRET_KEY environment variables, or pass as arguments."
         )
-    
+
     # Build Basic Auth header
     auth_string = f"{public_key}:{secret_key}"
     auth_encoded = base64.b64encode(auth_string.encode()).decode()
-    
+
     # Configure OTEL exporter environment
     os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = f"{base_url}/api/public/otel"
     os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {auth_encoded}"
-    
+
     # Initialize and return Strands telemetry
     from strands.telemetry import StrandsTelemetry
     telemetry = StrandsTelemetry()
     telemetry.setup_otlp_exporter()
-    
+
     return telemetry
 
 
 def create_traced_agent(
     model=None,
     system_prompt: str = "",
-    tools: Optional[list] = None,
-    session_id: Optional[str] = None,
-    user_id: Optional[str] = None,
-    tags: Optional[list] = None,
+    tools: list | None = None,
+    session_id: str | None = None,
+    user_id: str | None = None,
+    tags: list | None = None,
     **kwargs
 ) -> "Agent":
     """
@@ -94,7 +93,7 @@ def create_traced_agent(
         Configured Agent instance.
     """
     from strands import Agent
-    
+
     # Build trace attributes
     trace_attributes = {}
     if session_id:
@@ -103,12 +102,12 @@ def create_traced_agent(
         trace_attributes["user.id"] = user_id
     if tags:
         trace_attributes["langfuse.tags"] = tags
-    
+
     # Use default model if not provided
     if model is None:
         from strands.models.bedrock import BedrockModel
         model = BedrockModel(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
-    
+
     return Agent(
         model=model,
         system_prompt=system_prompt,
@@ -121,21 +120,21 @@ def create_traced_agent(
 if __name__ == "__main__":
     # Quick test if run directly
     print("Testing Langfuse + Strands setup...")
-    
+
     try:
         setup_langfuse_telemetry()
         print("✓ Telemetry configured successfully")
-        
+
         agent = create_traced_agent(
             system_prompt="You are a helpful assistant.",
             session_id="test-session",
             tags=["test"]
         )
         print("✓ Agent created successfully")
-        
+
         # Uncomment to test actual agent call:
         # result = agent("Say hello!")
         # print(f"✓ Agent response: {result}")
-        
+
     except Exception as e:
         print(f"✗ Error: {e}")

@@ -5,14 +5,13 @@ Finds: magic numbers, bare excepts, mutable defaults, type comparisons,
        god classes, data classes, long parameter lists.
 """
 
-import ast
-import sys
-import json
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
+import ast
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -114,10 +113,10 @@ class CodeSmellDetector(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         old_class = self.current_class
         self.current_class = node.name
-        
+
         methods = []
         attributes = set()
-        
+
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 methods.append(item.name)
@@ -125,7 +124,7 @@ class CodeSmellDetector(ast.NodeVisitor):
                 for target in item.targets:
                     if isinstance(target, ast.Name):
                         attributes.add(target.id)
-        
+
         for item in node.body:
             if isinstance(item, ast.FunctionDef) and item.name == '__init__':
                 for stmt in ast.walk(item):
@@ -134,20 +133,20 @@ class CodeSmellDetector(ast.NodeVisitor):
                             if isinstance(target, ast.Attribute):
                                 if isinstance(target.value, ast.Name) and target.value.id == 'self':
                                     attributes.add(target.attr)
-        
+
         # God class
         non_dunder = [m for m in methods if not m.startswith('_')]
         if len(methods) > 15 and len(attributes) > 10:
             self._add(node.lineno, "god_class",
                 f"Class {node.name} has {len(methods)} methods and {len(attributes)} attributes",
                 "Split into smaller focused classes", "high")
-        
+
         # Data class
         if len(attributes) > 3 and len(non_dunder) == 0:
             self._add(node.lineno, "data_class",
                 f"Class {node.name} has only data, no behavior methods",
                 "Consider using @dataclass or namedtuple", "low")
-        
+
         self.generic_visit(node)
         self.current_class = old_class
 
@@ -196,33 +195,33 @@ def main():
     parser.add_argument('--format', choices=['text', 'json'], default='text')
     parser.add_argument('--ignore', type=str, default='',
         help='Comma-separated smells to ignore')
-    
+
     args = parser.parse_args()
     ignore = set(args.ignore.split(',')) if args.ignore else set()
-    
+
     all_issues = []
     for filepath in find_python_files(Path(args.path)):
         all_issues.extend(analyze_file(filepath, ignore))
-    
+
     all_issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps([asdict(i) for i in all_issues], indent=2))
     else:
         if not all_issues:
             print("✅ No code smells found!")
             return
-        
+
         by_type = defaultdict(int)
         for issue in all_issues:
             by_type[issue.smell_type] += 1
-        
+
         print(f"Found {len(all_issues)} code smell(s):\n")
         print("Summary:")
         for smell, count in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {smell}: {count}")
         print()
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
         for issue in all_issues:
             icon = severity_icons[issue.severity]
