@@ -42,6 +42,17 @@ def boxes(value, maximum=5):
     return "■" * value + "□" * (maximum - value)
 
 
+@register.filter(name="abs")
+def abs_filter(value):
+    """Return the absolute value of a number."""
+    if value is None:
+        return 0
+    try:
+        return abs(int(value))
+    except (ValueError, TypeError):
+        return value
+
+
 @register.filter(name="lore_name")
 def lore_name(value):
     """Convert lore_of_the_beast to 'Lore of the Beast'."""
