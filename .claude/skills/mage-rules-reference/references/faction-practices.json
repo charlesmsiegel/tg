@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "traditions": ["Akashayana", "Celestial Chorus", "Cult of Ecstasy", "Dreamspeakers", "Euthanatos", "Order of Hermes", "Society of Ether", "Verbena", "Virtual Adepts"],
+    "conventions": ["Iteration X", "New World Order", "Progenitors", "Syndicate", "Void Engineers"],
+    "crafts": ["Ahl-i-Batin", "Bata'a", "Children of Knowledge", "Hollow Ones", "Kopa Loei", "Ngoma", "Orphans", "Sisters of Hippolyta", "Taftani", "Templar Knights", "Wu Lung"]
+  },
+  "Akashayana": ["Alchemy", "Craftwork", "Faith", "Yoga", "Dominion", "Martial Arts", "Qi Manipulation"],
+  "Celestial Chorus": ["Faith", "High Ritual Magick", "Bardism"],
+  "Cult of Ecstasy": ["Crazy Wisdom", "Gutter Magick", "Yoga", "Cybernetics", "Hypertech", "Bardism"],
+  "Dreamspeakers": ["Medicine-Work", "Craftwork", "Shamanism", "Crazy Wisdom", "Faith"],
+  "Euthanatos": ["Crazy Wisdom", "Faith", "High Ritual Magick", "Medicine-Work", "Reality Hacking", "Martial Arts", "Shamanism", "Voudoun", "Yoga"],
+  "Order of Hermes": ["Alchemy", "Dominion", "High Ritual Magick"],
+  "Society of Ether": ["Alchemy", "Craftwork", "Cybernetics", "Hypertech", "Reality Hacking", "Weird Science"],
+  "Verbena": ["Witchcraft", "Voudoun", "Dominion", "Weird Science", "Chaos Magick", "Yoga", "Martial Arts", "High Ritual Magick", "Cybernetics", "Art of Desire", "Craftwork", "Medicine-Work", "Hypertech"],
+  "Virtual Adepts": ["Reality Hacking", "Cybernetics", "Hypertech", "Weird Science", "Martial Arts", "Chaos Magick", "Gutter Magick"],
+  "Iteration X": ["Cybernetics", "Hypertech", "Craftwork", "Martial Arts", "Dominion", "Art of Desire", "Reality Hacking"],
+  "New World Order": ["Dominion", "Martial Arts", "Hypertech", "Bardism"],
+  "Progenitors": ["Weird Science", "Medicine-Work", "Cybernetics", "Hypertech"],
+  "Syndicate": ["Art of Desire", "Martial Arts", "Dominion", "Bardism"],
+  "Void Engineers": ["Hypertech", "Cybernetics", "Craftwork", "Reality Hacking", "Weird Science"],
+  "Ahl-i-Batin": ["Faith", "Crazy Wisdom", "Alchemy", "High Ritual Magick", "Yoga", "Gutter Magick", "Reality Hacking", "Chaos Magick"],
+  "Bata'a": ["Voudoun", "Faith", "Medicine-Work", "Craftwork", "Gutter Magick", "Shamanism", "Weird Science", "Dominion", "Maleficia", "Martial Arts"],
+  "Children of Knowledge": ["Alchemy", "Craftwork", "Crazy Wisdom", "Art of Desire", "Chaos Magick", "Hypertech"],
+  "Hollow Ones": ["Chaos Magick", "Gutter Magick"],
+  "Kopa Loei": ["Shamanism", "Witchcraft", "High Ritual Magick"],
+  "Ngoma": ["High Ritual Magick", "Alchemy", "Hypertech", "Medicine-Work", "Craftwork", "Reality Hacking", "Art of Desire"],
+  "Orphans": ["_any"],
+  "Sisters of Hippolyta": ["Medicine-Work", "Witchcraft", "Shamanism", "High Ritual Magick", "Craftwork", "Martial Arts"],
+  "Taftani": ["Alchemy", "Craftwork", "High Ritual Magick", "Crazy Wisdom", "Art of Desire", "Dominion", "Hypertech"],
+  "Templar Knights": ["Faith", "Martial Arts", "Dominion", "Craftwork", "Hypertech"],
+  "Wu Lung": ["High Ritual Magick", "Alchemy", "Martial Arts"]
+}

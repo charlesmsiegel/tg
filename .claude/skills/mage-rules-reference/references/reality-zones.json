@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "description": "Reality Zones modify Practice difficulties. Positive ratings = easier (-diff), negative = harder (+diff).",
+    "balance_rule": "Total of all Practice ratings must equal 0. Positive total must equal location Rank.",
+    "valid_practices": "Only the 32 base Practices in practices.json may be used. Specialized and Corrupted Practices are excluded."
+  },
+  "effects": {
+    "positive": "Each +1 rating gives -1 difficulty to that Practice",
+    "negative": "Each -1 rating gives +1 difficulty to that Practice",
+    "max_rating": "+/- 5 typical maximum per Practice",
+    "stacking": "Reality Zone modifiers stack with other difficulty modifiers"
+  },
+  "excluded_practices": {
+    "specialized": ["Artemis's Gift", "Asagwe", "Authority", "Biotech", "Bureaucracy", "Ceremonial Magick", "Do", "Ethertech", "Galdius Domini", "Harmony", "Hypereconomics", "Integrative Technology", "Lakashim", "Nyeredzi", "Occultation", "Reality Coding", "Spirit Ties", "Tecknology", "The Old Ways", "The Royal Art", "The Scene", "Wayfinding", "Weaving", "Wheel-Tending"],
+    "corrupted": ["Abyssalism", "Demonism", "Feralism", "Goetia", "Infernal Sciences", "The Black Mass", "Vamamarga"]
+  },
+  "examples": {
+    "Hermetic Sanctum": {
+      "High Ritual Magick": "+2",
+      "Gutter Magick": "-2",
+      "notes": "Favors ceremonial work, hinders street magic"
+    },
+    "Virtual Adept Node": {
+      "Reality Hacking": "+2",
+      "Hypertech": "+1",
+      "Faith": "-2",
+      "Witchcraft": "-1",
+      "notes": "Digital paradigm dominates"
+    },
+    "Verbena Grove": {
+      "Witchcraft": "+2",
+      "Medicine-Work": "+1",
+      "Hypertech": "-3",
+      "notes": "Nature magic thrives, technology fails"
+    }
+  }
+}

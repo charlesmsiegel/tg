@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "pattern_spheres": ["Forces", "Life", "Matter"],
+    "connecting_spheres": ["Correspondence", "Spirit", "Time"],
+    "prime_and_pillars": ["Prime", "Entropy", "Mind"]
+  },
+  "Correspondence": {
+    "1": "Sense immediate spatial relationships, find hidden things nearby, orientation",
+    "2": "Sense distant locations, touch/affect through space, teleport small objects",
+    "3": "Teleport self, open/close gates, view multiple places simultaneously",
+    "4": "Create permanent gates, wards against passage, be in multiple places",
+    "5": "Stretch/compress space, overlap locations, spatial mutilation"
+  },
+  "Entropy": {
+    "1": "Sense flaws/fate/fortune, detect lies, predict randomness, spot weaknesses",
+    "2": "Control probability, force specific random outcomes",
+    "3": "Decay/reinforce objects, grant good/bad luck to others",
+    "4": "Long-term luck control, heal/harm living beings directly (aggravated)",
+    "5": "Affect thoughts/memes, destroy ideas, bind oaths, alter beliefs"
+  },
+  "Forces": {
+    "1": "Perceive all energy types (infrared, electricity, radiation, kinetic, sound)",
+    "2": "Manipulate existing forces, enhance/weaken, invisibility, silence",
+    "3": "Transmute forces, conjure from nothing (with Prime 2), telekinesis",
+    "4": "Control major forces, weather manipulation, mile-scale effects",
+    "5": "Transmute major forces, region-scale effects, conjure infernos"
+  },
+  "Life": {
+    "1": "Sense living things, detect health/age/physical state",
+    "2": "Alter simple life (invertebrates, plants), heal self, cosmetic self-changes",
+    "3": "Transform simple life, alter/heal/harm others, add features to self",
+    "4": "Alter complex life, transform self into other creatures",
+    "5": "Create complex life (with Prime 2), perfect metamorphosis, any transformation"
+  },
+  "Matter": {
+    "1": "Analyze composition, understand structure, detect hidden compartments",
+    "2": "Basic transmutation (same state/properties), lead to gold",
+    "3": "Alter form and properties during transmutation, mend/break objects",
+    "4": "Complex transmutation, create composite materials and machinery",
+    "5": "Alter any properties, create any substance"
+  },
+  "Mind": {
+    "1": "Sense emotions/auras, shield mind, enhance mental attributes",
+    "2": "Read surface thoughts, send emotional impulses, read object memories",
+    "3": "Telepathy, project illusions, dreamwalk, psychic blast (bashing)",
+    "4": "Control conscious mind, alter memories, astral projection",
+    "5": "Control subconscious, permanent mental changes, create intelligence"
+  },
+  "Prime": {
+    "1": "Sense Quintessence/Resonance, use Nodes, consecrate items",
+    "2": "Fuel patterns with Quintessence, add aggravated damage, Body of Light",
+    "3": "Channel Quintessence, create simple Wonders, energy weapons",
+    "4": "Destroy by draining Quintessence, create permanent Wonders, refine Tass",
+    "5": "Create Nodes, infuse/withdraw life force, nullify Paradox"
+  },
+  "Spirit": {
+    "1": "See spirits/auras, sense Gauntlet strength, detect Fetishes",
+    "2": "Touch/speak to spirits, manipulate Gauntlet rating",
+    "3": "Step sideways, heal/harm spirits, awaken/lull object spirits",
+    "4": "Rend/seal Gauntlet, bind spirits, create Fetishes, exorcism",
+    "5": "Gilgul (destroy Avatar), create Realms, enter Deep Umbra"
+  },
+  "Time": {
+    "1": "Always know current time, detect Time magick ripples",
+    "2": "See past and future, conceal own Time magick",
+    "3": "Speed/slow time, bullet time, rewind time (+3 diff, always vulgar)",
+    "4": "Freeze time completely, time bubbles, set triggers, anchor points",
+    "5": "Time travel, time immunity, step outside time's flow"
+  }
+}
