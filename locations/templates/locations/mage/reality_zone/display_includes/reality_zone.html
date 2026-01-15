@@ -9,7 +9,7 @@
                 <div class="tg-card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="enhanced-heading">Enhanced Practices</h6>
+                            <h6 class="enhanced-heading {{ object.get_heading }}">Enhanced Practices</h6>
                             <div class="table-responsive">
                                 <table class="tg-table node-table mb-0">
                                     <tbody>
@@ -32,7 +32,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="hindered-heading">Hindered Practices</h6>
+                            <h6 class="hindered-heading {{ object.get_heading }}">Hindered Practices</h6>
                             <div class="table-responsive">
                                 <table class="tg-table node-table mb-0">
                                     <tbody>
@@ -42,7 +42,7 @@
                                                     <a href="{{ pr.practice.get_absolute_url }}" class="node-link">{{ pr.practice }}</a>
                                                 </td>
                                                 <td class="text-right">
-                                                    <span class="dots colored-dots reversed">{{ pr.rating|dots }}</span>
+                                                    <span class="dots colored-dots reversed">{{ pr.rating|abs|dots }}</span>
                                                 </td>
                                             </tr>
                                         {% empty %}

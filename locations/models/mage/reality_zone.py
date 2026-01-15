@@ -39,6 +39,9 @@ class RealityZone(models.Model):
         verbose_name = "Reality Zone"
         verbose_name_plural = "Reality Zone"
 
+    def get_heading(self):
+        return "mta_heading"
+
     def get_absolute_url(self):
         return reverse("locations:mage:reality_zone", args=[str(self.id)])
 
