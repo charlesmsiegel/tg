@@ -321,6 +321,7 @@ p.post {
 .dots.reversed {
     direction: rtl;
     unicode-bidi: bidi-override;
+    color: #dc3545;
 }
 
 /* Table styling for resonance, merits and flaws */
@@ -382,6 +383,10 @@ p.post {
     }
     
     .practice-hindered {
+        color: #e74c3c; /* Brighter red for dark theme */
+    }
+
+    .dots.reversed {
         color: #e74c3c; /* Brighter red for dark theme */
     }
 }
