@@ -29,7 +29,7 @@ def load_data():
     if not DATA_FILE.exists():
         print(f"Error: {DATA_FILE} not found")
         sys.exit(1)
-    with open(DATA_FILE, 'r') as f:
+    with open(DATA_FILE) as f:
         return json.load(f)
 
 def list_categories(data):
@@ -68,7 +68,7 @@ def get_key(data, category, obj_name, key):
         print(f"Error: Object '{obj_name}' not found in {category}")
         return
     obj = data[category][obj_name]
-    
+
     # Handle nested key access with dot notation
     keys = key.split('.')
     current = obj
@@ -84,7 +84,7 @@ def get_key(data, category, obj_name, key):
         else:
             print(f"Error: Key '{key}' not found")
             return
-    
+
     if isinstance(current, (dict, list)):
         print(json.dumps(current, indent=2))
     else:
@@ -94,16 +94,16 @@ def search_data(data, term, category=None):
     """Search for a term in the data."""
     term_lower = term.lower()
     results = []
-    
+
     categories = [category] if category else data.keys()
-    
+
     for cat in categories:
         if cat not in data:
             continue
         for obj_name, obj_data in data[cat].items():
             matches = search_in_value(obj_data, term_lower, f"{cat}.{obj_name}")
             results.extend(matches)
-    
+
     if results:
         print(f"Found {len(results)} matches for '{term}':")
         for path, snippet in results[:20]:  # Limit to 20 results
@@ -117,7 +117,7 @@ def search_data(data, term, category=None):
 def search_in_value(value, term, path):
     """Recursively search for term in a value."""
     results = []
-    
+
     if isinstance(value, str):
         if term in value.lower():
             results.append((path, value))
@@ -129,12 +129,12 @@ def search_in_value(value, term, path):
     elif isinstance(value, list):
         for i, v in enumerate(value):
             results.extend(search_in_value(v, term, f"{path}[{i}]"))
-    
+
     return results
 
 def main():
     args = sys.argv[1:]
-    
+
     # Handle --search flag
     search_term = None
     search_category = None
@@ -145,9 +145,9 @@ def main():
             args = args[:idx]  # Remove search args
             if args:
                 search_category = args[0]
-    
+
     data = load_data()
-    
+
     if search_term:
         search_data(data, search_term, search_category)
     elif len(args) == 0:

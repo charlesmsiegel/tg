@@ -4,14 +4,13 @@ Detect unpythonic patterns in Python code.
 Finds: non-idiomatic patterns that have cleaner Pythonic alternatives.
 """
 
-import ast
-import sys
-import json
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
+import ast
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -50,7 +49,7 @@ class UnpythonicDetector(ast.NodeVisitor):
                                 "for i in range(len(x)): x[i]",
                                 "for item in x: ... or for i, item in enumerate(x):",
                                 "medium")
-        
+
         # Manual index tracking
         for stmt in node.body:
             if isinstance(stmt, ast.AugAssign):
@@ -63,11 +62,11 @@ class UnpythonicDetector(ast.NodeVisitor):
                                 "for i, x in enumerate(items):",
                                 "low")
                             break
-        
+
         self.generic_visit(node)
 
     def visit_Compare(self, node: ast.Compare):
-        for i, (op, comparator) in enumerate(zip(node.ops, node.comparators)):
+        for i, (op, comparator) in enumerate(zip(node.ops, node.comparators, strict=False)):
             if isinstance(op, ast.Eq):
                 if isinstance(comparator, ast.Constant):
                     if comparator.value is True:
@@ -78,7 +77,7 @@ class UnpythonicDetector(ast.NodeVisitor):
                         self._add(node.lineno, "compare_to_false",
                             "Comparing to False explicitly",
                             "if x == False:", "if not x:", "low")
-            
+
             if isinstance(op, (ast.Eq, ast.NotEq)):
                 if isinstance(comparator, ast.Constant) and comparator.value is None:
                     op_name = '==' if isinstance(op, ast.Eq) else '!='
@@ -86,7 +85,7 @@ class UnpythonicDetector(ast.NodeVisitor):
                     self._add(node.lineno, "compare_none_equality",
                         f"Using {op_name} None instead of {is_name} None",
                         f"if x {op_name} None:", f"if x {is_name} None:", "medium")
-        
+
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call):
@@ -95,7 +94,7 @@ class UnpythonicDetector(ast.NodeVisitor):
                 self._add(node.lineno, "dict_keys_iteration",
                     "Using .keys() is usually unnecessary",
                     "for k in d.keys():", "for k in d:", "low")
-            
+
             if isinstance(node.func, ast.Name) and node.func.id == 'sorted':
                 if node.args:
                     arg = node.args[0]
@@ -104,7 +103,7 @@ class UnpythonicDetector(ast.NodeVisitor):
                             self._add(node.lineno, "sorted_dict_keys",
                                 "sorted(d.keys()) is redundant",
                                 "sorted(d.keys())", "sorted(d)", "low")
-        
+
         self.generic_visit(node)
 
     def visit_Try(self, node: ast.Try):
@@ -176,34 +175,34 @@ def main():
     parser = argparse.ArgumentParser(description="Detect unpythonic patterns")
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
-    
+
     args = parser.parse_args()
-    
+
     all_issues = []
     for filepath in find_python_files(Path(args.path)):
         all_issues.extend(analyze_file(filepath))
-    
+
     all_issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps([asdict(i) for i in all_issues], indent=2))
     else:
         if not all_issues:
             print("✅ No unpythonic patterns found!")
             return
-        
+
         by_type = defaultdict(int)
         for issue in all_issues:
             by_type[issue.pattern_type] += 1
-        
+
         print(f"Found {len(all_issues)} unpythonic pattern(s):\n")
         print("Summary:")
         for t, c in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {t}: {c}")
         print()
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
-        
+
         for issue in all_issues:
             icon = severity_icons[issue.severity]
             print(f"{icon} [{issue.severity.upper()}] {issue.file}:{issue.line}")

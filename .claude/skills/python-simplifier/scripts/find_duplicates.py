@@ -4,15 +4,14 @@ Detect duplicate code in Python using AST structural comparison.
 Finds: similar functions, duplicate code blocks, copy-paste code.
 """
 
-import ast
-import sys
-import json
-import hashlib
 import argparse
-from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
+import ast
+import hashlib
+import json
 from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -89,7 +88,7 @@ class DuplicateCollector(ast.NodeVisitor):
                 'end_line': getattr(node, 'end_lineno', node.lineno + lines),
                 'lines': lines,
                 'hash': ast_to_hash(node),
-                'preview': get_code_preview(self.source_lines, node.lineno, 
+                'preview': get_code_preview(self.source_lines, node.lineno,
                     getattr(node, 'end_lineno', node.lineno + lines))
             })
 
@@ -143,11 +142,11 @@ def find_duplicates(path: Path, min_lines: int) -> list[DuplicateGroup]:
     all_blocks = []
     for filepath in find_python_files(path):
         all_blocks.extend(analyze_file(filepath, min_lines))
-    
+
     by_hash = defaultdict(list)
     for block in all_blocks:
         by_hash[block['hash']].append(block)
-    
+
     duplicates = []
     for hash_val, blocks in by_hash.items():
         if len(blocks) >= 2:
@@ -161,7 +160,7 @@ def find_duplicates(path: Path, min_lines: int) -> list[DuplicateGroup]:
                 lines=int(avg_lines),
                 similarity=1.0
             ))
-    
+
     duplicates.sort(key=lambda x: (-len(x.occurrences), -x.lines))
     return duplicates
 
@@ -171,35 +170,35 @@ def main():
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
     parser.add_argument('--min-lines', type=int, default=5)
-    
+
     args = parser.parse_args()
     duplicates = find_duplicates(Path(args.path), args.min_lines)
-    
+
     if args.format == 'json':
         print(json.dumps([asdict(d) for d in duplicates], indent=2))
     else:
         if not duplicates:
             print("✅ No duplicate code found!")
             return
-        
+
         total_occurrences = sum(len(d.occurrences) for d in duplicates)
         total_duplicate_lines = sum(d.lines * (len(d.occurrences) - 1) for d in duplicates)
-        
+
         print(f"Found {len(duplicates)} duplicate code pattern(s)")
         print(f"Total: {total_occurrences} occurrences, ~{total_duplicate_lines} redundant lines\n")
-        
+
         for i, dup in enumerate(duplicates, 1):
             print(f"{'='*60}")
             print(f"Duplicate #{i} ({len(dup.occurrences)} occurrences, ~{dup.lines} lines each)")
             print(f"{'='*60}")
-            
+
             for occ in dup.occurrences:
                 print(f"\n📍 {occ['file']}:{occ['line']} ({occ['type']}: {occ['name']})")
                 for line in occ['preview'].split('\n'):
                     print(f"   {line}")
             print()
-        
-        print(f"\n💡 Suggestion: Extract duplicate code into shared functions/classes")
+
+        print("\n💡 Suggestion: Extract duplicate code into shared functions/classes")
 
 
 if __name__ == '__main__':

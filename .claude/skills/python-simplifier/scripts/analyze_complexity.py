@@ -5,13 +5,12 @@ Detects: cyclomatic complexity, cognitive complexity, nesting depth,
          function length, parameter count, class size.
 """
 
-import ast
-import sys
-import json
 import argparse
+import ast
+import json
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from dataclasses import dataclass, asdict
-from typing import Iterator
 
 
 @dataclass
@@ -83,9 +82,9 @@ class ComplexityVisitor(ast.NodeVisitor):
             elif isinstance(child, (ast.Lambda, ast.ListComp, ast.SetComp, ast.DictComp)):
                 increment = 1
                 nesting_inc = depth
-            
+
             total += increment + nesting_inc
-            
+
             if isinstance(child, (ast.If, ast.For, ast.While, ast.Try, ast.With)):
                 total += self._cognitive(child, depth + 1)
             else:
@@ -124,7 +123,7 @@ class ComplexityVisitor(ast.NodeVisitor):
 
     def _analyze_function(self, node):
         name = f"{self.current_class}.{node.name}" if self.current_class else node.name
-        
+
         # Cyclomatic complexity
         cc = self._cyclomatic(node)
         if cc > self.config.max_complexity:
@@ -135,7 +134,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                 severity=self._severity(cc, self.config.max_complexity),
                 suggestion="Extract methods or simplify conditionals"
             ))
-        
+
         # Cognitive complexity
         cog = self._cognitive(node)
         if cog > self.config.max_cognitive:
@@ -146,7 +145,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                 severity=self._severity(cog, self.config.max_cognitive),
                 suggestion="Reduce nesting and boolean operations"
             ))
-        
+
         # Nesting depth
         nesting = self._max_nesting(node)
         if nesting > self.config.max_nesting:
@@ -157,7 +156,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                 severity=self._severity(nesting, self.config.max_nesting),
                 suggestion="Use early returns or extract nested logic"
             ))
-        
+
         # Function length
         lines = self._function_lines(node)
         if lines > self.config.max_function_lines:
@@ -168,7 +167,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                 severity=self._severity(lines, self.config.max_function_lines),
                 suggestion="Break into smaller functions"
             ))
-        
+
         # Parameter count
         params = len(node.args.args) + len(node.args.kwonlyargs)
         if node.args.vararg:
@@ -187,7 +186,7 @@ class ComplexityVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         old_class = self.current_class
         self.current_class = node.name
-        
+
         methods = [n for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
         if len(methods) > self.config.max_class_methods:
             self.issues.append(ComplexityIssue(
@@ -197,7 +196,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                 severity=self._severity(len(methods), self.config.max_class_methods),
                 suggestion="Split into smaller focused classes"
             ))
-        
+
         if hasattr(node, 'end_lineno') and node.end_lineno:
             lines = node.end_lineno - node.lineno
             if lines > self.config.max_class_lines:
@@ -208,7 +207,7 @@ class ComplexityVisitor(ast.NodeVisitor):
                     severity=self._severity(lines, self.config.max_class_lines),
                     suggestion="Extract responsibilities into separate classes"
                 ))
-        
+
         self.generic_visit(node)
         self.current_class = old_class
 
@@ -248,29 +247,29 @@ def main():
     parser.add_argument('--max-nesting', type=int, default=4)
     parser.add_argument('--max-function-lines', type=int, default=50)
     parser.add_argument('--max-params', type=int, default=5)
-    
+
     args = parser.parse_args()
-    
+
     config = Config(
         max_complexity=args.max_complexity,
         max_nesting=args.max_nesting,
         max_function_lines=args.max_function_lines,
         max_params=args.max_params
     )
-    
+
     all_issues = []
     for filepath in find_python_files(Path(args.path)):
         all_issues.extend(analyze_file(filepath, config))
-    
+
     all_issues.sort(key=lambda x: (x.severity != 'high', x.severity != 'medium', x.file, x.line))
-    
+
     if args.format == 'json':
         print(json.dumps([asdict(i) for i in all_issues], indent=2))
     else:
         if not all_issues:
             print("✅ No complexity issues found!")
             return
-        
+
         severity_icons = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
         print(f"Found {len(all_issues)} complexity issue(s):\n")
         for issue in all_issues:
