@@ -6,10 +6,9 @@ import ast
 import json
 import subprocess
 import sys
-from collections import defaultdict
 from pathlib import Path
+from collections import defaultdict
 from typing import NamedTuple
-
 
 class Finding(NamedTuple):
     file: str
@@ -36,7 +35,7 @@ CUSTOM_CHECKS = {
 def run_bandit(path: Path, exclude_dirs: list[str]) -> list[Finding]:
     """Run bandit security scanner."""
     findings = []
-
+    
     cmd = [
         sys.executable, "-m", "bandit",
         "-r", str(path),
@@ -44,7 +43,7 @@ def run_bandit(path: Path, exclude_dirs: list[str]) -> list[Finding]:
         "-q",
         "--exclude", ",".join(exclude_dirs + [".venv", "venv", "test", "tests", "__pycache__"])
     ]
-
+    
     try:
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.stdout:
@@ -63,7 +62,7 @@ def run_bandit(path: Path, exclude_dirs: list[str]) -> list[Finding]:
         print("⚠️  bandit not installed. Install with: pip install bandit", file=sys.stderr)
     except json.JSONDecodeError:
         pass  # No issues found or error
-
+    
     return findings
 
 def check_hardcoded_secrets(filepath: Path) -> list[Finding]:
@@ -74,7 +73,7 @@ def check_hardcoded_secrets(filepath: Path) -> list[Finding]:
         tree = ast.parse(content)
     except Exception:
         return findings
-
+    
     for node in ast.walk(tree):
         # Check assignments like PASSWORD = "something"
         if isinstance(node, ast.Assign):
@@ -94,7 +93,7 @@ def check_hardcoded_secrets(filepath: Path) -> list[Finding]:
                                         description=f"Possible hardcoded secret in '{target.id}'"
                                     ))
                             break
-
+        
         # Check function calls with password-like kwargs
         if isinstance(node, ast.Call):
             for keyword in node.keywords:
@@ -113,7 +112,7 @@ def check_hardcoded_secrets(filepath: Path) -> list[Finding]:
                                         description=f"Possible hardcoded secret in argument '{keyword.arg}'"
                                     ))
                             break
-
+    
     return findings
 
 def check_unsafe_patterns(filepath: Path) -> list[Finding]:
@@ -124,7 +123,7 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
         tree = ast.parse(content)
     except Exception:
         return findings
-
+    
     for node in ast.walk(tree):
         # Check for eval/exec usage
         if isinstance(node, ast.Call):
@@ -133,7 +132,7 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
                 func_name = node.func.id
             elif isinstance(node.func, ast.Attribute):
                 func_name = node.func.attr
-
+            
             if func_name in ('eval', 'exec'):
                 findings.append(Finding(
                     file=str(filepath),
@@ -143,7 +142,7 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
                     confidence="high",
                     description=f"Use of {func_name}() can execute arbitrary code"
                 ))
-
+            
             # Check for shell=True in subprocess
             if func_name in ('run', 'call', 'Popen', 'check_output', 'check_call'):
                 for keyword in node.keywords:
@@ -157,7 +156,7 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
                                 confidence="medium",
                                 description="subprocess with shell=True may be vulnerable to injection"
                             ))
-
+            
             # Check for pickle.loads
             if func_name == 'loads':
                 if isinstance(node.func, ast.Attribute):
@@ -170,7 +169,7 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
                             confidence="high",
                             description="pickle.loads() can execute arbitrary code on untrusted data"
                         ))
-
+        
         # Check for assert statements (removed in optimized code)
         if isinstance(node, ast.Assert):
             findings.append(Finding(
@@ -181,24 +180,24 @@ def check_unsafe_patterns(filepath: Path) -> list[Finding]:
                 confidence="high",
                 description="Assert statements are removed with -O flag; don't use for security checks"
             ))
-
+    
     return findings
 
 def scan_directory(path: Path, exclude_dirs: set[str]) -> list[Finding]:
     """Scan directory with all security checks."""
     findings = []
     exclude_dirs = exclude_dirs | {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '.tox', 'build', 'dist'}
-
+    
     # Run bandit on entire directory
     findings.extend(run_bandit(path, list(exclude_dirs)))
-
+    
     # Run custom checks on each file
     for filepath in path.rglob('*.py'):
         if any(excluded in filepath.parts for excluded in exclude_dirs):
             continue
         findings.extend(check_hardcoded_secrets(filepath))
         findings.extend(check_unsafe_patterns(filepath))
-
+    
     # Deduplicate (bandit may catch same issues as custom checks)
     seen = set()
     unique = []
@@ -207,41 +206,41 @@ def scan_directory(path: Path, exclude_dirs: set[str]) -> list[Finding]:
         if key not in seen:
             seen.add(key)
             unique.append(f)
-
+    
     return unique
 
 def format_text(findings: list[Finding]) -> str:
     """Format findings as human-readable text."""
     if not findings:
         return "✅ No security issues found."
-
+    
     output = []
     by_severity = defaultdict(list)
     for f in findings:
         by_severity[f.severity].append(f)
-
+    
     severity_icons = {"high": "🔴", "medium": "🟡", "low": "🔵"}
-
+    
     for severity in ["high", "medium", "low"]:
         items = by_severity[severity]
         if not items:
             continue
-
+        
         output.append(f"\n{severity_icons[severity]} {severity.upper()} SEVERITY ({len(items)} issues)")
         output.append("-" * 50)
-
+        
         for f in sorted(items, key=lambda x: (x.file, x.line)):
             cwe_str = f" [CWE-{f.cwe}]" if f.cwe else ""
             output.append(f"  {f.file}:{f.line}{cwe_str}")
             output.append(f"    {f.issue}: {f.description}")
             if f.confidence != "high":
                 output.append(f"    (confidence: {f.confidence})")
-
+    
     output.append(f"\n📊 Summary: {len(findings)} security issues found")
     high_count = len(by_severity["high"])
     if high_count:
         output.append(f"   ⚠️  {high_count} HIGH severity issues require immediate attention")
-
+    
     return '\n'.join(output)
 
 def main():
@@ -251,29 +250,29 @@ def main():
     parser.add_argument("--severity", choices=["high", "medium", "low"], help="Filter by minimum severity")
     parser.add_argument("--exclude", nargs="*", default=[], help="Directories to exclude")
     args = parser.parse_args()
-
+    
     path = args.path.resolve()
     if not path.exists():
         print(f"Error: {path} does not exist", file=sys.stderr)
         sys.exit(1)
-
+    
     if path.is_file():
         findings = check_hardcoded_secrets(path) + check_unsafe_patterns(path)
         # Also run bandit on single file
         findings.extend(run_bandit(path, []))
     else:
         findings = scan_directory(path, set(args.exclude))
-
+    
     if args.severity:
         severity_order = {"high": 0, "medium": 1, "low": 2}
         max_level = severity_order[args.severity]
         findings = [f for f in findings if severity_order[f.severity] <= max_level]
-
+    
     if args.format == "json":
         print(json.dumps([f._asdict() for f in findings], indent=2))
     else:
         print(format_text(findings))
-
+    
     if any(f.severity == "high" for f in findings):
         sys.exit(1)
 

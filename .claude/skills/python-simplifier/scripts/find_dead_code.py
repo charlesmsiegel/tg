@@ -4,13 +4,14 @@ Detect dead code and unused code in Python.
 Finds: unused imports, unused variables, unreachable code, unused functions/classes.
 """
 
-import argparse
 import ast
+import sys
 import json
-from collections import defaultdict
-from collections.abc import Iterator
-from dataclasses import asdict, dataclass
+import argparse
 from pathlib import Path
+from dataclasses import dataclass, asdict
+from typing import Iterator, Set
+from collections import defaultdict
 
 
 @dataclass
@@ -30,11 +31,11 @@ class ScopeTracker(ast.NodeVisitor):
         self.issues: list[DeadCodeIssue] = []
         self.imports: dict[str, int] = {}
         self.from_imports: dict[str, int] = {}
-        self.used_names: set[str] = set()
+        self.used_names: Set[str] = set()
         self.functions: dict[str, int] = {}
         self.classes: dict[str, int] = {}
-        self.called_functions: set[str] = set()
-        self.instantiated_classes: set[str] = set()
+        self.called_functions: Set[str] = set()
+        self.instantiated_classes: Set[str] = set()
 
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
@@ -102,19 +103,19 @@ class ScopeTracker(ast.NodeVisitor):
     def _check_unused_params(self, node):
         if node.name.startswith('_'):
             return
-
+        
         params = set()
         for arg in node.args.args:
             if arg.arg not in ('self', 'cls'):
                 params.add(arg.arg)
         for arg in node.args.kwonlyargs:
             params.add(arg.arg)
-
+        
         used = set()
         for child in ast.walk(node):
             if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
                 used.add(child.id)
-
+        
         for param in params - used:
             self.issues.append(DeadCodeIssue(
                 file=self.filename, line=node.lineno,
@@ -132,7 +133,7 @@ class ScopeTracker(ast.NodeVisitor):
                     description=f"Import '{name}' is never used",
                     confidence=90
                 ))
-
+        
         for name, line in self.from_imports.items():
             if name not in self.used_names:
                 self.issues.append(DeadCodeIssue(
@@ -141,7 +142,7 @@ class ScopeTracker(ast.NodeVisitor):
                     description=f"Import '{name}' is never used",
                     confidence=90
                 ))
-
+        
         for name, line in self.functions.items():
             if name not in self.called_functions and not name.startswith('_'):
                 self.issues.append(DeadCodeIssue(
@@ -150,7 +151,7 @@ class ScopeTracker(ast.NodeVisitor):
                     description=f"Function '{name}' appears unused in this file",
                     confidence=60
                 ))
-
+        
         for name, line in self.classes.items():
             if name not in self.instantiated_classes and name not in self.used_names:
                 if not name.startswith('_'):
@@ -183,7 +184,7 @@ class RedundantCodeDetector(ast.NodeVisitor):
                     description="Condition is always False, code is unreachable",
                     confidence=100
                 ))
-
+        
         if len(node.body) == 1 and isinstance(node.body[0], ast.Pass) and not node.orelse:
             self.issues.append(DeadCodeIssue(
                 file=self.filename, line=node.lineno,
@@ -209,14 +210,14 @@ def analyze_file(filepath: Path) -> list[DeadCodeIssue]:
         source = filepath.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(source, filename=str(filepath))
         lines = source.splitlines()
-
+        
         tracker = ScopeTracker(str(filepath), lines)
         tracker.visit(tree)
         tracker.finalize()
-
+        
         redundant = RedundantCodeDetector(str(filepath))
         redundant.visit(tree)
-
+        
         return tracker.issues + redundant.issues
     except (SyntaxError, Exception):
         return []
@@ -236,35 +237,35 @@ def main():
     parser.add_argument('path', nargs='?', default='.', help='File or directory')
     parser.add_argument('--format', choices=['text', 'json'], default='text')
     parser.add_argument('--min-confidence', type=int, default=60)
-
+    
     args = parser.parse_args()
-
+    
     all_issues = []
     for filepath in find_python_files(Path(args.path)):
         all_issues.extend(analyze_file(filepath))
-
+    
     all_issues = [i for i in all_issues if i.confidence >= args.min_confidence]
     all_issues.sort(key=lambda x: (-x.confidence, x.file, x.line))
-
+    
     if args.format == 'json':
         print(json.dumps([asdict(i) for i in all_issues], indent=2))
     else:
         if not all_issues:
             print("✅ No dead code found!")
             return
-
+        
         by_type = defaultdict(int)
         for issue in all_issues:
             by_type[issue.issue_type] += 1
-
+        
         print(f"Found {len(all_issues)} potential dead code issue(s):\n")
         print("Summary:")
         for t, c in sorted(by_type.items(), key=lambda x: -x[1]):
             print(f"  {t}: {c}")
         print()
-
+        
         conf_icon = lambda c: '🔴' if c == 100 else ('🟡' if c >= 80 else '🟢')
-
+        
         for issue in all_issues:
             icon = conf_icon(issue.confidence)
             print(f"{icon} [{issue.confidence}%] {issue.file}:{issue.line}")
