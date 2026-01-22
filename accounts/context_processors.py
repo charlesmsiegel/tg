@@ -1,5 +1,7 @@
 import logging
 
+from django.core.cache import cache
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,10 +21,16 @@ def theme_context(request):
 def notification_count(request):
     """
     Add notification count and breakdown to all templates for authenticated users.
+    Results are cached for 60 seconds to reduce database queries.
     """
     context = {"notification_count": 0, "notification_breakdown": {}}
 
     if request.user.is_authenticated:
+        cache_key = f"notification_count_{request.user.id}"
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         try:
             profile = request.user.profile
             breakdown = {}
@@ -119,6 +127,10 @@ def notification_count(request):
 
             context["notification_count"] = count
             context["notification_breakdown"] = breakdown
+
+            # Cache for 60 seconds
+            cache.set(cache_key, context, 60)
+
         except Exception as e:
             # Log the error for debugging, but return 0 notifications to avoid breaking the page
             logger.warning(
