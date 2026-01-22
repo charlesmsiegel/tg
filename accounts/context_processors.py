@@ -70,13 +70,13 @@ def notification_count(request):
                     count += rotes_to_approve
 
                 # Freebies to approve
-                freebies = len(profile.freebies_to_approve())
+                freebies = profile.freebies_to_approve().count()
                 if freebies > 0:
                     breakdown["Freebies to Approve"] = freebies
                     count += freebies
 
                 # XP spend requests
-                xp_spend = len(profile.xp_spend_requests())
+                xp_spend = profile.xp_spend_requests().count()
                 if xp_spend > 0:
                     breakdown["XP Spend Requests"] = xp_spend
                     count += xp_spend
