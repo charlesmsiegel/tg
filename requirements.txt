@@ -7,7 +7,8 @@ crispy-bootstrap4==2025.6
 django-debug-toolbar==6.1.0
 requests==2.32.5
 # python==3.10 - note for setting up environment, it should be 3.10
-pillow==11.3.0
+# Security: Pin pillow to fix CVE out-of-bounds write when loading PSD images
+pillow>=12.1.1
 pytest==8.3.4
 pytest-django==4.9.0
 coverage==7.6.0
