@@ -116,3 +116,4 @@ mcp_servers/
 generated_stuff/
 .mcp.json
 db_test.sqlite3-journal
+.worktrees/
