@@ -10,7 +10,8 @@ requests>=2.33.0
 # python==3.10 - note for setting up environment, it should be 3.10
 # Security: Pin pillow to fix CVE out-of-bounds write when loading PSD images
 pillow>=12.1.1
-pytest==8.3.4
+# Security: Pin pytest to fix CVE-2025-71176 (insecure tmpdir handling)
+pytest>=9.0.3
 pytest-django==4.9.0
 coverage==7.6.0
 djlint==1.36.4
