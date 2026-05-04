@@ -17,7 +17,8 @@ djlint==1.36.4
 selenium==4.27.1
 numpy==2.2.2
 bleach==6.3.0
-python-dotenv==1.0.1
+# Security: Pin python-dotenv to fix CVE-2026-28684 (symlink following in set_key)
+python-dotenv>=1.2.2
 # Security: Pin setuptools to fix CVE-2024-6345 and CVE-2025-47273
 setuptools>=78.1.1
 # Security: Update cryptography to latest version
