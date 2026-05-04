@@ -5,7 +5,8 @@ django-tinymce4-lite==1.8.0
 django-crispy-forms==2.5
 crispy-bootstrap4==2025.6
 django-debug-toolbar==6.1.0
-requests==2.32.5
+# Security: Pin requests to fix CVE-2026-25645
+requests>=2.33.0
 # python==3.10 - note for setting up environment, it should be 3.10
 # Security: Pin pillow to fix CVE out-of-bounds write when loading PSD images
 pillow>=12.1.1
