@@ -17,7 +17,13 @@ from characters.tests.utils import human_setup
 
 
 class TestChargenValidationRendering(TestCase):
-    """The validation include and shared utilities must reach the page."""
+    """The validation include and shared utilities must reach the page.
+
+    Gameline note: VtMHuman/WtAHuman/CtDHuman ability views inherit
+    HumanAbilityView (whose permission mixin sets is_approved_user);
+    the WtOHuman/MtAHuman views are SpecialUserMixin-based and needed
+    the explicit flag fix carried in this PR (#1459).
+    """
 
     def setUp(self):
         human_setup()
@@ -31,7 +37,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
 
     def test_abilities_step_renders_validation_other_gameline(self):
         char = VtMHuman.objects.create(
@@ -41,7 +47,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
 
     def test_abilities_step_renders_validation_third_gameline(self):
         char = WtAHuman.objects.create(
@@ -51,7 +57,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
 
     def test_abilities_step_renders_validation_fourth_gameline(self):
         char = CtDHuman.objects.create(
@@ -61,7 +67,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
 
     def test_abilities_step_renders_validation_all_gamelines(self):
         """WtOHuman and MtAHuman work now that their ability views set
@@ -74,7 +80,7 @@ class TestChargenValidationRendering(TestCase):
             response = self.client.get(char.get_absolute_url())
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "abilities-validation-status")
-            self.assertContains(response, "TG.validation")
+            self.assertContains(response, "TG.validation = {")
 
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
@@ -87,7 +93,7 @@ class TestChargenValidationRendering(TestCase):
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "backgrounds-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
         # The multiplier map must render with real data, not fall back empty
         bg = Background.objects.filter(
             property_name__in=char.allowed_backgrounds
@@ -107,4 +113,4 @@ class TestChargenValidationRendering(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "virtues-validation-status")
-        self.assertContains(response, "TG.validation")
+        self.assertContains(response, "TG.validation = {")
