@@ -70,6 +70,17 @@ class TestSceneXPAwardView(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_double_award_redirects_without_extra_xp(self):
+        """Awarding twice (stale tab) redirects gracefully, no extra XP."""
+        self.client.login(username="stuser", password="password")
+        url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
+        data = {f"scene_{self.scene.pk}-{self.char.name}": "on"}
+        self.client.post(url, data)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.xp, 1)
+
 
 class TestObjectApprovalView(TestCase):
     """Test object approval for character, location, item, rote."""
@@ -449,6 +460,19 @@ class TestWeeklyXPApprovalView(TestCase):
         self.assertIn(response.status_code, [302, 401])
         if response.status_code == 302:
             self.assertIn("login", response.url)
+
+    def test_double_approval_redirects_gracefully(self):
+        """Approving twice redirects with an error instead of crashing."""
+        self.client.login(username="stuser", password="password")
+        url = reverse(
+            "accounts:weekly_xp_approval",
+            kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
+        )
+        self.client.post(url, {"finishing": True})
+        response = self.client.post(url, {"finishing": True})
+        self.assertEqual(response.status_code, 302)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.xp, 1)  # not double-credited
 
     def test_no_pending_request_404(self):
         """Approving a week/character pair with no submitted request is a 404."""
