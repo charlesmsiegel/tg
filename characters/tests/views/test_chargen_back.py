@@ -92,6 +92,22 @@ class TestChargenBackView(TestCase):
         char.refresh_from_db()
         self.assertEqual(char.creation_status, 6)  # Unchanged
 
+    def test_cannot_go_back_from_freebie_step_if_approved(self):
+        """Backing out of the freebie step itself is blocked once approved."""
+        char = VtMHuman.objects.create(
+            name="On Freebie Step",
+            owner=self.user,
+            status="Un",
+            creation_status=5,
+            freebies_approved=True,
+        )
+        self.client.login(username="player", password="password")
+        url = reverse("characters:chargen_back", kwargs={"pk": char.pk})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        char.refresh_from_db()
+        self.assertEqual(char.creation_status, 5)  # Unchanged
+
     def test_can_go_back_past_freebie_step_if_not_approved(self):
         """Can go back into the freebie step when freebies are not yet approved."""
         char = VtMHuman.objects.create(

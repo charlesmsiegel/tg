@@ -1,24 +1,49 @@
 {# Include this in chargen templates. Expects `chargen_steps` in context. #}
 {% if chargen_steps %}
+    <style>
+        .tg-chargen-progress {
+            display: flex;
+            align-items: center;
+        }
+        .tg-chargen-step {
+            flex: 1 1 0;
+            min-width: 0;
+            text-align: center;
+        }
+        .tg-chargen-step-label {
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tg-chargen-step-completed { color: var(--color-success, #28a745); }
+        .tg-chargen-step-current { color: var(--theme-accent, var(--color-primary)); }
+        .tg-chargen-step-current .tg-chargen-step-label { font-weight: 700; }
+        .tg-chargen-step-pending { color: var(--theme-text-secondary, #6c757d); }
+        .tg-chargen-connector {
+            flex: 0 0 auto;
+            width: 24px;
+            height: 2px;
+            margin: 0 4px;
+            align-self: center;
+            background: var(--theme-border, #dee2e6);
+        }
+    </style>
     <div class="tg-card mb-4">
         <div class="tg-card-body" style="padding: 12px 16px;">
-            <div style="display: flex; align-items: center;">
+            <div class="tg-chargen-progress">
                 {% for step in chargen_steps %}
-                    <div class="text-center" style="flex: 1 1 0; min-width: 0;">
+                    <div class="tg-chargen-step tg-chargen-step-{{ step.status }}">
                         {% if step.status == 'completed' %}
-                            <i class="fas fa-check-circle" style="color: #28a745;"></i>
-                            <div style="font-size: 0.75rem; color: #28a745; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ step.label }}</div>
+                            <i class="fas fa-check-circle"></i>
                         {% elif step.status == 'current' %}
-                            <i class="fas fa-dot-circle" style="color: var(--theme-accent, var(--color-primary));"></i>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--theme-accent, var(--color-primary)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ step.label }}</div>
+                            <i class="fas fa-dot-circle"></i>
                         {% else %}
-                            <i class="far fa-circle" style="color: var(--theme-text-secondary, #6c757d);"></i>
-                            <div style="font-size: 0.75rem; color: var(--theme-text-secondary, #6c757d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ step.label }}</div>
+                            <i class="far fa-circle"></i>
                         {% endif %}
+                        <div class="tg-chargen-step-label">{{ step.label }}</div>
                     </div>
-                    {% if not forloop.last %}
-                        <div style="flex: 0 0 auto; width: 24px; height: 2px; background: var(--theme-border, #dee2e6); margin: 0 4px; align-self: center;"></div>
-                    {% endif %}
+                    {% if not forloop.last %}<div class="tg-chargen-connector"></div>{% endif %}
                 {% endfor %}
             </div>
         </div>
