@@ -61,3 +61,21 @@ class TestChargenValidationRendering(TestCase):
         ).first()
         self.assertIsNotNone(bg)
         self.assertContains(response, f'"{bg.pk}": {bg.multiplier}')
+
+    def test_virtues_step_renders_validation(self):
+        from django.urls import reverse
+
+        from characters.models.vampire.vampire import Vampire
+
+        char = Vampire.objects.create(
+            name="Virtue Vampire", owner=self.owner, creation_status=5
+        )
+        self.client.login(username="owner", password="password")
+        # Vampire.get_absolute_url targets the plain detail view; chargen is
+        # reached through the generic character dispatcher.
+        response = self.client.get(
+            reverse("characters:character", kwargs={"pk": char.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "virtues-validation-status")
+        self.assertContains(response, "TG.validation")
