@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var total = 0;
         Array.prototype.forEach.call(form.querySelectorAll('select[name$="-bg"]'), function(select) {
             if (select.name.indexOf('__prefix__') !== -1) return;  // hidden empty-form template
-            var prefix = select.name.slice(0, -'-bg'.length);
+            var prefix = select.name.slice(0, -3);  // strip the trailing '-bg'
             var deleteBox = form.querySelector('input[name="' + prefix + '-DELETE"]');
             if (deleteBox && deleteBox.checked) return;
             var ratingInput = form.querySelector('input[name="' + prefix + '-rating"]');
