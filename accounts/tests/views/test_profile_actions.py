@@ -120,6 +120,31 @@ class TestObjectApprovalView(TestCase):
         self.item.refresh_from_db()
         self.assertEqual(self.item.status, "App")
 
+    def test_st_can_approve_rote(self):
+        from characters.models.core import Ability, Attribute
+        from characters.models.mage.effect import Effect
+        from characters.models.mage.rote import Rote
+
+        effect = Effect.objects.create(name="Test Effect")
+        attribute = Attribute.objects.create(name="Strength", property_name="strength")
+        ability = Ability.objects.create(name="Athletics", property_name="athletics")
+        rote = Rote.objects.create(
+            name="Test Rote",
+            chronicle=self.chronicle,
+            status="Sub",
+            effect=effect,
+            attribute=attribute,
+            ability=ability,
+        )
+        self.client.login(username="stuser", password="password")
+        url = reverse(
+            "accounts:object_approval", kwargs={"object_type": "rote", "pk": rote.pk}
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        rote.refresh_from_db()
+        self.assertEqual(rote.status, "App")
+
     def test_non_st_cannot_approve(self):
         self.client.login(username="player", password="password")
         url = reverse(
@@ -302,6 +327,24 @@ class TestWeeklyXPRequestView(TestCase):
         self.assertIn(response.status_code, [302, 401])
         if response.status_code == 302:
             self.assertIn("login", response.url)
+
+    def test_nonexistent_week_404(self):
+        self.client.login(username="player", password="password")
+        url = reverse(
+            "accounts:weekly_xp_request",
+            kwargs={"week_pk": 99999, "character_pk": self.char.pk},
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_nonexistent_character_404(self):
+        self.client.login(username="player", password="password")
+        url = reverse(
+            "accounts:weekly_xp_request",
+            kwargs={"week_pk": self.week.pk, "character_pk": 99999},
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
 
 
 class TestWeeklyXPApprovalView(TestCase):
