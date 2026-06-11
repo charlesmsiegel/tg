@@ -123,3 +123,6 @@ class TestHumanFreebiesStepRenders(TestCase):
         self.client.login(username="player", password="password")
         response = self.client.get(char.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        # The freebies form itself must render (not the not-owner fallback):
+        # is_approved_user is set by PermissionRequiredMixin.get_context_data.
+        self.assertContains(response, "Freebie Spend")
