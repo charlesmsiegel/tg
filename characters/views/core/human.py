@@ -604,6 +604,8 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
         return HttpResponseRedirect(mage.get_absolute_url())
 
 
+# Step numbers must stay in sync with HumanCharacterCreationView.view_mapping
+# below; a mismatch silently miscolors the progress bar.
 HUMAN_CHARGEN_STEPS = [
     (1, "Attributes"),
     (2, "Abilities"),

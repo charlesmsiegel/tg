@@ -81,7 +81,7 @@
                 <!-- Form Actions -->
                 <div class="tg-card">
                     <div class="tg-card-body text-center">
-                        {% if object.creation_status and object.creation_status > 1 and object.status == "Un" %}
+                        {% if object.creation_status > 1 and object.status == "Un" %}
                             {# formaction overrides the outer form's action for this button only — no nested form needed #}
                             <button type="submit"
                                     formaction="{% url 'characters:chargen_back' pk=object.pk %}"

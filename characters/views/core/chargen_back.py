@@ -11,6 +11,8 @@ from characters.models.core import Character
 class ChargenBackView(LoginRequiredMixin, View):
     """Go back one step in character creation. POST only."""
 
+    http_method_names = ["post"]
+
     def post(self, request, pk):
         char = get_object_or_404(Character, pk=pk)
         if char.owner != request.user:
