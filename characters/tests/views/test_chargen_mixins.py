@@ -80,3 +80,17 @@ class TestChargenProgressMixin(TestCase):
     def test_no_object_no_context(self):
         view = FakeView()
         self.assertNotIn("chargen_steps", view.get_context_data())
+
+
+class TestHumanChargenStepSync(TestCase):
+    """HUMAN_CHARGEN_STEPS must cover exactly the view_mapping steps."""
+
+    def test_step_labels_match_view_mapping(self):
+        from characters.views.core.human import (
+            HUMAN_CHARGEN_STEPS,
+            HumanCharacterCreationView,
+        )
+
+        step_numbers = {start for start, _ in HUMAN_CHARGEN_STEPS}
+        mapping_numbers = set(HumanCharacterCreationView.view_mapping.keys())
+        self.assertEqual(step_numbers, mapping_numbers)
