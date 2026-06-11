@@ -19,3 +19,52 @@
         {% for error in f.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
     {% endif %}
 {% endfor %}
+<div class="row">
+    <div class="col-sm">
+        <div id="backgrounds-validation-status" style="font-weight: 600; margin-top: 8px;"></div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+    var form = document.querySelector('form');
+    var statusEl = document.getElementById('backgrounds-validation-status');
+    if (!form || !statusEl || !window.TG || !TG.validation) return;
+
+    var BUDGET = {{ object.background_points }};
+    // Some backgrounds (Enhancements, Sanctum, Totem...) cost more per dot
+    var MULTIPLIERS = {
+        {% for bg in form.empty_form.bg.field.queryset %}"{{ bg.pk }}": {{ bg.multiplier }}{% if not forloop.last %},{% endif %}{% endfor %}
+    };
+
+    function validate() {
+        var total = 0;
+        Array.prototype.forEach.call(form.querySelectorAll('select[name$="-bg"]'), function(select) {
+            if (select.name.indexOf('__prefix__') !== -1) return;  // hidden empty-form template
+            var prefix = select.name.slice(0, -'-bg'.length);
+            var deleteBox = form.querySelector('input[name="' + prefix + '-DELETE"]');
+            if (deleteBox && deleteBox.checked) return;
+            var ratingInput = form.querySelector('input[name="' + prefix + '-rating"]');
+            if (!ratingInput) return;
+            var rating = parseInt(ratingInput.value, 10);
+            if (isNaN(rating)) return;
+            var multiplier = MULTIPLIERS[select.value] || 1;
+            total += rating * multiplier;
+        });
+        var valid = (total === BUDGET);
+        var message;
+        if (valid) {
+            message = 'Valid (' + total + '/' + BUDGET + ' points)';
+        } else if (total > BUDGET) {
+            message = (total - BUDGET) + ' point(s) over budget (' + total + '/' + BUDGET + ')';
+        } else {
+            message = (BUDGET - total) + ' point(s) remaining (' + total + '/' + BUDGET + ')';
+        }
+        TG.validation.setStatus(statusEl, valid, message);
+    }
+
+    form.addEventListener('change', validate);
+    form.addEventListener('input', validate);
+    validate();
+});
+</script>
