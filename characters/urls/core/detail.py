@@ -2,6 +2,7 @@ from django.urls import path
 
 from characters.views.core import GenericCharacterDetailView, GenericGroupDetailView
 from characters.views.core.archetype import ArchetypeDetailView
+from characters.views.core.chargen_back import ChargenBackView
 from characters.views.core.derangement import DerangementDetailView
 from characters.views.core.meritflaw import MeritFlawDetailView
 from characters.views.core.specialty import SpecialtyDetailView
@@ -29,5 +30,6 @@ urls = [
         DerangementDetailView.as_view(),
         name="derangement",
     ),
+    path("<pk>/chargen/back/", ChargenBackView.as_view(), name="chargen_back"),
     path("<pk>/", GenericCharacterDetailView.as_view(), name="character"),
 ]
