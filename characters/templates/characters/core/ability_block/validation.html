@@ -1,0 +1,58 @@
+{# Client-side validation for ability distribution forms. #}
+{# Expects primary/secondary/tertiary in context and rows of three .dots cells (Talents/Skills/Knowledges). #}
+{% if primary and secondary and tertiary %}
+    <div class="row">
+        <div class="col-sm">
+            <div id="abilities-validation-status" style="font-weight: 600; margin-top: 8px;"></div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        'use strict';
+        var form = document.querySelector('form');
+        var statusEl = document.getElementById('abilities-validation-status');
+        if (!form || !statusEl || !window.TG || !TG.validation) return;
+
+        var TARGETS = [{{ tertiary }}, {{ secondary }}, {{ primary }}].sort(function(a, b) { return a - b; });
+
+        // Ability rows lay out three .dots cells per row: Talents, Skills,
+        // Knowledges. Group the inputs by column position.
+        var groups = [[], [], []];
+        Array.prototype.forEach.call(form.querySelectorAll('.row'), function(row) {
+            var cells = row.querySelectorAll(':scope > .dots');
+            if (cells.length !== 3) return;
+            for (var i = 0; i < 3; i++) {
+                var input = cells[i].querySelector('input, select');
+                if (input) groups[i].push(input);
+            }
+        });
+        if (!groups[0].length) return;
+
+        function groupTotal(group) {
+            var total = 0;
+            group.forEach(function(field) {
+                var value = parseInt(field.value, 10);
+                if (!isNaN(value)) total += value;
+            });
+            return total;
+        }
+
+        function validate() {
+            var totals = groups.map(groupTotal).sort(function(a, b) { return a - b; });
+            var valid = JSON.stringify(totals) === JSON.stringify(TARGETS);
+            TG.validation.setStatus(
+                statusEl,
+                valid,
+                valid
+                    ? 'Valid ({{ primary }}/{{ secondary }}/{{ tertiary }})'
+                    : 'Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across categories (currently ' + totals.slice().reverse().join('/') + ')'
+            );
+            TG.validation.setSubmitEnabled(form, valid);
+        }
+
+        form.addEventListener('change', validate);
+        form.addEventListener('input', validate);
+        validate();
+    });
+    </script>
+{% endif %}
