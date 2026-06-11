@@ -19,6 +19,9 @@
         {% for error in f.non_field_errors %}<p class="alert centertext">{{ error }}</p>{% endfor %}
     {% endif %}
 {% endfor %}
+{# Guard mirrors the abilities include: only render the counter where the
+   character actually has a background budget in context. #}
+{% if object.background_points %}
 <div class="row">
     <div class="col-sm">
         <div id="backgrounds-validation-status" role="status" style="font-weight: 600; margin-top: 8px;"></div>
@@ -79,3 +82,4 @@ document.addEventListener('DOMContentLoaded', function() {
     validate();
 });
 </script>
+{% endif %}
