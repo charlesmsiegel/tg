@@ -16,6 +16,7 @@ from characters.models.core.merit_flaw_block import MeritFlaw
 from characters.models.core.specialty import Specialty
 from characters.services.freebie_spending import FreebieSpendingServiceFactory
 from characters.views.core.backgrounds import HumanBackgroundsView
+from characters.views.core.chargen_mixins import ChargenProgressMixin
 from characters.views.core.character import CharacterDetailView
 from core.forms.language import HumanLanguageForm
 from core.mixins import (
@@ -603,15 +604,54 @@ class HumanSpecialtiesView(SpendFreebiesPermissionMixin, FormView):
         return HttpResponseRedirect(mage.get_absolute_url())
 
 
+HUMAN_CHARGEN_STEPS = [
+    (1, "Attributes"),
+    (2, "Abilities"),
+    (3, "Backgrounds"),
+    (4, "Biography"),
+    (5, "Freebies"),
+    (6, "Languages"),
+    (7, "Specialties"),
+]
+
+
+class HumanAttributeChargenView(ChargenProgressMixin, HumanAttributeView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanAbilityChargenView(ChargenProgressMixin, HumanAbilityView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanBackgroundsChargenView(ChargenProgressMixin, HumanBackgroundsView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanBiographicalInformationChargenView(ChargenProgressMixin, HumanBiographicalInformation):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanFreebiesChargenView(ChargenProgressMixin, HumanFreebiesView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanLanguagesChargenView(ChargenProgressMixin, HumanLanguagesView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
+class HumanSpecialtiesChargenView(ChargenProgressMixin, HumanSpecialtiesView):
+    chargen_step_labels = HUMAN_CHARGEN_STEPS
+
+
 class HumanCharacterCreationView(DictView):
     view_mapping = {
-        1: HumanAttributeView,
-        2: HumanAbilityView,
-        3: HumanBackgroundsView,
-        4: HumanBiographicalInformation,
-        5: HumanFreebiesView,
-        6: HumanLanguagesView,
-        7: HumanSpecialtiesView,
+        1: HumanAttributeChargenView,
+        2: HumanAbilityChargenView,
+        3: HumanBackgroundsChargenView,
+        4: HumanBiographicalInformationChargenView,
+        5: HumanFreebiesChargenView,
+        6: HumanLanguagesChargenView,
+        7: HumanSpecialtiesChargenView,
     }
     model_class = Human
     key_property = "creation_status"
