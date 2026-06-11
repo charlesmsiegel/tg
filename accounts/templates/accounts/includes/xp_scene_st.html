@@ -18,24 +18,24 @@
                         </div>
                         <div class="tg-card-body" style="padding: 20px;">
                             <form method="post" action="{% url 'accounts:scene_xp_award' scene_pk=scenexp_form.scene.pk %}">
-                            {% csrf_token %}
-                            {% for field in scenexp_form %}
-                                <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
-                                    <div class="row align-items-center">
-                                        <div class="col-6">
-                                            <span style="font-weight: 600; font-size: 0.875rem;">{{ field.label }}</span>
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            {{ field }}
+                                {% csrf_token %}
+                                {% for field in scenexp_form %}
+                                    <div class="mb-3" style="padding: 12px 16px; border-radius: 6px; background-color: rgba(0,0,0,0.02);">
+                                        <div class="row align-items-center">
+                                            <div class="col-6">
+                                                <span style="font-weight: 600; font-size: 0.875rem;">{{ field.label }}</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                {{ field }}
+                                            </div>
                                         </div>
                                     </div>
+                                {% endfor %}
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="tg-btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Submit
+                                    </button>
                                 </div>
-                            {% endfor %}
-                            <div class="text-center mt-4">
-                                <button type="submit" class="tg-btn btn-primary">
-                                    <i class="fas fa-paper-plane"></i> Submit
-                                </button>
-                            </div>
                             </form>
                         </div>
                     </div>
