@@ -94,3 +94,10 @@ class TestHumanChargenStepSync(TestCase):
         step_numbers = {start for start, _ in HUMAN_CHARGEN_STEPS}
         mapping_numbers = set(HumanCharacterCreationView.view_mapping.keys())
         self.assertEqual(step_numbers, mapping_numbers)
+
+    def test_step_labels_are_ordered(self):
+        """Status computation assumes ascending start numbers."""
+        from characters.views.core.human import HUMAN_CHARGEN_STEPS
+
+        starts = [start for start, _ in HUMAN_CHARGEN_STEPS]
+        self.assertEqual(starts, sorted(starts))
