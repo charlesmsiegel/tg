@@ -51,6 +51,8 @@ def verify_st_for_chronicle(request, chronicle, action_description="this action"
 class SceneXPAwardView(LoginRequiredMixin, View):
     """Award XP for a completed scene. ST only."""
 
+    http_method_names = ["post"]
+
     def post(self, request, scene_pk):
         scene = get_object_or_404(Scene, pk=scene_pk)
         verify_st_for_chronicle(request, scene.chronicle, "scene XP award")
@@ -65,6 +67,8 @@ class SceneXPAwardView(LoginRequiredMixin, View):
 
 class ObjectApprovalView(LoginRequiredMixin, View):
     """Approve a character, location, item, or rote. ST only."""
+
+    http_method_names = ["post"]
 
     def post(self, request, object_type, pk):
         model_class = ApprovalService.OBJECT_MODEL_MAP.get(object_type)
@@ -81,6 +85,8 @@ class ObjectApprovalView(LoginRequiredMixin, View):
 class ImageApprovalView(LoginRequiredMixin, View):
     """Approve a pending image for a character, location, or item. ST only."""
 
+    http_method_names = ["post"]
+
     def post(self, request, object_type, pk):
         model_class = ApprovalService.IMAGE_MODEL_MAP.get(object_type)
         if not model_class:
@@ -96,6 +102,8 @@ class ImageApprovalView(LoginRequiredMixin, View):
 class FreebieAwardView(LoginRequiredMixin, View):
     """Award backstory freebies to a character. ST only."""
 
+    http_method_names = ["post"]
+
     def post(self, request, character_pk):
         char = get_object_or_404(Character, pk=character_pk)
         verify_st_for_chronicle(request, char.chronicle, "freebie approval")
@@ -110,6 +118,8 @@ class FreebieAwardView(LoginRequiredMixin, View):
 
 class WeeklyXPRequestView(LoginRequiredMixin, View):
     """Submit a weekly XP request. Character owner only."""
+
+    http_method_names = ["post"]
 
     def post(self, request, week_pk, character_pk):
         week = get_object_or_404(Week, pk=week_pk)
@@ -129,6 +139,8 @@ class WeeklyXPRequestView(LoginRequiredMixin, View):
 class WeeklyXPApprovalView(LoginRequiredMixin, View):
     """Approve a weekly XP request. ST only."""
 
+    http_method_names = ["post"]
+
     def post(self, request, week_pk, character_pk):
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=character_pk)
@@ -145,6 +157,8 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
 
 class MarkSceneReadView(LoginRequiredMixin, View):
     """Mark a scene as read. Any logged-in user."""
+
+    http_method_names = ["post"]
 
     def post(self, request, scene_pk):
         with transaction.atomic():
