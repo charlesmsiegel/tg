@@ -24,6 +24,11 @@ class TestChargenBackView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
         self.assertEqual(self.char.creation_status, 2)
+        # The redirect lands back in chargen: the character URL dispatches
+        # unfinished characters to their current creation step view.
+        self.assertEqual(response.url, self.char.get_absolute_url())
+        follow = self.client.get(response.url)
+        self.assertEqual(follow.status_code, 200)
 
     def test_cannot_go_back_past_step_1(self):
         self.char.creation_status = 1
