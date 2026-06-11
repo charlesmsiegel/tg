@@ -27,8 +27,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
-    var form = document.querySelector('form');
     var statusEl = document.getElementById('backgrounds-validation-status');
+    var form = statusEl && statusEl.closest('form');
     if (!form || !statusEl || !window.TG || !TG.validation) return;
 
     var BUDGET = {{ object.background_points }};
