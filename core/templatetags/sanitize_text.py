@@ -8,6 +8,25 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
+def clean_html(value):
+    """Sanitize HTML with bleach, allowing only a safe subset of tags."""
+    allowed_tags = ["a", "b", "i", "em", "strong", "u", "p", "br", "strike", "ul", "li", "span"]
+    allowed_attributes = {
+        "a": ["href"],
+        "span": lambda tag, name, value: name == "class" and value == "quote",
+    }
+    # Only allow safe protocols in links
+    allowed_protocols = ["http", "https", "mailto"]
+
+    return bleach.clean(
+        value,
+        tags=allowed_tags,
+        attributes=allowed_attributes,
+        protocols=allowed_protocols,
+        strip=True,
+    )
+
+
 @register.filter
 def sanitize_html(value):
     # Handle None, empty strings, and non-string types
@@ -18,24 +37,7 @@ def sanitize_html(value):
     if not isinstance(value, str):
         value = str(value)
 
-    allowed_tags = ["a", "b", "i", "em", "strong", "u", "p", "br", "strike", "ul", "li", "span"]
-    allowed_attributes = {
-        "a": ["href"],
-        "span": lambda tag, name, value: name == "class" and value == "quote",
-    }
-    # Only allow safe protocols in links
-    allowed_protocols = ["http", "https", "mailto"]
-
-    # Clean the HTML
-    cleaned_text = bleach.clean(
-        value,
-        tags=allowed_tags,
-        attributes=allowed_attributes,
-        protocols=allowed_protocols,
-        strip=True,
-    )
-
-    return format_html(cleaned_text)
+    return format_html(clean_html(value))
 
 
 @register.filter
@@ -70,6 +72,42 @@ def quote_tag(value):
     result = "".join(parts)
     # Mark as safe since we've escaped user content and only added safe HTML tags
     return mark_safe(result)
+
+
+def render_post_html(value):
+    """Sanitize post HTML and wrap quoted dialogue in styled spans.
+
+    Unlike quote_tag, this preserves safe HTML tags (bold, italic, links,
+    etc.) instead of escaping them. Dangerous markup is stripped by bleach.
+    Returns a plain string; use safe_post for template rendering.
+    """
+    if value is None or value == "":
+        return ""
+
+    if not isinstance(value, str):
+        value = str(value)
+
+    cleaned = clean_html(value)
+
+    # Wrap quoted text in styled spans, but only in text between tags so
+    # that quotes inside attribute values (e.g. href="...") are untouched.
+    def wrap_quotes(segment):
+        return re.sub(r'"([^"]*)"', r'<span class="quote">"\1"</span>', segment)
+
+    parts = re.split(r"(<[^>]*>)", cleaned)
+    parts = [part if part.startswith("<") else wrap_quotes(part) for part in parts if part]
+    return "".join(parts)
+
+
+@register.filter
+def safe_post(value):
+    """Render a post's message as sanitized HTML with quote styling.
+
+    Allows users to write safe HTML in posts (bold, italic, links, etc.)
+    while stripping dangerous markup and preserving the quote-highlighting
+    behavior of quote_tag.
+    """
+    return mark_safe(render_post_html(value))
 
 
 @register.filter

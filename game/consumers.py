@@ -9,6 +9,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from characters.models.core import CharacterModel
+from core.templatetags.sanitize_text import render_post_html
 from game.models import Scene
 
 logger = logging.getLogger(__name__)
@@ -305,6 +306,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             "character_url": character.get_absolute_url(),
             "display_name": post.display_name,
             "message": post.message,
+            "message_html": render_post_html(post.message),
             "datetime_created": post.datetime_created.isoformat(),
             "owner_id": character.owner_id,
             "is_st": is_st,

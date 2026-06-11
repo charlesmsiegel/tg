@@ -5,6 +5,7 @@ from django.test import TestCase
 from core.templatetags.sanitize_text import (
     badge_text,
     quote_tag,
+    safe_post,
     sanitize_html,
     simple_markdown,
 )
@@ -472,3 +473,52 @@ class BadgeTextFilterTest(TestCase):
         text = "autumn_person"
         result = badge_text(text)
         self.assertEqual(result, "Autumn Person")
+
+
+class SafePostFilterTest(TestCase):
+    """Tests for safe_post filter (sanitized HTML + quote styling for posts)."""
+
+    def test_returns_empty_string_for_none(self):
+        self.assertEqual(safe_post(None), "")
+
+    def test_returns_empty_string_for_empty_string(self):
+        self.assertEqual(safe_post(""), "")
+
+    def test_preserves_allowed_html(self):
+        result = safe_post("Some <b>bold</b> and <em>italic</em> text")
+        self.assertEqual(result, "Some <b>bold</b> and <em>italic</em> text")
+
+    def test_removes_script_tags(self):
+        result = safe_post("Hello <script>alert('xss')</script> world")
+        self.assertNotIn("<script>", result)
+        self.assertNotIn("</script>", result)
+
+    def test_removes_onclick_attributes(self):
+        result = safe_post('<b onclick="alert(1)">text</b>')
+        self.assertNotIn("onclick", result)
+        self.assertIn("<b>text</b>", result)
+
+    def test_strips_javascript_protocol(self):
+        result = safe_post('<a href="javascript:alert(1)">link</a>')
+        self.assertNotIn("javascript:", result)
+
+    def test_wraps_quoted_text_in_span(self):
+        result = safe_post('He said "hello there" loudly')
+        self.assertIn('<span class="quote">"hello there"</span>', result)
+
+    def test_quote_wrapping_with_html(self):
+        result = safe_post('<b>He said</b> "hi"')
+        self.assertIn("<b>He said</b>", result)
+        self.assertIn('<span class="quote">"hi"</span>', result)
+
+    def test_href_quotes_not_wrapped(self):
+        result = safe_post('<a href="http://example.com">link</a>')
+        self.assertIn('href="http://example.com"', result)
+
+    def test_returns_safe_string(self):
+        from django.utils.safestring import SafeString
+
+        self.assertIsInstance(safe_post("text"), SafeString)
+
+    def test_plain_text_unchanged(self):
+        self.assertEqual(safe_post("Just plain text"), "Just plain text")
