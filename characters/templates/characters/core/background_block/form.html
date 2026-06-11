@@ -21,7 +21,7 @@
 {% endfor %}
 <div class="row">
     <div class="col-sm">
-        <div id="backgrounds-validation-status" style="font-weight: 600; margin-top: 8px;"></div>
+        <div id="backgrounds-validation-status" role="status" style="font-weight: 600; margin-top: 8px;"></div>
     </div>
 </div>
 <script>
@@ -32,9 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!form || !statusEl || !window.TG || !TG.validation) return;
 
     var BUDGET = {{ object.background_points }};
-    // Some backgrounds (Enhancements, Sanctum, Totem...) cost more per dot
+    // Some backgrounds (Enhancements, Sanctum, Totem...) cost more per dot.
+    // empty_form comes from the view context with bg.queryset filtered to the
+    // character's allowed backgrounds; this reads Background.multiplier off
+    // that queryset. If the field or model attribute is renamed this renders
+    // an empty map and every cost silently falls back to 1.
     var MULTIPLIERS = {
-        {% for bg in form.empty_form.bg.field.queryset %}"{{ bg.pk }}": {{ bg.multiplier }}{% if not forloop.last %},{% endif %}{% endfor %}
+        {% for bg in empty_form.bg.field.queryset %}"{{ bg.pk }}": {{ bg.multiplier }}{% if not forloop.last %},{% endif %}{% endfor %}
     };
 
     function validate() {
@@ -51,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var multiplier = MULTIPLIERS[select.value] || 1;
             total += rating * multiplier;
         });
+        // Counter only — submit stays enabled (unlike abilities) so players
+        // can save partial progress; the server still enforces the budget.
         var valid = (total === BUDGET);
         var message;
         if (valid) {
