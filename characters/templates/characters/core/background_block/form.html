@@ -35,8 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Some backgrounds (Enhancements, Sanctum, Totem...) cost more per dot.
     // empty_form comes from the view context with bg.queryset filtered to the
     // character's allowed backgrounds; this reads Background.multiplier off
-    // that queryset. If the field or model attribute is renamed this renders
-    // an empty map and every cost silently falls back to 1.
+    // that queryset. pk and multiplier are both integers (AutoField /
+    // IntegerField), so rendering them into JS directly is safe. If the
+    // field or model attribute is renamed this renders an empty map and
+    // every cost silently falls back to 1.
     var MULTIPLIERS = {
         {% for bg in empty_form.bg.field.queryset %}"{{ bg.pk }}": {{ bg.multiplier }}{% if not forloop.last %},{% endif %}{% endfor %}
     };
