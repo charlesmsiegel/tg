@@ -212,6 +212,12 @@ class VampireVirtuesView(SpecialUserMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["uses_path"] = bool(self.object.path)
+        # The chargen template gates on is_approved_user; the global context
+        # processor only sets it for staff, so without this the owner sees
+        # the not-owner fallback instead of the virtues form.
+        context["is_approved_user"] = self.check_if_special_user(
+            self.object, self.request.user
+        )
         return context
 
     def form_valid(self, form):
