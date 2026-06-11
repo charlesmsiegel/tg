@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -42,6 +42,10 @@ def verify_st_for_chronicle(request, chronicle, action_description="this action"
 
     Raises PermissionDenied with a descriptive message if not.
     """
+    if not request.user.is_authenticated:
+        # Callers use LoginRequiredMixin; this guard makes the
+        # precondition explicit if the helper is ever reused without it.
+        raise PermissionDenied("Authentication required.")
     if not request.user.profile.is_st_for(chronicle):
         msg = f"You are not a storyteller for this chronicle. Cannot perform {action_description}."
         messages.error(request, msg)
@@ -58,8 +62,13 @@ class SceneXPAwardView(LoginRequiredMixin, View):
         verify_st_for_chronicle(request, scene.chronicle, "scene XP award")
         form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
         if form.is_valid():
-            form.save()
-            messages.success(request, f"XP awarded for scene '{scene.name}'!")
+            try:
+                form.save()
+            except ValidationError:
+                # e.g. XP already awarded for this scene (stale tab/double submit)
+                messages.error(request, f"XP was already awarded for scene '{scene.name}'.")
+            else:
+                messages.success(request, f"XP awarded for scene '{scene.name}'!")
         else:
             messages.error(request, "Failed to award XP. Please check your input.")
         return redirect("accounts:profile", pk=request.user.profile.pk)
@@ -148,8 +157,15 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
         xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
         form = WeeklyXPRequestForm(request.POST, week=week, character=char, instance=xp_request)
         if form.is_valid():
-            form.st_save()
-            messages.success(request, f"Weekly XP request approved for '{char.name}'!")
+            try:
+                form.st_save()
+            except ValueError:
+                # WeeklyXPRequest.approve raises if already approved
+                messages.error(
+                    request, f"Weekly XP request for '{char.name}' was already approved."
+                )
+            else:
+                messages.success(request, f"Weekly XP request approved for '{char.name}'!")
         else:
             messages.error(request, "Failed to approve XP request. Please check your input.")
         return redirect("accounts:profile", pk=request.user.profile.pk)
