@@ -382,6 +382,35 @@ class TestWeeklyXPApprovalView(TestCase):
         response = self.client.post(url, {})
         self.assertEqual(response.status_code, 403)
 
+    def test_nonexistent_week_404(self):
+        self.client.login(username="stuser", password="password")
+        url = reverse(
+            "accounts:weekly_xp_approval",
+            kwargs={"week_pk": 99999, "character_pk": self.char.pk},
+        )
+        response = self.client.post(url, {"finishing": True})
+        self.assertEqual(response.status_code, 404)
+
+    def test_nonexistent_character_404(self):
+        self.client.login(username="stuser", password="password")
+        url = reverse(
+            "accounts:weekly_xp_approval",
+            kwargs={"week_pk": self.week.pk, "character_pk": 99999},
+        )
+        response = self.client.post(url, {"finishing": True})
+        self.assertEqual(response.status_code, 404)
+
+    def test_no_pending_request_404(self):
+        """Approving a week/character pair with no submitted request is a 404."""
+        other_week = Week.objects.create(end_date=date.today())
+        self.client.login(username="stuser", password="password")
+        url = reverse(
+            "accounts:weekly_xp_approval",
+            kwargs={"week_pk": other_week.pk, "character_pk": self.char.pk},
+        )
+        response = self.client.post(url, {"finishing": True})
+        self.assertEqual(response.status_code, 404)
+
 
 class TestMarkSceneReadView(TestCase):
     """Test marking a scene as read."""
@@ -417,3 +446,14 @@ class TestMarkSceneReadView(TestCase):
         url = reverse("accounts:mark_scene_read", kwargs={"scene_pk": 99999})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
+
+    def test_marking_already_read_scene_is_idempotent(self):
+        self.client.login(username="player", password="password")
+        url = reverse("accounts:mark_scene_read", kwargs={"scene_pk": self.scene.pk})
+        self.client.post(url)
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            UserSceneReadStatus.objects.filter(scene=self.scene, user=self.user).count(),
+            1,
+        )
