@@ -1,5 +1,8 @@
 {# Client-side validation for ability distribution forms. #}
 {# Expects primary/secondary/tertiary in context and rows of three .dots cells (Talents/Skills/Knowledges). #}
+{# Truthiness (not is-not-None) is deliberate: when this block is included
+   without the target context vars (plain edit forms), they resolve to ''
+   which must suppress the script. No gameline uses a 0 target (min is 3). #}
 {% if primary and secondary and tertiary %}
     <div class="row">
         <div class="col-sm">

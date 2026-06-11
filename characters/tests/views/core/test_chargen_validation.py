@@ -55,6 +55,20 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation")
 
+    def test_abilities_step_renders_validation_fourth_gameline(self):
+        # Changeling human; MtAHuman is excluded for the same reason as
+        # WtOHuman — its ability view never sets is_approved_user (#1459).
+        from characters.models.changeling.ctdhuman import CtDHuman
+
+        char = CtDHuman.objects.create(
+            name="Changeling Ability Human", owner=self.owner, creation_status=2
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "abilities-validation-status")
+        self.assertContains(response, "TG.validation")
+
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
         # backgrounds block (pre-existing gap), so exercise a flow whose
