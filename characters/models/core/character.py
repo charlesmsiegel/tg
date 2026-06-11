@@ -252,7 +252,7 @@ class Character(CharacterModel):
 
     def next_stage(self):
         self.creation_status += 1
-        self.save()
+        self.save(update_fields=["creation_status"])
 
     def prev_stage(self):
         self.creation_status -= 1
