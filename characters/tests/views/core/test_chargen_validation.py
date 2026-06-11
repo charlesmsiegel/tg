@@ -26,6 +26,23 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation")
 
+    def test_abilities_step_renders_validation_other_gameline(self):
+        # The shared include covers five gamelines; exercise a second flow
+        # whose view sets the target context vars independently. (Not
+        # WtOHuman: its ability view never sets is_approved_user, so that
+        # step renders the not-owner fallback even for owners — pre-existing
+        # bug noted on issue #1459.)
+        from characters.models.vampire.vtmhuman import VtMHuman
+
+        char = VtMHuman.objects.create(
+            name="Vampire Ability Human", owner=self.owner, creation_status=2
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "abilities-validation-status")
+        self.assertContains(response, "TG.validation")
+
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
         # backgrounds block (pre-existing gap), so exercise a flow whose
