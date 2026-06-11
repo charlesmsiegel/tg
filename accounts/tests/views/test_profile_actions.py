@@ -10,6 +10,7 @@ from characters.models.core.human import Human
 from game.models import (
     Chronicle,
     Gameline,
+    Post,
     Scene,
     STRelationship,
     UserSceneReadStatus,
@@ -262,10 +263,14 @@ class TestFreebieAwardView(TestCase):
         )
 
     def test_st_can_award_freebies(self):
+        initial_freebies = self.char.freebies
         self.client.login(username="stuser", password="password")
         url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
         response = self.client.post(url, {"backstory_freebies": 5})
         self.assertEqual(response.status_code, 302)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.freebies, initial_freebies + 5)
+        self.assertTrue(self.char.freebies_approved)
 
     def test_non_st_cannot_award_freebies(self):
         self.client.login(username="player", password="password")
@@ -299,6 +304,12 @@ class TestWeeklyXPRequestView(TestCase):
             name="Char", owner=self.user, chronicle=self.chronicle, status="App"
         )
         self.week = Week.objects.create(end_date=date.today())
+        # A claimable scene: finished, character attached, latest post in week
+        self.scene = Scene.objects.create(
+            name="Weekly Scene", chronicle=self.chronicle, finished=True
+        )
+        self.scene.characters.add(self.char)
+        Post.objects.create(scene=self.scene, character=self.char, message="hi")
 
     def test_owner_can_submit_request(self):
         self.client.login(username="player", password="password")
@@ -308,9 +319,18 @@ class TestWeeklyXPRequestView(TestCase):
         )
         response = self.client.post(
             url,
-            {"learning": True, "rp": False, "focus": False, "standingout": False},
+            {
+                "learning": True,
+                "learning_scene": self.scene.pk,
+                "rp": False,
+                "focus": False,
+                "standingout": False,
+            },
         )
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(
+            WeeklyXPRequest.objects.filter(character=self.char, week=self.week).exists()
+        )
 
     def test_non_owner_cannot_submit(self):
         self.client.login(username="other", password="password")
@@ -376,6 +396,8 @@ class TestWeeklyXPApprovalView(TestCase):
         )
         response = self.client.post(url, {"finishing": True})
         self.assertEqual(response.status_code, 302)
+        self.xp_request.refresh_from_db()
+        self.assertTrue(self.xp_request.approved)
 
     def test_non_st_cannot_approve(self):
         self.client.login(username="player", password="password")
