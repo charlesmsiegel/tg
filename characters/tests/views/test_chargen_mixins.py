@@ -101,3 +101,25 @@ class TestHumanChargenStepSync(TestCase):
 
         starts = [start for start, _ in HUMAN_CHARGEN_STEPS]
         self.assertEqual(starts, sorted(starts))
+
+
+class TestHumanFreebiesStepRenders(TestCase):
+    """Human chargen step 5 must render (template existed only on disk for
+    other steps; the freebies view previously pointed at a missing path)."""
+
+    def test_freebies_step_renders(self):
+        from django.contrib.auth.models import User
+
+        from characters.models.core.human import Human
+
+        user = User.objects.create_user("player", "p@test.com", "password")
+        char = Human.objects.create(
+            name="Freebie Human",
+            owner=user,
+            status="Un",
+            creation_status=5,
+            freebies_approved=True,
+        )
+        self.client.login(username="player", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)

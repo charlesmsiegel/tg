@@ -454,7 +454,10 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
 
     model = Human
     form_class = HumanFreebiesForm
-    template_name = "characters/human/human/chargen.html"
+    # Same template the Human flow already uses for the abilities step; its
+    # freebies block renders for creation_status == 5. The previous path
+    # (characters/human/human/chargen.html) does not exist on disk.
+    template_name = "characters/wraith/wtohuman/chargen.html"
 
     def form_valid(self, form):
         if form.is_valid():
