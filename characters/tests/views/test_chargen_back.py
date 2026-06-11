@@ -63,6 +63,12 @@ class TestChargenBackView(TestCase):
         self.char.refresh_from_db()
         self.assertEqual(self.char.creation_status, 3)  # Unchanged
 
+    def test_get_method_not_allowed(self):
+        self.client.login(username="player", password="password")
+        url = reverse("characters:chargen_back", kwargs={"pk": self.char.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
     def test_nonexistent_character_404(self):
         self.client.login(username="player", password="password")
         url = reverse("characters:chargen_back", kwargs={"pk": 99999})

@@ -29,8 +29,8 @@ class ChargenBackView(LoginRequiredMixin, View):
         # AND any step before it (target <= freebie_step), since earlier
         # steps could invalidate the approved freebie allocation.
         target = char.creation_status - 1
-        freebie_step = getattr(char, "freebie_step", -1)
-        if freebie_step > 0 and target <= freebie_step:
+        # freebie_step is always defined (Character class attribute, -1 default)
+        if char.freebie_step > 0 and target <= char.freebie_step:
             if getattr(char, "freebies_approved", False):
                 messages.warning(
                     request,
