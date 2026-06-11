@@ -121,7 +121,7 @@
                     setStatus: function(el, valid, message) {
                         if (!el) return;
                         el.textContent = message;
-                        el.style.color = valid ? '#28a745' : '#dc3545';
+                        el.style.color = valid ? 'var(--color-success, #28a745)' : 'var(--color-danger, #dc3545)';
                     },
                     /* Enable/disable the form's main submit button (not Back/Cancel). */
                     setSubmitEnabled: function(form, enabled) {
