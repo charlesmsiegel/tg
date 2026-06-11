@@ -26,9 +26,9 @@
                                             </div>
                                         {% endfor %}
                                     </div>
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:object_approval' object_type='rote' pk=obj.pk %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" name="approve_rote" value="{{ obj.pk }}" class="tg-btn btn-success btn-sm">
+                                        <button type="submit" class="tg-btn btn-success btn-sm">
                                             <i class="fas fa-check"></i> Approve
                                         </button>
                                     </form>

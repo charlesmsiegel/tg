@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="tg-card-body" style="padding: 16px;">
-                        <form method="post" action="">
+                        <form method="post" action="{% url 'accounts:weekly_xp_approval' week_pk=weekly_xp_request_form.week.pk character_pk=weekly_xp_request_form.character.pk %}">
                             {% csrf_token %}
                             
                             <div class="mb-2" style="padding: 8px 12px; border-radius: 4px; background-color: rgba(0,0,0,0.02);">
@@ -90,10 +90,7 @@
                             </div>
                             
                             <div class="text-center mt-3">
-                                <button type="submit"
-                                        name="submit_weekly_approval"
-                                        value="week-{{ weekly_xp_request_form.week.pk }}-character-{{ weekly_xp_request_form.character.pk }}"
-                                        class="tg-btn btn-success btn-sm">
+                                <button type="submit" class="tg-btn btn-success btn-sm">
                                     <i class="fas fa-check"></i> Approve
                                 </button>
                             </div>

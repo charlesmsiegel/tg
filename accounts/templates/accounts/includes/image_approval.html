@@ -30,9 +30,9 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:image_approval' object_type='character' pk=char.pk %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" name="approve_character_image" value="character-{{ char.pk }}" class="tg-btn btn-success">
+                                        <button type="submit" class="tg-btn btn-success">
                                             <i class="fas fa-check"></i> Approve
                                         </button>
                                     </form>
@@ -65,9 +65,9 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:image_approval' object_type='location' pk=loc.pk %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" name="approve_location_image" value="location-{{ loc.pk }}" class="tg-btn btn-success">
+                                        <button type="submit" class="tg-btn btn-success">
                                             <i class="fas fa-check"></i> Approve
                                         </button>
                                     </form>
@@ -100,9 +100,9 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-md-3 text-center">
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:image_approval' object_type='item' pk=item.pk %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" name="approve_item_image" value="item-{{ item.pk }}" class="tg-btn btn-success">
+                                        <button type="submit" class="tg-btn btn-success">
                                             <i class="fas fa-check"></i> Approve
                                         </button>
                                     </form>
