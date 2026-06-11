@@ -44,6 +44,10 @@ class TestSceneXPAwardView(TestCase):
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
         response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": True})
         self.assertEqual(response.status_code, 302)
+        self.char.refresh_from_db()
+        self.scene.refresh_from_db()
+        self.assertEqual(self.char.xp, 1)
+        self.assertTrue(self.scene.xp_given)
 
     def test_non_st_cannot_award_xp(self):
         self.client.login(username="player", password="password")
@@ -399,6 +403,17 @@ class TestWeeklyXPApprovalView(TestCase):
         )
         response = self.client.post(url, {"finishing": True})
         self.assertEqual(response.status_code, 404)
+
+    def test_not_logged_in_redirects(self):
+        url = reverse(
+            "accounts:weekly_xp_approval",
+            kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
+        )
+        response = self.client.post(url)
+        # AuthErrorHandlerMiddleware returns 401; plain Django would redirect
+        self.assertIn(response.status_code, [302, 401])
+        if response.status_code == 302:
+            self.assertIn("login", response.url)
 
     def test_no_pending_request_404(self):
         """Approving a week/character pair with no submitted request is a 404."""
