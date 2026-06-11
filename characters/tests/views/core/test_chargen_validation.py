@@ -43,6 +43,18 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation")
 
+    def test_abilities_step_renders_validation_third_gameline(self):
+        from characters.models.werewolf.wtahuman import WtAHuman
+
+        char = WtAHuman.objects.create(
+            name="Werewolf Ability Human", owner=self.owner, creation_status=2
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "abilities-validation-status")
+        self.assertContains(response, "TG.validation")
+
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
         # backgrounds block (pre-existing gap), so exercise a flow whose
