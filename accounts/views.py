@@ -37,6 +37,9 @@ class SignUp(MessageMixin, CreateView):
 def verify_st_for_chronicle(request, chronicle, action_description="this action"):
     """Verify the requesting user is an ST for the given chronicle.
 
+    chronicle may be None (object with no chronicle); is_st_for(None)
+    returns False, so access is denied in that case.
+
     Raises PermissionDenied with a descriptive message if not.
     """
     if not request.user.profile.is_st_for(chronicle):
