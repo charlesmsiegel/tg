@@ -114,6 +114,10 @@
             {% endblock buttons %}
 
             {% block form_scripts %}
+                {# Must stay inside the form, after the content blocks: step
+                   scripts render earlier in the document and reference
+                   TG.validation from DOMContentLoaded handlers, which fire
+                   after this block has been parsed. #}
                 <script>
                 window.TG = window.TG || {};
                 TG.validation = {
