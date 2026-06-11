@@ -43,7 +43,7 @@ class TestSceneXPAwardView(TestCase):
     def test_st_can_award_xp(self):
         self.client.login(username="stuser", password="password")
         url = reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk})
-        response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": True})
+        response = self.client.post(url, {f"scene_{self.scene.pk}-{self.char.name}": "on"})
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
         self.scene.refresh_from_db()
