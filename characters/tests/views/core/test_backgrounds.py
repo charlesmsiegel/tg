@@ -377,3 +377,24 @@ class TestHumanBackgroundsViewMultiplier(TestCase):
         # Total = 4 + 1 = 5, should be valid
         if response.status_code == 302:
             self.assertEqual(self.human.creation_status, initial_status + 1)
+
+
+class TestHumanBackgroundsViewContext(TestCase):
+    """Tests for HumanBackgroundsView context data."""
+
+    def setUp(self):
+        human_setup()
+        self.owner = User.objects.create_user(username="owner", password="password")
+        self.human = Human.objects.create(
+            name="Test Human",
+            owner=self.owner,
+            creation_status=3,
+        )
+
+    def test_empty_form_in_context(self):
+        """empty_form must be in context: the points-counter JS builds its
+        multiplier map from empty_form.bg.field.queryset."""
+        self.client.login(username="owner", password="password")
+        response = self.client.get(self.human.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("empty_form", response.context)
