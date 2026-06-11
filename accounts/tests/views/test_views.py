@@ -115,8 +115,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve characters."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"approve_character": self.char.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "character", "pk": self.char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.char.refresh_from_db()
@@ -126,8 +128,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that storytellers can approve characters."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_character": self.char.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "character", "pk": self.char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
@@ -137,8 +141,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that storytellers can approve locations."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_location": self.location.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "location", "pk": self.location.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.location.refresh_from_db()
@@ -148,8 +154,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that storytellers can approve items."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_item": self.item.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "item", "pk": self.item.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.item.refresh_from_db()
@@ -159,8 +167,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve locations."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"approve_location": self.location.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "location", "pk": self.location.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
 
@@ -168,8 +178,10 @@ class TestProfileApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve items."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"approve_item": self.item.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "item", "pk": self.item.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
 
@@ -273,11 +285,8 @@ class TestProfileSceneXPWorkflow(TestCase):
         """Test that storytellers can award scene XP."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {
-                "submit_scene": self.scene.id,
-                f"scene_{self.scene.pk}-{self.char.name}": "on",
-            },
+            reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk}),
+            {f"scene_{self.scene.pk}-{self.char.name}": "on"},
         )
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
@@ -289,11 +298,8 @@ class TestProfileSceneXPWorkflow(TestCase):
         """Test that non-storytellers cannot award scene XP."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {
-                "submit_scene": self.scene.id,
-                f"scene_{self.scene.pk}-{self.char.name}": "on",
-            },
+            reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene.pk}),
+            {f"scene_{self.scene.pk}-{self.char.name}": "on"},
         )
         self.assertEqual(response.status_code, 403)
         self.char.refresh_from_db()
@@ -331,8 +337,10 @@ class TestProfileRoteApprovalWorkflow(TestCase):
         """Test that storytellers can approve rotes."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_rote": self.rote.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "rote", "pk": self.rote.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.rote.refresh_from_db()
@@ -342,8 +350,10 @@ class TestProfileRoteApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve rotes."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"approve_rote": self.rote.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "rote", "pk": self.rote.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.rote.refresh_from_db()
@@ -383,8 +393,10 @@ class TestProfileImageApprovalWorkflow(TestCase):
         """Test that storytellers can approve character images."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_character_image": f"image-{self.char.id}"},
+            reverse(
+                "accounts:image_approval",
+                kwargs={"object_type": "character", "pk": self.char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
@@ -394,8 +406,10 @@ class TestProfileImageApprovalWorkflow(TestCase):
         """Test that storytellers can approve location images."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_location_image": f"image-{self.location.id}"},
+            reverse(
+                "accounts:image_approval",
+                kwargs={"object_type": "location", "pk": self.location.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.location.refresh_from_db()
@@ -405,8 +419,10 @@ class TestProfileImageApprovalWorkflow(TestCase):
         """Test that storytellers can approve item images."""
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {"approve_item_image": f"image-{self.item.id}"},
+            reverse(
+                "accounts:image_approval",
+                kwargs={"object_type": "item", "pk": self.item.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.item.refresh_from_db()
@@ -416,8 +432,10 @@ class TestProfileImageApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve character images."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"approve_character_image": f"image-{self.char.id}"},
+            reverse(
+                "accounts:image_approval",
+                kwargs={"object_type": "character", "pk": self.char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.char.refresh_from_db()
@@ -449,11 +467,8 @@ class TestProfileFreebieWorkflow(TestCase):
         initial_freebies = self.char.freebies
         self.client.login(username="stuser", password="password")
         response = self.client.post(
-            self.st_user.profile.get_absolute_url(),
-            {
-                "submit_freebies": self.char.id,
-                "backstory_freebies": 5,
-            },
+            reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk}),
+            {"backstory_freebies": 5},
         )
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
@@ -465,11 +480,8 @@ class TestProfileFreebieWorkflow(TestCase):
         self.client.login(username="testuser", password="password")
         initial_freebies = self.char.freebies
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {
-                "submit_freebies": self.char.id,
-                "backstory_freebies": 5,
-            },
+            reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk}),
+            {"backstory_freebies": 5},
         )
         self.assertEqual(response.status_code, 403)
         self.char.refresh_from_db()
@@ -510,10 +522,10 @@ class TestProfileWeeklyXPWorkflow(TestCase):
         """Test that players cannot submit requests for others' characters."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {
-                "submit_weekly_request": f"week-{self.week.pk}-char-{self.other_char.pk}",
-            },
+            reverse(
+                "accounts:weekly_xp_request",
+                kwargs={"week_pk": self.week.pk, "character_pk": self.other_char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
 
@@ -560,10 +572,10 @@ class TestProfileWeeklyXPApprovalWorkflow(TestCase):
         """Test that non-storytellers cannot approve weekly XP requests."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {
-                "submit_weekly_approval": f"week-{self.week.pk}-char-{self.char.pk}",
-            },
+            reverse(
+                "accounts:weekly_xp_approval",
+                kwargs={"week_pk": self.week.pk, "character_pk": self.char.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.xp_request.refresh_from_db()
@@ -587,30 +599,27 @@ class TestProfileSceneReadWorkflow(TestCase):
         """Test that users can mark scenes as read."""
         self.client.login(username="testuser", password="password")
         response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"mark_scene_read": self.scene.id},
+            reverse("accounts:mark_scene_read", kwargs={"scene_pk": self.scene.pk}),
         )
         self.assertEqual(response.status_code, 302)
         status = UserSceneReadStatus.objects.get(scene=self.scene, user=self.user)
         self.assertTrue(status.read)
 
 
-class TestProfileEditPreferencesRedirect(TestCase):
-    """Test the edit preferences redirect in the profile view."""
+class TestProfileEditPreferencesLink(TestCase):
+    """Test the edit preferences link on the profile page."""
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
 
-    def test_edit_preferences_redirects_to_update_view(self):
-        """Test that clicking Edit Preferences redirects to profile update."""
+    def test_edit_preferences_links_to_update_view(self):
+        """Test that the profile page links to the profile update view."""
         self.client.login(username="testuser", password="password")
-        response = self.client.post(
-            self.user.profile.get_absolute_url(),
-            {"Edit Preferences": "Edit Preferences"},
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.url, reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk})
+        response = self.client.get(self.user.profile.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            reverse("accounts:profile_update", kwargs={"pk": self.user.profile.pk}),
         )
 
 
@@ -817,8 +826,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle A cannot approve characters in Chronicle B."""
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {"approve_character": self.char_b.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "character", "pk": self.char_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.char_b.refresh_from_db()
@@ -828,8 +839,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle A cannot approve locations in Chronicle B."""
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {"approve_location": self.location_b.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "location", "pk": self.location_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.location_b.refresh_from_db()
@@ -839,8 +852,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle A cannot approve items in Chronicle B."""
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {"approve_item": self.item_b.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "item", "pk": self.item_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.item_b.refresh_from_db()
@@ -850,11 +865,8 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle A cannot award scene XP in Chronicle B."""
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {
-                "submit_scene": self.scene_b.id,
-                f"scene_{self.scene_b.pk}-{self.char_b.name}": "on",
-            },
+            reverse("accounts:scene_xp_award", kwargs={"scene_pk": self.scene_b.pk}),
+            {f"scene_{self.scene_b.pk}-{self.char_b.name}": "on"},
         )
         self.assertEqual(response.status_code, 403)
         self.scene_b.refresh_from_db()
@@ -865,11 +877,11 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         self.client.login(username="st_a", password="password")
         initial_freebies = self.char_freebies_b.freebies
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {
-                "submit_freebies": self.char_freebies_b.id,
-                "backstory_freebies": 5,
-            },
+            reverse(
+                "accounts:freebie_award",
+                kwargs={"character_pk": self.char_freebies_b.pk},
+            ),
+            {"backstory_freebies": 5},
         )
         self.assertEqual(response.status_code, 403)
         self.char_freebies_b.refresh_from_db()
@@ -880,10 +892,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle A cannot approve weekly XP in Chronicle B."""
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {
-                "submit_weekly_approval": f"week-{self.week.pk}-char-{self.char_b.pk}",
-            },
+            reverse(
+                "accounts:weekly_xp_approval",
+                kwargs={"week_pk": self.week.pk, "character_pk": self.char_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.xp_request_b.refresh_from_db()
@@ -898,8 +910,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
         self.client.login(username="st_a", password="password")
         response = self.client.post(
-            self.st_user_a.profile.get_absolute_url(),
-            {"approve_character_image": f"image-{self.char_b.id}"},
+            reverse(
+                "accounts:image_approval",
+                kwargs={"object_type": "character", "pk": self.char_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 403)
         self.char_b.refresh_from_db()
@@ -909,8 +923,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         """Test that ST for Chronicle B can approve characters in Chronicle B."""
         self.client.login(username="st_b", password="password")
         response = self.client.post(
-            self.st_user_b.profile.get_absolute_url(),
-            {"approve_character": self.char_b.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "character", "pk": self.char_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.char_b.refresh_from_db()
@@ -928,8 +944,10 @@ class TestCrossChroniclePermissionSecurity(TestCase):
 
         self.client.login(username="st_b", password="password")
         response = self.client.post(
-            self.st_user_b.profile.get_absolute_url(),
-            {"approve_character": self.char_b.id},
+            reverse(
+                "accounts:object_approval",
+                kwargs={"object_type": "character", "pk": self.char_b.pk},
+            ),
         )
         self.assertEqual(response.status_code, 302)
         self.char_b.refresh_from_db()
