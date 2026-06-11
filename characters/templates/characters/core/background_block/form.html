@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var MULTIPLIERS = {
         {% for bg in empty_form.bg.field.queryset %}"{{ bg.pk }}": {{ bg.multiplier }}{% if not forloop.last %},{% endif %}{% endfor %}
     };
+    if (Object.keys(MULTIPLIERS).length === 0) {
+        console.warn('Background multiplier map is empty; all costs fall back to 1 per dot.');
+    }
 
     function validate() {
         var total = 0;
