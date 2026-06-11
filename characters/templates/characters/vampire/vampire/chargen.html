@@ -125,8 +125,8 @@
                                 <script>
                                 document.addEventListener('DOMContentLoaded', function() {
                                     'use strict';
-                                    var form = document.querySelector('form');
                                     var statusEl = document.getElementById('virtues-validation-status');
+                                    var form = statusEl && statusEl.closest('form');
                                     if (!form || !statusEl || !window.TG || !TG.validation) return;
 
                                     // Status only — submit stays enabled; the

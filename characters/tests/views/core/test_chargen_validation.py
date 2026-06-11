@@ -3,7 +3,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from characters.models.core.background_block import Background
 from characters.models.core.human import Human
+from characters.models.wraith.wtohuman import WtOHuman
 from characters.tests.utils import human_setup
 
 
@@ -28,8 +30,6 @@ class TestChargenValidationRendering(TestCase):
         # The plain-Human step 3 template (core/human/chargen.html) has no
         # backgrounds block (pre-existing gap), so exercise a flow whose
         # template includes background_block/form.html: the Wraith human.
-        from characters.models.wraith.wtohuman import WtOHuman
-
         char = WtOHuman.objects.create(
             name="Background Human", owner=self.owner, creation_status=3
         )
@@ -39,8 +39,6 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "backgrounds-validation-status")
         self.assertContains(response, "TG.validation")
         # The multiplier map must render with real data, not fall back empty
-        from characters.models.core.background_block import Background
-
         bg = Background.objects.filter(
             property_name__in=char.allowed_backgrounds
         ).first()
