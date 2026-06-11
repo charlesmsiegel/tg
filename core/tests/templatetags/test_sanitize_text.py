@@ -113,6 +113,12 @@ class SanitizeHTMLFilterTest(TestCase):
         result = sanitize_html(text)
         self.assertEqual(result, text)
 
+    def test_handles_literal_braces(self):
+        """Text containing braces must not be treated as format placeholders."""
+        text = "CSS uses {braces} and {0} placeholders"
+        result = sanitize_html(text)
+        self.assertEqual(result, text)
+
 
 class QuoteTagFilterTest(TestCase):
     """Tests for quote_tag filter."""
@@ -501,6 +507,8 @@ class SafePostFilterTest(TestCase):
     def test_strips_javascript_protocol(self):
         result = safe_post('<a href="javascript:alert(1)">link</a>')
         self.assertNotIn("javascript:", result)
+        # The unsafe href is dropped entirely, leaving a bare anchor
+        self.assertEqual(result, "<a>link</a>")
 
     def test_wraps_quoted_text_in_span(self):
         result = safe_post('He said "hello there" loudly')

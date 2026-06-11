@@ -2,13 +2,13 @@ import re
 
 import bleach
 from django import template
-from django.utils.html import escape, format_html
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 
-def clean_html(value):
+def _clean_html(value):
     """Sanitize HTML with bleach, allowing only a safe subset of tags."""
     allowed_tags = ["a", "b", "i", "em", "strong", "u", "p", "br", "strike", "ul", "li", "span"]
     allowed_attributes = {
@@ -37,7 +37,9 @@ def sanitize_html(value):
     if not isinstance(value, str):
         value = str(value)
 
-    return format_html(clean_html(value))
+    # mark_safe, not format_html: the cleaned text may contain literal
+    # braces, which format_html would treat as format placeholders
+    return mark_safe(_clean_html(value))
 
 
 @register.filter
@@ -87,10 +89,12 @@ def render_post_html(value):
     if not isinstance(value, str):
         value = str(value)
 
-    cleaned = clean_html(value)
+    cleaned = _clean_html(value)
 
     # Wrap quoted text in styled spans, but only in text between tags so
     # that quotes inside attribute values (e.g. href="...") are untouched.
+    # Known limitation: a quote pair that spans a tag boundary (e.g.
+    # "He said <em>hi</em>") is split across fragments and won't be wrapped.
     def wrap_quotes(segment):
         return re.sub(r'"([^"]*)"', r'<span class="quote">"\1"</span>', segment)
 
