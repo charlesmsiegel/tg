@@ -38,3 +38,11 @@ class TestChargenValidationRendering(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "backgrounds-validation-status")
         self.assertContains(response, "TG.validation")
+        # The multiplier map must render with real data, not fall back empty
+        from characters.models.core.background_block import Background
+
+        bg = Background.objects.filter(
+            property_name__in=char.allowed_backgrounds
+        ).first()
+        self.assertIsNotNone(bg)
+        self.assertContains(response, f'"{bg.pk}": {bg.multiplier}')
