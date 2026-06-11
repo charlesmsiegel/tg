@@ -398,6 +398,8 @@ class TestWeeklyXPApprovalView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.xp_request.refresh_from_db()
         self.assertTrue(self.xp_request.approved)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.xp, 1)  # 1 XP for the finishing category
 
     def test_non_st_cannot_approve(self):
         self.client.login(username="player", password="password")
