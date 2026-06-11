@@ -85,6 +85,36 @@
                             <div class="tg-card-body">
                                 {% csrf_token %}
                                 {{ form.as_p }}
+                                <div id="virtues-validation-status" style="font-weight: 600;"></div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    'use strict';
+                                    var form = document.querySelector('form');
+                                    var statusEl = document.getElementById('virtues-validation-status');
+                                    if (!form || !statusEl || !window.TG || !TG.validation) return;
+
+                                    var TARGET = 7;
+                                    // Inactive virtues render as hidden inputs and don't count
+                                    var SELECTOR = [
+                                        '#id_conscience', '#id_conviction',
+                                        '#id_self_control', '#id_instinct',
+                                        '#id_courage'
+                                    ].map(function(id) { return id + ':not([type="hidden"])'; }).join(', ');
+
+                                    function validate() {
+                                        var total = TG.validation.sumFields(form, SELECTOR);
+                                        var valid = (total === TARGET);
+                                        TG.validation.setStatus(
+                                            statusEl, valid,
+                                            valid ? 'Valid (' + total + '/7)' : total + '/7 dots'
+                                        );
+                                    }
+
+                                    form.addEventListener('change', validate);
+                                    form.addEventListener('input', validate);
+                                    validate();
+                                });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -121,6 +151,36 @@
                             <div class="tg-card-body">
                                 {% csrf_token %}
                                 {{ form.as_p }}
+                                <div id="virtues-validation-status" style="font-weight: 600;"></div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    'use strict';
+                                    var form = document.querySelector('form');
+                                    var statusEl = document.getElementById('virtues-validation-status');
+                                    if (!form || !statusEl || !window.TG || !TG.validation) return;
+
+                                    var TARGET = 7;
+                                    // Inactive virtues render as hidden inputs and don't count
+                                    var SELECTOR = [
+                                        '#id_conscience', '#id_conviction',
+                                        '#id_self_control', '#id_instinct',
+                                        '#id_courage'
+                                    ].map(function(id) { return id + ':not([type="hidden"])'; }).join(', ');
+
+                                    function validate() {
+                                        var total = TG.validation.sumFields(form, SELECTOR);
+                                        var valid = (total === TARGET);
+                                        TG.validation.setStatus(
+                                            statusEl, valid,
+                                            valid ? 'Valid (' + total + '/7)' : total + '/7 dots'
+                                        );
+                                    }
+
+                                    form.addEventListener('change', validate);
+                                    form.addEventListener('input', validate);
+                                    validate();
+                                });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -153,6 +213,36 @@
                             <div class="tg-card-body">
                                 {% csrf_token %}
                                 {{ form.as_p }}
+                                <div id="virtues-validation-status" style="font-weight: 600;"></div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    'use strict';
+                                    var form = document.querySelector('form');
+                                    var statusEl = document.getElementById('virtues-validation-status');
+                                    if (!form || !statusEl || !window.TG || !TG.validation) return;
+
+                                    var TARGET = 7;
+                                    // Inactive virtues render as hidden inputs and don't count
+                                    var SELECTOR = [
+                                        '#id_conscience', '#id_conviction',
+                                        '#id_self_control', '#id_instinct',
+                                        '#id_courage'
+                                    ].map(function(id) { return id + ':not([type="hidden"])'; }).join(', ');
+
+                                    function validate() {
+                                        var total = TG.validation.sumFields(form, SELECTOR);
+                                        var valid = (total === TARGET);
+                                        TG.validation.setStatus(
+                                            statusEl, valid,
+                                            valid ? 'Valid (' + total + '/7)' : total + '/7 dots'
+                                        );
+                                    }
+
+                                    form.addEventListener('change', validate);
+                                    form.addEventListener('input', validate);
+                                    validate();
+                                });
+                                </script>
                             </div>
                         </div>
                     </div>
