@@ -30,6 +30,6 @@ urls = [
         DerangementDetailView.as_view(),
         name="derangement",
     ),
-    path("<pk>/chargen/back/", ChargenBackView.as_view(), name="chargen_back"),
+    path("<int:pk>/chargen/back/", ChargenBackView.as_view(), name="chargen_back"),
     path("<pk>/", GenericCharacterDetailView.as_view(), name="character"),
 ]
