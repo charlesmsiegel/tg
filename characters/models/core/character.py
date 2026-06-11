@@ -256,7 +256,7 @@ class Character(CharacterModel):
 
     def prev_stage(self):
         self.creation_status -= 1
-        self.save()
+        self.save(update_fields=["creation_status"])
 
     def has_concept(self):
         return self.concept != ""
