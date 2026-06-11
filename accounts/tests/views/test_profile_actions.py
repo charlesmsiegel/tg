@@ -292,6 +292,17 @@ class TestFreebieAwardView(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_invalid_form_redirects_without_awarding(self):
+        """Invalid data (over the 0-15 range) redirects and mutates nothing."""
+        initial_freebies = self.char.freebies
+        self.client.login(username="stuser", password="password")
+        url = reverse("accounts:freebie_award", kwargs={"character_pk": self.char.pk})
+        response = self.client.post(url, {"backstory_freebies": 99})
+        self.assertEqual(response.status_code, 302)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.freebies, initial_freebies)
+        self.assertFalse(self.char.freebies_approved)
+
 
 class TestWeeklyXPRequestView(TestCase):
     """Test weekly XP request submission."""

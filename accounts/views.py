@@ -156,7 +156,12 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
 
 
 class MarkSceneReadView(LoginRequiredMixin, View):
-    """Mark a scene as read. Any logged-in user."""
+    """Mark a scene as read. Any logged-in user.
+
+    Uses request.user (the old ProfileView handler used the viewed
+    profile's user — always the same person, since ProfileView only
+    allows viewing your own profile).
+    """
 
     http_method_names = ["post"]
 
