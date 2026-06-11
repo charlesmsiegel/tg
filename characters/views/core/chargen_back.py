@@ -25,7 +25,9 @@ class ChargenBackView(LoginRequiredMixin, View):
             return redirect(char.get_absolute_url())
         if char.creation_status <= 1:
             return redirect(char.get_absolute_url())
-        # Prevent going back into the freebie step once freebies are locked in
+        # Once freebies are approved, block navigation to the freebie step
+        # AND any step before it (target <= freebie_step), since earlier
+        # steps could invalidate the approved freebie allocation.
         target = char.creation_status - 1
         freebie_step = getattr(char, "freebie_step", -1)
         if freebie_step > 0 and target <= freebie_step:
