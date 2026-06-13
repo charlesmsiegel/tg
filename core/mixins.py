@@ -272,28 +272,8 @@ class SpecialUserMixin:
     - Any authenticated storyteller (ST)
     - Anyone if the object has no owner
 
-    Usage:
-        class MyView(SpecialUserMixin, DetailView):
-            def get_context_data(self, **kwargs):
-                context = super().get_context_data(**kwargs)
-                context['is_special'] = self.check_if_special_user(self.object, self.request.user)
-                return context
-
-    IMPORTANT: this mixin does NOT set ``is_approved_user`` in context.
-    The global context processor only sets that flag for staff, so any view
-    whose template gates on ``{% if is_approved_user %}`` must set it itself.
-    Combine the staff flag with the special-user check so neither audience is
-    excluded (a plain assignment of check_if_special_user would overwrite the
-    staff True with False for a staff user who is not the owner/ST):
-
-        context["is_approved_user"] = (
-            getattr(self.request, "is_approved_user", False)
-            or self.check_if_special_user(self.object, self.request.user)
-        )
-
-    Omitting this makes the template render the not-owner fallback even for
-    the owner. A base-class fix that sets the flag for all SpecialUserMixin
-    views is tracked in issue #1459.
+    Does not set ``is_approved_user`` (templates gating on it need staff OR
+    check_if_special_user); base-class fix tracked in #1459.
     """
 
     def check_if_special_user(self, obj, user):
