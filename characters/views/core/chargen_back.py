@@ -3,10 +3,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 
 from characters.models.core import Character
+from characters.models.core.human import Human
 
 
 class ChargenBackView(LoginRequiredMixin, View):
@@ -15,30 +17,38 @@ class ChargenBackView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, pk):
-        char = get_object_or_404(Character, pk=pk)
-        if char.owner != request.user:
-            raise PermissionDenied
-        # Redirect through the generic character router, not get_absolute_url:
-        # several subclasses (Vampire, Ghoul, Wraith, Demon, Thrall, ...)
-        # override get_absolute_url to a plain detail route, which would drop
-        # the user out of chargen. The router dispatches Un characters to the
-        # creation step matching the (decremented) creation_status.
-        destination = redirect("characters:character", pk=char.pk)
-        if char.status != "Un":
-            messages.warning(
-                request, "Cannot change creation steps once a character is submitted."
-            )
-            return destination
-        if char.creation_status <= 1:
-            return destination
-        # Once freebies are approved, block back navigation entirely: any
-        # earlier step could invalidate the locked allocation. We do not key
-        # this on freebie_step — that class attribute diverges from the real
-        # per-gameline freebie step in several creation routers.
-        if getattr(char, "freebies_approved", False):
-            messages.warning(
-                request, "Cannot navigate back once freebies are approved."
-            )
-            return destination
-        char.prev_stage()
+        with transaction.atomic():
+            char = get_object_or_404(Character, pk=pk)
+            if char.owner != request.user:
+                raise PermissionDenied
+            # Redirect through the generic character router, not
+            # get_absolute_url: several subclasses (Vampire, Ghoul, Wraith,
+            # Demon, Thrall, ...) override get_absolute_url to a plain detail
+            # route, which would drop the user out of chargen. The router
+            # dispatches Un characters to the step matching creation_status.
+            destination = redirect("characters:character", pk=char.pk)
+            if char.status != "Un":
+                messages.warning(
+                    request,
+                    "Cannot change creation steps once a character is submitted.",
+                )
+                return destination
+            if char.creation_status <= 1:
+                return destination
+            # Lock the row the freebie-approval path also locks
+            # (award_backstory_freebies uses Human.objects.select_for_update),
+            # so a concurrent ST approval can't commit between this check and
+            # prev_stage and leave the character both approved and moved back.
+            if isinstance(char, Human):
+                char = Human.objects.select_for_update().get(pk=char.pk)
+            # Once freebies are approved, block back navigation entirely: any
+            # earlier step could invalidate the locked allocation. We do not
+            # key this on freebie_step — that class attribute diverges from the
+            # real per-gameline freebie step in several creation routers.
+            if getattr(char, "freebies_approved", False):
+                messages.warning(
+                    request, "Cannot navigate back once freebies are approved."
+                )
+                return destination
+            char.prev_stage()
         return destination
