@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
         var total = 0;
         Array.prototype.forEach.call(form.querySelectorAll('select[name$="-bg"]'), function(select) {
             if (select.name.indexOf('__prefix__') !== -1) return;  // hidden empty-form template
+            // A rating with no background chosen can't be saved (bg is
+            // required), so it must not count toward the total.
+            if (!select.value) return;
             var prefix = select.name.replace(/-bg$/, '');
             var deleteBox = form.querySelector('input[name="' + prefix + '-DELETE"]');
             if (deleteBox && deleteBox.checked) return;
@@ -79,6 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     form.addEventListener('change', validate);
     form.addEventListener('input', validate);
+    // The dynamic formset's Remove button deletes the row and fires
+    // formset:removed on document without an input/change event, so the
+    // counter would otherwise keep the removed row's dots in the total.
+    document.addEventListener('formset:removed', validate);
     validate();
 });
 </script>
