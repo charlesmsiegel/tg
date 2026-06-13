@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // The dynamic formset's Remove button deletes the row and fires
     // formset:removed on document without an input/change event, so the
     // counter would otherwise keep the removed row's dots in the total.
+    // (Dispatched on `document` by widgets/widgets/formset_manager.py.)
     document.addEventListener('formset:removed', validate);
     validate();
 });
