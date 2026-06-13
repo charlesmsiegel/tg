@@ -38,22 +38,24 @@ class ChargenBackView(LoginRequiredMixin, View):
                 char = Human.objects.select_for_update().get(pk=char.pk)
             else:
                 char = Character.objects.select_for_update().get(pk=char.pk)
-            if char.status != "Un":
-                messages.warning(
-                    request,
-                    "Cannot change creation steps once a character is submitted.",
-                )
-                return destination
-            if char.creation_status <= 1:
-                return destination
-            # Once freebies are approved, block back navigation entirely: any
-            # earlier step could invalidate the locked allocation. We do not
-            # key this on freebie_step — that class attribute diverges from the
-            # real per-gameline freebie step in several creation routers.
-            if getattr(char, "freebies_approved", False):
-                messages.warning(
-                    request, "Cannot navigate back once freebies are approved."
-                )
+            # can_navigate_back() is the single gate (shared with the
+            # chargen_back_url button); the branches below only choose the
+            # message for the blocked case. Once freebies are approved, back
+            # navigation is blocked entirely — any earlier step could
+            # invalidate the locked allocation, and freebie_step diverges from
+            # the real per-gameline freebie step in several creation routers.
+            if not char.can_navigate_back():
+                if char.status != "Un":
+                    messages.warning(
+                        request,
+                        "Cannot change creation steps once a character is submitted.",
+                    )
+                elif getattr(char, "freebies_approved", False):
+                    messages.warning(
+                        request,
+                        "Cannot change steps once freebie points have been assigned.",
+                    )
+                # creation_status <= 1: nothing to undo, return silently.
                 return destination
             char.prev_stage()
         return destination

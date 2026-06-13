@@ -120,8 +120,8 @@ class TestChargenBackView(TestCase):
             self.assertIn("login", response.url)
 
     def test_cannot_go_back_past_freebie_step_if_approved(self):
-        """Cannot back past the freebie step once freebies have been approved."""
-        # VtMHuman freebie_step is 5. Set creation_status to 6 (past freebies).
+        """Back is blocked once freebies are approved (the guard keys on
+        freebies_approved, not on any step number)."""
         char = VtMHuman.objects.create(
             name="Freebie Char",
             owner=self.user,
@@ -131,8 +131,6 @@ class TestChargenBackView(TestCase):
         )
         self.client.login(username="player", password="password")
         url = reverse("characters:chargen_back", kwargs={"pk": char.pk})
-        # Going back from 6 to 5 is the freebie step — blocked because
-        # freebies have already been approved.
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         char.refresh_from_db()
