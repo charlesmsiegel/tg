@@ -270,13 +270,9 @@ class Character(CharacterModel):
 
     @property
     def chargen_back_url(self):
-        """Back-navigation URL during chargen, or "" when not applicable.
-
-        Defined only on Character (not LocationModel/ItemModel, which also
-        carry a creation_status field), so the shared form template can gate
-        the Back button on character type by attribute presence rather than
-        guessing from field values.
-        """
+        """Back-navigation URL during chargen, or "" — Character-only so the
+        shared form gates the button by attribute presence. ChargenBackView is
+        authoritative; keep these guards in sync with it."""
         # Match ChargenBackView: it rejects back-navigation once freebies are
         # approved, so hide the button then instead of showing a no-op.
         # freebies_approved lives on Human, not the base Character.
