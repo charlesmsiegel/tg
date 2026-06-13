@@ -81,10 +81,14 @@
                 <!-- Form Actions -->
                 <div class="tg-card">
                     <div class="tg-card-body text-center">
-                        {% if object.creation_status|default:0 > 1 and object.status == "Un" %}
+                        {# chargen_back_url is only present on Character (not
+                           locations/items that also have creation_status) and
+                           is non-empty only mid-chargen; the owner check hides
+                           the button from STs/admins the endpoint would 403. #}
+                        {% if object.chargen_back_url and object.owner_id == request.user.id %}
                             {# formaction overrides the outer form's action for this button only — no nested form needed #}
                             <button type="submit"
-                                    formaction="{% url 'characters:chargen_back' pk=object.pk %}"
+                                    formaction="{{ object.chargen_back_url }}"
                                     formnovalidate
                                     title="Go back one step. Unsaved changes on this step are discarded."
                                     class="tg-btn btn-secondary btn-lg">

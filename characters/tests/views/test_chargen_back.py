@@ -24,11 +24,28 @@ class TestChargenBackView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.char.refresh_from_db()
         self.assertEqual(self.char.creation_status, 2)
-        # The redirect lands back in chargen: the character URL dispatches
-        # unfinished characters to their current creation step view.
-        self.assertEqual(response.url, self.char.get_absolute_url())
+        # The redirect goes through the generic character router (not
+        # get_absolute_url, which gameline subclasses override to a detail
+        # route), so unfinished characters land on their creation step view.
+        self.assertEqual(
+            response.url, reverse("characters:character", kwargs={"pk": self.char.pk})
+        )
         follow = self.client.get(response.url)
         self.assertEqual(follow.status_code, 200)
+
+    def test_back_redirects_through_router_for_subclassed_url(self):
+        """VtMHuman.get_absolute_url points at a detail route; Back must still
+        route through the dispatcher so the user stays in chargen."""
+        char = VtMHuman.objects.create(
+            name="Vamp Human", owner=self.user, status="Un", creation_status=3
+        )
+        self.client.login(username="player", password="password")
+        url = reverse("characters:chargen_back", kwargs={"pk": char.pk})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url, reverse("characters:character", kwargs={"pk": char.pk})
+        )
 
     def test_cannot_go_back_past_step_1(self):
         self.char.creation_status = 1
@@ -140,3 +157,41 @@ class TestChargenBackView(TestCase):
         self.assertEqual(response.status_code, 302)
         char.refresh_from_db()
         self.assertEqual(char.creation_status, 5)
+
+
+class TestChargenBackUrlProperty(TestCase):
+    """The chargen_back_url property gates the shared Back button."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("player", "p@test.com", "password")
+
+    def test_present_mid_chargen(self):
+        char = Human.objects.create(
+            name="C", owner=self.user, status="Un", creation_status=3
+        )
+        self.assertEqual(
+            char.chargen_back_url,
+            reverse("characters:chargen_back", kwargs={"pk": char.pk}),
+        )
+
+    def test_empty_on_step_1(self):
+        char = Human.objects.create(
+            name="C", owner=self.user, status="Un", creation_status=1
+        )
+        self.assertEqual(char.chargen_back_url, "")
+
+    def test_empty_when_submitted(self):
+        char = Human.objects.create(
+            name="C", owner=self.user, status="Un", creation_status=3
+        )
+        char.status = "Sub"
+        char.save()
+        self.assertEqual(char.chargen_back_url, "")
+
+    def test_locations_have_no_chargen_back_url(self):
+        """LocationModel also has creation_status but must not expose the
+        Back button — the property lives on Character only."""
+        from locations.models.core.location import LocationModel
+
+        loc = LocationModel.objects.create(name="Chantry", status="Un")
+        self.assertFalse(hasattr(loc, "chargen_back_url"))
