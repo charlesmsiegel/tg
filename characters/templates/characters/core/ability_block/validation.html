@@ -19,7 +19,8 @@
         var TARGETS = [{{ tertiary }}, {{ secondary }}, {{ primary }}].sort(function(a, b) { return a - b; });
 
         // Ability rows lay out three .dots cells per row: Talents, Skills,
-        // Knowledges. Group the inputs by column position. The length-3
+        // Knowledges. The grid is static, so grouping the inputs once here
+        // (not re-querying on each validate) is intentional. Group by column. The length-3
         // guard is sufficient because this include renders only on the
         // ability step, where the attribute block shows as a display (no
         // inputs) — input-bearing three-cell rows are the ability grid.

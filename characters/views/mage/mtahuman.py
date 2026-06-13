@@ -348,6 +348,7 @@ class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
         # The chargen template gates on is_approved_user; the global context
         # processor only sets it for staff (see #1459), so without this the
         # owner sees the not-owner fallback instead of the ability form.
+        # TODO(#1459): consolidate into SpecialUserMixin.get_context_data
         context["is_approved_user"] = (
             getattr(self.request, "is_approved_user", False)
             or self.check_if_special_user(self.object, self.request.user)
