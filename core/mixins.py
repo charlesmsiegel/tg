@@ -278,6 +278,18 @@ class SpecialUserMixin:
                 context = super().get_context_data(**kwargs)
                 context['is_special'] = self.check_if_special_user(self.object, self.request.user)
                 return context
+
+    IMPORTANT: this mixin does NOT set ``is_approved_user`` in context.
+    The global context processor only sets that flag for staff, so any view
+    whose template gates on ``{% if is_approved_user %}`` must set it itself:
+
+        context["is_approved_user"] = self.check_if_special_user(
+            self.object, self.request.user
+        )
+
+    Omitting this makes the template render the not-owner fallback even for
+    the owner. A base-class fix that sets the flag for all SpecialUserMixin
+    views is tracked in issue #1459.
     """
 
     def check_if_special_user(self, obj, user):
