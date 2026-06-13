@@ -85,16 +85,18 @@
                            locations/items that also have creation_status) and
                            is non-empty only mid-chargen; the owner check hides
                            the button from STs/admins the endpoint would 403. #}
-                        {% if object.chargen_back_url and object.owner_id == request.user.id %}
-                            {# formaction overrides the outer form's action for this button only — no nested form needed #}
-                            <button type="submit"
-                                    formaction="{{ object.chargen_back_url }}"
-                                    formnovalidate
-                                    title="Go back one step. Unsaved changes on this step are discarded."
-                                    class="tg-btn btn-secondary btn-lg">
-                                <i class="fas fa-arrow-left"></i> Back
-                            </button>
-                        {% endif %}
+                        {% with back_url=object.chargen_back_url %}
+                            {% if back_url and object.owner_id == request.user.id %}
+                                {# formaction overrides the outer form's action for this button only — no nested form needed #}
+                                <button type="submit"
+                                        formaction="{{ back_url }}"
+                                        formnovalidate
+                                        title="Go back one step. Unsaved changes on this step are discarded."
+                                        class="tg-btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                            {% endif %}
+                        {% endwith %}
                         <button type="submit" class="tg-btn btn-primary btn-lg">
                             <i class="fas fa-save"></i> Save
                         </button>
