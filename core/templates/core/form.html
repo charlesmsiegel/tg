@@ -81,6 +81,13 @@
                 <!-- Form Actions -->
                 <div class="tg-card">
                     <div class="tg-card-body text-center">
+                        {# Save is rendered FIRST so it stays the form's implicit
+                           submitter (Enter in a single-line field): otherwise a
+                           leading Back button — which carries formnovalidate —
+                           would submit and silently discard the step's edits. #}
+                        <button type="submit" class="tg-btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save
+                        </button>
                         {# chargen_back_url is only present on Character (not
                            locations/items that also have creation_status) and
                            is non-empty only mid-chargen; the owner check hides
@@ -97,9 +104,6 @@
                                 </button>
                             {% endif %}
                         {% endwith %}
-                        <button type="submit" class="tg-btn btn-primary btn-lg">
-                            <i class="fas fa-save"></i> Save
-                        </button>
                         {% if object %}
                             <a href="{{ object.get_absolute_url }}" class="tg-btn btn-secondary btn-lg">
                                 <i class="fas fa-times"></i> Cancel

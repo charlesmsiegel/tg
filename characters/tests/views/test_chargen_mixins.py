@@ -47,10 +47,25 @@ class TestChargenProgressMixin(TestCase):
             [s["status"] for s in steps], ["completed", "completed", "current"]
         )
 
-    def test_past_last_step_all_completed(self):
+    def test_final_group_stays_current_across_its_range(self):
+        """A multi-status final group must read 'current' for every status at
+        or above its start, not flip to 'completed' after its first status."""
+        class GroupedView(ChargenProgressMixin, FakeBase):
+            chargen_step_labels = [(1, "Stats"), (4, "Powers"), (6, "Details")]
+
+        # Status 7 is still inside the final "Details" group (starts at 6).
+        steps = self.get_steps(7, GroupedView)
+        self.assertEqual(
+            [s["status"] for s in steps], ["completed", "completed", "current"]
+        )
+
+    def test_past_last_step_keeps_final_current(self):
+        # The final label has no defined endpoint, so it stays current past
+        # its start rather than flipping to completed (real chargen never
+        # shows the bar beyond the last step — the character is submitted).
         steps = self.get_steps(4)
         self.assertEqual(
-            [s["status"] for s in steps], ["completed", "completed", "completed"]
+            [s["status"] for s in steps], ["completed", "completed", "current"]
         )
 
     def test_grouped_statuses(self):
