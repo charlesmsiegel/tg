@@ -268,6 +268,19 @@ class Character(CharacterModel):
     def get_absolute_url(self):
         return reverse("characters:character", kwargs={"pk": self.pk})
 
+    @property
+    def chargen_back_url(self):
+        """Back-navigation URL during chargen, or "" when not applicable.
+
+        Defined only on Character (not LocationModel/ItemModel, which also
+        carry a creation_status field), so the shared form template can gate
+        the Back button on character type by attribute presence rather than
+        guessing from field values.
+        """
+        if self.status == "Un" and self.creation_status > 1:
+            return reverse("characters:chargen_back", kwargs={"pk": self.pk})
+        return ""
+
     def get_update_url(self):
         return reverse("characters:update:character", kwargs={"pk": self.pk})
 
