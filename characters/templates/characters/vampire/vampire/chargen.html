@@ -159,8 +159,8 @@
                                         var message;
                                         if (valid) {
                                             message = 'Valid (' + total + '/' + TARGET + ')';
-                                        } else if (belowMin && total === TARGET) {
-                                            message = 'Each virtue must be at least 1';
+                                        } else if (belowMin) {
+                                            message = 'Each virtue must be at least 1 (' + total + '/' + TARGET + ')';
                                         } else {
                                             message = total + '/' + TARGET + ' dots';
                                         }

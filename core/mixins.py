@@ -281,10 +281,14 @@ class SpecialUserMixin:
 
     IMPORTANT: this mixin does NOT set ``is_approved_user`` in context.
     The global context processor only sets that flag for staff, so any view
-    whose template gates on ``{% if is_approved_user %}`` must set it itself:
+    whose template gates on ``{% if is_approved_user %}`` must set it itself.
+    Combine the staff flag with the special-user check so neither audience is
+    excluded (a plain assignment of check_if_special_user would overwrite the
+    staff True with False for a staff user who is not the owner/ST):
 
-        context["is_approved_user"] = self.check_if_special_user(
-            self.object, self.request.user
+        context["is_approved_user"] = (
+            getattr(self.request, "is_approved_user", False)
+            or self.check_if_special_user(self.object, self.request.user)
         )
 
     Omitting this makes the template render the not-owner fallback even for
