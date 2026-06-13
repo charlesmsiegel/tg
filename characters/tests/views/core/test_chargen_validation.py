@@ -69,6 +69,21 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation = {")
 
+    def test_staff_non_owner_sees_ability_validation(self):
+        """A staff user who is not the owner keeps is_approved_user via the
+        middleware flag, so they still see the form (not the not-owner
+        fallback) — the per-view flag must combine staff OR special-user."""
+        char = MtAHuman.objects.create(
+            name="Mage Ability Human", owner=self.owner, creation_status=2
+        )
+        staff = User.objects.create_user(
+            username="staff", password="password", is_staff=True
+        )
+        self.client.login(username="staff", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "abilities-validation-status")
+
     def test_abilities_validation_absent_before_ability_step(self):
         """The ability validation include must not render outside the
         ability step (here, step 1), so it can never disable submit on a
