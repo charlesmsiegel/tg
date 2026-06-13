@@ -39,7 +39,7 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation = {")
 
-    def test_abilities_step_renders_validation_other_gameline(self):
+    def test_abilities_step_renders_validation_vtmhuman(self):
         char = VtMHuman.objects.create(
             name="Vampire Ability Human", owner=self.owner, creation_status=2
         )
@@ -49,7 +49,7 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation = {")
 
-    def test_abilities_step_renders_validation_third_gameline(self):
+    def test_abilities_step_renders_validation_wtahuman(self):
         char = WtAHuman.objects.create(
             name="Werewolf Ability Human", owner=self.owner, creation_status=2
         )
@@ -59,7 +59,7 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation = {")
 
-    def test_abilities_step_renders_validation_fourth_gameline(self):
+    def test_abilities_step_renders_validation_ctdhuman(self):
         char = CtDHuman.objects.create(
             name="Changeling Ability Human", owner=self.owner, creation_status=2
         )
@@ -68,6 +68,18 @@ class TestChargenValidationRendering(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "abilities-validation-status")
         self.assertContains(response, "TG.validation = {")
+
+    def test_abilities_validation_absent_before_ability_step(self):
+        """The ability validation include must not render outside the
+        ability step (here, step 1), so it can never disable submit on a
+        non-distribution form."""
+        char = WtOHuman.objects.create(
+            name="Pre-ability Human", owner=self.owner, creation_status=1
+        )
+        self.client.login(username="owner", password="password")
+        response = self.client.get(char.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "abilities-validation-status")
 
     def test_abilities_step_renders_validation_all_gamelines(self):
         """WtOHuman and MtAHuman work now that their ability views set
