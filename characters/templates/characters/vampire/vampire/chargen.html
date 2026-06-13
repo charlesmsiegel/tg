@@ -141,13 +141,30 @@
                                         '#id_courage'
                                     ].map(function(id) { return id + ':not([type="hidden"])'; }).join(', ');
 
+                                    function activeBelowMin() {
+                                        // Each active virtue (Courage + the two
+                                        // chosen pair members) must be >= 1, per
+                                        // Vampire.clean(). The selector already
+                                        // matches only the active (visible) inputs.
+                                        var fields = form.querySelectorAll(SELECTOR);
+                                        return Array.prototype.some.call(fields, function(f) {
+                                            return (parseInt(f.value, 10) || 0) < 1;
+                                        });
+                                    }
+
                                     function validate() {
                                         var total = TG.validation.sumFields(form, SELECTOR);
-                                        var valid = (total === TARGET);
-                                        TG.validation.setStatus(
-                                            statusEl, valid,
-                                            valid ? 'Valid (' + total + '/' + TARGET + ')' : total + '/' + TARGET + ' dots'
-                                        );
+                                        var belowMin = activeBelowMin();
+                                        var valid = (total === TARGET) && !belowMin;
+                                        var message;
+                                        if (valid) {
+                                            message = 'Valid (' + total + '/' + TARGET + ')';
+                                        } else if (belowMin && total === TARGET) {
+                                            message = 'Each virtue must be at least 1';
+                                        } else {
+                                            message = total + '/' + TARGET + ' dots';
+                                        }
+                                        TG.validation.setStatus(statusEl, valid, message);
                                     }
 
                                     form.addEventListener('change', validate);

@@ -34,6 +34,11 @@
         });
         if (!groups[0].length) return;
 
+        // Each ability is capped at 3 dots in chargen (HumanAbilityView
+        // form_valid rejects ratings above 3), but the rendered inputs allow
+        // higher values, so the client must enforce the cap too.
+        var MAX_RATING = 3;
+
         function groupTotal(group) {
             var total = 0;
             group.forEach(function(field) {
@@ -43,16 +48,28 @@
             return total;
         }
 
+        function anyOverCap() {
+            return groups.some(function(group) {
+                return group.some(function(field) {
+                    var value = parseInt(field.value, 10);
+                    return !isNaN(value) && value > MAX_RATING;
+                });
+            });
+        }
+
         function validate() {
             var totals = groups.map(groupTotal).sort(function(a, b) { return a - b; });
-            var valid = JSON.stringify(totals) === JSON.stringify(TARGETS);
-            TG.validation.setStatus(
-                statusEl,
-                valid,
-                valid
-                    ? 'Valid ({{ primary }}/{{ secondary }}/{{ tertiary }})'
-                    : 'Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across categories (currently ' + totals.slice().reverse().join('/') + ')'
-            );
+            var overCap = anyOverCap();
+            var valid = !overCap && JSON.stringify(totals) === JSON.stringify(TARGETS);
+            var message;
+            if (valid) {
+                message = 'Valid ({{ primary }}/{{ secondary }}/{{ tertiary }})';
+            } else if (overCap) {
+                message = 'No ability may exceed ' + MAX_RATING + ' dots in creation';
+            } else {
+                message = 'Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across categories (currently ' + totals.slice().reverse().join('/') + ')';
+            }
+            TG.validation.setStatus(statusEl, valid, message);
             TG.validation.setSubmitEnabled(form, valid);
         }
 
