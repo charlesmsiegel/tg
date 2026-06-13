@@ -100,14 +100,15 @@ class TestChargenValidationRendering(TestCase):
         """WtOHuman and MtAHuman work now that their ability views set
         is_approved_user (two #1459 instances fixed in this PR)."""
         for model, name in [(WtOHuman, "Wraith"), (MtAHuman, "Mage")]:
-            char = model.objects.create(
-                name=f"{name} Ability Human", owner=self.owner, creation_status=2
-            )
-            self.client.login(username="owner", password="password")
-            response = self.client.get(char.get_absolute_url())
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "abilities-validation-status")
-            self.assertContains(response, "TG.validation = {")
+            with self.subTest(gameline=name):
+                char = model.objects.create(
+                    name=f"{name} Ability Human", owner=self.owner, creation_status=2
+                )
+                self.client.login(username="owner", password="password")
+                response = self.client.get(char.get_absolute_url())
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "abilities-validation-status")
+                self.assertContains(response, "TG.validation = {")
 
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
