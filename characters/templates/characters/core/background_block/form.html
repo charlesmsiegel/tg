@@ -47,8 +47,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('Background multiplier map is empty; all costs fall back to 1 per dot.');
     }
 
+    // BackgroundRatingForm's rating is an IntegerField clamped to 0..5, so a
+    // negative or fractional rating is rejected server-side; the counter must
+    // treat such a row as invalid rather than folding it into the total.
+    var RATING_MIN = 0, RATING_MAX = 5;
+
     function validate() {
         var total = 0;
+        var outOfRange = false;
         Array.prototype.forEach.call(form.querySelectorAll('select[name$="-bg"]'), function(select) {
             if (select.name.indexOf('__prefix__') !== -1) return;  // hidden empty-form template
             // A rating with no background chosen can't be saved (bg is
@@ -59,16 +65,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (deleteBox && deleteBox.checked) return;
             var ratingInput = form.querySelector('input[name="' + prefix + '-rating"]');
             if (!ratingInput) return;
-            var rating = parseInt(ratingInput.value, 10);
-            if (isNaN(rating)) return;
+            var raw = ratingInput.value.trim();
+            if (raw === '') return;
+            var rating = Number(raw);
+            var isInt = isFinite(rating) && Math.floor(rating) === rating;
+            if (!isInt || rating < RATING_MIN || rating > RATING_MAX) {
+                outOfRange = true;
+                return;
+            }
             var multiplier = MULTIPLIERS[select.value] || 1;
             total += rating * multiplier;
         });
         // Counter only — submit stays enabled (unlike abilities) so players
         // can save partial progress; the server still enforces the budget.
-        var valid = (total === BUDGET);
+        var valid = !outOfRange && (total === BUDGET);
         var message;
-        if (valid) {
+        if (outOfRange) {
+            message = 'Each rating must be a whole number from ' + RATING_MIN + ' to ' + RATING_MAX;
+        } else if (valid) {
             message = 'Valid (' + total + '/' + BUDGET + ' points)';
         } else if (total > BUDGET) {
             message = (total - BUDGET) + ' point(s) over budget (' + total + '/' + BUDGET + ')';

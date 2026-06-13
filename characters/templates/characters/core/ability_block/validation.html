@@ -48,24 +48,31 @@
             return total;
         }
 
-        function anyOverCap() {
+        // Every ability must be a whole number in 0..MAX_RATING. The server
+        // (HumanAbilityView.form_valid and variants) rejects values below 0 or
+        // above 3, and IntegerField rejects fractions, so checking only the
+        // category totals would let an out-of-range value pass the client.
+        function anyOutOfRange() {
             return groups.some(function(group) {
                 return group.some(function(field) {
-                    var value = parseInt(field.value, 10);
-                    return !isNaN(value) && value > MAX_RATING;
+                    var raw = field.value.trim();
+                    if (raw === '') return false;
+                    var value = Number(raw);
+                    var isInt = isFinite(value) && Math.floor(value) === value;
+                    return !isInt || value < 0 || value > MAX_RATING;
                 });
             });
         }
 
         function validate() {
             var totals = groups.map(groupTotal).sort(function(a, b) { return a - b; });
-            var overCap = anyOverCap();
-            var valid = !overCap && JSON.stringify(totals) === JSON.stringify(TARGETS);
+            var outOfRange = anyOutOfRange();
+            var valid = !outOfRange && JSON.stringify(totals) === JSON.stringify(TARGETS);
             var message;
             if (valid) {
                 message = 'Valid ({{ primary }}/{{ secondary }}/{{ tertiary }})';
-            } else if (overCap) {
-                message = 'No ability may exceed ' + MAX_RATING + ' dots in creation';
+            } else if (outOfRange) {
+                message = 'Each ability must be a whole number from 0 to ' + MAX_RATING;
             } else {
                 message = 'Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across categories (currently ' + totals.slice().reverse().join('/') + ')';
             }
