@@ -248,13 +248,13 @@ class TestChargenBackButtonRendering(TestCase):
         self.assertNotContains(response, "chargen/back/")
 
     def test_button_absent_when_freebies_approved(self):
-        # Step 5 (freebies) renders for an owner; step 6 would auto-advance
-        # for a plain Human lacking the Language merit (see #1462).
-        char = Human.objects.create(
+        # VtMHuman step 2 (abilities) renders reliably; with freebies approved
+        # the property returns "" so the button must not appear.
+        char = VtMHuman.objects.create(
             name="C",
             owner=self.user,
             status="Un",
-            creation_status=5,
+            creation_status=2,
             freebies_approved=True,
         )
         response = self._get(char)

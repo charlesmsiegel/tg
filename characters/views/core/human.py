@@ -454,10 +454,12 @@ class HumanFreebiesView(SpendFreebiesPermissionMixin, UpdateView):
 
     model = Human
     form_class = HumanFreebiesForm
-    # Thin wrapper over the wtohuman chargen template (which the Human flow
-    # already uses for the abilities step); the previous path
-    # (characters/human/human/chargen.html) never existed on disk.
-    template_name = "characters/core/human/freebies.html"
+    # NOTE: this template path does not exist; plain-Human chargen templates
+    # are incomplete (tracked in #1459). Repointing it at the wtohuman
+    # template renders but the plain HumanFreebiesForm lacks the conditional
+    # JS that template needs, so the freebies controls stay hidden. Leaving
+    # the pre-existing state rather than shipping a non-functional form here.
+    template_name = "characters/human/human/chargen.html"
 
     def form_valid(self, form):
         if form.is_valid():
