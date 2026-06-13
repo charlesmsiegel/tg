@@ -277,7 +277,14 @@ class Character(CharacterModel):
         the Back button on character type by attribute presence rather than
         guessing from field values.
         """
-        if self.status == "Un" and self.creation_status > 1:
+        # Match ChargenBackView: it rejects back-navigation once freebies are
+        # approved, so hide the button then instead of showing a no-op.
+        # freebies_approved lives on Human, not the base Character.
+        if (
+            self.status == "Un"
+            and self.creation_status > 1
+            and not getattr(self, "freebies_approved", False)
+        ):
             return reverse("characters:chargen_back", kwargs={"pk": self.pk})
         return ""
 

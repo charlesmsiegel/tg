@@ -99,6 +99,18 @@ class TestChargenBackView(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
 
+    def test_st_cannot_go_back_on_another_players_character(self):
+        """ST status grants no back-navigation on someone else's character."""
+        st = User.objects.create_user("st", "st@test.com", "password")
+        st.is_staff = True
+        st.save()
+        self.client.login(username="st", password="password")
+        url = reverse("characters:chargen_back", kwargs={"pk": self.char.pk})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.char.refresh_from_db()
+        self.assertEqual(self.char.creation_status, 3)
+
     def test_not_logged_in_redirects(self):
         url = reverse("characters:chargen_back", kwargs={"pk": self.char.pk})
         response = self.client.post(url)
@@ -188,6 +200,18 @@ class TestChargenBackUrlProperty(TestCase):
         char.save()
         self.assertEqual(char.chargen_back_url, "")
 
+    def test_empty_when_freebies_approved(self):
+        """The view blocks back-nav once freebies are approved, so the button
+        must hide rather than render a guaranteed no-op."""
+        char = Human.objects.create(
+            name="C",
+            owner=self.user,
+            status="Un",
+            creation_status=6,
+            freebies_approved=True,
+        )
+        self.assertEqual(char.chargen_back_url, "")
+
     def test_locations_have_no_chargen_back_url(self):
         """LocationModel also has creation_status but must not expose the
         Back button — the property lives on Character only."""
@@ -195,3 +219,44 @@ class TestChargenBackUrlProperty(TestCase):
 
         loc = LocationModel.objects.create(name="Chantry", status="Un")
         self.assertFalse(hasattr(loc, "chargen_back_url"))
+
+
+class TestChargenBackButtonRendering(TestCase):
+    """The Back button must appear only for the owner mid-chargen."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("player", "p@test.com", "password")
+        self.client.login(username="player", password="password")
+
+    def _get(self, char):
+        return self.client.get(
+            reverse("characters:character", kwargs={"pk": char.pk})
+        )
+
+    def test_button_present_mid_chargen(self):
+        char = Human.objects.create(
+            name="C", owner=self.user, status="Un", creation_status=2
+        )
+        response = self._get(char)
+        self.assertContains(response, "chargen/back/")
+
+    def test_button_absent_on_step_1(self):
+        char = Human.objects.create(
+            name="C", owner=self.user, status="Un", creation_status=1
+        )
+        response = self._get(char)
+        self.assertNotContains(response, "chargen/back/")
+
+    def test_button_absent_when_freebies_approved(self):
+        # Step 5 (freebies) renders for an owner; step 6 would auto-advance
+        # for a plain Human lacking the Language merit (see #1462).
+        char = Human.objects.create(
+            name="C",
+            owner=self.user,
+            status="Un",
+            creation_status=5,
+            freebies_approved=True,
+        )
+        response = self._get(char)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "chargen/back/")
