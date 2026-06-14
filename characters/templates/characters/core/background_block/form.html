@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // BackgroundRatingForm's rating is an IntegerField clamped to 0..5, so a
     // negative or fractional rating is rejected server-side; the counter must
     // treat such a row as invalid rather than folding it into the total.
-    var RATING_MIN = 0, RATING_MAX = 5;
+    var RATING_MIN = 0;
+    var RATING_MAX = 5;
 
     function validate() {
         var total = 0;
