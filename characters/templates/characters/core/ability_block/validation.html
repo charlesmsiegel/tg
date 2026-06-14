@@ -53,11 +53,14 @@
         // (HumanAbilityView.form_valid and variants) rejects values below 0 or
         // above 3, and IntegerField rejects fractions, so checking only the
         // category totals would let an out-of-range value pass the client.
+        // Detection only — the client never clamps/mutates the input value.
         function anyOutOfRange() {
             return groups.some(function(group) {
                 return group.some(function(field) {
+                    // The ModelForm field is required, so a cleared input is
+                    // invalid even if other ratings offset the category total.
                     var raw = field.value.trim();
-                    if (raw === '') return false;
+                    if (raw === '') return true;
                     var value = Number(raw);
                     var isInt = isFinite(value) && Math.floor(value) === value;
                     return !isInt || value < 0 || value > MAX_RATING;
@@ -78,6 +81,8 @@
                 message = 'Distribute {{ primary }}/{{ secondary }}/{{ tertiary }} dots across categories (currently ' + totals.slice().reverse().join('/') + ')';
             }
             TG.validation.setStatus(statusEl, valid, message);
+            // Abilities block submit until the distribution is valid; the
+            // backgrounds/virtues counters are status-only by design.
             TG.validation.setSubmitEnabled(form, valid);
         }
 

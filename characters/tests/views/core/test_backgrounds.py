@@ -392,9 +392,10 @@ class TestHumanBackgroundsViewContext(TestCase):
         )
 
     def test_empty_form_in_context(self):
-        """empty_form must be in context: the points-counter JS builds its
-        multiplier map from empty_form.bg.field.queryset."""
+        """empty_form and the multiplier-map JSON must be in context: the
+        points-counter JS depends on both."""
         self.client.login(username="owner", password="password")
         response = self.client.get(self.human.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertIn("empty_form", response.context)
+        self.assertIn("background_multipliers_json", response.context)
