@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView
 
@@ -70,13 +72,14 @@ class HumanBackgroundsView(SpendFreebiesPermissionMixin, FormView):
             property_name__in=self.object.allowed_backgrounds
         )
         context["empty_form"] = empty_form
-        # Multiplier map for the client points counter. It must cover EVERY
-        # selectable background, not just the allowed set: the formset's
-        # add-row rebuilds empty_form with add_fields(), which resets the bg
-        # queryset to all backgrounds, so a dynamically added row can select
-        # one outside allowed_backgrounds and the server still applies its
-        # real multiplier. pk and multiplier are both integers.
-        context["background_multipliers"] = dict(
-            Background.objects.values_list("pk", "multiplier")
+        # Multiplier map (pk -> cost multiplier) for the client points counter.
+        # It must cover EVERY selectable background, not just the allowed set:
+        # the formset's add-row rebuilds empty_form with add_fields(), which
+        # resets the bg queryset to all backgrounds, so a dynamically added row
+        # can select one outside allowed_backgrounds and the server still
+        # applies its real multiplier. Rendered via json.dumps to avoid a
+        # hand-built template loop; pk/multiplier are integers (no XSS).
+        context["background_multipliers_json"] = json.dumps(
+            dict(Background.objects.values_list("pk", "multiplier"))
         )
         return context
