@@ -71,7 +71,8 @@
         function validate() {
             var totals = groups.map(groupTotal).sort(function(a, b) { return a - b; });
             var outOfRange = anyOutOfRange();
-            var valid = !outOfRange && JSON.stringify(totals) === JSON.stringify(TARGETS);
+            var totalsMatch = totals.every(function(t, i) { return t === TARGETS[i]; });
+            var valid = !outOfRange && totalsMatch;
             var message;
             if (valid) {
                 message = 'Valid ({{ primary }}/{{ secondary }}/{{ tertiary }})';

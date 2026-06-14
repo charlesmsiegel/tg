@@ -42,10 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // multiplier are both integers, so rendering them into JS is safe.
     {# |safe is XSS-safe only because the view json.dumps a dict of integer
        pk->multiplier pairs. Do not reuse this with any string values. #}
+    // Built from all backgrounds; only empty on an unseeded table, in which
+    // case costs fall back to 1/dot (the server still enforces the budget).
     var MULTIPLIERS = {{ background_multipliers_json|safe }};
-    if (Object.keys(MULTIPLIERS).length === 0) {
-        console.warn('Background multiplier map is empty; all costs fall back to 1 per dot.');
-    }
 
     // BackgroundRatingForm's rating is an IntegerField clamped to 0..5, so a
     // negative or fractional rating is rejected server-side; the counter must
