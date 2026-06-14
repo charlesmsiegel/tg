@@ -103,6 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // formset:removed on document without an input/change event, so the
     // counter would otherwise keep the removed row's dots in the total.
     // (Dispatched on `document` by widgets/widgets/formset_manager.py.)
+    // Assumes the backgrounds step renders a single formset; re-validating
+    // on any formset removal is harmless since validate() rescans bg rows.
     document.addEventListener('formset:removed', validate);
     validate();
 });
