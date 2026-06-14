@@ -137,7 +137,10 @@
                             btn.disabled = !enabled;
                         });
                     },
-                    /* Sum integer values of inputs/selects matching selector. */
+                    /* Sum integer values of inputs/selects matching selector.
+                       Status display only: parseInt truncates fractionals, so
+                       callers gating validity must reject non-integers
+                       separately rather than trust this total. */
                     sumFields: function(form, selector) {
                         if (!form) return 0;
                         var total = 0;
