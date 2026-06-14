@@ -66,7 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var ratingInput = form.querySelector('input[name="' + prefix + '-rating"]');
             if (!ratingInput) return;
             var raw = ratingInput.value.trim();
-            if (raw === '') return;
+            if (raw === '') {
+                // A selected background requires a rating (form field is
+                // required); a blank rating can't save, so mark invalid.
+                outOfRange = true;
+                return;
+            }
             var rating = Number(raw);
             var isInt = isFinite(rating) && Math.floor(rating) === rating;
             if (!isInt || rating < RATING_MIN || rating > RATING_MAX) {
