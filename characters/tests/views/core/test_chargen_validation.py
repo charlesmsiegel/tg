@@ -143,6 +143,7 @@ class TestChargenValidationRendering(TestCase):
         self.assertContains(response, f'"{bg.pk}": {bg.multiplier}')
 
     def test_virtues_step_renders_validation(self):
+        # creation_status 5 is the Vampire virtues step (VampireVirtuesView).
         char = Vampire.objects.create(
             name="Virtue Vampire", owner=self.owner, creation_status=5
         )
