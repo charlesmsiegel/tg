@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
        pk->multiplier pairs. Do not reuse this with any string values. #}
     // Built from all backgrounds; only empty on an unseeded table, in which
     // case costs fall back to 1/dot (the server still enforces the budget).
-    var MULTIPLIERS = {{ background_multipliers_json|safe }};
+    {# default:"{}" guards against an empty render (var absent from context)
+       producing `var MULTIPLIERS = ;` — a syntax error that breaks the script. #}
+    var MULTIPLIERS = {{ background_multipliers_json|default:"{}"|safe }};
 
     // BackgroundRatingForm's rating is an IntegerField clamped to 0..5, so a
     // negative or fractional rating is rejected server-side; the counter must

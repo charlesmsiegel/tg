@@ -40,6 +40,8 @@
         // higher values, so the client must enforce the cap too.
         var MAX_RATING = 3;
 
+        // Parallel to TG.validation.sumFields but takes a pre-grouped array of
+        // inputs (not a selector), so it can't delegate to that helper.
         function groupTotal(group) {
             var total = 0;
             group.forEach(function(field) {
