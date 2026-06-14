@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // background's pk to its multiplier — not just the allowed subset —
     // because the formset add-row can select any background. pk and
     // multiplier are both integers, so rendering them into JS is safe.
+    {# |safe is XSS-safe only because the view json.dumps a dict of integer
+       pk->multiplier pairs. Do not reuse this with any string values. #}
     var MULTIPLIERS = {{ background_multipliers_json|safe }};
     if (Object.keys(MULTIPLIERS).length === 0) {
         console.warn('Background multiplier map is empty; all costs fall back to 1 per dot.');
