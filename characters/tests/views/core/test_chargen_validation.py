@@ -125,8 +125,8 @@ class TestChargenValidationRendering(TestCase):
 
     def test_backgrounds_step_renders_validation(self):
         # The plain-Human step 3 template (core/human/chargen.html) has no
-        # backgrounds block (pre-existing gap), so exercise a flow whose
-        # template includes background_block/form.html: the Wraith human.
+        # backgrounds block (pre-existing gap, tracked in #1459), so exercise a
+        # flow whose template includes background_block/form.html: Wraith human.
         char = WtOHuman.objects.create(
             name="Background Human", owner=self.owner, creation_status=3
         )
