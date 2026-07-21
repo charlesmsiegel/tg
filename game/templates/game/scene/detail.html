@@ -50,7 +50,7 @@
                         <p class="post mb-0" style="line-height: 1.6;">
                             <strong {% if post.character.owner.profile.is_st %}class="st"{% elif post.character.owner == request.user %}class="highlight"{% endif %}>
                                 <a href="{{ post.character.get_absolute_url }}" style="font-weight: 600;">{{ post.display_name }}</a>
-                            </strong>: {{ post.message|quote_tag }}
+                            </strong>: {{ post.message|safe_post }}
                         </p>
                     </div>
                 {% empty %}
@@ -324,12 +324,16 @@
                 highlightClass = 'class="highlight"';
             }
 
-            // Create HTML with all user content escaped
+            // Message HTML is sanitized server-side (message_html); fall back
+            // to escaping the raw message if it's missing.
+            const messageHtml = post.message_html !== undefined
+                ? post.message_html
+                : escapeHtml(post.message);
             postDiv.innerHTML = `
                 <p class="post mb-0" style="line-height: 1.6;">
                     <strong ${highlightClass}>
                         <a href="${escapeHtml(post.character_url)}" style="font-weight: 600;">${escapeHtml(post.display_name)}</a>
-                    </strong>: ${escapeHtml(post.message)}
+                    </strong>: ${messageHtml}
                 </p>
             `;
 

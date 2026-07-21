@@ -61,7 +61,7 @@
                                             {% for scene in scenes %}
                                                 <tr style="transition: var(--transition-fast);">
                                                     <td data-label="Title" style="padding: 16px;">
-                                                        <a href="{{ scene.get_absolute_url }}" class="{{ scene.gameline }}_heading" style="font-weight: 600;">
+                                                        <a href="{{ scene.get_absolute_url }}" class="{{ object.headings|default:'wod_heading' }}" style="font-weight: 600;">
                                                             {{ scene.name }}
                                                         </a>
                                                     </td>

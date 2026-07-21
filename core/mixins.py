@@ -272,13 +272,19 @@ class SpecialUserMixin:
     - Any authenticated storyteller (ST)
     - Anyone if the object has no owner
 
-    Usage:
-        class MyView(SpecialUserMixin, DetailView):
-            def get_context_data(self, **kwargs):
-                context = super().get_context_data(**kwargs)
-                context['is_special'] = self.check_if_special_user(self.object, self.request.user)
-                return context
+    Templates gating on ``is_approved_user`` should set it via
+    get_is_approved_user(); auto-setting it for all such views is in #1459.
     """
+
+    def get_is_approved_user(self, obj):
+        """is_approved_user value for templates: staff OR special-user access.
+
+        Combines the middleware/context-processor staff flag with the
+        per-object special-user check so neither audience is excluded.
+        """
+        return getattr(self.request, "is_approved_user", False) or (
+            self.check_if_special_user(obj, self.request.user)
+        )
 
     def check_if_special_user(self, obj, user):
         """

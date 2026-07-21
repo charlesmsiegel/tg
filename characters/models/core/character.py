@@ -252,11 +252,11 @@ class Character(CharacterModel):
 
     def next_stage(self):
         self.creation_status += 1
-        self.save()
+        self.save(update_fields=["creation_status"])
 
     def prev_stage(self):
         self.creation_status -= 1
-        self.save()
+        self.save(update_fields=["creation_status"])
 
     def has_concept(self):
         return self.concept != ""
@@ -267,6 +267,24 @@ class Character(CharacterModel):
 
     def get_absolute_url(self):
         return reverse("characters:character", kwargs={"pk": self.pk})
+
+    def can_navigate_back(self):
+        """Whether chargen back-navigation is currently allowed. Single source
+        of truth shared by chargen_back_url and ChargenBackView."""
+        # freebies_approved lives on Human, not the base Character.
+        return (
+            self.status == "Un"
+            and self.creation_status > 1
+            and not getattr(self, "freebies_approved", False)
+        )
+
+    @property
+    def chargen_back_url(self):
+        """Back-navigation URL during chargen, or "" — Character-only so the
+        shared form gates the button by attribute presence."""
+        if self.can_navigate_back():
+            return reverse("characters:chargen_back", kwargs={"pk": self.pk})
+        return ""
 
     def get_update_url(self):
         return reverse("characters:update:character", kwargs={"pk": self.pk})

@@ -1,4 +1,7 @@
-2{% extends "core/form.html" %}
+{% extends "core/form.html" %}
+{% block progress %}
+    {% include "characters/core/chargen_progress.html" %}
+{% endblock progress %}
 {% block creation_title %}
     Create Human
 {% endblock creation_title %}

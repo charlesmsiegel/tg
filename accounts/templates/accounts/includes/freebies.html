@@ -32,10 +32,10 @@
                                             {{ freebie_form.character.type.title }}
                                         {% endif %}
                                     </div>
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:freebie_award' character_pk=freebie_form.character.pk %}" method="post">
                                         {% csrf_token %}
                                         <div class="mb-2">{{ freebie_form.backstory_freebies }}</div>
-                                        <button type="submit" name="submit_freebies" value="{{ freebie_form.character.pk }}" class="tg-btn btn-primary btn-sm">
+                                        <button type="submit" class="tg-btn btn-primary btn-sm">
                                             <i class="fas fa-plus"></i> Add Freebies
                                         </button>
                                     </form>

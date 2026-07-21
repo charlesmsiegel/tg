@@ -345,6 +345,10 @@ class MtAHumanAbilityView(SpecialUserMixin, UpdateView):
         context["primary"] = self.primary
         context["secondary"] = self.secondary
         context["tertiary"] = self.tertiary
+        # The chargen template gates on is_approved_user; the global context
+        # processor only sets it for staff (see #1459), so without this the
+        # owner sees the not-owner fallback instead of the ability form.
+        context["is_approved_user"] = self.get_is_approved_user(self.object)
         return context
 
     def form_valid(self, form):

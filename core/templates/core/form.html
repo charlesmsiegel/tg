@@ -33,6 +33,8 @@
                 </div>
             {% endblock heading %}
 
+            {% block progress %}{% endblock progress %}
+
             {% block errors %}
                 {% if form.non_field_errors %}
                     <div class="tg-card mb-4">
@@ -79,9 +81,29 @@
                 <!-- Form Actions -->
                 <div class="tg-card">
                     <div class="tg-card-body text-center">
+                        {# Save is rendered FIRST so it stays the form's implicit
+                           submitter (Enter in a single-line field): otherwise a
+                           leading Back button — which carries formnovalidate —
+                           would submit and silently discard the step's edits. #}
                         <button type="submit" class="tg-btn btn-primary btn-lg">
                             <i class="fas fa-save"></i> Save
                         </button>
+                        {# chargen_back_url is only present on Character (not
+                           locations/items that also have creation_status) and
+                           is non-empty only mid-chargen; the owner check hides
+                           the button from STs/admins the endpoint would 403. #}
+                        {% with back_url=object.chargen_back_url %}
+                            {% if back_url and object.owner_id == request.user.id %}
+                                {# formaction overrides the outer form's action for this button only — no nested form needed #}
+                                <button type="submit"
+                                        formaction="{{ back_url }}"
+                                        formnovalidate
+                                        title="Go back one step. Unsaved changes on this step are discarded."
+                                        class="tg-btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                            {% endif %}
+                        {% endwith %}
                         {% if object %}
                             <a href="{{ object.get_absolute_url }}" class="tg-btn btn-secondary btn-lg">
                                 <i class="fas fa-times"></i> Cancel
@@ -90,6 +112,58 @@
                     </div>
                 </div>
             {% endblock buttons %}
+
+            {% block form_scripts %}
+                {# Must stay inside the form, after the content blocks: step
+                   scripts render earlier in the document and reference
+                   TG.validation from DOMContentLoaded handlers, which fire
+                   after this block has been parsed. #}
+                <script>
+                window.TG = window.TG || {};
+                TG.validation = {
+                    /* Set text and color (green/red) on a status element. */
+                    setStatus: function(el, valid, message) {
+                        if (!el) return;
+                        el.textContent = message;
+                        el.style.color = valid ? 'var(--color-success, #28a745)' : 'var(--color-danger, #dc3545)';
+                    },
+                    /* Enable/disable the form's main submit button (not Back/Cancel). */
+                    setSubmitEnabled: function(form, enabled) {
+                        if (!form) return;
+                        var buttons = form.querySelectorAll(
+                            'button[type="submit"]:not([formaction]), input[type="submit"]:not([formaction])'
+                        );
+                        Array.prototype.forEach.call(buttons, function(btn) {
+                            btn.disabled = !enabled;
+                        });
+                    },
+                    /* Sum integer values of inputs/selects matching selector.
+                       Status display only: parseInt truncates fractionals, so
+                       callers gating validity must reject non-integers
+                       separately rather than trust this total. */
+                    sumFields: function(form, selector) {
+                        if (!form) return 0;
+                        var total = 0;
+                        Array.prototype.forEach.call(form.querySelectorAll(selector), function(field) {
+                            var value = parseInt(field.value, 10);
+                            if (!isNaN(value)) total += value;
+                        });
+                        return total;
+                    },
+                    /* Count checked checkboxes matching selector.
+                       Not used yet; part of the shared API for upcoming
+                       chargen step validations (e.g. merit/flaw pickers). */
+                    countChecked: function(form, selector) {
+                        if (!form) return 0;
+                        var count = 0;
+                        Array.prototype.forEach.call(form.querySelectorAll(selector), function(box) {
+                            if (box.checked) count += 1;
+                        });
+                        return count;
+                    }
+                };
+                </script>
+            {% endblock form_scripts %}
         </form>
     </div>
 {% endblock content %}

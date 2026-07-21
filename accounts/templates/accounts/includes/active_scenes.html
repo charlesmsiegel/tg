@@ -15,9 +15,9 @@
                                     <h5 class="mb-3">
                                         <a href="{{ scene.get_absolute_url }}">{{ scene.name }}</a>
                                     </h5>
-                                    <form action="" method="post">
+                                    <form action="{% url 'accounts:mark_scene_read' scene_pk=scene.pk %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" name="mark_scene_read" value="{{ scene.pk }}" class="tg-btn btn-primary btn-sm">
+                                        <button type="submit" class="tg-btn btn-primary btn-sm">
                                             <i class="fas fa-check"></i> Mark Read
                                         </button>
                                     </form>
