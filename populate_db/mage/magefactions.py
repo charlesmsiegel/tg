@@ -164,6 +164,7 @@ MageFaction.objects.get_or_create(name="Ka'a Klubwerks", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Khlysty Flagellants", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Studiosi", parent=cox)[0]
 MageFaction.objects.get_or_create(name="Umilyenye", parent=cox)[0]
+dissidents_against_ananda = MageFaction.objects.get_or_create(name="Dissidents Against Ananda", parent=cox)[0]
 
 ds = MageFaction.objects.get_or_create(
     name="Dreamspeakers",
@@ -222,7 +223,7 @@ eu.save()
 MageFaction.objects.get_or_create(name="Chakravanti", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Madzimbabwe", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Vrati", parent=eu)[0]
-MageFaction.objects.get_or_create(name="Aided", parent=eu)[0]
+aided = MageFaction.objects.get_or_create(name="Aided", parent=eu)[0]
 MageFaction.objects.get_or_create(name="Hierchthonoi", parent=eu)[0]
 ooh = MageFaction.objects.get_or_create(name="Order of Hermes", parent=traditions, founded=750)[0]
 ooh.affinities.add(forces)
@@ -287,13 +288,13 @@ soe.languages.add(french, latin)
 soe.materials.add(leather, cloth, wood, steel, bone)
 soe.media.add(book, flash_drive, ebook, software)
 soe.save()
-MageFaction.objects.get_or_create(name="The Royal Ethernautical Society", parent=soe)[0]
+royal_ethernautical = MageFaction.objects.get_or_create(name="The Royal Ethernautical Society", parent=soe)[0]
 MageFaction.objects.get_or_create(name="The Cybernetic Research Institute", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Progressivists", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Utopians", parent=soe)[0]
-MageFaction.objects.get_or_create(name="Adventurers", parent=soe)[0]
+adventurers = MageFaction.objects.get_or_create(name="Adventurers", parent=soe)[0]
 MageFaction.objects.get_or_create(name="Aquanauts", parent=soe)[0]
-MageFaction.objects.get_or_create(name="Dissidents", parent=soe)[0]
+dissidents_soe = MageFaction.objects.get_or_create(name="Dissidents", parent=soe)[0]
 verb = MageFaction.objects.get_or_create(name="Verbena", parent=traditions, founded=-2000)[0]
 verb.affinities.add(forces, life)
 verb.paradigms.add(
@@ -324,7 +325,7 @@ verb.media.add(book, tablets)
 verb.save()
 MageFaction.objects.get_or_create(name="Moon-Seekers", parent=verb)[0]
 MageFaction.objects.get_or_create(name="Gardeners of the Tree", parent=verb)[0]
-MageFaction.objects.get_or_create(name="Life Weavers", parent=verb)[0]
+life_weavers = MageFaction.objects.get_or_create(name="Life Weavers", parent=verb)[0]
 MageFaction.objects.get_or_create(name="Twisters of Fate", parent=verb)[0]
 va = MageFaction.objects.get_or_create(
     name="Virtual Adepts",
@@ -347,10 +348,10 @@ va.materials.add(leather, cloth, steel)
 va.media.add(book, ebook, software, flash_drive)
 va.save()
 MageFaction.objects.get_or_create(name="Reality Coders", parent=va)[0]
-MageFaction.objects.get_or_create(name="Cyberpunks", parent=va)[0]
+cyberpunks = MageFaction.objects.get_or_create(name="Cyberpunks", parent=va)[0]
 MageFaction.objects.get_or_create(name="Chaoticians", parent=va)[0]
 MageFaction.objects.get_or_create(name="Cypherpunks", parent=va)[0]
-MageFaction.objects.get_or_create(name="Nexplorers", parent=va)[0]
+nexplorers = MageFaction.objects.get_or_create(name="Nexplorers", parent=va)[0]
 
 da = MageFaction.objects.get_or_create(name="The Disparate Alliance")[0]
 hollow_ones = MageFaction.objects.get_or_create(
@@ -494,17 +495,17 @@ nwo.affinities.add(mind, correspondence)
 nwo.paradigms.add(gods_and_monsters, might_is_right, tech_holds_all_answers)
 nwo.practices.add(dominion, martialarts, hypertech, bardism)
 nwo.save()
-syn = MageFaction.objects.get_or_create(name="The Syndicate", parent=tu)[0]
+syn = syndicate = MageFaction.objects.get_or_create(name="The Syndicate", parent=tu)[0]
 syn.affinities.add(entropy, mind, prime)
 syn.paradigms.add(might_is_right, one_way_trip_to_oblivion)
 syn.practices.add(artofdesire, martialarts, dominion, bardism)
 syn.save()
-prog = MageFaction.objects.get_or_create(name="Progenitors", parent=tu)[0]
+prog = progenitors = MageFaction.objects.get_or_create(name="Progenitors", parent=tu)[0]
 prog.affinities.add(life, entropy, mind)
 prog.paradigms.add(might_is_right, divine_and_alive)
 prog.practices.add(weirdscience, medicinework, cybernetics, hypertech)
 prog.save()
-ve = MageFaction.objects.get_or_create(name="Void Engineers", parent=tu)[0]
+ve = void_engineers = MageFaction.objects.get_or_create(name="Void Engineers", parent=tu)[0]
 ve.affinities.add(spirit, correspondence, forces)
 ve.paradigms.add(tech_holds_all_answers, gods_and_monsters, everything_is_chaos)
 ve.practices.add(hypertech, cybernetics, craftwork, realityhacking, weirdscience)
@@ -514,23 +515,23 @@ MageFaction.objects.get_or_create(name="Statisticians", parent=itx)[0]
 MageFaction.objects.get_or_create(name="Time-Motion Managers", parent=itx)[0]
 MageFaction.objects.get_or_create(name="Macrotechnicians", parent=itx)[0]
 MageFaction.objects.get_or_create(name="Ivory Tower", parent=nwo)[0]
-MageFaction.objects.get_or_create(name="The Operatives", parent=nwo)[0]
+operatives = MageFaction.objects.get_or_create(name="The Operatives", parent=nwo)[0]
 MageFaction.objects.get_or_create(name="The Watchers", parent=nwo)[0]
 MageFaction.objects.get_or_create(name="The Feed", parent=nwo)[0]
 MageFaction.objects.get_or_create(name="Division Q", parent=nwo)[0]
 MageFaction.objects.get_or_create(name="Media Control", parent=syn)[0]
-MageFaction.objects.get_or_create(name="Financiers", parent=syn)[0]
-MageFaction.objects.get_or_create(name="Enforcers", parent=syn)[0]
+financiers = MageFaction.objects.get_or_create(name="Financiers", parent=syn)[0]
+enforcers = MageFaction.objects.get_or_create(name="Enforcers", parent=syn)[0]
 MageFaction.objects.get_or_create(name="Disbursements", parent=syn)[0]
 MageFaction.objects.get_or_create(name="Pharmacopoeists", parent=prog)[0]
 MageFaction.objects.get_or_create(name="Damage Control", parent=prog)[0]
-MageFaction.objects.get_or_create(name="Applied Science", parent=prog)[0]
+applied_science = MageFaction.objects.get_or_create(name="Applied Science", parent=prog)[0]
 MageFaction.objects.get_or_create(name="FACADE Engineers", parent=prog)[0]
 MageFaction.objects.get_or_create(name="Genegineers", parent=prog)[0]
 MageFaction.objects.get_or_create(name="Earth Frontier Division", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Research and Execution", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Neutralization Specialization Corps", parent=ve)[0]
-MageFaction.objects.get_or_create(name="Border Corps Division", parent=ve)[0]
+border_corps = MageFaction.objects.get_or_create(name="Border Corps Division", parent=ve)[0]
 MageFaction.objects.get_or_create(name="Pan-Dimension Corps", parent=ve)[0]
 
 nephandi = MageFaction.objects.get_or_create(name="Nephandi")[0]

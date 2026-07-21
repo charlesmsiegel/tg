@@ -117,3 +117,5 @@ generated_stuff/
 .mcp.json
 db_test.sqlite3-journal
 .worktrees/
+online_game.sqlite3:Zone.Identifier
+online_game.sqlite3
