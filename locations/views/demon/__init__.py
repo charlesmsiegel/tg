@@ -10,3 +10,14 @@ from .reliquary import (
     ReliquaryListView,
     ReliquaryUpdateView,
 )
+
+__all__ = [
+    "BastionCreateView",
+    "BastionDetailView",
+    "BastionListView",
+    "BastionUpdateView",
+    "ReliquaryCreateView",
+    "ReliquaryDetailView",
+    "ReliquaryListView",
+    "ReliquaryUpdateView",
+]

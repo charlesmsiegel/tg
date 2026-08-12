@@ -10,3 +10,14 @@ from .safehouse import (
     SafehouseListView,
     SafehouseUpdateView,
 )
+
+__all__ = [
+    "HuntingGroundCreateView",
+    "HuntingGroundDetailView",
+    "HuntingGroundListView",
+    "HuntingGroundUpdateView",
+    "SafehouseCreateView",
+    "SafehouseDetailView",
+    "SafehouseListView",
+    "SafehouseUpdateView",
+]

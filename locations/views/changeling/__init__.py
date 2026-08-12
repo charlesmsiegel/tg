@@ -24,3 +24,27 @@ from .holding import (
     HoldingUpdateView,
 )
 from .trod import TrodCreateView, TrodDetailView, TrodListView, TrodUpdateView
+
+__all__ = [
+    "FreeholdBasicsView",
+    "FreeholdCreationView",
+    "FreeholdDetailsView",
+    "FreeholdFeaturesView",
+    "FreeholdPowersView",
+    "DreamRealmCreateView",
+    "DreamRealmDetailView",
+    "DreamRealmListView",
+    "DreamRealmUpdateView",
+    "FreeholdCreateView",
+    "FreeholdDetailView",
+    "FreeholdListView",
+    "FreeholdUpdateView",
+    "HoldingCreateView",
+    "HoldingDetailView",
+    "HoldingListView",
+    "HoldingUpdateView",
+    "TrodCreateView",
+    "TrodDetailView",
+    "TrodListView",
+    "TrodUpdateView",
+]

@@ -19,3 +19,30 @@ from .necropolis import (
     NecropolisUpdateView,
 )
 from .nihil import NihilCreateView, NihilDetailView, NihilListView, NihilUpdateView
+
+__all__ = [
+    "BywayCreateView",
+    "BywayDetailView",
+    "BywayListView",
+    "BywayUpdateView",
+    "CitadelCreateView",
+    "CitadelDetailView",
+    "CitadelListView",
+    "CitadelUpdateView",
+    "WraithFreeholdCreateView",
+    "WraithFreeholdDetailView",
+    "WraithFreeholdListView",
+    "WraithFreeholdUpdateView",
+    "HauntCreateView",
+    "HauntDetailView",
+    "HauntListView",
+    "HauntUpdateView",
+    "NecropolisCreateView",
+    "NecropolisDetailView",
+    "NecropolisListView",
+    "NecropolisUpdateView",
+    "NihilCreateView",
+    "NihilDetailView",
+    "NihilListView",
+    "NihilUpdateView",
+]
