@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.http import Http404
@@ -32,6 +32,11 @@ class SignUp(MessageMixin, CreateView):
     template_name = "accounts/signup.html"
     success_message = "Account created successfully! Welcome to Tellurium Games."
     error_message = "Failed to create account. Please correct the errors below."
+
+
+class CustomPasswordResetView(PasswordResetView):
+    email_template_name = "accounts/registration/password_reset_email.txt"
+    html_email_template_name = "accounts/registration/password_reset_email.html"
 
 
 def verify_st_for_chronicle(request, chronicle, action_description="this action"):

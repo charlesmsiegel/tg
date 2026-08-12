@@ -4,6 +4,7 @@ from accounts import views
 from core import views as core_views
 
 urlpatterns = [
+    path("password_reset/", views.CustomPasswordResetView.as_view(), name="password_reset"),
     path("signup/", views.SignUp.as_view(), name="signup"),
     path("profile/update/<pk>/", views.ProfileUpdateView.as_view(), name="profile_update"),
     path("profile/<pk>/", views.ProfileView.as_view(), name="profile"),
