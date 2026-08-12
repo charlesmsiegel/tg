@@ -51,11 +51,14 @@ an observable contract and benefits the correct scope.
 
 ### 1. Secure the HTML password-reset email
 
-Remove block-wide `autoescape off` only from the HTML email template. Retain it
-in the text body and subject, where HTML entity escaping is not a security
-boundary. Add a password-reset email rendering test with hostile HTML in the
-username and site name; assert the HTML body escapes it and the reset URL remains
-usable.
+Configure the password-reset view to use `password_reset_email.txt` as its
+plain-text body and `password_reset_email.html` as its HTML alternative. The
+stock Django view currently sends the `.html` file as `text/plain` and never
+uses the existing `.txt` file. Remove block-wide `autoescape off` only from the
+HTML alternative. Retain it in the text body and subject, where HTML entity
+escaping is not a security boundary. Add an end-to-end mail test with hostile
+HTML in the username; assert that the text part remains readable, the HTML part
+escapes it, and both reset URLs remain usable.
 
 ### 2. Correct detector classification
 
@@ -126,7 +129,8 @@ unscored candidates.
 
 ## Acceptance Criteria
 
-- Hostile username/site-name HTML is escaped in the HTML reset email.
+- Password-reset mail contains a plain-text body and an HTML alternative, and
+  hostile username HTML is escaped in the HTML alternative.
 - Plain-text reset templates render without unwanted HTML entities and are not
   reported as high-severity autoescape defects.
 - Django declarative class configuration and intentional signal imports are not
