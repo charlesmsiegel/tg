@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">widgets — Codebase Atlas</h1>
-  <p class="doc-sub">Reusable dynamic form-interaction components</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 31 files, 5329 LOC</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -184,6 +184,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
 <button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this is</h2>
@@ -241,6 +242,7 @@ flowchart TD
 
 <h2>Eval / coverage artifacts</h2>
 <p class="dim">No coverage artifact (coverage.xml, lcov.info, coverage.out) was found in the repo, so no Coverage tab is included &mdash; test extent below is read from the test files themselves, not measured. There is no eval/benchmark infrastructure in this package, which is expected for a UI-widget library with no model calls.</p>
+
 
 </section>
 <section class="panel" id="inventory" role="tabpanel">
@@ -351,17 +353,17 @@ flowchart TD
 <tbody><tr><td><code>widgets/__init__.py</code></td><td class='num'>6</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>3</td></tr>
 <tr><td><code>widgets/chained.py</code></td><td class='num'>4</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>fields/chained.py</code></td><td class='num'>3</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>widgets/point_pool.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>mixins/chained.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>2</td></tr>
-<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>mixins/conditional.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>widgets/metadata_select.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>views.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>mixins/conditional.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/point_pool.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>2</td></tr>
 <tr><td><code>widgets/formset_manager.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>fields/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>mixins/point_pool.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>widgets/filterable.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>mixins/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>fields/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/filterable.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>utils.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
 </div>
 <div>
@@ -394,7 +396,7 @@ flowchart TD
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">18</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">19</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">31</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">conditional.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -438,6 +440,7 @@ flowchart TD
 
 </section>
 <section class="panel" id="flows" role="tabpanel">
+
 
 <p class="dim">Four flows chosen for where a mistake would be hardest to notice: the cascading-select round trip (the package's largest, most-used subsystem), the point-pool distribution check (implemented twice, client and server), the create-or-select save path (skips model validation on purpose), and the startup URL registration (runs once per process, fails silently).</p>
 
@@ -551,8 +554,10 @@ sequenceDiagram
 <li>Mutating <code>urlpatterns</code> in place at import time is order-dependent on which app's <code>ready()</code> runs first relative to when the URLconf module was first imported and cached.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <h2>Concern ownership</h2>
 <div class="tbl-wrap"><table>
@@ -581,8 +586,10 @@ sequenceDiagram
 <h2>Dependency graph &mdash; no cycles</h2>
 <p>The automated dependency scan found zero import cycles at either module or file granularity (<code>module_cycles: []</code>, <code>file_cycles: []</code> in <code>analyze_deps</code>'s summary), and zero resource/template-load edges (the package loads no external templates or prompts &mdash; all rendered content is Python-string JS embedded directly in the widget modules). The 6-module split (<code>widgets</code>, <code>tests</code>, <code>mixins</code>, <code>templatetags</code>, repo root, <code>fields</code>) matches the real package layout with no structural surprises.</p>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <h2>Invariants</h2>
 <div class="tbl-wrap"><table>
@@ -614,8 +621,10 @@ sequenceDiagram
 <div class="callout warn"><strong>4. The package's own flagship examples are duplicated by hand in production, so fixes to the shared widget won't propagate.</strong> A bug fix or rule change to <code>widgets/mixins/point_pool.py</code>'s distribution logic will not reach the 10 chargen templates that include <code>attribute_block/form.html</code>'s independent ~230-line copy; a change to <code>widgets/widgets/filterable.py</code> won't reach <code>werewolf/gift/list.html</code> or <code>wraith/thorn/list.html</code>. This is a live maintenance trap, not a hypothetical one &mdash; both duplicates were confirmed by direct inspection, not inferred.</div>
 <div class="callout warn"><strong>5. ~5% of the package (268 lines) is unreferenced.</strong> <code>OptionMetadataSelect</code>/<code>OptionMetadataSelectMultiple</code> (<code>widgets/widgets/metadata_select.py</code>) are exported from the public API but have zero callers anywhere in the repo outside their own test file (confirmed via repo-wide grep) &mdash; not a runtime risk, but a maintenance cost and a sign the package was built ahead of the domain's actual pull on it.</div>
 
+
 </section>
 <section class="panel" id="glossary" role="tabpanel">
+
 
 <div class="tbl-wrap"><table>
 <thead><tr><th>Domain term</th><th>Code name(s)</th><th>Files</th><th>Note</th></tr></thead>
@@ -631,8 +640,9 @@ sequenceDiagram
 <h2>Misleading names</h2>
 <p class="dim">Outside the "metadata" drift above, naming is direct and consistent with the domain &mdash; class and field names describe what they do (<code>ChainedChoiceField</code>, <code>PointPoolMixin</code>, <code>CreateOrSelectField</code>) rather than generic UI abstractions. One small inconsistency: <code>widgets/widgets/point_pool.py:548</code> declares <code>PointPoolSelect._js_rendered</code> as if it were the class's own render-tracking flag, but the class's actual check at <code>widgets/widgets/point_pool.py:592</code> reads <code>PointPoolInput._js_rendered</code> instead &mdash; the declared attribute is never read by its own class, which will mislead anyone searching for where <code>PointPoolSelect</code> tracks its render state.</p>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */

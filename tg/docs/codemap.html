@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">tg — Codebase Atlas</h1>
-  <p class="doc-sub">Django project settings, URLconf, and the GAMELINES registry</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 8 files, 779 LOC</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -182,6 +182,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this is</h2>
@@ -240,13 +241,14 @@ flowchart TD
 <h2>Tests and evals</h2>
 <p class="dim">No test files live under <code>tg/</code> itself (unsurprising for a settings module), and no coverage artifact was found for this package — the Coverage tab is omitted rather than fabricated. No LLM call sites exist here either, so the LLM Ops tab is omitted too.</p>
 
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">8</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">779</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">7</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">777</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
   <div class="kpi warn"><div class="n">0%</div><div class="l">test code share</div></div>
 </div>
@@ -254,14 +256,14 @@ flowchart TD
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>779</td><td class='num'>8</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>100.0%</td></tr></tbody></table></div>
+<tbody><tr><td>Python</td><td class='num'>777</td><td class='num'>7</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>100.0%</td></tr></tbody></table></div>
 <p class="dim">Coverage: 1 file(s) in unrecognized languages are not counted above (.backup (1)).</p>
 
 <h2>Top-level directories</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
 <tbody><tr><td><code>settings/</code></td><td class='num'>698</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
-<tr><td><code>(root)/</code></td><td class='num'>81</td><td><div class="bar "><i style="width:11.6%"></i></div></td></tr></tbody></table></div>
+<tr><td><code>(root)/</code></td><td class='num'>79</td><td><div class="bar "><i style="width:11.3%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
 <div>
@@ -274,8 +276,7 @@ flowchart TD
 <tr><td><code>urls.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:12.1%"></i></div></td><td class='num'>3</td></tr>
 <tr><td><code>asgi.py</code></td><td class='num'>24</td><td><div class="bar "><i style="width:6.5%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>settings/__init__.py</code></td><td class='num'>24</td><td><div class="bar "><i style="width:6.5%"></i></div></td><td class='num'>3</td></tr>
-<tr><td><code>wsgi.py</code></td><td class='num'>10</td><td><div class="bar "><i style="width:2.7%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>secrets.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>wsgi.py</code></td><td class='num'>10</td><td><div class="bar "><i style="width:2.7%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Most branch-heavy files</h2>
@@ -288,8 +289,7 @@ flowchart TD
 <tr><td><code>settings/__init__.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:23.1%"></i></div></td><td class='num'>24</td><td class='num'>2</td></tr>
 <tr><td><code>settings/base.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:23.1%"></i></div></td><td class='num'>372</td><td class='num'>4</td></tr>
 <tr><td><code>asgi.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:7.7%"></i></div></td><td class='num'>24</td><td class='num'>3</td></tr>
-<tr><td><code>wsgi.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:7.7%"></i></div></td><td class='num'>10</td><td class='num'>0</td></tr>
-<tr><td><code>secrets.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>2</td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>wsgi.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:7.7%"></i></div></td><td class='num'>10</td><td class='num'>0</td></tr></tbody></table></div>
 </div>
 </div>
 
@@ -310,7 +310,7 @@ flowchart TD
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":81,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 5 files"},{"id":"settings","label":"settings","group":"settings","size":698,"fanIn":0,"fanOut":0,"meta":"settings \u00b7 4 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":79,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 4 files"},{"id":"settings","label":"settings","group":"settings","size":698,"fanIn":0,"fanOut":0,"meta":"settings \u00b7 4 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -319,8 +319,8 @@ flowchart TD
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
 <tbody><tr><td><code>settings/base.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Highest fan-out (most dependencies)</h2>
@@ -332,7 +332,6 @@ flowchart TD
 <tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>asgi.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>secrets.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>wsgi.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>settings/base.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
@@ -347,7 +346,7 @@ flowchart TD
 
 <div class="kpis">
   <div class="kpi accent"><div class="n">38</div><div class="l">commits (24 months ago)</div></div>
-  <div class="kpi"><div class="n">7</div><div class="l">files touched</div></div>
+  <div class="kpi"><div class="n">6</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">production.py</div><div class="l">top hotspot</div></div>
 </div>
 <div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
@@ -356,7 +355,7 @@ flowchart TD
 <h2>Churn × size map</h2>
 <p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
 <div class="viz" data-render="treemap" style="height:540px"></div>
-<script type="application/json">{"items":[{"name":"settings/production.py","value":228,"metric":7,"meta":"13 branches \u00b7 2 authors"},{"name":"settings/development.py","value":74,"metric":8,"meta":"6 branches \u00b7 2 authors"},{"name":"settings/base.py","value":372,"metric":11,"meta":"3 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":5,"meta":"3 branches \u00b7 2 authors"},{"name":"settings/__init__.py","value":24,"metric":3,"meta":"3 branches \u00b7 2 authors"},{"name":"asgi.py","value":24,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"secrets.py","value":2,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"wsgi.py","value":10,"metric":0,"meta":"1 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":11}</script>
+<script type="application/json">{"items":[{"name":"settings/production.py","value":228,"metric":7,"meta":"13 branches \u00b7 2 authors"},{"name":"settings/development.py","value":74,"metric":8,"meta":"6 branches \u00b7 2 authors"},{"name":"settings/base.py","value":372,"metric":11,"meta":"3 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":5,"meta":"3 branches \u00b7 2 authors"},{"name":"settings/__init__.py","value":24,"metric":3,"meta":"3 branches \u00b7 2 authors"},{"name":"asgi.py","value":24,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"wsgi.py","value":10,"metric":0,"meta":"1 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":11}</script>
 
 <h2>Hotspot ranking</h2>
 <p class="dim">Score = commits × (branch points + 1). Tests excluded. 1 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: settings.py.backup (1).</p>
@@ -368,13 +367,13 @@ flowchart TD
 <tr><td><code>urls.py</code></td><td class='num'>5</td><td class='num'>3</td><td class='num'>45</td><td class='num'>2</td><td class='num' data-sort='20'><div class="bar bad"><i style="width:20.4%"></i></div></td></tr>
 <tr><td><code>settings/__init__.py</code></td><td class='num'>3</td><td class='num'>3</td><td class='num'>24</td><td class='num'>2</td><td class='num' data-sort='12'><div class="bar bad"><i style="width:12.2%"></i></div></td></tr>
 <tr><td><code>asgi.py</code></td><td class='num'>1</td><td class='num'>1</td><td class='num'>24</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:2.0%"></i></div></td></tr>
-<tr><td><code>secrets.py</code></td><td class='num'>2</td><td class='num'>0</td><td class='num'>2</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:2.0%"></i></div></td></tr>
 <tr><td><code>wsgi.py</code></td><td class='num'>0</td><td class='num'>1</td><td class='num'>10</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 
 
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <div class="callout bad"><strong>The gameline registry has two owners that have drifted apart.</strong> <code>tg/settings/base.py:204-255</code> defines <code>GAMELINES</code> as the registry every model is supposed to read (<code>GAMELINE_CHOICES</code> is built from it and used directly as field choices, e.g. <code>core/models.py:195</code> and <code>core/models.py:736</code>). But <code>core/models.py:958</code> hand-maintains a second, independent list for validation, and the two no longer agree. Neither list agrees with what's actually installed.</div>
 
@@ -412,8 +411,10 @@ flowchart TD
 
 <p class="dim">No import cycles exist in this package (see Dependencies tab), so there is nothing to explain on that front — the drift above is a data-consistency problem, not a structural one.</p>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <h2>Invariants</h2>
 <div class="tbl-wrap"><table>
@@ -439,8 +440,9 @@ flowchart TD
 <div class="callout warn"><strong>3. <code>tg/settings.py.backup</code> is committed, dead, and settings-shaped.</strong> A future edit aimed at "the settings file" that lands here silently does nothing — no import error, no effect, just wasted work. Low likelihood, easy fix (delete it).</div>
 <div class="callout warn"><strong>4. <code>tg/secrets.py</code> holds hardcoded credential-shaped values.</strong> The file is gitignored (confirmed via <code>git check-ignore</code>, not tracked in the repo despite existing on disk) and nothing in <code>settings/</code> imports it (<code>SECRET_KEY</code> is read from the environment in both <code>tg/settings/development.py:14-16</code> and <code>tg/settings/production.py:14</code>) — so this is local-machine clutter, not a leaked production secret. Worth deleting so it can't be mistaken for one.</div>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */

@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">accounts — Codebase Atlas</h1>
-  <p class="doc-sub">User profiles and Storyteller permission/approval logic</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 23 files, 3518 LOC (Python)</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -183,6 +183,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
 <button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this is</h2>
@@ -253,23 +254,24 @@ flowchart TD
 <strong>README.md is stale enough to mislead.</strong> <code>accounts/README.md</code> describes a <code>Profile</code> with <code>is_storyteller</code>/<code>display_name</code>/<code>bio</code>/<code>avatar</code> fields and an <code>objects_to_approve()</code> stub (<code># Characters, items, locations, XP requests / pass</code>). None of that matches <code>accounts/models.py:16-96</code>: there is no <code>is_storyteller</code> field (<code>is_st()</code> queries <code>STRelationship</code> instead), no <code>display_name</code>/<code>bio</code>/<code>avatar</code>, and <code>objects_to_approve()</code> is fully implemented at <code>accounts/models.py:232-242</code>. The README also points to two doc paths, given as "docs/CODE_STYLE.md" and "docs/PERMISSIONS.md", and (from a docstring at <code>accounts/models.py:28</code>) a third given as "docs/design/user_model_architecture.md" — none of those three files exist anywhere in the repo. Anyone onboarding from the README will build the wrong mental model of the Profile schema.
 </div>
 
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">46</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">5,651</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">45</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">5,539</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
-  <div class="kpi good"><div class="n">71%</div><div class="l">test code share</div></div>
+  <div class="kpi good"><div class="n">73%</div><div class="l">test code share</div></div>
 </div>
 
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>3,518</td><td class='num'>15</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>62.3%</td></tr>
-<tr><td>HTML</td><td class='num'>1,844</td><td class='num'>30</td><td><div class="bar "><i style="width:52.4%"></i></div></td><td class='num'>32.6%</td></tr>
-<tr><td>Markdown</td><td class='num'>289</td><td class='num'>1</td><td><div class="bar "><i style="width:8.2%"></i></div></td><td class='num'>5.1%</td></tr></tbody></table></div>
+<tbody><tr><td>Python</td><td class='num'>3,406</td><td class='num'>14</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>61.5%</td></tr>
+<tr><td>HTML</td><td class='num'>1,844</td><td class='num'>30</td><td><div class="bar "><i style="width:54.1%"></i></div></td><td class='num'>33.3%</td></tr>
+<tr><td>Markdown</td><td class='num'>289</td><td class='num'>1</td><td><div class="bar "><i style="width:8.5%"></i></div></td><td class='num'>5.2%</td></tr></tbody></table></div>
 <p class="dim">Coverage: 2 file(s) in unrecognized languages are not counted above (.txt (2)).</p>
 
 <h2>Top-level directories</h2>
@@ -277,8 +279,7 @@ flowchart TD
 <thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
 <tbody><tr><td><code>tests/</code></td><td class='num'>2,494</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
 <tr><td><code>templates/</code></td><td class='num'>1,844</td><td><div class="bar "><i style="width:73.9%"></i></div></td></tr>
-<tr><td><code>(root)/</code></td><td class='num'>1,201</td><td><div class="bar "><i style="width:48.2%"></i></div></td></tr>
-<tr><td><code>migrations/</code></td><td class='num'>112</td><td><div class="bar "><i style="width:4.5%"></i></div></td></tr></tbody></table></div>
+<tr><td><code>(root)/</code></td><td class='num'>1,201</td><td><div class="bar "><i style="width:48.2%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
 <div>
@@ -294,7 +295,6 @@ flowchart TD
 <tr><td><code>views.py</code></td><td class='num'>250</td><td><div class="bar "><i style="width:29.1%"></i></div></td><td class='num'>33</td></tr>
 <tr><td><code>forms.py</code></td><td class='num'>129</td><td><div class="bar "><i style="width:15.0%"></i></div></td><td class='num'>12</td></tr>
 <tr><td><code>context_processors.py</code></td><td class='num'>114</td><td><div class="bar "><i style="width:13.3%"></i></div></td><td class='num'>23</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>112</td><td><div class="bar "><i style="width:13.0%"></i></div></td><td class='num'>2</td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:5.2%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>34</td><td><div class="bar "><i style="width:4.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>signals.py</code></td><td class='num'>12</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>1</td></tr>
@@ -312,7 +312,6 @@ flowchart TD
 <tr><td><code>forms.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:26.7%"></i></div></td><td class='num'>129</td><td class='num'>5</td></tr>
 <tr><td><code>tests/views/test_profile_actions.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:17.8%"></i></div></td><td class='num'>470</td><td class='num'>4</td></tr>
 <tr><td><code>tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>6</td><td><div class="bar warn"><i style="width:13.3%"></i></div></td><td class='num'>443</td><td class='num'>3</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>112</td><td class='num'>7</td></tr>
 <tr><td><code>tests/context_processors/test_context_processors.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>341</td><td class='num'>4</td></tr>
 <tr><td><code>tests/forms/test_forms.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>346</td><td class='num'>5</td></tr>
 <tr><td><code>tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>860</td><td class='num'>4</td></tr>
@@ -341,7 +340,7 @@ flowchart TD
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":912,"fanIn":0,"fanOut":1,"meta":"(repo root) \u00b7 9 files"},{"id":"migrations","label":"migrations","group":"migrations","size":112,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 2 files"},{"id":"templates/accounts","label":"templates","group":"templates","size":368,"fanIn":2,"fanOut":1,"meta":"templates/accounts \u00b7 3 files"},{"id":"templates/accounts/includes","label":"includes","group":"templates","size":1065,"fanIn":1,"fanOut":0,"meta":"templates/accounts/includes \u00b7 20 files"},{"id":"templates/registration","label":"registration","group":"templates","size":102,"fanIn":1,"fanOut":0,"meta":"templates/registration \u00b7 1 files"},{"id":"tests","label":"tests","group":"tests","size":0,"fanIn":0,"fanOut":0,"meta":"tests \u00b7 1 files"},{"id":"tests/context_processors","label":"context_processors","group":"tests","size":341,"fanIn":0,"fanOut":0,"meta":"tests/context_processors \u00b7 2 files"},{"id":"tests/forms","label":"forms","group":"tests","size":346,"fanIn":0,"fanOut":0,"meta":"tests/forms \u00b7 2 files"},{"id":"tests/integration","label":"integration","group":"tests","size":34,"fanIn":0,"fanOut":0,"meta":"tests/integration \u00b7 2 files"},{"id":"tests/models","label":"models","group":"tests","size":443,"fanIn":0,"fanOut":0,"meta":"tests/models \u00b7 2 files"},{"id":"tests/views","label":"views","group":"tests","size":1330,"fanIn":0,"fanOut":2,"meta":"tests/views \u00b7 3 files"}],"links":[{"source":"","target":"templates/accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/accounts","target":"templates/accounts/includes","weight":20,"imports":0,"loads":20,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/accounts","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/registration","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":912,"fanIn":0,"fanOut":1,"meta":"(repo root) \u00b7 9 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"templates/accounts","label":"templates","group":"templates","size":368,"fanIn":2,"fanOut":1,"meta":"templates/accounts \u00b7 3 files"},{"id":"templates/accounts/includes","label":"includes","group":"templates","size":1065,"fanIn":1,"fanOut":0,"meta":"templates/accounts/includes \u00b7 20 files"},{"id":"templates/registration","label":"registration","group":"templates","size":102,"fanIn":1,"fanOut":0,"meta":"templates/registration \u00b7 1 files"},{"id":"tests","label":"tests","group":"tests","size":0,"fanIn":0,"fanOut":0,"meta":"tests \u00b7 1 files"},{"id":"tests/context_processors","label":"context_processors","group":"tests","size":341,"fanIn":0,"fanOut":0,"meta":"tests/context_processors \u00b7 2 files"},{"id":"tests/forms","label":"forms","group":"tests","size":346,"fanIn":0,"fanOut":0,"meta":"tests/forms \u00b7 2 files"},{"id":"tests/integration","label":"integration","group":"tests","size":34,"fanIn":0,"fanOut":0,"meta":"tests/integration \u00b7 2 files"},{"id":"tests/models","label":"models","group":"tests","size":443,"fanIn":0,"fanOut":0,"meta":"tests/models \u00b7 2 files"},{"id":"tests/views","label":"views","group":"tests","size":1330,"fanIn":0,"fanOut":2,"meta":"tests/views \u00b7 3 files"}],"links":[{"source":"","target":"templates/accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/accounts","target":"templates/accounts/includes","weight":20,"imports":0,"loads":20,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/accounts","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/registration","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -353,17 +352,17 @@ flowchart TD
 <tr><td><code>templates/accounts/form.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/accounts/signup.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/registration/login.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/xp_story.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_spend_requests.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/accounts/includes/xp_scene_st.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/xp_weekly_st.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/item_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/attention.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/xp_weekly.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/accounts/includes/settings.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/image_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/rote_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly_st.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/accounts/includes/journals.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/accounts/includes/active_scenes.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>templates/accounts/includes/character_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/locations.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/location_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/image_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_story.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Highest fan-out (most dependencies)</h2>
@@ -381,10 +380,10 @@ flowchart TD
 <tr><td><code>models.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>signals.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>migrations/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>tests/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>tests/context_processors/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>tests/context_processors/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/context_processors/test_context_processors.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
 </div>
 </div>
 
@@ -426,7 +425,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">152</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">153</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">14</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -436,7 +435,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <h2>Churn × size map</h2>
 <p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
 <div class="viz" data-render="treemap" style="height:540px"></div>
-<script type="application/json">{"items":[{"name":"models.py","value":351,"metric":57,"meta":"45 branches \u00b7 2 authors"},{"name":"views.py","value":250,"metric":60,"meta":"33 branches \u00b7 2 authors"},{"name":"forms.py","value":129,"metric":25,"meta":"12 branches \u00b7 2 authors"},{"name":"context_processors.py","value":114,"metric":9,"meta":"23 branches \u00b7 2 authors"},{"name":"signals.py","value":12,"metric":5,"meta":"1 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"admin.py","value":5,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":6,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"migrations/0001_initial.py","value":112,"metric":0,"meta":"2 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":60}</script>
+<script type="application/json">{"items":[{"name":"models.py","value":351,"metric":57,"meta":"45 branches \u00b7 2 authors"},{"name":"views.py","value":250,"metric":60,"meta":"33 branches \u00b7 2 authors"},{"name":"forms.py","value":129,"metric":25,"meta":"12 branches \u00b7 2 authors"},{"name":"context_processors.py","value":114,"metric":9,"meta":"23 branches \u00b7 2 authors"},{"name":"signals.py","value":12,"metric":5,"meta":"1 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"admin.py","value":5,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":6,"metric":1,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":60}</script>
 
 <h2>Hotspot ranking</h2>
 <p class="dim">Score = commits × (branch points + 1). Tests excluded. 33 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/accounts/detail.html (36), templates/accounts/form.html (9), templates/accounts/includes/xp_weekly.html (6).</p>
@@ -449,13 +448,13 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <tr><td><code>signals.py</code></td><td class='num'>5</td><td class='num'>1</td><td class='num'>12</td><td class='num'>2</td><td class='num' data-sort='10'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>8</td><td class='num'>0</td><td class='num'>45</td><td class='num'>2</td><td class='num' data-sort='8'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>admin.py</code></td><td class='num'>3</td><td class='num'>0</td><td class='num'>5</td><td class='num'>1</td><td class='num' data-sort='3'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>apps.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>6</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>0</td><td class='num'>2</td><td class='num'>112</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+<tr><td><code>apps.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>6</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 
 
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <div class="card">
 <h3>Concern ownership</h3>
@@ -484,8 +483,10 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <p><code>accounts/models.py</code> and <code>accounts/views.py</code> import forward into <code>characters</code>, <code>items</code>, <code>locations</code>, <code>game</code>, and <code>core</code> (<code>accounts/models.py:6-13</code>, <code>accounts/views.py:20-24</code>) — never the reverse in this package. The Dependencies tab's import graph shows zero first-party edges for <code>accounts</code> because those targets live outside the package boundary the analyzer was scoped to (<code>--exclude</code> plus package-local run); that is a scoping artifact of this atlas, not evidence of decoupling. <code>module_cycles</code> and <code>file_cycles</code> both came back empty, and reading the imports by hand agrees: <code>accounts</code> is a leaf that many apps' data flows into, not a hub other apps import from.</p>
 </div>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <div class="card">
 <h3>Invariants</h3>
@@ -527,8 +528,10 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 </ol>
 </div>
 
+
 </section>
 <section class="panel" id="glossary" role="tabpanel">
+
 
 <div class="card">
 <div class="tbl-wrap"><table>
@@ -543,8 +546,9 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 </table></div>
 </div>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization. Automated tabs: Inventory, Dependencies, Hotspots. Judgment tabs authored from code reading — verify citations before acting.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */

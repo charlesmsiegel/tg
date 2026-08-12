@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">game — Codebase Atlas</h1>
-  <p class="doc-sub">Chronicles, scenes, and the XP approval workflow</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 60 files, 12,080 LOC (8,219 Python)</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -184,6 +184,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
 <button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this package is</h2>
@@ -257,23 +258,24 @@ flowchart TD
 <li><strong>No LLM usage in this package</strong> &mdash; the LLM-call-site analyzer found none; no LLM Ops tab was generated.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">60</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">12,080</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">58</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">11,331</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
-  <div class="kpi good"><div class="n">52%</div><div class="l">test code share</div></div>
+  <div class="kpi good"><div class="n">57%</div><div class="l">test code share</div></div>
 </div>
 
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>8,219</td><td class='num'>20</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>68.0%</td></tr>
-<tr><td>HTML</td><td class='num'>3,616</td><td class='num'>39</td><td><div class="bar "><i style="width:44.0%"></i></div></td><td class='num'>29.9%</td></tr>
-<tr><td>Markdown</td><td class='num'>245</td><td class='num'>1</td><td><div class="bar "><i style="width:3.0%"></i></div></td><td class='num'>2.0%</td></tr></tbody></table></div>
+<tbody><tr><td>Python</td><td class='num'>7,470</td><td class='num'>18</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>65.9%</td></tr>
+<tr><td>HTML</td><td class='num'>3,616</td><td class='num'>39</td><td><div class="bar "><i style="width:48.4%"></i></div></td><td class='num'>31.9%</td></tr>
+<tr><td>Markdown</td><td class='num'>245</td><td class='num'>1</td><td><div class="bar "><i style="width:3.3%"></i></div></td><td class='num'>2.2%</td></tr></tbody></table></div>
 
 
 <h2>Top-level directories</h2>
@@ -282,7 +284,6 @@ flowchart TD
 <tbody><tr><td><code>tests/</code></td><td class='num'>4,247</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
 <tr><td><code>templates/</code></td><td class='num'>3,616</td><td><div class="bar "><i style="width:85.1%"></i></div></td></tr>
 <tr><td><code>(root)/</code></td><td class='num'>3,357</td><td><div class="bar "><i style="width:79.0%"></i></div></td></tr>
-<tr><td><code>migrations/</code></td><td class='num'>749</td><td><div class="bar "><i style="width:17.6%"></i></div></td></tr>
 <tr><td><code>management/</code></td><td class='num'>111</td><td><div class="bar "><i style="width:2.6%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
@@ -295,11 +296,9 @@ flowchart TD
 <tr><td><code>models.py</code></td><td class='num'>1,022</td><td><div class="bar "><i style="width:65.8%"></i></div></td><td class='num'>182</td></tr>
 <tr><td><code>views.py</code></td><td class='num'>940</td><td><div class="bar "><i style="width:60.5%"></i></div></td><td class='num'>79</td></tr>
 <tr><td><code>forms.py</code></td><td class='num'>531</td><td><div class="bar "><i style="width:34.2%"></i></div></td><td class='num'>49</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>485</td><td><div class="bar "><i style="width:31.2%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>tests/forms/test_forms.py</code> <span class="badge neutral">test</span></td><td class='num'>471</td><td><div class="bar "><i style="width:30.3%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>324</td><td><div class="bar "><i style="width:20.9%"></i></div></td><td class='num'>7</td></tr>
 <tr><td><code>consumers.py</code></td><td class='num'>266</td><td><div class="bar "><i style="width:17.1%"></i></div></td><td class='num'>26</td></tr>
-<tr><td><code>migrations/0002_initial.py</code></td><td class='num'>264</td><td><div class="bar "><i style="width:17.0%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>tests/consumers/test_consumers.py</code> <span class="badge neutral">test</span></td><td class='num'>257</td><td><div class="bar "><i style="width:16.5%"></i></div></td><td class='num'>3</td></tr>
 <tr><td><code>admin.py</code></td><td class='num'>206</td><td><div class="bar "><i style="width:13.3%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>113</td><td><div class="bar "><i style="width:7.3%"></i></div></td><td class='num'>0</td></tr>
@@ -328,8 +327,6 @@ flowchart TD
 <tr><td><code>signals.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>20</td><td class='num'>3</td></tr>
 <tr><td><code>tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>1,553</td><td class='num'>6</td></tr>
 <tr><td><code>routing.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>8</td><td class='num'>1</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>485</td><td class='num'>7</td></tr>
-<tr><td><code>migrations/0002_initial.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>264</td><td class='num'>4</td></tr>
 <tr><td><code>admin.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>206</td><td class='num'>5</td></tr>
 <tr><td><code>apps.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>6</td><td class='num'>2</td></tr>
 <tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>113</td><td class='num'>2</td></tr>
@@ -356,7 +353,7 @@ flowchart TD
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":3112,"fanIn":0,"fanOut":10,"meta":"(repo root) \u00b7 11 files"},{"id":"management/commands","label":"commands","group":"management","size":111,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 2 files"},{"id":"migrations","label":"migrations","group":"migrations","size":749,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 3 files"},{"id":"templates/game/chronicle","label":"chronicle","group":"templates","size":1017,"fanIn":2,"fanOut":0,"meta":"templates/game/chronicle \u00b7 12 files"},{"id":"templates/game/freebie_spending_record","label":"freebie_spending_record","group":"templates","size":214,"fanIn":2,"fanOut":0,"meta":"templates/game/freebie_spending_record \u00b7 3 files"},{"id":"templates/game/journal","label":"journal","group":"templates","size":287,"fanIn":2,"fanOut":0,"meta":"templates/game/journal \u00b7 2 files"},{"id":"templates/game/scene","label":"scene","group":"templates","size":609,"fanIn":2,"fanOut":0,"meta":"templates/game/scene \u00b7 4 files"},{"id":"templates/game/setting_element","label":"setting_element","group":"templates","size":179,"fanIn":2,"fanOut":0,"meta":"templates/game/setting_element \u00b7 3 files"},{"id":"templates/game/story","label":"story","group":"templates","size":104,"fanIn":2,"fanOut":0,"meta":"templates/game/story \u00b7 3 files"},{"id":"templates/game/story_xp_request","label":"story_xp_request","group":"templates","size":249,"fanIn":2,"fanOut":0,"meta":"templates/game/story_xp_request \u00b7 3 files"},{"id":"templates/game/week","label":"week","group":"templates","size":362,"fanIn":2,"fanOut":0,"meta":"templates/game/week \u00b7 3 files"},{"id":"templates/game/weekly_xp_request","label":"weekly_xp_request","group":"templates","size":323,"fanIn":1,"fanOut":0,"meta":"templates/game/weekly_xp_request \u00b7 3 files"},{"id":"templates/game/xp_spending_request","label":"xp_spending_request","group":"templates","size":272,"fanIn":2,"fanOut":0,"meta":"templates/game/xp_spending_request \u00b7 3 files"},{"id":"tests","label":"tests","group":"tests","size":4247,"fanIn":0,"fanOut":9,"meta":"tests \u00b7 15 files"}],"links":[{"source":"","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/journal","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"","target":"templates/game/scene","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/week","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/weekly_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/xp_spending_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/journal","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/scene","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/week","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/xp_spending_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":3112,"fanIn":0,"fanOut":10,"meta":"(repo root) \u00b7 11 files"},{"id":"management/commands","label":"commands","group":"management","size":111,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 2 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"templates/game/chronicle","label":"chronicle","group":"templates","size":1017,"fanIn":2,"fanOut":0,"meta":"templates/game/chronicle \u00b7 12 files"},{"id":"templates/game/freebie_spending_record","label":"freebie_spending_record","group":"templates","size":214,"fanIn":2,"fanOut":0,"meta":"templates/game/freebie_spending_record \u00b7 3 files"},{"id":"templates/game/journal","label":"journal","group":"templates","size":287,"fanIn":2,"fanOut":0,"meta":"templates/game/journal \u00b7 2 files"},{"id":"templates/game/scene","label":"scene","group":"templates","size":609,"fanIn":2,"fanOut":0,"meta":"templates/game/scene \u00b7 4 files"},{"id":"templates/game/setting_element","label":"setting_element","group":"templates","size":179,"fanIn":2,"fanOut":0,"meta":"templates/game/setting_element \u00b7 3 files"},{"id":"templates/game/story","label":"story","group":"templates","size":104,"fanIn":2,"fanOut":0,"meta":"templates/game/story \u00b7 3 files"},{"id":"templates/game/story_xp_request","label":"story_xp_request","group":"templates","size":249,"fanIn":2,"fanOut":0,"meta":"templates/game/story_xp_request \u00b7 3 files"},{"id":"templates/game/week","label":"week","group":"templates","size":362,"fanIn":2,"fanOut":0,"meta":"templates/game/week \u00b7 3 files"},{"id":"templates/game/weekly_xp_request","label":"weekly_xp_request","group":"templates","size":323,"fanIn":1,"fanOut":0,"meta":"templates/game/weekly_xp_request \u00b7 3 files"},{"id":"templates/game/xp_spending_request","label":"xp_spending_request","group":"templates","size":272,"fanIn":2,"fanOut":0,"meta":"templates/game/xp_spending_request \u00b7 3 files"},{"id":"tests","label":"tests","group":"tests","size":4247,"fanIn":0,"fanOut":9,"meta":"tests \u00b7 15 files"}],"links":[{"source":"","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/journal","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"","target":"templates/game/scene","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/week","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/weekly_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"","target":"templates/game/xp_spending_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/chronicle","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/freebie_spending_record","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/journal","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/scene","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/setting_element","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/story_xp_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/week","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/game/xp_spending_request","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -365,20 +362,20 @@ flowchart TD
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
 <tbody><tr><td><code>templates/game/scene/detail.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/chronicle/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/freebie_spending_record/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/story/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/week/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/chronicle/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>5</td></tr>
-<tr><td><code>templates/game/scene/commands.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/chronicle/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/freebie_spending_record/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/xp_spending_request/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/story_xp_request/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/game/story_xp_request/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/scene/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/journal/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>templates/game/week/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>templates/game/freebie_spending_record/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/xp_spending_request/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/chronicle/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/setting_element/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/story/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/story_xp_request/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/freebie_spending_record/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/setting_element/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/setting_element/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/freebie_spending_record/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/scene/commands.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/chronicle/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/game/story/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Highest fan-out (most dependencies)</h2>
@@ -442,7 +439,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">222</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">223</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">18</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -452,7 +449,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <h2>Churn × size map</h2>
 <p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
 <div class="viz" data-render="treemap" style="height:540px"></div>
-<script type="application/json">{"items":[{"name":"models.py","value":1022,"metric":84,"meta":"182 branches \u00b7 2 authors"},{"name":"views.py","value":940,"metric":69,"meta":"79 branches \u00b7 2 authors"},{"name":"forms.py","value":531,"metric":22,"meta":"49 branches \u00b7 2 authors"},{"name":"consumers.py","value":266,"metric":5,"meta":"26 branches \u00b7 2 authors"},{"name":"management/commands/migrate_jsonfield_to_models.py","value":111,"metric":4,"meta":"10 branches \u00b7 2 authors"},{"name":"admin.py","value":206,"metric":21,"meta":"0 branches \u00b7 2 authors"},{"name":"urls.py","value":113,"metric":14,"meta":"0 branches \u00b7 2 authors"},{"name":"signals.py","value":20,"metric":3,"meta":"2 branches \u00b7 1 authors"},{"name":"routing.py","value":8,"metric":3,"meta":"1 branches \u00b7 2 authors"},{"name":"apps.py","value":6,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"migrations/0001_initial.py","value":485,"metric":0,"meta":"1 branches \u00b7 0 authors"},{"name":"migrations/0002_initial.py","value":264,"metric":0,"meta":"1 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":84}</script>
+<script type="application/json">{"items":[{"name":"models.py","value":1022,"metric":84,"meta":"182 branches \u00b7 2 authors"},{"name":"views.py","value":940,"metric":69,"meta":"79 branches \u00b7 2 authors"},{"name":"forms.py","value":531,"metric":22,"meta":"49 branches \u00b7 2 authors"},{"name":"consumers.py","value":266,"metric":5,"meta":"26 branches \u00b7 2 authors"},{"name":"management/commands/migrate_jsonfield_to_models.py","value":111,"metric":4,"meta":"10 branches \u00b7 2 authors"},{"name":"admin.py","value":206,"metric":21,"meta":"0 branches \u00b7 2 authors"},{"name":"urls.py","value":113,"metric":14,"meta":"0 branches \u00b7 2 authors"},{"name":"signals.py","value":20,"metric":3,"meta":"2 branches \u00b7 1 authors"},{"name":"routing.py","value":8,"metric":3,"meta":"1 branches \u00b7 2 authors"},{"name":"apps.py","value":6,"metric":3,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":84}</script>
 
 <h2>Hotspot ranking</h2>
 <p class="dim">Score = commits × (branch points + 1). Tests excluded. 40 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/game/scene/detail.html (32), templates/game/chronicle/detail.html (28), templates/game/scene/commands.html (13).</p>
@@ -467,14 +464,13 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <tr><td><code>urls.py</code></td><td class='num'>14</td><td class='num'>0</td><td class='num'>113</td><td class='num'>2</td><td class='num' data-sort='14'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>signals.py</code></td><td class='num'>3</td><td class='num'>2</td><td class='num'>20</td><td class='num'>1</td><td class='num' data-sort='9'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
 <tr><td><code>routing.py</code></td><td class='num'>3</td><td class='num'>1</td><td class='num'>8</td><td class='num'>2</td><td class='num' data-sort='6'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>apps.py</code></td><td class='num'>3</td><td class='num'>0</td><td class='num'>6</td><td class='num'>1</td><td class='num' data-sort='3'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>0</td><td class='num'>1</td><td class='num'>485</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
-<tr><td><code>migrations/0002_initial.py</code></td><td class='num'>0</td><td class='num'>1</td><td class='num'>264</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+<tr><td><code>apps.py</code></td><td class='num'>3</td><td class='num'>0</td><td class='num'>6</td><td class='num'>1</td><td class='num' data-sort='3'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 
 
 </section>
 <section class="panel" id="flows" role="tabpanel">
+
 
 <div class="card hero">
 <h2>Where correctness matters most</h2>
@@ -592,8 +588,10 @@ sequenceDiagram
 <li><code>handle_chat_message</code> silently drops the message with only a generic error when <code>message_processing</code> raises <code>ValueError</code> for malformed roll syntax (<code>game/consumers.py:131-133</code>); the synchronous post path (<code>game/models.py:542-545</code> inside <code>Scene.add_post</code>) does the same &mdash; <code>except ValueError: return</code> &mdash; silently discarding the post text the player typed with no persisted record of the failed attempt.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <h2>Concern ownership</h2>
 <div class="tbl-wrap"><table class="sortable">
@@ -628,8 +626,10 @@ sequenceDiagram
 <li>No import cycle was reported by <code>analyze_deps</code>, but per the Overview caveat its Python resolution found 0 first-party edges for this package, so an absence of reported cycles is not evidence of an absence of cycles &mdash; it is evidence the analyzer couldn't see this package's cross-app imports at all.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <h2>Invariants</h2>
 <div class="tbl-wrap"><table class="sortable">
@@ -671,8 +671,10 @@ sequenceDiagram
 <strong>5. Duplicated permission and formatting logic between the sync and WebSocket post paths.</strong> Ownership/membership checks (<code>game/views.py:319,333-335</code> vs <code>game/consumers.py:107,112</code>) and the <code>straighten_quotes</code> translation table (<code>game/views.py:346-...</code> vs <code>game/consumers.py:219-254</code>, byte-for-byte identical Unicode tables) are maintained in two places. Lower severity than the above &mdash; currently consistent, but a silent-drift risk on the next edit to either.
 </div>
 
+
 </section>
 <section class="panel" id="glossary" role="tabpanel">
+
 
 <h2>Domain language vs. code language</h2>
 <div class="tbl-wrap"><table class="sortable">
@@ -690,8 +692,9 @@ sequenceDiagram
 </tbody>
 </table></div>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */

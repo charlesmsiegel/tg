@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">core — Codebase Atlas</h1>
-  <p class="doc-sub">Shared polymorphic base models, permissions, and view mixins for all gamelines</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 171 files, 24277 lines</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -184,6 +184,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
 <button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this is</h2>
@@ -260,22 +261,23 @@ flowchart TD
 <li><strong>No LLM calls, no coverage tab.</strong> <code>analyze_llm</code> found no model call sites in <code>core</code> (expected — this is a Django CRUD/permissions layer, not an AI feature). <code>analyze_coverage</code>, scoped to <code>core</code>, found no parseable coverage artifact in that scope; the Coverage tab is intentionally absent rather than fabricated. There is a repo-root <code>.coverage</code> database (outside the <code>core</code>-scoped search, and not directly parseable without first running <code>coverage xml</code>) — worth converting and re-running the analyzer if a coverage tab is wanted later. <code>core/tests/</code> is large (11,754 LOC, 52.9% of the package's total lines) but its measured pass/line-coverage isn't available to this atlas.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">158</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">24,387</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">156</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">23,918</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
-  <div class="kpi good"><div class="n">53%</div><div class="l">test code share</div></div>
+  <div class="kpi good"><div class="n">54%</div><div class="l">test code share</div></div>
 </div>
 
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>22,199</td><td class='num'>121</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>91.0%</td></tr>
-<tr><td>HTML</td><td class='num'>2,078</td><td class='num'>36</td><td><div class="bar "><i style="width:9.4%"></i></div></td><td class='num'>8.5%</td></tr>
+<tbody><tr><td>Python</td><td class='num'>21,730</td><td class='num'>119</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>90.9%</td></tr>
+<tr><td>HTML</td><td class='num'>2,078</td><td class='num'>36</td><td><div class="bar "><i style="width:9.6%"></i></div></td><td class='num'>8.7%</td></tr>
 <tr><td>Markdown</td><td class='num'>110</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.5%</td></tr></tbody></table></div>
 
 
@@ -286,13 +288,12 @@ flowchart TD
 <tr><td><code>management/</code></td><td class='num'>4,028</td><td><div class="bar "><i style="width:34.3%"></i></div></td></tr>
 <tr><td><code>(root)/</code></td><td class='num'>3,482</td><td><div class="bar "><i style="width:29.6%"></i></div></td></tr>
 <tr><td><code>templates/</code></td><td class='num'>2,078</td><td><div class="bar "><i style="width:17.7%"></i></div></td></tr>
-<tr><td><code>views/</code></td><td class='num'>854</td><td><div class="bar "><i style="width:7.3%"></i></div></td></tr>
+<tr><td><code>views/</code></td><td class='num'>889</td><td><div class="bar "><i style="width:7.6%"></i></div></td></tr>
 <tr><td><code>templatetags/</code></td><td class='num'>638</td><td><div class="bar "><i style="width:5.4%"></i></div></td></tr>
-<tr><td><code>migrations/</code></td><td class='num'>513</td><td><div class="bar "><i style="width:4.4%"></i></div></td></tr>
-<tr><td><code>widgets/</code></td><td class='num'>403</td><td><div class="bar "><i style="width:3.4%"></i></div></td></tr>
+<tr><td><code>widgets/</code></td><td class='num'>410</td><td><div class="bar "><i style="width:3.5%"></i></div></td></tr>
 <tr><td><code>services/</code></td><td class='num'>301</td><td><div class="bar "><i style="width:2.6%"></i></div></td></tr>
-<tr><td><code>forms/</code></td><td class='num'>234</td><td><div class="bar "><i style="width:2.0%"></i></div></td></tr>
-<tr><td><code>middleware/</code></td><td class='num'>102</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+<tr><td><code>forms/</code></td><td class='num'>235</td><td><div class="bar "><i style="width:2.0%"></i></div></td></tr>
+<tr><td><code>middleware/</code></td><td class='num'>103</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
 <div>
@@ -313,12 +314,12 @@ flowchart TD
 <tr><td><code>linked_stat.py</code></td><td class='num'>427</td><td><div class="bar "><i style="width:32.2%"></i></div></td><td class='num'>41</td></tr>
 <tr><td><code>permissions.py</code></td><td class='num'>395</td><td><div class="bar "><i style="width:29.8%"></i></div></td><td class='num'>71</td></tr>
 <tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>383</td><td><div class="bar "><i style="width:28.9%"></i></div></td><td class='num'>19</td></tr>
-<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>373</td><td><div class="bar "><i style="width:28.1%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>369</td><td><div class="bar "><i style="width:27.8%"></i></div></td><td class='num'>54</td></tr>
 <tr><td><code>widgets/linked_stat.py</code></td><td class='num'>367</td><td><div class="bar "><i style="width:27.7%"></i></div></td><td class='num'>56</td></tr>
 <tr><td><code>tests/views/test_reference.py</code> <span class="badge neutral">test</span></td><td class='num'>365</td><td><div class="bar "><i style="width:27.5%"></i></div></td><td class='num'>2</td></tr>
 <tr><td><code>tests/test_decorators.py</code> <span class="badge neutral">test</span></td><td class='num'>354</td><td><div class="bar "><i style="width:26.7%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>tests/test_linked_stat.py</code> <span class="badge neutral">test</span></td><td class='num'>353</td><td><div class="bar "><i style="width:26.6%"></i></div></td><td class='num'>3</td></tr></tbody></table></div>
+<tr><td><code>tests/test_linked_stat.py</code> <span class="badge neutral">test</span></td><td class='num'>353</td><td><div class="bar "><i style="width:26.6%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>tests/permissions/test_permissions_deployment.py</code> <span class="badge neutral">test</span></td><td class='num'>345</td><td><div class="bar "><i style="width:26.0%"></i></div></td><td class='num'>9</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Most branch-heavy files</h2>
@@ -365,7 +366,7 @@ flowchart TD
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":3372,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 17 files"},{"id":"forms","label":"forms","group":"forms","size":234,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 3 files"},{"id":"management","label":"management","group":"management","size":1,"fanIn":0,"fanOut":0,"meta":"management \u00b7 1 files"},{"id":"management/commands","label":"commands","group":"management","size":4027,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 21 files"},{"id":"middleware","label":"middleware","group":"middleware","size":102,"fanIn":0,"fanOut":1,"meta":"middleware \u00b7 4 files"},{"id":"migrations","label":"migrations","group":"migrations","size":513,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 3 files"},{"id":"services","label":"services","group":"services","size":301,"fanIn":0,"fanOut":0,"meta":"services \u00b7 3 files"},{"id":"templates/core","label":"templates","group":"templates","size":1964,"fanIn":4,"fanOut":0,"meta":"templates/core \u00b7 33 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":638,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 8 files"},{"id":"tests","label":"tests","group":"tests","size":11754,"fanIn":0,"fanOut":1,"meta":"tests \u00b7 62 files"},{"id":"views","label":"views","group":"views","size":854,"fanIn":0,"fanOut":1,"meta":"views \u00b7 10 files"},{"id":"widgets","label":"widgets","group":"widgets","size":403,"fanIn":0,"fanOut":0,"meta":"widgets \u00b7 3 files"}],"links":[{"source":"middleware","target":"templates/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templatetags","target":"templates/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"views","target":"templates/core","weight":22,"imports":0,"loads":22,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":3372,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 17 files"},{"id":"forms","label":"forms","group":"forms","size":235,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 3 files"},{"id":"management","label":"management","group":"management","size":1,"fanIn":0,"fanOut":0,"meta":"management \u00b7 1 files"},{"id":"management/commands","label":"commands","group":"management","size":4027,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 21 files"},{"id":"middleware","label":"middleware","group":"middleware","size":103,"fanIn":0,"fanOut":1,"meta":"middleware \u00b7 4 files"},{"id":"migrations","label":"migrations","group":"migrations","size":0,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 1 files"},{"id":"services","label":"services","group":"services","size":301,"fanIn":0,"fanOut":0,"meta":"services \u00b7 3 files"},{"id":"templates/core","label":"templates","group":"templates","size":1964,"fanIn":4,"fanOut":0,"meta":"templates/core \u00b7 33 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":638,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 8 files"},{"id":"tests","label":"tests","group":"tests","size":11754,"fanIn":0,"fanOut":1,"meta":"tests \u00b7 62 files"},{"id":"views","label":"views","group":"views","size":889,"fanIn":0,"fanOut":1,"meta":"views \u00b7 10 files"},{"id":"widgets","label":"widgets","group":"widgets","size":410,"fanIn":0,"fanOut":0,"meta":"widgets \u00b7 3 files"}],"links":[{"source":"middleware","target":"templates/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templatetags","target":"templates/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"views","target":"templates/core","weight":22,"imports":0,"loads":22,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -379,15 +380,15 @@ flowchart TD
 <tr><td><code>templates/core/errors/401.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/core/errors/403.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/core/character_template/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
-<tr><td><code>templates/core/newsitem/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/core/newsitem/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/core/language/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>templates/core/language/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/newsitem/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>forms/language.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>management/commands/__init__.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>middleware/approved_user.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>templates/core/templatetags/linked_stat_row.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
-<tr><td><code>views/character_template.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>5</td></tr></tbody></table></div>
+<tr><td><code>views/home.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Highest fan-out (most dependencies)</h2>
@@ -451,7 +452,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">322</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">323</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">117</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -461,7 +462,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 <h2>Churn × size map</h2>
 <p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
 <div class="viz" data-render="treemap" style="height:540px"></div>
-<script type="application/json">{"items":[{"name":"models.py","value":842,"metric":77,"meta":"95 branches \u00b7 2 authors"},{"name":"mixins.py","value":621,"metric":25,"meta":"105 branches \u00b7 2 authors"},{"name":"permissions.py","value":395,"metric":18,"meta":"71 branches \u00b7 2 authors"},{"name":"utils.py","value":125,"metric":17,"meta":"33 branches \u00b7 2 authors"},{"name":"templatetags/sanitize_text.py","value":141,"metric":13,"meta":"37 branches \u00b7 2 authors"},{"name":"templatetags/dots.py","value":264,"metric":9,"meta":"46 branches \u00b7 2 authors"},{"name":"views/generic.py","value":173,"metric":11,"meta":"35 branches \u00b7 2 authors"},{"name":"management/commands/approve_pending_items.py","value":316,"metric":4,"meta":"74 branches \u00b7 2 authors"},{"name":"widgets/linked_stat.py","value":367,"metric":5,"meta":"56 branches \u00b7 2 authors"},{"name":"management/commands/validate_data_integrity.py","value":369,"metric":5,"meta":"54 branches \u00b7 2 authors"},{"name":"management/commands/populate_gamedata.py","value":168,"metric":9,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/sync_character_status.py","value":228,"metric":5,"meta":"53 branches \u00b7 2 authors"},{"name":"cache.py","value":281,"metric":6,"meta":"43 branches \u00b7 2 authors"},{"name":"services/chronicle_data.py","value":211,"metric":6,"meta":"40 branches \u00b7 1 authors"},{"name":"management/commands/find_duplicate_objects.py","value":269,"metric":5,"meta":"37 branches \u00b7 2 authors"},{"name":"management/commands/audit_xp_spending.py","value":229,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"templatetags/permissions.py","value":154,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"management/commands/process_weekly_xp.py","value":186,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"views/character_template.py","value":275,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"management/commands/validate_character_data.py","value":211,"metric":4,"meta":"38 branches \u00b7 2 authors"},{"name":"linked_stat.py","value":427,"metric":3,"meta":"41 branches \u00b7 1 authors"},{"name":"management/commands/monitor_validation.py","value":306,"metric":5,"meta":"24 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_orphaned_data.py","value":184,"metric":4,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/import_chronicle.py","value":200,"metric":5,"meta":"21 branches \u00b7 2 authors"},{"name":"management/commands/archive_inactive_chronicles.py","value":162,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"management/commands/generate_chronicle_summary.py","value":311,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"decorators.py","value":102,"metric":5,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/generate_st_report.py","value":129,"metric":4,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/audit_user_permissions.py","value":164,"metric":4,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/export_chronicle.py","value":175,"metric":5,"meta":"11 branches \u00b7 2 authors"},{"name":"templatetags/field.py","value":38,"metric":8,"meta":"6 branches \u00b7 1 authors"},{"name":"management/commands/populate_test_chronicle.py","value":176,"metric":5,"meta":"10 branches \u00b7 2 authors"},{"name":"management/commands/reset_db.py","value":80,"metric":3,"meta":"15 branches \u00b7 2 authors"},{"name":"context_processors.py","value":29,"metric":8,"meta":"4 branches \u00b7 2 authors"},{"name":"views/reference.py","value":211,"metric":2,"meta":"19 branches \u00b7 1 authors"},{"name":"forms/character_template.py","value":215,"metric":3,"meta":"12 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_old_weeks.py","value":64,"metric":4,"meta":"7 branches \u00b7 2 authors"},{"name":"services/approval.py","value":86,"metric":3,"meta":"9 branches \u00b7 1 authors"},{"name":"ajax.py","value":68,"metric":2,"meta":"13 branches \u00b7 1 authors"},{"name":"validators.py","value":34,"metric":3,"meta":"7 branches \u00b7 1 authors"},{"name":"xp_utils.py","value":69,"metric":2,"meta":"11 branches \u00b7 1 authors"},{"name":"middleware/cache_middleware.py","value":51,"metric":3,"meta":"7 branches \u00b7 2 authors"},{"name":"views/book.py","value":36,"metric":8,"meta":"2 branches \u00b7 2 authors"},{"name":"views/houserules.py","value":39,"metric":12,"meta":"1 branches \u00b7 2 authors"},{"name":"management/commands/reset_demo_data.py","value":99,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"middleware/auth_error_handler.py","value":39,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"constants.py","value":140,"metric":9,"meta":"1 branches \u00b7 2 authors"},{"name":"forms/language.py","value":18,"metric":6,"meta":"2 branches \u00b7 2 authors"},{"name":"views/home.py","value":14,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"admin.py","value":114,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"views/__init__.py","value":34,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"templatetags/json_filters.py","value":23,"metric":2,"meta":"4 branches \u00b7 2 authors"},{"name":"urls.py","value":102,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"views/language.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/newsitem.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/errors.py","value":28,"metric":1,"meta":"4 branches \u00b7 1 authors"},{"name":"base.py","value":19,"metric":1,"meta":"3 branches \u00b7 1 authors"},{"name":"widgets/__init__.py","value":7,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"widgets/autocomplete.py","value":29,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"templatetags/get_specialty.py","value":13,"metric":1,"meta":"2 branches \u00b7 1 authors"},{"name":"middleware/__init__.py","value":1,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"middleware/approved_user.py","value":11,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"forms/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/commands/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"services/__init__.py","value":4,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":4,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"migrations/0001_initial.py","value":373,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"migrations/0002_initial.py","value":140,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"templatetags/resonance.py","value":5,"metric":0,"meta":"0 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":77}</script>
+<script type="application/json">{"items":[{"name":"models.py","value":842,"metric":77,"meta":"95 branches \u00b7 2 authors"},{"name":"mixins.py","value":621,"metric":25,"meta":"105 branches \u00b7 2 authors"},{"name":"permissions.py","value":395,"metric":18,"meta":"71 branches \u00b7 2 authors"},{"name":"utils.py","value":125,"metric":17,"meta":"33 branches \u00b7 2 authors"},{"name":"templatetags/sanitize_text.py","value":141,"metric":13,"meta":"37 branches \u00b7 2 authors"},{"name":"templatetags/dots.py","value":264,"metric":9,"meta":"46 branches \u00b7 2 authors"},{"name":"views/generic.py","value":173,"metric":11,"meta":"35 branches \u00b7 2 authors"},{"name":"management/commands/approve_pending_items.py","value":316,"metric":4,"meta":"74 branches \u00b7 2 authors"},{"name":"widgets/linked_stat.py","value":367,"metric":5,"meta":"56 branches \u00b7 2 authors"},{"name":"management/commands/validate_data_integrity.py","value":369,"metric":5,"meta":"54 branches \u00b7 2 authors"},{"name":"management/commands/populate_gamedata.py","value":168,"metric":9,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/sync_character_status.py","value":228,"metric":5,"meta":"53 branches \u00b7 2 authors"},{"name":"cache.py","value":281,"metric":6,"meta":"43 branches \u00b7 2 authors"},{"name":"services/chronicle_data.py","value":211,"metric":6,"meta":"40 branches \u00b7 1 authors"},{"name":"management/commands/find_duplicate_objects.py","value":269,"metric":5,"meta":"37 branches \u00b7 2 authors"},{"name":"management/commands/audit_xp_spending.py","value":229,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"templatetags/permissions.py","value":154,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"management/commands/process_weekly_xp.py","value":186,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"views/character_template.py","value":275,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"management/commands/validate_character_data.py","value":211,"metric":4,"meta":"38 branches \u00b7 2 authors"},{"name":"linked_stat.py","value":427,"metric":3,"meta":"41 branches \u00b7 1 authors"},{"name":"management/commands/monitor_validation.py","value":306,"metric":5,"meta":"24 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_orphaned_data.py","value":184,"metric":4,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/import_chronicle.py","value":200,"metric":5,"meta":"21 branches \u00b7 2 authors"},{"name":"management/commands/archive_inactive_chronicles.py","value":162,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"management/commands/generate_chronicle_summary.py","value":311,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"decorators.py","value":102,"metric":5,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/generate_st_report.py","value":129,"metric":4,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/audit_user_permissions.py","value":164,"metric":4,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/export_chronicle.py","value":175,"metric":5,"meta":"11 branches \u00b7 2 authors"},{"name":"templatetags/field.py","value":38,"metric":8,"meta":"6 branches \u00b7 1 authors"},{"name":"management/commands/populate_test_chronicle.py","value":176,"metric":5,"meta":"10 branches \u00b7 2 authors"},{"name":"management/commands/reset_db.py","value":80,"metric":3,"meta":"15 branches \u00b7 2 authors"},{"name":"views/reference.py","value":211,"metric":2,"meta":"19 branches \u00b7 1 authors"},{"name":"forms/character_template.py","value":215,"metric":3,"meta":"12 branches \u00b7 2 authors"},{"name":"context_processors.py","value":29,"metric":7,"meta":"4 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_old_weeks.py","value":64,"metric":4,"meta":"7 branches \u00b7 2 authors"},{"name":"services/approval.py","value":86,"metric":3,"meta":"9 branches \u00b7 1 authors"},{"name":"ajax.py","value":68,"metric":2,"meta":"13 branches \u00b7 1 authors"},{"name":"validators.py","value":34,"metric":3,"meta":"7 branches \u00b7 1 authors"},{"name":"xp_utils.py","value":69,"metric":2,"meta":"11 branches \u00b7 1 authors"},{"name":"middleware/cache_middleware.py","value":51,"metric":3,"meta":"7 branches \u00b7 2 authors"},{"name":"views/book.py","value":36,"metric":8,"meta":"2 branches \u00b7 2 authors"},{"name":"views/houserules.py","value":39,"metric":12,"meta":"1 branches \u00b7 2 authors"},{"name":"management/commands/reset_demo_data.py","value":99,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"middleware/auth_error_handler.py","value":39,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"constants.py","value":140,"metric":9,"meta":"1 branches \u00b7 2 authors"},{"name":"forms/language.py","value":18,"metric":6,"meta":"2 branches \u00b7 2 authors"},{"name":"views/__init__.py","value":69,"metric":12,"meta":"0 branches \u00b7 2 authors"},{"name":"views/home.py","value":14,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"admin.py","value":114,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"templatetags/json_filters.py","value":23,"metric":2,"meta":"4 branches \u00b7 2 authors"},{"name":"urls.py","value":102,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"views/language.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/newsitem.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/errors.py","value":28,"metric":1,"meta":"4 branches \u00b7 1 authors"},{"name":"widgets/__init__.py","value":14,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"base.py","value":19,"metric":1,"meta":"3 branches \u00b7 1 authors"},{"name":"widgets/autocomplete.py","value":29,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"middleware/__init__.py","value":2,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"templatetags/get_specialty.py","value":13,"metric":1,"meta":"2 branches \u00b7 1 authors"},{"name":"forms/__init__.py","value":2,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"middleware/approved_user.py","value":11,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"management/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/commands/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"services/__init__.py","value":4,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":4,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"templatetags/resonance.py","value":5,"metric":0,"meta":"0 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":77}</script>
 
 <h2>Hotspot ranking</h2>
 <p class="dim">Score = commits × (branch points + 1). Tests excluded. 37 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/core/base.html (29), templates/core/form.html (21), templates/core/object.html (17).</p>
@@ -497,6 +498,7 @@ code that names them. Resource edges are found textually: a quoted path is an ed
 
 </section>
 <section class="panel" id="flows" role="tabpanel">
+
 
 <p class="dim">Four flows chosen because correctness here fans out to every gameline: object-level authorization on every detail/edit view, the XP/freebie approval workflow, template-driven NPC creation, and the validation-on-save path every model in the tree relies on.</p>
 
@@ -640,8 +642,10 @@ sequenceDiagram
 <li><code>skip_validation=True</code> is a trust-the-caller escape hatch with no logging or audit trail when used — outside tests, the only caller in the repo is a data-seeding script (<code>populate_db/chronicles/test/044_character_status.py:25-52</code>, four call sites). That's a narrow, plausible use (seeded fixtures known to be valid), but nothing in <code>Model.save()</code> logs or flags when validation was bypassed, so a future call site added without that context gets silent skip-validation behavior with no signal.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="boundaries" role="tabpanel">
+
 
 <h2>Concern ownership</h2>
 <div class="tbl-wrap"><table>
@@ -682,8 +686,10 @@ This is the same invariant the Overview and Invariants tabs both flag from a dif
 <h2>Cycles</h2>
 <p class="dim">The dependency analyzer found <strong>zero</strong> module-level or file-level import cycles (<code>module_cycles: []</code>, <code>file_cycles: []</code>). Given the resource caveat in the Overview tab — most of <code>core</code>'s real coupling to <code>characters</code> and <code>game</code> lives in function-body imports the analyzer can't see as edges — this result should be read as <strong>"no cycles detected in the visible graph,"</strong> not "no cycles exist." The boundary violations above (core → characters at call time) are exactly the kind of edge a textual/static import scanner misses; they were found by reading the code, not by the graph.</p>
 
+
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <div class="card hero">
 <p>The headline finding in this tab is a <strong>confirmed, reproduced logic bug</strong>, not a theoretical risk: <code>CharacterTemplate.get_heading()</code> returns a Python object repr instead of a CSS class name, on every render of the template detail page. Verified by instantiating the actual descriptor pattern against Django 5.1's field machinery (see below) — this is not inferred from reading alone.</p>
@@ -728,8 +734,10 @@ getattr(cls, "gameline", "fallback"):  &lt;django.db.models.query_utils.Deferred
 <div class="callout warn"><strong>4. Spending-request approve/reject locking asymmetry.</strong> Race window only under double-submit or concurrent ST clicks (<code>core/mixins.py:696-699</code> vs <code>:734-739</code>); plausible but not high-frequency.</div>
 <div class="callout"><strong>5. Duplicated image/status-approval logic across <code>ApprovalService</code> and <code>core/management/commands/approve_pending_items.py</code>.</strong> Not a bug today (both paths currently agree on behavior), but see Boundaries &amp; Ownership — the next change to approval semantics has two places to update and no mechanism that would fail if only one were touched.</div>
 
+
 </section>
 <section class="panel" id="glossary" role="tabpanel">
+
 
 <h2>Domain term ↔ code name drift</h2>
 <div class="tbl-wrap"><table>
@@ -751,8 +759,9 @@ getattr(cls, "gameline", "fallback"):  &lt;django.db.models.query_utils.Deferred
 
 <div class="callout good">Outside the items above, naming in <code>core</code> is generally direct and predictable — <code>CacheKeyGenerator</code>, <code>CacheInvalidator</code>, <code>VisibilityFilterMixin</code>, <code>OwnerRequiredMixin</code> all do exactly what their names say, with no drift found while reading them.</div>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */

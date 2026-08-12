@@ -6,9 +6,10 @@
 <title>tg — Measurement</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Design tokens are code-visualization's, verbatim. The three document types in
-   a code overview sit next to each other in one nav bar; sharing the palette is
-   what makes them read as one artifact rather than three tools' output. */
+/* Design tokens are code-visualization's, copied verbatim. A measurement
+   document sits in the same nav bar as a code map and a health page; sharing
+   the palette is what makes them read as one artifact rather than three
+   tools' output. A CI test pins these two blocks byte-identical. */
 :root{
   --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
   --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
@@ -35,6 +36,7 @@
     --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
   }
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
@@ -51,15 +53,13 @@ h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px
 main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- tabs: code-visualization's contract, so one shell serves all four
-   documents. code-overview forces this template on assemble.py and on
-   build_measurement.py, so the markup those two emit has to fit here. ------- */
+/* ---------- tabs: code-visualization's contract, so one shell serves both -- */
 nav.tabs{
   display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
   padding:0 28px;border-bottom:1px solid var(--border);
 }
-/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
-   renders as a stray rule under the header. */
+/* An untabbed page (a summary portal) leaves TABS_NAV empty; without this the
+   empty bar renders as a stray rule under the header. */
 nav.tabs:empty{display:none;border:none}
 nav.tabs button{
   background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
@@ -83,10 +83,6 @@ a{color:var(--accent)}
 code,.mono{font-family:var(--mono);font-size:.92em}
 p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
-.grid{display:grid;gap:14px;margin:12px 0}
-.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
-.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.grid>*{min-width:0}
 .kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
 .kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -102,10 +98,6 @@ p code,li code,td code{background:var(--surface-2);border:1px solid var(--border
 .callout.warn{border-color:var(--warn);background:var(--warn-dim)}
 .callout.bad{border-color:var(--bad);background:var(--bad-dim)}
 .callout.good{border-color:var(--good);background:var(--good-dim)}
-details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
-details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
-details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
-details .body{padding:12px 16px}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
@@ -113,13 +105,12 @@ tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:t
 tbody tr:last-child td{border-bottom:none}
 tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+td code.floc{white-space:nowrap;overflow-wrap:normal}
 .bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
 .bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
 .bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
 
 /* ---------- grade components ---------- */
-/* Grade colour is bound to the band, not to the score, so the letter and the
-   colour can never disagree — the two are read together at a glance. */
 .g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
 .g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
 .gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
@@ -127,31 +118,6 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var
 .gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
 .gradecard .what{flex:1 1 260px;min-width:0}
 .gradecard .what h2{margin:0 0 4px;font-size:19px}
-.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.catrow:last-child{border-bottom:none}
-.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
-.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
-.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
-.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
-.catrow .bar>i{background:var(--grade)}
-.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
-@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
-.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
-.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
-.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
-.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
-.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
-.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
-.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
-/* The type token and the category name are short and identify the row; letting
-   them wrap mid-word to buy width for a long description makes the table harder
-   to scan, not easier. The description column is the one that should give. */
-td code.ftype{white-space:nowrap;overflow-wrap:normal}
-td.cat{white-space:nowrap}
-/* A file:line split across two lines is not a citation anyone can copy. The
-   wrapper scrolls if a path is genuinely too deep for the viewport. */
-td code.floc{white-space:nowrap;overflow-wrap:normal}
 footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
 footer.doc a{color:var(--text-dim)}
 @media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
@@ -162,7 +128,7 @@ footer.doc a{color:var(--text-dim)}
   <div class="doc-label">MEASUREMENT AUDIT</div>
   <h1 class="doc-title">tg — Measurement</h1>
   <p class="doc-sub">Can the numbers tg reports be believed?</p>
-  <div class="doc-meta">generated 2026-08-10 · 0 measurable thing(s)</div>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6 · 2 measurable thing(s)</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -188,22 +154,22 @@ footer.doc a{color:var(--text-dim)}
 <button role="tab" data-tab="tab-findings" aria-selected="false" aria-controls="tab-findings">Findings</button>
 <button role="tab" data-tab="tab-unmeasurable" aria-selected="false" aria-controls="tab-unmeasurable">Unmeasurable</button></nav>
 <main><section class="panel active" id="tab-score" role="tabpanel">
-<section class="gradecard g-none"><div><div class="letter">—</div><div class="score">— / 100</div></div><div class="what"><h2>Measurement coverage</h2><p class="dim">Importance-weighted measured things over measurable things. It says how much of what matters is actually measured — not whether the code is correct.</p></div></section><div class="callout warn"><strong>No measurement content here.</strong> Nothing in this unit produces a quality, accuracy or score number, so there is nothing to grade. That is an honest null, not a pass.</div><div class="callout warn">No written summary was supplied. The prose that says what this unit measures and why is the one part no script can produce, and this page is weaker without it.</div><div class="kpis"><div class="kpi accent"><div class="n">0</div><div class="l">measurable things</div></div><div class="kpi"><div class="n">0.00</div><div class="l">weight measured</div></div><div class="kpi"><div class="n">0</div><div class="l">weight total</div></div></div><h3>By importance</h3><div class="tbl-wrap"><table><thead><tr><th>Importance</th><th class="num">Things</th><th class="num">Weight</th><th class="num">Measured</th><th class="num">Share</th></tr></thead><tbody><tr><td>gates a ship decision</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr><tr><td>informs a decision</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr><tr><td>informational</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr></tbody></table></div><h3>Not audited</h3><p class="dim">A silent gap reads as a clean bill of health, so it is listed instead.</p><ul><li>no measurable thing is defined at pure repository scope (outside any single mapped package); the one real measurement subsystem found in this repo (monitor_validation.health_score) is owned by, and scored on, the core package — see core/docs/measurement.html and the package table below.</li></ul><h3>Packages</h3><p class="dim">A package with nothing measurable is listed as having no measurement content, not as passing.</p><div class="tbl-wrap"><table><thead><tr><th>Package</th><th class="num">Score</th><th class="num">Grade</th><th class="num">Things</th><th>State</th></tr></thead><tbody><tr><td>accounts</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>chained_select</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>characters</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>core</td><td class="num">25.0</td><td class="num">F</td><td class="num">2</td><td>graded</td></tr><tr><td>game</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>items</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>locations</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>widgets</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>tg</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr></tbody></table></div>
+<section class="gradecard g-f"><div><div class="letter">F</div><div class="score">25.0 / 100</div></div><div class="what"><h2>Measurement coverage</h2><p class="dim">Importance-weighted measured things over measurable things. It says how much of what matters is actually measured — not whether the code is correct.</p></div></section><div class="callout"><strong>no ship-gating numbers were inventoried.</strong> The headline score averages every importance level; this line is the cut that decides releases.</div><div class="callout warn">No written summary was supplied. The prose that says what this unit measures and why is the one part no script can produce, and this page is weaker without it.</div><div class="kpis"><div class="kpi accent"><div class="n">2</div><div class="l">measurable things</div></div><div class="kpi"><div class="n">1.00</div><div class="l">weight measured</div></div><div class="kpi"><div class="n">4</div><div class="l">weight total</div></div></div><h3>By importance</h3><div class="tbl-wrap"><table><thead><tr><th>Importance</th><th class="num">Things</th><th class="num">Weight</th><th class="num">Measured</th><th class="num">Share</th></tr></thead><tbody><tr><td>gates a ship decision</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr><tr><td>informs a decision</td><td class="num">2</td><td class="num">4</td><td class="num">1.00</td><td class="num">25%</td></tr><tr><td>informational</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr></tbody></table></div><h3>Not audited</h3><p class="dim">A silent gap reads as a clean bill of health, so it is listed instead.</p><ul><li>no other package in this repository defines a composite score, threshold-gated status, or evaluation metric with ground truth; scanned candidates elsewhere (dice-roll odds, XP totals, rating dots, choice-maps) are domain data fields rendered to templates, not measurements of system quality, and are not treated as measurable rows</li></ul><h3>Packages</h3><p class="dim">A package with nothing measurable is listed as having no measurement content, not as passing.</p><div class="tbl-wrap"><table><thead><tr><th>Package</th><th class="num">Score</th><th class="num">Grade</th><th class="num">Things</th><th>State</th></tr></thead><tbody><tr><td>accounts</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>chained_select</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>characters</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>core</td><td class="num">25.0</td><td class="num">F</td><td class="num">2</td><td>graded</td></tr><tr><td>game</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>items</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>locations</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>widgets</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr><tr><td>tg</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td>no measurement content</td></tr></tbody></table></div>
 
 </section>
 <section class="panel" id="tab-inventory" role="tabpanel">
-<p class="dim">Nothing measurable was inventoried in this unit.</p>
+<p>Every measurable thing this audit found, with the weight and credit that produced the score. The denominator is a judgment — dispute the rows, not the letter.</p><p class="dim">Credit is set by the worst confirmed finding against the thing:</p><ul class="dim"><li><code class="mono">1.00</code> — measured, nothing found against it</li><li><code class="mono">0.50</code> — measured, one medium finding</li><li><code class="mono">0.25</code> — measured, one high finding</li><li><code class="mono">0.00</code> — not measured, or unmeasurable with today&#x27;s data</li></ul><div class="tbl-wrap"><table><thead><tr><th>Thing</th><th>Importance</th><th class="num">Credit</th><th>Why</th><th class="num">N</th><th>Consumer</th><th>Evidence</th></tr></thead><tbody><tr><td><strong>monitor_validation.health_score</strong><br><code class="mono">100 - min(5*data_integrity_issues, 50) - (10 if xp_approval_rate&lt;80) - (10 if scenes_awaiting_xp&gt;10), floored at 0</code></td><td>informs a decision<br><span class="faint">read by a human as a post-deploy health check (docs/deployment.md:65 runs it right after every deploy) and is the sole basis for the healthy/degraded status line and the --alert path; nothing automated (CI, rollback) gates on it</span></td><td class="num">0.50</td><td>computed live and correctly from real data (n=47 characters in the current database), but reduced by finding hardcoded_composite_weights: the three deductions (-5/issue capped at -50, -10, -10) and the healthy/degraded cutoff of 90 have no stated derivation, and the --alert path they gate is an unimplemented stub<br><span class="badge bad">hardcoded_composite_weights</span></td><td class="num">47 / 47</td><td>core/management/commands/monitor_validation.py:74 sets status healthy/degraded at score&gt;=90; docs/deployment.md:65 runs it manually after each deploy</td><td><code class="floc">core/management/commands/monitor_validation.py:221-241</code><br></td></tr><tr><td><strong>monitor_validation.alert_delivery</strong><br><code class="mono">n/a - no delivery mechanism exists</code></td><td>informs a decision<br><span class="faint">this is what is supposed to turn a degraded score into someone actually finding out; the docstring calls the command runnable &#x27;as a cron job or monitoring service&#x27;</span></td><td class="num">0.00</td><td>not measured because there is nothing to measure yet: send_alerts() only writes to stdout and carries a TODO (&#x27;Implement actual alerting mechanism&#x27;) for email/Slack/PagerDuty, and nothing in the repo schedules this command (no cron config, no CI workflow, no Procfile reference) beyond the one manual invocation in the deploy runbook<br><span class="badge bad">dead_alert_path</span></td><td class="num">—</td><td>core/management/commands/monitor_validation.py:332-361 (send_alerts)</td><td><code class="floc">core/management/commands/monitor_validation.py:332-361</code><br></td></tr></tbody></table></div>
 
 </section>
 <section class="panel" id="tab-findings" role="tabpanel">
-<p class="dim">No confirmed findings against the measurement itself. That is not the same as the numbers being right — see the Unmeasurable tab for what nothing here could check.</p>
+<p>Ranked by likelihood × blast radius on the decisions the number drives, not by how clever the finding is.</p><div class="card"><div><span class="badge warn">medium</span> <code>hardcoded_composite_weights</code></div><h3>health_score&#x27;s weights and healthy/degraded cutoff are unexplained magic numbers</h3><p>calculate_health_score() (core/management/commands/monitor_validation.py:221-241) deducts -5 per integrity issue (capped at -50), -10 for approval_rate&lt;80, -10 for scenes_awaiting_xp&gt;10, with no comment or derivation for any of the three, and handle() (line 74) treats &gt;=90 as the sole healthy/degraded boundary. A different mix of issues can produce the same score, and there is no record of why these particular numbers were chosen.</p><p class="dim"><strong>Blast radius:</strong> the healthy/degraded label shown after every deploy, and whether --alert fires at all</p><code class="floc">core/management/commands/monitor_validation.py:221-241</code> <code class="floc">core/management/commands/monitor_validation.py:74</code> </div><div class="card"><div><span class="badge warn">medium</span> <code>dead_alert_path</code></div><h3>The --alert flag has no real alerting behind it</h3><p>send_alerts() (core/management/commands/monitor_validation.py:332-361) formats an alert message and writes it to stdout with self.style.ERROR, with a TODO listing email/Slack/PagerDuty as unimplemented. If this command is ever run non-interactively (a cron job, as its own docstring suggests), a degraded score raises no actual alert.</p><p class="dim"><strong>Blast radius:</strong> any unattended run of this command; currently mitigated only because the one documented invocation (docs/deployment.md:65) is run by a human watching the terminal</p><code class="floc">core/management/commands/monitor_validation.py:332-361</code> </div>
 
 </section>
 <section class="panel" id="tab-unmeasurable" role="tabpanel">
 <p class="dim">Nothing was found that today's data structurally cannot measure.</p>
 
 </section>
-<script type="application/json" id="measurement-meta">{"schema":"measurement/1","scope":"repository","package":"tg","generated":"2026-08-10","commit":"","score":null,"grade":"\u2014","weight_total":0.0,"weight_measured":0.0,"by_importance":{"3":{"total":0.0,"measured":0.0,"share":null,"rows":0},"2":{"total":0.0,"measured":0.0,"share":null,"rows":0},"1":{"total":0.0,"measured":0.0,"share":null,"rows":0}},"rows":[],"findings":[],"not_audited":["no measurable thing is defined at pure repository scope (outside any single mapped package); the one real measurement subsystem found in this repo (monitor_validation.health_score) is owned by, and scored on, the core package \u2014 see core/docs/measurement.html and the package table below."],"rows_out_of_scope":0,"packages":[{"name":"accounts","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"chained_select","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"characters","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"core","score":25.0,"grade":"F","rows":2,"generated":true},{"name":"game","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"items","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"locations","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"widgets","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"tg","score":null,"grade":"\u2014","rows":0,"generated":true}]}</script></main>
+<script type="application/json" id="measurement-meta">{"schema":"measurement/1","scope":"repository","package":"tg","generated":"2026-08-11","commit":"f8bb01d6","score":25.0,"grade":"F","weight_total":4.0,"weight_measured":1.0,"by_importance":{"3":{"total":0.0,"measured":0.0,"share":null,"rows":0},"2":{"total":4.0,"measured":1.0,"share":25.0,"rows":2},"1":{"total":0.0,"measured":0.0,"share":null,"rows":0}},"rows":[{"name":"monitor_validation.health_score","importance":2,"importance_reason":"read by a human as a post-deploy health check (docs/deployment.md:65 runs it right after every deploy) and is the sole basis for the healthy/degraded status line and the --alert path; nothing automated (CI, rollback) gates on it","credit":0.5,"credit_reason":"computed live and correctly from real data (n=47 characters in the current database), but reduced by finding hardcoded_composite_weights: the three deductions (-5/issue capped at -50, -10, -10) and the healthy/degraded cutoff of 90 have no stated derivation, and the --alert path they gate is an unimplemented stub","finding":"hardcoded_composite_weights","n":47,"n_total":47,"formula":"100 - min(5*data_integrity_issues, 50) - (10 if xp_approval_rate<80) - (10 if scenes_awaiting_xp>10), floored at 0","consumer":"core/management/commands/monitor_validation.py:74 sets status healthy/degraded at score>=90; docs/deployment.md:65 runs it manually after each deploy","evidence":["core/management/commands/monitor_validation.py:221-241"],"status":"measured"},{"name":"monitor_validation.alert_delivery","importance":2,"importance_reason":"this is what is supposed to turn a degraded score into someone actually finding out; the docstring calls the command runnable 'as a cron job or monitoring service'","credit":0.0,"credit_reason":"not measured because there is nothing to measure yet: send_alerts() only writes to stdout and carries a TODO ('Implement actual alerting mechanism') for email/Slack/PagerDuty, and nothing in the repo schedules this command (no cron config, no CI workflow, no Procfile reference) beyond the one manual invocation in the deploy runbook","finding":"dead_alert_path","n":null,"formula":"n/a - no delivery mechanism exists","consumer":"core/management/commands/monitor_validation.py:332-361 (send_alerts)","evidence":["core/management/commands/monitor_validation.py:332-361"],"status":"not_measured"}],"findings":[{"id":"hardcoded_composite_weights","severity":"medium","title":"health_score's weights and healthy/degraded cutoff are unexplained magic numbers","detail":"calculate_health_score() (core/management/commands/monitor_validation.py:221-241) deducts -5 per integrity issue (capped at -50), -10 for approval_rate<80, -10 for scenes_awaiting_xp>10, with no comment or derivation for any of the three, and handle() (line 74) treats >=90 as the sole healthy/degraded boundary. A different mix of issues can produce the same score, and there is no record of why these particular numbers were chosen.","evidence":["core/management/commands/monitor_validation.py:221-241","core/management/commands/monitor_validation.py:74"],"blast_radius":"the healthy/degraded label shown after every deploy, and whether --alert fires at all"},{"id":"dead_alert_path","severity":"medium","title":"The --alert flag has no real alerting behind it","detail":"send_alerts() (core/management/commands/monitor_validation.py:332-361) formats an alert message and writes it to stdout with self.style.ERROR, with a TODO listing email/Slack/PagerDuty as unimplemented. If this command is ever run non-interactively (a cron job, as its own docstring suggests), a degraded score raises no actual alert.","evidence":["core/management/commands/monitor_validation.py:332-361"],"blast_radius":"any unattended run of this command; currently mitigated only because the one documented invocation (docs/deployment.md:65) is run by a human watching the terminal"}],"not_audited":["no other package in this repository defines a composite score, threshold-gated status, or evaluation metric with ground truth; scanned candidates elsewhere (dice-roll odds, XP totals, rating dots, choice-maps) are domain data fields rendered to templates, not measurements of system quality, and are not treated as measurable rows"],"rows_out_of_scope":0,"packages":[{"name":"accounts","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"chained_select","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"characters","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"core","score":25.0,"grade":"F","rows":2,"generated":true},{"name":"game","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"items","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"locations","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"widgets","score":null,"grade":"\u2014","rows":0,"generated":true},{"name":"tg","score":null,"grade":"\u2014","rows":0,"generated":true}]}</script></main>
 <footer class="doc">Generated by science-investigation. The score is measurement coverage, not code quality: it says how much of what matters is measured, never whether the code is correct.</footer>
 <script>
 (function(){

@@ -152,10 +152,10 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 </head>
 <body>
 <header class="doc">
-  <div class="doc-label">CODEBASE ATLAS</div>
+  <div class="doc-label">CODE MAP</div>
   <h1 class="doc-title">populate_db — Codebase Atlas</h1>
-  <p class="doc-sub">Game-data seed scripts (codemap only — not graded; see docs note)</p>
-  <div class="doc-meta">generated 2026-08-09 · d6933760 · 227 files, 109066 LOC</div>
+  <p class="doc-sub">Architecture, dependencies, hotspots, and critical flows</p>
+  <div class="doc-meta">generated 2026-08-11 · f8bb01d6</div>
 </header>
 <!-- code-overview:nav --><style>
 .co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
@@ -181,6 +181,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
 <button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
 <main><section class="panel active" id="overview" role="tabpanel">
+
 
 <div class="card hero">
 <h2>What this is</h2>
@@ -226,36 +227,35 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <li><strong>No import graph to speak of.</strong> The Dependencies tab shows 0 resolved first-party import edges inside <code>populate_db/</code> — that's accurate, not a tooling gap: these scripts import Django models from <code>characters/</code>, <code>core/</code>, and <code>game/</code> (outside this directory's scope) but essentially never import each other. Cross-file coordination happens entirely through the database (via <code>get_or_create</code>/<code>filter().first()</code> lookups) and through the loader's file-ordering logic, not through Python imports.</li>
 </ul>
 
+
 </section>
 <section class="panel" id="inventory" role="tabpanel">
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">227</div><div class="l">source files</div></div>
-  <div class="kpi"><div class="n">109,066</div><div class="l">lines of code</div></div>
+  <div class="kpi accent"><div class="n">104</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">62,083</div><div class="l">lines of code</div></div>
   <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
-  <div class="kpi good"><div class="n">38%</div><div class="l">test code share</div></div>
+  <div class="kpi warn"><div class="n">0%</div><div class="l">test code share</div></div>
 </div>
 
 <h2>Languages</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
-<tbody><tr><td>Python</td><td class='num'>108,427</td><td class='num'>226</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>99.4%</td></tr>
-<tr><td>Markdown</td><td class='num'>639</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.6%</td></tr></tbody></table></div>
-<p class="dim">Coverage: 1 file(s) over 2 MB skipped entirely, largest <code>chronicles/the_nine.py</code> (7 MB).</p>
+<tbody><tr><td>Python</td><td class='num'>62,083</td><td class='num'>104</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>100.0%</td></tr></tbody></table></div>
+
 
 <h2>Top-level directories</h2>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
-<tbody><tr><td><code>chronicles/</code></td><td class='num'>46,983</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
-<tr><td><code>(root)/</code></td><td class='num'>28,413</td><td><div class="bar "><i style="width:60.5%"></i></div></td></tr>
-<tr><td><code>mage/</code></td><td class='num'>16,515</td><td><div class="bar "><i style="width:35.2%"></i></div></td></tr>
-<tr><td><code>demon/</code></td><td class='num'>5,599</td><td><div class="bar "><i style="width:11.9%"></i></div></td></tr>
-<tr><td><code>werewolf/</code></td><td class='num'>4,292</td><td><div class="bar "><i style="width:9.1%"></i></div></td></tr>
-<tr><td><code>character_templates/</code></td><td class='num'>2,290</td><td><div class="bar "><i style="width:4.9%"></i></div></td></tr>
-<tr><td><code>changeling/</code></td><td class='num'>2,045</td><td><div class="bar "><i style="width:4.4%"></i></div></td></tr>
-<tr><td><code>vampire/</code></td><td class='num'>1,962</td><td><div class="bar "><i style="width:4.2%"></i></div></td></tr>
-<tr><td><code>wraith/</code></td><td class='num'>838</td><td><div class="bar "><i style="width:1.8%"></i></div></td></tr>
+<tbody><tr><td><code>(root)/</code></td><td class='num'>28,413</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>mage/</code></td><td class='num'>16,515</td><td><div class="bar "><i style="width:58.1%"></i></div></td></tr>
+<tr><td><code>demon/</code></td><td class='num'>5,599</td><td><div class="bar "><i style="width:19.7%"></i></div></td></tr>
+<tr><td><code>werewolf/</code></td><td class='num'>4,292</td><td><div class="bar "><i style="width:15.1%"></i></div></td></tr>
+<tr><td><code>character_templates/</code></td><td class='num'>2,290</td><td><div class="bar "><i style="width:8.1%"></i></div></td></tr>
+<tr><td><code>changeling/</code></td><td class='num'>2,045</td><td><div class="bar "><i style="width:7.2%"></i></div></td></tr>
+<tr><td><code>vampire/</code></td><td class='num'>1,962</td><td><div class="bar "><i style="width:6.9%"></i></div></td></tr>
+<tr><td><code>wraith/</code></td><td class='num'>838</td><td><div class="bar "><i style="width:2.9%"></i></div></td></tr>
 <tr><td><code>mummy/</code></td><td class='num'>129</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
 
 <div class="grid cols-2">
@@ -266,49 +266,49 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <tbody><tr><td><code>01_resonance.py</code></td><td class='num'>14,117</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>10</td></tr>
 <tr><td><code>nouns.py</code></td><td class='num'>6,801</td><td><div class="bar "><i style="width:48.2%"></i></div></td><td class='num'>5</td></tr>
 <tr><td><code>mage/effects_INC.py</code></td><td class='num'>6,136</td><td><div class="bar "><i style="width:43.5%"></i></div></td><td class='num'>533</td></tr>
-<tr><td><code>chronicles/online_game.py</code></td><td class='num'>3,519</td><td><div class="bar "><i style="width:24.9%"></i></div></td><td class='num'>745</td></tr>
 <tr><td><code>mage/wonders_INC.py</code></td><td class='num'>3,189</td><td><div class="bar "><i style="width:22.6%"></i></div></td><td class='num'>95</td></tr>
 <tr><td><code>merits_and_flaws_INC.py</code></td><td class='num'>2,963</td><td><div class="bar "><i style="width:21.0%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>specialties.py</code></td><td class='num'>1,886</td><td><div class="bar "><i style="width:13.4%"></i></div></td><td class='num'>1</td></tr>
 <tr><td><code>demon/demon_merits_and_flaws.py</code></td><td class='num'>1,614</td><td><div class="bar "><i style="width:11.4%"></i></div></td><td class='num'>202</td></tr>
-<tr><td><code>chronicles/test/002_vampire_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>1,563</td><td><div class="bar "><i style="width:11.1%"></i></div></td><td class='num'>115</td></tr>
-<tr><td><code>chronicles/test/017_demon_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>1,544</td><td><div class="bar "><i style="width:10.9%"></i></div></td><td class='num'>106</td></tr>
-<tr><td><code>chronicles/test/014_changeling_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>1,531</td><td><div class="bar "><i style="width:10.8%"></i></div></td><td class='num'>96</td></tr>
-<tr><td><code>chronicles/test/008_mage_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>1,500</td><td><div class="bar "><i style="width:10.6%"></i></div></td><td class='num'>114</td></tr>
 <tr><td><code>mage/practices_INC.py</code></td><td class='num'>1,466</td><td><div class="bar "><i style="width:10.4%"></i></div></td><td class='num'>0</td></tr>
 <tr><td><code>changeling/cantrips.py</code></td><td class='num'>1,426</td><td><div class="bar "><i style="width:10.1%"></i></div></td><td class='num'>34</td></tr>
-<tr><td><code>chronicles/chargen_test.py</code> <span class="badge neutral">test</span></td><td class='num'>1,156</td><td><div class="bar "><i style="width:8.2%"></i></div></td><td class='num'>150</td></tr>
-<tr><td><code>chronicles/test/005_werewolf_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>1,087</td><td><div class="bar "><i style="width:7.7%"></i></div></td><td class='num'>73</td></tr>
-<tr><td><code>chronicles/test/003_vampire_npc.py</code> <span class="badge neutral">test</span></td><td class='num'>1,057</td><td><div class="bar "><i style="width:7.5%"></i></div></td><td class='num'>91</td></tr>
 <tr><td><code>mage/rotes.py</code></td><td class='num'>1,008</td><td><div class="bar "><i style="width:7.1%"></i></div></td><td class='num'>8</td></tr>
 <tr><td><code>demon/demon_rituals.py</code></td><td class='num'>963</td><td><div class="bar "><i style="width:6.8%"></i></div></td><td class='num'>126</td></tr>
-<tr><td><code>werewolf/gifts_INC.py</code></td><td class='num'>954</td><td><div class="bar "><i style="width:6.8%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+<tr><td><code>werewolf/gifts_INC.py</code></td><td class='num'>954</td><td><div class="bar "><i style="width:6.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>00_books.py</code></td><td class='num'>882</td><td><div class="bar "><i style="width:6.2%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>demon/demon_visages.py</code></td><td class='num'>854</td><td><div class="bar "><i style="width:6.0%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>mage/sectors.py</code></td><td class='num'>817</td><td><div class="bar "><i style="width:5.8%"></i></div></td><td class='num'>26</td></tr>
+<tr><td><code>werewolf/spirits.py</code></td><td class='num'>734</td><td><div class="bar "><i style="width:5.2%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>vampire/linear_magic_rituals.py</code></td><td class='num'>642</td><td><div class="bar "><i style="width:4.5%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>werewolf/renown_incidents.py</code></td><td class='num'>624</td><td><div class="bar "><i style="width:4.4%"></i></div></td><td class='num'>23</td></tr>
+<tr><td><code>mage/magefactions.py</code></td><td class='num'>589</td><td><div class="bar "><i style="width:4.2%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>demon/demon_relics.py</code></td><td class='num'>557</td><td><div class="bar "><i style="width:3.9%"></i></div></td><td class='num'>30</td></tr></tbody></table></div>
 </div>
 <div>
 <h2>Most branch-heavy files</h2>
 <p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
 <div class="tbl-wrap"><table class="sortable">
 <thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
-<tbody><tr><td><code>chronicles/online_game.py</code></td><td class='num'>745</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>3,519</td><td class='num'>3</td></tr>
-<tr><td><code>mage/effects_INC.py</code></td><td class='num'>533</td><td><div class="bar warn"><i style="width:71.5%"></i></div></td><td class='num'>6,136</td><td class='num'>2</td></tr>
-<tr><td><code>demon/demon_merits_and_flaws.py</code></td><td class='num'>202</td><td><div class="bar warn"><i style="width:27.1%"></i></div></td><td class='num'>1,614</td><td class='num'>0</td></tr>
-<tr><td><code>chronicles/chargen_test.py</code> <span class="badge neutral">test</span></td><td class='num'>150</td><td><div class="bar warn"><i style="width:20.1%"></i></div></td><td class='num'>1,156</td><td class='num'>5</td></tr>
-<tr><td><code>demon/demon_rituals.py</code></td><td class='num'>126</td><td><div class="bar warn"><i style="width:16.9%"></i></div></td><td class='num'>963</td><td class='num'>1</td></tr>
-<tr><td><code>chronicles/test/002_vampire_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>115</td><td><div class="bar warn"><i style="width:15.4%"></i></div></td><td class='num'>1,563</td><td class='num'>5</td></tr>
-<tr><td><code>chronicles/test/008_mage_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>114</td><td><div class="bar warn"><i style="width:15.3%"></i></div></td><td class='num'>1,500</td><td class='num'>7</td></tr>
-<tr><td><code>chronicles/test/017_demon_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>106</td><td><div class="bar warn"><i style="width:14.2%"></i></div></td><td class='num'>1,544</td><td class='num'>6</td></tr>
-<tr><td><code>chronicles/test/014_changeling_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>96</td><td><div class="bar warn"><i style="width:12.9%"></i></div></td><td class='num'>1,531</td><td class='num'>5</td></tr>
-<tr><td><code>mage/wonders_INC.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:12.8%"></i></div></td><td class='num'>3,189</td><td class='num'>2</td></tr>
-<tr><td><code>chronicles/test/003_vampire_npc.py</code> <span class="badge neutral">test</span></td><td class='num'>91</td><td><div class="bar warn"><i style="width:12.2%"></i></div></td><td class='num'>1,057</td><td class='num'>5</td></tr>
-<tr><td><code>chronicles/test/049_traits.py</code> <span class="badge neutral">test</span></td><td class='num'>89</td><td><div class="bar warn"><i style="width:11.9%"></i></div></td><td class='num'>291</td><td class='num'>5</td></tr>
-<tr><td><code>archetypes.py</code></td><td class='num'>85</td><td><div class="bar warn"><i style="width:11.4%"></i></div></td><td class='num'>324</td><td class='num'>2</td></tr>
-<tr><td><code>chronicles/test/004_vampire_pc_aux.py</code> <span class="badge neutral">test</span></td><td class='num'>78</td><td><div class="bar warn"><i style="width:10.5%"></i></div></td><td class='num'>860</td><td class='num'>6</td></tr>
-<tr><td><code>chronicles/test/007_werewolf_pc_aux.py</code> <span class="badge neutral">test</span></td><td class='num'>74</td><td><div class="bar warn"><i style="width:9.9%"></i></div></td><td class='num'>756</td><td class='num'>6</td></tr>
-<tr><td><code>chronicles/test/005_werewolf_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>73</td><td><div class="bar warn"><i style="width:9.8%"></i></div></td><td class='num'>1,087</td><td class='num'>6</td></tr>
-<tr><td><code>chronicles/test/020_hunter_characters.py</code> <span class="badge neutral">test</span></td><td class='num'>71</td><td><div class="bar warn"><i style="width:9.5%"></i></div></td><td class='num'>812</td><td class='num'>5</td></tr>
-<tr><td><code>chronicles/test/019_demon_pc_aux.py</code> <span class="badge neutral">test</span></td><td class='num'>69</td><td><div class="bar warn"><i style="width:9.3%"></i></div></td><td class='num'>841</td><td class='num'>6</td></tr>
-<tr><td><code>chronicles/test/036_mage_items.py</code> <span class="badge neutral">test</span></td><td class='num'>69</td><td><div class="bar warn"><i style="width:9.3%"></i></div></td><td class='num'>854</td><td class='num'>4</td></tr>
-<tr><td><code>chronicles/test/010_mage_pc_aux.py</code> <span class="badge neutral">test</span></td><td class='num'>68</td><td><div class="bar warn"><i style="width:9.1%"></i></div></td><td class='num'>750</td><td class='num'>6</td></tr></tbody></table></div>
+<tbody><tr><td><code>mage/effects_INC.py</code></td><td class='num'>533</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>6,136</td><td class='num'>2</td></tr>
+<tr><td><code>demon/demon_merits_and_flaws.py</code></td><td class='num'>202</td><td><div class="bar warn"><i style="width:37.9%"></i></div></td><td class='num'>1,614</td><td class='num'>0</td></tr>
+<tr><td><code>demon/demon_rituals.py</code></td><td class='num'>126</td><td><div class="bar warn"><i style="width:23.6%"></i></div></td><td class='num'>963</td><td class='num'>1</td></tr>
+<tr><td><code>mage/wonders_INC.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:17.8%"></i></div></td><td class='num'>3,189</td><td class='num'>2</td></tr>
+<tr><td><code>archetypes.py</code></td><td class='num'>85</td><td><div class="bar warn"><i style="width:15.9%"></i></div></td><td class='num'>324</td><td class='num'>2</td></tr>
+<tr><td><code>werewolf/fetishes.py</code></td><td class='num'>56</td><td><div class="bar warn"><i style="width:10.5%"></i></div></td><td class='num'>483</td><td class='num'>1</td></tr>
+<tr><td><code>vampire/vampire_titles.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:7.5%"></i></div></td><td class='num'>389</td><td class='num'>1</td></tr>
+<tr><td><code>changeling/cantrips.py</code></td><td class='num'>34</td><td><div class="bar warn"><i style="width:6.4%"></i></div></td><td class='num'>1,426</td><td class='num'>2</td></tr>
+<tr><td><code>demon/demon_earthbound_rituals.py</code></td><td class='num'>30</td><td><div class="bar warn"><i style="width:5.6%"></i></div></td><td class='num'>158</td><td class='num'>1</td></tr>
+<tr><td><code>demon/demon_relics.py</code></td><td class='num'>30</td><td><div class="bar warn"><i style="width:5.6%"></i></div></td><td class='num'>557</td><td class='num'>1</td></tr>
+<tr><td><code>changeling/kiths.py</code></td><td class='num'>27</td><td><div class="bar warn"><i style="width:5.1%"></i></div></td><td class='num'>128</td><td class='num'>1</td></tr>
+<tr><td><code>house_rules.py</code></td><td class='num'>26</td><td><div class="bar warn"><i style="width:4.9%"></i></div></td><td class='num'>115</td><td class='num'>1</td></tr>
+<tr><td><code>mage/sectors.py</code></td><td class='num'>26</td><td><div class="bar warn"><i style="width:4.9%"></i></div></td><td class='num'>817</td><td class='num'>2</td></tr>
+<tr><td><code>werewolf/renown_incidents.py</code></td><td class='num'>23</td><td><div class="bar warn"><i style="width:4.3%"></i></div></td><td class='num'>624</td><td class='num'>1</td></tr>
+<tr><td><code>demon/demon_rituals_hotf_devils.py</code></td><td class='num'>19</td><td><div class="bar warn"><i style="width:3.6%"></i></div></td><td class='num'>85</td><td class='num'>1</td></tr>
+<tr><td><code>derangements.py</code></td><td class='num'>18</td><td><div class="bar warn"><i style="width:3.4%"></i></div></td><td class='num'>25</td><td class='num'>1</td></tr>
+<tr><td><code>demon/demon_rituals_hotf_defilers.py</code></td><td class='num'>18</td><td><div class="bar warn"><i style="width:3.4%"></i></div></td><td class='num'>98</td><td class='num'>1</td></tr>
+<tr><td><code>wraith/wraith_thorns.py</code></td><td class='num'>16</td><td><div class="bar warn"><i style="width:3.0%"></i></div></td><td class='num'>421</td><td class='num'>2</td></tr>
+<tr><td><code>demon/demon_earthbound_abilities.py</code></td><td class='num'>15</td><td><div class="bar warn"><i style="width:2.8%"></i></div></td><td class='num'>60</td><td class='num'>1</td></tr>
+<tr><td><code>werewolf/talens.py</code></td><td class='num'>15</td><td><div class="bar warn"><i style="width:2.8%"></i></div></td><td class='num'>200</td><td class='num'>1</td></tr></tbody></table></div>
 </div>
 </div>
 
@@ -318,18 +318,18 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">11</div><div class="l">modules</div></div>
+  <div class="kpi accent"><div class="n">9</div><div class="l">modules</div></div>
   <div class="kpi"><div class="n">0</div><div class="l">file-level imports</div></div>
   <div class="kpi"><div class="n">0</div><div class="l">runtime loads</div></div>
   <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
-  <div class="kpi"><div class="n">10</div><div class="l">top-level arms</div></div>
+  <div class="kpi"><div class="n">9</div><div class="l">top-level arms</div></div>
 </div>
 
 <div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
 <h2>Module dependency graph</h2>
 <p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
 <div class="viz" data-render="forcegraph" style="height:620px"></div>
-<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":28413,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 18 files"},{"id":"changeling","label":"changeling","group":"changeling","size":2045,"fanIn":0,"fanOut":0,"meta":"changeling \u00b7 4 files"},{"id":"character_templates","label":"character_templates","group":"character_templates","size":2290,"fanIn":0,"fanOut":0,"meta":"character_templates \u00b7 8 files"},{"id":"chronicles","label":"chronicles","group":"chronicles","size":6107,"fanIn":0,"fanOut":0,"meta":"chronicles \u00b7 6 files"},{"id":"chronicles/test","label":"test","group":"chronicles","size":40237,"fanIn":0,"fanOut":0,"meta":"chronicles/test \u00b7 116 files"},{"id":"demon","label":"demon","group":"demon","size":5599,"fanIn":0,"fanOut":0,"meta":"demon \u00b7 25 files"},{"id":"mage","label":"mage","group":"mage","size":16515,"fanIn":0,"fanOut":0,"meta":"mage \u00b7 21 files"},{"id":"mummy","label":"mummy","group":"mummy","size":129,"fanIn":0,"fanOut":0,"meta":"mummy \u00b7 3 files"},{"id":"vampire","label":"vampire","group":"vampire","size":1962,"fanIn":0,"fanOut":0,"meta":"vampire \u00b7 8 files"},{"id":"werewolf","label":"werewolf","group":"werewolf","size":4292,"fanIn":0,"fanOut":0,"meta":"werewolf \u00b7 13 files"},{"id":"wraith","label":"wraith","group":"wraith","size":838,"fanIn":0,"fanOut":0,"meta":"wraith \u00b7 4 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":28413,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 18 files"},{"id":"changeling","label":"changeling","group":"changeling","size":2045,"fanIn":0,"fanOut":0,"meta":"changeling \u00b7 4 files"},{"id":"character_templates","label":"character_templates","group":"character_templates","size":2290,"fanIn":0,"fanOut":0,"meta":"character_templates \u00b7 8 files"},{"id":"demon","label":"demon","group":"demon","size":5599,"fanIn":0,"fanOut":0,"meta":"demon \u00b7 25 files"},{"id":"mage","label":"mage","group":"mage","size":16515,"fanIn":0,"fanOut":0,"meta":"mage \u00b7 21 files"},{"id":"mummy","label":"mummy","group":"mummy","size":129,"fanIn":0,"fanOut":0,"meta":"mummy \u00b7 3 files"},{"id":"vampire","label":"vampire","group":"vampire","size":1962,"fanIn":0,"fanOut":0,"meta":"vampire \u00b7 8 files"},{"id":"werewolf","label":"werewolf","group":"werewolf","size":4292,"fanIn":0,"fanOut":0,"meta":"werewolf \u00b7 13 files"},{"id":"wraith","label":"wraith","group":"wraith","size":838,"fanIn":0,"fanOut":0,"meta":"wraith \u00b7 4 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
 
 <div class="grid cols-2">
 <div>
@@ -369,7 +369,7 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 
 
 <div class="kpis">
-  <div class="kpi accent"><div class="n">119</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi accent"><div class="n">120</div><div class="l">commits (24 months ago)</div></div>
   <div class="kpi"><div class="n">104</div><div class="l">files touched</div></div>
   <div class="kpi warn"><div class="n">effects_INC.py</div><div class="l">top hotspot</div></div>
 </div>
@@ -410,11 +410,12 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <tr><td><code>mage/mage_example_rotes.py</code></td><td class='num'>4</td><td class='num'>8</td><td class='num'>427</td><td class='num'>2</td><td class='num' data-sort='36'><div class="bar bad"><i style="width:2.2%"></i></div></td></tr>
 <tr><td><code>changeling/cantrips.py</code></td><td class='num'>1</td><td class='num'>34</td><td class='num'>1,426</td><td class='num'>1</td><td class='num' data-sort='35'><div class="bar bad"><i style="width:2.2%"></i></div></td></tr>
 <tr><td><code>demon/demon_rituals_hotf_malefactors.py</code></td><td class='num'>3</td><td class='num'>10</td><td class='num'>79</td><td class='num'>2</td><td class='num' data-sort='33'><div class="bar bad"><i style="width:2.1%"></i></div></td></tr></tbody></table></div>
-<details><summary>Complex but dormant files (1) — high complexity, zero recent commits</summary><div class="body"><p class="dim">Not urgent, but risky to modify: nobody has touched these recently, so working knowledge may have evaporated.</p><ul><li><code>chronicles/online_game.py</code> <span class='dim'>(745 branches, untouched)</span></li></ul></div></details>
+
 
 
 </section>
 <section class="panel" id="invariants" role="tabpanel">
+
 
 <div class="card hero">
 <h2>The one invariant that matters here: load order</h2>
@@ -441,8 +442,9 @@ footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-f
 <div class="callout warn"><strong>2. Silent <code>None</code> on missed lookups</strong> in character-building scripts (<code>populate_db/chronicles/test/002_vampire_characters.py:1240</code>) turns an ordering bug into a hard-to-notice data bug instead of a loud failure.</div>
 <div class="callout good"><strong>3. Low overall risk in practice.</strong> This is seed/fixture data for dev and test chronicles, not production write paths; nearly every creation call is <code>get_or_create</code> (idempotent, re-runnable), and the two risks above only bite if someone reorders files without reading the docstrings.</div>
 
+
 </section></main>
-<footer class="doc">Generated by code-visualization. This package is codemap-only by design — see docs/code-overview.json for why.</footer>
+<footer class="doc"></footer>
 <div class="viz-tip" id="viz-tip"></div>
 <script>
 /* ============ tabs ============ */
