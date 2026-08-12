@@ -8,3 +8,17 @@ from .sect import VampireSect
 from .title import VampireTitle
 from .vampire import Vampire
 from .vtmhuman import VtMHuman
+
+__all__ = [
+    "VampireClan",
+    "Coterie",
+    "Discipline",
+    "Ghoul",
+    "Path",
+    "Revenant",
+    "RevenantFamily",
+    "VampireSect",
+    "VampireTitle",
+    "Vampire",
+    "VtMHuman",
+]

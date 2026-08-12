@@ -4,3 +4,14 @@ from .mtahuman import MtAHumanCreationForm
 from .practiceform import PracticeRatingForm, PracticeRatingFormSet
 from .rote import RoteCreationForm
 from .sorcerer import SorcererForm
+
+__all__ = [
+    "EffectForm",
+    "EffectFormSet",
+    "MageFreebiesForm",
+    "MtAHumanCreationForm",
+    "PracticeRatingForm",
+    "PracticeRatingFormSet",
+    "RoteCreationForm",
+    "SorcererForm",
+]

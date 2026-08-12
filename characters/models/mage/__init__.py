@@ -17,3 +17,28 @@ from .resonance import Resonance
 from .rote import Rote
 from .sorcerer import LinearMagicPath, LinearMagicRitual, Sorcerer
 from .sphere import Sphere
+
+__all__ = [
+    "Cabal",
+    "Advantage",
+    "Companion",
+    "Effect",
+    "MageFaction",
+    "SorcererFellowship",
+    "CorruptedPractice",
+    "Instrument",
+    "Paradigm",
+    "Practice",
+    "SpecializedPractice",
+    "Tenet",
+    "Mage",
+    "PracticeRating",
+    "ResRating",
+    "MtAHuman",
+    "Resonance",
+    "Rote",
+    "LinearMagicPath",
+    "LinearMagicRitual",
+    "Sorcerer",
+    "Sphere",
+]
