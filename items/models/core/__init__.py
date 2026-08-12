@@ -5,3 +5,13 @@ from .meleeweapon import MeleeWeapon
 from .rangedweapon import RangedWeapon
 from .thrownweapon import ThrownWeapon
 from .weapon import Weapon
+
+__all__ = [
+    "ItemModel",
+    "Material",
+    "Medium",
+    "MeleeWeapon",
+    "RangedWeapon",
+    "ThrownWeapon",
+    "Weapon",
+]

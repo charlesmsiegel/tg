@@ -8,3 +8,21 @@ from .core import (
     ThrownWeapon,
     Weapon,
 )
+
+__all__ = [
+    "changeling",
+    "demon",
+    "hunter",
+    "mage",
+    "mummy",
+    "vampire",
+    "werewolf",
+    "wraith",
+    "ItemModel",
+    "Material",
+    "Medium",
+    "MeleeWeapon",
+    "RangedWeapon",
+    "ThrownWeapon",
+    "Weapon",
+]
