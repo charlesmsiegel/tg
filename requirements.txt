@@ -17,7 +17,10 @@ coverage==7.6.0
 djlint==1.36.4
 selenium==4.27.1
 numpy==2.2.2
-bleach==6.3.0
+# Security: Pin bleach to fix GHSA-8rfp-98v4-mmr6 (URI scheme allowlist bypass via
+# Unicode > U+00A0), GHSA-gj48-438w-jh9v (formaction URI schemes), GHSA-g75f-g53v-794x
+# (linkify email regex CPU exhaustion)
+bleach==6.4.0
 # Security: Pin python-dotenv to fix CVE-2026-28684 (symlink following in set_key)
 python-dotenv>=1.2.2
 # Security: Pin setuptools to fix CVE-2024-6345 and CVE-2025-47273
@@ -36,7 +39,9 @@ redis==5.2.1
 # WebSocket/Real-time dependencies
 channels==4.1.0
 channels-redis==4.2.1
-daphne==4.1.2
+# Security: Pin daphne to fix GHSA-rrc9-mx66-ffcm (unbounded WebSocket frame memory
+# consumption), GHSA-xh68-hfp5-5x5m (WebSocket handshake header smuggling)
+daphne==4.2.3
 # Security: Pin tornado to fix GHSA-7cx3-6m66-7c5m, GHSA-8w49-h785-mj3c (DoS vulnerabilities)
 tornado>=6.5
 
