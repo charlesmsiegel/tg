@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from accounts.dashboard import ProfileDashboard
-from game.models import Chronicle, Scene, UserSceneReadStatus
+from characters.models.core import Human
+from game.models import Chronicle, Gameline, Scene, STRelationship, UserSceneReadStatus
+from items.models.core import ItemModel
 from locations.models.core import LocationModel
 
 
@@ -39,3 +41,108 @@ class TestProfileDashboardNotifications(TestCase):
             context,
             {"notification_count": 0, "notification_breakdown": {}},
         )
+
+
+class TestProfileDashboardSelectors(TestCase):
+    def setUp(self):
+        self.st_user = User.objects.create_user("selector-st", "st@test.com", "password")
+        self.owner = User.objects.create_user("selector-owner", "owner@test.com", "password")
+        self.chronicle = Chronicle.objects.create(name="Selector Chronicle")
+        gameline = Gameline.objects.create(name="Selector Gameline")
+        STRelationship.objects.create(
+            user=self.st_user,
+            chronicle=self.chronicle,
+            gameline=gameline,
+        )
+
+        self.owned = {
+            "my_characters": Human.objects.create(
+                name="Owned Character",
+                owner=self.st_user,
+                chronicle=self.chronicle,
+                concept="Test",
+                status="App",
+            ),
+            "my_locations": LocationModel.objects.create(
+                name="Owned Location",
+                owner=self.st_user,
+                chronicle=self.chronicle,
+                status="App",
+            ),
+            "my_items": ItemModel.objects.create(
+                name="Owned Item",
+                owner=self.st_user,
+                chronicle=self.chronicle,
+                status="App",
+            ),
+        }
+        self.pending = {
+            "characters_to_approve": Human.objects.create(
+                name="Pending Character",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                concept="Test",
+                status="Sub",
+            ),
+            "locations_to_approve": LocationModel.objects.create(
+                name="Pending Location",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                status="Sub",
+            ),
+            "items_to_approve": ItemModel.objects.create(
+                name="Pending Item",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                status="Sub",
+            ),
+        }
+        self.pending_images = {
+            "character_images_to_approve": Human.objects.create(
+                name="Pending Character Image",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                concept="Test",
+                status="App",
+                image_status="sub",
+                image="test_image.png",
+            ),
+            "location_images_to_approve": LocationModel.objects.create(
+                name="Pending Location Image",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                status="App",
+                image_status="sub",
+                image="test_image.png",
+            ),
+            "item_images_to_approve": ItemModel.objects.create(
+                name="Pending Item Image",
+                owner=self.owner,
+                chronicle=self.chronicle,
+                status="App",
+                image_status="sub",
+                image="test_image.png",
+            ),
+        }
+
+    def assert_dashboard_matches_profile(self, method_name, expected):
+        dashboard_result = getattr(self.st_user.profile.dashboard, method_name)()
+        profile_result = getattr(self.st_user.profile, method_name)()
+
+        self.assertQuerySetEqual(dashboard_result, profile_result, transform=lambda obj: obj)
+        self.assertIn(expected, dashboard_result)
+
+    def test_owned_selectors_match_profile_compatibility_methods(self):
+        for method_name, expected in self.owned.items():
+            with self.subTest(method=method_name):
+                self.assert_dashboard_matches_profile(method_name, expected)
+
+    def test_pending_approval_selectors_match_profile_compatibility_methods(self):
+        for method_name, expected in self.pending.items():
+            with self.subTest(method=method_name):
+                self.assert_dashboard_matches_profile(method_name, expected)
+
+    def test_pending_image_selectors_match_profile_compatibility_methods(self):
+        for method_name, expected in self.pending_images.items():
+            with self.subTest(method=method_name):
+                self.assert_dashboard_matches_profile(method_name, expected)

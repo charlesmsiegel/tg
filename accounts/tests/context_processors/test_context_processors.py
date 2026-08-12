@@ -3,6 +3,7 @@
 from datetime import date
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db import connection
 from django.test import RequestFactory, TestCase
@@ -10,6 +11,7 @@ from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 
 from accounts.context_processors import notification_count, theme_context
+from characters.models.core.character import Character
 from characters.models.core.human import Human
 from characters.models.mage.rote import Rote
 from game.models import (
@@ -103,6 +105,7 @@ class TestNotificationCountContextProcessor(TestCase):
         request = self.factory.get("/")
         request.user = self.st_user
 
+        ContentType.objects.get_for_models(Character, Human, Rote)
         with CaptureQueriesContext(connection) as queries:
             context = notification_count(request)
 
@@ -118,7 +121,7 @@ class TestNotificationCountContextProcessor(TestCase):
                 },
             },
         )
-        self.assertEqual(len(queries), 23)
+        self.assertEqual(len(queries), 21)
 
     def test_cache_hit_returns_the_original_context_without_queries(self):
         """A cache hit must not rerun database-backed notification aggregation."""

@@ -444,6 +444,11 @@ class TestProfileObjectQueries(TestCase):
         self.assertEqual(items.count(), 1)
         self.assertIn(self.item, items)
 
+    def test_dashboard_property_is_bound_to_profile(self):
+        dashboard = self.user.profile.dashboard
+
+        self.assertIs(dashboard.profile, self.user.profile)
+
 
 class TestProfileThemeMethods(TestCase):
     """Test Profile theme-related methods."""
@@ -553,7 +558,7 @@ class TestUnfulfilledWeeklyXPRequests(TestCase):
     def test_unfulfilled_returns_empty_for_no_weeks(self):
         """Test that method returns empty list if character has no weeks."""
         other_player = User.objects.create_user("other", "other@test.com", "password")
-        other_char = Human.objects.create(
+        Human.objects.create(
             name="No Weeks Char",
             owner=other_player,
             chronicle=self.chronicle,

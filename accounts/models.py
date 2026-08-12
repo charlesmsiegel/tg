@@ -3,14 +3,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
-from characters.models.core.character import Character
-from characters.models.mage.mage import Mage
-from characters.models.mage.rote import Rote
 from core.base import ValidatedSaveMixin
 from core.constants import HeadingChoices, ThemeChoices
-from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
-from items.models.core.item import ItemModel
-from locations.models.core.location import LocationModel
+from game.models import STRelationship
 
 
 class Profile(ValidatedSaveMixin, models.Model):
@@ -118,178 +113,76 @@ class Profile(ValidatedSaveMixin, models.Model):
         # Check if user has an STRelationship for this chronicle
         return STRelationship.objects.filter(user=self.user, chronicle=chronicle).exists()
 
+    @property
+    def dashboard(self):
+        """Return the profile-bound dashboard selector."""
+        from accounts.dashboard import ProfileDashboard
+
+        return ProfileDashboard(self)
+
     def st_relations(self):
-        """Get all storyteller relationships organized by chronicle.
-
-        Returns a dict mapping Chronicle objects to lists of STRelationship objects.
-        Optimized to avoid N+1 query issues.
-        """
-        relationships = STRelationship.objects.for_user_optimized(self.user)
-
-        d = {}
-        for rel in relationships:
-            if rel.chronicle not in d:
-                d[rel.chronicle] = []
-            d[rel.chronicle].append(rel)
-        return d
+        """Return storyteller relationships grouped by chronicle."""
+        return self.dashboard.st_relations()
 
     def my_characters(self):
-        """Get all characters owned by this user.
-
-        Returns:
-            QuerySet[Character]: Characters owned by this user, ordered by name.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return Character.objects.owned_by(self.user).with_polymorphic_ctype()
+        """Return characters owned by this user."""
+        return self.dashboard.my_characters()
 
     def my_locations(self):
-        """Get all locations owned by this user.
-
-        Returns:
-            QuerySet[LocationModel]: Locations owned by this user, ordered by name.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return LocationModel.objects.owned_by(self.user).with_polymorphic_ctype()
+        """Return locations owned by this user."""
+        return self.dashboard.my_locations()
 
     def my_items(self):
-        """Get all items owned by this user.
-
-        Returns:
-            QuerySet[ItemModel]: Items owned by this user, ordered by name.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return ItemModel.objects.owned_by(self.user).with_polymorphic_ctype()
+        """Return items owned by this user."""
+        return self.dashboard.my_items()
 
     def xp_requests(self):
-        """Get scenes awaiting XP awards for this user's chronicles.
-
-        Returns:
-            QuerySet[Scene]: Finished scenes that haven't had XP awarded yet.
-        """
-        return Scene.objects.awaiting_xp().for_user_chronicles(self.user)
+        """Return scenes awaiting XP awards for this user's chronicles."""
+        return self.dashboard.xp_requests()
 
     def xp_story(self):
-        """Get stories that haven't had XP awarded yet.
-
-        Returns:
-            QuerySet[Story]: Stories where xp_given is False.
-        """
-        return Story.objects.filter(xp_given=False)
+        """Return stories that have not had XP awarded."""
+        return self.dashboard.xp_story()
 
     def xp_weekly(self):
-        """Get weeks that haven't had XP awarded yet.
-
-        Returns:
-            QuerySet[Week]: Weeks where xp_given is False.
-        """
-        return Week.objects.filter(xp_given=False)
+        """Return weeks that have not had XP awarded."""
+        return self.dashboard.xp_weekly()
 
     def characters_to_approve(self):
-        """Get characters pending approval for this user's chronicles.
-
-        Returns:
-            QuerySet[Character]: Characters awaiting ST approval in chronicles
-            where this user is a storyteller.
-        """
-        return Character.objects.pending_approval_for_user(self.user)
+        """Return characters awaiting this storyteller's approval."""
+        return self.dashboard.characters_to_approve()
 
     def items_to_approve(self):
-        """Get items pending approval for this user's chronicles.
-
-        Returns:
-            QuerySet[ItemModel]: Items awaiting ST approval in chronicles
-            where this user is a storyteller.
-        """
-        return ItemModel.objects.pending_approval_for_user(self.user)
+        """Return items awaiting this storyteller's approval."""
+        return self.dashboard.items_to_approve()
 
     def locations_to_approve(self):
-        """Get locations pending approval for this user's chronicles.
-
-        Returns:
-            QuerySet[LocationModel]: Locations awaiting ST approval in chronicles
-            where this user is a storyteller.
-        """
-        return LocationModel.objects.pending_approval_for_user(self.user)
+        """Return locations awaiting this storyteller's approval."""
+        return self.dashboard.locations_to_approve()
 
     def rotes_to_approve(self):
-        """Get rotes pending approval with their associated mages.
-
-        Optimized to avoid N+1 query issues by using select_related and prefetch_related.
-        """
-        from django.db.models import Prefetch
-
-        rotes = (
-            Rote.objects.filter(
-                status__in=["Un", "Sub"],
-                chronicle__in=self.user.chronicle_set.all(),
-            )
-            .select_related("chronicle")
-            .prefetch_related(Prefetch("mage_set", queryset=Mage.objects.select_related("owner")))
-            .order_by("name")
-        )
-        return {r: list(r.mage_set.all()) for r in rotes}
+        """Return rotes awaiting approval with their associated mages."""
+        return self.dashboard.rotes_to_approve()
 
     def objects_to_approve(self):
-        """Get all objects pending approval for this user's chronicles.
-
-        Returns a combined list of characters, items, locations, and rotes
-        that are pending approval for chronicles where this user is a storyteller.
-        """
-        to_approve = list(self.characters_to_approve())
-        to_approve.extend(list(self.items_to_approve()))
-        to_approve.extend(list(self.locations_to_approve()))
-        to_approve.extend(list(self.rotes_to_approve()))
-        return to_approve
+        """Return all objects awaiting this storyteller's approval."""
+        return self.dashboard.objects_to_approve()
 
     def freebies_to_approve(self):
-        """Get characters with unapproved freebie point allocations.
-
-        Returns:
-            QuerySet[Character]: Characters at the freebie spending step
-            that haven't been approved yet.
-        """
-        return Character.objects.filter(
-            chronicle__in=self.user.chronicle_set.all(), freebies_approved=False
-        ).at_freebie_step()
+        """Return characters with unapproved freebie allocations."""
+        return self.dashboard.freebies_to_approve()
 
     def character_images_to_approve(self):
-        """Get characters with pending image uploads for this user's chronicles.
-
-        Returns:
-            QuerySet[Character]: Characters with images awaiting ST approval.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return (
-            Character.objects.with_pending_images()
-            .for_user_chronicles(self.user)
-            .with_polymorphic_ctype()
-        )
+        """Return characters with images awaiting approval."""
+        return self.dashboard.character_images_to_approve()
 
     def location_images_to_approve(self):
-        """Get locations with pending image uploads for this user's chronicles.
-
-        Returns:
-            QuerySet[LocationModel]: Locations with images awaiting ST approval.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return (
-            LocationModel.objects.with_pending_images()
-            .for_user_chronicles(self.user)
-            .with_polymorphic_ctype()
-        )
+        """Return locations with images awaiting approval."""
+        return self.dashboard.location_images_to_approve()
 
     def item_images_to_approve(self):
-        """Get items with pending image uploads for this user's chronicles.
-
-        Returns:
-            QuerySet[ItemModel]: Items with images awaiting ST approval.
-            Includes polymorphic_ctype for subclass-specific method calls in templates.
-        """
-        return (
-            ItemModel.objects.with_pending_images()
-            .for_user_chronicles(self.user)
-            .with_polymorphic_ctype()
-        )
+        """Return items with images awaiting approval."""
+        return self.dashboard.item_images_to_approve()
 
     @property
     def theme_list(self):
@@ -335,107 +228,21 @@ class Profile(ValidatedSaveMixin, models.Model):
         return reverse("accounts:profile", kwargs={"pk": self.pk})
 
     def get_updated_journals(self):
-        """Get journals with entries awaiting ST response.
-
-        Returns:
-            QuerySet[Journal]: Journals containing entries where the ST hasn't
-            yet provided a message/response.
-        """
-        return Journal.objects.filter(entries__st_message="").select_related("character").distinct()
+        """Return journals with entries awaiting storyteller response."""
+        return self.dashboard.get_updated_journals()
 
     def get_unfulfilled_weekly_xp_requests(self):
-        """Get character/week pairs that need XP requests created.
-
-        Returns a list of (character, week) tuples where:
-        - The character belongs to this user
-        - The character is associated with the week
-        - No WeeklyXPRequest exists for this character/week combination
-        - The character is not an NPC
-
-        This helps track which weekly XP requests the user still needs to submit.
-        """
-        char_list = self.my_characters()
-        char_week_pairs = Week.characters.through.objects.filter(
-            charactermodel_id__in=char_list
-        ).values_list("charactermodel_id", "week_id")
-
-        existing_requests = set(
-            WeeklyXPRequest.objects.filter(
-                character_id__in=[c for (c, w) in char_week_pairs],
-                week_id__in=[w for (c, w) in char_week_pairs],
-            ).values_list("character_id", "week_id")
-        )
-
-        missing_pairs = []
-        for char_id, week_id in char_week_pairs:
-            if (char_id, week_id) not in existing_requests:
-                missing_pairs.append((char_id, week_id))
-
-        # Early return if no missing pairs
-        if not missing_pairs:
-            return []
-
-        char_map = {c.pk: c for c in char_list}
-        # Only fetch weeks that are actually needed (not all weeks in the database)
-        week_ids = set(w for (c, w) in missing_pairs)
-        week_map = {w.pk: w for w in Week.objects.filter(pk__in=week_ids)}
-
-        results = [(char_map[c], week_map[w]) for (c, w) in missing_pairs]
-        return [pair for pair in results if not pair[0].npc]
+        """Return player character/week pairs needing XP requests."""
+        return self.dashboard.get_unfulfilled_weekly_xp_requests()
 
     def get_unfulfilled_weekly_xp_requests_to_approve(self):
-        """Get all character/week pairs with unapproved XP requests for storyteller review.
-
-        Returns a list of (character, week) tuples where:
-        - A WeeklyXPRequest exists for the character/week combination
-        - The request has not yet been approved
-        - The character is in a chronicle where this user is ST
-
-        This is used by storytellers to review and approve pending weekly XP requests.
-        """
-        # Only fetch characters in chronicles where this user is ST
-        char_list = Character.objects.filter(chronicle__st_relationships__user=self.user)
-
-        char_week_pairs = Week.characters.through.objects.filter(
-            charactermodel_id__in=char_list
-        ).values_list("charactermodel_id", "week_id")
-
-        unapproved_reqs = set(
-            WeeklyXPRequest.objects.filter(
-                approved=False,
-                character_id__in=[c for (c, w) in char_week_pairs],
-                week_id__in=[w for (c, w) in char_week_pairs],
-            ).values_list("character_id", "week_id")
-        )
-
-        result_pairs = list(unapproved_reqs)
-
-        # Early return if no unapproved requests
-        if not result_pairs:
-            return []
-
-        char_map = {c.pk: c for c in char_list}
-        # Only fetch weeks that are actually needed (not all weeks in the database)
-        week_ids = set(w for (c, w) in result_pairs)
-        week_map = {w.pk: w for w in Week.objects.filter(pk__in=week_ids)}
-        return [(char_map[c], week_map[w]) for (c, w) in result_pairs]
+        """Return character/week pairs awaiting storyteller approval."""
+        return self.dashboard.get_unfulfilled_weekly_xp_requests_to_approve()
 
     def xp_spend_requests(self):
-        """Get all characters waiting for XP spend approval.
-
-        Returns a queryset of characters that have pending XP spending requests
-        awaiting storyteller approval.
-
-        UPDATED: Optimized to use a single database query instead of N+1 queries.
-        """
-        return Character.objects.filter(xp_spendings__approved="Pending").distinct()
+        """Return characters with pending XP spending requests."""
+        return self.dashboard.xp_spend_requests()
 
     def unread_scenes(self):
-        """Get scenes that the user has not marked as read.
-
-        Returns:
-            QuerySet[Scene]: Scenes where the user's read status is False.
-        """
-        return Scene.objects.filter(
-            user_read_statuses__user=self.user, user_read_statuses__read=False
-        ).distinct()
+        """Return scenes the user has not marked as read."""
+        return self.dashboard.unread_scenes()
