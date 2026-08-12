@@ -3,11 +3,11 @@
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from accounts.views import ProfileView
 from characters.models.core import Human
-from characters.models.core.human import Human
 from characters.models.mage.rote import Rote
 from game.models import (
     Chronicle,
@@ -486,6 +486,28 @@ class TestProfileFreebieWorkflow(TestCase):
         self.assertEqual(response.status_code, 403)
         self.char.refresh_from_db()
         self.assertEqual(self.char.freebies, initial_freebies)
+
+    def test_freebie_forms_cache_owner_profiles(self):
+        from characters.models.vampire.vtmhuman import VtMHuman
+
+        VtMHuman.objects.create(
+            name="Freebie Query Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            creation_status=5,
+            freebies_approved=False,
+        )
+        request = RequestFactory().get(self.st_user.profile.get_absolute_url())
+        request.user = self.st_user
+        view = ProfileView()
+        view.setup(request, pk=self.st_user.profile.pk)
+        view.object = self.st_user.profile
+
+        forms = view.get_context_data()["freebie_forms"]
+
+        self.assertEqual(len(forms), 1)
+        with self.assertNumQueries(0):
+            self.assertIsNotNone(forms[0].character.owner.profile.pk)
 
 
 class TestProfileWeeklyXPWorkflow(TestCase):

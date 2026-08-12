@@ -56,7 +56,7 @@ class ModelQuerySet(PolymorphicQuerySet):
         """
         return (
             self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
-            .select_related("polymorphic_ctype", "chronicle", "owner")
+            .select_related("polymorphic_ctype", "chronicle", "owner", "owner__profile")
             .order_by("name")
         )
 

@@ -341,7 +341,7 @@ class Profile(ValidatedSaveMixin, models.Model):
             QuerySet[Journal]: Journals containing entries where the ST hasn't
             yet provided a message/response.
         """
-        return Journal.objects.filter(entries__st_message="").distinct()
+        return Journal.objects.filter(entries__st_message="").select_related("character").distinct()
 
     def get_unfulfilled_weekly_xp_requests(self):
         """Get character/week pairs that need XP requests created.

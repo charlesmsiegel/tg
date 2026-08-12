@@ -191,6 +191,71 @@ class TestObjectsToApprove(TestCase):
         self.assertNotIn(character_outside, to_approve)
 
 
+class TestProfileTemplateQueryCaching(TestCase):
+    """Relations used by profile templates must be cached with their rows."""
+
+    def setUp(self):
+        from items.models.core import ItemModel
+        from locations.models.core import LocationModel
+
+        self.st_user = User.objects.create_user("st-cache", "st-cache@test.com", "password")
+        self.player_user = User.objects.create_user(
+            "player-cache", "player-cache@test.com", "password"
+        )
+        self.chronicle = Chronicle.objects.create(name="Template Query Chronicle")
+        self.gameline = Gameline.objects.create(name="Template Query Gameline")
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
+        )
+        self.character = Human.objects.create(
+            name="Pending Character",
+            owner=self.player_user,
+            chronicle=self.chronicle,
+            status="Sub",
+        )
+        self.location = LocationModel.objects.create(
+            name="Pending Location",
+            owner=self.player_user,
+            chronicle=self.chronicle,
+            status="Sub",
+        )
+        self.item = ItemModel.objects.create(
+            name="Pending Item",
+            owner=self.player_user,
+            chronicle=self.chronicle,
+            status="Sub",
+        )
+
+    def test_approval_rows_cache_owner_profiles(self):
+        profile = self.st_user.profile
+
+        for method_name in (
+            "characters_to_approve",
+            "items_to_approve",
+            "locations_to_approve",
+        ):
+            rows = list(getattr(profile, method_name)())
+            self.assertEqual(len(rows), 1)
+            with self.subTest(method=method_name), self.assertNumQueries(0):
+                self.assertIsNotNone(rows[0].owner.profile.pk)
+
+    def test_updated_journals_cache_characters(self):
+        from django.utils import timezone
+
+        from game.models import JournalEntry
+
+        JournalEntry.objects.create(
+            journal=self.character.journal,
+            st_message="",
+            date=timezone.now(),
+        )
+
+        journals = list(self.st_user.profile.get_updated_journals())
+        self.assertEqual(len(journals), 1)
+        with self.assertNumQueries(0):
+            self.assertEqual(journals[0].character.name, "Pending Character")
+
+
 class TestThemePreferences(TestCase):
     """Test theme preference functionality."""
 
