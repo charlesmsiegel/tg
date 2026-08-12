@@ -1,7 +1,5 @@
 from django.urls import include, path
 
-from characters import views
-
 from . import create, detail, index, update
 
 urls = [

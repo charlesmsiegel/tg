@@ -1,6 +1,5 @@
 from django.urls import include, path
 
-from characters import views
 from characters.urls.mage import ajax, create, detail, index, update
 
 urls = [
