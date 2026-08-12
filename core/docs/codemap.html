@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>core — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">core — Codebase Atlas</h1>
+  <p class="doc-sub">Shared polymorphic base models, permissions, and view mixins for all gamelines</p>
+  <div class="doc-meta">generated 2026-08-09 · d6933760 · 171 files, 24277 lines</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">core</span></div><div class="co-row"><span class="co-lbl">core</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../chained_select/docs/codemap.html">chained_select</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>What this is</h2>
+<p><code>core</code> is the shared architectural spine every one of the eight game lines (VtM, WtA, MtA, WtO, CtD, DtF, MtR, HtR) is built on. It is not a "utilities" grab-bag: it supplies the base polymorphic model tree (<code>core/models.py</code>), the object-level authorization engine (<code>core/permissions.py</code>), the class-based-view mixin library every gameline view composes from (<code>core/mixins.py</code>), plus templatetags, cross-app management commands, and the small set of reference models (Book, Language, NewsItem, HouseRule, CharacterTemplate) that don't belong to any single gameline. Its architectural style is <strong>layered framework-library</strong>: gameline apps (characters, items, locations) depend heavily on <code>core</code>; <code>core</code> depends on almost nothing gameline-specific in return (it does reach into <code>characters.models</code> at a few call sites — see Boundaries). Read it as the contract every gameline app is implicitly bound by, not as one app among equals.</p>
+</div>
+
+<div class="callout warn">
+<strong>Read this atlas alongside the health report, not instead of it.</strong> <code>core/docs/health.html</code> grades this package <strong>F (5.0/100)</strong>, driven mostly by two mechanical categories: 90 <code>mutable_class_attribute</code> findings (largely Django's own idiomatic <code>ModelAdmin.list_display = [...]</code> / model <code>Meta.fields = [...]</code> pattern, which is how Django recommends writing admin classes and form Metas — not a design defect on its own) and missing type annotations/docstrings (Dependencies & Hygiene). This atlas does not re-litigate that density score; it looks past it for structural and behavioral issues the linter can't see — several of which are more concerning than the graded findings, including one confirmed logic bug (see the risk ranking in Invariants &amp; Risks).
+</div>
+
+<h2>Entry points</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Entry point</th><th>What it kicks off</th></tr></thead>
+<tbody>
+<tr><td><code>core/models.py</code> — <code>Model</code>, <code>PermissionMixin</code></td><td>Abstract base every Character/ItemModel/LocationModel subclass across all 8 gamelines inherits: polymorphic identity, ownership, chronicle scoping, status, image workflow, visibility.</td></tr>
+<tr><td><code>core/base.py</code> — <code>ValidatedSaveMixin</code></td><td><code>save()</code> override that forces <code>full_clean()</code> for the handful of standalone (non-polymorphic) models: <code>Book</code>, <code>NewsItem</code>, <code>Language</code>, <code>HouseRule</code>, <code>Noun</code>, <code>TemplateApplication</code>.</td></tr>
+<tr><td><code>core/permissions.py</code> — <code>PermissionManager</code></td><td>Static-method service every view mixin and template calls into for role derivation, permission checks, and queryset filtering. The single authorization chokepoint — when it works, it works everywhere at once.</td></tr>
+<tr><td><code>core/mixins.py</code> — 20 view mixins</td><td>Composed onto every gameline's CBVs: permission gating (<code>ViewPermissionMixin</code>, <code>EditPermissionMixin</code>), ownership (<code>OwnerRequiredMixin</code>), messaging, formsets, XP/freebie approval workflow.</td></tr>
+<tr><td><code>core/urls.py</code> → <code>core/views/*.py</code></td><td>HTTP entry points for the reference models core owns directly (Book, Language, NewsItem, HouseRule, CharacterTemplate).</td></tr>
+<tr><td><code>core/management/commands/*.py</code> (21 commands)</td><td>Cron/operator entry points: data-integrity validation, XP processing, chronicle export/import, storyteller reports, DB reset/seed.</td></tr>
+<tr><td><code>core/middleware/*.py</code></td><td>Request-cycle entry points: auth-error status-code translation, cache control, "approved user" context flag.</td></tr>
+</tbody>
+</table></div>
+
+<h2>Reading order</h2>
+<ol>
+<li><code>core/base.py</code> — 26 lines, sets the tone: the whole package is small, deliberate mixins layered onto Django's ORM, not a framework of its own.</li>
+<li><code>core/constants.py</code> — the choice/enum vocabulary (<code>GameLine</code>, <code>CharacterStatus</code>, <code>HeadingChoices</code>) referenced everywhere else; skim it before models.py so the field choices make sense.</li>
+<li><code>core/models.py</code> — the abstract <code>Model</code> class (line 369) is the one to slow down on: <code>gameline</code> is a <em>plain string class attribute</em> on most subclasses (line 371) but becomes a real DB field on <code>CharacterTemplate</code> (line 783) — that inconsistency is a live bug, not a style note (see Invariants &amp; Risks).</li>
+<li><code>core/permissions.py</code> — <code>PermissionManager.get_user_roles</code> (line 102) and <code>_check_status_restrictions</code> (line 207) are the actual authorization logic; everything else in the package defers to this file.</li>
+<li><code>core/mixins.py</code> — read <code>PermissionRequiredMixin</code> (line 42) then <code>STRequiredMixin</code> (line 238) then <code>StorytellerRequiredMixin</code> (line 438) back to back; the fact that three different "is this user allowed" mixins live 200 lines apart with different scopes is the package's biggest boundary problem.</li>
+<li><code>core/views/character_template.py</code> — has its own, unrelated, same-named <code>STRequiredMixin</code> (line 30). Read it right after the mixins.py one; the contrast is the point.</li>
+<li><code>core/cache.py</code> — the caching layer every gameline app is expected to opt into via <code>@invalidate_cache_on_save</code>; skim for the invalidation contract, skip the docstring examples.</li>
+<li><code>core/management/commands/monitor_validation.py</code> — read <code>calculate_health_score</code> and <code>send_alerts</code>; already flagged in <code>core/docs/measurement.html</code> as a hand-weighted score with a stubbed alert path, included here only for completeness.</li>
+<li>Skip: <code>core/migrations/</code> (generated), the JSON example docstrings scattered through <code>core/cache.py</code> and <code>core/mixins.py</code> (illustrative, not load-bearing), and the 62 files under <code>core/tests/</code> unless you're chasing a specific invariant — they're read in Invariants &amp; Risks instead of here.</li>
+</ol>
+
+<h2>Intended architecture</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+  constants["core.constants<br/>choice vocab"]
+  models["core.models<br/>Model / PermissionMixin"]
+  base["core.base<br/>ValidatedSaveMixin"]
+  perms["core.permissions<br/>PermissionManager"]
+  mixins["core.mixins<br/>view mixins"]
+  cache["core.cache<br/>CacheInvalidator"]
+  views["core.views<br/>Book/Language/CharacterTemplate CBVs"]
+  mgmt["core.management.commands<br/>ops/cron"]
+  gamelines["gameline apps<br/>(characters/items/locations)"]
+
+  constants --> models
+  base --> models
+  models --> perms
+  perms --> mixins
+  mixins --> views
+  models --> cache
+  models -.->|"subclassed by"| gamelines
+  perms -.->|"reaches into characters.models.Character"| gamelines
+  mixins -.->|"reaches into characters.services"| gamelines
+  mgmt --> models
+</pre></div></div>
+
+<div class="callout warn">
+<strong>The intended layering is one-directional (gamelines depend on core); the real graph isn't quite.</strong> <code>PermissionManager.get_user_roles</code> and <code>filter_queryset_for_user</code> import <code>characters.models.core.character.Character</code> at call time (<code>core/permissions.py:162</code>, <code>core/permissions.py:460</code>), and <code>ApprovalMixin</code>/<code>XPApprovalMixin</code>/<code>FreebieApprovalMixin</code> in <code>core/mixins.py:781-813</code> import <code>characters.services.xp_spending</code> and <code>characters.services.freebie_spending</code> at call time. These are all local (function-body) imports specifically to dodge a circular-import failure at module load — a real constraint, correctly worked around, but it means <code>core</code> is not actually gameline-agnostic; it has runtime knowledge of <code>characters</code>. The dependency analyzer in this atlas doesn't surface these as edges (see Dependencies tab caveat below) because they're inside function bodies, not top-of-file imports.</div>
+
+<div class="callout">
+<strong>Dependency graph caveat (read before trusting the Dependencies tab's low edge count).</strong> <code>analyze_deps</code> reports only <strong>12 first-party import edges</strong> across 158 source files, with 179 <code>local_import</code> findings independently flagged by code-doctor in <code>core/docs/health.html</code>. Both numbers point at the same thing: this codebase pushes a large share of its real inter-module coupling into function-body imports (to break circular-import chains between <code>core</code>, <code>characters</code>, and <code>game</code>), which the textual/AST import graph can't see as edges. Treat the Dependencies tab's near-empty graph as <strong>coupling understated</strong>, not coupling absent — the boundary violations above were found by reading, not by the graph.</div>
+
+<h2>Key decisions &amp; constraints</h2>
+<ul>
+<li><strong>django-polymorphic, not multi-table-inheritance-by-hand.</strong> <code>Model(PermissionMixin, PolymorphicModel)</code> (<code>core/models.py:369</code>) is what lets a single <code>Character</code> queryset yield Vampires, Garou, and Mages transparently. <code>ModelManager</code> deliberately does <em>not</em> auto-apply <code>select_related('polymorphic_ctype')</code> (<code>core/models.py:85-101</code>) — a documented perf trade-off, opt in via <code>.with_polymorphic_ctype()</code>.</li>
+<li><strong>Validation-on-save is universal but implemented twice.</strong> Polymorphic models get it from <code>Model.save()</code> (<code>core/models.py:550-554</code>); standalone models get an identical override from <code>ValidatedSaveMixin</code> (<code>core/base.py:22-25</code>). The duplication is deliberate (documented in <code>core/base.py</code>'s docstring, to dodge a circular import) rather than an oversight.</li>
+<li><strong>Authorization is centralized by convention, not enforcement.</strong> <code>PermissionManager</code> is the single intended chokepoint, but nothing stops a view from checking <code>request.user.profile.is_st()</code> directly instead of going through it — and several mixins do exactly that (see Boundaries &amp; Ownership).</li>
+<li><strong>No LLM calls, no coverage tab.</strong> <code>analyze_llm</code> found no model call sites in <code>core</code> (expected — this is a Django CRUD/permissions layer, not an AI feature). <code>analyze_coverage</code>, scoped to <code>core</code>, found no parseable coverage artifact in that scope; the Coverage tab is intentionally absent rather than fabricated. There is a repo-root <code>.coverage</code> database (outside the <code>core</code>-scoped search, and not directly parseable without first running <code>coverage xml</code>) — worth converting and re-running the analyzer if a coverage tab is wanted later. <code>core/tests/</code> is large (11,754 LOC, 52.9% of the package's total lines) but its measured pass/line-coverage isn't available to this atlas.</li>
+</ul>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">158</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">24,387</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">53%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>22,199</td><td class='num'>121</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>91.0%</td></tr>
+<tr><td>HTML</td><td class='num'>2,078</td><td class='num'>36</td><td><div class="bar "><i style="width:9.4%"></i></div></td><td class='num'>8.5%</td></tr>
+<tr><td>Markdown</td><td class='num'>110</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.5%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>11,754</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>management/</code></td><td class='num'>4,028</td><td><div class="bar "><i style="width:34.3%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>3,482</td><td><div class="bar "><i style="width:29.6%"></i></div></td></tr>
+<tr><td><code>templates/</code></td><td class='num'>2,078</td><td><div class="bar "><i style="width:17.7%"></i></div></td></tr>
+<tr><td><code>views/</code></td><td class='num'>854</td><td><div class="bar "><i style="width:7.3%"></i></div></td></tr>
+<tr><td><code>templatetags/</code></td><td class='num'>638</td><td><div class="bar "><i style="width:5.4%"></i></div></td></tr>
+<tr><td><code>migrations/</code></td><td class='num'>513</td><td><div class="bar "><i style="width:4.4%"></i></div></td></tr>
+<tr><td><code>widgets/</code></td><td class='num'>403</td><td><div class="bar "><i style="width:3.4%"></i></div></td></tr>
+<tr><td><code>services/</code></td><td class='num'>301</td><td><div class="bar "><i style="width:2.6%"></i></div></td></tr>
+<tr><td><code>forms/</code></td><td class='num'>234</td><td><div class="bar "><i style="width:2.0%"></i></div></td></tr>
+<tr><td><code>middleware/</code></td><td class='num'>102</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>tests/mixins/test_mixins.py</code> <span class="badge neutral">test</span></td><td class='num'>1,327</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>17</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>842</td><td><div class="bar "><i style="width:63.5%"></i></div></td><td class='num'>95</td></tr>
+<tr><td><code>tests/test_management_commands.py</code> <span class="badge neutral">test</span></td><td class='num'>649</td><td><div class="bar "><i style="width:48.9%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>mixins.py</code></td><td class='num'>621</td><td><div class="bar "><i style="width:46.8%"></i></div></td><td class='num'>105</td></tr>
+<tr><td><code>tests/permissions/test_permission_manager.py</code> <span class="badge neutral">test</span></td><td class='num'>590</td><td><div class="bar "><i style="width:44.5%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/views/test_character_template.py</code> <span class="badge neutral">test</span></td><td class='num'>571</td><td><div class="bar "><i style="width:43.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/templatetags/test_permissions.py</code> <span class="badge neutral">test</span></td><td class='num'>463</td><td><div class="bar "><i style="width:34.9%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>tests/views/test_generic.py</code> <span class="badge neutral">test</span></td><td class='num'>450</td><td><div class="bar "><i style="width:33.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/templatetags/test_sanitize_text.py</code> <span class="badge neutral">test</span></td><td class='num'>440</td><td><div class="bar "><i style="width:33.2%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/test_cache.py</code> <span class="badge neutral">test</span></td><td class='num'>439</td><td><div class="bar "><i style="width:33.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/views/test_home.py</code> <span class="badge neutral">test</span></td><td class='num'>435</td><td><div class="bar "><i style="width:32.8%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>linked_stat.py</code></td><td class='num'>427</td><td><div class="bar "><i style="width:32.2%"></i></div></td><td class='num'>41</td></tr>
+<tr><td><code>permissions.py</code></td><td class='num'>395</td><td><div class="bar "><i style="width:29.8%"></i></div></td><td class='num'>71</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>383</td><td><div class="bar "><i style="width:28.9%"></i></div></td><td class='num'>19</td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>373</td><td><div class="bar "><i style="width:28.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>369</td><td><div class="bar "><i style="width:27.8%"></i></div></td><td class='num'>54</td></tr>
+<tr><td><code>widgets/linked_stat.py</code></td><td class='num'>367</td><td><div class="bar "><i style="width:27.7%"></i></div></td><td class='num'>56</td></tr>
+<tr><td><code>tests/views/test_reference.py</code> <span class="badge neutral">test</span></td><td class='num'>365</td><td><div class="bar "><i style="width:27.5%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/test_decorators.py</code> <span class="badge neutral">test</span></td><td class='num'>354</td><td><div class="bar "><i style="width:26.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_linked_stat.py</code> <span class="badge neutral">test</span></td><td class='num'>353</td><td><div class="bar "><i style="width:26.6%"></i></div></td><td class='num'>3</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>mixins.py</code></td><td class='num'>105</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>621</td><td class='num'>7</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:90.5%"></i></div></td><td class='num'>842</td><td class='num'>6</td></tr>
+<tr><td><code>management/commands/approve_pending_items.py</code></td><td class='num'>74</td><td><div class="bar warn"><i style="width:70.5%"></i></div></td><td class='num'>316</td><td class='num'>9</td></tr>
+<tr><td><code>permissions.py</code></td><td class='num'>71</td><td><div class="bar warn"><i style="width:67.6%"></i></div></td><td class='num'>395</td><td class='num'>5</td></tr>
+<tr><td><code>widgets/linked_stat.py</code></td><td class='num'>56</td><td><div class="bar warn"><i style="width:53.3%"></i></div></td><td class='num'>367</td><td class='num'>6</td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>54</td><td><div class="bar warn"><i style="width:51.4%"></i></div></td><td class='num'>369</td><td class='num'>6</td></tr>
+<tr><td><code>management/commands/sync_character_status.py</code></td><td class='num'>53</td><td><div class="bar warn"><i style="width:50.5%"></i></div></td><td class='num'>228</td><td class='num'>6</td></tr>
+<tr><td><code>templatetags/dots.py</code></td><td class='num'>46</td><td><div class="bar warn"><i style="width:43.8%"></i></div></td><td class='num'>264</td><td class='num'>3</td></tr>
+<tr><td><code>cache.py</code></td><td class='num'>43</td><td><div class="bar warn"><i style="width:41.0%"></i></div></td><td class='num'>281</td><td class='num'>4</td></tr>
+<tr><td><code>linked_stat.py</code></td><td class='num'>41</td><td><div class="bar warn"><i style="width:39.0%"></i></div></td><td class='num'>427</td><td class='num'>5</td></tr>
+<tr><td><code>services/chronicle_data.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:38.1%"></i></div></td><td class='num'>211</td><td class='num'>5</td></tr>
+<tr><td><code>management/commands/validate_character_data.py</code></td><td class='num'>38</td><td><div class="bar warn"><i style="width:36.2%"></i></div></td><td class='num'>211</td><td class='num'>9</td></tr>
+<tr><td><code>management/commands/find_duplicate_objects.py</code></td><td class='num'>37</td><td><div class="bar warn"><i style="width:35.2%"></i></div></td><td class='num'>269</td><td class='num'>6</td></tr>
+<tr><td><code>templatetags/sanitize_text.py</code></td><td class='num'>37</td><td><div class="bar warn"><i style="width:35.2%"></i></div></td><td class='num'>141</td><td class='num'>3</td></tr>
+<tr><td><code>management/commands/audit_xp_spending.py</code></td><td class='num'>36</td><td><div class="bar warn"><i style="width:34.3%"></i></div></td><td class='num'>229</td><td class='num'>6</td></tr>
+<tr><td><code>templatetags/permissions.py</code></td><td class='num'>36</td><td><div class="bar warn"><i style="width:34.3%"></i></div></td><td class='num'>154</td><td class='num'>3</td></tr>
+<tr><td><code>views/generic.py</code></td><td class='num'>35</td><td><div class="bar warn"><i style="width:33.3%"></i></div></td><td class='num'>173</td><td class='num'>5</td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:31.4%"></i></div></td><td class='num'>125</td><td class='num'>5</td></tr>
+<tr><td><code>management/commands/cleanup_orphaned_data.py</code></td><td class='num'>29</td><td><div class="bar warn"><i style="width:27.6%"></i></div></td><td class='num'>184</td><td class='num'>5</td></tr>
+<tr><td><code>management/commands/populate_gamedata.py</code></td><td class='num'>29</td><td><div class="bar warn"><i style="width:27.6%"></i></div></td><td class='num'>168</td><td class='num'>5</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">12</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">12</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">62</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">11</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":3372,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 17 files"},{"id":"forms","label":"forms","group":"forms","size":234,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 3 files"},{"id":"management","label":"management","group":"management","size":1,"fanIn":0,"fanOut":0,"meta":"management \u00b7 1 files"},{"id":"management/commands","label":"commands","group":"management","size":4027,"fanIn":0,"fanOut":0,"meta":"management/commands \u00b7 21 files"},{"id":"middleware","label":"middleware","group":"middleware","size":102,"fanIn":0,"fanOut":1,"meta":"middleware \u00b7 4 files"},{"id":"migrations","label":"migrations","group":"migrations","size":513,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 3 files"},{"id":"services","label":"services","group":"services","size":301,"fanIn":0,"fanOut":0,"meta":"services \u00b7 3 files"},{"id":"templates/core","label":"templates","group":"templates","size":1964,"fanIn":4,"fanOut":0,"meta":"templates/core \u00b7 33 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":638,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 8 files"},{"id":"tests","label":"tests","group":"tests","size":11754,"fanIn":0,"fanOut":1,"meta":"tests \u00b7 62 files"},{"id":"views","label":"views","group":"views","size":854,"fanIn":0,"fanOut":1,"meta":"views \u00b7 10 files"},{"id":"widgets","label":"widgets","group":"widgets","size":403,"fanIn":0,"fanOut":0,"meta":"widgets \u00b7 3 files"}],"links":[{"source":"middleware","target":"templates/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templatetags","target":"templates/core","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"views","target":"templates/core","weight":22,"imports":0,"loads":22,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>templates/core/base.html</code></td><td class='num'>17</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/form.html</code></td><td class='num'>4</td><td><div class="bar "><i style="width:23.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/object.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:17.6%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>templates/core/errors/401.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/errors/403.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/character_template/list.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/newsitem/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/newsitem/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/language/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/core/language/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:11.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>forms/language.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>management/commands/__init__.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>middleware/approved_user.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/templatetags/linked_stat_row.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/character_template.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:5.9%"></i></div></td><td class='num'>5</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>views/__init__.py</code></td><td class='num'>8</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/core/object.html</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:87.5%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>views/character_template.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:62.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>tests/views/test_home.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/errors.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/book.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:37.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/houserules.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:37.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/language.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:37.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/newsitem.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:37.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>middleware/auth_error_handler.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:25.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/__init__.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:25.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>forms/__init__.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:12.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>management/commands/reset_db.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:12.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>middleware/__init__.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:12.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templatetags/dots.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:12.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path.</p>
+<div class="callout warn"><b>3 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>templates/core/includes/property_row.html</code> <code>templates/core/includes/scene_list.html</code> <code>templates/core/includes/stat_card.html</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>templates/core/base.html</code></td><td class='num'>17</td><td><code>templates/core/book/list.html:1</code> <code>templates/core/character_template/delete.html:1</code> <code>templates/core/character_template/detail.html:1</code> <code>templates/core/character_template/form.html:1</code> <code>templates/core/character_template/import.html:1</code> <code>templates/core/character_template/list.html:1</code> <span class='dim'>… 11 more</span></td></tr>
+<tr><td><code>templates/core/form.html</code></td><td class='num'>4</td><td><code>templates/core/book/form.html:1</code> <code>templates/core/houserules/form.html:1</code> <code>templates/core/language/form.html:1</code> <code>templates/core/newsitem/form.html:1</code></td></tr>
+<tr><td><code>templates/core/object.html</code></td><td class='num'>3</td><td><code>templates/core/book/detail.html:1</code> <code>templates/core/language/detail.html:1</code> <code>templates/core/newsitem/detail.html:1</code></td></tr>
+<tr><td><code>templates/core/character_template/list.html</code></td><td class='num'>2</td><td><code>tests/views/test_character_template.py:146</code> <code>views/character_template.py:58</code></td></tr>
+<tr><td><code>templates/core/errors/401.html</code></td><td class='num'>2</td><td><code>middleware/auth_error_handler.py:40</code> <code>views/errors.py:13</code></td></tr>
+<tr><td><code>templates/core/errors/403.html</code></td><td class='num'>2</td><td><code>middleware/auth_error_handler.py:49</code> <code>views/errors.py:23</code></td></tr>
+<tr><td><code>templates/core/language/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:453</code> <code>views/language.py:9</code></td></tr>
+<tr><td><code>templates/core/language/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:470</code> <code>views/language.py:15</code></td></tr>
+<tr><td><code>templates/core/newsitem/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:386</code> <code>views/newsitem.py:9</code></td></tr>
+<tr><td><code>templates/core/newsitem/form.html</code></td><td class='num'>2</td><td><code>tests/views/test_home.py:404</code> <code>views/newsitem.py:21</code></td></tr>
+<tr><td><code>management/commands/__init__.py</code></td><td class='num'>1</td><td><code>management/commands/reset_db.py:74</code></td></tr>
+<tr><td><code>templates/core/book/detail.html</code></td><td class='num'>1</td><td><code>views/book.py:12</code></td></tr>
+<tr><td><code>templates/core/book/form.html</code></td><td class='num'>1</td><td><code>views/book.py:25</code></td></tr>
+<tr><td><code>templates/core/book/list.html</code></td><td class='num'>1</td><td><code>views/book.py:19</code></td></tr>
+<tr><td><code>templates/core/character_template/delete.html</code></td><td class='num'>1</td><td><code>views/character_template.py:149</code></td></tr>
+<tr><td><code>templates/core/character_template/detail.html</code></td><td class='num'>1</td><td><code>views/character_template.py:98</code></td></tr>
+<tr><td><code>templates/core/character_template/form.html</code></td><td class='num'>1</td><td><code>views/character_template.py:110</code></td></tr>
+<tr><td><code>templates/core/character_template/import.html</code></td><td class='num'>1</td><td><code>views/character_template.py:203</code></td></tr>
+<tr><td><code>templates/core/errors/404.html</code></td><td class='num'>1</td><td><code>views/errors.py:32</code></td></tr>
+<tr><td><code>templates/core/errors/500.html</code></td><td class='num'>1</td><td><code>views/errors.py:41</code></td></tr>
+<tr><td><code>templates/core/houserules/detail.html</code></td><td class='num'>1</td><td><code>views/houserules.py:24</code></td></tr>
+<tr><td><code>templates/core/houserules/form.html</code></td><td class='num'>1</td><td><code>views/houserules.py:30</code></td></tr>
+<tr><td><code>templates/core/houserules/index.html</code></td><td class='num'>1</td><td><code>views/houserules.py:11</code></td></tr>
+<tr><td><code>templates/core/includes/buttons.html</code></td><td class='num'>1</td><td><code>templates/core/object.html:35</code></td></tr>
+<tr><td><code>templates/core/includes/description.html</code></td><td class='num'>1</td><td><code>templates/core/object.html:30</code></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">322</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">117</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"models.py","value":842,"metric":77,"meta":"95 branches \u00b7 2 authors"},{"name":"mixins.py","value":621,"metric":25,"meta":"105 branches \u00b7 2 authors"},{"name":"permissions.py","value":395,"metric":18,"meta":"71 branches \u00b7 2 authors"},{"name":"utils.py","value":125,"metric":17,"meta":"33 branches \u00b7 2 authors"},{"name":"templatetags/sanitize_text.py","value":141,"metric":13,"meta":"37 branches \u00b7 2 authors"},{"name":"templatetags/dots.py","value":264,"metric":9,"meta":"46 branches \u00b7 2 authors"},{"name":"views/generic.py","value":173,"metric":11,"meta":"35 branches \u00b7 2 authors"},{"name":"management/commands/approve_pending_items.py","value":316,"metric":4,"meta":"74 branches \u00b7 2 authors"},{"name":"widgets/linked_stat.py","value":367,"metric":5,"meta":"56 branches \u00b7 2 authors"},{"name":"management/commands/validate_data_integrity.py","value":369,"metric":5,"meta":"54 branches \u00b7 2 authors"},{"name":"management/commands/populate_gamedata.py","value":168,"metric":9,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/sync_character_status.py","value":228,"metric":5,"meta":"53 branches \u00b7 2 authors"},{"name":"cache.py","value":281,"metric":6,"meta":"43 branches \u00b7 2 authors"},{"name":"services/chronicle_data.py","value":211,"metric":6,"meta":"40 branches \u00b7 1 authors"},{"name":"management/commands/find_duplicate_objects.py","value":269,"metric":5,"meta":"37 branches \u00b7 2 authors"},{"name":"management/commands/audit_xp_spending.py","value":229,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"templatetags/permissions.py","value":154,"metric":5,"meta":"36 branches \u00b7 2 authors"},{"name":"management/commands/process_weekly_xp.py","value":186,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"views/character_template.py","value":275,"metric":8,"meta":"22 branches \u00b7 2 authors"},{"name":"management/commands/validate_character_data.py","value":211,"metric":4,"meta":"38 branches \u00b7 2 authors"},{"name":"linked_stat.py","value":427,"metric":3,"meta":"41 branches \u00b7 1 authors"},{"name":"management/commands/monitor_validation.py","value":306,"metric":5,"meta":"24 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_orphaned_data.py","value":184,"metric":4,"meta":"29 branches \u00b7 2 authors"},{"name":"management/commands/import_chronicle.py","value":200,"metric":5,"meta":"21 branches \u00b7 2 authors"},{"name":"management/commands/archive_inactive_chronicles.py","value":162,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"management/commands/generate_chronicle_summary.py","value":311,"metric":5,"meta":"20 branches \u00b7 2 authors"},{"name":"decorators.py","value":102,"metric":5,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/generate_st_report.py","value":129,"metric":4,"meta":"19 branches \u00b7 2 authors"},{"name":"management/commands/audit_user_permissions.py","value":164,"metric":4,"meta":"18 branches \u00b7 2 authors"},{"name":"management/commands/export_chronicle.py","value":175,"metric":5,"meta":"11 branches \u00b7 2 authors"},{"name":"templatetags/field.py","value":38,"metric":8,"meta":"6 branches \u00b7 1 authors"},{"name":"management/commands/populate_test_chronicle.py","value":176,"metric":5,"meta":"10 branches \u00b7 2 authors"},{"name":"management/commands/reset_db.py","value":80,"metric":3,"meta":"15 branches \u00b7 2 authors"},{"name":"context_processors.py","value":29,"metric":8,"meta":"4 branches \u00b7 2 authors"},{"name":"views/reference.py","value":211,"metric":2,"meta":"19 branches \u00b7 1 authors"},{"name":"forms/character_template.py","value":215,"metric":3,"meta":"12 branches \u00b7 2 authors"},{"name":"management/commands/cleanup_old_weeks.py","value":64,"metric":4,"meta":"7 branches \u00b7 2 authors"},{"name":"services/approval.py","value":86,"metric":3,"meta":"9 branches \u00b7 1 authors"},{"name":"ajax.py","value":68,"metric":2,"meta":"13 branches \u00b7 1 authors"},{"name":"validators.py","value":34,"metric":3,"meta":"7 branches \u00b7 1 authors"},{"name":"xp_utils.py","value":69,"metric":2,"meta":"11 branches \u00b7 1 authors"},{"name":"middleware/cache_middleware.py","value":51,"metric":3,"meta":"7 branches \u00b7 2 authors"},{"name":"views/book.py","value":36,"metric":8,"meta":"2 branches \u00b7 2 authors"},{"name":"views/houserules.py","value":39,"metric":12,"meta":"1 branches \u00b7 2 authors"},{"name":"management/commands/reset_demo_data.py","value":99,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"middleware/auth_error_handler.py","value":39,"metric":4,"meta":"4 branches \u00b7 2 authors"},{"name":"constants.py","value":140,"metric":9,"meta":"1 branches \u00b7 2 authors"},{"name":"forms/language.py","value":18,"metric":6,"meta":"2 branches \u00b7 2 authors"},{"name":"views/home.py","value":14,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"admin.py","value":114,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"views/__init__.py","value":34,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"templatetags/json_filters.py","value":23,"metric":2,"meta":"4 branches \u00b7 2 authors"},{"name":"urls.py","value":102,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"views/language.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/newsitem.py","value":22,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"views/errors.py","value":28,"metric":1,"meta":"4 branches \u00b7 1 authors"},{"name":"base.py","value":19,"metric":1,"meta":"3 branches \u00b7 1 authors"},{"name":"widgets/__init__.py","value":7,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"widgets/autocomplete.py","value":29,"metric":4,"meta":"0 branches \u00b7 2 authors"},{"name":"templatetags/get_specialty.py","value":13,"metric":1,"meta":"2 branches \u00b7 1 authors"},{"name":"middleware/__init__.py","value":1,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"middleware/approved_user.py","value":11,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"forms/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"management/commands/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"services/__init__.py","value":4,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":4,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"migrations/0001_initial.py","value":373,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"migrations/0002_initial.py","value":140,"metric":0,"meta":"0 branches \u00b7 0 authors"},{"name":"templatetags/resonance.py","value":5,"metric":0,"meta":"0 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":77}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 37 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/core/base.html (29), templates/core/form.html (21), templates/core/object.html (17).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>77</td><td class='num'>95</td><td class='num'>842</td><td class='num'>2</td><td class='num' data-sort='7392'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>mixins.py</code></td><td class='num'>25</td><td class='num'>105</td><td class='num'>621</td><td class='num'>2</td><td class='num' data-sort='2650'><div class="bar bad"><i style="width:35.8%"></i></div></td></tr>
+<tr><td><code>permissions.py</code></td><td class='num'>18</td><td class='num'>71</td><td class='num'>395</td><td class='num'>2</td><td class='num' data-sort='1296'><div class="bar bad"><i style="width:17.5%"></i></div></td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>17</td><td class='num'>33</td><td class='num'>125</td><td class='num'>2</td><td class='num' data-sort='578'><div class="bar bad"><i style="width:7.8%"></i></div></td></tr>
+<tr><td><code>templatetags/sanitize_text.py</code></td><td class='num'>13</td><td class='num'>37</td><td class='num'>141</td><td class='num'>2</td><td class='num' data-sort='494'><div class="bar bad"><i style="width:6.7%"></i></div></td></tr>
+<tr><td><code>templatetags/dots.py</code></td><td class='num'>9</td><td class='num'>46</td><td class='num'>264</td><td class='num'>2</td><td class='num' data-sort='423'><div class="bar bad"><i style="width:5.7%"></i></div></td></tr>
+<tr><td><code>views/generic.py</code></td><td class='num'>11</td><td class='num'>35</td><td class='num'>173</td><td class='num'>2</td><td class='num' data-sort='396'><div class="bar bad"><i style="width:5.4%"></i></div></td></tr>
+<tr><td><code>management/commands/approve_pending_items.py</code></td><td class='num'>4</td><td class='num'>74</td><td class='num'>316</td><td class='num'>2</td><td class='num' data-sort='300'><div class="bar bad"><i style="width:4.1%"></i></div></td></tr>
+<tr><td><code>widgets/linked_stat.py</code></td><td class='num'>5</td><td class='num'>56</td><td class='num'>367</td><td class='num'>2</td><td class='num' data-sort='285'><div class="bar bad"><i style="width:3.9%"></i></div></td></tr>
+<tr><td><code>management/commands/validate_data_integrity.py</code></td><td class='num'>5</td><td class='num'>54</td><td class='num'>369</td><td class='num'>2</td><td class='num' data-sort='275'><div class="bar bad"><i style="width:3.7%"></i></div></td></tr>
+<tr><td><code>management/commands/populate_gamedata.py</code></td><td class='num'>9</td><td class='num'>29</td><td class='num'>168</td><td class='num'>2</td><td class='num' data-sort='270'><div class="bar bad"><i style="width:3.7%"></i></div></td></tr>
+<tr><td><code>management/commands/sync_character_status.py</code></td><td class='num'>5</td><td class='num'>53</td><td class='num'>228</td><td class='num'>2</td><td class='num' data-sort='270'><div class="bar bad"><i style="width:3.7%"></i></div></td></tr>
+<tr><td><code>cache.py</code></td><td class='num'>6</td><td class='num'>43</td><td class='num'>281</td><td class='num'>2</td><td class='num' data-sort='264'><div class="bar bad"><i style="width:3.6%"></i></div></td></tr>
+<tr><td><code>services/chronicle_data.py</code></td><td class='num'>6</td><td class='num'>40</td><td class='num'>211</td><td class='num'>1</td><td class='num' data-sort='246'><div class="bar bad"><i style="width:3.3%"></i></div></td></tr>
+<tr><td><code>management/commands/find_duplicate_objects.py</code></td><td class='num'>5</td><td class='num'>37</td><td class='num'>269</td><td class='num'>2</td><td class='num' data-sort='190'><div class="bar bad"><i style="width:2.6%"></i></div></td></tr>
+<tr><td><code>management/commands/audit_xp_spending.py</code></td><td class='num'>5</td><td class='num'>36</td><td class='num'>229</td><td class='num'>2</td><td class='num' data-sort='185'><div class="bar bad"><i style="width:2.5%"></i></div></td></tr>
+<tr><td><code>templatetags/permissions.py</code></td><td class='num'>5</td><td class='num'>36</td><td class='num'>154</td><td class='num'>2</td><td class='num' data-sort='185'><div class="bar bad"><i style="width:2.5%"></i></div></td></tr>
+<tr><td><code>management/commands/process_weekly_xp.py</code></td><td class='num'>8</td><td class='num'>22</td><td class='num'>186</td><td class='num'>2</td><td class='num' data-sort='184'><div class="bar bad"><i style="width:2.5%"></i></div></td></tr>
+<tr><td><code>views/character_template.py</code></td><td class='num'>8</td><td class='num'>22</td><td class='num'>275</td><td class='num'>2</td><td class='num' data-sort='184'><div class="bar bad"><i style="width:2.5%"></i></div></td></tr>
+<tr><td><code>management/commands/validate_character_data.py</code></td><td class='num'>4</td><td class='num'>38</td><td class='num'>211</td><td class='num'>2</td><td class='num' data-sort='156'><div class="bar bad"><i style="width:2.1%"></i></div></td></tr>
+<tr><td><code>linked_stat.py</code></td><td class='num'>3</td><td class='num'>41</td><td class='num'>427</td><td class='num'>1</td><td class='num' data-sort='126'><div class="bar bad"><i style="width:1.7%"></i></div></td></tr>
+<tr><td><code>management/commands/monitor_validation.py</code></td><td class='num'>5</td><td class='num'>24</td><td class='num'>306</td><td class='num'>2</td><td class='num' data-sort='125'><div class="bar bad"><i style="width:1.7%"></i></div></td></tr>
+<tr><td><code>management/commands/cleanup_orphaned_data.py</code></td><td class='num'>4</td><td class='num'>29</td><td class='num'>184</td><td class='num'>2</td><td class='num' data-sort='120'><div class="bar bad"><i style="width:1.6%"></i></div></td></tr>
+<tr><td><code>management/commands/import_chronicle.py</code></td><td class='num'>5</td><td class='num'>21</td><td class='num'>200</td><td class='num'>2</td><td class='num' data-sort='110'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>management/commands/archive_inactive_chronicles.py</code></td><td class='num'>5</td><td class='num'>20</td><td class='num'>162</td><td class='num'>2</td><td class='num' data-sort='105'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<p class="dim">Four flows chosen because correctness here fans out to every gameline: object-level authorization on every detail/edit view, the XP/freebie approval workflow, template-driven NPC creation, and the validation-on-save path every model in the tree relies on.</p>
+
+<h2>1. Object-level view authorization</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant U as Browser
+  participant V as CBV (e.g. CharacterDetailView)
+  participant M as PermissionRequiredMixin
+  participant OC as ObjectCachingMixin
+  participant PM as PermissionManager
+
+  U->>V: GET /characters/vtm/42/
+  V->>M: dispatch(request)
+  M->>M: has_permission()
+  M->>OC: get_object()
+  OC->>OC: hasattr(self,"_cached_object")?
+  alt not cached
+    OC->>V: super().get_object() (DB query)
+    OC-->>OC: cache on self
+  end
+  OC-->>M: obj
+  M->>PM: user_has_permission(user, obj, VIEW_FULL)
+  PM->>PM: get_user_roles(user, obj)
+  PM->>PM: _check_status_restrictions(user, obj, perm, roles)
+  PM-->>M: bool
+  alt permission denied
+    M-->>U: Http404 or PermissionDenied
+  else granted
+    M->>V: super().dispatch(...) (get_object() reuses cache)
+    V-->>U: 200 rendered page
+  end
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li><code>PermissionRequiredMixin.dispatch</code> (<code>core/mixins.py:59-66</code>) raises <code>Http404</code> by default (<code>raise_404_on_deny = True</code>) — a deliberate "don't reveal the object exists" choice for view-permission checks, but <code>EditPermissionMixin</code> flips it to <code>PermissionDenied</code>/403 (<code>core/mixins.py:96-103</code>). A view author who mixes these in the wrong order, or forgets to override <code>raise_404_on_deny</code>, gets the wrong error code with no test to catch it (see Invariants).</li>
+<li><code>ObjectCachingMixin.get_object()</code> (<code>core/mixins.py:35-39</code>) caches the object on <code>self</code> for the life of the request — correct for avoiding a duplicate query, but it means the permission check and the render always see the same DB snapshot even under concurrent writes within the same request; not a bug, but worth knowing before assuming "the page always reflects the latest edit."</li>
+<li><code>get_user_roles</code> does five separate <code>hasattr</code>-guarded lookups plus a DB query for <code>Character.objects.filter(...)</code> (<code>core/permissions.py:162-165</code>) and another for <code>obj.observers.filter(...)</code> (<code>core/permissions.py:168-170</code>) — two extra queries per permission check, uncached, on every gated view.</li>
+</ul>
+
+<h2>2. XP / Freebie spending approval</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant ST as Storyteller (browser)
+  participant V as XPApprovalMixin.post
+  participant AM as ApprovalMixin
+  participant TX as transaction.atomic
+  participant SF as XPSpendingServiceFactory
+  participant Svc as XPSpendingService
+
+  ST->>V: POST xp_request_123=Approve
+  V->>AM: _parse_request_id(request, "Approve")
+  alt malformed key or non-integer id
+    AM-->>V: raise ValidationError
+    V-->>ST: messages.error + redirect
+  end
+  V->>AM: spendings_manager.get(id=..., approved="Pending")
+  alt DoesNotExist
+    AM-->>ST: "already processed" + redirect
+  end
+  V->>TX: with transaction.atomic()
+  TX->>SF: get_service_factory().get_service(character)
+  SF->>Svc: apply(spending_request, user)
+  alt service raises
+    Svc-->>V: Exception
+    V->>V: logger.error(..., exc_info=True)
+    V-->>ST: messages.error("Error approving...") + redirect
+  else result.success
+    Svc-->>V: result
+    V-->>ST: messages.success(result.message)
+  else result.success == False
+    Svc-->>V: result
+    V-->>ST: messages.error(result.error)
+  end
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li>The <em>approve</em> path (<code>core/mixins.py:696-704</code>) fetches the spending request with a plain <code>.get()</code>, no <code>select_for_update()</code> — two concurrent approve clicks (e.g. double-submit) can both pass the <code>approved="Pending"</code> filter before either commits. The <em>reject</em> path three lines later (<code>core/mixins.py:733-739</code>) does use <code>select_for_update()</code>. Same mixin, same request shape, inconsistent locking.</li>
+<li><code>except Exception as e</code> around the entire approve-service call (<code>core/mixins.py:717-722</code>) swallows everything — a bug inside <code>service.apply()</code> becomes a generic flash message and a log line, not a 500 that would surface in monitoring. Deliberate (keeps the ST-facing UI from breaking on domain errors) but it means service-layer bugs are invisible unless someone reads logs.</li>
+<li><code>get_service_factory()</code> and <code>get_request_model()</code> are late-imported per-call (<code>core/mixins.py:781-788</code>, <code>807-813</code>) specifically to avoid a circular import with <code>characters.services</code> — the same pattern flagged in the Overview tab's boundary caveat.</li>
+</ul>
+
+<h2>3. Quick-NPC creation from a CharacterTemplate</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant ST as Storyteller
+  participant V as CharacterTemplateQuickNPCView.post
+  participant TX as transaction.atomic
+  participant CT as CharacterTemplate
+  participant Char as character_model
+
+  ST->>V: POST /templates/7/quick-npc/
+  V->>V: get_character_model(template) (importlib per character_type)
+  alt unsupported character_type
+    V-->>ST: messages.error + redirect
+  end
+  V->>TX: with transaction.atomic()
+  TX->>Char: objects.create(name=..., status="App", npc=True)
+  TX->>CT: apply_to_character(character)
+  loop basic_info / attributes / abilities / backgrounds / powers / merits_flaws / languages / specialties
+    CT->>CT: setattr(character, field, value) or get_or_create(...)
+    Note over CT: each lookup swallows DoesNotExist silently
+  end
+  CT->>Char: character.save()
+  CT->>CT: TemplateApplication.objects.create(...)
+  CT->>CT: self.times_used += 1; self.save(update_fields=["times_used"])
+  TX-->>V: commit
+  V-->>ST: redirect to character detail
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li><code>apply_to_character</code> (<code>core/models.py:848-946</code>) silently drops any field that doesn't resolve — <code>except Archetype.DoesNotExist: pass</code>, <code>except Background.DoesNotExist: pass</code>, <code>except MeritFlaw.DoesNotExist: pass</code>, <code>except Language.DoesNotExist: pass</code>, <code>except Ability.DoesNotExist: pass</code> (five separate swallow sites). A template referencing a renamed or deleted reference object produces a silently incomplete NPC with no warning to the ST who clicked the button.</li>
+<li>The whole apply runs inside the outer <code>transaction.atomic()</code> from the view (<code>core/views/character_template.py:287</code>), but <code>apply_to_character</code> calls <code>character.save()</code> itself (<code>core/models.py:939</code>) <em>and</em> the view calls <code>character.save()</code> again right after (<code>core/views/character_template.py:302</code>) — two full-clean saves of the same object in one request. Harmless (idempotent) but a sign the transaction boundary and the save boundary were designed separately.</li>
+<li><code>get_character_model</code>'s <code>character_type_map</code> (<code>core/views/character_template.py:323-330</code>) covers 6 of the 8 gamelines — Hunter and Mummy have no entry, so a template with <code>character_type="hunter"</code> silently falls into "not supported" rather than erroring loudly at template-creation time.</li>
+</ul>
+
+<h2>4. Validation-on-save (shared by every model in the tree)</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant Caller
+  participant Model as Model.save() / ValidatedSaveMixin.save()
+  participant FC as full_clean()
+  participant Clean as clean()
+
+  Caller->>Model: obj.save(**kwargs)
+  Model->>Model: kwargs.pop("skip_validation", False)
+  alt skip_validation not set
+    Model->>FC: self.full_clean()
+    FC->>Clean: self.clean() (subclass override chain)
+    alt ValidationError raised
+      Clean-->>Caller: propagates uncaught
+    end
+  else skip_validation=True
+    Note over Model: full_clean() bypassed entirely
+  end
+  Model->>Model: super().save(*args, **kwargs)
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li>The same four-line pattern is written independently in <code>core/models.py:550-554</code> (<code>Model.save</code>) and <code>core/base.py:22-25</code> (<code>ValidatedSaveMixin.save</code>) — not imported from a shared helper. A future fix to one (e.g. wrapping in try/except to add field-level context) has to be remembered and applied to the other by hand.</li>
+<li><code>skip_validation=True</code> is a trust-the-caller escape hatch with no logging or audit trail when used — outside tests, the only caller in the repo is a data-seeding script (<code>populate_db/chronicles/test/044_character_status.py:25-52</code>, four call sites). That's a narrow, plausible use (seeded fixtures known to be valid), but nothing in <code>Model.save()</code> logs or flags when validation was bypassed, so a future call site added without that context gets silent skip-validation behavior with no signal.</li>
+</ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Concern ownership</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Concern</th><th>Owning module(s)</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Permission/role derivation</td><td><code>core/permissions.py</code> (<code>PermissionManager</code>) — the intended single owner</td><td><span class="badge good">good</span> as designed</td></tr>
+<tr><td>"Is this user a storyteller" checks in views</td><td><code>core/mixins.py</code> <code>STRequiredMixin</code> (chronicle-scoped) + <code>core/mixins.py</code> <code>StorytellerRequiredMixin</code> (global <code>profile.is_st()</code>) + <code>core/views/character_template.py</code> <code>STRequiredMixin</code> (global, same name, different base class) + <code>PermissionManager.get_user_roles</code>'s own chronicle-ST logic</td><td><span class="badge bad">smeared</span> — 4 independent implementations</td></tr>
+<tr><td>Validation-on-save</td><td><code>core/models.py</code> <code>Model.save()</code> + <code>core/base.py</code> <code>ValidatedSaveMixin.save()</code></td><td><span class="badge warn">2 owners</span> — duplicated, not shared, by documented necessity (circular import)</td></tr>
+<tr><td>Cache key generation &amp; invalidation</td><td><code>core/cache.py</code> (<code>CacheKeyGenerator</code>, <code>CacheInvalidator</code>)</td><td><span class="badge good">good</span> single owner</td></tr>
+<tr><td>Flash messaging on CBVs</td><td><code>core/mixins.py</code> (<code>SuccessMessageMixin</code>, <code>ErrorMessageMixin</code>, <code>DeleteMessageMixin</code>)</td><td><span class="badge good">good</span> single owner</td></tr>
+<tr><td>Object/image approval mutation</td><td><code>core/services/approval.py</code> (<code>ApprovalService</code>) <em>and</em> <code>core/management/commands/approve_pending_items.py</code> (independent inline logic)</td><td><span class="badge bad">smeared</span> — same mutation, two code paths, one bypasses validation (see Data ownership)</td></tr>
+<tr><td>XP/freebie spending approval</td><td><code>core/mixins.py</code> <code>ApprovalMixin</code> (HTTP/transaction shell) delegating to <code>characters.services.xp_spending</code> / <code>characters.services.freebie_spending</code></td><td><span class="badge warn">2 owners by design</span> — core owns the request/response shell, characters owns the domain logic; the late-import boundary crossing is deliberate (see Overview)</td></tr>
+<tr><td>Gameline vocabulary (codes, display names, URL namespaces)</td><td><code>core/constants.py</code> (<code>GameLine</code>) as the documented "single source of truth", plus a second, independently-maintained list in <code>core/models.py:958</code> (<code>CharacterTemplate.clean()</code>'s <code>valid_gamelines</code>) and <code>settings.GAMELINES</code> in <code>tg/settings/base.py:204</code></td><td><span class="badge warn">2-3 owners</span> — <code>CharacterTemplate.clean()</code>'s hardcoded list (<code>["wod","vtm","wta","mta","wto","ctd","dtf"]</code>) is missing <code>htr</code> and <code>mtr</code>, which <em>are</em> in <code>GameLine.CHOICES</code> (<code>core/constants.py:17-27</code>) — a template for Hunter or Mummy fails this hand-rolled validation even though the field's own <code>choices=GameLine.CHOICES</code> (<code>core/models.py:783-787</code>) would accept it.</td></tr>
+</tbody>
+</table></div>
+
+<h2>Data ownership</h2>
+<div class="callout bad">
+<strong><code>status</code> has three write paths inside <code>core</code>, and they disagree on whether validation runs.</strong>
+<ul>
+<li><code>Model.update_status()</code> (<code>core/models.py:420-422</code>) — assigns <code>self.status</code> in memory; caller is responsible for calling <code>.save()</code> afterward, which triggers <code>full_clean()</code>.</li>
+<li><code>ApprovalService.approve_object()</code> (<code>core/services/approval.py:57-58</code>) — <code>obj.status = "App"; obj.save()</code>, inside <code>transaction.atomic()</code>. Goes through <code>full_clean()</code>.</li>
+<li><code>core/management/commands/approve_pending_items.py</code>'s character-approval branch (<code>core/management/commands/approve_pending_items.py:135</code>) — <code>queryset.update(status="App")</code>, a bulk SQL <code>UPDATE</code>. Django's <code>QuerySet.update()</code> <strong>never calls <code>save()</code> or <code>clean()</code></strong>, so every invariant <code>Model.clean()</code> enforces (name required, status in valid choices, image_status in valid choices) is silently bypassed for every character this command approves in bulk.</li>
+</ul>
+This is the same invariant the Overview and Invariants tabs both flag from a different angle: "every save runs full_clean()" is true of the two object-level paths and false of the bulk path, and nothing marks the bulk path as an intentional, audited exception.
+</div>
+
+<div class="callout warn">
+<strong><code>image_status</code> has two independent implementations of the same mutation.</strong> <code>ApprovalService.approve_image()</code> (<code>core/services/approval.py:89-93</code>) sets <code>image_status="app"</code> and saves one object at a time through the validated path. <code>core/management/commands/approve_pending_items.py</code>'s <code>approve_images()</code> (<code>core/management/commands/approve_pending_items.py:181-187</code>) does the identical mutation inline, in a loop, inside its own <code>transaction.atomic()</code>, without calling <code>ApprovalService</code> at all. Both go through <code>.save()</code> (so both validate), but a future change to "what counts as approving an image" — an audit log, a notification, a business rule — has to be found and applied in two places, and there is nothing here that would fail if only one were updated.</div>
+
+<h2>Boundary violations</h2>
+<ul>
+<li><strong>Duplicate, same-named, differently-scoped mixin.</strong> <code>core/mixins.py:238-263</code> defines <code>STRequiredMixin</code> as chronicle-scoped (checks <code>obj.chronicle.head_st</code> / <code>head_storytellers</code>) and documents itself in the module docstring as one of the mixins "used throughout the application" (<code>core/mixins.py:1-8</code>). <code>core/views/character_template.py:30-51</code> defines <em>its own</em> <code>STRequiredMixin</code>, never imported from <code>core.mixins</code>, that checks the unrelated global <code>user.profile.is_st()</code> flag via <code>UserPassesTestMixin</code>. A reader who sees <code>STRequiredMixin</code> used on a view has to check the import line to know which authorization model actually applies — the name alone is actively misleading. See the Glossary tab for the naming angle; this is the ownership angle: <code>core.mixins</code>'s docstring claims to be the consolidated mixin library, and this file is proof it isn't.</li>
+<li><strong><code>core</code> reaches into <code>characters.models</code> at authorization time.</strong> <code>PermissionManager.get_user_roles()</code> imports <code>characters.models.core.character.Character</code> mid-function (<code>core/permissions.py:162</code>) to check player-in-chronicle status, and <code>filter_queryset_for_user()</code> does the same (<code>core/permissions.py:460</code>). <code>core</code> is meant to be the layer gamelines depend on, not the reverse — this is a narrow, deliberate exception (worked around via local import to dodge a circular dependency, per the Overview tab), but it means <code>core.permissions</code> cannot be understood, or safely modified, without also understanding <code>characters.models.core.character</code>.</li>
+<li><strong>Approval logic reimplemented instead of reused.</strong> <code>core/management/commands/approve_pending_items.py</code> exists alongside <code>core/services/approval.py</code>'s <code>ApprovalService</code>, which was explicitly written (per its docstring, <code>core/services/approval.py:12-18</code>) to "consolidate duplicated approval logic ... into a single, testable service class." The management command doesn't call it for images or the bulk-status path, reintroducing exactly the duplication the service was created to remove.</li>
+</ul>
+
+<h2>Cycles</h2>
+<p class="dim">The dependency analyzer found <strong>zero</strong> module-level or file-level import cycles (<code>module_cycles: []</code>, <code>file_cycles: []</code>). Given the resource caveat in the Overview tab — most of <code>core</code>'s real coupling to <code>characters</code> and <code>game</code> lives in function-body imports the analyzer can't see as edges — this result should be read as <strong>"no cycles detected in the visible graph,"</strong> not "no cycles exist." The boundary violations above (core → characters at call time) are exactly the kind of edge a textual/static import scanner misses; they were found by reading the code, not by the graph.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<div class="card hero">
+<p>The headline finding in this tab is a <strong>confirmed, reproduced logic bug</strong>, not a theoretical risk: <code>CharacterTemplate.get_heading()</code> returns a Python object repr instead of a CSS class name, on every render of the template detail page. Verified by instantiating the actual descriptor pattern against Django 5.1's field machinery (see below) — this is not inferred from reading alone.</p>
+</div>
+
+<h2>Invariants</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Every model save runs <code>full_clean()</code> unless the caller explicitly opts out</td><td><code>core/models.py:550-554</code> (<code>Model.save</code>), <code>core/base.py:22-25</code> (<code>ValidatedSaveMixin.save</code>)</td><td><span class="badge warn">partially</span> — true for every <code>.save()</code> call, but Django's <code>QuerySet.update()</code> bypasses <code>save()</code>/<code>clean()</code> entirely, and <code>core/management/commands/approve_pending_items.py:135</code> uses exactly that: <code>queryset.update(status="App")</code>. Nothing marks that call site as an intentional exception to the invariant everywhere else in the package treats as universal.</td></tr>
+<tr><td>A model's <code>gameline</code> class attribute holds the gameline code as a plain string, readable via class-level access</td><td>Assumed by <code>Model.get_gameline()</code> (<code>core/models.py:433-443</code>), and transitively by <code>get_full_gameline()</code>, <code>get_heading()</code>, <code>get_badge_class()</code> (<code>core/models.py:445-514</code>)</td><td><span class="badge bad">broken for CharacterTemplate</span> — see detail below.</td></tr>
+<tr><td>A pending XP/freebie spending request can be approved or rejected exactly once</td><td>Reject path: <code>select_for_update()</code> (<code>core/mixins.py:734-739</code>). Approve path: plain <code>.get()</code>, no locking (<code>core/mixins.py:696-699</code>)</td><td><span class="badge warn">partially</span> — enforced against concurrent reject, not against concurrent approve (e.g. a double-submitted click).</td></tr>
+<tr><td>A DB-valid <code>gameline</code> choice is also accepted by domain-level validation</td><td><code>CharacterTemplate.clean()</code>'s hardcoded <code>valid_gamelines</code> list (<code>core/models.py:958</code>) vs. the field's own <code>choices=GameLine.CHOICES</code> (<code>core/models.py:783-787</code>)</td><td><span class="badge warn">broken for htr/mtr</span> — full citation and explanation in the Boundaries tab (gameline vocabulary row).</td></tr>
+<tr><td>Every <code>Observer.object_id</code> refers to a live object of the recorded <code>content_type</code></td><td>Checked once, at creation, in <code>Observer.clean()</code> (<code>core/models.py:307-316</code>)</td><td><span class="badge warn">assumed but not maintained</span> — nothing revokes or cleans up an <code>Observer</code> row when its target object is later deleted (<code>content_type</code> + <code>object_id</code> is a generic FK with no cascade); <code>core/management/commands/cleanup_orphaned_data.py</code> exists for exactly this class of problem but does not mention <code>Observer</code>.</td></tr>
+</tbody>
+</table></div>
+
+<div class="callout bad">
+<strong>Confirmed: <code>CharacterTemplate.get_heading()</code> / <code>get_badge_class()</code> / <code>get_full_gameline()</code> return garbage.</strong>
+<p><code>Model.get_gameline()</code> is written as <code>getattr(self.__class__, "gameline", "wod")</code> (<code>core/models.py:433-443</code>) — deliberate class-level access, because on most <code>Model</code> subclasses <code>gameline</code> is a <em>plain Python string</em> set directly on the class (like the abstract base's own <code>gameline = "wod"</code> at <code>core/models.py:371</code>), and reading it off the class avoids touching the instance/DB. But <code>CharacterTemplate</code> overrides <code>gameline</code> with a real Django field — <code>models.CharField(choices=GameLine.CHOICES, ...)</code> (<code>core/models.py:783-787</code>). Accessing a Django field name at the <em>class</em> level (not the instance level) returns the field's <code>DeferredAttribute</code> descriptor object, not its value — this was reproduced directly against Django 5.1's model machinery in this session:</p>
+<pre style="overflow-x:auto"><code>class-level access: &lt;django.db.models.query_utils.DeferredAttribute object at 0x...&gt;
+instance access:    'vtm'
+getattr(cls, "gameline", "fallback"):  &lt;django.db.models.query_utils.DeferredAttribute object at 0x...&gt;</code></pre>
+<p>So for any <code>CharacterTemplate</code> instance, <code>get_gameline()</code> returns a <code>DeferredAttribute</code> object, not e.g. <code>"vtm"</code>. That value flows into <code>get_heading()</code> (<code>core/models.py:456-463</code>, producing a garbled string like <code>"&lt;django.db.models.query_utils.DeferredAttribute object at 0x...&gt;_heading"</code> instead of <code>"vtm_heading"</code>), into <code>get_badge_class()</code> (<code>core/models.py:499-514</code>, same corruption in a CSS class), and into <code>get_full_gameline()</code> via <code>core/utils.py:77-89</code>'s <code>settings.GAMELINES.get(s, {})</code> dict lookup, which silently falls back to stringifying the descriptor as the "gameline name" since it won't match any key. <code>get_heading()</code> alone is called at 12+ sites in <code>core/templates/core/character_template/detail.html</code> (e.g. line 9, 39, 90, 99...) — every visit to a template detail page renders at least one broken CSS class. No test in <code>core/tests/</code> instantiates <code>get_heading()</code>/<code>get_badge_class()</code> against a real <code>CharacterTemplate</code>, which is how this survived.</p>
+</div>
+
+<h2>Failure handling</h2>
+<ul>
+<li><strong>Broad exception swallowing around the XP/freebie approve path.</strong> <code>ApprovalMixin.post()</code> wraps the entire approve-and-apply block in <code>except Exception as e</code> (<code>core/mixins.py:717-722</code>), logs it, and shows a generic flash message. A bug inside the domain service becomes an ST-facing "Error approving XP spending: ..." message rather than a visible 500 — intentional UX, but it means service-layer regressions are invisible without reading logs.</li>
+<li><strong>Five silent <code>DoesNotExist</code> swallows in template application.</strong> <code>CharacterTemplate.apply_to_character()</code> (<code>core/models.py:848-946</code>) has five separate <code>except ...DoesNotExist: pass</code> blocks (Archetype, Background, MeritFlaw, Language, Ability). A template referencing a renamed/deleted reference object produces a silently incomplete NPC or character with no error, no log line, and no indication to the ST which fields didn't apply.</li>
+<li><strong>Bare <code>except Exception</code> inside a validation method.</strong> <code>Observer.clean()</code> (<code>core/models.py:317-322</code>) catches any unexpected exception while checking the target object's existence and only logs at <code>debug</code> level (a level typically off in production) — an unexpected error here is effectively invisible.</li>
+<li><strong>Alerting is a documented stub, not a bug this atlas is re-deriving.</strong> <code>core/management/commands/monitor_validation.py</code>'s <code>send_alerts()</code> (<code>core/management/commands/monitor_validation.py:332-361</code>) only writes to stdout; the actual delivery mechanism (email/Slack/PagerDuty) is a <code>TODO</code>. This was already identified in <code>core/docs/measurement.html</code>'s audit of the command's hand-weighted <code>health_score</code> — noted here only so the risk ranking below doesn't look like it forgot about it.</li>
+</ul>
+
+<h2>Concurrency</h2>
+<p>This is a synchronous Django/WSGI codebase — no threads, async views, or in-process shared mutable state to reason about in <code>core</code>. The concurrency surface that matters is <strong>database-level</strong>: row locking during multi-step read-modify-write sequences. The one place <code>core</code> does this deliberately (<code>select_for_update()</code> on the spending-request reject path, <code>core/mixins.py:737</code>) is inconsistent with its own approve path three lines earlier, which doesn't lock (see Invariants table above). No other multi-step mutation in the package (approval, template application, status sync) uses row locking; each currently gets away with it because these are low-frequency, ST-initiated actions rather than high-contention user paths.</p>
+
+<h2>Risk ranking</h2>
+<div class="callout bad"><strong>1. Confirmed bug: CharacterTemplate heading/badge/gameline-name methods are broken.</strong> Triggers on every view of every character-template detail page (<code>core/templates/core/character_template/detail.html</code>, 12+ call sites). Cosmetic in the current templates (a garbled CSS class fails silently rather than crashing), but it's live, reproducible, and untested — and the same <code>getattr(self.__class__, "gameline", ...)</code> pattern would break identically for any future <code>Model</code> subclass that turns <code>gameline</code> into a real field.</div>
+<div class="callout bad"><strong>2. Bulk status approval bypasses full-model validation.</strong> <code>core/management/commands/approve_pending_items.py</code>'s <code>queryset.update(status="App")</code> (<code>core/management/commands/approve_pending_items.py:135</code>) approves characters via raw SQL <code>UPDATE</code>, skipping <code>Model.clean()</code> entirely — the one invariant (validate on save) every other code path in this atlas treats as load-bearing. Lower likelihood (only this command triggers it) but the blast radius is direct: it can commit characters into "Approved" status while violating every constraint <code>clean()</code> would otherwise catch.</div>
+<div class="callout warn"><strong>3. Storyteller-determination logic has already diverged across its four implementations.</strong> <code>core/views/character_template.py</code>'s <code>STRequiredMixin</code> checks a global flag where <code>core/mixins.py</code>'s same-named class checks chronicle scope — see Boundaries. Likelihood of further divergence is high (nothing structurally prevents a fifth ad hoc check appearing); blast radius is authorization-shaped, which makes any instance worth treating seriously even though nothing catastrophic was found in this reading pass.</div>
+<div class="callout warn"><strong>4. Spending-request approve/reject locking asymmetry.</strong> Race window only under double-submit or concurrent ST clicks (<code>core/mixins.py:696-699</code> vs <code>:734-739</code>); plausible but not high-frequency.</div>
+<div class="callout"><strong>5. Duplicated image/status-approval logic across <code>ApprovalService</code> and <code>core/management/commands/approve_pending_items.py</code>.</strong> Not a bug today (both paths currently agree on behavior), but see Boundaries &amp; Ownership — the next change to approval semantics has two places to update and no mechanism that would fail if only one were touched.</div>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<h2>Domain term ↔ code name drift</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Domain concept</th><th>Code name(s)</th><th>Files</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>A Storyteller's chronicle-scoped authorization to approve/edit objects</td><td><code>Role.CHRONICLE_HEAD_ST</code> / <code>Role.GAME_ST</code> (permissions), vs. <code>STRequiredMixin</code> (two classes, two meanings — see below), vs. <code>StorytellerRequiredMixin</code>, vs. <code>user.profile.is_st()</code></td><td><code>core/permissions.py:16-25</code>, <code>core/mixins.py:238-263</code>, <code>core/mixins.py:438-460</code>, <code>core/views/character_template.py:30-51</code></td><td><span class="badge warn">warn</span> — one domain concept ("is this person allowed to act as ST here"), four code spellings, at least two genuinely different scopes (per-chronicle vs. global). See Boundaries &amp; Ownership for the ownership angle on this same drift.</td></tr>
+<tr><td><code>gameline</code> as "the code identifying which WoD game this object belongs to"</td><td>Plain Python class attribute on most <code>Model</code> subclasses (e.g. <code>core/models.py:371</code>'s <code>gameline = "wod"</code>) <em>vs.</em> a real Django <code>CharField</code> on <code>CharacterTemplate</code> (<code>core/models.py:783-787</code>)</td><td><code>core/models.py</code></td><td><span class="badge bad">warn — load-bearing</span>. Same attribute name, two different Python mechanisms, and the base class's own accessor method (<code>get_gameline()</code>) only works correctly for one of them. This is the root cause of the confirmed bug in Invariants &amp; Risks, not just a naming inconsistency.</td></tr>
+<tr><td>"STRequiredMixin"</td><td>Two unrelated classes share this exact name</td><td><code>core/mixins.py:238</code> (chronicle-scoped, extends <code>ObjectCachingMixin</code>, raises <code>PermissionDenied</code>) vs. <code>core/views/character_template.py:30</code> (global <code>is_st()</code>, extends <code>UserPassesTestMixin</code>, redirects with a flash message)</td><td>—</td><td><span class="badge bad">bad</span> — the single worst naming collision in the package. A grep for <code>STRequiredMixin</code> without checking imports will mislead.</td></tr>
+<tr><td>"Approve" (an object's <code>status</code> field reaching <code>"App"</code>)</td><td><code>ApprovalService.approve_object()</code>, <code>ApprovalMixin</code> (a <em>different</em> concern — XP/freebie <em>spending request</em> approval, not object approval), <code>core/management/commands/approve_pending_items.py</code></td><td><code>core/services/approval.py</code>, <code>core/mixins.py:611-761</code>, <code>core/management/commands/approve_pending_items.py</code></td><td><span class="badge warn">warn</span> — "approval" means three different things in this package: approving a submitted character/item/location (<code>ApprovalService</code>), approving a pending XP or freebie <em>spend</em> on an already-approved character (<code>ApprovalMixin</code>), and the batch command that does the first one plus image/freebie approval in one CLI tool. Each individually makes sense; together they mean a reader has to check which "approve" is meant every time the word appears.</td></tr>
+<tr><td>The XP/freebie approval workflow's per-type customization point</td><td><code>spending_type</code> (human string, e.g. <code>"XP spending"</code>) vs. <code>request_key_prefix</code> (e.g. <code>"xp_request_"</code>, declared but never actually read by <code>ApprovalMixin.post()</code> — the POST key is parsed generically via <code>_parse_request_id</code>)</td><td><code>core/mixins.py:611-815</code></td><td><span class="badge warn">warn</span> — <code>request_key_prefix</code> is documented as configuring "prefix for parsing request IDs" but <code>post()</code> never references <code>self.request_key_prefix</code>; the prefix is implicit in the template's POST field names instead. Not wrong, but a class attribute that reads as load-bearing and isn't.</td></tr>
+</tbody>
+</table></div>
+
+<h2>Misleading names</h2>
+<ul>
+<li><code>PermissionMixin.observers</code> (<code>core/models.py:347</code>) is a <code>GenericRelation</code> to the <code>Observer</code> model — reasonable — but the class is named <code>PermissionMixin</code> while it also carries <code>visibility</code> (a display/access-tier field) and the observer relation itself; "permission" in this codebase is really owned by <code>core.permissions.PermissionManager</code>, and this mixin is closer to "visibility and access-grant fields." Minor, but a reader looking for where permissions are *computed* who lands here first will be misdirected to where they're merely *stored*.</li>
+<li><code>ValidatedSaveMixin</code> (<code>core/base.py</code>) and <code>Model.save()</code> (<code>core/models.py:550-554</code>) implement the identical behavior under different names with no shared base — a reader who knows one exists has no naming cue that points them to the other.</li>
+</ul>
+
+<div class="callout good">Outside the items above, naming in <code>core</code> is generally direct and predictable — <code>CacheKeyGenerator</code>, <code>CacheInvalidator</code>, <code>VisibilityFilterMixin</code>, <code>OwnerRequiredMixin</code> all do exactly what their names say, with no drift found while reading them.</div>
+
+</section></main>
+<footer class="doc">Generated by code-visualization.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

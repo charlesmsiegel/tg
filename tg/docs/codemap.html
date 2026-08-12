@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tg — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">tg — Codebase Atlas</h1>
+  <p class="doc-sub">Django project settings, URLconf, and the GAMELINES registry</p>
+  <div class="doc-meta">generated 2026-08-09 · d6933760 · 8 files, 779 LOC</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">tg</span></div><div class="co-row"><span class="co-lbl">tg</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../chained_select/docs/codemap.html">chained_select</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>What this is</h2>
+<p><code>tg</code> is the Django project package for a World of Darkness character-management app — not application logic, but the wiring around it: environment-switched settings, the root URLconf, and the WSGI/ASGI entry points. It is small (8 source files, 779 LOC) and has no internal complexity of its own: <code>tg/settings/base.py</code> holds everything shared, and <code>tg/settings/development.py</code>/<code>tg/settings/production.py</code> each layer a handful of overrides on top via <code>from .base import *</code>. The one piece of real domain content living here is <strong>GAMELINES</strong>, a registry mapping each of the World of Darkness game lines to a display name and an app label, consumed by every gameline-aware model in the rest of the codebase.</p>
+</div>
+
+<h2>Entry points</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Entry point</th><th>Kicks off</th></tr></thead>
+<tbody>
+<tr><td><code>tg/wsgi.py:16</code></td><td>Synchronous HTTP entry point (<code>application</code>); reads <code>DJANGO_SETTINGS_MODULE=tg.settings</code>.</td></tr>
+<tr><td><code>tg/asgi.py:25-32</code></td><td>ASGI entry point; routes HTTP to Django and WebSocket traffic to <code>game.routing.websocket_urlpatterns</code> through an auth-and-origin-checked stack.</td></tr>
+<tr><td><code>tg/settings/__init__.py:19-30</code></td><td>Picks <code>development</code> or <code>production</code> settings from <code>DJANGO_ENVIRONMENT</code>; fails loudly (raises) on any other value.</td></tr>
+<tr><td><code>tg/urls.py:23-35</code></td><td>Root URLconf: mounts <code>core</code>, <code>characters</code>, <code>locations</code>, <code>items</code>, <code>game</code>, <code>accounts</code> app URLconfs plus Django's built-in auth URLs, and serves media in DEBUG.</td></tr>
+</tbody>
+</table></div>
+
+<h2>Reading order</h2>
+<ol>
+<li><code>tg/settings/__init__.py</code> — the environment switch; read this first, it explains why there are two settings files.</li>
+<li><code>tg/settings/base.py</code> — everything shared: apps, middleware, database, logging, and the <code>GAMELINES</code> registry (<code>tg/settings/base.py:204-255</code>).</li>
+<li><code>tg/settings/development.py</code> — thin overrides (debug toolbar, local-memory cache).</li>
+<li><code>tg/settings/production.py</code> — thin overrides (security headers, Redis cache/channel layer, rotating logs). Note it never actually swaps the database engine — see Invariants.</li>
+<li><code>tg/urls.py</code>, then <code>tg/wsgi.py</code> / <code>tg/asgi.py</code>.</li>
+<li>Skip <code>tg/settings.py.backup</code> — a pre-split, single-file settings module still tracked in git but superseded by the <code>settings/</code> package; Python cannot import a <code>.backup</code> file, so it is inert. See Boundaries.</li>
+<li><code>tg/secrets.py</code> — two hardcoded values, gitignored (not a real leak; see Invariants).</li>
+</ol>
+
+<h2>Intended architecture</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+  INIT["settings/__init__.py<br/>env switch"] --> DEV["settings/development.py"]
+  INIT --> PROD["settings/production.py"]
+  DEV --> BASE["settings/base.py<br/>apps, middleware, GAMELINES"]
+  PROD --> BASE
+  URLS["urls.py"] --> APPS["core / characters / locations /<br/>items / game / accounts urlconfs"]
+  WSGI["wsgi.py"] --> INIT
+  ASGI["asgi.py"] --> INIT
+  ASGI --> ROUTING["game.routing<br/>websocket_urlpatterns"]
+  BASE -. "GAMELINE_CHOICES" .-> REST["rest of codebase<br/>(character/item/location models)"]
+</pre></div></div>
+<p class="dim">This matches the real dependency graph (see Dependencies tab) — it's a two-module, cycle-free tree with no surprises. The graph is genuinely this simple; it isn't hiding coupling.</p>
+
+<h2>Key decisions &amp; constraints</h2>
+<div class="grid cols-2">
+<div class="card">
+<h3>Fail-secure settings selection</h3>
+<p><code>tg/settings/__init__.py:25-30</code> raises <code>ValueError</code> on an unrecognized <code>DJANGO_ENVIRONMENT</code> rather than silently defaulting — a deliberate guard against accidentally booting with the wrong settings.</p>
+</div>
+<div class="card">
+<h3>SQLite is the only wired-up database</h3>
+<p><code>tg/settings/base.py:84-91</code> defines a SQLite <code>DATABASES</code>; <code>tg/settings/production.py:96</code> only tunes <code>CONN_MAX_AGE</code> on it. The Postgres/MySQL blocks in <code>tg/settings/production.py:99-131</code> are commented-out examples, not active config. See Invariants for the consequence.</p>
+</div>
+</div>
+
+<h2>Tests and evals</h2>
+<p class="dim">No test files live under <code>tg/</code> itself (unsurprising for a settings module), and no coverage artifact was found for this package — the Coverage tab is omitted rather than fabricated. No LLM call sites exist here either, so the LLM Ops tab is omitted too.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">8</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">779</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi warn"><div class="n">0%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>779</td><td class='num'>8</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>100.0%</td></tr></tbody></table></div>
+<p class="dim">Coverage: 1 file(s) in unrecognized languages are not counted above (.backup (1)).</p>
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>settings/</code></td><td class='num'>698</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>81</td><td><div class="bar "><i style="width:11.6%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>settings/base.py</code></td><td class='num'>372</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>settings/production.py</code></td><td class='num'>228</td><td><div class="bar "><i style="width:61.3%"></i></div></td><td class='num'>13</td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>74</td><td><div class="bar "><i style="width:19.9%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:12.1%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>asgi.py</code></td><td class='num'>24</td><td><div class="bar "><i style="width:6.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>settings/__init__.py</code></td><td class='num'>24</td><td><div class="bar "><i style="width:6.5%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>wsgi.py</code></td><td class='num'>10</td><td><div class="bar "><i style="width:2.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>secrets.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>settings/production.py</code></td><td class='num'>13</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>228</td><td class='num'>4</td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:46.2%"></i></div></td><td class='num'>74</td><td class='num'>3</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:23.1%"></i></div></td><td class='num'>45</td><td class='num'>3</td></tr>
+<tr><td><code>settings/__init__.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:23.1%"></i></div></td><td class='num'>24</td><td class='num'>2</td></tr>
+<tr><td><code>settings/base.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:23.1%"></i></div></td><td class='num'>372</td><td class='num'>4</td></tr>
+<tr><td><code>asgi.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:7.7%"></i></div></td><td class='num'>24</td><td class='num'>3</td></tr>
+<tr><td><code>wsgi.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:7.7%"></i></div></td><td class='num'>10</td><td class='num'>0</td></tr>
+<tr><td><code>secrets.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>2</td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">2</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">4</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">2</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":81,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 5 files"},{"id":"settings","label":"settings","group":"settings","size":698,"fanIn":0,"fanOut":0,"meta":"settings \u00b7 4 files"}],"links":[],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>settings/base.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>settings/__init__.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>settings/production.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>asgi.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>secrets.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>wsgi.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>settings/base.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">38</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">7</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">production.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"settings/production.py","value":228,"metric":7,"meta":"13 branches \u00b7 2 authors"},{"name":"settings/development.py","value":74,"metric":8,"meta":"6 branches \u00b7 2 authors"},{"name":"settings/base.py","value":372,"metric":11,"meta":"3 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":5,"meta":"3 branches \u00b7 2 authors"},{"name":"settings/__init__.py","value":24,"metric":3,"meta":"3 branches \u00b7 2 authors"},{"name":"asgi.py","value":24,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"secrets.py","value":2,"metric":2,"meta":"0 branches \u00b7 1 authors"},{"name":"wsgi.py","value":10,"metric":0,"meta":"1 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":11}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 1 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: settings.py.backup (1).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>settings/production.py</code></td><td class='num'>7</td><td class='num'>13</td><td class='num'>228</td><td class='num'>2</td><td class='num' data-sort='98'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>settings/development.py</code></td><td class='num'>8</td><td class='num'>6</td><td class='num'>74</td><td class='num'>2</td><td class='num' data-sort='56'><div class="bar bad"><i style="width:57.1%"></i></div></td></tr>
+<tr><td><code>settings/base.py</code></td><td class='num'>11</td><td class='num'>3</td><td class='num'>372</td><td class='num'>2</td><td class='num' data-sort='44'><div class="bar bad"><i style="width:44.9%"></i></div></td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>5</td><td class='num'>3</td><td class='num'>45</td><td class='num'>2</td><td class='num' data-sort='20'><div class="bar bad"><i style="width:20.4%"></i></div></td></tr>
+<tr><td><code>settings/__init__.py</code></td><td class='num'>3</td><td class='num'>3</td><td class='num'>24</td><td class='num'>2</td><td class='num' data-sort='12'><div class="bar bad"><i style="width:12.2%"></i></div></td></tr>
+<tr><td><code>asgi.py</code></td><td class='num'>1</td><td class='num'>1</td><td class='num'>24</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:2.0%"></i></div></td></tr>
+<tr><td><code>secrets.py</code></td><td class='num'>2</td><td class='num'>0</td><td class='num'>2</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:2.0%"></i></div></td></tr>
+<tr><td><code>wsgi.py</code></td><td class='num'>0</td><td class='num'>1</td><td class='num'>10</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<div class="callout bad"><strong>The gameline registry has two owners that have drifted apart.</strong> <code>tg/settings/base.py:204-255</code> defines <code>GAMELINES</code> as the registry every model is supposed to read (<code>GAMELINE_CHOICES</code> is built from it and used directly as field choices, e.g. <code>core/models.py:195</code> and <code>core/models.py:736</code>). But <code>core/models.py:958</code> hand-maintains a second, independent list for validation, and the two no longer agree. Neither list agrees with what's actually installed.</div>
+
+<h2>Concern ownership</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Concern</th><th>Owning module(s)</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Gameline registry (canonical name/app-label list)</td><td><code>tg/settings/base.py</code> (<code>GAMELINES</code>, <code>GAMELINE_CHOICES</code>)</td><td><span class="badge accent">intended single owner</span></td></tr>
+<tr><td>Gameline <em>validation</em> (which codes are acceptable)</td><td><code>tg/settings/base.py</code> (via <code>GAMELINE_CHOICES</code> on model fields) <em>and</em> <code>core/models.py:958</code> (a separate hardcoded list in <code>CharacterTemplate.clean()</code>)</td><td><span class="badge bad">smeared, drifted</span></td></tr>
+<tr><td>Installed Django apps</td><td><code>tg/settings/base.py:20-41</code> (<code>INSTALLED_APPS</code>)</td><td><span class="badge accent">single owner</span></td></tr>
+<tr><td>Environment selection (dev vs. prod)</td><td><code>tg/settings/__init__.py</code></td><td><span class="badge good">single owner</span></td></tr>
+</tbody>
+</table></div>
+
+<h2>Data ownership: the three gameline lists, side by side</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>List</th><th>Location</th><th>Members</th></tr></thead>
+<tbody>
+<tr><td><code>GAMELINES</code> / <code>GAMELINE_CHOICES</code> (canonical)</td><td><code>tg/settings/base.py:204-258</code></td><td>wod, vtm, wta, mta, wto, ctd, dtf, mtr, htr, <strong>orp</strong> — 10 keys</td></tr>
+<tr><td><code>INSTALLED_APPS</code> (what's actually deployed)</td><td><code>tg/settings/base.py:20-41</code></td><td>accounts, characters, game, items, locations, core (+ widgets, chained_select) — no app for <code>orp</code>/"orpheus"</td></tr>
+<tr><td><code>valid_gamelines</code> (hand-maintained validator)</td><td><code>core/models.py:958</code></td><td>wod, vtm, wta, mta, wto, ctd, dtf — 7 keys, missing <strong>mtr</strong>, <strong>htr</strong>, <strong>orp</strong></td></tr>
+</tbody>
+</table></div>
+
+<h2>Boundary violations / drift</h2>
+<div class="callout bad">
+<strong>Dead registry entry: <code>orp</code> (Orpheus) has no app.</strong> <code>tg/settings/base.py:250-254</code> defines <code>"orp": {"name": "Orpheus", "app_name": "orpheus", ...}</code>, but there is no <code>orpheus</code> app in <code>INSTALLED_APPS</code> (<code>tg/settings/base.py:20-41</code>) and no <code>orpheus/</code> directory anywhere in the repo. Anything that selects gameline <code>orp</code> passes model validation (it's a valid <code>GAMELINE_CHOICES</code> entry) but has no corresponding app to route to, template-namespace against, or otherwise resolve — it is either a forward-looking placeholder for a gameline that was never built, or a leftover from one that was removed. Either way, the registry currently overstates what the app supports.
+</div>
+<div class="callout warn">
+<strong>Stale validator: <code>core/models.py:958</code> rejects three real gamelines.</strong> <code>CharacterTemplate.clean()</code> (<code>core/models.py:948-966</code>) checks <code>self.gameline</code> against a hardcoded <code>valid_gamelines</code> list that predates the addition of Mummy (<code>mtr</code>) and Hunter (<code>htr</code>) to <code>GAMELINES</code> — and, consistently with the app-label problem above, also excludes <code>orp</code>. A <code>CharacterTemplate</code> for Mummy or Hunter can be created with a gameline that the model field itself accepts (via <code>GAMELINE_CHOICES</code>) but that this <code>clean()</code> override then rejects as invalid, contradicting the field's own choices. The comment directly above it — "already done in Model, but verify" (<code>core/models.py:957</code>) — shows the intent was to re-derive from the same source, not fork a second copy.
+</div>
+<div class="callout warn">
+<strong>Dead file confusable with the live settings package.</strong> <code>tg/settings.py.backup</code> is tracked in git (last touched at <code>1641e69a</code>) and still looks like a plausible settings module, but it predates the <code>settings/</code> package split and nothing imports it — Python won't import a <code>.backup</code> file, and <code>ROOT_URLCONF</code>/<code>DJANGO_SETTINGS_MODULE</code> both point at <code>tg.settings</code>, the package. It should be deleted rather than left to confuse whoever next greps for "settings.py".
+</div>
+
+<p class="dim">No import cycles exist in this package (see Dependencies tab), so there is nothing to explain on that front — the drift above is a data-consistency problem, not a structural one.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>Invariants</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Every key in <code>GAMELINES</code> has a corresponding installed app</td><td>Nowhere — no check exists</td><td><span class="badge bad">assumed, violated for <code>orp</code></span></td></tr>
+<tr><td>The set of gamelines a <code>CharacterTemplate</code> accepts matches what the model field allows</td><td><code>core/models.py:958</code> (separate list) vs. <code>GAMELINE_CHOICES</code> on the field</td><td><span class="badge bad">enforced by two disagreeing sources</span></td></tr>
+<tr><td><code>DJANGO_ENVIRONMENT</code> only ever selects a known settings module</td><td><code>tg/settings/__init__.py:21-30</code> — raises on anything else</td><td><span class="badge good">enforced</span></td></tr>
+<tr><td>Production runs with <code>SECRET_KEY</code> from the environment, never a default</td><td><code>tg/settings/production.py:14</code> — <code>os.environ["SECRET_KEY"]</code>, a <code>KeyError</code> if unset</td><td><span class="badge good">enforced</span></td></tr>
+<tr><td>Production runs against a production-grade database</td><td>Nowhere — <code>DATABASES</code> is inherited unchanged from <code>tg/settings/base.py:84-91</code> (SQLite); <code>tg/settings/production.py:96</code> only sets <code>CONN_MAX_AGE</code> on it</td><td><span class="badge bad">assumed, not enforced</span></td></tr>
+</tbody>
+</table></div>
+
+<h2>Failure handling</h2>
+<p>This package is config, not request-handling code, so there isn't much runtime failure logic to assess. What exists: <code>tg/urls.py:38-46</code> wraps the debug-toolbar import in <code>try/except ImportError: pass</code> — a deliberate, narrow swallow (missing dev-only dependency shouldn't break URL loading) rather than a hidden bug. <code>tg/settings/development.py:34-54</code> does the same around the toolbar's app/middleware registration. Both are appropriately scoped to an optional dev dependency, not application logic.</p>
+
+<h2>Concurrency</h2>
+<p class="dim">No concurrency primitives live in this package. It configures concurrency for the rest of the app (Channels/Daphne ASGI stack in <code>tg/asgi.py</code>, an in-memory channel layer in dev vs. Redis in prod — <code>tg/settings/base.py:409-413</code>, <code>tg/settings/production.py:247-256</code>) but does no locking or shared-state management itself.</p>
+
+<h2>Risk ranking</h2>
+<div class="callout bad"><strong>1. Production database is SQLite unless someone remembers to override it.</strong> <code>tg/settings/production.py:99-131</code> ships the Postgres/MySQL config as commented-out examples; nothing fails loudly if they stay commented. Under <code>ATOMIC_REQUESTS=True</code> (<code>tg/settings/base.py:89</code>) and a single-writer SQLite file, concurrent write throughput is the actual ceiling on this app in production. If a real production database is configured outside this repo (e.g. via a deploy-time settings override not visible here), this risk is moot — but nothing in the code says so.</div>
+<div class="callout bad"><strong>2. The gameline registry, its app list, and its validator have three different opinions.</strong> See Boundaries: <code>orp</code> is registered but unbuilt; Mummy and Hunter templates can be silently rejected by <code>core/models.py:958</code> despite being valid gamelines everywhere else. This is a live correctness bug for template creation on two of the eight built-out game lines, not a hypothetical.</div>
+<div class="callout warn"><strong>3. <code>tg/settings.py.backup</code> is committed, dead, and settings-shaped.</strong> A future edit aimed at "the settings file" that lands here silently does nothing — no import error, no effect, just wasted work. Low likelihood, easy fix (delete it).</div>
+<div class="callout warn"><strong>4. <code>tg/secrets.py</code> holds hardcoded credential-shaped values.</strong> The file is gitignored (confirmed via <code>git check-ignore</code>, not tracked in the repo despite existing on disk) and nothing in <code>settings/</code> imports it (<code>SECRET_KEY</code> is read from the environment in both <code>tg/settings/development.py:14-16</code> and <code>tg/settings/production.py:14</code>) — so this is local-machine clutter, not a leaked production secret. Worth deleting so it can't be mistaken for one.</div>
+
+</section></main>
+<footer class="doc">Generated by code-visualization.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

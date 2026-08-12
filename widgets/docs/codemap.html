@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>widgets — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">widgets — Codebase Atlas</h1>
+  <p class="doc-sub">Reusable dynamic form-interaction components</p>
+  <div class="doc-meta">generated 2026-08-09 · d6933760 · 31 files, 5329 LOC</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">widgets</span></div><div class="co-row"><span class="co-lbl">widgets</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../chained_select/docs/codemap.html">chained_select</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>What this is</h2>
+<p>A reusable Django form-component library: five interaction patterns that recur across World of Darkness character/item/location chargen screens &mdash; cascading dropdowns, point-budget allocation, "pick canon or homebrew," conditional field visibility, and dynamic add/remove formsets &mdash; each packaged as a self-configuring widget/mixin/field trio. Every widget embeds its own JavaScript as a Python string and injects it on <code>render()</code>, so a template author writes <code>{{ form.my_field }}</code> and gets working client-side behavior with no <code>{{ form.media }}</code>, no static files, and no build step (<code>widgets/__init__.py:1-74</code>). The package auto-registers one AJAX endpoint into the project's root URLconf from <code>AppConfig.ready()</code> (<code>widgets/apps.py:15-57</code>).</p>
+<p>It replaced an older <code>chained_select</code> app, which now survives only as a deprecation shim re-exporting from <code>widgets</code> (<code>chained_select/__init__.py:1-20</code>, referenced in <code>tg/settings/base.py:36-37</code>). Real, current consumers span <code>characters/forms/</code>, <code>items/forms/</code>, <code>locations/forms/</code>, and <code>game/forms.py</code> &mdash; 18 files outside the package import from it.</p>
+</div>
+
+<div class="callout warn"><strong>Adoption is real but partial.</strong> The package's own docstrings and commit history name two flagship justifications &mdash; attribute-point distribution and filterable item lists &mdash; that are still hand-duplicated in production templates instead of consuming the shared widget. See <code>06-boundaries</code> and <code>07-invariants</code> for the specifics; this is not a hypothetical, both were verified directly against the templates.</p></div>
+
+<h2>Entry points</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Entry point</th><th>Kicks off</th></tr></thead>
+<tbody>
+<tr><td><code>widgets/__init__.py:76-121</code></td><td>Public API &mdash; every field/mixin/widget/view a consuming form imports</td></tr>
+<tr><td><code>widgets/apps.py:15-57</code></td><td><code>AppConfig.ready()</code> inserts the <code>/__chained_select__/</code> AJAX route into <code>settings.ROOT_URLCONF</code> at process start</td></tr>
+<tr><td><code>widgets/views.py:16-66</code> (<code>auto_chained_ajax_view</code>)</td><td>Runtime AJAX endpoint: dynamically imports a form class named in a GET parameter and returns its choices as JSON</td></tr>
+<tr><td>A consuming <code>forms.Form</code>/<code>forms.ModelForm</code> mixing in <code>ChainedSelectMixin</code>/<code>PointPoolMixin</code>/<code>CreateOrSelectMixin</code>/<code>ConditionalFieldsMixin</code></td><td><code>__init__</code> override runs the mixin's field-wiring pass before the form is used</td></tr>
+<tr><td><code>{% load formset_tags %}{% formset ... %}</code> (<code>widgets/templatetags/formset_tags.py:171-245</code>)</td><td>Renders a complete dynamic formset block plus its JS, once per template use</td></tr>
+</tbody></table></div>
+
+<h2>Reading order</h2>
+<ol>
+<li><code>widgets/__init__.py</code> &mdash; the package's own README-as-docstring; read the three usage examples before anything else.</li>
+<li><code>widgets/fields/chained.py</code> then <code>widgets/widgets/chained.py</code> then <code>widgets/mixins/chained.py</code> &mdash; the largest, most-consumed subsystem (cascading selects); read field &rarr; widget &rarr; mixin in that order since each wraps the previous.</li>
+<li><code>widgets/mixins/point_pool.py</code> paired with <code>widgets/widgets/point_pool.py</code> &mdash; the point-budget subsystem; note the client/server split between the embedded JS and <code>PointPoolMixin.clean()</code>.</li>
+<li><code>widgets/mixins/conditional.py</code> &mdash; declarative show/hide rules; read the module docstring's rule format before the class body.</li>
+<li><code>widgets/widgets/create_or_select.py</code> + <code>widgets/mixins/create_or_select.py</code> &mdash; smallest subsystem, good example of the "widget renders, mixin validates/saves" split used throughout.</li>
+<li><code>widgets/widgets/formset_manager.py</code> + <code>widgets/templatetags/formset_tags.py</code> &mdash; the one subsystem exposed as a template tag rather than a form field.</li>
+<li><code>widgets/apps.py</code> &mdash; short, but the URLconf-mutation-at-startup trick is unusual enough to read deliberately.</li>
+<li><strong>Skip on a first pass:</strong> <code>widgets/widgets/metadata_select.py</code> &mdash; a complete, working widget with zero callers outside its own test (verified: no repo file outside <code>widgets/</code> imports <code>OptionMetadataSelect</code>). Read it only when auditing dead code.</li>
+<li><code>widgets/tests/</code> &mdash; skim <code>test_point_pool.py</code> and <code>test_chained_select.py</code> for the invariants the widgets assume (e.g. what a "valid" distribution means).</li>
+</ol>
+
+<h2>Layer map</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+    Fields["fields/*.py<br/>Field subclasses"] --> Widgets["widgets/*.py<br/>Widget.render() embeds JS"]
+    Mixins["mixins/*.py<br/>Form mixins: wire widgets, clean(), save()"] --> Widgets
+    Widgets --> Browser["Embedded JS managers<br/>(one per widget, window.* singletons)"]
+    Views["views.py<br/>auto_chained_ajax_view"] -.->|"fetch() on chain change"| Browser
+    Apps["apps.py ready()"] -->|"inserts route into"| RootURLs["project ROOT_URLCONF"]
+    TemplateTags["templatetags/*.py"] --> Widgets
+    ConsumingForms["characters/ items/ locations/ game/ forms"] --> Mixins
+    ConsumingForms --> Fields
+</pre></div></div>
+<div class="callout good">This intended layering matches the real dependency graph: <code>analyze_deps</code> found zero import cycles among the package's 6 modules (<code>module_cycles: []</code>, <code>file_cycles: []</code>), and fan-out is concentrated exactly where the diagram predicts &mdash; <code>widgets/__init__.py</code> has the package's highest fan-in (6) as the single public surface.</div>
+
+<h2>Key decisions &amp; constraints</h2>
+<ul>
+<li><strong>JS-as-Python-string instead of Django's Media API.</strong> Every widget defines its manager class as a triple-quoted JS string and injects a <code>&lt;script&gt;</code> tag from <code>render()</code> (e.g. <code>widgets/widgets/chained.py:14-230</code>). This is asserted as a convenience ("no static files or <code>{{ form.media }}</code> needed", <code>widgets/widgets/chained.py:13</code>) but never weighed against its costs: no minification/caching, JS re-parsed as a Python string on every import, and inline-script CSP friction if the project ever adopts a script-src policy.</li>
+<li><strong>"Render once per request" is reinvented per widget.</strong> Six separate files independently implement the same shape &mdash; a boolean flag, a check-and-set in <code>render()</code>, a <code>reset_js_rendered</code> classmethod, and a <code>request_finished.connect(...)</code> call &mdash; instead of sharing one helper (detailed in <code>07-invariants</code>).</li>
+<li><strong>No client build step.</strong> All interactivity ships as inline <code>&lt;script&gt;</code> tags; there is no bundler, no TypeScript, no minifier anywhere in the package. This is a deliberate constraint of the codebase (see project <code>CLAUDE.md</code>), not an oversight.</li>
+<li><strong>Auto-registration via <code>AppConfig.ready()</code>.</strong> <code>widgets/apps.py:26-57</code> imports the project's root URLconf module and mutates its <code>urlpatterns</code> list in place, wrapped in a bare <code>try/except Exception</code> that only warns. This crosses the app's own boundary into project configuration.</li>
+</ul>
+
+<h2>Eval / coverage artifacts</h2>
+<p class="dim">No coverage artifact (coverage.xml, lcov.info, coverage.out) was found in the repo, so no Coverage tab is included &mdash; test extent below is read from the test files themselves, not measured. There is no eval/benchmark infrastructure in this package, which is expected for a UI-widget library with no model calls.</p>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">31</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">5,329</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">34%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>5,329</td><td class='num'>31</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>100.0%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>widgets/</code></td><td class='num'>1,847</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>tests/</code></td><td class='num'>1,789</td><td><div class="bar "><i style="width:96.9%"></i></div></td></tr>
+<tr><td><code>mixins/</code></td><td class='num'>875</td><td><div class="bar "><i style="width:47.4%"></i></div></td></tr>
+<tr><td><code>templatetags/</code></td><td class='num'>337</td><td><div class="bar "><i style="width:18.2%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>294</td><td><div class="bar "><i style="width:15.9%"></i></div></td></tr>
+<tr><td><code>fields/</code></td><td class='num'>187</td><td><div class="bar "><i style="width:10.1%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>widgets/point_pool.py</code></td><td class='num'>502</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>106</td></tr>
+<tr><td><code>widgets/filterable.py</code></td><td class='num'>365</td><td><div class="bar "><i style="width:72.7%"></i></div></td><td class='num'>66</td></tr>
+<tr><td><code>tests/test_point_pool.py</code> <span class="badge neutral">test</span></td><td class='num'>363</td><td><div class="bar "><i style="width:72.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/formset_manager.py</code></td><td class='num'>332</td><td><div class="bar "><i style="width:66.1%"></i></div></td><td class='num'>44</td></tr>
+<tr><td><code>tests/test_formset_manager.py</code> <span class="badge neutral">test</span></td><td class='num'>329</td><td><div class="bar "><i style="width:65.5%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>mixins/conditional.py</code></td><td class='num'>318</td><td><div class="bar "><i style="width:63.3%"></i></div></td><td class='num'>57</td></tr>
+<tr><td><code>tests/test_chained_select.py</code> <span class="badge neutral">test</span></td><td class='num'>313</td><td><div class="bar "><i style="width:62.4%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>tests/test_conditional_fields.py</code> <span class="badge neutral">test</span></td><td class='num'>269</td><td><div class="bar "><i style="width:53.6%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/chained.py</code></td><td class='num'>263</td><td><div class="bar "><i style="width:52.4%"></i></div></td><td class='num'>40</td></tr>
+<tr><td><code>mixins/point_pool.py</code></td><td class='num'>251</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>32</td></tr>
+<tr><td><code>templatetags/formset_tags.py</code></td><td class='num'>241</td><td><div class="bar "><i style="width:48.0%"></i></div></td><td class='num'>28</td></tr>
+<tr><td><code>tests/test_create_or_select.py</code> <span class="badge neutral">test</span></td><td class='num'>226</td><td><div class="bar "><i style="width:45.0%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>widgets/metadata_select.py</code></td><td class='num'>216</td><td><div class="bar "><i style="width:43.0%"></i></div></td><td class='num'>26</td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>195</td><td><div class="bar "><i style="width:38.8%"></i></div></td><td class='num'>44</td></tr>
+<tr><td><code>tests/test_metadata_select.py</code> <span class="badge neutral">test</span></td><td class='num'>182</td><td><div class="bar "><i style="width:36.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>152</td><td><div class="bar "><i style="width:30.3%"></i></div></td><td class='num'>19</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>115</td><td><div class="bar "><i style="width:22.9%"></i></div></td><td class='num'>18</td></tr>
+<tr><td><code>fields/chained.py</code></td><td class='num'>105</td><td><div class="bar "><i style="width:20.9%"></i></div></td><td class='num'>14</td></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>104</td><td><div class="bar "><i style="width:20.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>tests/test_filterable_list.py</code> <span class="badge neutral">test</span></td><td class='num'>104</td><td><div class="bar "><i style="width:20.7%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>widgets/point_pool.py</code></td><td class='num'>106</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>502</td><td class='num'>7</td></tr>
+<tr><td><code>widgets/filterable.py</code></td><td class='num'>66</td><td><div class="bar warn"><i style="width:62.3%"></i></div></td><td class='num'>365</td><td class='num'>9</td></tr>
+<tr><td><code>mixins/conditional.py</code></td><td class='num'>57</td><td><div class="bar warn"><i style="width:53.8%"></i></div></td><td class='num'>318</td><td class='num'>8</td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>44</td><td><div class="bar warn"><i style="width:41.5%"></i></div></td><td class='num'>195</td><td class='num'>7</td></tr>
+<tr><td><code>widgets/formset_manager.py</code></td><td class='num'>44</td><td><div class="bar warn"><i style="width:41.5%"></i></div></td><td class='num'>332</td><td class='num'>7</td></tr>
+<tr><td><code>widgets/chained.py</code></td><td class='num'>40</td><td><div class="bar warn"><i style="width:37.7%"></i></div></td><td class='num'>263</td><td class='num'>6</td></tr>
+<tr><td><code>mixins/point_pool.py</code></td><td class='num'>32</td><td><div class="bar warn"><i style="width:30.2%"></i></div></td><td class='num'>251</td><td class='num'>7</td></tr>
+<tr><td><code>templatetags/formset_tags.py</code></td><td class='num'>28</td><td><div class="bar warn"><i style="width:26.4%"></i></div></td><td class='num'>241</td><td class='num'>5</td></tr>
+<tr><td><code>widgets/metadata_select.py</code></td><td class='num'>26</td><td><div class="bar warn"><i style="width:24.5%"></i></div></td><td class='num'>216</td><td class='num'>7</td></tr>
+<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>19</td><td><div class="bar warn"><i style="width:17.9%"></i></div></td><td class='num'>152</td><td class='num'>5</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>18</td><td><div class="bar warn"><i style="width:17.0%"></i></div></td><td class='num'>115</td><td class='num'>6</td></tr>
+<tr><td><code>fields/chained.py</code></td><td class='num'>14</td><td><div class="bar warn"><i style="width:13.2%"></i></div></td><td class='num'>105</td><td class='num'>4</td></tr>
+<tr><td><code>mixins/create_or_select.py</code></td><td class='num'>13</td><td><div class="bar warn"><i style="width:12.3%"></i></div></td><td class='num'>102</td><td class='num'>4</td></tr>
+<tr><td><code>fields/create_or_select.py</code></td><td class='num'>8</td><td><div class="bar warn"><i style="width:7.5%"></i></div></td><td class='num'>74</td><td class='num'>4</td></tr>
+<tr><td><code>tests/test_chained_select.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:7.5%"></i></div></td><td class='num'>313</td><td class='num'>5</td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:6.6%"></i></div></td><td class='num'>30</td><td class='num'>4</td></tr>
+<tr><td><code>templatetags/conditional_fields.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:6.6%"></i></div></td><td class='num'>65</td><td class='num'>2</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>4</td><td><div class="bar warn"><i style="width:3.8%"></i></div></td><td class='num'>45</td><td class='num'>6</td></tr>
+<tr><td><code>tests/test_create_or_select.py</code> <span class="badge neutral">test</span></td><td class='num'>3</td><td><div class="bar warn"><i style="width:2.8%"></i></div></td><td class='num'>226</td><td class='num'>4</td></tr>
+<tr><td><code>templatetags/filterable_list.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:1.9%"></i></div></td><td class='num'>30</td><td class='num'>4</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">6</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">32</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">6</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":294,"fanIn":0,"fanOut":3,"meta":"(repo root) \u00b7 4 files"},{"id":"fields","label":"fields","group":"fields","size":187,"fanIn":2,"fanOut":1,"meta":"fields \u00b7 3 files"},{"id":"mixins","label":"mixins","group":"mixins","size":875,"fanIn":1,"fanOut":2,"meta":"mixins \u00b7 5 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":337,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 4 files"},{"id":"tests","label":"tests","group":"tests","size":1789,"fanIn":0,"fanOut":1,"meta":"tests \u00b7 8 files"},{"id":"widgets","label":"widgets","group":"widgets","size":1847,"fanIn":5,"fanOut":0,"meta":"widgets \u00b7 7 files"}],"links":[{"source":"","target":"fields","weight":2,"imports":2,"loads":0,"kind":"import","cycle":false},{"source":"","target":"mixins","weight":4,"imports":4,"loads":0,"kind":"import","cycle":false},{"source":"","target":"widgets","weight":5,"imports":5,"loads":0,"kind":"import","cycle":false},{"source":"fields","target":"widgets","weight":2,"imports":2,"loads":0,"kind":"import","cycle":false},{"source":"mixins","target":"fields","weight":1,"imports":1,"loads":0,"kind":"import","cycle":false},{"source":"mixins","target":"widgets","weight":2,"imports":2,"loads":0,"kind":"import","cycle":false},{"source":"templatetags","target":"widgets","weight":1,"imports":1,"loads":0,"kind":"import","cycle":false},{"source":"tests","target":"widgets","weight":6,"imports":6,"loads":0,"kind":"import","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>widgets/__init__.py</code></td><td class='num'>6</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>widgets/chained.py</code></td><td class='num'>4</td><td><div class="bar "><i style="width:66.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>fields/chained.py</code></td><td class='num'>3</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/point_pool.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/metadata_select.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>mixins/conditional.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/formset_manager.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:33.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>fields/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>mixins/point_pool.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>widgets/filterable.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>mixins/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>1</td><td><div class="bar "><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>__init__.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>widgets/__init__.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:25.0%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>mixins/__init__.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:16.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:16.7%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>fields/__init__.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>fields/chained.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>fields/create_or_select.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>mixins/point_pool.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templatetags/formset_tags.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_chained_select.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_conditional_fields.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_create_or_select.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/test_filterable_list.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:8.3%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">18</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">31</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">conditional.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"mixins/conditional.py","value":318,"metric":4,"meta":"57 branches \u00b7 2 authors"},{"name":"widgets/filterable.py","value":365,"metric":2,"meta":"66 branches \u00b7 2 authors"},{"name":"templatetags/formset_tags.py","value":241,"metric":4,"meta":"28 branches \u00b7 2 authors"},{"name":"widgets/point_pool.py","value":502,"metric":1,"meta":"106 branches \u00b7 1 authors"},{"name":"mixins/chained.py","value":195,"metric":2,"meta":"44 branches \u00b7 1 authors"},{"name":"widgets/formset_manager.py","value":332,"metric":2,"meta":"44 branches \u00b7 2 authors"},{"name":"widgets/chained.py","value":263,"metric":2,"meta":"40 branches \u00b7 1 authors"},{"name":"mixins/point_pool.py","value":251,"metric":2,"meta":"32 branches \u00b7 2 authors"},{"name":"widgets/metadata_select.py","value":216,"metric":2,"meta":"26 branches \u00b7 2 authors"},{"name":"mixins/create_or_select.py","value":102,"metric":3,"meta":"13 branches \u00b7 2 authors"},{"name":"widgets/create_or_select.py","value":152,"metric":2,"meta":"19 branches \u00b7 2 authors"},{"name":"templatetags/conditional_fields.py","value":65,"metric":3,"meta":"7 branches \u00b7 2 authors"},{"name":"views.py","value":115,"metric":1,"meta":"18 branches \u00b7 1 authors"},{"name":"fields/create_or_select.py","value":74,"metric":2,"meta":"8 branches \u00b7 2 authors"},{"name":"__init__.py","value":104,"metric":8,"meta":"1 branches \u00b7 2 authors"},{"name":"utils.py","value":30,"metric":2,"meta":"7 branches \u00b7 1 authors"},{"name":"fields/chained.py","value":105,"metric":1,"meta":"14 branches \u00b7 1 authors"},{"name":"templatetags/filterable_list.py","value":30,"metric":3,"meta":"2 branches \u00b7 2 authors"},{"name":"widgets/__init__.py","value":17,"metric":3,"meta":"1 branches \u00b7 1 authors"},{"name":"apps.py","value":45,"metric":1,"meta":"4 branches \u00b7 1 authors"},{"name":"mixins/__init__.py","value":9,"metric":2,"meta":"1 branches \u00b7 1 authors"},{"name":"fields/__init__.py","value":8,"metric":1,"meta":"1 branches \u00b7 1 authors"},{"name":"templatetags/__init__.py","value":1,"metric":1,"meta":"0 branches \u00b7 1 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":8}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>mixins/conditional.py</code></td><td class='num'>4</td><td class='num'>57</td><td class='num'>318</td><td class='num'>2</td><td class='num' data-sort='232'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>widgets/filterable.py</code></td><td class='num'>2</td><td class='num'>66</td><td class='num'>365</td><td class='num'>2</td><td class='num' data-sort='134'><div class="bar bad"><i style="width:57.8%"></i></div></td></tr>
+<tr><td><code>templatetags/formset_tags.py</code></td><td class='num'>4</td><td class='num'>28</td><td class='num'>241</td><td class='num'>2</td><td class='num' data-sort='116'><div class="bar bad"><i style="width:50.0%"></i></div></td></tr>
+<tr><td><code>widgets/point_pool.py</code></td><td class='num'>1</td><td class='num'>106</td><td class='num'>502</td><td class='num'>1</td><td class='num' data-sort='107'><div class="bar bad"><i style="width:46.1%"></i></div></td></tr>
+<tr><td><code>mixins/chained.py</code></td><td class='num'>2</td><td class='num'>44</td><td class='num'>195</td><td class='num'>1</td><td class='num' data-sort='90'><div class="bar bad"><i style="width:38.8%"></i></div></td></tr>
+<tr><td><code>widgets/formset_manager.py</code></td><td class='num'>2</td><td class='num'>44</td><td class='num'>332</td><td class='num'>2</td><td class='num' data-sort='90'><div class="bar bad"><i style="width:38.8%"></i></div></td></tr>
+<tr><td><code>widgets/chained.py</code></td><td class='num'>2</td><td class='num'>40</td><td class='num'>263</td><td class='num'>1</td><td class='num' data-sort='82'><div class="bar bad"><i style="width:35.3%"></i></div></td></tr>
+<tr><td><code>mixins/point_pool.py</code></td><td class='num'>2</td><td class='num'>32</td><td class='num'>251</td><td class='num'>2</td><td class='num' data-sort='66'><div class="bar bad"><i style="width:28.4%"></i></div></td></tr>
+<tr><td><code>widgets/metadata_select.py</code></td><td class='num'>2</td><td class='num'>26</td><td class='num'>216</td><td class='num'>2</td><td class='num' data-sort='54'><div class="bar bad"><i style="width:23.3%"></i></div></td></tr>
+<tr><td><code>mixins/create_or_select.py</code></td><td class='num'>3</td><td class='num'>13</td><td class='num'>102</td><td class='num'>2</td><td class='num' data-sort='42'><div class="bar bad"><i style="width:18.1%"></i></div></td></tr>
+<tr><td><code>widgets/create_or_select.py</code></td><td class='num'>2</td><td class='num'>19</td><td class='num'>152</td><td class='num'>2</td><td class='num' data-sort='40'><div class="bar bad"><i style="width:17.2%"></i></div></td></tr>
+<tr><td><code>templatetags/conditional_fields.py</code></td><td class='num'>3</td><td class='num'>7</td><td class='num'>65</td><td class='num'>2</td><td class='num' data-sort='24'><div class="bar bad"><i style="width:10.3%"></i></div></td></tr>
+<tr><td><code>views.py</code></td><td class='num'>1</td><td class='num'>18</td><td class='num'>115</td><td class='num'>1</td><td class='num' data-sort='19'><div class="bar bad"><i style="width:8.2%"></i></div></td></tr>
+<tr><td><code>fields/create_or_select.py</code></td><td class='num'>2</td><td class='num'>8</td><td class='num'>74</td><td class='num'>2</td><td class='num' data-sort='18'><div class="bar bad"><i style="width:7.8%"></i></div></td></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>8</td><td class='num'>1</td><td class='num'>104</td><td class='num'>2</td><td class='num' data-sort='16'><div class="bar bad"><i style="width:6.9%"></i></div></td></tr>
+<tr><td><code>utils.py</code></td><td class='num'>2</td><td class='num'>7</td><td class='num'>30</td><td class='num'>1</td><td class='num' data-sort='16'><div class="bar bad"><i style="width:6.9%"></i></div></td></tr>
+<tr><td><code>fields/chained.py</code></td><td class='num'>1</td><td class='num'>14</td><td class='num'>105</td><td class='num'>1</td><td class='num' data-sort='15'><div class="bar bad"><i style="width:6.5%"></i></div></td></tr>
+<tr><td><code>templatetags/filterable_list.py</code></td><td class='num'>3</td><td class='num'>2</td><td class='num'>30</td><td class='num'>2</td><td class='num' data-sort='9'><div class="bar bad"><i style="width:3.9%"></i></div></td></tr>
+<tr><td><code>widgets/__init__.py</code></td><td class='num'>3</td><td class='num'>1</td><td class='num'>17</td><td class='num'>1</td><td class='num' data-sort='6'><div class="bar bad"><i style="width:2.6%"></i></div></td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>1</td><td class='num'>4</td><td class='num'>45</td><td class='num'>1</td><td class='num' data-sort='5'><div class="bar bad"><i style="width:2.2%"></i></div></td></tr>
+<tr><td><code>mixins/__init__.py</code></td><td class='num'>2</td><td class='num'>1</td><td class='num'>9</td><td class='num'>1</td><td class='num' data-sort='4'><div class="bar bad"><i style="width:1.7%"></i></div></td></tr>
+<tr><td><code>fields/__init__.py</code></td><td class='num'>1</td><td class='num'>1</td><td class='num'>8</td><td class='num'>1</td><td class='num' data-sort='2'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>templatetags/__init__.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>1</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<p class="dim">Four flows chosen for where a mistake would be hardest to notice: the cascading-select round trip (the package's largest, most-used subsystem), the point-pool distribution check (implemented twice, client and server), the create-or-select save path (skips model validation on purpose), and the startup URL registration (runs once per process, fails silently).</p>
+
+<h2>1. Cascading select: change &rarr; children update</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+    participant Tpl as Django template
+    participant Mixin as ChainedSelectMixin
+    participant Widget as ChainedSelect.render()
+    participant JS as ChainedSelectManager (browser)
+    participant Ajax as auto_chained_ajax_view
+
+    Tpl->>Mixin: form.__init__()
+    Mixin->>Mixin: _build_chains() follows parent_field links
+    Mixin->>Widget: attach chain_name, position, choices_tree
+    Tpl->>Widget: render field
+    Widget-->>Tpl: select HTML + embedded JS (once) + JSON choice tree
+    JS->>JS: registerSelect() on DOMContentLoaded
+    Note over JS: user changes parent select
+    JS->>JS: handleChange() looks up next child in chain.order
+    alt embedded tree has the key
+        JS->>JS: setOptions() from choiceTrees[chainName][key]
+    else field needs AJAX (choices_callback, no choices_map)
+        JS->>Ajax: fetch ?form=...&field=...&parent_value=...
+        Ajax->>Ajax: importlib.import_module(form_path), getattr(class_name)
+        Ajax->>Ajax: instantiate form, call field.choices_callback(parent_value)
+        Ajax-->>JS: JSON {choices:[...]}
+        JS->>JS: setOptions(), re-enable select
+    end
+    Tpl->>Mixin: form submitted
+    Mixin->>Mixin: clean() re-validates value against get_choices_for_parent()
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li><code>auto_chained_ajax_view</code> dynamically imports whatever dotted path arrives in the <code>form</code> GET parameter and instantiates it (<code>widgets/views.py:27-38</code>) &mdash; there is no allowlist of which form classes may be probed this way, only that the resolved field must expose <code>choices_callback</code>. Any importable form in the project with a chained field is reachable through this single, always-registered, unauthenticated endpoint.</li>
+<li><code>ChainedSelectMixin._build_chains()</code> assumes a strict linear chain: it finds "the child" of the current field by taking the first match in a dict iteration and stops (<code>widgets/mixins/chained.py:86-97</code>). A form with two independent children of the same parent silently collapses to a chain of one, with no error raised.</li>
+<li>The child-lookup fallback when nothing matches (<code>tree[key] || []</code>, <code>widgets/widgets/chained.py:114</code>) fails open to an empty option list rather than surfacing that the parent value had no configured children.</li>
+</ul>
+
+<h2>2. Point-pool distribution: allocate &rarr; validate</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+    participant Mixin as PointPoolMixin
+    participant Widget as PointPoolInput/Select.render()
+    participant JS as PointPoolManager (browser)
+    participant Clean as PointPoolMixin.clean()
+
+    Mixin->>Mixin: _setup_pool_widgets() wraps each pool field
+    Widget-->>Mixin: root widget embeds JSON pool_config once
+    Note over JS: user edits any pool field
+    JS->>JS: getCurrentGroupTotals(), isValidState() searches target permutations
+    JS->>JS: updateInputConstraints() disables/limits out-of-range options client-side
+    Note over Clean: form submitted regardless of client state
+    Clean->>Clean: _validate_distribution_pool(): sorted(totals) == sorted(targets)?
+    alt mismatch
+        Clean-->>Mixin: add_error(None, "Distribution must be ...")
+    end
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li>Client and server implement related but not identical checks: the browser's <code>isValidState()</code>/<code>getPermutations()</code> (<code>widgets/widgets/point_pool.py:146-181</code>) answers "is this partial, in-progress allocation still achievable," while the server's <code>_validate_distribution_pool</code> (<code>widgets/mixins/point_pool.py:176-219</code>) answers only "does the final, complete allocation exactly match a permutation of targets." They were authored independently and solve different sub-problems &mdash; a change to one gives no guarantee the other still agrees on edge cases (e.g. duplicate target values).</li>
+<li><code>PointPoolSelect.render()</code> checks <code>PointPoolInput._js_rendered</code> rather than its own class's flag (<code>widgets/widgets/point_pool.py:592</code>), while separately declaring its own unused <code>_js_rendered = False</code> at <code>widgets/widgets/point_pool.py:548</code>. The two widget classes emit the same JS bundle, so this happens to work, but only because someone remembered to cross-reference the sibling class by hand.</li>
+<li>This exact mechanism (distribution-mode point pools for physical/social/mental attributes) is the package's own motivating example (<code>widgets/mixins/point_pool.py:38-51</code>), yet the actual attribute-allocation screen used in production does not call this code at all &mdash; see <code>06-boundaries</code>.</li>
+</ul>
+
+<h2>3. Create-or-select: toggle &rarr; save</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+    participant JS as CreateOrSelectManager (browser)
+    participant Form as CreateOrSelectMixin
+    participant Model as ModelForm._post_clean()
+
+    Note over JS: user checks/unchecks the toggle
+    JS->>JS: updateVisibility() shows/hides select vs create containers (CSS only)
+    Note over Form: form submitted
+    Form->>Form: clean(): is_creating? else require select_field
+    Form->>Model: _post_clean()
+    alt not creating and selection present
+        Model->>Model: self.instance = selection; return (skip super()._post_clean())
+    else creating
+        Model->>Model: super()._post_clean() runs full model validation
+    end
+    Form->>Form: save(): return selected object, or super().save()
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li>In select mode, <code>_post_clean()</code> deliberately skips <code>Model.full_clean()</code> entirely and just assigns <code>self.instance = selection</code> (<code>widgets/mixins/create_or_select.py:74-92</code>) &mdash; documented as intentional, since the selected object is already valid, but it also means any <code>clean_&lt;field&gt;</code> methods defined further down the same ModelForm never run against the selected object's data.</li>
+<li>Client-side visibility toggling is pure CSS (<code>d-none</code> class) with no server-side enforcement that hidden fields were actually left blank &mdash; a tampered POST could submit both a selection and creation-mode field values simultaneously; <code>clean()</code> only checks that <em>at least</em> a selection or create-mode is present, not that the other mode's fields are empty.</li>
+</ul>
+
+<h2>4. Process startup: URL auto-registration</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+    participant Django as Django startup
+    participant App as WidgetsConfig.ready()
+    participant Root as ROOT_URLCONF module
+
+    Django->>App: ready()
+    App->>Root: importlib.import_module(settings.ROOT_URLCONF)
+    App->>Root: inspect existing urlpatterns names
+    alt "__chained_select_ajax__" not already present
+        App->>Root: urlpatterns.insert(0, path(...))
+    end
+    opt any exception during the above
+        App->>App: warnings.warn(RuntimeWarning), continue startup
+    end
+</pre></div></div>
+<p><strong>Seams:</strong></p>
+<ul>
+<li>The whole block is one bare <code>except Exception</code> (<code>widgets/apps.py:48-57</code>) &mdash; an <code>AttributeError</code> from a URLconf module with no <code>urlpatterns</code> attribute, a broken <code>ROOT_URLCONF</code> setting, and a genuine bug in this code all produce the identical outcome: a warning and an app that silently has no AJAX endpoint. Nothing downstream (e.g. the chained-select JS's <code>fetch()</code> call) is told the route never registered; it will fail at request time with a 404 instead.</li>
+<li>Mutating <code>urlpatterns</code> in place at import time is order-dependent on which app's <code>ready()</code> runs first relative to when the URLconf module was first imported and cached.</li>
+</ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Concern ownership</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Concern</th><th>Owning module(s)</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Choice normalization (tuples/querysets/model instances &rarr; dicts)</td><td><code>widgets/utils.py:8-35</code> (<code>normalize_choices</code>), but <code>widgets/mixins/chained.py:198-208</code> (<code>_choice_to_dict</code>) independently re-implements a narrower version of the same conversion for the choice tree</td><td><span class="badge warn">2 owners</span></td></tr>
+<tr><td>"Render this widget's JS bundle once per request"</td><td>Six independent implementations: <code>widgets/widgets/chained.py:242,299-301</code>, <code>widgets/widgets/create_or_select.py:132,173-175</code>, <code>widgets/widgets/metadata_select.py:165,239-241</code>, <code>widgets/widgets/point_pool.py:473,515-517</code> and <code>:548,592</code> (second, cross-referencing copy), <code>widgets/mixins/conditional.py:284,326-328</code>, <code>widgets/widgets/formset_manager.py:366-386</code></td><td><span class="badge bad">smeared</span></td></tr>
+<tr><td>Pool/chain/rule validation on submit</td><td>Each mixin owns <code>clean()</code> for its own concern: <code>mixins/point_pool.py:118-133</code>, <code>mixins/chained.py:210-248</code>, <code>mixins/create_or_select.py:94-110</code></td><td><span class="badge good">single owner (per concern)</span></td></tr>
+<tr><td>Client-side "is this input still valid" logic</td><td>Duplicated per subsystem inside each embedded JS string &mdash; <code>widgets/widgets/point_pool.py:19-461</code>, <code>widgets/widgets/chained.py:14-230</code>, <code>widgets/widgets/filterable.py:58-416</code> &mdash; by construction (no shared JS module system exists), so this is a structural constraint rather than an ownership failure</td><td><span class="badge neutral">by design</span></td></tr>
+<tr><td>Root URLconf registration</td><td><code>widgets/apps.py:19-57</code> &mdash; single owner, but the owner reaches outside its own app into project-level configuration</td><td><span class="badge warn">boundary crossing</span></td></tr>
+<tr><td>Attribute-distribution UI (physical/social/mental point-buy)</td><td><em>Claimed</em> owner: <code>widgets/mixins/point_pool.py</code> + <code>widgets/widgets/point_pool.py</code> (this is the package's own worked example). <em>Actual</em> owner in production: <code>characters/templates/characters/core/attribute_block/form.html:47-282</code>, a hand-rolled duplicate</td><td><span class="badge bad">smeared / fictional ownership</span></td></tr>
+<tr><td>Filterable item lists</td><td><em>Claimed</em> owner: <code>widgets/widgets/filterable.py</code> (used by 5 Mage list templates). <em>Actual</em> parallel owner: hand-rolled <code>filterGifts()</code>/<code>filterThorns()</code> in <code>characters/templates/characters/werewolf/gift/list.html:108-161</code> and <code>characters/templates/characters/wraith/thorn/list.html:103-153</code></td><td><span class="badge warn">2 owners</span></td></tr>
+</tbody></table></div>
+
+<h2>Data ownership</h2>
+<p class="dim">The package holds no persistent data of its own &mdash; no models, no cache, no session state. Its only "shared structure" is the per-request class-level <code>_js_rendered</code> flags discussed above, which are mutated by every instance of a given widget class within a process.</p>
+<div class="callout warn"><strong>Multiple writers to one flag, no synchronization.</strong> Every <code>ChainedSelect</code> instance rendered in a single request writes to the same class attribute <code>ChainedSelect._js_rendered</code> (<code>widgets/widgets/chained.py:242</code>); the same is true for the other five flags listed above. Under a threaded server this attribute is also shared <em>across concurrently-executing requests</em> in the same process &mdash; see the concurrency section of <code>07-invariants</code>.</div>
+
+<h2>Boundary violations</h2>
+<ul>
+<li><strong>App reaches into project config.</strong> <code>widgets/apps.py:26-47</code> imports <code>settings.ROOT_URLCONF</code> and mutates its <code>urlpatterns</code> list directly, rather than the project wiring the route itself in its own root urlconf. This is a reusable-app convenience trading isolation for zero-setup &mdash; worth knowing when debugging URL resolution order.</li>
+<li><strong>Production template bypasses the widget it was built to replace.</strong> <code>characters/forms/core/attribute_form.py:1-6</code> states in its own docstring that <code>DistributionPoolMixin</code> "eliminates the need for custom JavaScript in the template," yet <code>characters/templates/characters/core/attribute_block/form.html</code> ships ~230 lines of hand-written JS (lines 47-282) implementing the identical primary/secondary/tertiary permutation logic already in <code>widgets/mixins/point_pool.py:38-51</code> and <code>widgets/widgets/point_pool.py:146-181</code>. This template is <code>{% include %}</code>d by 10 chargen templates across Changeling, Mage, Vampire, and core human chargen &mdash; verified via <code>grep</code> across <code>characters/templates/</code>.</li>
+<li><strong>Two gameline list pages bypass FilterableList.</strong> <code>characters/templates/characters/mage/effect/list.html</code> and four other Mage list templates use <code>{% load filterable_list %}</code> as intended, but <code>characters/templates/characters/werewolf/gift/list.html</code> and <code>characters/templates/characters/wraith/thorn/list.html</code> implement their own near-identical client-side filtering instead.</li>
+</ul>
+
+<h2>Dependency graph &mdash; no cycles</h2>
+<p>The automated dependency scan found zero import cycles at either module or file granularity (<code>module_cycles: []</code>, <code>file_cycles: []</code> in <code>analyze_deps</code>'s summary), and zero resource/template-load edges (the package loads no external templates or prompts &mdash; all rendered content is Python-string JS embedded directly in the widget modules). The 6-module split (<code>widgets</code>, <code>tests</code>, <code>mixins</code>, <code>templatetags</code>, repo root, <code>fields</code>) matches the real package layout with no structural surprises.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>Invariants</h2>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>A chained-select chain is a strict linear sequence: each field has at most one child</td><td>Not enforced &mdash; <code>_build_chains()</code> picks the first matching child in dict-iteration order and stops (<code>widgets/mixins/chained.py:86-97</code>)</td><td><span class="badge bad">assumed, unenforced</span></td></tr>
+<tr><td>A given widget class's JS bundle is emitted at most once per HTTP response</td><td>Per-class boolean flag + <code>request_finished</code> reset, in each of 6 files (see <code>06-boundaries</code>)</td><td><span class="badge warn">enforced single-threaded only</span></td></tr>
+<tr><td>Point-pool distribution totals match some permutation of configured targets</td><td>Server: <code>widgets/mixins/point_pool.py:176-219</code> (exact match on submit). Client: <code>widgets/widgets/point_pool.py:146-181</code> (partial-progress check, different algorithm)</td><td><span class="badge warn">enforced, but by two independently-authored implementations</span></td></tr>
+<tr><td>Selecting an existing object in create-or-select mode never runs model validation on it</td><td><code>widgets/mixins/create_or_select.py:74-92</code> &mdash; explicit, documented, intentional</td><td><span class="badge good">enforced</span></td></tr>
+<tr><td>Hidden create-mode fields are never submitted alongside a selection</td><td>Not enforced server-side &mdash; only CSS visibility client-side (<code>widgets/widgets/create_or_select.py:61-73</code>); <code>clean()</code> checks presence of a selection or create-flag, not absence of the other mode's data</td><td><span class="badge warn">partially enforced</span></td></tr>
+<tr><td>The auto-registered AJAX endpoint only serves choices for fields that opted in via <code>choices_callback</code></td><td><code>widgets/views.py:44-53</code> checks the field has a callback, but the <code>form</code> path itself is fully attacker-chosen and dynamically imported first (<code>widgets/views.py:36-38</code>)</td><td><span class="badge bad">enforced too late</span></td></tr>
+</tbody></table></div>
+
+<h2>Failure handling</h2>
+<ul>
+<li><code>widgets/apps.py:48-57</code> wraps the entire URL auto-registration in a bare <code>except Exception</code> that only emits a <code>RuntimeWarning</code> and continues. A misconfigured <code>ROOT_URLCONF</code>, a broken import, and a genuine bug in the registration code are all indistinguishable from the outside &mdash; the app starts normally with a silently missing route.</li>
+<li><code>widgets/views.py:63-66</code>: <code>auto_chained_ajax_view</code> distinguishes <code>(ValueError, ImportError, AttributeError)</code> (400, "could not load form") from any other exception (500, raw <code>str(e)</code> in the response body) &mdash; the 500 path returns internal exception text directly to the client.</li>
+<li>Browser-side failures (bad JSON in an embedded choice tree, a missing container for create-or-select) are <code>console.error</code>/<code>console.warn</code> only &mdash; no user-visible fallback, which is a reasonable choice for a form-widget library but means a template author who miswires a data attribute gets no signal outside devtools.</li>
+</ul>
+
+<h2>Concurrency</h2>
+<div class="callout bad"><strong>The "render once per request" flags are shared, unsynchronized, process-wide class attributes, not request-scoped state.</strong> Django serves concurrent requests within one process under any threaded deployment (the dev server's default threading, <code>gunicorn --threads</code>, mod_wsgi threaded mode, ASGI with sync views run in a thread pool). Because <code>ChainedSelect._js_rendered</code> and its five siblings are plain class attributes with no lock and no request-local storage, two concurrent requests rendering the same widget class can interleave: request A sets the flag and starts writing its response; request B checks the (now-true) flag and skips emitting the JS entirely, even though B's own response never contained it. The <code>request_finished</code> signal resets the flag once <em>a</em> request finishes, not necessarily the one that set it. The result is an intermittent, load-dependent bug: a page renders with its interactive widget completely inert, no error anywhere.</div>
+<p>Outside this, the package is synchronous and single-purpose per request &mdash; no threads, no async views, no locks are used anywhere in the 31 files.</p>
+
+<h2>Risk ranking</h2>
+<div class="callout bad"><strong>1. Cross-request JS-injection race under threaded deployment.</strong> All six <code>_js_rendered</code>-style flags are process-global mutable class state with no synchronization (representative: <code>widgets/widgets/chained.py:242,299-301</code>). Likelihood scales directly with concurrent traffic to any page using these widgets; blast radius is "the form silently doesn't work" with no exception raised anywhere &mdash; the hardest kind of bug to reproduce or diagnose.</div>
+<div class="callout bad"><strong>2. Unauthenticated arbitrary form import via the AJAX endpoint.</strong> <code>auto_chained_ajax_view</code> (<code>widgets/views.py:27-38</code>) accepts a dotted class path from a GET parameter and calls <code>importlib.import_module</code> + <code>getattr</code> + instantiation on it before checking anything about the target. The endpoint is always registered (via <code>widgets/apps.py</code>) and requires no login. Worth a dedicated security look at what forms in this project are reachable this way and what their <code>__init__</code> does.</div>
+<div class="callout warn"><strong>3. Chain-builder silently drops branching relationships.</strong> <code>ChainedSelectMixin._build_chains()</code> collapses a parent with two children into a single linked chain with no error (<code>widgets/mixins/chained.py:86-97</code>). Any future form with two independent dropdowns depending on the same parent will silently lose one of them from the chain, and nothing will fail loudly &mdash; it will just not update.</div>
+<div class="callout warn"><strong>4. The package's own flagship examples are duplicated by hand in production, so fixes to the shared widget won't propagate.</strong> A bug fix or rule change to <code>widgets/mixins/point_pool.py</code>'s distribution logic will not reach the 10 chargen templates that include <code>attribute_block/form.html</code>'s independent ~230-line copy; a change to <code>widgets/widgets/filterable.py</code> won't reach <code>werewolf/gift/list.html</code> or <code>wraith/thorn/list.html</code>. This is a live maintenance trap, not a hypothetical one &mdash; both duplicates were confirmed by direct inspection, not inferred.</div>
+<div class="callout warn"><strong>5. ~5% of the package (268 lines) is unreferenced.</strong> <code>OptionMetadataSelect</code>/<code>OptionMetadataSelectMultiple</code> (<code>widgets/widgets/metadata_select.py</code>) are exported from the public API but have zero callers anywhere in the repo outside their own test file (confirmed via repo-wide grep) &mdash; not a runtime risk, but a maintenance cost and a sign the package was built ahead of the domain's actual pull on it.</div>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<div class="tbl-wrap"><table>
+<thead><tr><th>Domain term</th><th>Code name(s)</th><th>Files</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>Cascading dropdown chain (e.g. Tradition &rarr; Faction &rarr; Subfaction)</td><td><code>ChainedChoiceField</code>, <code>ChainedSelectMixin</code>, <code>ChainedSelect</code>, "chain"</td><td><code>fields/chained.py</code>, <code>mixins/chained.py</code>, <code>widgets/chained.py</code></td><td>Consistent naming end to end &mdash; no drift.</td></tr>
+<tr><td>WoD attribute point-buy priority rule (primary/secondary/tertiary)</td><td>"distribution mode", <code>DistributionPoolMixin</code>, <code>distribution_targets</code></td><td><code>mixins/point_pool.py</code></td><td><span class="badge warn">two vocabularies for one rule</span> &mdash; the package calls it "distribution"; the actual production implementation for this exact rule (<code>characters/templates/characters/core/attribute_block/form.html</code>) uses its own independent names (<code>PRIMARY</code>/<code>SECONDARY</code>/<code>TERTIARY</code> JS constants, <code>CATEGORIES</code>) and never references the widget's terms at all.</td></tr>
+<tr><td>Budget-constrained points (e.g. 7 Background dots)</td><td>"simple mode", <code>SimplePoolMixin</code>, <code>total_budget</code></td><td><code>mixins/point_pool.py</code></td><td>"Simple" names the code path, not the domain concept; mildly opaque to a reader who doesn't already know the two-mode split.</td></tr>
+<tr><td>"Pick an existing catalog item or homebrew one" (Effects, Artifacts, Numina)</td><td><code>CreateOrSelectMixin</code>, <code>CreateOrSelectField</code>, <code>select_or_create</code></td><td><code>mixins/create_or_select.py</code>, <code>fields/create_or_select.py</code></td><td>Clean, matches domain usage in <code>characters/forms/mage/effect.py</code> and <code>items/forms/mage/sorcerer_artifact.py</code>.</td></tr>
+<tr><td>Freebie-point spending category/example/value cascade</td><td><code>conditional_fields</code>, <code>ConditionalFieldsMixin</code></td><td><code>mixins/conditional.py</code></td><td>Generic infrastructure name reused for a specific WoD spending rule (<code>characters/forms/core/chained_freebies.py</code>) &mdash; acceptable since the mixin genuinely is general-purpose.</td></tr>
+<tr><td>Per-option data (e.g. "is this Background poolable")</td><td><strong>Two different code names for the same concept:</strong> <code>metadata</code> as a select-option <code>data-*</code> attribute (<code>OptionMetadataSelect</code>, <code>widgets/widgets/metadata_select.py</code>) vs. <code>metadata</code> as a choice-tuple's 3rd element consumed by <code>_choice_to_dict</code>/embedded choice trees (<code>widgets/mixins/chained.py:198-208</code>)</td><td><code>widgets/widgets/metadata_select.py</code>, <code>widgets/mixins/chained.py</code></td><td><span class="badge warn">same word, two mechanisms</span> &mdash; and the production code that needs this concept (<code>characters/forms/core/chained_freebies.py:40</code>, <code>metadata_truthy</code> against <code>ChainedSelect</code>-populated options) uses the second mechanism, not the widget actually named for the concept.</td></tr>
+</tbody></table></div>
+
+<h2>Misleading names</h2>
+<p class="dim">Outside the "metadata" drift above, naming is direct and consistent with the domain &mdash; class and field names describe what they do (<code>ChainedChoiceField</code>, <code>PointPoolMixin</code>, <code>CreateOrSelectField</code>) rather than generic UI abstractions. One small inconsistency: <code>widgets/widgets/point_pool.py:548</code> declares <code>PointPoolSelect._js_rendered</code> as if it were the class's own render-tracking flag, but the class's actual check at <code>widgets/widgets/point_pool.py:592</code> reads <code>PointPoolInput._js_rendered</code> instead &mdash; the declared attribute is never read by its own class, which will mislead anyone searching for where <code>PointPoolSelect</code> tracks its render state.</p>
+
+</section></main>
+<footer class="doc">Generated by code-visualization.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

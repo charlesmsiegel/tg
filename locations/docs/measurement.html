@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>locations — Measurement</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">MEASUREMENT AUDIT</div>
+  <h1 class="doc-title">locations — Measurement</h1>
+  <p class="doc-sub">Can the numbers locations reports be believed?</p>
+  <div class="doc-meta">generated 2026-08-09 · 0 measurable thing(s)</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/measurement.html">⌂ Overall Measurement</a><span class="co-sep">/</span><span class="co-here">locations</span></div><div class="co-row"><span class="co-lbl">locations</span><a href="summary.html">Summary</a><a href="codemap.html">Code Map</a><a href="health.html">Health</a><a href="#" aria-current="page">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Measurement</span><a href="../../accounts/docs/measurement.html">accounts</a><a href="../../chained_select/docs/measurement.html">chained_select</a><a href="../../characters/docs/measurement.html">characters</a><a href="../../core/docs/measurement.html">core</a><a href="../../game/docs/measurement.html">game</a><a href="../../items/docs/measurement.html">items</a><a href="../../widgets/docs/measurement.html">widgets</a><a href="../../tg/docs/measurement.html">tg</a></div></nav><!-- /code-overview:nav -->
+<!--DOC_NAV-->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="tab-score" aria-selected="true" aria-controls="tab-score">Score</button>
+<button role="tab" data-tab="tab-inventory" aria-selected="false" aria-controls="tab-inventory">Inventory</button>
+<button role="tab" data-tab="tab-findings" aria-selected="false" aria-controls="tab-findings">Findings</button>
+<button role="tab" data-tab="tab-unmeasurable" aria-selected="false" aria-controls="tab-unmeasurable">Unmeasurable</button></nav>
+<main><section class="panel active" id="tab-score" role="tabpanel">
+<section class="gradecard g-none"><div><div class="letter">—</div><div class="score">— / 100</div></div><div class="what"><h2>Measurement coverage</h2><p class="dim">Importance-weighted measured things over measurable things. It says how much of what matters is actually measured — not whether the code is correct.</p></div></section><div class="callout warn"><strong>No measurement content here.</strong> Nothing in this unit produces a quality, accuracy or score number, so there is nothing to grade. That is an honest null, not a pass.</div><div class="callout warn">No written summary was supplied. The prose that says what this unit measures and why is the one part no script can produce, and this page is weaker without it.</div><div class="kpis"><div class="kpi accent"><div class="n">0</div><div class="l">measurable things</div></div><div class="kpi"><div class="n">0.00</div><div class="l">weight measured</div></div><div class="kpi"><div class="n">0</div><div class="l">weight total</div></div></div><h3>By importance</h3><div class="tbl-wrap"><table><thead><tr><th>Importance</th><th class="num">Things</th><th class="num">Weight</th><th class="num">Measured</th><th class="num">Share</th></tr></thead><tbody><tr><td>gates a ship decision</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr><tr><td>informs a decision</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr><tr><td>informational</td><td class="num">0</td><td class="num">0</td><td class="num">0.00</td><td class="num">—</td></tr></tbody></table></div><h3>Not audited (whole repository)</h3><p class="dim">A silent gap reads as a clean bill of health, so it is listed instead. This list covers the whole repository, not just this unit: these are things the audit never reached anywhere.</p><ul><li>no evaluation, scoring, or accuracy-with-ground-truth system is defined in this package. find_metrics.py&#x27;s textual candidates here are Django model/form fields and dict lookups used to render World of Darkness character sheets (e.g. attribute/ability ratings, resonance totals, gameline/choice maps) — domain data the app stores and displays, not measurements of the system&#x27;s own quality that this audit&#x27;s rubric covers. See core/docs/measurement.html for this repository&#x27;s one genuine measurement subsystem (the monitor_validation health-score command).</li></ul>
+
+</section>
+<section class="panel" id="tab-inventory" role="tabpanel">
+<p class="dim">Nothing measurable was inventoried in this unit.</p>
+
+</section>
+<section class="panel" id="tab-findings" role="tabpanel">
+<p class="dim">No confirmed findings against the measurement itself. That is not the same as the numbers being right — see the Unmeasurable tab for what nothing here could check.</p>
+
+</section>
+<section class="panel" id="tab-unmeasurable" role="tabpanel">
+<p class="dim">Nothing was found that today's data structurally cannot measure.</p>
+
+</section>
+<script type="application/json" id="measurement-meta">{"schema":"measurement/1","scope":"package","package":"locations","generated":"2026-08-09","commit":"","score":null,"grade":"\u2014","weight_total":0.0,"weight_measured":0.0,"by_importance":{"3":{"total":0.0,"measured":0.0,"share":null,"rows":0},"2":{"total":0.0,"measured":0.0,"share":null,"rows":0},"1":{"total":0.0,"measured":0.0,"share":null,"rows":0}},"rows":[],"findings":[],"not_audited":["no evaluation, scoring, or accuracy-with-ground-truth system is defined in this package. find_metrics.py's textual candidates here are Django model/form fields and dict lookups used to render World of Darkness character sheets (e.g. attribute/ability ratings, resonance totals, gameline/choice maps) \u2014 domain data the app stores and displays, not measurements of the system's own quality that this audit's rubric covers. See core/docs/measurement.html for this repository's one genuine measurement subsystem (the monitor_validation health-score command)."],"rows_out_of_scope":0}</script></main>
+<footer class="doc">Generated by science-investigation. The score is measurement coverage, not code quality: it says how much of what matters is measured, never whether the code is correct.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

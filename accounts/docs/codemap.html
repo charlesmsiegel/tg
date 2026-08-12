@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>accounts — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">accounts — Codebase Atlas</h1>
+  <p class="doc-sub">User profiles and Storyteller permission/approval logic</p>
+  <div class="doc-meta">generated 2026-08-09 · d6933760 · 23 files, 3518 LOC (Python)</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">accounts</span></div><div class="co-row"><span class="co-lbl">accounts</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../chained_select/docs/codemap.html">chained_select</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../locations/docs/codemap.html">locations</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>What this is</h2>
+<p><code>accounts</code> is the identity and cross-cutting-query layer of a Django 5.1 World of Darkness app: a one-to-one <code>Profile</code> extending <code>django.contrib.auth.User</code> (<code>accounts/models.py:16</code>), plus the login/signup views and forms that sit in front of it. Its distinguishing feature isn't authentication (that's mostly stock Django) — it's that <code>Profile</code> is the aggregation point every other app's "things I need to look at" queries funnel through: characters, items, locations, XP requests, journals and rotes awaiting storyteller approval all surface as <code>Profile</code> methods (<code>accounts/models.py:187-292</code>) rather than living in those apps' own querysets. The package owns almost no domain data of its own (nine model fields, mostly UI preferences) and almost no mutation logic (approval writes live in <code>core/services/approval.py</code>); it is thin glue with a wide read surface.</p>
+</div>
+
+<div class="grid cols-2">
+<div class="card">
+<h3>Entry points</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Route</th><th>View</th><th>Kicks off</th></tr></thead>
+<tbody>
+<tr><td><code>signup/</code></td><td><code>SignUp</code> <code>accounts/views.py:27</code></td><td>Creates <code>User</code>; <code>Profile</code> auto-created via signal</td></tr>
+<tr><td><code>login/</code></td><td><code>CustomLoginView</code> <code>accounts/views.py:293</code></td><td>Stock Django auth; redirects to the user's own profile</td></tr>
+<tr><td><code>profile/&lt;pk&gt;/</code></td><td><code>ProfileView</code> <code>accounts/views.py:194</code></td><td>Dashboard: approval queues, XP forms, notification-adjacent data</td></tr>
+<tr><td><code>profile/update/&lt;pk&gt;/</code></td><td><code>ProfileUpdateView</code> <code>accounts/views.py:263</code></td><td>Edit theme/heading/discord/lines/veils preferences</td></tr>
+<tr><td><code>approve/&lt;object_type&gt;/&lt;pk&gt;/</code></td><td><code>ObjectApprovalView</code> <code>accounts/views.py:77</code></td><td>Delegates the actual write to <code>ApprovalService.approve_object</code></td></tr>
+<tr><td><code>approve-image/&lt;object_type&gt;/&lt;pk&gt;/</code></td><td><code>ImageApprovalView</code> <code>accounts/views.py:94</code></td><td>Delegates to <code>ApprovalService.approve_image</code></td></tr>
+<tr><td><code>character/&lt;pk&gt;/award-freebies/</code></td><td><code>FreebieAwardView</code> <code>accounts/views.py:111</code></td><td>ST awards backstory freebie points to a character</td></tr>
+<tr><td><code>weekly-xp/&lt;week&gt;/&lt;character&gt;/request|approve/</code></td><td><code>WeeklyXPRequestView</code> / <code>WeeklyXPApprovalView</code> <code>accounts/views.py:128,148</code></td><td>Player submits, ST approves, weekly XP</td></tr>
+<tr><td><code>scene/&lt;pk&gt;/award-xp|mark-read/</code></td><td><code>SceneXPAwardView</code> / <code>MarkSceneReadView</code> <code>accounts/views.py:55,174</code></td><td>Per-scene XP award and read-state tracking</td></tr>
+<tr><td>every template render</td><td><code>theme_context</code>, <code>notification_count</code> <code>accounts/context_processors.py:8,21</code></td><td>Injects theme + a cached (60s) cross-app notification badge count into every page</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="card">
+<h3>Reading order</h3>
+<ol>
+<li><code>accounts/models.py:16-96</code> — <code>Profile</code> fields, <code>is_st()</code>/<code>is_st_for()</code>. Note <code>is_st()</code> is a live query against <code>STRelationship</code> (<code>game.models</code>), not a stored flag.</li>
+<li><code>accounts/models.py:187-292</code> — the approval-queue methods. Read three of them, not all nine; <code>characters_to_approve</code>/<code>items_to_approve</code>/<code>locations_to_approve</code> are one pattern repeated (see Boundaries/Invariants).</li>
+<li><code>accounts/views.py:37-52</code> — <code>verify_st_for_chronicle</code>, the single authorization chokepoint every ST-only view calls before mutating anything.</li>
+<li><code>accounts/views.py:194-260</code> — <code>ProfileView.get_context_data</code>, where most of the above gets assembled into one page.</li>
+<li><code>core/services/approval.py</code> — where the actual approval writes happen; read this alongside step 3 to see the split between "who may act" (accounts) and "what the action does" (core).</li>
+<li><code>accounts/context_processors.py:21-143</code> — <code>notification_count</code>; shows the same nine-way fan-out as the Profile methods, now called on every page load.</li>
+<li><code>accounts/forms.py</code>, <code>accounts/signals.py</code> — skip unless changing the form fields or the profile-creation trigger; both are short and self-contained.</li>
+<li><code>accounts/tests/views/test_views.py:825-960</code> — the cross-chronicle permission tests; read these to see what "ST for chronicle A cannot touch chronicle B's objects" actually verifies.</li>
+</ol>
+<p class="dim">Skip: <code>accounts/migrations/</code> (generated), <code>accounts/README.md</code> (see callout below — it describes a different, earlier version of this package).</p>
+</div>
+</div>
+
+<div class="card">
+<h3>Intended vs. actual shape</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+  U["User (Django auth)"] -->|OneToOne| P["Profile\naccounts/models.py"]
+  V["views.py\n(auth + approval endpoints)"] --> P
+  V --> AS["ApprovalService\ncore/services/approval.py"]
+  P -->|reads| CH["Character / Item / Location\ncharacters, items, locations apps"]
+  P -->|reads| G["Scene / Story / Week / STRelationship\ngame app"]
+  CP["context_processors.py"] -->|reads, cached 60s| P
+  T["templates/accounts/detail.html\n+ 15 includes"] --> V
+</pre></div></div>
+<p class="dim">This is the real shape, not just the intended one — the Dependencies tab's Python import graph is empty for this package (see below) because nearly every import crosses into <code>characters</code>, <code>items</code>, <code>locations</code>, <code>game</code> or <code>core</code>; <code>accounts</code> has almost no internal file-to-file coupling to draw. The template include graph (also in Dependencies) is the only dense part of the picture.</p>
+</div>
+
+<div class="card">
+<h3>Key decisions</h3>
+<ul>
+<li><strong>Default <code>User</code> + <code>Profile</code> OneToOne, not a custom user model.</strong> Documented in-line as a deliberate trade-off: the project was already in production when <code>AbstractUser</code> became best practice, and migrating would have meant a risky data migration (<code>accounts/models.py:19-30</code>). The docstring points readers to a design doc for the full analysis, path given as "docs/design/user_model_architecture.md" — that file does not exist anywhere in the repo, so the trade-off is undocumented beyond this comment.</li>
+<li><strong>Validation runs on every save, unconditionally.</strong> <code>Profile</code> mixes in <code>ValidatedSaveMixin</code> (<code>accounts/models.py:16</code>, <code>core/base.py:9-25</code>), which calls <code>full_clean()</code> on every <code>.save()</code> unless a caller explicitly passes <code>skip_validation=True</code> — no code in this package does. That's a stronger guarantee than default Django (which doesn't validate on save), but it makes <code>Profile.clean()</code> load-bearing rather than advisory — see Invariants for a place that guarantee currently misfires.</li>
+<li><strong>ST status is computed, not stored.</strong> There is no <code>is_storyteller</code> boolean field; <code>is_st()</code> queries <code>STRelationship</code> per call (<code>accounts/models.py:94-96</code>). Simpler to keep consistent (no denormalized flag to forget to update) at the cost of a query wherever it's checked.</li>
+</ul>
+</div>
+
+<div class="callout warn">
+<strong>README.md is stale enough to mislead.</strong> <code>accounts/README.md</code> describes a <code>Profile</code> with <code>is_storyteller</code>/<code>display_name</code>/<code>bio</code>/<code>avatar</code> fields and an <code>objects_to_approve()</code> stub (<code># Characters, items, locations, XP requests / pass</code>). None of that matches <code>accounts/models.py:16-96</code>: there is no <code>is_storyteller</code> field (<code>is_st()</code> queries <code>STRelationship</code> instead), no <code>display_name</code>/<code>bio</code>/<code>avatar</code>, and <code>objects_to_approve()</code> is fully implemented at <code>accounts/models.py:232-242</code>. The README also points to two doc paths, given as "docs/CODE_STYLE.md" and "docs/PERMISSIONS.md", and (from a docstring at <code>accounts/models.py:28</code>) a third given as "docs/design/user_model_architecture.md" — none of those three files exist anywhere in the repo. Anyone onboarding from the README will build the wrong mental model of the Profile schema.
+</div>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">46</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">5,651</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">71%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>3,518</td><td class='num'>15</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>62.3%</td></tr>
+<tr><td>HTML</td><td class='num'>1,844</td><td class='num'>30</td><td><div class="bar "><i style="width:52.4%"></i></div></td><td class='num'>32.6%</td></tr>
+<tr><td>Markdown</td><td class='num'>289</td><td class='num'>1</td><td><div class="bar "><i style="width:8.2%"></i></div></td><td class='num'>5.1%</td></tr></tbody></table></div>
+<p class="dim">Coverage: 2 file(s) in unrecognized languages are not counted above (.txt (2)).</p>
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>2,494</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>templates/</code></td><td class='num'>1,844</td><td><div class="bar "><i style="width:73.9%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>1,201</td><td><div class="bar "><i style="width:48.2%"></i></div></td></tr>
+<tr><td><code>migrations/</code></td><td class='num'>112</td><td><div class="bar "><i style="width:4.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>860</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/views/test_profile_actions.py</code> <span class="badge neutral">test</span></td><td class='num'>470</td><td><div class="bar "><i style="width:54.7%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>443</td><td><div class="bar "><i style="width:51.5%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>351</td><td><div class="bar "><i style="width:40.8%"></i></div></td><td class='num'>45</td></tr>
+<tr><td><code>tests/forms/test_forms.py</code> <span class="badge neutral">test</span></td><td class='num'>346</td><td><div class="bar "><i style="width:40.2%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/context_processors/test_context_processors.py</code> <span class="badge neutral">test</span></td><td class='num'>341</td><td><div class="bar "><i style="width:39.7%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>250</td><td><div class="bar "><i style="width:29.1%"></i></div></td><td class='num'>33</td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>129</td><td><div class="bar "><i style="width:15.0%"></i></div></td><td class='num'>12</td></tr>
+<tr><td><code>context_processors.py</code></td><td class='num'>114</td><td><div class="bar "><i style="width:13.3%"></i></div></td><td class='num'>23</td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>112</td><td><div class="bar "><i style="width:13.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:5.2%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>34</td><td><div class="bar "><i style="width:4.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>signals.py</code></td><td class='num'>12</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>6</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>5</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>45</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>351</td><td class='num'>4</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:73.3%"></i></div></td><td class='num'>250</td><td class='num'>5</td></tr>
+<tr><td><code>context_processors.py</code></td><td class='num'>23</td><td><div class="bar warn"><i style="width:51.1%"></i></div></td><td class='num'>114</td><td class='num'>5</td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:26.7%"></i></div></td><td class='num'>129</td><td class='num'>5</td></tr>
+<tr><td><code>tests/views/test_profile_actions.py</code> <span class="badge neutral">test</span></td><td class='num'>8</td><td><div class="bar warn"><i style="width:17.8%"></i></div></td><td class='num'>470</td><td class='num'>4</td></tr>
+<tr><td><code>tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>6</td><td><div class="bar warn"><i style="width:13.3%"></i></div></td><td class='num'>443</td><td class='num'>3</td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>112</td><td class='num'>7</td></tr>
+<tr><td><code>tests/context_processors/test_context_processors.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>341</td><td class='num'>4</td></tr>
+<tr><td><code>tests/forms/test_forms.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>346</td><td class='num'>5</td></tr>
+<tr><td><code>tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>2</td><td><div class="bar warn"><i style="width:4.4%"></i></div></td><td class='num'>860</td><td class='num'>4</td></tr>
+<tr><td><code>signals.py</code></td><td class='num'>1</td><td><div class="bar warn"><i style="width:2.2%"></i></div></td><td class='num'>12</td><td class='num'>2</td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>5</td><td class='num'>1</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>6</td><td class='num'>2</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>45</td><td class='num'>2</td></tr>
+<tr><td><code>tests/integration/test_integration.py</code> <span class="badge neutral">test</span></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>34</td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">11</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">25</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">4</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":912,"fanIn":0,"fanOut":1,"meta":"(repo root) \u00b7 9 files"},{"id":"migrations","label":"migrations","group":"migrations","size":112,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 2 files"},{"id":"templates/accounts","label":"templates","group":"templates","size":368,"fanIn":2,"fanOut":1,"meta":"templates/accounts \u00b7 3 files"},{"id":"templates/accounts/includes","label":"includes","group":"templates","size":1065,"fanIn":1,"fanOut":0,"meta":"templates/accounts/includes \u00b7 20 files"},{"id":"templates/registration","label":"registration","group":"templates","size":102,"fanIn":1,"fanOut":0,"meta":"templates/registration \u00b7 1 files"},{"id":"tests","label":"tests","group":"tests","size":0,"fanIn":0,"fanOut":0,"meta":"tests \u00b7 1 files"},{"id":"tests/context_processors","label":"context_processors","group":"tests","size":341,"fanIn":0,"fanOut":0,"meta":"tests/context_processors \u00b7 2 files"},{"id":"tests/forms","label":"forms","group":"tests","size":346,"fanIn":0,"fanOut":0,"meta":"tests/forms \u00b7 2 files"},{"id":"tests/integration","label":"integration","group":"tests","size":34,"fanIn":0,"fanOut":0,"meta":"tests/integration \u00b7 2 files"},{"id":"tests/models","label":"models","group":"tests","size":443,"fanIn":0,"fanOut":0,"meta":"tests/models \u00b7 2 files"},{"id":"tests/views","label":"views","group":"tests","size":1330,"fanIn":0,"fanOut":2,"meta":"tests/views \u00b7 3 files"}],"links":[{"source":"","target":"templates/accounts","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/accounts","target":"templates/accounts/includes","weight":20,"imports":0,"loads":20,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/accounts","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests/views","target":"templates/registration","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>templates/accounts/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>20</td></tr>
+<tr><td><code>templates/accounts/form.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/signup.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/registration/login.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_story.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_scene_st.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly_st.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/item_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/attention.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/settings.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/image_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/rote_approval.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/journals.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/accounts/includes/active_scenes.html</code></td><td class='num'>1</td><td><div class="bar "><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>templates/accounts/detail.html</code></td><td class='num'>20</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>views.py</code></td><td class='num'>3</td><td><div class="bar warn"><i style="width:15.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/views/test_views.py</code></td><td class='num'>2</td><td><div class="bar warn"><i style="width:10.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>context_processors.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>models.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>signals.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>migrations/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/context_processors/__init__.py</code></td><td class='num'>0</td><td><div class="bar warn"><i style="width:1.5%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path.</p>
+<div class="callout warn"><b>6 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>templates/registration/logged_out.html</code> <code>templates/registration/password_reset_complete.html</code> <code>templates/registration/password_reset_confirm.html</code> <code>templates/registration/password_reset_done.html</code> <code>templates/registration/password_reset_email.html</code> <code>templates/registration/password_reset_form.html</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>templates/accounts/detail.html</code></td><td class='num'>2</td><td><code>tests/views/test_views.py:59</code> <code>views.py:202</code></td></tr>
+<tr><td><code>templates/accounts/form.html</code></td><td class='num'>1</td><td><code>views.py:272</code></td></tr>
+<tr><td><code>templates/accounts/includes/active_scenes.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:42</code></td></tr>
+<tr><td><code>templates/accounts/includes/attention.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:46</code></td></tr>
+<tr><td><code>templates/accounts/includes/character_approval.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:63</code></td></tr>
+<tr><td><code>templates/accounts/includes/characters.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:51</code></td></tr>
+<tr><td><code>templates/accounts/includes/chronicles.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:45</code></td></tr>
+<tr><td><code>templates/accounts/includes/freebies.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:62</code></td></tr>
+<tr><td><code>templates/accounts/includes/image_approval.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:67</code></td></tr>
+<tr><td><code>templates/accounts/includes/item_approval.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:65</code></td></tr>
+<tr><td><code>templates/accounts/includes/items.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:53</code></td></tr>
+<tr><td><code>templates/accounts/includes/journals.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:47</code></td></tr>
+<tr><td><code>templates/accounts/includes/location_approval.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:64</code></td></tr>
+<tr><td><code>templates/accounts/includes/locations.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:52</code></td></tr>
+<tr><td><code>templates/accounts/includes/rote_approval.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:66</code></td></tr>
+<tr><td><code>templates/accounts/includes/settings.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:37</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_scene_st.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:59</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_spend_requests.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:48</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_story.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:54</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_story_st.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:60</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:55</code></td></tr>
+<tr><td><code>templates/accounts/includes/xp_weekly_st.html</code></td><td class='num'>1</td><td><code>templates/accounts/detail.html:61</code></td></tr>
+<tr><td><code>templates/accounts/signup.html</code></td><td class='num'>1</td><td><code>views.py:32</code></td></tr>
+<tr><td><code>templates/registration/login.html</code></td><td class='num'>1</td><td><code>tests/views/test_views.py:30</code></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">152</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">14</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">models.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"models.py","value":351,"metric":57,"meta":"45 branches \u00b7 2 authors"},{"name":"views.py","value":250,"metric":60,"meta":"33 branches \u00b7 2 authors"},{"name":"forms.py","value":129,"metric":25,"meta":"12 branches \u00b7 2 authors"},{"name":"context_processors.py","value":114,"metric":9,"meta":"23 branches \u00b7 2 authors"},{"name":"signals.py","value":12,"metric":5,"meta":"1 branches \u00b7 2 authors"},{"name":"urls.py","value":45,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"admin.py","value":5,"metric":3,"meta":"0 branches \u00b7 1 authors"},{"name":"apps.py","value":6,"metric":1,"meta":"0 branches \u00b7 1 authors"},{"name":"migrations/0001_initial.py","value":112,"metric":0,"meta":"2 branches \u00b7 0 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":60}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 33 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/accounts/detail.html (36), templates/accounts/form.html (9), templates/accounts/includes/xp_weekly.html (6).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>models.py</code></td><td class='num'>57</td><td class='num'>45</td><td class='num'>351</td><td class='num'>2</td><td class='num' data-sort='2622'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>views.py</code></td><td class='num'>60</td><td class='num'>33</td><td class='num'>250</td><td class='num'>2</td><td class='num' data-sort='2040'><div class="bar bad"><i style="width:77.8%"></i></div></td></tr>
+<tr><td><code>forms.py</code></td><td class='num'>25</td><td class='num'>12</td><td class='num'>129</td><td class='num'>2</td><td class='num' data-sort='325'><div class="bar bad"><i style="width:12.4%"></i></div></td></tr>
+<tr><td><code>context_processors.py</code></td><td class='num'>9</td><td class='num'>23</td><td class='num'>114</td><td class='num'>2</td><td class='num' data-sort='216'><div class="bar bad"><i style="width:8.2%"></i></div></td></tr>
+<tr><td><code>signals.py</code></td><td class='num'>5</td><td class='num'>1</td><td class='num'>12</td><td class='num'>2</td><td class='num' data-sort='10'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>urls.py</code></td><td class='num'>8</td><td class='num'>0</td><td class='num'>45</td><td class='num'>2</td><td class='num' data-sort='8'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>admin.py</code></td><td class='num'>3</td><td class='num'>0</td><td class='num'>5</td><td class='num'>1</td><td class='num' data-sort='3'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>apps.py</code></td><td class='num'>1</td><td class='num'>0</td><td class='num'>6</td><td class='num'>1</td><td class='num' data-sort='1'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>0</td><td class='num'>2</td><td class='num'>112</td><td class='num'>0</td><td class='num' data-sort='0'><div class="bar bad"><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<div class="card">
+<h3>Concern ownership</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Concern</th><th>Owner(s)</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>ST authorization for a chronicle</td><td><code>Profile.is_st_for</code> <code>accounts/models.py:98-119</code>, called exclusively through <code>verify_st_for_chronicle</code> <code>accounts/views.py:37-52</code></td><td><span class="badge good">good</span> single chokepoint — every ST-only view calls the same helper</td></tr>
+<tr><td>Approval-queue listing (what needs a look)</td><td><code>Profile.*_to_approve</code> methods <code>accounts/models.py:187-292</code></td><td><span class="badge good">good</span> single owner, though the implementation is triplicated — see Invariants</td></tr>
+<tr><td>Approval mutation (writing the approved state)</td><td><code>ApprovalService</code> <code>core/services/approval.py</code></td><td><span class="badge good">good</span> deliberately factored out of <code>accounts</code>; views only decide <em>whether</em> to call it</td></tr>
+<tr><td>Notification-count aggregation</td><td><code>notification_count</code> context processor <code>accounts/context_processors.py:21-143</code></td><td><span class="badge warn">warn</span> single owner, but re-derives the same nine counts <code>Profile</code> already exposes as methods — see Invariants for the duplication</td></tr>
+<tr><td>Profile lifecycle (create-on-signup)</td><td><code>accounts/signals.py:6-16</code></td><td><span class="badge good">good</span> one signal, one responsibility</td></tr>
+<tr><td>User-facing preferences (theme, heading, discord, lines/veils)</td><td>fields on <code>Profile</code> + <code>ProfileUpdateForm</code> <code>accounts/forms.py:62-97</code></td><td><span class="badge good">good</span></td></tr>
+<tr><td>Scene "read" tracking</td><td><code>MarkSceneReadView</code> <code>accounts/views.py:174-191</code>, mutating <code>UserSceneReadStatus</code> — a model defined in <code>game/models.py</code></td><td><span class="badge warn">warn</span> the only write path for a <code>game</code>-owned model lives in <code>accounts</code>; not a smear (still one writer) but the model's home and its mutator disagree</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="card">
+<h3>Data ownership</h3>
+<p><code>Profile</code> itself has a clean single writer: created only by <code>accounts/signals.py:16</code>, updated only through <code>ProfileUpdateView</code> / <code>ProfileUpdateForm</code> (<code>accounts/views.py:263-290</code>, <code>accounts/forms.py:62</code>). No other app writes to it directly in this package's code.</p>
+<div class="callout">No multiple-writer conflicts were found for data <code>accounts</code> owns. The one shared-model write (<code>UserSceneReadStatus</code>, above) is single-writer, just cross-app.</div>
+</div>
+
+<div class="card">
+<h3>Import direction</h3>
+<p><code>accounts/models.py</code> and <code>accounts/views.py</code> import forward into <code>characters</code>, <code>items</code>, <code>locations</code>, <code>game</code>, and <code>core</code> (<code>accounts/models.py:6-13</code>, <code>accounts/views.py:20-24</code>) — never the reverse in this package. The Dependencies tab's import graph shows zero first-party edges for <code>accounts</code> because those targets live outside the package boundary the analyzer was scoped to (<code>--exclude</code> plus package-local run); that is a scoping artifact of this atlas, not evidence of decoupling. <code>module_cycles</code> and <code>file_cycles</code> both came back empty, and reading the imports by hand agrees: <code>accounts</code> is a leaf that many apps' data flows into, not a hub other apps import from.</p>
+</div>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<div class="card">
+<h3>Invariants</h3>
+<div class="tbl-wrap"><table>
+<thead><tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Every <code>User</code> gets exactly one <code>Profile</code></td><td><code>post_save</code> signal, creation only <code>accounts/signals.py:6-16</code></td><td><span class="badge warn">warn</span> — no DB constraint backs it; a <code>User</code> created via <code>bulk_create</code>, a fixture, or any path that skips signals has no <code>Profile</code>, and every accessor (<code>request.user.profile</code>) assumes one exists</td></tr>
+<tr><td>A user may only view/edit their own <code>Profile</code> unless staff</td><td><code>ProfileView.get_object</code> <code>accounts/views.py:204-218</code>, <code>ProfileUpdateView.get_object</code> <code>accounts/views.py:276-290</code></td><td><span class="badge good">good</span> — enforced identically in both views and covered by <code>accounts/tests/views/test_views.py:646,691,699</code></td></tr>
+<tr><td>Only an ST for chronicle <code>X</code> may approve/award objects belonging to <code>X</code></td><td><code>verify_st_for_chronicle</code> <code>accounts/views.py:37-52</code>, called before every mutating view</td><td><span class="badge good">good</span> — cross-chronicle denial covered explicitly at <code>accounts/tests/views/test_views.py:825-921</code></td></tr>
+<tr><td>A storyteller's approval queue shows every chronicle they can act as ST for</td><td><em>not</em> enforced — <code>*_to_approve()</code>/<code>freebies_to_approve()</code> (<code>accounts/models.py:187-292,244-253</code>) filter on <code>user.chronicle_set</code>, the reverse of the <code>STRelationship</code> through-table (<code>core/models.py:58</code>), while authorization (<code>is_st_for</code>, <code>accounts/models.py:98-119</code>) also grants access via <code>Chronicle.head_st</code></td><td><span class="badge bad">bad</span> — a chronicle's <code>head_st</code> with no matching <code>STRelationship</code> row is authorized to approve but the queue never shows them anything to approve. See risk #1.</td></tr>
+<tr><td><code>Profile.theme</code> stays within <code>ThemeChoices.CHOICES</code></td><td><code>Profile.clean()</code> <code>accounts/models.py:304-308</code>, sourced live from <code>self.theme_list</code> (<code>accounts/models.py:294-297</code>), run on every <code>.save()</code> via <code>ValidatedSaveMixin</code> <code>core/base.py:22-25</code></td><td><span class="badge good">good</span> — the valid set is derived from <code>core.constants.ThemeChoices</code> at call time, so it can't go stale</td></tr>
+<tr><td><code>Profile.preferred_heading</code> stays within the model field's declared choices</td><td><code>Profile.clean()</code> <code>accounts/models.py:311-322</code>, checked against a hand-written list, <em>not</em> against <code>HeadingChoices.CHOICES</code></td><td><span class="badge bad">bad</span> — the hardcoded list omits <code>"dtf_heading"</code>, which <code>HeadingChoices.CHOICES</code> (<code>core/constants.py:68,77</code>) and the migration (<code>accounts/migrations/0001_initial.py:35</code>) both declare valid. See risk #1.</td></tr>
+<tr><td>XP is awarded to a scene/weekly-request at most once</td><td><code>Scene.award_xp</code> / <code>WeeklyXPRequest</code> approval raise on re-award; caught at <code>accounts/views.py:64-69</code> and <code>accounts/views.py:160-166</code></td><td><span class="badge good">good</span> — the exception is the enforcement mechanism, and both call sites turn it into a user-facing message rather than a 500</td></tr>
+</tbody>
+</table></div>
+</div>
+
+<div class="card">
+<h3>Failure handling</h3>
+<ul>
+<li><code>notification_count</code> (<code>accounts/context_processors.py:21</code>) wraps its entire nine-count computation in a bare <code>except Exception</code> that logs and returns zero (<code>accounts/context_processors.py:134-141</code>). Deliberate — a broken badge shouldn't break the page — but it means a bug in any one of the nine sub-queries silently zeroes the whole notification badge for every storyteller, with only a log line as evidence.</li>
+<li><code>ObjectApprovalView</code> / <code>ImageApprovalView</code> (<code>accounts/views.py:77-108</code>) let an invalid <code>object_type</code> raise <code>Http404</code> rather than silently no-op — good, fails loud.</li>
+<li>No outbound network calls, timeouts, or retries in this package (pure Django ORM + template rendering), so those categories don't apply.</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Concurrency</h3>
+<p>Synchronous request/response only. <code>MarkSceneReadView.post</code> wraps its get-or-create/save in <code>transaction.atomic()</code> (<code>accounts/views.py:185-189</code>). <code>ApprovalService.approve_object</code> wraps its status write plus pooled-background updates in <code>transaction.atomic()</code> (<code>core/services/approval.py:55-64</code>); <code>ApprovalService.approve_image</code> does not (<code>core/services/approval.py:89-93</code>) — it's a single-field, single-<code>save()</code> write, so the gap is low-risk, but it's an inconsistency between the two service methods worth noting.</p>
+</div>
+
+<div class="callout bad"><strong>Risk ranking</strong>
+<ol>
+<li><strong>A head storyteller with no <code>STRelationship</code> row sees an empty queue for chronicles they're authorized to run.</strong> <code>Chronicle.head_st</code> (<code>game/models.py:120-127</code>) can be set directly (e.g. via the chronicle form or admin, <code>game/forms.py:606</code>, <code>game/admin.py:40</code>) without creating a matching <code>STRelationship</code> row — nothing wires the two together. Authorization honors both: <code>is_st_for()</code> checks <code>head_st</code> first (<code>accounts/models.py:113-119</code>), and <code>verify_st_for_chronicle</code> (<code>accounts/views.py:37-52</code>) uses it, so a head-ST-only user really can approve things. But every listing method a head ST would use to find them — <code>characters_to_approve</code>, <code>items_to_approve</code>, <code>locations_to_approve</code>, <code>freebies_to_approve</code> (<code>accounts/models.py:187-253</code>) and the underlying <code>pending_approval_for_user</code> (<code>core/models.py:49-61</code>) — filter on <code>user.chronicle_set</code>, the reverse of the <code>STRelationship</code> through-table only. <code>is_st()</code> itself (<code>accounts/models.py:94-96</code>) has the same gap, so <code>notification_count</code>'s entire ST branch (<code>accounts/context_processors.py:52</code>) and <code>ProfileView</code>'s <code>scenes_waiting</code> (<code>accounts/views.py:230-232</code>) are also blind to head-ST-only users. Every <code>is_st()</code> test in the suite constructs its ST via <code>STRelationship</code>, never via bare <code>head_st</code> (<code>accounts/tests/models/test_models.py:44-64</code>), so this gap has no test coverage in either direction.</li>
+<li><strong>Demon players cannot save a valid preference — a live, reachable bug.</strong> <code>preferred_heading</code>'s model field declares <code>"dtf_heading"</code> ("Demon: the Fallen") as a legal choice (<code>core/constants.py:68,77</code>; present in the initial migration, <code>accounts/migrations/0001_initial.py:35</code>), so <code>ProfileUpdateForm</code> (a plain <code>ModelForm</code>, <code>accounts/forms.py:62-75</code>) renders it as a selectable option. Selecting it and saving passes Django's own field validation but then fails <code>Profile.clean()</code>'s hand-written <code>valid_headings</code> list (<code>accounts/models.py:311-322</code>), which never got updated when Demon: The Fallen was added — every other check in <code>clean()</code> derives its valid set live (<code>theme_list</code>, <code>accounts/models.py:294-297</code>); this one didn't. The test suite has the identical stale list baked into its "all headings" test (<code>accounts/tests/forms/test_forms.py:137-144</code>), so nothing catches it.</li>
+<li><strong>Triplicated approval-queue query methods will drift.</strong> <code>my_characters</code>/<code>my_locations</code>/<code>my_items</code>, <code>characters_to_approve</code>/<code>items_to_approve</code>/<code>locations_to_approve</code>, and <code>character_images_to_approve</code>/<code>location_images_to_approve</code>/<code>item_images_to_approve</code> (<code>accounts/models.py:136-161, 187-212, 255-292</code>) are each three structurally identical methods differing only in the model class. A fix applied to one (an added <code>select_related</code>, a changed filter) has to be manually copied to the other two or the queue silently behaves differently per object type.</li>
+<li><strong>Notification aggregation duplicates the approval-queue logic it summarizes.</strong> <code>accounts/context_processors.py:21-143</code> re-implements roughly the same nine counts <code>Profile</code>'s <code>*_to_approve</code> methods already expose, as one 90-line function with 23 branches (flagged in the health report's complexity findings) inside a broad <code>except Exception</code>. A change to what counts as "pending" in one place is easy to forget in the other.</li>
+<li><strong>N+1 queries in the approval templates.</strong> <code>accounts/templates/accounts/includes/character_approval.html</code>, <code>accounts/templates/accounts/includes/freebies.html</code>, <code>accounts/templates/accounts/includes/item_approval.html</code>, and <code>accounts/templates/accounts/includes/image_approval.html</code> walk 2-4 relations per row inside a loop (e.g. <code>obj.owner.profile.get_absolute_url</code>) without the view pre-fetching them — on a chronicle with a large approval queue this is one query per row per relation. Confirmed in the health report; the querysets built in <code>accounts/models.py:187-292</code> and passed to these templates by <code>ProfileView.get_context_data</code> (<code>accounts/views.py:220-260</code>) don't <code>select_related</code> the paths the templates actually walk.</li>
+</ol>
+</div>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<div class="card">
+<div class="tbl-wrap"><table>
+<thead><tr><th>Domain term</th><th>Code name(s)</th><th>Files</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>Storyteller (ST)</td><td><code>is_st()</code>, <code>is_st_for()</code>, <code>STRelationship</code>, <code>head_st</code></td><td><code>accounts/models.py:94-119</code>, <code>game/models.py:120-125,247</code></td><td><span class="badge bad">bad</span> — "being an ST" has two independent code paths: owning <code>Chronicle.head_st</code>, or holding an <code>STRelationship</code> row. Authorization (<code>is_st_for()</code>) checks both; the blanket <code>is_st()</code> and every approval-queue listing method check only <code>STRelationship</code>. A head ST with no <code>STRelationship</code> row is authorized to act but invisible to their own queue — see Invariants risk #1.</td></tr>
+<tr><td>Approval queue</td><td><code>objects_to_approve()</code>, <code>*_to_approve()</code> methods</td><td><code>accounts/models.py:187-292</code></td><td>Consistent naming across characters/items/locations/rotes/images/freebies/weekly-XP; the one outlier is that "objects" in <code>objects_to_approve()</code> means only characters+items+locations+rotes — it does not include images, freebies, or weekly XP, which are separate methods entirely and rendered as separate template sections.</td></tr>
+<tr><td>Theme (UI color scheme)</td><td><code>Profile.theme</code>, <code>ThemeChoices</code></td><td><code>accounts/models.py:44-49</code>, <code>core/constants.py:82-91</code></td><td><span class="badge warn">warn</span> — easy to confuse with <code>preferred_heading</code> / <code>HeadingChoices</code> below; both are per-profile display settings picked from a dropdown, but one is a color scheme (light/dark) and the other is a gameline-specific font/heading style. The template variable names don't disambiguate: <code>{{ object.preferred_heading }}</code> is used as a CSS class throughout the templates (e.g. <code>accounts/templates/accounts/detail.html:17</code>) the same way a "theme" class would be.</td></tr>
+<tr><td>Heading style</td><td><code>Profile.preferred_heading</code>, <code>HeadingChoices</code></td><td><code>accounts/models.py:37-42</code>, <code>core/constants.py:60-79</code></td><td>Per-gameline heading font (vtm/wta/mta/ctd/wto/dtf/wod) applied as a CSS class in every template that renders a card title. See Invariants for the <code>dtf_heading</code> validation bug.</td></tr>
+<tr><td>Freebies</td><td><code>backstory_freebies</code>, <code>FreebieAwardForm</code>, <code>freebies_to_approve()</code></td><td><code>accounts/forms.py:150-159</code>, <code>accounts/models.py:244-253</code></td><td>Consistent; "freebies" here specifically means backstory freebie points awarded by an ST, distinct from a character's general freebie pool set at chargen (that logic lives in <code>characters</code>, not touched by this package beyond the award call).</td></tr>
+</tbody>
+</table></div>
+</div>
+
+</section></main>
+<footer class="doc">Generated by code-visualization. Automated tabs: Inventory, Dependencies, Hotspots. Judgment tabs authored from code reading — verify citations before acting.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

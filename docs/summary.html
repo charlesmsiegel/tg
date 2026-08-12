@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tg — Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Design tokens are code-visualization's, verbatim. The three document types in
+   a code overview sit next to each other in one nav bar; sharing the palette is
+   what makes them read as one artifact rather than three tools' output. */
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs: code-visualization's contract, so one shell serves all four
+   documents. code-overview forces this template on assemble.py and on
+   build_measurement.py, so the markup those two emit has to fit here. ------- */
+nav.tabs{
+  display:flex;gap:2px;flex-wrap:wrap;max-width:1280px;margin:18px auto 0;
+  padding:0 28px;border-bottom:1px solid var(--border);
+}
+/* summary.html is untabbed and leaves TABS_NAV empty; without this the bar
+   renders as a stray rule under the header. */
+nav.tabs:empty{display:none;border:none}
+nav.tabs button{
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);
+  font-family:var(--sans);font-size:14px;padding:9px 14px;cursor:pointer;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+section.panel{display:none}
+section.panel.active{display:block}
+
+/* ---------- content primitives (shared with code-visualization) ---------- */
+h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:30px 0 10px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin:8px 0;max-width:940px;color:var(--text)}
+ul,ol{margin:8px 0 8px 22px;max-width:940px}
+li{margin:4px 0}
+a{color:var(--accent)}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.grid{display:grid;gap:14px;margin:12px 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{background:var(--surface-2);text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- grade components ---------- */
+/* Grade colour is bound to the band, not to the score, so the letter and the
+   colour can never disagree — the two are read together at a glance. */
+.g-a{--grade:var(--good)} .g-b{--grade:var(--accent)} .g-c{--grade:var(--warn)}
+.g-d{--grade:var(--bad)} .g-f{--grade:var(--bad)} .g-none{--grade:var(--text-faint)}
+.gradecard{display:flex;flex-wrap:wrap;align-items:center;gap:26px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;padding:22px 26px;margin:16px 0;background-image:linear-gradient(110deg,color-mix(in srgb,var(--grade) 12%,transparent),transparent 55%)}
+.gradecard .letter{font-size:64px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--grade);font-variant-numeric:tabular-nums;min-width:96px}
+.gradecard .score{font-family:var(--mono);font-size:13px;color:var(--text-dim);margin-top:6px}
+.gradecard .what{flex:1 1 260px;min-width:0}
+.gradecard .what h2{margin:0 0 4px;font-size:19px}
+.catrow{display:grid;grid-template-columns:minmax(140px,1.4fr) minmax(90px,2fr) 54px 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.catrow:last-child{border-bottom:none}
+.catrow .cname{font-size:13.5px;overflow-wrap:anywhere}
+.catrow .cname small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.04em}
+.catrow .cscore{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.catrow .cgrade{font-family:var(--mono);font-weight:600;text-align:right;color:var(--grade)}
+.catrow .bar>i{background:var(--grade)}
+.catrow.ungraded .cname,.catrow.ungraded .cscore{color:var(--text-faint)}
+@media(max-width:560px){.catrow{grid-template-columns:1fr 54px 46px}.catrow .bar{grid-column:1/-1}}
+.doclinks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin:16px 0}
+.doclink{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--text)}
+.doclink:hover{border-color:var(--accent);background:var(--accent-dim)}
+.doclink .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.doclink .t{font-size:16px;font-weight:600;margin-top:4px}
+.doclink .d{color:var(--text-dim);font-size:13px;margin-top:4px}
+.doclink[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.sev-high{color:var(--bad)} .sev-medium{color:var(--warn)} .sev-low{color:var(--text-dim)}
+/* The type token and the category name are short and identify the row; letting
+   them wrap mid-word to buy width for a long description makes the table harder
+   to scan, not easier. The description column is the one that should give. */
+td code.ftype{white-space:nowrap;overflow-wrap:normal}
+td.cat{white-space:nowrap}
+/* A file:line split across two lines is not a citation anyone can copy. The
+   wrapper scrolls if a path is genuinely too deep for the viewport. */
+td code.floc{white-space:nowrap;overflow-wrap:normal}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+footer.doc a{color:var(--text-dim)}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px} .gradecard .letter{font-size:48px;min-width:72px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODE OVERVIEW</div>
+  <h1 class="doc-title">tg — Overview</h1>
+  <p class="doc-sub">Summary of the tg repository: what it is, how healthy it is, and where to read next.</p>
+  <div class="doc-meta">generated 2026-08-10 · d6933760 · grade F · 10 packages</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><span class="co-here">⌂ Overall Summary</span></div><div class="co-row"><span class="co-lbl">This repository</span><a href="#" aria-current="page">Summary</a><a href="codemap.html">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Summary</span><a href="../accounts/docs/summary.html">accounts</a><a href="../chained_select/docs/summary.html">chained_select</a><a href="../characters/docs/summary.html">characters</a><a href="../core/docs/summary.html">core</a><a href="../game/docs/summary.html">game</a><a href="../items/docs/summary.html">items</a><a href="../locations/docs/summary.html">locations</a><a href="../widgets/docs/summary.html">widgets</a><a href="../tg/docs/summary.html">tg</a></div></nav><!-- /code-overview:nav -->
+
+<nav class="tabs" role="tablist"></nav>
+<main><!-- Body layout for summary.html. Filled by build_summary.py. This is the page a
+     reader lands on: it says what the unit is, what grade it carries, and sends
+     them to the two documents that show the working. -->
+<!-- tab: Summary -->
+<p>This is a Django 5.1 web application for managing World of Darkness tabletop RPG characters, items, and locations across eight game lines (Vampire, Werewolf, Mage, Wraith, Changeling, Demon, Mummy, Hunter). The intended architecture is one shared polymorphic kernel &mdash; <code>core.models.Model</code>, extended per-gameline by <code>characters</code>, <code>items</code>, and <code>locations</code> &mdash; under a single <code>game.Chronicle</code>/Storyteller-approval workflow, with <code>accounts</code> holding user identity and ST authority, and <code>tg</code>'s <code>GAMELINES</code> registry meant to be the single source of truth for which game lines exist.</p>
+<p>Nine packages were mapped and graded (<code>chained_select</code> and <code>widgets</code> both cover the same problem &mdash; form-widget UI &mdash; because <code>chained_select</code> is dead code superseded by <code>widgets</code>, confirmed at the atlas level). A tenth, <code>populate_db</code>, is deliberately codemap-only: it is game-data seed scripts, not application logic.</p>
+<p>The independent per-package and repo-level analyses converge on the same story from three different angles &mdash; deterministic code-doctor findings, a from-scratch codebase atlas, and a three-judge theory panel &mdash; without seeing each other's conclusions: the shared kernel is real but only partially honored. <code>characters</code> and <code>locations</code> mostly follow it; <code>items</code> largely reverted to unprotected per-gameline copies; the XP economy has at least three non-converging implementations; "which gamelines exist" is answered independently in at least three places that have already drifted; and the package meant to be everyone's dependency-free foundation (<code>core</code>) turns out to import upward from a feature app (<code>game</code>), producing a 6-package import cycle invisible from any single package's own atlas.</p>
+<p>None of this is speculative &mdash; every finding highlighted here was independently confirmed by direct code reading with file:line citations in the linked codemap and health pages, not inferred from patterns alone.</p>
+
+
+<section class="gradecard g-f">
+  <div>
+    <div class="letter">F</div>
+    <div class="score">13.4 / 100</div>
+  </div>
+  <div class="what">
+    <h2>tg</h2>
+    <p class="dim">the whole repository</p>
+    <div><span class="badge neutral">2307 files · 220420 lines</span> <span class="badge bad">25842 finding(s)</span></div>
+  </div>
+</section>
+
+<div class="callout"><strong>Measurement: no measurement content.</strong> Nothing in this unit produces a quality or accuracy number, so there is nothing to grade. That is a null, not a pass.</div>
+
+<section class="gradecard g-f"><div><div class="letter">F</div><div class="score">40.0 / 100</div></div><div class="what"><h2>Theory</h2><p class="dim">Whether the code expresses a coherent theory of its problem, judged by a panel of three. A reading, not a measurement — read its evidence rather than this letter.</p></div></section>
+
+<div class="doclinks"><a class="doclink" href="codemap.html"><div class="k">codemap</div><div class="t">Code Map</div><div class="d">Structure, dependencies, hotspots, and the judgment tabs</div></a><a class="doclink" href="health.html"><div class="k">health</div><div class="t">Health</div><div class="d">Graded findings — 25842 in total</div></a><a class="doclink" href="measurement.html"><div class="k">measurement</div><div class="t">Measurement</div><div class="d">Can the numbers this unit reports be believed? Importance-weighted measurement coverage, with the inventory it was computed from.</div></a><a class="doclink" href="theory.html"><div class="k">theory</div><div class="t">Theory</div><div class="d">Does this unit&#x27;s code express a coherent theory of its problem? A panel of three judges, their evidence, and any dimension they read differently.</div></a></div>
+
+<h2>What stands out</h2><ul><li>6-package import cycle: core.models imports game.Chronicle while game.models imports back from core — the intended dependency-free foundation depends upward on a feature app</li><li>A 9th gameline (Orpheus) is registered in tg&#x27;s GAMELINES but has no models/views/urls anywhere — confirmed at repo scope, not local to one package</li><li>items has little to no login/permission enforcement across 6 of 8 gamelines, contradicting the project&#x27;s own CLAUDE.md rule that player-related models require auth</li><li>The XP economy has at least 3 non-converging spend/approval implementations, including one unlocked write racing a select_for_update-protected path (game)</li><li>&#x27;Which gamelines exist&#x27; is answered independently in at least 3-4 places (tg GAMELINES, core.models hardcoded list, per-app URL patterns) that have already drifted out of sync</li></ul><div class="card"><strong>Code map</strong> — <a href="codemap.html">tg — Codebase Atlas</a><p class="dim">Tabs: Overview, Inventory, Dependencies, Hotspots, Critical Flows, Boundaries &amp;amp; Ownership, Invariants &amp;amp; Risks, Glossary</p><p class="faint mono">generated 2026-08-10 · d6933760 · 2,194 files, 222K LOC</p></div>
+
+<h2>Category scores</h2><div class="card"><div class="catrow g-f" title="2296 finding(s) · 72.21 weighted per KLOC · scores 50 at 6"><div class="cname">Correctness<small>weight 25% · 2296 finding(s)</small></div><div class="bar"><i style="width:1.5%"></i></div><div class="cscore">0.0</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="110 finding(s) · 3.66 weighted per KLOC · scores 50 at 2"><div class="cname">Security<small>weight 15% · 110 finding(s)</small></div><div class="bar"><i style="width:28.2%"></i></div><div class="cscore">28.2</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="1504 finding(s) · 13.82 weighted per KLOC · scores 50 at 8"><div class="cname">Tests &amp; Safety Net<small>weight 15% · 1504 finding(s)</small></div><div class="bar"><i style="width:30.2%"></i></div><div class="cscore">30.2</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="4875 finding(s) · 36.29 weighted per KLOC · scores 50 at 12"><div class="cname">Complexity<small>weight 15% · 4875 finding(s)</small></div><div class="bar"><i style="width:12.3%"></i></div><div class="cscore">12.3</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="2455 finding(s) · 31.06 weighted per KLOC · scores 50 at 10"><div class="cname">Design &amp; Structure<small>weight 12% · 2455 finding(s)</small></div><div class="bar"><i style="width:11.6%"></i></div><div class="cscore">11.6</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="5502 finding(s) · 90.90 weighted per KLOC · scores 50 at 10"><div class="cname">Duplication &amp; Dead Code<small>weight 10% · 5502 finding(s)</small></div><div class="bar"><i style="width:1.5%"></i></div><div class="cscore">0.2</div><div class="cgrade">F</div></div>
+<div class="catrow g-f" title="9100 finding(s) · 62.50 weighted per KLOC · scores 50 at 25"><div class="cname">Dependencies &amp; Hygiene<small>weight 8% · 9100 finding(s)</small></div><div class="bar"><i style="width:17.7%"></i></div><div class="cscore">17.7</div><div class="cgrade">F</div></div></div>
+
+<h2>Packages</h2><p class="dim">Each package has its own summary and code map. 1 of them has no health page and is therefore ungraded — marked <em>not generated</em> below.</p><div class="tbl-wrap"><table><thead><tr><th>Package</th><th>Language</th><th class="num">Lines</th><th class="num">Score</th><th>Grade</th><th class="num">Findings</th><th class="num">Measurement</th><th>Measurement state</th><th class="num">Theory</th><th>Theory state</th></tr></thead><tbody><tr><td><a href="../accounts/docs/summary.html">accounts</a><br><span class="faint mono">accounts</span></td><td><span class="badge neutral">python</span></td><td class="num">5362</td><td class="num">14.0</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">530</td><td class="num">—</td><td>no measurement content</td><td class="num">50.0</td><td>F</td></tr><tr><td><a href="../chained_select/docs/summary.html">chained_select</a><br><span class="faint mono">chained_select</span></td><td><span class="badge neutral">python</span></td><td class="num">1499</td><td class="num">26.3</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">148</td><td class="num">—</td><td>no measurement content</td><td class="num">40.0</td><td>F</td></tr><tr><td><a href="../characters/docs/summary.html">characters</a><br><span class="faint mono">characters</span></td><td><span class="badge neutral">python</span></td><td class="num">125640</td><td class="num">18.6</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">14770</td><td class="num">—</td><td>no measurement content</td><td class="num">62.5</td><td>D-</td></tr><tr><td><a href="../core/docs/summary.html">core</a><br><span class="faint mono">core</span></td><td><span class="badge neutral">python</span></td><td class="num">24277</td><td class="num">5.0</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">3188</td><td class="num">25.0</td><td>F</td><td class="num">80.0</td><td>B-</td></tr><tr><td><a href="../game/docs/summary.html">game</a><br><span class="faint mono">game</span></td><td><span class="badge neutral">python</span></td><td class="num">11835</td><td class="num">9.4</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">1454</td><td class="num">—</td><td>no measurement content</td><td class="num">50.0</td><td>F</td></tr><tr><td><a href="../items/docs/summary.html">items</a><br><span class="faint mono">items</span></td><td><span class="badge neutral">python</span></td><td class="num">15945</td><td class="num">17.8</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">2119</td><td class="num">—</td><td>no measurement content</td><td class="num">47.5</td><td>F</td></tr><tr><td><a href="../locations/docs/summary.html">locations</a><br><span class="faint mono">locations</span></td><td><span class="badge neutral">python</span></td><td class="num">29754</td><td class="num">27.9</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">3127</td><td class="num">—</td><td>no measurement content</td><td class="num">57.5</td><td>F</td></tr><tr><td><a href="../widgets/docs/summary.html">widgets</a><br><span class="faint mono">widgets</span></td><td><span class="badge neutral">python</span></td><td class="num">5329</td><td class="num">20.0</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">446</td><td class="num">—</td><td>no measurement content</td><td class="num">60.0</td><td>D-</td></tr><tr><td><a href="../tg/docs/summary.html">tg</a><br><span class="faint mono">tg</span></td><td><span class="badge neutral">python</span></td><td class="num">779</td><td class="num">46.8</td><td class="g-f" style="color:var(--grade);font-family:var(--mono);font-weight:600">F</td><td class="num">60</td><td class="num">—</td><td>no measurement content</td><td class="num">60.0</td><td>D-</td></tr><tr><td>populate_db<br><span class="faint mono">populate_db</span></td><td><span class="badge neutral">python</span></td><td class="num">—</td><td class="num">—</td><td class="g-none" style="color:var(--grade);font-family:var(--mono);font-weight:600">—</td><td class="num"><span class="badge neutral">not generated</span></td><td class="num">—</td><td>not generated</td><td class="num">—</td><td>not generated</td></tr></tbody></table></div>
+
+<h2>Worst findings</h2><div class="tbl-wrap"><table><thead><tr><th>Severity</th><th>Type</th><th>Category</th><th>Location</th><th>Finding</th></tr></thead><tbody><tr><td class="sev-high">🔴 high</td><td><code class="ftype">unused_import</code></td><td class="cat">Duplication &amp; Dead Code</td><td><code class="floc">accounts\apps.py:9</code></td><td>Import &#x27;accounts&#x27; is never used</td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">cyclomatic_complexity</code></td><td class="cat">Complexity</td><td><code class="floc">accounts\context_processors.py:21</code></td><td><br><span class="faint">→ Extract methods or simplify conditionals</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">cognitive_complexity</code></td><td class="cat">Complexity</td><td><code class="floc">accounts\context_processors.py:21</code></td><td><br><span class="faint">→ Reduce nesting and boolean operations</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">mutable_class_attribute</code></td><td class="cat">Correctness</td><td><code class="floc">accounts\forms.py:65</code></td><td>Class attribute &#x27;fields&#x27; is a mutable value shared by every instance of Meta<br><span class="faint">→ Assign it in __init__ instead, or use an immutable constant (tuple/frozenset). If a shared class variable is truly intended, annotate it ClassVar and document it.</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">mutable_class_attribute</code></td><td class="cat">Correctness</td><td><code class="floc">accounts\migrations\0001_initial.py:12</code></td><td>Class attribute &#x27;dependencies&#x27; is a mutable value shared by every instance of Migration<br><span class="faint">→ Assign it in __init__ instead, or use an immutable constant (tuple/frozenset). If a shared class variable is truly intended, annotate it ClassVar and document it.</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">mutable_class_attribute</code></td><td class="cat">Correctness</td><td><code class="floc">accounts\migrations\0001_initial.py:16</code></td><td>Class attribute &#x27;operations&#x27; is a mutable value shared by every instance of Migration<br><span class="faint">→ Assign it in __init__ instead, or use an immutable constant (tuple/frozenset). If a shared class variable is truly intended, annotate it ClassVar and document it.</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">low_cohesion</code></td><td class="cat">Design &amp; Structure</td><td><code class="floc">accounts\models.py:16</code></td><td>Class has low cohesion (LCOM=70)<br><span class="faint">→ Methods don&#x27;t share attributes - consider splitting class</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">duplicate_code</code></td><td class="cat">Duplication &amp; Dead Code</td><td><code class="floc">accounts\models.py:136</code></td><td>3 structurally identical ~8-line function blocks; also at accounts\models.py:145, accounts\models.py:154<br><span class="faint">→ Extract the shared logic into one function/class.</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">duplicate_code</code></td><td class="cat">Duplication &amp; Dead Code</td><td><code class="floc">accounts\models.py:187</code></td><td>3 structurally identical ~8-line function blocks; also at accounts\models.py:196, accounts\models.py:205<br><span class="faint">→ Extract the shared logic into one function/class.</span></td></tr><tr><td class="sev-high">🔴 high</td><td><code class="ftype">duplicate_code</code></td><td class="cat">Duplication &amp; Dead Code</td><td><code class="floc">accounts\models.py:255</code></td><td>3 structurally identical ~12-line function blocks; also at accounts\models.py:268, accounts\models.py:281<br><span class="faint">→ Extract the shared logic into one function/class.</span></td></tr></tbody></table></div>
+
+<h2>Caveats</h2><div class="callout bad">Detectors that did not complete: <strong>code-doctor</strong>: <code>hygiene</code>. Their categories were dropped, so this score is partial: the missing ones could have moved it either way.</div><div class="callout">44567 finding(s) about code outside this unit are not counted here.</div>
+</main>
+<footer class="doc">Generated by code-overview. The grade comes from health.html; the structure comes from codemap.html. Both are linked above.</footer>
+<script>
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  function activate(id){
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab)));
+})();
+</script>
+</body>
+</html>

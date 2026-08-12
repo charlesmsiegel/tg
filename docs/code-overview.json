@@ -1,0 +1,86 @@
+{
+  "schema": "code-overview/1",
+  "generated": "2026-08-09",
+  "packages": [
+    {
+      "name": "accounts",
+      "roots": ["accounts"],
+      "docs": "accounts/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "chained_select",
+      "roots": ["chained_select"],
+      "docs": "chained_select/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "characters",
+      "roots": ["characters"],
+      "docs": "characters/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "core",
+      "roots": ["core"],
+      "docs": "core/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "game",
+      "roots": ["game"],
+      "docs": "game/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "items",
+      "roots": ["items"],
+      "docs": "items/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "locations",
+      "roots": ["locations"],
+      "docs": "locations/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "widgets",
+      "roots": ["widgets"],
+      "docs": "widgets/docs",
+      "language": "python",
+      "doctor": "django-code-doctor"
+    },
+    {
+      "name": "tg",
+      "roots": ["tg"],
+      "docs": "tg/docs",
+      "language": "python",
+      "doctor": "python-code-doctor"
+    },
+    {
+      "name": "populate_db",
+      "roots": ["populate_db"],
+      "docs": "populate_db/docs",
+      "language": "python",
+      "doctor": ""
+    }
+  ],
+  "notes": {
+    "excluded": [
+      "dl (data-dump scripts, ~400k lines of serialized fixtures, not hand-written logic)",
+      "collected_static (collectstatic build output)",
+      "source_static (excluded alongside collected_static per user choice)",
+      "coverage_html, logs, media, scripts, SOURCES (below --min-files, build/runtime artifacts)"
+    ],
+    "root_repo_candidate": "the whole-repo candidate (pyproject.toml at .) is not a package in this map; repo-level docs cover that scope directly",
+    "populate_db": "codemap only by user choice — mostly game-data seed scripts, not application logic; no health/measurement/theory grading. character_templates, mummy, and test stay as subfolders within it rather than separate packages."
+  }
+}

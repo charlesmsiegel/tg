@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>locations — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">locations — Codebase Atlas</h1>
+  <p class="doc-sub">Polymorphic per-gameline places, sanctums, and territories</p>
+  <div class="doc-meta">generated 2026-08-09 · d6933760 · 382 files, 21849 LOC</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><a href="../../docs/codemap.html">⌂ Overall Code Map</a><span class="co-sep">/</span><span class="co-here">locations</span></div><div class="co-row"><span class="co-lbl">locations</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../../accounts/docs/codemap.html">accounts</a><a href="../../chained_select/docs/codemap.html">chained_select</a><a href="../../characters/docs/codemap.html">characters</a><a href="../../core/docs/codemap.html">core</a><a href="../../game/docs/codemap.html">game</a><a href="../../items/docs/codemap.html">items</a><a href="../../widgets/docs/codemap.html">widgets</a><a href="../../tg/docs/codemap.html">tg</a><a href="../../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>What this is</h2>
+<p><code>locations</code> is the polymorphic <code>LocationModel</code> inheritance tree for a Django 5.1 World of Darkness app: one shared base (parent/containment, ownership, gauntlet/shroud/dimension_barrier ratings) with 36 concrete gameline subclasses — Vampire Havens/Domains/Elysiums/Racks/Barrens/TremereChantry, Mage Chantries/Nodes/Sanctums/Sectors/Realms/Demesnes/Libraries/ParadoxRealms/RealityZones, Werewolf Caerns, Wraith Necropolises/Nihils/Citadels/Haunts/Byways/Freeholds, Changeling Freeholds/Holdings/Trods/DreamRealms, Demon Bastions/Reliquaries, Hunter HuntingGrounds/Safehouses, Mummy Tombs/CultTemples/UndergroundSanctuaries. It is a standard Django CRUD app (models → forms → views → urls → templates), not a service — its only callers are the app's own views and templates.</p>
+<p>Architecturally it mirrors <code>characters</code> (a sibling polymorphic tree) at roughly a sixth of the size, but the mirroring is uneven: the model layer is disciplined (every subclass extends <code>LocationModel</code> the same way), while the surrounding form/view/permission layers diverge per gameline — see the callout below and the Boundaries tab.</p>
+</div>
+
+<div class="kpis">
+<div class="kpi"><div class="n">21,849</div><div class="l">Python LOC</div></div>
+<div class="kpi"><div class="n">36</div><div class="l">concrete location models</div></div>
+<div class="kpi"><div class="n">9</div><div class="l">gamelines (incl. core/wod)</div></div>
+<div class="kpi warn"><div class="n">3/9</div><div class="l">gamelines with a <code>forms/</code> package</div></div>
+</div>
+
+<h2>Entry points</h2>
+<div class="tbl-wrap"><table class="sortable">
+<tr><th>Entry point</th><th>What it kicks off</th></tr>
+<tr><td><code>locations/urls/__init__.py</code></td><td>Builds <code>urlpatterns</code> by looping over <code>core.constants.GameLine.URL_PATTERNS</code> and importing each gameline's <code>locations/urls/&lt;gameline&gt;</code> package (8 of them), then appends shared <code>create/</code>, <code>update/</code>, <code>list/</code>, <code>index/</code>, and root detail routes.</td></tr>
+<tr><td><code>locations/views/core/__init__.py:125</code> <code>LocationIndexView</code></td><td>GET renders the location home page (all top-level locations grouped by chronicle); POST is the generic "pick a gameline + type, then create or list" dispatcher used by <code>templates/locations/index.html</code>.</td></tr>
+<tr><td><code>locations/views/core/__init__.py:68</code> <code>GenericLocationDetailView</code></td><td>Looks up a location's polymorphic <code>type</code> and redispatches to the matching per-model <code>DetailView</code> via <code>view_mapping</code>.</td></tr>
+<tr><td>Per-gameline <code>CreateView</code>/<code>UpdateView</code>/<code>ListView</code>/<code>DetailView</code></td><td>36 sets of standard Django CBVs, one per concrete model, e.g. <code>locations/views/vampire/__init__.py</code>, <code>locations/views/mage/chantry.py</code>.</td></tr>
+</table></div>
+
+<h2>Reading order</h2>
+<ol>
+<li><code>locations/models/core/location.py</code> — the polymorphic base: <code>parent</code>/<code>contained_within</code> containment, <code>owned_by</code>, and the gauntlet/shroud/dimension_barrier triad every location carries whether or not the gameline uses it (see Glossary).</li>
+<li><code>locations/models/core/city.py</code> — smallest possible subclass; shows the minimal override surface (<code>type</code>, <code>gameline</code>, one <code>get_update_url</code>/<code>get_creation_url</code> pair).</li>
+<li><code>locations/models/wraith/necropolis.py</code> and <code>locations/models/werewolf/caern.py</code> — two more small, clean subclasses; <code>Caern.save()</code> (line 41) shows the one common pattern of deriving a base-class field (<code>gauntlet</code>) from a subclass field (<code>rank</code>).</li>
+<li><code>locations/models/mage/chantry.py</code> — the largest model (392 lines) and a top churn/complexity hotspot; also the one place the polymorphic pattern gets special-cased (it multiply-inherits <code>BackgroundBlock</code> from the <code>characters</code> app — see Boundaries).</li>
+<li><code>locations/views/core/__init__.py</code> — read the whole file; the <code>LocationIndexView.post()</code> gameline branching (lines 184–200) is the single highest-value read in this package (see Invariants &amp; Risks).</li>
+<li><code>locations/views/vampire/__init__.py</code> — one flat 363-line file holding all 6 Vampire location view sets; contrast the permission mixins on <code>HavenCreateView</code>/<code>DomainCreateView</code> (lines 31, 83) against <code>TremereChantryCreateView</code>/<code>BarrensCreateView</code> (lines 241, 303).</li>
+<li><code>locations/forms/core/location_creation.py</code> — the chained gameline→type dropdown driving the generic creation form; note it hardcodes ST-vs-non-ST visibility to Mage only (lines 50–89).</li>
+<li>Skip: <code>locations/migrations/0001_initial.py</code> (3,987 lines, generated) and the per-gameline template trees under <code>templates/locations/*</code> unless chasing a specific fan-in template (see Dependencies tab — <code>core/location/detail.html</code> and <code>core/location/form.html</code> are shared by most gamelines).</li>
+</ol>
+
+<h2>Intended vs. actual architecture</h2>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+  LM["LocationModel\n(core, polymorphic base)"]
+  LM --> VTM["Vampire: 6 models"]
+  LM --> MTA["Mage: 9 models"]
+  LM --> WTO["Wraith: 6 models"]
+  LM --> CTD["Changeling: 4 models"]
+  LM --> WTA["Werewolf: 1 model"]
+  LM --> DTF["Demon: 2 models"]
+  LM --> HTR["Hunter: 2 models"]
+  LM --> MTR["Mummy: 3 models"]
+  LM --> WOD["core/wod: City"]
+  VTM --> VF["forms/? — none"]
+  MTA --> MF["forms/mage — full"]
+  CTD --> CF["forms/changeling — full"]
+  WTO --> WF2["forms/? — none"]
+  WTA --> WF3["forms/? — none"]
+  DTF --> DF["forms/? — none"]
+  HTR --> HF["forms/? — none"]
+  MTR --> MRF["forms/? — none"]
+  classDef missing fill:#3a2020,stroke:#a44,color:#eee
+  class VF,WF2,WF3,DF,HF,MRF missing
+</pre></div></div>
+<div class="callout warn">Only Mage, Changeling and core have a dedicated <code>forms/</code> package (<code>locations/forms/{core,mage,changeling}</code>). The other 6 gamelines (Vampire, Wraith, Werewolf, Demon, Hunter, Mummy) skip custom forms entirely — their <code>CreateView</code>/<code>UpdateView</code> pairs each restate the same field list twice (e.g. <code>locations/views/vampire/__init__.py:33-45</code> and <code>:53-65</code> for Haven). This is consistent with <code>locations/docs/health.html</code>'s F grade in Duplication &amp; Dead Code (764 findings, 103/KLOC).</div>
+
+<h2>Key decisions &amp; constraints</h2>
+<ul>
+<li><strong>django-polymorphic single-table-per-tree.</strong> <code>core.models.Model</code> (<code>core/models.py:369</code>) extends <code>PolymorphicModel</code>; <code>LocationModel</code> and every gameline subclass inherit through it, so <code>LocationModel.objects.all()</code> can return mixed concrete types and <code>.with_polymorphic_ctype()</code> (<code>core/models.py:34</code>) is required before calling subclass-only methods.</li>
+<li><strong>URL routing is declarative and self-skipping.</strong> <code>locations/urls/__init__.py</code> wraps each gameline's <code>import_module</code> in <code>try/except (ImportError, AttributeError)</code>, so a missing gameline urls package silently drops that gameline's routes rather than failing loudly — worth knowing when a route 404s unexpectedly.</li>
+<li><strong>No coverage artifact and no LLM usage</strong> were found for this package (the coverage analyzer found no coverage.xml/lcov.info/etc.; the LLM-ops analyzer found no SDK call sites) — the Coverage and LLM Ops tabs are omitted rather than fabricated.</li>
+<li><strong>Base-class field bleed.</strong> Every location, including a plain <code>City</code>, carries Wraith-flavored <code>shroud</code>/<code>dimension_barrier</code> fields and Mage/Wraith-flavored <code>gauntlet</code> (<code>locations/models/core/location.py:39-41</code>) because they live on the shared base rather than a gameline-specific mixin — see Glossary.</li>
+</ul>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">382</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">29,925</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">39%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>21,849</td><td class='num'>233</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>73.0%</td></tr>
+<tr><td>HTML</td><td class='num'>7,905</td><td class='num'>148</td><td><div class="bar "><i style="width:36.2%"></i></div></td><td class='num'>26.4%</td></tr>
+<tr><td>Markdown</td><td class='num'>171</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.6%</td></tr></tbody></table></div>
+
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>tests/</code></td><td class='num'>8,481</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>templates/</code></td><td class='num'>7,905</td><td><div class="bar "><i style="width:93.2%"></i></div></td></tr>
+<tr><td><code>migrations/</code></td><td class='num'>4,347</td><td><div class="bar "><i style="width:51.3%"></i></div></td></tr>
+<tr><td><code>models/</code></td><td class='num'>4,219</td><td><div class="bar "><i style="width:49.7%"></i></div></td></tr>
+<tr><td><code>views/</code></td><td class='num'>2,259</td><td><div class="bar "><i style="width:26.6%"></i></div></td></tr>
+<tr><td><code>forms/</code></td><td class='num'>1,572</td><td><div class="bar "><i style="width:18.5%"></i></div></td></tr>
+<tr><td><code>urls/</code></td><td class='num'>851</td><td><div class="bar "><i style="width:10.0%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>283</td><td><div class="bar "><i style="width:3.3%"></i></div></td></tr>
+<tr><td><code>templatetags/</code></td><td class='num'>8</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>migrations/0001_initial.py</code></td><td class='num'>3,987</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>37</td></tr>
+<tr><td><code>models/mage/paradox_realm.py</code></td><td class='num'>645</td><td><div class="bar "><i style="width:16.2%"></i></div></td><td class='num'>41</td></tr>
+<tr><td><code>tests/models/mage/test_paradox_realm.py</code> <span class="badge neutral">test</span></td><td class='num'>506</td><td><div class="bar "><i style="width:12.7%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>tests/forms/changeling/test_freehold.py</code> <span class="badge neutral">test</span></td><td class='num'>487</td><td><div class="bar "><i style="width:12.2%"></i></div></td><td class='num'>6</td></tr>
+<tr><td><code>tests/forms/mage/test_sector.py</code> <span class="badge neutral">test</span></td><td class='num'>422</td><td><div class="bar "><i style="width:10.6%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/forms/mage/test_chantry.py</code> <span class="badge neutral">test</span></td><td class='num'>372</td><td><div class="bar "><i style="width:9.3%"></i></div></td><td class='num'>11</td></tr>
+<tr><td><code>migrations/0002_initial.py</code></td><td class='num'>360</td><td><div class="bar "><i style="width:9.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/forms/mage/test_node.py</code> <span class="badge neutral">test</span></td><td class='num'>349</td><td><div class="bar "><i style="width:8.8%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>models/mage/chantry.py</code></td><td class='num'>332</td><td><div class="bar "><i style="width:8.3%"></i></div></td><td class='num'>24</td></tr>
+<tr><td><code>tests/forms/mage/test_demesne.py</code> <span class="badge neutral">test</span></td><td class='num'>326</td><td><div class="bar "><i style="width:8.2%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>tests/models/changeling/test_freehold.py</code> <span class="badge neutral">test</span></td><td class='num'>319</td><td><div class="bar "><i style="width:8.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>tests/models/mage/test_chantry.py</code> <span class="badge neutral">test</span></td><td class='num'>317</td><td><div class="bar "><i style="width:8.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/vampire/__init__.py</code></td><td class='num'>311</td><td><div class="bar "><i style="width:7.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/models/mage/test_sector.py</code> <span class="badge neutral">test</span></td><td class='num'>295</td><td><div class="bar "><i style="width:7.4%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>models/mage/realm.py</code></td><td class='num'>292</td><td><div class="bar "><i style="width:7.3%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>tests/models/mage/test_realm.py</code> <span class="badge neutral">test</span></td><td class='num'>292</td><td><div class="bar "><i style="width:7.3%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>tests/models/hunter/test_safehouse.py</code> <span class="badge neutral">test</span></td><td class='num'>289</td><td><div class="bar "><i style="width:7.2%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/views/mage/test_chantry.py</code> <span class="badge neutral">test</span></td><td class='num'>285</td><td><div class="bar "><i style="width:7.1%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>tests/models/wraith/test_haunt.py</code> <span class="badge neutral">test</span></td><td class='num'>283</td><td><div class="bar "><i style="width:7.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>tests/forms/mage/test_paradox_realm.py</code> <span class="badge neutral">test</span></td><td class='num'>269</td><td><div class="bar "><i style="width:6.7%"></i></div></td><td class='num'>0</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>models/mage/paradox_realm.py</code></td><td class='num'>41</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>645</td><td class='num'>5</td></tr>
+<tr><td><code>forms/mage/node.py</code></td><td class='num'>37</td><td><div class="bar warn"><i style="width:90.2%"></i></div></td><td class='num'>234</td><td class='num'>4</td></tr>
+<tr><td><code>migrations/0001_initial.py</code></td><td class='num'>37</td><td><div class="bar warn"><i style="width:90.2%"></i></div></td><td class='num'>3,987</td><td class='num'>7</td></tr>
+<tr><td><code>models/mage/sector.py</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:80.5%"></i></div></td><td class='num'>236</td><td class='num'>4</td></tr>
+<tr><td><code>models/mage/chantry.py</code></td><td class='num'>24</td><td><div class="bar warn"><i style="width:58.5%"></i></div></td><td class='num'>332</td><td class='num'>4</td></tr>
+<tr><td><code>models/mage/node.py</code></td><td class='num'>18</td><td><div class="bar warn"><i style="width:43.9%"></i></div></td><td class='num'>212</td><td class='num'>5</td></tr>
+<tr><td><code>forms/mage/chantry.py</code></td><td class='num'>17</td><td><div class="bar warn"><i style="width:41.5%"></i></div></td><td class='num'>203</td><td class='num'>4</td></tr>
+<tr><td><code>forms/changeling/freehold.py</code></td><td class='num'>15</td><td><div class="bar warn"><i style="width:36.6%"></i></div></td><td class='num'>156</td><td class='num'>5</td></tr>
+<tr><td><code>tests/forms/core/test_location_creation.py</code> <span class="badge neutral">test</span></td><td class='num'>15</td><td><div class="bar warn"><i style="width:36.6%"></i></div></td><td class='num'>222</td><td class='num'>3</td></tr>
+<tr><td><code>forms/changeling/creation.py</code></td><td class='num'>14</td><td><div class="bar warn"><i style="width:34.1%"></i></div></td><td class='num'>168</td><td class='num'>5</td></tr>
+<tr><td><code>views/mage/chantry.py</code></td><td class='num'>14</td><td><div class="bar warn"><i style="width:34.1%"></i></div></td><td class='num'>254</td><td class='num'>6</td></tr>
+<tr><td><code>forms/mage/sanctum.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:29.3%"></i></div></td><td class='num'>63</td><td class='num'>3</td></tr>
+<tr><td><code>models/changeling/freehold.py</code></td><td class='num'>12</td><td><div class="bar warn"><i style="width:29.3%"></i></div></td><td class='num'>213</td><td class='num'>4</td></tr>
+<tr><td><code>forms/mage/demesne.py</code></td><td class='num'>11</td><td><div class="bar warn"><i style="width:26.8%"></i></div></td><td class='num'>66</td><td class='num'>3</td></tr>
+<tr><td><code>forms/mage/sector.py</code></td><td class='num'>11</td><td><div class="bar warn"><i style="width:26.8%"></i></div></td><td class='num'>139</td><td class='num'>5</td></tr>
+<tr><td><code>models/mummy/tomb.py</code></td><td class='num'>11</td><td><div class="bar warn"><i style="width:26.8%"></i></div></td><td class='num'>170</td><td class='num'>4</td></tr>
+<tr><td><code>tests/forms/mage/test_chantry.py</code> <span class="badge neutral">test</span></td><td class='num'>11</td><td><div class="bar warn"><i style="width:26.8%"></i></div></td><td class='num'>372</td><td class='num'>4</td></tr>
+<tr><td><code>views/core/__init__.py</code></td><td class='num'>11</td><td><div class="bar warn"><i style="width:26.8%"></i></div></td><td class='num'>204</td><td class='num'>4</td></tr>
+<tr><td><code>forms/core/location_creation.py</code></td><td class='num'>10</td><td><div class="bar warn"><i style="width:24.4%"></i></div></td><td class='num'>75</td><td class='num'>6</td></tr>
+<tr><td><code>tests/models/mage/test_node.py</code> <span class="badge neutral">test</span></td><td class='num'>10</td><td><div class="bar warn"><i style="width:24.4%"></i></div></td><td class='num'>256</td><td class='num'>4</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">18</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">130</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">254</div><div class="l">runtime loads</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">9</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout good"><b>No module-level dependency cycles detected.</b> The import graph is a DAG at this grouping level.</div>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":112,"fanIn":0,"fanOut":0,"meta":"(repo root) \u00b7 3 files"},{"id":"forms","label":"forms","group":"forms","size":1572,"fanIn":0,"fanOut":0,"meta":"forms \u00b7 19 files"},{"id":"migrations","label":"migrations","group":"migrations","size":4347,"fanIn":0,"fanOut":0,"meta":"migrations \u00b7 3 files"},{"id":"models","label":"models","group":"models","size":4219,"fanIn":0,"fanOut":0,"meta":"models \u00b7 45 files"},{"id":"templates/locations","label":"templates","group":"templates","size":360,"fanIn":3,"fanOut":0,"meta":"templates/locations \u00b7 3 files"},{"id":"templates/locations/changeling","label":"changeling","group":"templates","size":1056,"fanIn":2,"fanOut":1,"meta":"templates/locations/changeling \u00b7 19 files"},{"id":"templates/locations/core","label":"core","group":"templates","size":248,"fanIn":10,"fanOut":0,"meta":"templates/locations/core \u00b7 8 files"},{"id":"templates/locations/demon","label":"demon","group":"templates","size":272,"fanIn":1,"fanOut":1,"meta":"templates/locations/demon \u00b7 8 files"},{"id":"templates/locations/hunter","label":"hunter","group":"templates","size":454,"fanIn":2,"fanOut":1,"meta":"templates/locations/hunter \u00b7 6 files"},{"id":"templates/locations/mage","label":"mage","group":"templates","size":2200,"fanIn":2,"fanOut":1,"meta":"templates/locations/mage \u00b7 46 files"},{"id":"templates/locations/mummy","label":"mummy","group":"templates","size":547,"fanIn":1,"fanOut":1,"meta":"templates/locations/mummy \u00b7 9 files"},{"id":"templates/locations/vampire","label":"vampire","group":"templates","size":1616,"fanIn":2,"fanOut":1,"meta":"templates/locations/vampire \u00b7 24 files"},{"id":"templates/locations/werewolf/caern","label":"caern","group":"templates","size":85,"fanIn":2,"fanOut":1,"meta":"templates/locations/werewolf/caern \u00b7 4 files"},{"id":"templates/locations/wraith","label":"wraith","group":"templates","size":898,"fanIn":1,"fanOut":1,"meta":"templates/locations/wraith \u00b7 18 files"},{"id":"templatetags","label":"templatetags","group":"templatetags","size":8,"fanIn":0,"fanOut":1,"meta":"templatetags \u00b7 1 files"},{"id":"tests","label":"tests","group":"tests","size":8481,"fanIn":0,"fanOut":7,"meta":"tests \u00b7 107 files"},{"id":"urls","label":"urls","group":"urls","size":851,"fanIn":0,"fanOut":0,"meta":"urls \u00b7 47 files"},{"id":"views","label":"views","group":"views","size":2259,"fanIn":0,"fanOut":10,"meta":"views \u00b7 37 files"}],"links":[{"source":"templates/locations/changeling","target":"templates/locations/core","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/locations/demon","target":"templates/locations/core","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"templates/locations/hunter","target":"templates/locations/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templates/locations/mage","target":"templates/locations/core","weight":15,"imports":0,"loads":15,"kind":"resource","cycle":false},{"source":"templates/locations/mummy","target":"templates/locations/core","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"templates/locations/vampire","target":"templates/locations/core","weight":6,"imports":0,"loads":6,"kind":"resource","cycle":false},{"source":"templates/locations/werewolf/caern","target":"templates/locations/core","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"templates/locations/wraith","target":"templates/locations/core","weight":12,"imports":0,"loads":12,"kind":"resource","cycle":false},{"source":"templatetags","target":"templates/locations","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/changeling","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/core","weight":4,"imports":0,"loads":4,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/hunter","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/mage","weight":19,"imports":0,"loads":19,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/vampire","weight":8,"imports":0,"loads":8,"kind":"resource","cycle":false},{"source":"tests","target":"templates/locations/werewolf/caern","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/changeling","weight":16,"imports":0,"loads":16,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/core","weight":5,"imports":0,"loads":5,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/demon","weight":6,"imports":0,"loads":6,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/hunter","weight":6,"imports":0,"loads":6,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/mage","weight":29,"imports":0,"loads":29,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/mummy","weight":9,"imports":0,"loads":9,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/vampire","weight":18,"imports":0,"loads":18,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/werewolf/caern","weight":3,"imports":0,"loads":3,"kind":"resource","cycle":false},{"source":"views","target":"templates/locations/wraith","weight":18,"imports":0,"loads":18,"kind":"resource","cycle":false}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>templates/locations/core/location/detail.html</code></td><td class='num'>35</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/locations/core/location/form.html</code></td><td class='num'>19</td><td><div class="bar "><i style="width:54.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/mage/reality_zone/display_includes/reality_zone.html</code></td><td class='num'>7</td><td><div class="bar "><i style="width:20.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/mage/chantry/form.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:8.6%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/locations/mage/chantry/detail.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:8.6%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>templates/locations/mage/chantry/display_includes/integrated_effects.html</code></td><td class='num'>3</td><td><div class="bar "><i style="width:8.6%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>models/core/location.py</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/changeling/freehold/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>templates/locations/changeling/freehold/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/changeling/freehold/chargen/powers.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/core/city/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>templates/locations/core/city/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/locations/hunter/huntingground/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/locations/hunter/huntingground/form.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>templates/locations/mage/library/detail.html</code></td><td class='num'>2</td><td><div class="bar "><i style="width:5.7%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>views/vampire/__init__.py</code></td><td class='num'>18</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>templates/locations/mage/chantry/locgen.html</code></td><td class='num'>10</td><td><div class="bar warn"><i style="width:55.6%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>models/mage/__init__.py</code></td><td class='num'>9</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/__init__.py</code></td><td class='num'>9</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/mummy.py</code></td><td class='num'>9</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/mage/__init__.py</code></td><td class='num'>9</td><td><div class="bar warn"><i style="width:50.0%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>models/__init__.py</code></td><td class='num'>7</td><td><div class="bar warn"><i style="width:38.9%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>models/vampire/__init__.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:33.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>models/wraith/__init__.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:33.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>views/wraith/__init__.py</code></td><td class='num'>6</td><td><div class="bar warn"><i style="width:33.3%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>forms/changeling/__init__.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:27.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>forms/mage/__init__.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:27.8%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>urls/mage/__init__.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:27.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>urls/vampire/__init__.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:27.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>views/changeling/__init__.py</code></td><td class='num'>5</td><td><div class="bar warn"><i style="width:27.8%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path.</p>
+<div class="callout warn"><b>4 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>templates/locations/core/city/display_includes/basics.html</code> <code>templates/locations/core/location/display_includes/title.html</code> <code>templates/locations/demon/reliquary/display_includes/health.html</code> <code>templates/locations/mage/chantry/select_or_create_form.html</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>templates/locations/core/location/detail.html</code></td><td class='num'>35</td><td><code>templates/locations/changeling/dream_realm/detail.html:1</code> <code>templates/locations/changeling/freehold/detail.html:1</code> <code>templates/locations/changeling/holding/detail.html:1</code> <code>templates/locations/changeling/trod/detail.html:1</code> <code>templates/locations/core/city/detail.html:1</code> <code>templates/locations/demon/bastion/detail.html:1</code> <span class='dim'>… 29 more</span></td></tr>
+<tr><td><code>templates/locations/core/location/form.html</code></td><td class='num'>19</td><td><code>templates/locations/core/city/form.html:1</code> <code>templates/locations/demon/bastion/form.html:1</code> <code>templates/locations/demon/reliquary/form.html:1</code> <code>templates/locations/mage/chantry/basics.html:1</code> <code>templates/locations/mage/chantry/form.html:1</code> <code>templates/locations/mage/demesne/form.html:1</code> <span class='dim'>… 13 more</span></td></tr>
+<tr><td><code>templates/locations/mage/reality_zone/display_includes/reality_zone.html</code></td><td class='num'>7</td><td><code>templates/locations/mage/demesne/detail.html:54</code> <code>templates/locations/mage/node/detail.html:30</code> <code>templates/locations/mage/paradox_realm/detail.html:123</code> <code>templates/locations/mage/reality_zone/detail.html:16</code> <code>templates/locations/mage/realm/detail.html:25</code> <code>templates/locations/mage/sanctum/detail.html:23</code> <span class='dim'>… 1 more</span></td></tr>
+<tr><td><code>templates/locations/mage/chantry/detail.html</code></td><td class='num'>3</td><td><code>tests/models/mage/test_chantry.py:187</code> <code>tests/views/mage/test_chantry.py:69</code> <code>views/mage/chantry.py:31</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/display_includes/integrated_effects.html</code></td><td class='num'>3</td><td><code>templates/locations/mage/chantry/detail.html:28</code> <code>templates/locations/mage/chantry/effects_form.html:1</code> <code>templates/locations/mage/chantry/locgen.html:31</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/form.html</code></td><td class='num'>3</td><td><code>tests/models/mage/test_chantry.py:209</code> <code>tests/views/mage/test_chantry.py:101</code> <code>views/mage/chantry.py:74</code></td></tr>
+<tr><td><code>templates/locations/changeling/dream_realm/form.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_dream_realm.py:74</code> <code>views/changeling/dream_realm.py:29</code></td></tr>
+<tr><td><code>templates/locations/changeling/dream_realm/list.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_dream_realm.py:25</code> <code>views/changeling/dream_realm.py:21</code></td></tr>
+<tr><td><code>templates/locations/changeling/freehold/chargen/powers.html</code></td><td class='num'>2</td><td><code>tests/models/changeling/test_freehold.py:149</code> <code>views/changeling/creation.py:88</code></td></tr>
+<tr><td><code>templates/locations/changeling/freehold/detail.html</code></td><td class='num'>2</td><td><code>tests/models/changeling/test_freehold.py:270</code> <code>views/changeling/freehold.py:16</code></td></tr>
+<tr><td><code>templates/locations/changeling/freehold/form.html</code></td><td class='num'>2</td><td><code>tests/models/changeling/test_freehold.py:338</code> <code>views/changeling/freehold.py:37</code></td></tr>
+<tr><td><code>templates/locations/changeling/holding/form.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_holding.py:74</code> <code>views/changeling/holding.py:29</code></td></tr>
+<tr><td><code>templates/locations/changeling/holding/list.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_holding.py:25</code> <code>views/changeling/holding.py:21</code></td></tr>
+<tr><td><code>templates/locations/changeling/trod/form.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_trod.py:73</code> <code>views/changeling/trod.py:29</code></td></tr>
+<tr><td><code>templates/locations/changeling/trod/list.html</code></td><td class='num'>2</td><td><code>tests/views/changeling/test_trod.py:25</code> <code>views/changeling/trod.py:21</code></td></tr>
+<tr><td><code>templates/locations/core/city/detail.html</code></td><td class='num'>2</td><td><code>tests/models/core/test_city.py:30</code> <code>views/core/city.py:9</code></td></tr>
+<tr><td><code>templates/locations/core/city/form.html</code></td><td class='num'>2</td><td><code>tests/models/core/test_city.py:56</code> <code>views/core/city.py:35</code></td></tr>
+<tr><td><code>templates/locations/hunter/huntingground/detail.html</code></td><td class='num'>2</td><td><code>tests/models/hunter/test_huntingground.py:181</code> <code>views/hunter/huntingground.py:10</code></td></tr>
+<tr><td><code>templates/locations/hunter/huntingground/form.html</code></td><td class='num'>2</td><td><code>tests/models/hunter/test_huntingground.py:193</code> <code>views/hunter/huntingground.py:38</code></td></tr>
+<tr><td><code>templates/locations/index.html</code></td><td class='num'>2</td><td><code>tests/views/core/test_location.py:20</code> <code>views/core/__init__.py:175</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/display_includes/basics.html</code></td><td class='num'>2</td><td><code>templates/locations/mage/chantry/detail.html:23</code> <code>templates/locations/mage/chantry/locgen.html:14</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/display_includes/members.html</code></td><td class='num'>2</td><td><code>templates/locations/mage/chantry/detail.html:31</code> <code>templates/locations/mage/chantry/locgen.html:68</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/display_includes/resources_remaining.html</code></td><td class='num'>2</td><td><code>templates/locations/mage/chantry/detail.html:25</code> <code>templates/locations/mage/chantry/locgen.html:17</code></td></tr>
+<tr><td><code>templates/locations/mage/chantry/list.html</code></td><td class='num'>2</td><td><code>tests/views/mage/test_chantry.py:21</code> <code>views/mage/chantry.py:50</code></td></tr>
+<tr><td><code>templates/locations/mage/library/detail.html</code></td><td class='num'>2</td><td><code>tests/models/mage/test_library.py:107</code> <code>views/mage/library.py:11</code></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">269</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">230</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">chantry.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"models/mage/chantry.py","value":332,"metric":32,"meta":"24 branches \u00b7 2 authors"},{"name":"forms/mage/node.py","value":234,"metric":20,"meta":"37 branches \u00b7 2 authors"},{"name":"models/mage/node.py","value":212,"metric":29,"meta":"18 branches \u00b7 2 authors"},{"name":"models/mage/sector.py","value":236,"metric":13,"meta":"33 branches \u00b7 2 authors"},{"name":"views/mage/chantry.py","value":254,"metric":28,"meta":"14 branches \u00b7 2 authors"},{"name":"models/mage/paradox_realm.py","value":645,"metric":9,"meta":"41 branches \u00b7 2 authors"},{"name":"views/core/__init__.py","value":204,"metric":31,"meta":"11 branches \u00b7 2 authors"},{"name":"forms/mage/chantry.py","value":203,"metric":19,"meta":"17 branches \u00b7 2 authors"},{"name":"forms/core/location_creation.py","value":75,"metric":16,"meta":"10 branches \u00b7 2 authors"},{"name":"models/core/location.py","value":69,"metric":18,"meta":"6 branches \u00b7 2 authors"},{"name":"forms/changeling/freehold.py","value":156,"metric":6,"meta":"15 branches \u00b7 2 authors"},{"name":"models/changeling/freehold.py","value":213,"metric":7,"meta":"12 branches \u00b7 2 authors"},{"name":"views/core/location.py","value":74,"metric":14,"meta":"5 branches \u00b7 2 authors"},{"name":"models/mage/realm.py","value":292,"metric":13,"meta":"5 branches \u00b7 2 authors"},{"name":"forms/changeling/creation.py","value":168,"metric":5,"meta":"14 branches \u00b7 2 authors"},{"name":"models/mummy/tomb.py","value":170,"metric":6,"meta":"11 branches \u00b7 2 authors"},{"name":"forms/mage/sanctum.py","value":63,"metric":5,"meta":"12 branches \u00b7 1 authors"},{"name":"forms/mage/sector.py","value":139,"metric":5,"meta":"11 branches \u00b7 2 authors"},{"name":"models/mage/library.py","value":55,"metric":14,"meta":"3 branches \u00b7 2 authors"},{"name":"models/vampire/haven.py","value":77,"metric":9,"meta":"5 branches \u00b7 2 authors"},{"name":"forms/mage/demesne.py","value":66,"metric":4,"meta":"11 branches \u00b7 2 authors"},{"name":"models/vampire/chantry.py","value":109,"metric":5,"meta":"8 branches \u00b7 2 authors"},{"name":"models/hunter/safehouse.py","value":110,"metric":6,"meta":"6 branches \u00b7 2 authors"},{"name":"models/vampire/rack.py","value":74,"metric":6,"meta":"6 branches \u00b7 2 authors"},{"name":"forms/mage/paradox_realm.py","value":116,"metric":5,"meta":"7 branches \u00b7 2 authors"},{"name":"models/vampire/barrens.py","value":112,"metric":5,"meta":"7 branches \u00b7 2 authors"},{"name":"urls/__init__.py","value":29,"metric":13,"meta":"2 branches \u00b7 2 authors"},{"name":"models/demon/reliquary.py","value":69,"metric":11,"meta":"2 branches \u00b7 2 authors"},{"name":"views/changeling/creation.py","value":121,"metric":5,"meta":"5 branches \u00b7 2 authors"},{"name":"models/werewolf/caern.py","value":39,"metric":7,"meta":"3 branches \u00b7 2 authors"},{"name":"admin.py","value":108,"metric":26,"meta":"0 branches \u00b7 2 authors"},{"name":"models/demon/bastion.py","value":31,"metric":8,"meta":"2 branches \u00b7 2 authors"},{"name":"models/vampire/domain.py","value":65,"metric":7,"meta":"2 branches \u00b7 2 authors"},{"name":"models/mummy/cult_temple.py","value":58,"metric":5,"meta":"3 branches \u00b7 2 authors"},{"name":"views/mage/node.py","value":43,"metric":16,"meta":"0 branches \u00b7 2 authors"},{"name":"models/changeling/dream_realm.py","value":191,"metric":5,"meta":"2 branches \u00b7 2 authors"},{"name":"models/mage/reality_zone.py","value":61,"metric":15,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mage/create.py","value":50,"metric":14,"meta":"0 branches \u00b7 3 authors"},{"name":"views/mage/sanctum.py","value":28,"metric":14,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mage/__init__.py","value":41,"metric":13,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/mage/reality_zone.py","value":30,"metric":6,"meta":"1 branches \u00b7 1 authors"},{"name":"models/changeling/trod.py","value":144,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"models/hunter/huntingground.py","value":115,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"models/wraith/freehold.py","value":71,"metric":6,"meta":"1 branches \u00b7 2 authors"},{"name":"views/core/city.py","value":70,"metric":12,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mage/library.py","value":33,"metric":12,"meta":"0 branches \u00b7 2 authors"},{"name":"views/werewolf/caern.py","value":47,"metric":12,"meta":"0 branches \u00b7 2 authors"},{"name":"models/mage/__init__.py","value":13,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"models/wraith/haunt.py","value":60,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mage/update.py","value":50,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mage/reality_zone.py","value":38,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mage/realm.py","value":35,"metric":11,"meta":"0 branches \u00b7 2 authors"},{"name":"models/changeling/holding.py","value":175,"metric":5,"meta":"1 branches \u00b7 2 authors"},{"name":"views/__init__.py","value":1,"metric":10,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mage/sector.py","value":24,"metric":10,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/core/limited_edit.py","value":45,"metric":3,"meta":"2 branches \u00b7 2 authors"},{"name":"models/__init__.py","value":2,"metric":9,"meta":"0 branches \u00b7 2 authors"},{"name":"models/wraith/necropolis.py","value":26,"metric":9,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mage/detail.py","value":26,"metric":9,"meta":"0 branches \u00b7 2 authors"},{"name":"views/changeling/freehold.py","value":54,"metric":3,"meta":"2 branches \u00b7 2 authors"},{"name":"views/wraith/haunt.py","value":47,"metric":9,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/mage/library.py","value":17,"metric":4,"meta":"1 branches \u00b7 1 authors"},{"name":"models/mage/sanctum.py","value":17,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mage/index.py","value":22,"metric":8,"meta":"0 branches \u00b7 3 authors"},{"name":"views/wraith/necropolis.py","value":40,"metric":8,"meta":"0 branches \u00b7 2 authors"},{"name":"models/core/city.py","value":24,"metric":7,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/changeling/dream_realm.py","value":74,"metric":3,"meta":"1 branches \u00b7 1 authors"},{"name":"models/mage/demesne.py","value":33,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"models/wraith/byway.py","value":64,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"models/wraith/citadel.py","value":43,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"models/wraith/nihil.py","value":84,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"views/mummy.py","value":134,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"views/changeling/__init__.py","value":26,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"views/vampire/__init__.py","value":311,"metric":6,"meta":"0 branches \u00b7 2 authors"},{"name":"forms/mage/__init__.py","value":8,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"models/mummy/sanctuary.py","value":38,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"models/vampire/elysium.py","value":62,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mage/__init__.py","value":11,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/mummy/__init__.py","value":9,"metric":5,"meta":"0 branches \u00b7 2 authors"},{"name":"urls/wraith/create.py","value":35,"metric":5,"meta":"0 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":32}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 150 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: templates/locations/index.html (19), templates/locations/core/location/detail.html (13), templates/locations/mage/chantry/detail.html (13).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>models/mage/chantry.py</code></td><td class='num'>32</td><td class='num'>24</td><td class='num'>332</td><td class='num'>2</td><td class='num' data-sort='800'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>forms/mage/node.py</code></td><td class='num'>20</td><td class='num'>37</td><td class='num'>234</td><td class='num'>2</td><td class='num' data-sort='760'><div class="bar bad"><i style="width:95.0%"></i></div></td></tr>
+<tr><td><code>models/mage/node.py</code></td><td class='num'>29</td><td class='num'>18</td><td class='num'>212</td><td class='num'>2</td><td class='num' data-sort='551'><div class="bar bad"><i style="width:68.9%"></i></div></td></tr>
+<tr><td><code>models/mage/sector.py</code></td><td class='num'>13</td><td class='num'>33</td><td class='num'>236</td><td class='num'>2</td><td class='num' data-sort='442'><div class="bar bad"><i style="width:55.2%"></i></div></td></tr>
+<tr><td><code>views/mage/chantry.py</code></td><td class='num'>28</td><td class='num'>14</td><td class='num'>254</td><td class='num'>2</td><td class='num' data-sort='420'><div class="bar bad"><i style="width:52.5%"></i></div></td></tr>
+<tr><td><code>models/mage/paradox_realm.py</code></td><td class='num'>9</td><td class='num'>41</td><td class='num'>645</td><td class='num'>2</td><td class='num' data-sort='378'><div class="bar bad"><i style="width:47.2%"></i></div></td></tr>
+<tr><td><code>views/core/__init__.py</code></td><td class='num'>31</td><td class='num'>11</td><td class='num'>204</td><td class='num'>2</td><td class='num' data-sort='372'><div class="bar bad"><i style="width:46.5%"></i></div></td></tr>
+<tr><td><code>forms/mage/chantry.py</code></td><td class='num'>19</td><td class='num'>17</td><td class='num'>203</td><td class='num'>2</td><td class='num' data-sort='342'><div class="bar bad"><i style="width:42.8%"></i></div></td></tr>
+<tr><td><code>forms/core/location_creation.py</code></td><td class='num'>16</td><td class='num'>10</td><td class='num'>75</td><td class='num'>2</td><td class='num' data-sort='176'><div class="bar bad"><i style="width:22.0%"></i></div></td></tr>
+<tr><td><code>models/core/location.py</code></td><td class='num'>18</td><td class='num'>6</td><td class='num'>69</td><td class='num'>2</td><td class='num' data-sort='126'><div class="bar bad"><i style="width:15.8%"></i></div></td></tr>
+<tr><td><code>forms/changeling/freehold.py</code></td><td class='num'>6</td><td class='num'>15</td><td class='num'>156</td><td class='num'>2</td><td class='num' data-sort='96'><div class="bar bad"><i style="width:12.0%"></i></div></td></tr>
+<tr><td><code>models/changeling/freehold.py</code></td><td class='num'>7</td><td class='num'>12</td><td class='num'>213</td><td class='num'>2</td><td class='num' data-sort='91'><div class="bar bad"><i style="width:11.4%"></i></div></td></tr>
+<tr><td><code>views/core/location.py</code></td><td class='num'>14</td><td class='num'>5</td><td class='num'>74</td><td class='num'>2</td><td class='num' data-sort='84'><div class="bar bad"><i style="width:10.5%"></i></div></td></tr>
+<tr><td><code>models/mage/realm.py</code></td><td class='num'>13</td><td class='num'>5</td><td class='num'>292</td><td class='num'>2</td><td class='num' data-sort='78'><div class="bar bad"><i style="width:9.8%"></i></div></td></tr>
+<tr><td><code>forms/changeling/creation.py</code></td><td class='num'>5</td><td class='num'>14</td><td class='num'>168</td><td class='num'>2</td><td class='num' data-sort='75'><div class="bar bad"><i style="width:9.4%"></i></div></td></tr>
+<tr><td><code>models/mummy/tomb.py</code></td><td class='num'>6</td><td class='num'>11</td><td class='num'>170</td><td class='num'>2</td><td class='num' data-sort='72'><div class="bar bad"><i style="width:9.0%"></i></div></td></tr>
+<tr><td><code>forms/mage/sanctum.py</code></td><td class='num'>5</td><td class='num'>12</td><td class='num'>63</td><td class='num'>1</td><td class='num' data-sort='65'><div class="bar bad"><i style="width:8.1%"></i></div></td></tr>
+<tr><td><code>forms/mage/sector.py</code></td><td class='num'>5</td><td class='num'>11</td><td class='num'>139</td><td class='num'>2</td><td class='num' data-sort='60'><div class="bar bad"><i style="width:7.5%"></i></div></td></tr>
+<tr><td><code>models/mage/library.py</code></td><td class='num'>14</td><td class='num'>3</td><td class='num'>55</td><td class='num'>2</td><td class='num' data-sort='56'><div class="bar bad"><i style="width:7.0%"></i></div></td></tr>
+<tr><td><code>models/vampire/haven.py</code></td><td class='num'>9</td><td class='num'>5</td><td class='num'>77</td><td class='num'>2</td><td class='num' data-sort='54'><div class="bar bad"><i style="width:6.8%"></i></div></td></tr>
+<tr><td><code>forms/mage/demesne.py</code></td><td class='num'>4</td><td class='num'>11</td><td class='num'>66</td><td class='num'>2</td><td class='num' data-sort='48'><div class="bar bad"><i style="width:6.0%"></i></div></td></tr>
+<tr><td><code>models/vampire/chantry.py</code></td><td class='num'>5</td><td class='num'>8</td><td class='num'>109</td><td class='num'>2</td><td class='num' data-sort='45'><div class="bar bad"><i style="width:5.6%"></i></div></td></tr>
+<tr><td><code>models/hunter/safehouse.py</code></td><td class='num'>6</td><td class='num'>6</td><td class='num'>110</td><td class='num'>2</td><td class='num' data-sort='42'><div class="bar bad"><i style="width:5.2%"></i></div></td></tr>
+<tr><td><code>models/vampire/rack.py</code></td><td class='num'>6</td><td class='num'>6</td><td class='num'>74</td><td class='num'>2</td><td class='num' data-sort='42'><div class="bar bad"><i style="width:5.2%"></i></div></td></tr>
+<tr><td><code>forms/mage/paradox_realm.py</code></td><td class='num'>5</td><td class='num'>7</td><td class='num'>116</td><td class='num'>2</td><td class='num' data-sort='40'><div class="bar bad"><i style="width:5.0%"></i></div></td></tr></tbody></table></div>
+<details><summary>Complex but dormant files (1) — high complexity, zero recent commits</summary><div class="body"><p class="dim">Not urgent, but risky to modify: nobody has touched these recently, so working knowledge may have evaporated.</p><ul><li><code>migrations/0001_initial.py</code> <span class='dim'>(37 branches, untouched)</span></li></ul></div></details>
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<div class="card hero">
+<h2>Where correctness matters most</h2>
+<p>Three flows: the generic "create or list a location" dispatcher (the one path every gameline is supposed to share), the per-gameline create/update path where permission enforcement actually diverges, and the polymorphic detail-view dispatch that every location, regardless of gameline, goes through to render.</p>
+</div>
+
+<h3>1. Generic create/list dispatch from the location index</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant U as Browser
+  participant V as LocationIndexView.post
+  participant OT as ObjectType
+  U->>V: POST index/ (loc_type, action=create|index)
+  V->>OT: get_or_create(name=loc_type, type="loc", defaults gameline="wod")
+  OT-->>V: gameline code
+  alt gameline in [wod, wta, mta]
+    V->>V: build redi = "locations[:gameline]:create|list:loc_type"
+    V-->>U: redirect(redi)
+  else gameline in [vtm, wto, ctd, dtf, htr, mtr]
+    V->>V: no branch matches, redi never assigned
+    V-->>U: UnboundLocalError (500)
+  end
+</pre></div></div>
+<p class="dim">Seams:</p>
+<ul>
+<li>The <code>if</code>/<code>elif</code> chain at <code>locations/views/core/__init__.py:186-191</code> (action=create) and <code>:194-199</code> (action=index) only recognizes <code>gameline == "wod"|"wta"|"mta"</code>; <code>core.constants.GameLine.URL_PATTERNS</code> (<code>core/constants.py:34-43</code>) registers 8 gamelines including <code>vampire</code>, <code>wraith</code>, <code>changeling</code>, <code>demon</code>, <code>mummy</code>, <code>hunter</code>. Posting a create/index action for any location type belonging to those 6 gamelines leaves <code>redi</code> unbound before <code>return redirect(redi)</code> — an <code>UnboundLocalError</code>, not a handled redirect.</li>
+<li>This only fires through the POST path of the shared index page; direct navigation to a gameline's own namespaced URL (e.g. <code>locations:vampire:create:haven</code>, used by <code>Haven.get_creation_url</code> at <code>locations/models/vampire/haven.py:58-59</code>) is unaffected — so the bug is easy to miss in day-to-day per-gameline testing and only surfaces from the generic index UI.</li>
+</ul>
+
+<h3>2. Create/update request path — permission enforcement diverges within one file</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant U as Anonymous browser
+  participant H as HavenCreateView
+  participant B as BarrensCreateView
+  U->>H: GET vampire/create/haven/
+  H->>H: LoginRequiredMixin check
+  H-->>U: redirect to login (not authenticated)
+  U->>B: GET vampire/create/barrens/
+  B->>B: no LoginRequiredMixin, no permission mixin
+  B-->>U: 200, bare CreateView form rendered
+</pre></div></div>
+<p class="dim">Seams:</p>
+<ul>
+<li><code>HavenCreateView</code>, <code>DomainCreateView</code>, <code>ElysiumCreateView</code>, <code>RackCreateView</code> (<code>locations/views/vampire/__init__.py:31, 83, 133, 187</code>) all mix in <code>LoginRequiredMixin, MessageMixin</code>, and their <code>DetailView</code> siblings use <code>ViewPermissionMixin</code>; their <code>UpdateView</code>s use <code>EditPermissionMixin</code>.</li>
+<li><code>TremereChantryCreateView</code>/<code>TremereChantryUpdateView</code>/<code>TremereChantryDetailView</code> (<code>locations/views/vampire/__init__.py:236-294</code>) and <code>BarrensCreateView</code>/<code>BarrensUpdateView</code>/<code>BarrensDetailView</code> (<code>:298-363</code>) use bare <code>CreateView</code>/<code>UpdateView</code>/<code>DetailView</code> with none of those mixins — no login requirement, no ST/owner edit check, no visibility filter.</li>
+<li>This is the same file, same author pattern, four models handled one way and two the other — not a difference between gamelines, a difference within one gameline's view module. It directly contradicts this repo's own <code>CLAUDE.md</code> rule that player-related location/character models require <code>LoginRequiredMixin</code>/<code>ViewPermissionMixin</code>.</li>
+</ul>
+
+<h3>3. Polymorphic detail-view dispatch</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant U as Browser
+  participant G as GenericLocationDetailView
+  participant M as view_mapping dict
+  participant D as Per-model DetailView
+  participant T as core/location/detail.html
+  U->>G: GET locations/&lt;pk&gt;/
+  G->>G: fetch LocationModel by pk, read polymorphic .type
+  G->>M: view_mapping[type]
+  alt type known (36 entries)
+    M-->>G: matching DetailView class
+    G-->>U: delegate to per-model DetailView
+    D->>T: render gameline detail.html, which {% include %}s core/location/detail.html
+  else type not in view_mapping
+    G-->>U: redirect to locations:index (default_redirect)
+  end
+</pre></div></div>
+<p class="dim">Seams:</p>
+<ul>
+<li><code>view_mapping</code> (<code>locations/views/core/__init__.py:74-122</code>) is a hand-maintained dict of 36 entries; a new subclass that forgets an entry here falls through to the <code>default_redirect</code> silently rather than 404ing loudly — a class of bug that would look like "the location vanished," not a stack trace.</li>
+<li><code>templates/locations/core/location/detail.html</code> has fan-in 35 per the Dependencies tab — nearly every gameline detail template includes it, so a change there has the widest blast radius of any file in the package.</li>
+</ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<h2>Concern ownership</h2>
+<div class="tbl-wrap"><table class="sortable">
+<tr><th>Concern</th><th>Owning module(s)</th><th>Verdict</th></tr>
+<tr><td>Polymorphic identity / containment</td><td><code>locations/models/core/location.py</code> (<code>LocationModel</code>, <code>type</code>, <code>parent</code>, <code>contained_within</code>)</td><td><span class="badge good">good</span> — every subclass extends it the same way, no bypasses found</td></tr>
+<tr><td>URL routing</td><td><code>locations/urls/__init__.py</code> (dynamic per-gameline loader) + <code>core.constants.GameLine.URL_PATTERNS</code></td><td><span class="badge good">good</span> single owner, though failures degrade silently (see Overview)</td></tr>
+<tr><td>Rating validation (gauntlet/shroud/dimension_barrier)</td><td><code>LocationModel.clean()</code> (<code>locations/models/core/location.py:69-91</code>)</td><td><span class="badge good">good</span> single owner, applies uniformly via inherited <code>save()</code></td></tr>
+<tr><td>Merit/flaw rating bounds</td><td>Re-declared per subclass: <code>HavenMeritFlawRating</code>, <code>NodeMeritFlawRating</code>, etc., each with its own <code>CheckConstraint</code></td><td><span class="badge warn">warn</span> — correct everywhere checked, but the same -10..10 constraint is copy-pasted rather than shared</td></tr>
+<tr><td>Create/Update form field lists</td><td>Duplicated per gameline: <code>locations/views/vampire/__init__.py</code> repeats every field list twice (Create + Update) per model; 6 of 9 gamelines have no <code>forms/</code> package at all</td><td><span class="badge bad">bad</span> — smeared, matches <code>locations/docs/health.html</code>'s Duplication &amp; Dead Code grade of F</td></tr>
+<tr><td>View-level auth/permission checks</td><td><code>core.mixins</code> (<code>ViewPermissionMixin</code>, <code>EditPermissionMixin</code>) applied per view class</td><td><span class="badge bad">bad</span> — applied to Haven/Domain/Elysium/Rack, dropped for TremereChantry/Barrens in the same file (<code>locations/views/vampire/__init__.py:236-362</code>)</td></tr>
+<tr><td>Background-point economy (allies/resources/etc.)</td><td><code>characters.models.core.background_block.BackgroundBlock</code>, reused by <code>locations.models.mage.chantry.Chantry</code></td><td><span class="badge bad">bad</span> — cross-package reach, see violation below</td></tr>
+</table></div>
+
+<h2>Data ownership</h2>
+<div class="callout warn">
+<strong><code>LocationModel.contained_within</code></strong> (M2M, <code>locations/models/core/location.py:32-36</code>) is written from multiple, unrelated call sites rather than one owning method: <code>Chantry.set_library()</code> (<code>locations/models/mage/chantry.py:282-285</code>) adds a Library to it directly, and Django admin/forms can add/remove it through the generic <code>contained_within</code> form field present on nearly every gameline's Create/Update field list (e.g. <code>locations/views/vampire/__init__.py:36, 56, 88...</code>). No model-level invariant stops a location from being contained within itself or forming a containment cycle — nothing in <code>LocationModel.clean()</code> checks it.
+</div>
+<div class="callout warn">
+<strong><code>BackgroundRating.char</code></strong> (<code>characters/models/core/background_block.py:22-28</code>) is an FK typed at <code>characters.Human</code>, but <code>Chantry</code> — a <code>LocationModel</code> — writes to it as if it were a generic owner via <code>BackgroundBlock._set_property</code> (<code>characters/models/core/background_block.py:90-97</code>, <code>char=self</code> where <code>self</code> is a <code>Chantry</code>). Two different apps' models are writing the same table under an assumption that only one of them satisfies.
+</div>
+
+<h2>Boundary violations</h2>
+<ul>
+<li><strong>Chantry reaches into the characters package's Human-oriented background system.</strong> <code>Chantry(BackgroundBlock, LocationModel)</code> (<code>locations/models/mage/chantry.py:13</code>) inherits <code>BackgroundBlock</code> from <code>characters.models.core.background_block</code>, whose <code>total_background_rating()</code> (<code>characters/models/core/background_block.py:99-103</code>) filters <code>BackgroundRating.objects.filter(..., char=self)</code> — a query designed for a <code>Human</code> instance. The project's own test suite documents this as a known, unfixed design issue: <code>locations/tests/models/mage/test_chantry.py:95-99</code> — <em>"BackgroundBlock.total_background_rating() queries BackgroundRating.objects.filter(char=self) expecting a Human instance... This is a known design issue - Chantry uses BackgroundBlock but is a Location. Skipping this test until the design is fixed."</em> In practice <code>Chantry</code> works around it by maintaining its own <code>backgrounds</code> relation via <code>ChantryBackgroundRating</code> (<code>locations/models/mage/chantry.py:361-380</code>) and its own <code>trait_cost()</code>/<code>total_cost()</code> (<code>locations/models/mage/chantry.py:178-186</code>, <code>locations/models/mage/chantry.py:227-246</code>), so the inherited <code>BackgroundBlock</code> machinery (dynamic property creation at <code>characters/models/core/background_block.py:74-97</code>) is present on the class but effectively dead weight that would misbehave if exercised.</li>
+<li><strong>Generic index dispatcher only understands 3 of 8 gameline namespaces.</strong> <code>LocationIndexView.post()</code> (<code>locations/views/core/__init__.py:184-200</code>) hardcodes <code>wod</code>/<code>wta</code>/<code>mta</code> while its own sibling <code>locs</code> dict two dozen lines above (<code>:126-171</code>) lists models from all 8 gamelines — the dispatcher was not updated in step with the model registry it sits next to. See Critical Flows for the resulting failure mode.</li>
+<li><strong>No dependency cycles.</strong> The dependency analyzer reports zero module cycles and zero file cycles for this package — the violations above are semantic (wrong assumptions across an app boundary, inconsistent mixin application), not import cycles.</li>
+</ul>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h2>Invariants</h2>
+<div class="tbl-wrap"><table class="sortable">
+<tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr>
+<tr><td>gauntlet/shroud/dimension_barrier ∈ [0,10]</td><td><code>locations/models/core/location.py:74-89</code> (<code>LocationModel.clean()</code>)</td><td><span class="badge good">good</span> — enforced once, inherited by all 36 subclasses</td></tr>
+<tr><td>Node/HorizonRealm rank ∈ declared range, merit/flaw ratings ∈ [-10,10]</td><td>Per-model <code>CheckConstraint</code>s, e.g. <code>locations/models/mage/node.py:61-82</code>, <code>locations/models/mage/realm.py:142-144</code></td><td><span class="badge good">good</span> — enforced at the DB level, though the pattern is copy-pasted per model rather than shared</td></tr>
+<tr><td>"<code>rank</code> is settable via <code>set_rank()</code>"</td><td>True for <code>Node</code> (<code>models/mage/node.py:91-94</code>), <code>Library</code> (<code>models/mage/library.py:45-46</code>), <code>HorizonRealm</code> (<code>models/mage/realm.py:227-231</code>), <code>Haunt</code> (<code>models/wraith/haunt.py:65-66</code>) — false for <code>Chantry</code></td><td><span class="badge bad">bad</span> — <code>Chantry.rank</code> is a read-only <code>@property</code> derived from <code>total_points</code> (<code>models/mage/chantry.py:197-207</code>); <code>Chantry.set_rank()</code> (<code>:287-289</code>) does <code>self.rank = rank</code>, which raises <code>AttributeError</code> against a property with no setter. No test calls it — <code>tests/models/mage/test_chantry.py:102-108</code> is named <code>test_set_rank</code> but never invokes <code>set_rank()</code>, only asserts the derived property. Dead, broken code that looks callable.</td></tr>
+<tr><td>Location index create/list works for every registered gameline</td><td><code>locations/views/core/__init__.py:184-200</code></td><td><span class="badge bad">bad</span> — only true for 3 of 8 (see risk ranking)</td></tr>
+<tr><td>Player-facing location views require login/permission check</td><td><code>core.mixins.ViewPermissionMixin</code> / <code>EditPermissionMixin</code> / <code>LoginRequiredMixin</code>, applied per view class</td><td><span class="badge bad">bad</span> — applied to 4 of 6 Vampire location types, absent for TremereChantry and Barrens (<code>locations/views/vampire/__init__.py:236-362</code>)</td></tr>
+</table></div>
+
+<h2>Failure handling</h2>
+<ul>
+<li><strong>Unhandled branch → unhandled exception, not a graceful error.</strong> <code>LocationIndexView.post()</code> lets <code>redi</code> go unassigned for 6 of 8 gamelines and then calls <code>redirect(redi)</code> (<code>locations/views/core/__init__.py:184-200</code>) — this is a 500, not a 404 or a form error, for a path reachable from the main location index page's own generic form.</li>
+<li><strong>Missing gameline URL module fails silently.</strong> <code>locations/urls/__init__.py</code> catches <code>(ImportError, AttributeError)</code> around each gameline's dynamic <code>import_module</code> and does nothing on failure — a typo'd module name would drop a gameline's routes with no log line or exception surfaced anywhere.</li>
+<li><strong>Chantry's inherited <code>BackgroundBlock</code> machinery is untested against its actual failure mode.</strong> The project's own comment (<code>locations/tests/models/mage/test_chantry.py:95-99</code>) documents the mismatch but the test is skipped rather than asserting the failure — so a future caller of the inherited dynamic properties (<code>chantry.allies = 3</code>, etc., created via <code>BackgroundBlock.__init__</code> at <code>characters/models/core/background_block.py:74-79</code>) would hit it live in production, not in CI.</li>
+</ul>
+
+<h2>Concurrency</h2>
+<p>Synchronous Django views throughout; no threading, async views, or locking in this package. The only shared-mutation risk is the M2M/FK writes noted in Boundaries (<code>contained_within</code>, cross-model <code>BackgroundRating.char</code>), which are ordinary last-write-wins Django ORM semantics, not a concurrency bug specific to this package.</p>
+
+<h2>Risk ranking</h2>
+<div class="callout bad"><strong>1. Generic location index throws <code>UnboundLocalError</code> for Vampire, Wraith, Changeling, Demon, Hunter, and Mummy locations.</strong> Any create/list action posted from <code>templates/locations/index.html</code> for a location type in those 6 gamelines 500s (<code>locations/views/core/__init__.py:184-200</code>). High likelihood (the index page is the discoverable, "browse everything" entry point) × wide blast radius (6 of 8 non-core gamelines, i.e. most of the app's location types).</div>
+<div class="callout bad"><strong>2. Two of six Vampire location types (TremereChantry, Barrens) have no login or permission check on Create/Update/Detail.</strong> <code>locations/views/vampire/__init__.py:236-362</code> — directly contradicts this repo's own documented rule (player-related models require <code>LoginRequiredMixin</code>/<code>ViewPermissionMixin</code>). Any anonymous user can view, and any authenticated user can create/edit, these locations.</div>
+<div class="callout warn"><strong>3. <code>Chantry.set_rank()</code> is dead code that raises if called</strong> (<code>locations/models/mage/chantry.py:287-289</code>) — low likelihood since nothing currently calls it, but it will confuse the next person who copies the pattern from <code>Node</code>/<code>Library</code>/<code>HorizonRealm</code> onto <code>Chantry</code>.</div>
+<div class="callout warn"><strong>4. Duplication in the Create/Update field lists and missing <code>forms/</code> packages for 6 of 9 gamelines</strong> means every field addition/rename has to be made in 2-4 places per model (Create fields, Update fields, sometimes template). Consistent with <code>locations/docs/health.html</code>'s F grade in Duplication &amp; Dead Code (764 findings, 103.01/KLOC weighted).</div>
+<div class="callout warn"><strong>5. Knowledge concentration on the Mage hotspots.</strong> <code>locations/models/mage/chantry.py</code>, <code>locations/forms/mage/node.py</code>, and <code>locations/models/mage/node.py</code> are the top 3 churn×complexity hotspots (score 800, 760, 551) per the hotspots analyzer, and each shows only 2 distinct authors — the most complex, most frequently changed code in the package has the thinnest bus factor.</div>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<h2>Domain term ↔ code name</h2>
+<div class="tbl-wrap"><table class="sortable">
+<tr><th>Domain term</th><th>Code name(s)</th><th>Files</th><th>Note</th></tr>
+<tr><td>Shroud / Gauntlet / Dimension Barrier</td><td><code>shroud</code>, <code>gauntlet</code>, <code>dimension_barrier</code></td><td><code>locations/models/core/location.py:39-41</code></td><td><span class="badge warn">warn</span> — Wraith (Shroud), Mage/Umbra (Gauntlet), and a bespoke "dimension barrier" concept are baked into the shared <code>LocationModel</code> base rather than a gameline mixin, so every Vampire Haven and Hunter Safehouse carries three fields it never uses.</td></tr>
+<tr><td>Chantry (Mage Tradition/Convention stronghold)</td><td><code>Chantry</code></td><td><code>locations/models/mage/chantry.py:13</code></td><td>Distinct class from the Vampire equivalent below — no name collision at the class level, but both are "a faction's home base" and both files are literally named "chantry.py", just in different gameline directories: <code>locations/models/mage/chantry.py</code> vs <code>locations/models/vampire/chantry.py</code>.</td></tr>
+<tr><td>Chantry (Tremere clan stronghold)</td><td><code>TremereChantry</code></td><td><code>locations/models/vampire/chantry.py:7</code></td><td>Correctly disambiguated from Mage's <code>Chantry</code> by prefixing the class name, even though the file path alone (<code>vampire/chantry.py</code>) would collide.</td></tr>
+<tr><td>Freehold (Changeling fae community)</td><td><code>Freehold</code></td><td><code>locations/models/changeling/freehold.py</code></td><td>Same disambiguation pattern as Chantry.</td></tr>
+<tr><td>Freehold (Wraith independent community)</td><td><code>WraithFreehold</code></td><td><code>locations/models/wraith/freehold.py</code></td><td>Correctly prefixed to avoid colliding with Changeling's <code>Freehold</code> at the Python name level.</td></tr>
+<tr><td>Rank / power level</td><td><code>rank</code> as a real <code>IntegerField</code> (<code>Node</code>, <code>HorizonRealm</code>, <code>Library</code>, <code>Caern</code>-adjacent) vs. <code>rank</code> as a derived read-only <code>@property</code> (<code>Chantry</code>)</td><td><code>locations/models/mage/node.py:35</code>, <code>locations/models/mage/realm.py:49-57</code>, <code>locations/models/mage/library.py:13</code>, <code>locations/models/mage/chantry.py:197-207</code></td><td><span class="badge warn">warn</span> — one word means "a stored attribute you can set" everywhere except Chantry, where it means "a value computed from <code>total_points</code>." <code>Chantry.set_rank()</code> exists and looks like the others but is broken (see Invariants &amp; Risks).</td></tr>
+<tr><td>Location containment</td><td><code>parent</code> (FK, single) vs. <code>contained_within</code> (M2M, plural)</td><td><code>locations/models/core/location.py:25-36</code></td><td>Two different containment relationships coexist on every location with no doc comment distinguishing them; call sites (e.g. <code>Chantry.set_library</code>, <code>locations/models/mage/chantry.py:282-285</code>) use <code>contained_within</code> exclusively — <code>parent</code>'s intended use is not evident from this package alone.</td></tr>
+</table></div>
+
+<div class="callout good">Per-gameline naming is otherwise consistent: every model's <code>type</code> class attribute matches its URL segment and template directory name (e.g. <code>type = "haven"</code> ↔ <code>locations:vampire:create:haven</code> ↔ <code>templates/locations/vampire/haven/</code>), which made the structural read straightforward.</div>
+
+</section></main>
+<footer class="doc">Generated by code-visualization.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

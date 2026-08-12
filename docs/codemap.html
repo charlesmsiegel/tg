@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tg — Codebase Atlas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1420; --bg-grid:rgba(120,160,220,0.05); --surface:#141d2e; --surface-2:#1a2538;
+  --border:rgba(150,180,230,0.14); --border-strong:rgba(150,180,230,0.30);
+  --text:#dbe4f3; --text-dim:#8fa1bd; --text-faint:#5f7191;
+  --accent:#5aa7e8; --accent-dim:rgba(90,167,232,0.14);
+  --good:#59c98f; --good-dim:rgba(89,201,143,0.14);
+  --warn:#e0b25a; --warn-dim:rgba(224,178,90,0.14);
+  --bad:#e06a6a; --bad-dim:rgba(224,106,106,0.15);
+  --violet:#a08fd8;
+  --heat-lo:#27405e; --heat-hi:#e0703f;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f3f5f9; --bg-grid:rgba(40,70,120,0.055); --surface:#ffffff; --surface-2:#eef1f7;
+    --border:rgba(30,55,95,0.14); --border-strong:rgba(30,55,95,0.30);
+    --text:#1d2838; --text-dim:#51617a; --text-faint:#8593a8;
+    --accent:#1f6fbd; --accent-dim:rgba(31,111,189,0.10);
+    --good:#1f8f5c; --good-dim:rgba(31,143,92,0.10);
+    --warn:#a87418; --warn-dim:rgba(168,116,24,0.12);
+    --bad:#bd3f3f; --bad-dim:rgba(189,63,63,0.10);
+    --violet:#6a55b0;
+    --heat-lo:#c9d8ec; --heat-hi:#cf5a26;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:32px 32px; line-height:1.55; font-size:15px;
+}
+header.doc{padding:34px 28px 0; max-width:1280px; margin:0 auto}
+.doc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+.doc-label::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;display:inline-block}
+h1.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+.doc-sub{color:var(--text-dim);margin-top:6px;max-width:900px}
+.doc-meta{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:10px}
+nav.tabs{
+  position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+  margin-top:22px;padding:0 28px;display:flex;gap:2px;overflow-x:auto;
+  max-width:1280px;margin-left:auto;margin-right:auto;scrollbar-width:thin;
+}
+nav.tabs button{
+  appearance:none;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+  padding:12px 14px;cursor:pointer;white-space:nowrap;transition:color .15s;
+}
+nav.tabs button:hover{color:var(--text)}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px}
+.panel{display:none;animation:fadeUp .25s ease both}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- content primitives ---------- */
+.panel h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:26px 0 10px}
+.panel h2:first-child{margin-top:0}
+.panel h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.panel p{margin:8px 0;max-width:940px;color:var(--text)}
+.panel ul,.panel ol{margin:8px 0 8px 22px;max-width:940px}
+.panel li{margin:4px 0}
+.dim{color:var(--text-dim)} .faint{color:var(--text-faint)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.5;margin:10px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:12px 0}
+.card.hero{border-color:var(--border-strong);background:linear-gradient(180deg,var(--accent-dim),var(--surface) 60%)}
+.grid{display:grid;gap:14px;margin:12px 0}
+/* 480px: enough for a 4-5 column table (path + two numbers + a 120px bar) at its
+   minimum widths — below that the pair stacks instead of silently clipping columns.
+   min(100%,...) lets the single remaining track shrink with a phone viewport
+   instead of forcing page-level horizontal overflow */
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid>*{min-width:0}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;min-width:130px}
+.kpi .n{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+.kpi.warn .n{color:var(--warn)} .kpi.bad .n{color:var(--bad)} .kpi.good .n{color:var(--good)} .kpi.accent .n{color:var(--accent)}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);vertical-align:1px;white-space:nowrap}
+.badge.good{color:var(--good);background:var(--good-dim);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-dim);border-color:transparent}
+.badge.bad{color:var(--bad);background:var(--bad-dim);border-color:transparent}
+.badge.accent{color:var(--accent);background:var(--accent-dim);border-color:transparent}
+.badge.neutral{color:var(--text-dim);background:var(--surface-2);border-color:transparent}
+.callout{border-left:3px solid var(--accent);background:var(--accent-dim);border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;max-width:940px}
+.callout.warn{border-color:var(--warn);background:var(--warn-dim)}
+.callout.bad{border-color:var(--bad);background:var(--bad-dim)}
+.callout.good{border-color:var(--good);background:var(--good-dim)}
+details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--surface)}
+details summary{cursor:pointer;padding:10px 16px;font-weight:500;color:var(--text-dim)}
+details[open] summary{border-bottom:1px solid var(--border);color:var(--text)}
+details .body{padding:12px 16px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+thead th{
+  position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);
+  padding:9px 14px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+}
+/* anywhere (not break-word): lets a long file path shrink the column under
+   pressure, so numeric columns keep their width instead of being pushed out of
+   the clip box — the paths give way, the numbers never do */
+tbody td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+tbody tr:hover{background:var(--accent-dim)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+table.sortable thead th{cursor:pointer;user-select:none}
+table.sortable thead th::after{content:"↕";opacity:.35;margin-left:6px;font-size:10px}
+table.sortable thead th.asc::after{content:"↑";opacity:1;color:var(--accent)}
+table.sortable thead th.desc::after{content:"↓";opacity:1;color:var(--accent)}
+
+/* CSS bars inside tables */
+.bar{position:relative;background:var(--surface-2);border-radius:4px;height:14px;min-width:120px;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.bar.warn>i{background:var(--warn)} .bar.bad>i{background:var(--bad)} .bar.good>i{background:var(--good)}
+
+/* ---------- viz containers ---------- */
+.viz{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden}
+.viz svg{display:block;width:100%;height:100%}
+.viz .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:5}
+.viz .zoombar button{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:var(--mono);cursor:pointer;font-size:14px;line-height:1}
+.viz .zoombar button:hover{background:var(--accent-dim);color:var(--accent)}
+.viz .legend{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-dim);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px;max-width:70%}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.viz-tip{position:fixed;pointer-events:none;z-index:200;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:380px}
+.mermaid-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin:12px 0;overflow:hidden;min-height:120px}
+.mermaid-wrap .mviewport{overflow:hidden;cursor:grab;padding:14px}
+.mermaid-wrap .mviewport.dragging{cursor:grabbing}
+.mermaid{font-family:var(--sans)}
+.mermaid[data-processed="true"]{display:flex;justify-content:center}
+footer.doc{max-width:1280px;margin:0 auto;padding:0 28px 34px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px}
+@media(max-width:720px){header.doc,main,nav.tabs,footer.doc{padding-left:16px;padding-right:16px} h1.doc-title{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="doc">
+  <div class="doc-label">CODEBASE ATLAS</div>
+  <h1 class="doc-title">tg — Codebase Atlas</h1>
+  <p class="doc-sub">World of Darkness tabletop RPG character manager — repo-wide architecture</p>
+  <div class="doc-meta">generated 2026-08-10 · d6933760 · 2,194 files, 222K LOC</div>
+</header>
+<!-- code-overview:nav --><style>
+.co-nav{position:sticky;top:0;z-index:60;max-width:1280px;margin:0 auto;padding:10px 28px;
+  font-family:var(--mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:12px;
+  background:color-mix(in srgb,var(--bg,#0d1420) 92%,transparent);
+  border-bottom:1px solid var(--border,rgba(150,180,230,0.14));
+  backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:6px}
+.co-nav .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-width:0}
+.co-nav a{color:var(--text-dim,#8fa1bd);text-decoration:none;padding:3px 9px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap}
+.co-nav a:hover{color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav a[aria-current]{color:var(--accent,#1f6fbd);
+  border-color:var(--accent,#1f6fbd);background:var(--accent-dim,rgba(31,111,189,0.10))}
+.co-nav .co-here{color:var(--text,#dbe4f3);font-weight:600;padding:3px 0}
+.co-nav .co-lbl{color:var(--text-faint,#5f7191);letter-spacing:.08em;text-transform:uppercase;
+  font-size:10.5px;padding-right:2px}
+.co-nav .co-sep{color:var(--text-faint,#5f7191);opacity:.6}
+@media(max-width:720px){.co-nav{padding-left:16px;padding-right:16px}}
+</style><nav class="co-nav" aria-label="code overview"><div class="co-row"><span class="co-here">⌂ Overall Code Map</span></div><div class="co-row"><span class="co-lbl">This repository</span><a href="summary.html">Summary</a><a href="#" aria-current="page">Code Map</a><a href="health.html">Health</a><a href="measurement.html">Measurement</a><a href="theory.html">Theory</a></div><div class="co-row"><span class="co-lbl">Other packages · Code Map</span><a href="../accounts/docs/codemap.html">accounts</a><a href="../chained_select/docs/codemap.html">chained_select</a><a href="../characters/docs/codemap.html">characters</a><a href="../core/docs/codemap.html">core</a><a href="../game/docs/codemap.html">game</a><a href="../items/docs/codemap.html">items</a><a href="../locations/docs/codemap.html">locations</a><a href="../widgets/docs/codemap.html">widgets</a><a href="../tg/docs/codemap.html">tg</a><a href="../populate_db/docs/codemap.html">populate_db</a></div></nav><!-- /code-overview:nav -->
+<nav class="tabs" role="tablist"><button role="tab" data-tab="overview" aria-selected="true" aria-controls="overview">Overview</button>
+<button role="tab" data-tab="inventory" aria-selected="false" aria-controls="inventory">Inventory</button>
+<button role="tab" data-tab="dependencies" aria-selected="false" aria-controls="dependencies">Dependencies</button>
+<button role="tab" data-tab="hotspots" aria-selected="false" aria-controls="hotspots">Hotspots</button>
+<button role="tab" data-tab="flows" aria-selected="false" aria-controls="flows">Critical Flows</button>
+<button role="tab" data-tab="boundaries" aria-selected="false" aria-controls="boundaries">Boundaries &amp; Ownership</button>
+<button role="tab" data-tab="invariants" aria-selected="false" aria-controls="invariants">Invariants &amp; Risks</button>
+<button role="tab" data-tab="glossary" aria-selected="false" aria-controls="glossary">Glossary</button></nav>
+<main><section class="panel active" id="overview" role="tabpanel">
+
+<div class="card hero">
+<h2>tg — repo-wide architecture</h2>
+<p>A Django 5.1 monolith that manages tabletop RPG characters, items, and locations across eight World of Darkness game lines (Vampire, Werewolf, Mage, Wraith, Changeling, Demon, Mummy, Hunter). The architectural style is a <strong>polymorphic-inheritance monolith</strong>: three base model trees (<code>core.models.Model</code> → per-gameline <code>Character</code>/<code>ItemModel</code>/<code>LocationModel</code> subclasses, via django-polymorphic) are shared by nine first-party Django apps that are wired together almost entirely through Django's ORM (foreign keys), not through service interfaces. There are 2,194 source files and roughly 222,000 lines of code (Python 170,755 / HTML 49,742), with tests accounting for 45.5% of LOC — this atlas covers the whole tree except <code>populate_db</code> and <code>dl</code> (data-seed and data-dump directories, excluded by request since they would swamp the graph and are graded separately).</p>
+</div>
+
+<div class="callout warn">
+<strong>This is the repo-wide view only.</strong> Each of the 9 real packages (<code>accounts</code>, <code>chained_select</code>, <code>characters</code>, <code>core</code>, <code>game</code>, <code>items</code>, <code>locations</code>, <code>widgets</code>, <code>tg</code>) plus <code>populate_db</code> already has its own deep-dive <em>package</em>/docs/codemap.html with package-internal findings, hotspots, and confirmed bugs — this atlas does not repeat those. What it adds is what only shows up at repo scope: how the packages actually depend on each other, where that coupling forms cycles, and a reading order across the whole system.
+</div>
+
+<h3>Entry points</h3>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Entry point</th><th>Kicks off</th></tr></thead>
+<tbody>
+<tr><td><code>manage.py</code></td><td>Django management commands (migrate, runserver, custom commands under each app's <code>management/commands/</code>)</td></tr>
+<tr><td><code>tg/urls.py:22-33</code></td><td>Root URLconf — dispatches <code>/</code> to <code>core.urls</code>, <code>/characters/</code>, <code>/locations/</code>, <code>/items/</code>, <code>/game/</code>, <code>/accounts/</code> to their respective app URLconfs, plus Django's built-in auth URLs</td></tr>
+<tr><td><code>tg/asgi.py</code></td><td>ASGI entry (Daphne/Channels) — <code>daphne</code> and <code>channels</code> are listed first in <code>tg/settings/base.py:21,28</code>, and <code>game/consumers.py</code> is the only consumer module, backing the live scene/chat features</td></tr>
+<tr><td><code>tg/settings/base.py</code>, <code>tg/settings/development.py</code>, <code>tg/settings/production.py</code></td><td>Django settings split by environment; <code>tg/settings/base.py:20-41</code> is <code>INSTALLED_APPS</code>, <code>tg/settings/base.py:204-255</code> is the <code>GAMELINES</code> registry that drives per-gameline behavior everywhere else</td></tr>
+</tbody>
+</table></div>
+
+<h3>Reading order</h3>
+<ol>
+<li><code>tg/settings/base.py:204-255</code> — the <code>GAMELINES</code> dict. Every gameline-specific module elsewhere in the repo keys off this. Read it first; it's the map of "what game lines exist" that the rest of the codebase assumes.</li>
+<li><code>tg/settings/base.py:20-41</code> — <code>INSTALLED_APPS</code>. Notice <code>widgets</code> and <code>chained_select</code> are both installed, with a comment marking <code>chained_select</code> "Deprecated — backward compatibility only" (<code>tg/settings/base.py:37</code>).</li>
+<li><code>core/models.py:369</code> — <code>class Model(PermissionMixin, PolymorphicModel)</code>, the shared base every <code>Character</code>, <code>ItemModel</code>, and <code>LocationModel</code> subclass inherits from. This is the single most-depended-on file in the repo.</li>
+<li><code>core/base.py:1-6</code> — a short module whose own docstring says it exists so foundational mixins can be "importable without triggering circular imports with other model files." Worth reading before the cycle explained in Boundaries &amp; Ownership below — the team clearly anticipated the cycle risk, but the escape hatch doesn't cover every case.</li>
+<li><code>core/mixins.py</code> — the view-level permission/ownership/messaging mixins (<code>ViewPermissionMixin:86</code>, <code>EditPermissionMixin:96</code>, <code>OwnerRequiredMixin:167</code>, <code>STRequiredMixin:238</code>) that every app's views compose. Second most-depended-on file (fan-in 160).</li>
+<li><code>characters/models/core/character.py:127-140</code> — <code>CharacterModel</code>/<code>Character</code>, the root of the largest subsystem (<code>characters/</code> is 125,372 LOC / 1,224 files — 56% of the app-level codebase).</li>
+<li><code>game/models.py:115,247,1007</code> — <code>Chronicle</code>, <code>STRelationship</code>, <code>WeeklyXPRequest</code>. Read this after <code>core/models.py</code>, not before: <code>core.models.Model</code> itself has a foreign key into this file (see Boundaries).</li>
+<li><code>accounts/models.py:15-153</code> — <code>Profile</code>, which fans out to characters, items, locations, and game (imports at <code>accounts/models.py:6-11</code>) to answer "what does this user own / what can they approve." A good single file for seeing how the packages compose at the UI layer.</li>
+<li><code>core/services/approval.py</code> — a small service module worth a stop precisely because of what it imports (see Boundaries) — it is the one place in <code>core</code> that reaches into a specific gameline's specific model.</li>
+<li>Skip <code>chained_select/</code> unless working on backward-compatibility shims — it is dead code, fully superseded by <code>widgets/</code>, kept only so old imports don't break (<code>chained_select/__init__.py:1-13</code>). Skip migrations (<code>*/migrations/*.py</code>) and generated static (<code>collected_static</code>, already excluded from this atlas).</li>
+</ol>
+
+<h3>Layer map (intended)</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+flowchart TD
+  settings["tg settings + urls"] --> core["core (base models, permissions, mixins)"]
+  core --> accounts
+  core --> characters
+  core --> items
+  core --> locations
+  core --> game
+  characters -.owner FK.-> items
+  characters -.owner FK.-> locations
+  accounts --> characters
+  accounts --> items
+  accounts --> locations
+  accounts --> game
+  widgets["widgets (form UI, no app deps)"]
+  chained_select["chained_select (deprecated shim)"] --> widgets
+</pre></div></div>
+<div class="callout warn">
+The real dependency graph (Dependencies tab) contradicts the "core is the dependency-free foundation" mental model this diagram implies: <code>core.models.Model</code> itself imports <code>game.models.Chronicle</code> (<code>core/models.py:22</code>), and <code>characters</code>, <code>items</code>, and <code>locations</code> import each other directly rather than only depending downward on <code>core</code>. See Boundaries &amp; Ownership for the concrete edges — the analyzer's <code>module_cycles</code> reports one 6-module cycle spanning <code>accounts, characters, core, game, items, locations</code>.
+</div>
+
+<h3>Key decisions &amp; constraints</h3>
+<ul>
+<li><strong>Polymorphic inheritance over composition.</strong> <code>characters</code>, <code>items</code>, <code>locations</code> each build a django-polymorphic tree rooted in <code>core.models.Model</code> (<code>core/models.py:369</code>), so a single queryset (e.g. <code>Character.objects.all()</code>) can return mixed concrete gameline subclasses. This explains why so many files in those three apps import from <code>core</code> — and why <code>core</code>'s own reach into <code>game</code> (for the shared <code>chronicle</code> field, <code>core/models.py:377,733</code>) then pulls that dependency into every subclass in the tree.</li>
+<li><strong>Custom <code>Profile</code> instead of a custom <code>User</code> model.</strong> <code>accounts/models.py:15-29</code> documents the trade-off explicitly in a docstring: the project was already in production when <code>AbstractUser</code> became best practice, so a <code>OneToOneField</code> extension was chosen instead.</li>
+<li><strong>Gameline registry as the single source of truth.</strong> <code>settings.GAMELINES</code> (<code>tg/settings/base.py:204-255</code>) is meant to be the map from gameline code (e.g. <code>"mta"</code>) to display name and app-name convention; the invariant that every entry has real model/view/url modules is checked in Invariants &amp; Risks below, and it's violated.</li>
+<li><strong>Deliberate dead-code migration in progress.</strong> <code>widgets</code> replaced <code>chained_select</code> for chained/dependent select form fields; <code>chained_select</code> is kept only as a re-export shim (<code>chained_select/__init__.py:16-24</code>) and is explicitly marked deprecated in settings.</li>
+<li><strong>No LLM usage in this codebase</strong> — the LLM-call-site analyzer found no model call sites, so there is no LLM Ops tab here; this is a conventional CRUD/ORM application, not an AI feature.</li>
+<li><strong>No coverage artifact at repo root</strong> — the coverage analyzer found a <code>.coverage</code> file but no rendered XML/lcov report; consistent with the per-package atlases, this repo-wide atlas does not fabricate a coverage tab. Running <code>coverage xml</code> would produce a repo-wide number if wanted later.</li>
+</ul>
+
+</section>
+<section class="panel" id="inventory" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">2,194</div><div class="l">source files</div></div>
+  <div class="kpi"><div class="n">222,360</div><div class="l">lines of code</div></div>
+  <div class="kpi"><div class="n">2</div><div class="l">languages</div></div>
+  <div class="kpi good"><div class="n">46%</div><div class="l">test code share</div></div>
+</div>
+
+<h2>Languages</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Language</th><th class="num">LOC</th><th class="num">Files</th><th>Share</th><th class="num">%</th></tr></thead>
+<tbody><tr><td>Python</td><td class='num'>170,755</td><td class='num'>1,287</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>76.8%</td></tr>
+<tr><td>HTML</td><td class='num'>49,742</td><td class='num'>891</td><td><div class="bar "><i style="width:29.1%"></i></div></td><td class='num'>22.4%</td></tr>
+<tr><td>Markdown</td><td class='num'>1,706</td><td class='num'>9</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.8%</td></tr>
+<tr><td>YAML</td><td class='num'>90</td><td class='num'>2</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr>
+<tr><td>TOML</td><td class='num'>42</td><td class='num'>1</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr>
+<tr><td>Shell</td><td class='num'>25</td><td class='num'>4</td><td><div class="bar "><i style="width:1.5%"></i></div></td><td class='num'>0.0%</td></tr></tbody></table></div>
+<p class="dim">Coverage: 42 file(s) in unrecognized languages are not counted above (.png (32), .log (3), .txt (3), .identifier (1), .ini (1)); 4 file(s) over 2 MB skipped entirely, largest <code>db.sqlite3</code> (41 MB).</p>
+
+<h2>Top-level directories</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Directory</th><th class="num">LOC</th><th>Share</th></tr></thead>
+<tbody><tr><td><code>characters/</code></td><td class='num'>125,904</td><td><div class="bar "><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>locations/</code></td><td class='num'>29,925</td><td><div class="bar "><i style="width:23.8%"></i></div></td></tr>
+<tr><td><code>core/</code></td><td class='num'>24,387</td><td><div class="bar "><i style="width:19.4%"></i></div></td></tr>
+<tr><td><code>items/</code></td><td class='num'>16,129</td><td><div class="bar "><i style="width:12.8%"></i></div></td></tr>
+<tr><td><code>game/</code></td><td class='num'>12,080</td><td><div class="bar "><i style="width:9.6%"></i></div></td></tr>
+<tr><td><code>accounts/</code></td><td class='num'>5,651</td><td><div class="bar "><i style="width:4.5%"></i></div></td></tr>
+<tr><td><code>widgets/</code></td><td class='num'>5,329</td><td><div class="bar "><i style="width:4.2%"></i></div></td></tr>
+<tr><td><code>chained_select/</code></td><td class='num'>1,646</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>tg/</code></td><td class='num'>779</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>(root)/</code></td><td class='num'>381</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>.github/</code></td><td class='num'>90</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr>
+<tr><td><code>scripts/</code></td><td class='num'>59</td><td><div class="bar "><i style="width:1.5%"></i></div></td></tr></tbody></table></div>
+
+<div class="grid cols-2">
+<div>
+<h2>Largest files</h2>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">LOC</th><th>Size</th><th class="num">Branches</th></tr></thead>
+<tbody><tr><td><code>characters/migrations/0003_initial.py</code></td><td class='num'>4,234</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>15</td></tr>
+<tr><td><code>characters/migrations/0001_initial.py</code></td><td class='num'>4,106</td><td><div class="bar "><i style="width:97.0%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>locations/migrations/0001_initial.py</code></td><td class='num'>3,987</td><td><div class="bar "><i style="width:94.2%"></i></div></td><td class='num'>37</td></tr>
+<tr><td><code>game/tests/models/test_models.py</code> <span class="badge neutral">test</span></td><td class='num'>1,553</td><td><div class="bar "><i style="width:36.7%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>game/tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>1,473</td><td><div class="bar "><i style="width:34.8%"></i></div></td><td class='num'>12</td></tr>
+<tr><td><code>items/migrations/0001_initial.py</code></td><td class='num'>1,377</td><td><div class="bar "><i style="width:32.5%"></i></div></td><td class='num'>9</td></tr>
+<tr><td><code>core/tests/mixins/test_mixins.py</code> <span class="badge neutral">test</span></td><td class='num'>1,327</td><td><div class="bar "><i style="width:31.3%"></i></div></td><td class='num'>17</td></tr>
+<tr><td><code>characters/migrations/0002_initial.py</code></td><td class='num'>1,302</td><td><div class="bar "><i style="width:30.8%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/tests/models/changeling/test_changeling.py</code> <span class="badge neutral">test</span></td><td class='num'>1,260</td><td><div class="bar "><i style="width:29.8%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>characters/tests/services/test_xp_spending.py</code> <span class="badge neutral">test</span></td><td class='num'>1,095</td><td><div class="bar "><i style="width:25.9%"></i></div></td><td class='num'>10</td></tr>
+<tr><td><code>game/models.py</code></td><td class='num'>1,022</td><td><div class="bar "><i style="width:24.1%"></i></div></td><td class='num'>182</td></tr>
+<tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>1,001</td><td><div class="bar "><i style="width:23.6%"></i></div></td><td class='num'>127</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>940</td><td><div class="bar "><i style="width:22.2%"></i></div></td><td class='num'>79</td></tr>
+<tr><td><code>characters/tests/models/core/test_human.py</code> <span class="badge neutral">test</span></td><td class='num'>918</td><td><div class="bar "><i style="width:21.7%"></i></div></td><td class='num'>14</td></tr>
+<tr><td><code>characters/tests/models/mage/test_mtahuman.py</code> <span class="badge neutral">test</span></td><td class='num'>903</td><td><div class="bar "><i style="width:21.3%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/tests/models/vampire/test_vampire.py</code> <span class="badge neutral">test</span></td><td class='num'>891</td><td><div class="bar "><i style="width:21.0%"></i></div></td><td class='num'>4</td></tr>
+<tr><td><code>characters/tests/models/mage/test_mage.py</code> <span class="badge neutral">test</span></td><td class='num'>866</td><td><div class="bar "><i style="width:20.5%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>accounts/tests/views/test_views.py</code> <span class="badge neutral">test</span></td><td class='num'>860</td><td><div class="bar "><i style="width:20.3%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>842</td><td><div class="bar "><i style="width:19.9%"></i></div></td><td class='num'>95</td></tr>
+<tr><td><code>characters/tests/models/wraith/test_wraith.py</code> <span class="badge neutral">test</span></td><td class='num'>813</td><td><div class="bar "><i style="width:19.2%"></i></div></td><td class='num'>2</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Most branch-heavy files</h2>
+<p class="dim">Branch count ≈ decision points (if/for/while/case/catch/&amp;&amp;/||). A rough cyclomatic-complexity proxy.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Branches</th><th>Heat</th><th class="num">LOC</th><th class="num">Max depth</th></tr></thead>
+<tbody><tr><td><code>game/models.py</code></td><td class='num'>182</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>1,022</td><td class='num'>7</td></tr>
+<tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>127</td><td><div class="bar warn"><i style="width:69.8%"></i></div></td><td class='num'>1,001</td><td class='num'>9</td></tr>
+<tr><td><code>characters/models/mage/mage.py</code></td><td class='num'>123</td><td><div class="bar warn"><i style="width:67.6%"></i></div></td><td class='num'>783</td><td class='num'>6</td></tr>
+<tr><td><code>characters/views/werewolf/fera.py</code></td><td class='num'>111</td><td><div class="bar warn"><i style="width:61.0%"></i></div></td><td class='num'>611</td><td class='num'>6</td></tr>
+<tr><td><code>widgets/widgets/point_pool.py</code></td><td class='num'>106</td><td><div class="bar warn"><i style="width:58.2%"></i></div></td><td class='num'>502</td><td class='num'>7</td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>105</td><td><div class="bar warn"><i style="width:57.7%"></i></div></td><td class='num'>621</td><td class='num'>7</td></tr>
+<tr><td><code>characters/forms/mage/freebies.py</code></td><td class='num'>103</td><td><div class="bar warn"><i style="width:56.6%"></i></div></td><td class='num'>252</td><td class='num'>7</td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>96</td><td><div class="bar warn"><i style="width:52.7%"></i></div></td><td class='num'>695</td><td class='num'>7</td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>95</td><td><div class="bar warn"><i style="width:52.2%"></i></div></td><td class='num'>842</td><td class='num'>6</td></tr>
+<tr><td><code>characters/views/mage/sorcerer.py</code></td><td class='num'>93</td><td><div class="bar warn"><i style="width:51.1%"></i></div></td><td class='num'>808</td><td class='num'>7</td></tr>
+<tr><td><code>items/models/mage/grimoire.py</code></td><td class='num'>85</td><td><div class="bar warn"><i style="width:46.7%"></i></div></td><td class='num'>404</td><td class='num'>7</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>79</td><td><div class="bar warn"><i style="width:43.4%"></i></div></td><td class='num'>940</td><td class='num'>5</td></tr>
+<tr><td><code>characters/forms/mage/xp.py</code></td><td class='num'>77</td><td><div class="bar warn"><i style="width:42.3%"></i></div></td><td class='num'>180</td><td class='num'>6</td></tr>
+<tr><td><code>characters/services/freebie_spending/base.py</code></td><td class='num'>74</td><td><div class="bar warn"><i style="width:40.7%"></i></div></td><td class='num'>731</td><td class='num'>7</td></tr>
+<tr><td><code>core/management/commands/approve_pending_items.py</code></td><td class='num'>74</td><td><div class="bar warn"><i style="width:40.7%"></i></div></td><td class='num'>316</td><td class='num'>9</td></tr>
+<tr><td><code>characters/models/vampire/vampire.py</code></td><td class='num'>73</td><td><div class="bar warn"><i style="width:40.1%"></i></div></td><td class='num'>645</td><td class='num'>6</td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>71</td><td><div class="bar warn"><i style="width:39.0%"></i></div></td><td class='num'>395</td><td class='num'>5</td></tr>
+<tr><td><code>characters/forms/core/xp.py</code></td><td class='num'>67</td><td><div class="bar warn"><i style="width:36.8%"></i></div></td><td class='num'>216</td><td class='num'>7</td></tr>
+<tr><td><code>widgets/widgets/filterable.py</code></td><td class='num'>66</td><td><div class="bar warn"><i style="width:36.3%"></i></div></td><td class='num'>365</td><td class='num'>9</td></tr>
+<tr><td><code>characters/views/mage/companion.py</code></td><td class='num'>65</td><td><div class="bar warn"><i style="width:35.7%"></i></div></td><td class='num'>610</td><td class='num'>6</td></tr></tbody></table></div>
+</div>
+</div>
+
+
+</section>
+<section class="panel" id="dependencies" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">12</div><div class="l">modules</div></div>
+  <div class="kpi"><div class="n">3,836</div><div class="l">file-level imports</div></div>
+  <div class="kpi"><div class="n">2,343</div><div class="l">runtime loads</div></div>
+  <div class="kpi bad"><div class="n">2</div><div class="l">cycles</div></div>
+  <div class="kpi"><div class="n">12</div><div class="l">top-level arms</div></div>
+</div>
+
+<div class="callout bad"><b>2 module-level dependency cycles detected</b> — modules that import each other directly or transitively. Cycles make modules impossible to understand or test in isolation.<ul style="margin-top:8px"><li><span class='badge bad'>cycle 1</span> <code>chained_select</code> ⇄ <code>widgets</code></li><li><span class='badge bad'>cycle 2</span> <code>accounts</code> ⇄ <code>characters</code> ⇄ <code>core</code> ⇄ <code>game</code> ⇄ <code>items</code> ⇄ <code>locations</code></li></ul></div><details><summary>File-level import cycles: 4 strongly-connected groups</summary><div class="body"><p class="dim">Files that (transitively) import each other. In Python these often include type-annotation or lazy in-function imports — less harmful than top-level cycles, but each one still couples the files' lifecycles. Worth explaining case-by-case in the Boundaries tab.</p><ul><li><span class='badge warn'>group 1</span> <code>characters/managers/__init__.py</code> ⇄ <code>characters/managers/background_manager.py</code> ⇄ <code>characters/managers/merit_flaw_manager.py</code> ⇄ <code>characters/models/__init__.py</code> ⇄ <code>characters/models/changeling/__init__.py</code> ⇄ <code>characters/models/changeling/autumn_person.py</code> ⇄ <code>characters/models/changeling/cantrip.py</code> ⇄ <code>characters/models/changeling/changeling.py</code> <span class='dim'>… 146 more</span></li><li><span class='badge warn'>group 2</span> <code>characters/views/__init__.py</code> ⇄ <code>characters/views/core/__init__.py</code></li><li><span class='badge warn'>group 3</span> <code>items/views/__init__.py</code> ⇄ <code>items/views/core/__init__.py</code></li><li><span class='badge warn'>group 4</span> <code>locations/views/__init__.py</code> ⇄ <code>locations/views/core/__init__.py</code></li></ul></div></details>
+<h2>Module dependency graph</h2>
+<p class="dim">Node area = lines of code · solid arrows = imports, dashed = runtime loads (a rendered template, a prompt read off disk) · drag nodes, Ctrl/⌘-scroll to zoom, hover to isolate a neighborhood.</p>
+<div class="viz" data-render="forcegraph" style="height:620px"></div>
+<script type="application/json">{"nodes":[{"id":"","label":"(root)","group":"(root)","size":1663,"fanIn":1,"fanOut":1,"meta":"(repo root) \u00b7 6 files"},{"id":"accounts","label":"accounts","group":"cycle","size":5053,"fanIn":2,"fanOut":5,"meta":"accounts \u00b7 47 files \u00b7 in dependency cycle #2"},{"id":"chained_select","label":"chained_select","group":"cycle","size":1499,"fanIn":1,"fanOut":1,"meta":"chained_select \u00b7 9 files \u00b7 in dependency cycle #1"},{"id":"characters","label":"characters","group":"cycle","size":125372,"fanIn":6,"fanOut":5,"meta":"characters \u00b7 1224 files \u00b7 in dependency cycle #2"},{"id":"core","label":"core","group":"cycle","size":24214,"fanIn":5,"fanOut":6,"meta":"core \u00b7 169 files \u00b7 in dependency cycle #2"},{"id":"game","label":"game","group":"cycle","size":11835,"fanIn":6,"fanOut":5,"meta":"game \u00b7 70 files \u00b7 in dependency cycle #2"},{"id":"items","label":"items","group":"cycle","size":15856,"fanIn":5,"fanOut":5,"meta":"items \u00b7 310 files \u00b7 in dependency cycle #2"},{"id":"locations","label":"locations","group":"cycle","size":29810,"fanIn":5,"fanOut":6,"meta":"locations \u00b7 409 files \u00b7 in dependency cycle #2"},{"id":"logs","label":"logs","group":"logs","size":0,"fanIn":1,"fanOut":0,"meta":"logs \u00b7 1 files"},{"id":"scripts","label":"scripts","group":"scripts","size":59,"fanIn":0,"fanOut":0,"meta":"scripts \u00b7 1 files"},{"id":"tg","label":"tg","group":"tg","size":779,"fanIn":0,"fanOut":3,"meta":"tg \u00b7 9 files"},{"id":"widgets","label":"widgets","group":"cycle","size":5329,"fanIn":6,"fanOut":1,"meta":"widgets \u00b7 31 files \u00b7 in dependency cycle #1"}],"links":[{"source":"","target":"characters","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"accounts","target":"characters","weight":45,"imports":20,"loads":25,"kind":"mixed","cycle":true},{"source":"accounts","target":"core","weight":16,"imports":6,"loads":10,"kind":"mixed","cycle":true},{"source":"accounts","target":"game","weight":9,"imports":9,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"items","weight":5,"imports":5,"loads":0,"kind":"import","cycle":true},{"source":"accounts","target":"locations","weight":6,"imports":6,"loads":0,"kind":"import","cycle":true},{"source":"chained_select","target":"widgets","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"core","weight":530,"imports":268,"loads":262,"kind":"mixed","cycle":true},{"source":"characters","target":"game","weight":93,"imports":93,"loads":0,"kind":"import","cycle":true},{"source":"characters","target":"items","weight":28,"imports":25,"loads":3,"kind":"mixed","cycle":true},{"source":"characters","target":"locations","weight":38,"imports":22,"loads":16,"kind":"mixed","cycle":true},{"source":"characters","target":"widgets","weight":15,"imports":15,"loads":0,"kind":"import","cycle":false},{"source":"core","target":"accounts","weight":4,"imports":3,"loads":1,"kind":"mixed","cycle":true},{"source":"core","target":"characters","weight":77,"imports":74,"loads":3,"kind":"mixed","cycle":true},{"source":"core","target":"game","weight":37,"imports":37,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"items","weight":12,"imports":12,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"locations","weight":17,"imports":17,"loads":0,"kind":"import","cycle":true},{"source":"core","target":"widgets","weight":2,"imports":2,"loads":0,"kind":"import","cycle":false},{"source":"game","target":"characters","weight":18,"imports":18,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"core","weight":40,"imports":10,"loads":30,"kind":"mixed","cycle":true},{"source":"game","target":"items","weight":2,"imports":1,"loads":1,"kind":"mixed","cycle":true},{"source":"game","target":"locations","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"game","target":"widgets","weight":1,"imports":1,"loads":0,"kind":"import","cycle":false},{"source":"items","target":"characters","weight":47,"imports":41,"loads":6,"kind":"mixed","cycle":true},{"source":"items","target":"core","weight":82,"imports":35,"loads":47,"kind":"mixed","cycle":true},{"source":"items","target":"game","weight":7,"imports":7,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"locations","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"items","target":"widgets","weight":3,"imports":3,"loads":0,"kind":"import","cycle":false},{"source":"locations","target":"accounts","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"characters","weight":58,"imports":49,"loads":9,"kind":"mixed","cycle":true},{"source":"locations","target":"core","weight":111,"imports":49,"loads":62,"kind":"mixed","cycle":true},{"source":"locations","target":"game","weight":26,"imports":26,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"items","weight":3,"imports":3,"loads":0,"kind":"import","cycle":true},{"source":"locations","target":"widgets","weight":3,"imports":3,"loads":0,"kind":"import","cycle":false},{"source":"tg","target":"","weight":1,"imports":0,"loads":1,"kind":"resource","cycle":false},{"source":"tg","target":"game","weight":1,"imports":1,"loads":0,"kind":"import","cycle":false},{"source":"tg","target":"logs","weight":2,"imports":0,"loads":2,"kind":"resource","cycle":false},{"source":"widgets","target":"chained_select","weight":1,"imports":1,"loads":0,"kind":"import","cycle":true}],"legendExtra":"<span><i class=\"sw\" style=\"background:transparent;border:2px solid var(--bad);box-sizing:border-box\"><\/i>red edges = cycle<\/span><span><i class=\"sw\" style=\"background:var(--text-faint)\"><\/i>dashed edges = runtime load<\/span>"}</script>
+
+<div class="grid cols-2">
+<div>
+<h2>Highest fan-in (most depended-on)</h2>
+<p class="dim">Changes here ripple widely — review with extra care.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-in</th><th></th><th class="num">Fan-out</th></tr></thead>
+<tbody><tr><td><code>core/templates/core/base.html</code></td><td class='num'>221</td><td><div class="bar "><i style="width:100.0%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>game/models.py</code></td><td class='num'>182</td><td><div class="bar "><i style="width:82.4%"></i></div></td><td class='num'>8</td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>160</td><td><div class="bar "><i style="width:72.4%"></i></div></td><td class='num'>5</td></tr>
+<tr><td><code>core/templates/core/form.html</code></td><td class='num'>150</td><td><div class="bar "><i style="width:67.9%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>104</td><td><div class="bar "><i style="width:47.1%"></i></div></td><td class='num'>10</td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>70</td><td><div class="bar "><i style="width:31.7%"></i></div></td><td class='num'>14</td></tr>
+<tr><td><code>characters/models/core/__init__.py</code></td><td class='num'>60</td><td><div class="bar "><i style="width:27.1%"></i></div></td><td class='num'>10</td></tr>
+<tr><td><code>core/templates/core/object.html</code></td><td class='num'>56</td><td><div class="bar "><i style="width:25.3%"></i></div></td><td class='num'>7</td></tr>
+<tr><td><code>characters/costs.py</code></td><td class='num'>50</td><td><div class="bar "><i style="width:22.6%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>45</td><td><div class="bar "><i style="width:20.4%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>characters/models/core/background_block.py</code></td><td class='num'>44</td><td><div class="bar "><i style="width:19.9%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>locations/__init__.py</code></td><td class='num'>40</td><td><div class="bar "><i style="width:18.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>locations/views/__init__.py</code></td><td class='num'>40</td><td><div class="bar "><i style="width:18.1%"></i></div></td><td class='num'>9</td></tr>
+<tr><td><code>characters/forms/core/limited_edit.py</code></td><td class='num'>39</td><td><div class="bar "><i style="width:17.6%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>characters/models/mage/focus.py</code></td><td class='num'>39</td><td><div class="bar "><i style="width:17.6%"></i></div></td><td class='num'>4</td></tr></tbody></table></div>
+</div>
+<div>
+<h2>Highest fan-out (most dependencies)</h2>
+<p class="dim">High fan-out can indicate orchestrators — or god modules doing too much.</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Fan-out</th><th></th><th class="num">Fan-in</th></tr></thead>
+<tbody><tr><td><code>characters/views/core/__init__.py</code></td><td class='num'>118</td><td><div class="bar warn"><i style="width:100.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>locations/views/core/__init__.py</code></td><td class='num'>51</td><td><div class="bar warn"><i style="width:43.2%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>items/views/core/__init__.py</code></td><td class='num'>49</td><td><div class="bar warn"><i style="width:41.5%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>43</td><td><div class="bar warn"><i style="width:36.4%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>game/tests/views/test_views.py</code></td><td class='num'>39</td><td><div class="bar warn"><i style="width:33.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/views/mage/sorcerer.py</code></td><td class='num'>38</td><td><div class="bar warn"><i style="width:32.2%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>38</td><td><div class="bar warn"><i style="width:32.2%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>accounts/tests/views/test_views.py</code></td><td class='num'>35</td><td><div class="bar warn"><i style="width:29.7%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/views/mage/companion.py</code></td><td class='num'>35</td><td><div class="bar warn"><i style="width:29.7%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>characters/templates/characters/mage/mage/chargen.html</code></td><td class='num'>33</td><td><div class="bar warn"><i style="width:28.0%"></i></div></td><td class='num'>2</td></tr>
+<tr><td><code>characters/tests/views/vampire/test_vtmhuman.py</code></td><td class='num'>32</td><td><div class="bar warn"><i style="width:27.1%"></i></div></td><td class='num'>0</td></tr>
+<tr><td><code>characters/templates/characters/mage/sorcerer/chargen.html</code></td><td class='num'>32</td><td><div class="bar warn"><i style="width:27.1%"></i></div></td><td class='num'>1</td></tr>
+<tr><td><code>characters/models/werewolf/__init__.py</code></td><td class='num'>30</td><td><div class="bar warn"><i style="width:25.4%"></i></div></td><td class='num'>3</td></tr>
+<tr><td><code>characters/tests/utils.py</code></td><td class='num'>29</td><td><div class="bar warn"><i style="width:24.6%"></i></div></td><td class='num'>37</td></tr>
+<tr><td><code>characters/views/werewolf/fera.py</code></td><td class='num'>29</td><td><div class="bar warn"><i style="width:24.6%"></i></div></td><td class='num'>1</td></tr></tbody></table></div>
+</div>
+</div>
+
+<h2>Runtime resources</h2>
+<p class="dim">Files loaded rather than imported — templates, prompts, schemas, embedded data — and the
+code that names them. Resource edges are found textually: a quoted path is an edge only when it resolves to a file that exists. Paths assembled entirely at runtime (no literal segment) are invisible, and a resolved string is evidence of a reference, not proof the file is loaded on every code path. 7 computed path(s) and 0 file(s) hit the reporting cap.</p>
+<div class="callout warn"><b>30 assets nothing references</b> — same file type, same directories as the loaded ones, but no code path names them. Either dead weight or loaded by a computed path this analysis cannot see.<p style="margin-top:8px"><code>CLAUDE.md</code> <code>README.md</code> <code>accounts/templates/registration/logged_out.html</code> <code>accounts/templates/registration/password_reset_complete.html</code> <code>accounts/templates/registration/password_reset_confirm.html</code> <code>accounts/templates/registration/password_reset_done.html</code> <code>accounts/templates/registration/password_reset_email.html</code> <code>accounts/templates/registration/password_reset_form.html</code> <code>characters/templates/characters/core/attribute_block/form_pool.html</code> <code>characters/templates/characters/core/human/abilities.html</code> <code>characters/templates/characters/core/human/create.html</code> <code>characters/templates/characters/core/human/load_examples_dropdown_list.html</code> <code>characters/templates/characters/core/human/load_values_dropdown_list.html</code> <code>characters/templates/characters/mage/effect/create.html</code> <code>characters/templates/characters/mage/mage/create.html</code> <code>characters/templates/characters/mage/mage/load_faction_dropdown_list.html</code> <code>characters/templates/characters/mage/mage/load_mf_rating_dropdown_list.html</code> <code>characters/templates/characters/mage/mage/load_subfaction_dropdown_list.html</code> <code>characters/templates/characters/mage/mage/mage_basics_block_form.html</code> <code>characters/templates/characters/mage/sorcerer/load_affinity_dropdown_list.html</code> <code>characters/templates/characters/mage/sorcerer/load_attribute_dropdown_list.html</code> <code>characters/templates/characters/mage/spheres/display.html</code> <code>characters/templates/characters/mage/tenet/display_includes/basics.html</code> <code>characters/templates/characters/werewolf/renownincident/display_includes/temporary_renown.html</code> <code>core/templates/core/includes/property_row.html</code> <code>core/templates/core/includes/stat_card.html</code> <code>locations/templates/locations/core/city/display_includes/basics.html</code> <code>locations/templates/locations/core/location/display_includes/title.html</code> <code>locations/templates/locations/demon/reliquary/display_includes/health.html</code> <code>logs/debug.log</code></p></div>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Asset</th><th class="num">Loaders</th><th>Loaded at</th></tr></thead>
+<tbody><tr><td><code>core/templates/core/base.html</code></td><td class='num'>221</td><td><code>accounts/templates/accounts/detail.html:1</code> <code>accounts/templates/accounts/signup.html:1</code> <code>accounts/templates/registration/logged_out.html:1</code> <code>accounts/templates/registration/login.html:1</code> <code>accounts/templates/registration/password_reset_complete.html:1</code> <code>accounts/templates/registration/password_reset_confirm.html:1</code> <span class='dim'>… 215 more</span></td></tr>
+<tr><td><code>core/templates/core/form.html</code></td><td class='num'>150</td><td><code>accounts/templates/accounts/form.html:1</code> <code>characters/templates/characters/changeling/autumn_person/form.html:1</code> <code>characters/templates/characters/changeling/cantrip/form.html:1</code> <code>characters/templates/characters/changeling/changeling/basics.html:1</code> <code>characters/templates/characters/changeling/changeling/chargen.html:1</code> <code>characters/templates/characters/changeling/chimera/form.html:1</code> <span class='dim'>… 144 more</span></td></tr>
+<tr><td><code>core/templates/core/object.html</code></td><td class='num'>56</td><td><code>characters/templates/characters/changeling/cantrip/detail.html:1</code> <code>characters/templates/characters/changeling/chimera/detail.html:1</code> <code>characters/templates/characters/changeling/house/detail.html:1</code> <code>characters/templates/characters/changeling/house_faction/detail.html:1</code> <code>characters/templates/characters/changeling/kith/detail.html:1</code> <code>characters/templates/characters/changeling/legacy/detail.html:1</code> <span class='dim'>… 50 more</span></td></tr>
+<tr><td><code>locations/templates/locations/core/location/detail.html</code></td><td class='num'>35</td><td><code>locations/templates/locations/changeling/dream_realm/detail.html:1</code> <code>locations/templates/locations/changeling/freehold/detail.html:1</code> <code>locations/templates/locations/changeling/holding/detail.html:1</code> <code>locations/templates/locations/changeling/trod/detail.html:1</code> <code>locations/templates/locations/core/city/detail.html:1</code> <code>locations/templates/locations/demon/bastion/detail.html:1</code> <span class='dim'>… 29 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/background_block/detail.html</code></td><td class='num'>32</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:35</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:35</code> <code>characters/templates/characters/changeling/ctdhuman/detail.html:13</code> <code>characters/templates/characters/core/group/detail.html:5</code> <code>characters/templates/characters/core/human/detail.html:57</code> <code>characters/templates/characters/hunter/htrhuman/detail.html:33</code> <span class='dim'>… 26 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/attribute_block/detail.html</code></td><td class='num'>20</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:21</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:21</code> <code>characters/templates/characters/changeling/ctdhuman/detail.html:7</code> <code>characters/templates/characters/core/human/abilities.html:17</code> <code>characters/templates/characters/core/human/chargen.html:23</code> <code>characters/templates/characters/core/human/detail.html:49</code> <span class='dim'>… 14 more</span></td></tr>
+<tr><td><code>locations/templates/locations/core/location/form.html</code></td><td class='num'>19</td><td><code>locations/templates/locations/core/city/form.html:1</code> <code>locations/templates/locations/demon/bastion/form.html:1</code> <code>locations/templates/locations/demon/reliquary/form.html:1</code> <code>locations/templates/locations/mage/chantry/basics.html:1</code> <code>locations/templates/locations/mage/chantry/form.html:1</code> <code>locations/templates/locations/mage/demesne/form.html:1</code> <span class='dim'>… 13 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/attribute_block/form.html</code></td><td class='num'>18</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:19</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:19</code> <code>characters/templates/characters/core/human/attributes.html:20</code> <code>characters/templates/characters/core/human/chargen.html:21</code> <code>characters/templates/characters/mage/companion/chargen.html:19</code> <code>characters/templates/characters/mage/mage/chargen.html:19</code> <span class='dim'>… 12 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/character/not_owner.html</code></td><td class='num'>17</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:89</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:87</code> <code>characters/templates/characters/core/character/detail.html:44</code> <code>characters/templates/characters/mage/companion/chargen.html:126</code> <code>characters/templates/characters/mage/mage/chargen.html:145</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:119</code> <span class='dim'>… 11 more</span></td></tr>
+<tr><td><code>items/templates/items/core/item/detail.html</code></td><td class='num'>17</td><td><code>items/templates/items/changeling/dross/detail.html:1</code> <code>items/templates/items/changeling/treasure/detail.html:1</code> <code>items/templates/items/core/weapon/detail.html:1</code> <code>items/templates/items/demon/relic/detail.html:1</code> <code>items/templates/items/hunter/gear/detail.html:1</code> <code>items/templates/items/hunter/relic/detail.html:1</code> <span class='dim'>… 11 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/background_block/form.html</code></td><td class='num'>16</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:33</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:33</code> <code>characters/templates/characters/mage/companion/chargen.html:33</code> <code>characters/templates/characters/mage/mage/chargen.html:33</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:33</code> <code>characters/templates/characters/mage/sorcerer/chargen.html:33</code> <span class='dim'>… 10 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/language_display_block.html</code></td><td class='num'>16</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:78</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:55</code> <code>characters/templates/characters/core/human/detail.html:69</code> <code>characters/templates/characters/mage/companion/chargen.html:55</code> <code>characters/templates/characters/mage/mage/chargen.html:64</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:55</code> <span class='dim'>… 10 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/meritflaw/display_includes/meritflaw_block.html</code></td><td class='num'>16</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:57</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:50</code> <code>characters/templates/characters/core/human/detail.html:66</code> <code>characters/templates/characters/mage/companion/chargen.html:40</code> <code>characters/templates/characters/mage/mage/chargen.html:59</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:50</code> <span class='dim'>… 10 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/human_language_block_form.html</code></td><td class='num'>15</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:80</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:57</code> <code>characters/templates/characters/mage/companion/chargen.html:57</code> <code>characters/templates/characters/mage/mage/chargen.html:66</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:57</code> <code>characters/templates/characters/mage/sorcerer/chargen.html:65</code> <span class='dim'>… 9 more</span></td></tr>
+<tr><td><code>characters/templates/characters/werewolf/fera/detail.html</code></td><td class='num'>14</td><td><code>characters/tests/models/werewolf/test_ajaba.py:138</code> <code>characters/tests/models/werewolf/test_ananasi.py:118</code> <code>characters/tests/models/werewolf/test_bastet.py:155</code> <code>characters/tests/models/werewolf/test_corax.py:97</code> <code>characters/tests/models/werewolf/test_grondr.py:125</code> <code>characters/tests/models/werewolf/test_gurahl.py:125</code> <span class='dim'>… 8 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/ally/form_include.html</code></td><td class='num'>13</td><td><code>characters/templates/characters/changeling/ctdhuman/chargen.html:78</code> <code>characters/templates/characters/mage/companion/chargen.html:112</code> <code>characters/templates/characters/mage/mage/chargen.html:131</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:105</code> <code>characters/templates/characters/mage/sorcerer/chargen.html:125</code> <code>characters/templates/characters/vampire/ghoul/chargen.html:194</code> <span class='dim'>… 7 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/equipment_block.html</code></td><td class='num'>12</td><td><code>characters/templates/characters/demon/demon/detail.html:215</code> <code>characters/templates/characters/demon/thrall/detail.html:132</code> <code>characters/templates/characters/hunter/hunter/detail.html:179</code> <code>characters/templates/characters/mage/companion/chargen.html:97</code> <code>characters/templates/characters/mage/mage/chargen.html:116</code> <code>characters/templates/characters/mage/mage/detail.html:23</code> <span class='dim'>… 6 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/detail.html</code></td><td class='num'>10</td><td><code>characters/templates/characters/changeling/ctdhuman/detail.html:1</code> <code>characters/templates/characters/demon/dtfhuman/detail.html:1</code> <code>characters/templates/characters/hunter/htrhuman/detail.html:1</code> <code>characters/templates/characters/mage/mtahuman/detail.html:1</code> <code>characters/templates/characters/mummy/mtrhuman/detail.html:1</code> <code>characters/templates/characters/vampire/vtmhuman/detail.html:1</code> <span class='dim'>… 4 more</span></td></tr>
+<tr><td><code>items/templates/items/mage/wonder/detail.html</code></td><td class='num'>10</td><td><code>items/templates/items/mage/artifact/detail.html:1</code> <code>items/templates/items/mage/charm/detail.html:1</code> <code>items/templates/items/mage/grimoire/detail.html:1</code> <code>items/templates/items/mage/periapt/detail.html:1</code> <code>items/templates/items/mage/talisman/detail.html:1</code> <code>items/templates/items/werewolf/fetish/detail.html:1</code> <span class='dim'>… 4 more</span></td></tr>
+<tr><td><code>items/templates/items/mage/wonder/form.html</code></td><td class='num'>10</td><td><code>items/templates/items/mage/artifact/form.html:1</code> <code>items/templates/items/mage/charm/form.html:1</code> <code>items/templates/items/mage/grimoire/form.html:1</code> <code>items/templates/items/mage/periapt/form.html:1</code> <code>items/templates/items/mage/talisman/form.html:1</code> <code>items/templates/items/werewolf/fetish/form.html:1</code> <span class='dim'>… 4 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/advantages_display.html</code></td><td class='num'>9</td><td><code>characters/templates/characters/changeling/changeling/chargen.html:46</code> <code>characters/templates/characters/changeling/ctdhuman/chargen.html:39</code> <code>characters/templates/characters/core/human/detail.html:54</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:39</code> <code>characters/templates/characters/vampire/ghoul/chargen.html:161</code> <code>characters/templates/characters/vampire/vampire/chargen.html:219</code> <span class='dim'>… 3 more</span></td></tr>
+<tr><td><code>characters/templates/characters/core/human/form.html</code></td><td class='num'>8</td><td><code>characters/templates/characters/changeling/ctdhuman/form.html:1</code> <code>characters/templates/characters/demon/dtfhuman/form.html:1</code> <code>characters/templates/characters/mage/mtahuman/form.html:1</code> <code>characters/templates/characters/vampire/vtmhuman/form.html:1</code> <code>characters/templates/characters/werewolf/wtahuman/form.html:1</code> <code>characters/templates/characters/wraith/wtohuman/form.html:1</code> <span class='dim'>… 2 more</span></td></tr>
+<tr><td><code>characters/templates/characters/werewolf/wtahuman/detail.html</code></td><td class='num'>7</td><td><code>characters/templates/characters/werewolf/fomor/detail.html:1</code> <code>characters/templates/characters/werewolf/garou/detail.html:1</code> <code>characters/templates/characters/werewolf/kinfolk/detail.html:1</code> <code>characters/templates/characters/werewolf/kinfolk/form.html:1</code> <code>characters/tests/models/werewolf/test_wtahuman.py:274</code> <code>characters/tests/views/werewolf/test_wtahuman.py:57</code> <span class='dim'>… 1 more</span></td></tr>
+<tr><td><code>locations/templates/locations/mage/node/form_include.html</code></td><td class='num'>7</td><td><code>characters/templates/characters/mage/companion/chargen.html:85</code> <code>characters/templates/characters/mage/mage/chargen.html:99</code> <code>characters/templates/characters/mage/mtahuman/chargen.html:78</code> <code>characters/templates/characters/mage/sorcerer/chargen.html:93</code> <code>locations/templates/locations/mage/chantry/locgen.html:37</code> <code>locations/templates/locations/mage/node/form.html:6</code> <span class='dim'>… 1 more</span></td></tr>
+<tr><td><code>locations/templates/locations/mage/reality_zone/display_includes/reality_zone.html</code></td><td class='num'>7</td><td><code>locations/templates/locations/mage/demesne/detail.html:54</code> <code>locations/templates/locations/mage/node/detail.html:30</code> <code>locations/templates/locations/mage/paradox_realm/detail.html:123</code> <code>locations/templates/locations/mage/reality_zone/detail.html:16</code> <code>locations/templates/locations/mage/realm/detail.html:25</code> <code>locations/templates/locations/mage/sanctum/detail.html:23</code> <span class='dim'>… 1 more</span></td></tr></tbody></table></div>
+
+
+
+</section>
+<section class="panel" id="hotspots" role="tabpanel">
+
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n">1,477</div><div class="l">commits (24 months ago)</div></div>
+  <div class="kpi"><div class="n">1,269</div><div class="l">files touched</div></div>
+  <div class="kpi warn"><div class="n">mage.py</div><div class="l">top hotspot</div></div>
+</div>
+<div class="callout"><b>How to read this:</b> files that are both <i>complex</i> and <i>frequently changed</i> are where defects concentrate — complexity makes mistakes likely, churn gives them opportunities. Prioritize refactoring and review attention here, not on complex-but-stable code.</div>
+
+
+<h2>Churn × size map</h2>
+<p class="dim">Area = lines of code · color = commit count since 24 months ago · hover for details.</p>
+<div class="viz" data-render="treemap" style="height:540px"></div>
+<script type="application/json">{"items":[{"name":"characters/views/mage/mage.py","value":1001,"metric":189,"meta":"127 branches \u00b7 2 authors"},{"name":"game/models.py","value":1022,"metric":84,"meta":"182 branches \u00b7 2 authors"},{"name":"characters/models/mage/mage.py","value":783,"metric":66,"meta":"123 branches \u00b7 2 authors"},{"name":"core/models.py","value":842,"metric":77,"meta":"95 branches \u00b7 2 authors"},{"name":"characters/models/core/human.py","value":695,"metric":72,"meta":"96 branches \u00b7 2 authors"},{"name":"characters/views/mage/sorcerer.py","value":808,"metric":63,"meta":"93 branches \u00b7 2 authors"},{"name":"game/views.py","value":940,"metric":69,"meta":"79 branches \u00b7 2 authors"},{"name":"characters/views/mage/companion.py","value":610,"metric":54,"meta":"65 branches \u00b7 2 authors"},{"name":"characters/views/core/human.py","value":551,"metric":54,"meta":"55 branches \u00b7 2 authors"},{"name":"core/mixins.py","value":621,"metric":25,"meta":"105 branches \u00b7 2 authors"},{"name":"accounts/models.py","value":351,"metric":57,"meta":"45 branches \u00b7 2 authors"},{"name":"characters/views/werewolf/fera.py","value":611,"metric":19,"meta":"111 branches \u00b7 2 authors"},{"name":"accounts/views.py","value":250,"metric":60,"meta":"33 branches \u00b7 2 authors"},{"name":"items/models/mage/grimoire.py","value":404,"metric":18,"meta":"85 branches \u00b7 2 authors"},{"name":"characters/models/demon/demon.py","value":465,"metric":26,"meta":"54 branches \u00b7 2 authors"},{"name":"characters/forms/core/xp.py","value":216,"metric":21,"meta":"67 branches \u00b7 2 authors"},{"name":"characters/models/wraith/wraith.py","value":668,"metric":25,"meta":"56 branches \u00b7 2 authors"},{"name":"characters/models/vampire/vampire.py","value":645,"metric":19,"meta":"73 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/garou.py","value":488,"metric":23,"meta":"60 branches \u00b7 2 authors"},{"name":"characters/forms/mage/xp.py","value":180,"metric":17,"meta":"77 branches \u00b7 2 authors"},{"name":"core/permissions.py","value":395,"metric":18,"meta":"71 branches \u00b7 2 authors"},{"name":"characters/views/core/__init__.py","value":453,"metric":61,"meta":"20 branches \u00b7 2 authors"},{"name":"characters/forms/mage/freebies.py","value":252,"metric":12,"meta":"103 branches \u00b7 2 authors"},{"name":"characters/models/core/character.py","value":415,"metric":50,"meta":"22 branches \u00b7 2 authors"},{"name":"game/forms.py","value":531,"metric":22,"meta":"49 branches \u00b7 2 authors"},{"name":"characters/views/werewolf/kinfolk.py","value":359,"metric":31,"meta":"33 branches \u00b7 2 authors"},{"name":"characters/models/changeling/changeling.py","value":407,"metric":22,"meta":"44 branches \u00b7 2 authors"},{"name":"characters/views/wraith/wtohuman.py","value":453,"metric":42,"meta":"21 branches \u00b7 2 authors"},{"name":"characters/views/mage/mtahuman.py","value":735,"metric":52,"meta":"15 branches \u00b7 2 authors"},{"name":"locations/models/mage/chantry.py","value":332,"metric":32,"meta":"24 branches \u00b7 2 authors"},{"name":"characters/views/changeling/changeling.py","value":558,"metric":35,"meta":"21 branches \u00b7 2 authors"},{"name":"locations/forms/mage/node.py","value":234,"metric":20,"meta":"37 branches \u00b7 2 authors"},{"name":"characters/views/wraith/wraith_chargen.py","value":457,"metric":20,"meta":"32 branches \u00b7 2 authors"},{"name":"characters/views/demon/demon_chargen.py","value":398,"metric":20,"meta":"31 branches \u00b7 2 authors"},{"name":"core/utils.py","value":125,"metric":17,"meta":"33 branches \u00b7 2 authors"},{"name":"locations/models/mage/node.py","value":212,"metric":29,"meta":"18 branches \u00b7 2 authors"},{"name":"characters/forms/core/chained_freebies.py","value":227,"metric":14,"meta":"38 branches \u00b7 2 authors"},{"name":"characters/views/vampire/vtmhuman.py","value":352,"metric":41,"meta":"12 branches \u00b7 2 authors"},{"name":"characters/views/changeling/ctdhuman.py","value":331,"metric":36,"meta":"13 branches \u00b7 2 authors"},{"name":"characters/views/werewolf/wtahuman.py","value":394,"metric":38,"meta":"12 branches \u00b7 2 authors"},{"name":"core/templatetags/sanitize_text.py","value":141,"metric":13,"meta":"37 branches \u00b7 2 authors"},{"name":"characters/models/werewolf/kinfolk.py","value":135,"metric":16,"meta":"28 branches \u00b7 2 authors"},{"name":"characters/views/vampire/vampire_chargen.py","value":304,"metric":24,"meta":"18 branches \u00b7 2 authors"},{"name":"items/views/core/__init__.py","value":212,"metric":28,"meta":"15 branches \u00b7 2 authors"},{"name":"locations/models/mage/sector.py","value":236,"metric":13,"meta":"33 branches \u00b7 2 authors"},{"name":"characters/models/core/merit_flaw_block.py","value":213,"metric":17,"meta":"24 branches \u00b7 2 authors"},{"name":"core/templatetags/dots.py","value":264,"metric":9,"meta":"46 branches \u00b7 2 authors"},{"name":"locations/views/mage/chantry.py","value":254,"metric":28,"meta":"14 branches \u00b7 2 authors"},{"name":"characters/forms/mage/rote.py","value":173,"metric":22,"meta":"18 branches \u00b7 2 authors"},{"name":"core/views/generic.py","value":173,"metric":11,"meta":"35 branches \u00b7 2 authors"},{"name":"characters/forms/core/freebies.py","value":80,"metric":17,"meta":"22 branches \u00b7 2 authors"},{"name":"characters/forms/mage/enhancements.py","value":272,"metric":9,"meta":"42 branches \u00b7 2 authors"},{"name":"locations/models/mage/paradox_realm.py","value":645,"metric":9,"meta":"41 branches \u00b7 2 authors"},{"name":"locations/views/core/__init__.py","value":204,"metric":31,"meta":"11 branches \u00b7 2 authors"},{"name":"characters/forms/core/npc_profile.py","value":550,"metric":8,"meta":"45 branches \u00b7 2 authors"},{"name":"characters/forms/core/character_creation.py","value":181,"metric":23,"meta":"14 branches \u00b7 2 authors"},{"name":"locations/forms/mage/chantry.py","value":203,"metric":19,"meta":"17 branches \u00b7 2 authors"},{"name":"accounts/forms.py","value":129,"metric":25,"meta":"12 branches \u00b7 2 authors"},{"name":"characters/views/core/character.py","value":146,"metric":27,"meta":"11 branches \u00b7 2 authors"},{"name":"core/management/commands/approve_pending_items.py","value":316,"metric":4,"meta":"74 branches \u00b7 2 authors"},{"name":"items/forms/mage/wonder.py","value":200,"metric":8,"meta":"36 branches \u00b7 1 authors"},{"name":"characters/services/freebie_spending/mage.py","value":710,"metric":5,"meta":"58 branches \u00b7 2 authors"},{"name":"characters/models/demon/earthbound.py","value":238,"metric":17,"meta":"16 branches \u00b7 2 authors"},{"name":"core/widgets/linked_stat.py","value":367,"metric":5,"meta":"56 branches \u00b7 2 authors"},{"name":"characters/views/werewolf/fomor.py","value":360,"metric":31,"meta":"8 branches \u00b7 2 authors"},{"name":"core/management/commands/validate_data_integrity.py","value":369,"metric":5,"meta":"54 branches \u00b7 2 authors"},{"name":"characters/models/core/background_block.py","value":161,"metric":15,"meta":"17 branches \u00b7 2 authors"},{"name":"core/management/commands/populate_gamedata.py","value":168,"metric":9,"meta":"29 branches \u00b7 2 authors"},{"name":"core/management/commands/sync_character_status.py","value":228,"metric":5,"meta":"53 branches \u00b7 2 authors"},{"name":"core/cache.py","value":281,"metric":6,"meta":"43 branches \u00b7 2 authors"},{"name":"characters/models/demon/thrall.py","value":181,"metric":13,"meta":"18 branches \u00b7 2 authors"},{"name":"core/services/chronicle_data.py","value":211,"metric":6,"meta":"40 branches \u00b7 1 authors"},{"name":"characters/services/xp_spending/base.py","value":536,"metric":5,"meta":"46 branches \u00b7 1 authors"},{"name":"widgets/mixins/conditional.py","value":318,"metric":4,"meta":"57 branches \u00b7 2 authors"},{"name":"characters/views/werewolf/garou.py","value":432,"metric":33,"meta":"6 branches \u00b7 2 authors"},{"name":"characters/services/freebie_spending/base.py","value":731,"metric":3,"meta":"74 branches \u00b7 1 authors"},{"name":"characters/views/vampire/ghoul_chargen.py","value":193,"metric":16,"meta":"13 branches \u00b7 2 authors"},{"name":"characters/models/demon/apocalyptic_form.py","value":157,"metric":13,"meta":"16 branches \u00b7 2 authors"},{"name":"accounts/context_processors.py","value":114,"metric":9,"meta":"23 branches \u00b7 2 authors"},{"name":"characters/models/mage/focus.py","value":185,"metric":23,"meta":"8 branches \u00b7 2 authors"}],"valueLabel":"LOC","metricLabel":"commits","metricMax":189}</script>
+
+<h2>Hotspot ranking</h2>
+<p class="dim">Score = commits × (branch points + 1). Tests excluded. 910 frequently-changed non-code file(s) (config/SQL/proto/docs) are not ranked here — top: characters/templates/characters/mage/mage/chargen.html (40), accounts/templates/accounts/detail.html (36), game/templates/game/scene/detail.html (32).</p>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>File</th><th class="num">Commits</th><th class="num">Branches</th><th class="num">LOC</th><th class="num">Authors</th><th class="num">Hotspot score</th></tr></thead>
+<tbody><tr><td><code>characters/views/mage/mage.py</code></td><td class='num'>189</td><td class='num'>127</td><td class='num'>1,001</td><td class='num'>2</td><td class='num' data-sort='24192'><div class="bar bad"><i style="width:100.0%"></i></div></td></tr>
+<tr><td><code>game/models.py</code></td><td class='num'>84</td><td class='num'>182</td><td class='num'>1,022</td><td class='num'>2</td><td class='num' data-sort='15372'><div class="bar bad"><i style="width:63.5%"></i></div></td></tr>
+<tr><td><code>characters/models/mage/mage.py</code></td><td class='num'>66</td><td class='num'>123</td><td class='num'>783</td><td class='num'>2</td><td class='num' data-sort='8184'><div class="bar bad"><i style="width:33.8%"></i></div></td></tr>
+<tr><td><code>core/models.py</code></td><td class='num'>77</td><td class='num'>95</td><td class='num'>842</td><td class='num'>2</td><td class='num' data-sort='7392'><div class="bar bad"><i style="width:30.6%"></i></div></td></tr>
+<tr><td><code>characters/models/core/human.py</code></td><td class='num'>72</td><td class='num'>96</td><td class='num'>695</td><td class='num'>2</td><td class='num' data-sort='6984'><div class="bar bad"><i style="width:28.9%"></i></div></td></tr>
+<tr><td><code>characters/views/mage/sorcerer.py</code></td><td class='num'>63</td><td class='num'>93</td><td class='num'>808</td><td class='num'>2</td><td class='num' data-sort='5922'><div class="bar bad"><i style="width:24.5%"></i></div></td></tr>
+<tr><td><code>game/views.py</code></td><td class='num'>69</td><td class='num'>79</td><td class='num'>940</td><td class='num'>2</td><td class='num' data-sort='5520'><div class="bar bad"><i style="width:22.8%"></i></div></td></tr>
+<tr><td><code>characters/views/mage/companion.py</code></td><td class='num'>54</td><td class='num'>65</td><td class='num'>610</td><td class='num'>2</td><td class='num' data-sort='3564'><div class="bar bad"><i style="width:14.7%"></i></div></td></tr>
+<tr><td><code>characters/views/core/human.py</code></td><td class='num'>54</td><td class='num'>55</td><td class='num'>551</td><td class='num'>2</td><td class='num' data-sort='3024'><div class="bar bad"><i style="width:12.5%"></i></div></td></tr>
+<tr><td><code>core/mixins.py</code></td><td class='num'>25</td><td class='num'>105</td><td class='num'>621</td><td class='num'>2</td><td class='num' data-sort='2650'><div class="bar bad"><i style="width:11.0%"></i></div></td></tr>
+<tr><td><code>accounts/models.py</code></td><td class='num'>57</td><td class='num'>45</td><td class='num'>351</td><td class='num'>2</td><td class='num' data-sort='2622'><div class="bar bad"><i style="width:10.8%"></i></div></td></tr>
+<tr><td><code>characters/views/werewolf/fera.py</code></td><td class='num'>19</td><td class='num'>111</td><td class='num'>611</td><td class='num'>2</td><td class='num' data-sort='2128'><div class="bar bad"><i style="width:8.8%"></i></div></td></tr>
+<tr><td><code>accounts/views.py</code></td><td class='num'>60</td><td class='num'>33</td><td class='num'>250</td><td class='num'>2</td><td class='num' data-sort='2040'><div class="bar bad"><i style="width:8.4%"></i></div></td></tr>
+<tr><td><code>items/models/mage/grimoire.py</code></td><td class='num'>18</td><td class='num'>85</td><td class='num'>404</td><td class='num'>2</td><td class='num' data-sort='1548'><div class="bar bad"><i style="width:6.4%"></i></div></td></tr>
+<tr><td><code>characters/models/demon/demon.py</code></td><td class='num'>26</td><td class='num'>54</td><td class='num'>465</td><td class='num'>2</td><td class='num' data-sort='1430'><div class="bar bad"><i style="width:5.9%"></i></div></td></tr>
+<tr><td><code>characters/forms/core/xp.py</code></td><td class='num'>21</td><td class='num'>67</td><td class='num'>216</td><td class='num'>2</td><td class='num' data-sort='1428'><div class="bar bad"><i style="width:5.9%"></i></div></td></tr>
+<tr><td><code>characters/models/wraith/wraith.py</code></td><td class='num'>25</td><td class='num'>56</td><td class='num'>668</td><td class='num'>2</td><td class='num' data-sort='1425'><div class="bar bad"><i style="width:5.9%"></i></div></td></tr>
+<tr><td><code>characters/models/vampire/vampire.py</code></td><td class='num'>19</td><td class='num'>73</td><td class='num'>645</td><td class='num'>2</td><td class='num' data-sort='1406'><div class="bar bad"><i style="width:5.8%"></i></div></td></tr>
+<tr><td><code>characters/models/werewolf/garou.py</code></td><td class='num'>23</td><td class='num'>60</td><td class='num'>488</td><td class='num'>2</td><td class='num' data-sort='1403'><div class="bar bad"><i style="width:5.8%"></i></div></td></tr>
+<tr><td><code>characters/forms/mage/xp.py</code></td><td class='num'>17</td><td class='num'>77</td><td class='num'>180</td><td class='num'>2</td><td class='num' data-sort='1326'><div class="bar bad"><i style="width:5.5%"></i></div></td></tr>
+<tr><td><code>core/permissions.py</code></td><td class='num'>18</td><td class='num'>71</td><td class='num'>395</td><td class='num'>2</td><td class='num' data-sort='1296'><div class="bar bad"><i style="width:5.4%"></i></div></td></tr>
+<tr><td><code>characters/views/core/__init__.py</code></td><td class='num'>61</td><td class='num'>20</td><td class='num'>453</td><td class='num'>2</td><td class='num' data-sort='1281'><div class="bar bad"><i style="width:5.3%"></i></div></td></tr>
+<tr><td><code>characters/forms/mage/freebies.py</code></td><td class='num'>12</td><td class='num'>103</td><td class='num'>252</td><td class='num'>2</td><td class='num' data-sort='1248'><div class="bar bad"><i style="width:5.2%"></i></div></td></tr>
+<tr><td><code>characters/models/core/character.py</code></td><td class='num'>50</td><td class='num'>22</td><td class='num'>415</td><td class='num'>2</td><td class='num' data-sort='1150'><div class="bar bad"><i style="width:4.8%"></i></div></td></tr>
+<tr><td><code>game/forms.py</code></td><td class='num'>22</td><td class='num'>49</td><td class='num'>531</td><td class='num'>2</td><td class='num' data-sort='1100'><div class="bar bad"><i style="width:4.5%"></i></div></td></tr></tbody></table></div>
+<details><summary>Complex but dormant files (1) — high complexity, zero recent commits</summary><div class="body"><p class="dim">Not urgent, but risky to modify: nobody has touched these recently, so working knowledge may have evaporated.</p><ul><li><code>locations/migrations/0001_initial.py</code> <span class='dim'>(37 branches, untouched)</span></li></ul></div></details>
+
+
+</section>
+<section class="panel" id="flows" role="tabpanel">
+
+<p class="dim">These flows are chosen because each one crosses at least three package boundaries — they are where a repo-wide view adds something a single package's atlas can't show.</p>
+
+<h3>1. Object approval — the cross-package hub</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant P as Profile page (accounts view)
+  participant Pr as accounts.Profile
+  participant A as core.services.ApprovalService
+  participant Ch as characters.Character
+  participant It as items.ItemModel
+  participant Lo as locations.LocationModel
+  participant R as characters.models.mage.Rote
+
+  P->>Pr: objects_to_approve()
+  Pr->>Ch: filter unapproved, owned in ST's chronicles
+  Pr->>It: filter unapproved
+  Pr->>Lo: filter unapproved
+  P->>A: approve_object(model_type, object_id)
+  A->>A: OBJECT_MODEL_MAP[model_type] lookup
+  alt model_type == "character"
+    A->>Ch: get_object_or_404, set status="App", save()
+    A->>Ch: for group in obj.group_set: update_pooled_backgrounds()
+  else model_type == "rote"
+    A->>R: get_object_or_404, set status="App", save()
+  else item / location
+    A->>It: or Lo: get_object_or_404, set status="App", save()
+  end
+  A-->>P: (obj, success_message)
+</pre></div></div>
+<ul>
+<li><strong>Seam — asymmetric gameline coupling.</strong> <code>core/services/approval.py:6-9</code> imports <code>characters.models.core.character.Character</code>, <code>items.models.core.ItemModel</code>, <code>locations.models.core.location.LocationModel</code> — all reasonably generic base classes — but also <code>characters.models.mage.rote.Rote</code>, one specific gameline's specific model. A <code>core</code>-level service now has a hardwired dependency on Mage. If another gameline later needs an approvable non-character object (a Werewolf gift request, say), <code>OBJECT_MODEL_MAP</code> (<code>core/services/approval.py:21-26</code>) has to be edited by hand — the "generic" service isn't actually generic.</li>
+<li><strong>Seam — no partial-failure handling across the group update.</strong> <code>approve_object</code> wraps the status change and the pooled-background recalculation in one <code>transaction.atomic()</code> (<code>core/services/approval.py:55-64</code>), which is correct for atomicity, but a bug in <code>update_pooled_backgrounds()</code> for any one group aborts approval for the whole character with no partial-success reporting back to the ST.</li>
+</ul>
+
+<h3>2. Weekly XP approval — accounts × game × characters × core</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant U as Player
+  participant V as characters view (WeeklyXPRequest create)
+  participant M as core.mixins.OwnerRequiredMixin
+  participant G as game.models.WeeklyXPRequest
+  participant ST as Storyteller
+  participant SV as game view (approve)
+  participant CM as core.mixins.STRequiredMixin
+  participant Pr as accounts.Profile.is_st_for
+  participant Ch as game.models.Chronicle
+
+  U->>V: POST create WeeklyXPRequest
+  V->>M: dispatch() checks owner_check_model
+  M-->>V: 403 if not owner
+  V->>G: WeeklyXPRequest.objects.create(...)
+  ST->>SV: POST approve request
+  SV->>CM: dispatch() — StorytellerRequired / STRequired check
+  CM->>Pr: is_st_for(chronicle)
+  Pr->>Ch: head_st == user OR STRelationship.objects.filter(...).exists()
+  Pr-->>CM: bool
+  alt not ST for this chronicle
+    CM-->>SV: 403
+  else
+    SV->>G: request.status = approved; save()
+  end
+</pre></div></div>
+<ul>
+<li><strong>Seam — permission decision lives three files away from the model it protects.</strong> The actual "is this user allowed" check is <code>accounts/models.py:98-119</code> (<code>Profile.is_st_for</code>), invoked from a mixin in <code>core/mixins.py:238-265</code> (<code>STRequiredMixin</code>), protecting a model defined in <code>game/models.py:1007</code> (<code>WeeklyXPRequest</code>). Understanding "who can approve XP" requires reading all three files in the right order — nothing at the model or mixin layer documents that <code>Profile</code> is where the actual rule lives.</li>
+<li><strong>Seam — <code>game_storytellers</code> exception is a comment, not a type.</strong> <code>accounts/models.py:105</code> notes "game_storytellers are view-only and cannot perform approval actions" but that distinction isn't visible in <code>STRelationship</code>'s shape at the call sites that matter — it's enforced only inside <code>is_st_for</code>'s boolean logic (<code>accounts/models.py:113-119</code>), which a new mixin could easily bypass by checking <code>STRelationship.objects.filter(...).exists()</code> directly instead of going through <code>Profile</code>.</li>
+</ul>
+
+<h3>3. Character detail page render — the request path most users hit</h3>
+<div class="mermaid-wrap"><div class="mviewport"><pre class="mermaid">
+sequenceDiagram
+  participant B as Browser
+  participant U as tg.urls
+  participant CU as characters.urls
+  participant V as characters view (DetailView)
+  participant PM as core.mixins.ViewPermissionMixin
+  participant Pm as core.permissions
+  participant Mo as core.models.Model / Character subclass
+  participant T as core/templates/core/object.html
+
+  B->>U: GET /characters/<id>/
+  U->>CU: include("characters.urls")
+  CU->>V: dispatch
+  V->>PM: has_permission()
+  PM->>Pm: role/visibility check (Role, VisibilityTier)
+  alt denied
+    PM-->>B: 403
+  else
+    V->>Mo: get_object() (polymorphic, resolves to concrete subclass)
+    V->>T: render via {% include %} chain
+    T-->>B: 200 HTML
+  end
+</pre></div></div>
+<ul>
+<li><strong>Seam — <code>core/templates/core/object.html</code> is loaded 56 times</strong> (fan-in in the Dependencies tab) across <code>characters</code>, <code>items</code>, and <code>locations</code> detail templates. A change to that one template's contract (block names, required context keys) has blast radius across three apps with no compile-time check — only template rendering at request time would surface a break.</li>
+<li><strong>Seam — polymorphic <code>get_object()</code> cost is invisible at the view layer.</strong> Because every subclass ultimately resolves through <code>core.models.Model</code>'s polymorphic manager, N+1 risk from missing <code>with_polymorphic_ctype()</code> (used correctly in <code>accounts/models.py:143,152,161</code> for list views) is a pattern a reader has to know to look for; it isn't enforced by the base class itself.</li>
+</ul>
+
+</section>
+<section class="panel" id="boundaries" role="tabpanel">
+
+<div class="card hero">
+<p>The dependency analyzer reports one repo-scope module cycle spanning six of the nine packages — <code>accounts, characters, core, game, items, locations</code> — plus a second, narrower cycle between <code>chained_select</code> and <code>widgets</code>. Both are explained below with the concrete import edges that cause them; neither is visible from any single package's own atlas, because each edge originates in one package and lands in another.</p>
+</div>
+
+<h3>Concern ownership</h3>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Concern</th><th>Owning module(s)</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Polymorphic base models</td><td><code>core.models.Model</code> (<code>core/models.py:369</code>)</td><td><span class="badge good">single owner</span></td></tr>
+<tr><td>View permission/ownership checks</td><td><code>core.mixins</code>, <code>core.permissions</code></td><td><span class="badge good">single owner</span></td></tr>
+<tr><td>Object/image approval workflow</td><td><code>core.services.approval.ApprovalService</code>, but with a hardcoded map into <code>characters.models.mage.Rote</code> (<code>core/services/approval.py:7,25</code>)</td><td><span class="badge warn">2 owners</span> — approval logic lives in core, but its object-type coverage is defined per-gameline ad hoc</td></tr>
+<tr><td>Storyteller-relationship authority ("can this user approve for this chronicle")</td><td>Decision logic in <code>accounts.Profile.is_st_for</code> (<code>accounts/models.py:98-119</code>); enforcement in <code>core.mixins.STRequiredMixin</code> (<code>core/mixins.py:238</code>); data in <code>game.models.STRelationship</code> (<code>game/models.py:247</code>)</td><td><span class="badge bad">smeared</span> across 3 packages</td></tr>
+<tr><td>Form widgets (chained/dependent selects)</td><td><code>widgets</code> — zero imports of any gameline app or <code>core</code></td><td><span class="badge good">single owner, clean boundary</span></td></tr>
+<tr><td>XP cost tables</td><td><code>characters.costs</code> (fan-in 50, fan-out 0 — a pure leaf module other files read from)</td><td><span class="badge good">single owner</span></td></tr>
+<tr><td>Gameline registry (name, short code, app-name convention)</td><td><code>tg.settings.base.GAMELINES</code> (<code>tg/settings/base.py:204-255</code>)</td><td><span class="badge warn">single declared owner, but not self-consistent</span> — see Invariants tab</td></tr>
+</tbody>
+</table></div>
+
+<h3>Data ownership</h3>
+<div class="callout warn">
+<strong><code>core.models.Model.chronicle</code></strong> (<code>core/models.py:377</code> on <code>PermissionMixin</code>, and again at <code>core/models.py:733</code>) is a <code>ForeignKey</code> to <code>game.models.Chronicle</code>. Every polymorphic subclass in <code>characters</code>, <code>items</code>, and <code>locations</code> inherits this field, meaning <code>game</code> effectively owns a column that appears on every gameplay object in the system, while the base class that defines it lives in <code>core</code> — the package meant to be everyone else's shared, dependency-free foundation.
+</div>
+<div class="callout warn">
+<strong>Approval status fields</strong> (<code>status</code> on <code>Character</code>/<code>ItemModel</code>/<code>LocationModel</code>, <code>Rote.status</code>) are written from two places: the model's own view-layer save path (chargen flows, per package) and <code>core.services.ApprovalService.approve_object</code> (<code>core/services/approval.py:55-64</code>), which reaches across package lines to flip that status directly. Two writers for the same field, one of them living outside the package that defines the field.
+</div>
+
+<h3>Boundary violations / cross-package coupling</h3>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Direction</th><th>Evidence</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><code>core</code> → <code>game</code></td><td><code>core/models.py:22</code> (<code>from game.models import Chronicle</code>)</td><td>The base app imports a feature app. <code>core/base.py:1-6</code>'s own docstring shows the team is aware of circular-import risk ("mixins that need to be importable without triggering circular imports") but the escape hatch (<code>core.base</code>) doesn't cover this specific field.</td></tr>
+<tr><td><code>game</code> → <code>core</code></td><td><code>game/models.py:15-18</code> (imports <code>core.base</code>, <code>core.constants</code>, <code>core.utils</code>, <code>core.validators</code>)</td><td>This is the closing half of the cycle: <code>core</code> needs <code>game.models.Chronicle</code> for a field; <code>game</code> needs <code>core</code>'s base mixins/constants to define its own models at all.</td></tr>
+<tr><td><code>characters</code> → <code>items</code></td><td><code>characters/models/mage/mage.py:24</code>, <code>characters/models/mage/mtahuman.py:5</code>, <code>characters/models/werewolf/fera.py:7</code>, <code>characters/models/werewolf/garou.py:14</code>, <code>characters/models/werewolf/kinfolk.py:7</code>, <code>characters/models/mage/faction.py:6-7</code></td><td>Mage and Werewolf character models hold FKs/M2Ms into <code>items</code> (Wonders, Fetishes, Materials, Media).</td></tr>
+<tr><td><code>items</code> → <code>characters</code></td><td><code>items/models/core/item.py:4</code> (<code>from characters.models.core import CharacterModel</code>)</td><td>Every item's <code>owner</code> field is a FK to <code>CharacterModel</code>. Combined with the row above, this closes a real cycle: <code>characters</code> and <code>items</code> import each other's model modules.</td></tr>
+<tr><td><code>characters</code> → <code>locations</code></td><td><code>characters/models/mage/mage.py:25-26</code> (Mage → <code>Library</code>, <code>Node</code>)</td><td>Same pattern as items: gameline-specific character model reaches into a location subclass.</td></tr>
+<tr><td><code>locations</code> → <code>characters</code></td><td><code>locations/models/core/location.py:5</code>, <code>locations/models/core/city.py:4</code></td><td><code>LocationModel.owner</code> and <code>City</code> both FK to <code>Character</code>-family models, closing the <code>characters</code> ↔ <code>locations</code> cycle.</td></tr>
+<tr><td><code>accounts</code> → <code>characters</code>, <code>items</code>, <code>locations</code>, <code>game</code></td><td><code>accounts/models.py:6-11</code></td><td><code>Profile</code> is a genuine aggregation root (it needs to answer "what does this user own/approve" across every domain), so this fan-out is expected — but it means <code>accounts</code> sits downstream of the entire cycle above, so any change anywhere in it can, transitively, touch <code>Profile</code>.</td></tr>
+<tr><td><code>chained_select</code> ↔ <code>widgets</code></td><td><code>chained_select/__init__.py:19-24</code> imports from <code>widgets</code>; <code>widgets/tests/test_chained_select.py:355,373</code> imports <code>from chained_select import ChainedChoiceField</code></td><td>Not a production cycle — the only edge back into <code>chained_select</code> is a backward-compatibility <em>test</em> in <code>widgets</code> verifying the deprecated shim still works. Benign, but it does mean <code>widgets</code>' own test suite can't run in isolation from the deprecated package it's supposed to have replaced.</td></tr>
+</tbody>
+</table></div>
+
+<p class="dim">Net picture: <code>widgets</code> is the one package with a genuinely clean boundary (no imports of any gameline app or <code>core</code>). Every other first-party app is, directly or transitively, part of one six-package cycle. This is unsurprising for a Django app built on Django's FK-based ORM — foreign keys are real dependencies — but the <code>core</code> → <code>game</code> edge specifically inverts the intended layering (<code>core</code> is supposed to be the thing everything else depends on, not the reverse), and is the one edge in this cycle that a schema change (e.g. moving the shared <code>chronicle</code> field off the base <code>Model</code> class and onto a mixin owned by <code>game</code>, or promoting it to a lazy/string FK) could remove without touching the domain-modeling FKs between <code>characters</code>/<code>items</code>/<code>locations</code>, which are closer to unavoidable given the ownership relationships those apps model.</p>
+
+</section>
+<section class="panel" id="invariants" role="tabpanel">
+
+<h3>Repo-wide invariants</h3>
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Invariant</th><th>Where enforced</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Every entry in <code>settings.GAMELINES</code> has real <code>models</code>/<code>views</code>/<code>urls</code> modules under <code>characters</code>, <code>items</code>, and <code>locations</code></td><td>Nowhere — no code checks this; it's an implicit assumption every gameline-dispatch call site relies on</td><td><span class="badge bad">assumed, enforced nowhere</span></td></tr>
+<tr><td>Every polymorphic subclass of <code>core.models.Model</code> gets a <code>chronicle</code> FK and participates in the approval workflow</td><td><code>core/models.py:369-377,733</code> (inherited field); <code>core/services/approval.py:21-26</code> (approval map)</td><td><span class="badge warn">partially</span> — the base field is universal, but the approval map is manually maintained per model type and currently only covers <code>character</code>/<code>location</code>/<code>item</code>/<code>rote</code></td></tr>
+<tr><td>A storyteller can only approve objects within chronicles they have an <code>STRelationship</code> for (or head)</td><td><code>accounts/models.py:98-119</code>, gated by <code>core/mixins.py:238-265</code></td><td><span class="badge good">enforced</span>, but only if callers route through the mixin rather than checking <code>STRelationship</code> directly (see Boundaries)</td></tr>
+<tr><td>Owner-only mutation (a player can only edit their own characters/items/locations)</td><td><code>core/mixins.py:167-236</code> (<code>OwnerRequiredMixin</code>)</td><td><span class="badge good">enforced</span> at the mixin layer, consistently reused across apps</td></tr>
+<tr><td><code>widgets</code> stays free of gameline/app coupling (it's meant to be a generic, reusable form-UI layer)</td><td>No import of <code>characters</code>/<code>items</code>/<code>locations</code>/<code>game</code>/<code>accounts</code>/<code>core</code> anywhere in <code>widgets/*.py</code> outside tests</td><td><span class="badge good">holds</span> — the one clean boundary in the repo</td></tr>
+</tbody>
+</table></div>
+
+<div class="callout bad">
+<strong>Violated: the Orpheus gameline is registered but has no implementation.</strong> <code>tg/settings/base.py:250-254</code> declares <code>"orp": {"name": "Orpheus", "short": "Orp", "app_name": "orpheus"}</code> in <code>GAMELINES</code>, alongside the eight game lines that do have full model/view/url trees. There is no <code>orpheus</code> directory or file anywhere under <code>characters/</code>, <code>items/</code>, or <code>locations/</code> (confirmed by search — zero matches for "orpheus" in any of those three apps' <code>models</code>, <code>views</code>, or <code>urls</code> packages). This is a cross-cutting consistency invariant, not a bug local to one package: any repo-wide code that iterates <code>GAMELINES</code> to build a menu, a dispatch table, or a form-choices list (a pattern <code>CLAUDE.md</code> itself prescribes — "Always use settings for gameline data") will silently include Orpheus as a choice with nothing behind it. Each per-package atlas that touches gameline dispatch independently rediscovers a symptom of this same root cause; this is the one place it's visible as a single invariant.
+</div>
+
+<h3>Failure handling</h3>
+<ul>
+<li><strong>Swallowed partial failure in approval.</strong> <code>core/services/approval.py:55-64</code> wraps status-change and pooled-background recalculation in one <code>transaction.atomic()</code> block with no per-group error isolation — one bad group aborts the whole approval with a generic exception, not a scoped message telling the ST which group failed.</li>
+<li><strong>Permission checks depend on caller discipline, not type-level enforcement.</strong> <code>accounts.Profile.is_st_for</code> (<code>accounts/models.py:98-119</code>) is the one correct place to check ST authority (it correctly distinguishes head-ST from game-ST per the docstring at line 105), but nothing stops a new view from querying <code>game.models.STRelationship</code> directly and re-implementing (or mis-implementing) that logic — there's no repository/manager method on <code>STRelationship</code> itself that encodes the same rule.</li>
+</ul>
+
+<h3>Concurrency</h3>
+<p>This is a synchronous Django request/response app for the vast majority of code paths; the one asynchronous surface is <code>channels</code>/<code>daphne</code> for live scene updates (<code>game/consumers.py</code>, declared first in <code>INSTALLED_APPS</code> at <code>tg/settings/base.py:21,28</code>). That consumer module sits in <code>game</code>, meaning the one place the repo has to reason about async/sync boundaries and shared connection state is inside the same package that also anchors the core↔game import cycle described in Boundaries — worth a closer read at the package level (this atlas doesn't re-derive <code>game</code>'s own findings; see <code>game/docs/codemap.html</code>).</p>
+
+<h3>Risk ranking</h3>
+<div class="callout bad">
+<strong>1. <code>core</code> → <code>game</code> → <code>core</code> import cycle inverts the intended dependency direction.</strong> <code>core.models.Model</code> (the base every domain model in the repo inherits) imports <code>game.models.Chronicle</code> (<code>core/models.py:22</code>), while <code>game.models</code> imports <code>core.base</code>/<code>core.constants</code>/<code>core.utils</code>/<code>core.validators</code> (<code>game/models.py:15-18</code>) to define itself. Any future refactor that tries to make <code>core</code> a standalone, reusable base layer (or even just changes import order during app loading) has to reckon with this. Likelihood: this edge is structural, not incidental — it will not go away on its own. Blast radius: touches every polymorphic model in the repo, since all of them inherit the <code>chronicle</code> field.</div>
+<div class="callout warn">
+<strong>2. Storyteller-approval authority is smeared across three packages with no type-level guard.</strong> Decision logic in <code>accounts</code>, enforcement in <code>core.mixins</code>, data in <code>game.models.STRelationship</code>. A new view or management command that queries approval eligibility without routing through <code>Profile.is_st_for</code> would silently under- or over-authorize. Likelihood: moderate (management commands under <code>core/management/commands/</code> already import <code>game.models</code> directly for XP/chronicle operations — <code>core/management/commands/audit_xp_spending.py:17</code>, <code>process_weekly_xp.py:14</code> — showing the pattern of bypassing the model layer already exists). Blast radius: XP and approval correctness, chronicle-scoped.</div>
+<div class="callout warn">
+<strong>3. Orpheus is a registered gameline with zero implementation.</strong> See the invariants callout above. Likelihood: certain (confirmed present). Blast radius: limited today (nothing iterates to build a form/dispatch that includes it, as far as this atlas's textual analysis can see) but latent — the first repo-wide iteration over <code>GAMELINES</code> that assumes full coverage will break on this entry.</div>
+<div class="callout warn">
+<strong>4. <code>characters</code> ↔ <code>items</code> and <code>characters</code> ↔ <code>locations</code> cycles make partial builds/imports order-sensitive.</strong> Mage and Werewolf character models import specific item/location subclasses (<code>characters/models/mage/mage.py:24-26</code>, <code>characters/models/werewolf/fera.py:7</code>), while the base <code>ItemModel</code>/<code>LocationModel</code> import back into <code>characters</code> for their <code>owner</code> FK (<code>items/models/core/item.py:4</code>, <code>locations/models/core/location.py:5</code>). Likelihood: low for runtime breakage (Django's app registry resolves this at startup), but it does mean the three apps cannot be extracted, versioned, or tested in isolation from each other — a genuine coupling cost even though it never throws.</div>
+<div class="callout warn">
+<strong>5. No repo-wide coverage or CI-visible test-health number.</strong> The coverage analyzer found no rendered coverage artifact at repo root (only a raw <code>.coverage</code> file). Combined with 45.5% of LOC being test code, the repo clearly invests in tests, but nothing at repo scope currently reports what fraction of the cross-package flows above (approval, XP, permission checks) that test volume actually exercises.</div>
+
+</section>
+<section class="panel" id="glossary" role="tabpanel">
+
+<p class="dim">Domain language vs. code language, focused on terms that mean something different (or are represented differently) in more than one package — the kind of drift a single-package atlas can't surface because it only sees its own usage.</p>
+
+<div class="tbl-wrap"><table class="sortable">
+<thead><tr><th>Domain term</th><th>Code representation(s)</th><th>Files</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>Game line (e.g. "Vampire: the Masquerade")</td><td><code>settings.GAMELINES</code> dict keyed by short code (<code>"vtm"</code>) <span class="badge warn">and</span> a <code>gameline</code> <code>CharField</code> storing that same short code on domain models <span class="badge warn">and</span> a separate <code>game.models.Gameline</code> Django model with its own <code>name</code> field and PK</td><td><code>tg/settings/base.py:204-255</code>, <code>core/models.py:193,734,783</code>, <code>game/models.py:96-111</code></td><td>Three different representations of one concept. The <code>settings.GAMELINES</code> dict is the one <code>CLAUDE.md</code> itself prescribes as canonical ("Always use settings for gameline data"). The <code>game.models.Gameline</code> row-model, used as the FK target for <code>STRelationship.gameline</code> (<code>game/models.py:262-267</code>), is not referenced from any live application code path found in this scan (models/views outside tests, migrations, and the excluded <code>populate_db</code>/<code>dl</code> dirs) — it looks like a parallel, DB-backed representation that only the data-seeding scripts populate, rather than one the settings-driven majority of the app reads from. Unverified whether the two are kept in sync by convention; worth confirming before relying on either in new code.</td></tr>
+<tr><td>Storyteller (ST)</td><td><code>Chronicle.head_st</code> FK (<code>game/models.py:120-125</code>), <code>STRelationship</code> rows (<code>game/models.py:247</code>), <code>Role.GAME_ST</code> / <code>Role.CHRONICLE_HEAD_ST</code> enum members (<code>core/permissions.py:18-19</code>), and the informal "game storyteller" concept documented only in a docstring (<code>accounts/models.py:105</code>)</td><td><code>game/models.py</code>, <code>core/permissions.py</code>, <code>accounts/models.py</code></td><td>Not drift so much as an under-modeled distinction: "head ST" vs. "game ST" (view-only) is real and load-bearing (see Invariants), but only one of the two representations (<code>core.permissions.Role</code>) actually encodes it as a first-class value; the other (<code>STRelationship</code>) doesn't carry a role/permission-level field of its own, based on the fields listed at <code>game/models.py:248-267</code> (user, chronicle, gameline only) — the distinction is reconstructed at read time by <code>accounts.Profile.is_st_for</code> rather than stored.</td></tr>
+<tr><td>Chronicle (a campaign)</td><td><code>game.models.Chronicle</code></td><td><code>game/models.py:115</code></td><td>Consistent naming throughout — the FK is always named <code>chronicle</code> wherever it appears (<code>core/models.py:377,733</code>, <code>game/models.py:123,247-256</code>). No drift found.</td></tr>
+<tr><td>Owner (the player who controls a character/item/location)</td><td><code>owner</code> FK on <code>CharacterModel</code>/<code>ItemModel</code>/<code>LocationModel</code></td><td><code>items/models/core/item.py:4</code>, <code>locations/models/core/location.py:5</code></td><td>Consistent across all three polymorphic trees.</td></tr>
+</tbody>
+</table></div>
+
+<div class="callout good">
+Most core vocabulary (Chronicle, Scene, Story, owner, XP, freebies) is used consistently in code with the same name it has at the table — this is a domain-literate codebase, not one where naming has drifted broadly. The <code>Gameline</code>-model-vs-<code>GAMELINES</code>-dict split above is the one finding worth a maintainer's attention; everything else in this scan was clean enough not to list.
+</div>
+
+</section></main>
+<footer class="doc">Generated by code-visualization. See each package's own docs/codemap.html for a package-level deep dive.</footer>
+<div class="viz-tip" id="viz-tip"></div>
+<script>
+/* ============ tabs ============ */
+(function(){
+  const btns=[...document.querySelectorAll('nav.tabs button')];
+  const panels=[...document.querySelectorAll('.panel')];
+  function activate(id,push){
+    btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+    if(push){try{history.replaceState(null,'','#'+id)}catch(e){}}
+    window.dispatchEvent(new CustomEvent('tab:shown',{detail:{id}}));
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.tab,true)));
+  const initial=location.hash&&panels.some(p=>'#'+p.id===location.hash)?location.hash.slice(1):(panels[0]&&panels[0].id);
+  if(initial)activate(initial,false);
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(panels.some(p=>p.id===h))activate(h,false);});
+})();
+
+/* ============ helpers ============ */
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip=document.getElementById('viz-tip');
+function showTip(html,x,y){tip.innerHTML=html;tip.style.display='block';
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+14,innerWidth-r.width-10)+'px';
+  tip.style.top=Math.min(y+14,innerHeight-r.height-10)+'px';}
+function hideTip(){tip.style.display='none'}
+function lerpColor(a,b,t){
+  const pa=hex(a),pb=hex(b);
+  return `rgb(${pa.map((v,i)=>Math.round(v+(pb[i]-v)*t)).join(',')})`;
+  function hex(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');
+    return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16));}
+}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(n)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* sortable tables */
+document.querySelectorAll('table.sortable').forEach(tb=>{
+  tb.querySelectorAll('thead th').forEach((th,ci)=>{
+    th.addEventListener('click',()=>{
+      const dir=th.classList.contains('asc')?'desc':'asc';
+      tb.querySelectorAll('thead th').forEach(h=>h.classList.remove('asc','desc'));
+      th.classList.add(dir);
+      const rows=[...tb.querySelectorAll('tbody tr')];
+      const val=r=>{const td=r.children[ci];if(!td)return '';
+        const d=td.dataset.sort!==undefined?td.dataset.sort:td.textContent.trim();
+        const n=parseFloat(String(d).replace(/[,%]/g,''));return isNaN(n)?String(d).toLowerCase():n;};
+      rows.sort((a,b)=>{const va=val(a),vb=val(b);
+        const c=(typeof va==='number'&&typeof vb==='number')?va-vb:String(va).localeCompare(String(vb));
+        return dir==='asc'?c:-c;});
+      const tbody=tb.querySelector('tbody');rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+});
+
+/* pan/zoom for a container holding an inner element (svg group or div) */
+function panZoom(viewport,apply,getState){
+  let drag=null;
+  viewport.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();
+    const s=getState();const f=e.deltaY<0?1.15:1/1.15;
+    const r=viewport.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    s.x=mx-(mx-s.x)*f; s.y=my-(my-s.y)*f; s.k=Math.max(.15,Math.min(8,s.k*f)); apply();
+  },{passive:false});
+  viewport.addEventListener('mousedown',e=>{
+    if(e.target.closest('.zoombar')||e.target.dataset.draggable)return;
+    drag={sx:e.clientX,sy:e.clientY,ox:getState().x,oy:getState().y};
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{if(!drag)return;
+    const s=getState();s.x=drag.ox+e.clientX-drag.sx;s.y=drag.oy+e.clientY-drag.sy;apply();});
+  window.addEventListener('mouseup',()=>{drag=null;viewport.classList.remove('dragging')});
+}
+function addZoombar(container,zoomIn,zoomOut,reset){
+  const bar=document.createElement('div');bar.className='zoombar';
+  [['+',zoomIn],['−',zoomOut],['⟲',reset]].forEach(([t,fn])=>{
+    const b=document.createElement('button');b.textContent=t;b.title=t==='⟲'?'Reset view':(t==='+'?'Zoom in':'Zoom out');
+    b.addEventListener('click',fn);bar.appendChild(b);});
+  container.appendChild(bar);
+}
+
+/* ============ force-directed graph ============ */
+/* data: {nodes:[{id,label,group,size,fanIn,fanOut,meta}], links:[{source,target,cycle,weight}], groups:{name:colorKey}} */
+function renderForceGraph(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||560;
+  const groupNames=[...new Set(data.nodes.map(n=>n.group||''))];
+  const palette=[cssVar('--accent'),cssVar('--good'),cssVar('--warn'),cssVar('--violet'),cssVar('--bad'),'#5ec2c9','#c98fb8','#8fb0c9'];
+  const gcolor={};groupNames.forEach((g,i)=>gcolor[g]=palette[i%palette.length]);
+  const nodes=data.nodes.map(n=>({...n,x:W/2+(Math.random()-0.5)*W*0.7,y:H/2+(Math.random()-0.5)*H*0.7,vx:0,vy:0}));
+  const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+  const links=data.links.filter(l=>idx[l.source]!==undefined&&idx[l.target]!==undefined)
+    .map(l=>({...l,s:idx[l.source],t:idx[l.target]}));
+  const maxSize=Math.max(1,...nodes.map(n=>n.size||1));
+  const R=n=>6+14*Math.sqrt((n.size||1)/maxSize);
+  /* simulate */
+  const iter=nodes.length>60?220:320;
+  for(let k=0;k<iter;k++){
+    const t=1-k/iter, rep=9000*t+900;
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||1;
+      if(d2<250000){const f=rep/d2;dx*=f;dy*=f;a.vx+=dx;a.vy+=dy;b.vx-=dx;b.vy-=dy;}
+    }
+    links.forEach(l=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const want=90+R(a)+R(b);const f=0.02*(d-want)/d;
+      a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    nodes.forEach(n=>{
+      n.vx+=(W/2-n.x)*0.0035;n.vy+=(H/2-n.y)*0.0035;
+      n.x+=Math.max(-14,Math.min(14,n.vx));n.y+=Math.max(-14,Math.min(14,n.vy));
+      n.vx*=0.6;n.vy*=0.6;});
+  }
+  /* fit */
+  const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y);
+  const pad=60,minx=Math.min(...xs)-pad,maxx=Math.max(...xs)+pad,miny=Math.min(...ys)-pad,maxy=Math.max(...ys)+pad;
+  const fitK=Math.min(W/(maxx-minx),H/(maxy-miny),1.6);
+  const st={k:fitK,x:(W-(maxx+minx)*fitK)/2,y:(H-(maxy+miny)*fitK)/2};
+  const init={...st};
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS(svgNS,'defs');
+  defs.innerHTML=`<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--text-faint')}"/></marker>
+  <marker id="arr-cyc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${cssVar('--bad')}"/></marker>`;
+  svg.appendChild(defs);
+  const g=document.createElementNS(svgNS,'g');svg.appendChild(g);
+  const apply=()=>g.setAttribute('transform',`translate(${st.x},${st.y}) scale(${st.k})`);
+  const edgeEls=[],nodeEls=[];
+  links.forEach(l=>{
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('stroke',l.cycle?cssVar('--bad'):cssVar('--text-faint'));
+    p.setAttribute('stroke-opacity',l.cycle?'0.9':'0.4');
+    p.setAttribute('stroke-width',l.cycle?2:Math.min(3,0.7+Math.log2(1+(l.weight||1))*0.5));
+    p.setAttribute('fill','none');
+    /* dashed = loaded at runtime (template, prompt, data), not imported */
+    if(l.kind==='resource')p.setAttribute('stroke-dasharray','5 4');
+    p.setAttribute('marker-end',l.cycle?'url(#arr-cyc)':'url(#arr)');
+    g.appendChild(p);edgeEls.push(p);
+  });
+  nodes.forEach(n=>{
+    const grp=document.createElementNS(svgNS,'g');grp.style.cursor='grab';grp.dataset.draggable='1';
+    const c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('r',R(n));c.setAttribute('fill',gcolor[n.group||'']);
+    c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke',cssVar('--bg'));c.setAttribute('stroke-width','1.5');
+    c.dataset.draggable='1';
+    const t=document.createElementNS(svgNS,'text');
+    t.textContent=n.label||n.id;t.setAttribute('font-size','11');t.setAttribute('font-family',cssVar('--mono'));
+    t.setAttribute('fill',cssVar('--text'));t.setAttribute('text-anchor','middle');t.setAttribute('dy',R(n)+13);
+    t.style.pointerEvents='none';
+    grp.appendChild(c);grp.appendChild(t);g.appendChild(grp);nodeEls.push(grp);
+    grp.addEventListener('mouseenter',e=>{
+      showTip(`<b>${esc(n.label||n.id)}</b><br>${n.meta?esc(n.meta)+'<br>':''}fan-in ${n.fanIn??'–'} · fan-out ${n.fanOut??'–'}${n.size?` · ${fmt(n.size)} loc`:''}`,e.clientX,e.clientY);
+      hl(n.id);});
+    grp.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    grp.addEventListener('mouseleave',()=>{hideTip();hl(null)});
+    let dragN=null;
+    grp.addEventListener('mousedown',e=>{e.stopPropagation();dragN={mx:e.clientX,my:e.clientY,ox:n.x,oy:n.y};});
+    window.addEventListener('mousemove',e=>{if(!dragN)return;
+      n.x=dragN.ox+(e.clientX-dragN.mx)/st.k;n.y=dragN.oy+(e.clientY-dragN.my)/st.k;draw();});
+    window.addEventListener('mouseup',()=>dragN=null);
+  });
+  function hl(id){
+    if(id===null){edgeEls.forEach((p,i)=>p.setAttribute('stroke-opacity',links[i].cycle?'0.9':'0.4'));
+      nodeEls.forEach(el=>el.style.opacity='1');return;}
+    const near=new Set([id]);
+    links.forEach(l=>{if(l.source===id)near.add(l.target);if(l.target===id)near.add(l.source)});
+    edgeEls.forEach((p,i)=>{const l=links[i];
+      p.setAttribute('stroke-opacity',(l.source===id||l.target===id)?'1':'0.08');});
+    nodeEls.forEach((el,i)=>el.style.opacity=near.has(nodes[i].id)?'1':'0.25');
+  }
+  function draw(){
+    links.forEach((l,i)=>{const a=nodes[l.s],b=nodes[l.t];
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const tx=b.x-dx/d*(R(b)+3),ty=b.y-dy/d*(R(b)+3);
+      const sx=a.x+dx/d*R(a),sy=a.y+dy/d*R(a);
+      const mx=(sx+tx)/2-dy/d*10,my=(sy+ty)/2+dx/d*10;
+      edgeEls[i].setAttribute('d',`M${sx},${sy} Q${mx},${my} ${tx},${ty}`);});
+    nodes.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x},${n.y})`));
+  }
+  draw();apply();
+  container.appendChild(svg);
+  panZoom(container,apply,()=>st);
+  addZoombar(container,
+    ()=>{st.k=Math.min(8,st.k*1.25);apply()},
+    ()=>{st.k=Math.max(.15,st.k/1.25);apply()},
+    ()=>{Object.assign(st,init);apply()});
+  if(groupNames.length>1||data.legendExtra){
+    const leg=document.createElement('div');leg.className='legend';
+    groupNames.forEach(gn=>{leg.innerHTML+=`<span><i class="sw" style="background:${gcolor[gn]}"></i>${esc(gn||'(root)')}</span>`});
+    if(data.legendExtra)leg.innerHTML+=data.legendExtra;
+    container.appendChild(leg);
+  }
+}
+
+/* ============ squarified treemap ============ */
+/* data: {items:[{name,value,metric,meta}], metricLabel, metricMax} — value drives area, metric drives heat color */
+function renderTreemap(container,data){
+  const W=container.clientWidth||900,H=container.clientHeight||520;
+  const items=data.items.filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,d)=>s+d.value,0)||1;
+  const mmax=data.metricMax??Math.max(1,...items.map(d=>d.metric||0));
+  const rects=[];
+  (function squarify(list,x,y,w,h){
+    if(!list.length)return;
+    if(list.length===1){rects.push({d:list[0],x,y,w,h});return;}
+    let row=[],rest=list.slice(),best=Infinity;
+    while(rest.length){
+      const cand=row.concat(rest[0]);
+      const sum=cand.reduce((s,d)=>s+d.value,0);
+      const side=Math.min(w,h);
+      const scale=(w*h)*(sum/list.reduce((s,d)=>s+d.value,0));
+      const len=scale/side;
+      const worst=Math.max(...cand.map(d=>{
+        const a=(d.value/sum)*side*len;const r=Math.max(len*len/ (a/side*side/ (a/len)||1),1);
+        const iw=(d.value/sum)*side, ratio=Math.max(len/iw,iw/len);return ratio;}));
+      if(worst<=best){best=worst;row=cand;rest.shift();}
+      else break;
+    }
+    const sum=row.reduce((s,d)=>s+d.value,0);
+    const frac=sum/list.reduce((s,d)=>s+d.value,0);
+    if(w>=h){const cw=w*frac;let cy=y;
+      row.forEach(d=>{const ch=h*(d.value/sum);rects.push({d,x,y:cy,w:cw,h:ch});cy+=ch;});
+      squarify(rest,x+cw,y,w-cw,h);
+    }else{const ch=h*frac;let cx=x;
+      row.forEach(d=>{const cw=w*(d.value/sum);rects.push({d,x:cx,y,w:cw,h:ch});cx+=cw;});
+      squarify(rest,x,y+ch,w,h-ch);
+    }
+  })(items,0,0,W,H);
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const lo=cssVar('--heat-lo'),hi=cssVar('--heat-hi');
+  rects.forEach(r=>{
+    const t=Math.pow(Math.min(1,(r.d.metric||0)/mmax),0.6);
+    const g=document.createElementNS(svgNS,'g');
+    const rc=document.createElementNS(svgNS,'rect');
+    rc.setAttribute('x',r.x+1);rc.setAttribute('y',r.y+1);
+    rc.setAttribute('width',Math.max(0,r.w-2));rc.setAttribute('height',Math.max(0,r.h-2));
+    rc.setAttribute('rx',3);rc.setAttribute('fill',lerpColor(lo,hi,t));
+    rc.setAttribute('stroke',cssVar('--bg'));rc.setAttribute('stroke-width','1');
+    g.appendChild(rc);
+    if(r.w>66&&r.h>22){
+      const tx=document.createElementNS(svgNS,'text');
+      const nm=r.d.name.split('/').pop();
+      tx.textContent=nm.length>Math.floor(r.w/6.6)?nm.slice(0,Math.floor(r.w/6.6)-1)+'…':nm;
+      tx.setAttribute('x',r.x+7);tx.setAttribute('y',r.y+16);
+      tx.setAttribute('font-size','11');tx.setAttribute('font-family',cssVar('--mono'));
+      tx.setAttribute('fill',t>0.55?'#fff':cssVar('--text'));tx.style.pointerEvents='none';
+      g.appendChild(tx);
+    }
+    g.addEventListener('mouseenter',e=>{rc.setAttribute('stroke',cssVar('--text'));
+      showTip(`<b>${esc(r.d.name)}</b><br>${esc(data.valueLabel||'size')}: ${fmt(r.d.value)}<br>${esc(data.metricLabel||'metric')}: ${fmt(r.d.metric||0)}${r.d.meta?'<br>'+esc(r.d.meta):''}`,e.clientX,e.clientY);});
+    g.addEventListener('mousemove',e=>showTip(tip.innerHTML,e.clientX,e.clientY));
+    g.addEventListener('mouseleave',()=>{rc.setAttribute('stroke',cssVar('--bg'));hideTip();});
+    svg.appendChild(g);
+  });
+  container.appendChild(svg);
+  const leg=document.createElement('div');leg.className='legend';
+  leg.innerHTML=`<span>area = ${esc(data.valueLabel||'size')}</span><span><i class="sw" style="background:${lo}"></i>low ${esc(data.metricLabel||'')}</span><span><i class="sw" style="background:${hi}"></i>high ${esc(data.metricLabel||'')}</span>`;
+  container.appendChild(leg);
+}
+
+/* ============ auto-init viz blocks ============ */
+document.querySelectorAll('.viz[data-render]').forEach(el=>{
+  const dataEl=el.nextElementSibling;
+  if(!dataEl||dataEl.type!=='application/json')return;
+  let data;try{data=JSON.parse(dataEl.textContent)}catch(e){el.textContent='data parse error';return}
+  const render=()=>{
+    if(el.dataset.done)return;el.dataset.done='1';
+    try{
+      if(el.dataset.render==='forcegraph')renderForceGraph(el,data);
+      else if(el.dataset.render==='treemap')renderTreemap(el,data);
+    }catch(e){el.innerHTML='<p style="padding:16px" class="dim">render error: '+esc(e.message)+'</p>';}
+  };
+  const panel=el.closest('.panel');
+  if(panel&&panel.classList.contains('active'))render();
+  else window.addEventListener('tab:shown',ev=>{if(panel&&ev.detail.id===panel.id)render();});
+});
+
+/* ============ mermaid (lazy per tab, with pan/zoom) ============ */
+(function(){
+  if(!document.querySelector('.mermaid'))return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js';
+  s.onload=()=>{
+    if(typeof mermaid==='undefined'){document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});return;}
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',
+      themeVariables:{
+        primaryColor:cssVar('--surface-2'),primaryTextColor:cssVar('--text'),
+        primaryBorderColor:cssVar('--border-strong'),lineColor:cssVar('--text-dim'),
+        secondaryColor:cssVar('--accent-dim'),tertiaryColor:cssVar('--surface'),
+        background:cssVar('--surface'),mainBkg:cssVar('--surface-2'),
+        nodeTextColor:cssVar('--text'),fontFamily:cssVar('--sans'),fontSize:'14px',
+        actorBkg:cssVar('--surface-2'),actorBorder:cssVar('--accent'),actorTextColor:cssVar('--text'),
+        signalColor:cssVar('--text-dim'),signalTextColor:cssVar('--text'),
+        labelBoxBkgColor:cssVar('--surface-2'),labelTextColor:cssVar('--text'),
+        loopTextColor:cssVar('--text-dim'),noteBkgColor:cssVar('--warn-dim'),noteTextColor:cssVar('--text'),noteBorderColor:cssVar('--warn'),
+        clusterBkg:cssVar('--accent-dim'),clusterBorder:cssVar('--border-strong'),titleColor:cssVar('--text'),
+        edgeLabelBackground:cssVar('--surface')
+      }});
+    async function renderIn(panel){
+      const nodes=[...panel.querySelectorAll('.mermaid:not([data-processed])')];
+      if(!nodes.length)return;
+      try{await mermaid.run({nodes});}catch(e){/* leaves source visible */}
+      nodes.forEach(n=>{
+        const wrap=n.closest('.mermaid-wrap');if(!wrap||wrap.dataset.pz)return;wrap.dataset.pz='1';
+        const vp=wrap.querySelector('.mviewport')||wrap;
+        const svg=n.querySelector('svg');if(!svg)return;
+        svg.style.maxWidth='none';
+        const st={k:1,x:0,y:0},init={k:1,x:0,y:0};
+        const apply=()=>{svg.style.transformOrigin='0 0';svg.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.k})`};
+        panZoom(vp,apply,()=>st);
+        addZoombar(wrap,()=>{st.k=Math.min(8,st.k*1.25);apply()},()=>{st.k=Math.max(.2,st.k/1.25);apply()},()=>{Object.assign(st,init);apply()});
+      });
+    }
+    const active=document.querySelector('.panel.active');if(active)renderIn(active);
+    window.addEventListener('tab:shown',e=>{const p=document.getElementById(e.detail.id);if(p)renderIn(p);});
+  };
+  s.onerror=()=>{document.querySelectorAll('.mermaid').forEach(n=>{n.style.cssText='white-space:pre;font-family:var(--mono);font-size:12px;padding:14px;overflow-x:auto';});};
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
