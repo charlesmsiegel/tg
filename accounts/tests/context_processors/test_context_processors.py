@@ -3,7 +3,10 @@
 from datetime import date
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.db import connection
 from django.test import RequestFactory, TestCase
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 
 from accounts.context_processors import notification_count, theme_context
@@ -55,6 +58,7 @@ class TestNotificationCountContextProcessor(TestCase):
     """Tests for notification_count context processor."""
 
     def setUp(self):
+        cache.clear()
         self.factory = RequestFactory()
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
@@ -63,7 +67,79 @@ class TestNotificationCountContextProcessor(TestCase):
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
-        self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        self.location = LocationModel.objects.create(
+            name="Test Location", chronicle=self.chronicle, status="App"
+        )
+
+    def _create_mixed_player_st_notifications(self):
+        player_character = Human.objects.create(
+            name="ST Player Character",
+            owner=self.st_user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="App",
+        )
+        Human.objects.create(
+            name="Pending Character",
+            owner=self.user,
+            chronicle=self.chronicle,
+            concept="Test",
+            status="Sub",
+        )
+        week = Week.objects.create(end_date=date.today())
+        week.characters.add(player_character)
+        scene = Scene.objects.create(
+            name="Unread Finished Scene",
+            chronicle=self.chronicle,
+            location=self.location,
+            finished=True,
+            xp_given=False,
+        )
+        UserSceneReadStatus.objects.create(user=self.st_user, scene=scene, read=False)
+
+    def test_mixed_player_and_st_notifications_preserve_labels_total_and_queries(self):
+        """Characterize player and storyteller notification aggregation together."""
+        self._create_mixed_player_st_notifications()
+        request = self.factory.get("/")
+        request.user = self.st_user
+
+        with CaptureQueriesContext(connection) as queries:
+            context = notification_count(request)
+
+        self.assertEqual(
+            context,
+            {
+                "notification_count": 4,
+                "notification_breakdown": {
+                    "Unread Scenes": 1,
+                    "Weekly XP Requests": 1,
+                    "Scene XP Requests": 1,
+                    "Characters to Approve": 1,
+                },
+            },
+        )
+        self.assertEqual(len(queries), 23)
+
+    def test_cache_hit_returns_the_original_context_without_queries(self):
+        """A cache hit must not rerun database-backed notification aggregation."""
+        scene = Scene.objects.create(
+            name="First Unread Scene", chronicle=self.chronicle, location=self.location
+        )
+        UserSceneReadStatus.objects.create(user=self.user, scene=scene, read=False)
+        request = self.factory.get("/")
+        request.user = self.user
+        first_context = notification_count(request)
+
+        second_scene = Scene.objects.create(
+            name="Second Unread Scene", chronicle=self.chronicle, location=self.location
+        )
+        UserSceneReadStatus.objects.create(user=self.user, scene=second_scene, read=False)
+
+        with self.assertNumQueries(0):
+            cached_context = notification_count(request)
+
+        self.assertEqual(cached_context, first_context)
+        self.assertEqual(cached_context["notification_count"], 1)
 
     def test_unauthenticated_user_gets_zero_notifications(self):
         """Test that unauthenticated users get zero notifications."""
@@ -114,7 +190,7 @@ class TestNotificationCountContextProcessor(TestCase):
 
     def test_st_sees_xp_requests_from_scenes(self):
         """Test that storytellers see scene XP requests."""
-        scene = Scene.objects.create(
+        Scene.objects.create(
             name="Test Scene",
             chronicle=self.chronicle,
             location=self.location,
@@ -208,7 +284,7 @@ class TestNotificationCountContextProcessor(TestCase):
         Since we can't easily set an image in tests, we test that the code path works
         by verifying no error is raised and the count includes only valid items.
         """
-        char = Human.objects.create(
+        Human.objects.create(
             name="Test Character",
             owner=self.user,
             chronicle=self.chronicle,
