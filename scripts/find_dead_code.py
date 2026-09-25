@@ -56,7 +56,11 @@ from core.create_redirects import APP_NAMES
 from core.views.generic import DictView
 from scripts.inventory_authorization_routes import descendants
 
-connections["default"].settings_dict["NAME"] = ":memory:"  # never touch a real DB file
+# Never touch a real database: the scan needs none. Fail loudly rather than
+# misconfigure a non-SQLite connection if the settings ever change.
+if not connections["default"].settings_dict["ENGINE"].endswith("sqlite3"):
+    sys.exit("find_dead_code.py expects the default database to use SQLite")
+connections["default"].settings_dict["NAME"] = ":memory:"
 
 LOCAL_CONFIGS = [c for c in apps.get_app_configs() if Path(c.path).resolve().is_relative_to(ROOT)]
 LOCAL_APPS = tuple(sorted({c.name.split(".")[0] for c in LOCAL_CONFIGS}))
@@ -372,7 +376,7 @@ def url_name_of(getter):
     """Resolve what a URL getter returns back to its URL name (None if it cannot run)."""
     try:
         return resolve(urlsplit(getter()).path).view_name
-    except Exception:  # noqa: BLE001 - needs DB/arguments: fall back to literals
+    except Exception:  # needs DB/arguments: fall back to literals
         return None
 
 
@@ -396,7 +400,7 @@ def model_url_names():
                 if not inspect.ismethod(bound) and instance is None:
                     instance = model(pk=1)
                 target = bound if inspect.ismethod(bound) else getattr(instance, attr)
-            except Exception:  # noqa: BLE001 - model cannot be instantiated bare
+            except Exception:  # model cannot be instantiated bare
                 continue
             names.add(url_name_of(target))
     return names - {None}
@@ -466,7 +470,7 @@ def section_urls():
         if literal.startswith("/") and "//" not in literal:
             try:
                 referenced.add(resolve(urlsplit(literal).path).view_name)
-            except Exception:  # noqa: BLE001 - not a routable path
+            except Exception:  # not a routable path
                 pass
     computed = computed_items("url")
     type_routes = object_type_routes()
@@ -548,7 +552,7 @@ def import_project_modules():
             module = src.rel[:-3].replace("/", ".").removesuffix(".__init__")
             try:
                 importlib.import_module(module)
-            except Exception as exc:  # noqa: BLE001 - report and keep scanning
+            except Exception as exc:  # report and keep scanning
                 failures.append(f"{module}: {type(exc).__name__}")
     if failures:
         print(f"warning: {len(failures)} modules failed to import: {failures[:5]}", file=sys.stderr)
@@ -612,7 +616,7 @@ def view_template_names(view):
         is_model = isinstance(model, type) and issubclass(model, models.Model)
         instance.object_list = model._default_manager.none() if is_model else []
         return list(instance.get_template_names())
-    except Exception:  # noqa: BLE001 - needs request/object state: rely on literals
+    except Exception:  # needs request/object state: rely on literals
         return []
 
 
@@ -647,12 +651,11 @@ def section_templates():
     nontest, test = literal_files(False), literal_files(True)
     runtime = {name for view in routed_views() for name in view_template_names(view)}
     computed = computed_items("template")
-    dead_view_templates = {
-        name: (cls.__name__, where.split(":")[0])
-        for cls, where, status in unrouted_views()[0]
-        if status.startswith("dead")
-        for name in view_template_names(cls)
-    }
+    dead_view_templates = {}  # template -> first unrouted view by name (stable output)
+    for cls, where, status in sorted(unrouted_views()[0], key=lambda row: row[0].__name__):
+        if status.startswith("dead"):
+            for name in view_template_names(cls):
+                dead_view_templates.setdefault(name, (cls.__name__, where.split(":")[0]))
     status_of, users_of = {}, {}
     for name, rel in templates.items():
         users = nontest.get(name, set()) - {rel}
