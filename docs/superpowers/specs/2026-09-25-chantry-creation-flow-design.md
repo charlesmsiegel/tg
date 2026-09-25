@@ -215,15 +215,16 @@ The background block template uses `rating.display_name` instead of repeating th
 
 ### 6. Schema
 
-`ChantryBackgroundRating.linked_object`:
+`core.Model` is abstract, so no foreign key can point at it. `ChantryBackgroundRating` therefore gets two nullable columns, and one property that reads and writes whichever applies:
 
 ```python
-models.ForeignKey("core.Model", null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
+linked_location = models.ForeignKey("locations.LocationModel", null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
+linked_character = models.ForeignKey("characters.CharacterModel", null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
+# linked_object: property returning the concrete linked Node/Library/Sanctum/NPC, or None
 ```
 
-- It points at the polymorphic base, so it can hold a Node, Library, Sanctum or NPC.
-- `locations` has no migration history, so a new migration, `tg_schema/migrations/0002_chantry_rating_linked_object.py`, follows the `0001_scene_visibility` pattern: it introspects the table and calls `schema_editor.add_field` only when the column is missing.
-- Fresh test databases get the column from the model.
+- `locations` has no migration history, so a new migration, `tg_schema/migrations/0002_chantry_rating_linked_object.py`, follows the `0001_scene_visibility` pattern. It introspects the table and adds each column only when it is missing.
+- Fresh test databases get the columns from the model.
 - No data migration is needed: existing ratings have `NULL`, and the detail page falls back to `note`/`url`.
 - The same fallback applies when a linked object is deleted by some other route and `SET_NULL` clears the column. The Resources card then shows the rating as unlinked, with its `note`, and `has_node()`/`has_library()` report it as unrealised. Tests cover a Node deleted after it was linked.
 
