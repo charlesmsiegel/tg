@@ -1,260 +1,64 @@
-# Table Generator (TG)
+# Tellurium Games (TG)
 
-A comprehensive Django web application for managing World of Darkness tabletop RPG characters, items, and locations across multiple game lines.
+TG is a Django application for running *World of Darkness* tabletop chronicles. Players can create and advance characters; Storytellers can organize chronicles, scenes, stories, journals, items, and locations in the same place. The site is in beta, and the depth of support varies by game line.
 
-## Overview
+## What is here
 
-Table Generator is a feature-rich character management system designed for World of Darkness campaigns. It supports multiple game lines including Vampire: the Masquerade, Werewolf: the Apocalypse, Mage: the Ascension, Wraith: the Oblivion, Changeling: the Dreaming, and Demon: the Fallen.
+- Character sheets and creation flows with game-specific traits, plus experience and freebie spending.
+- Chronicles with player and Storyteller roles, scenes, stories, journals, and house rules.
+- Review and approval workflows for characters and advancement.
+- Reference data for abilities, powers, factions, and other game material, loaded from `populate_db/`.
+- Scene chat over Django Channels.
 
-### Key Features
+The character code includes **Vampire: the Masquerade**, **Werewolf: the Apocalypse**, **Mage: the Ascension**, **Wraith: the Oblivion**, **Changeling: the Dreaming**, **Demon: the Fallen**, **Mummy: the Resurrection**, and **Hunter: the Reckoning**. These game lines are at different stages of development.
 
-- **Multi-Gameline Support** - Full character creation and management for 6+ WoD game lines
-- **Chronicle Management** - Organize campaigns with storytellers, players, scenes, and stories
-- **Permissions System** - Fine-grained access control for characters, items, and locations
-- **XP & Freebie Tracking** - Comprehensive character progression with approval workflows
-- **Character Templates** - Pre-built templates for quick character and NPC creation
-- **Polymorphic Models** - Flexible inheritance system for game-specific features
-- **Responsive UI** - Custom-designed interface with gameline-specific theming
+## Run locally
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.10+
-- pip and virtualenv
-- Git
-
-### Installation
+You need Python 3.10 or newer and Git. The commands below use a macOS or Linux shell. Local development uses SQLite and an in-memory channel layer, so it does not require PostgreSQL or Redis.
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/tg.git
+git clone https://github.com/charlesmsiegel/tg.git
 cd tg
-
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-# Create .env file with your configuration
-cp .env.example .env
-# Edit .env with your SECRET_KEY and other settings
-
-# Run migrations
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 python manage.py migrate
-
-# Load game data
-bash setup_db.sh
-
-# Create superuser
 python manage.py createsuperuser
-
-# Collect static files
-python manage.py collectstatic
-
-# Run development server
-python manage.py runserver
+python manage.py runserver 7000
 ```
 
-Visit `http://localhost:8000` to access the application.
+Open <http://127.0.0.1:7000/>. You can sign in with the superuser you created or make a player account at `/accounts/signup/`.
 
-### Secrets Configuration
+Development settings are selected by default. You can copy [`.env.example`](.env.example) to `.env` to change local settings; the app reads it with `python-dotenv`. In particular, `SECRET_KEY` and `DJANGO_ALLOWED_HOSTS` are recognized. The database defaults to `db.sqlite3` in the project root.
 
-You'll need to create a `.env` file with your configuration:
+### Load game data
+
+To populate a **fresh local database** with the bundled game data, run this from the repository root:
 
 ```bash
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=sqlite:///db.sqlite3
+python manage.py populate_gamedata --dry-run  # Preview the scripts
+python manage.py populate_gamedata            # Load them
 ```
 
-Generate a secure secret key:
-```python
-import secrets
-print(secrets.token_urlsafe(50))
-```
+Check the command's final success and failure counts. It executes the Python files in `populate_db/` and reports errors per file. The `setup_db.sh` script is for a full reset: it calls `reset_db --yes`, deleting the existing local database and app migration files. Do not use it to add data to a database you want to keep.
 
-## Project Structure
-
-```
-tg/
-├── characters/        # Character models, views, forms by gameline
-├── items/             # Equipment and artifacts
-├── locations/         # Places and locations
-├── game/              # Chronicle, Scene, Story management
-├── accounts/          # User profiles and authentication
-├── core/              # Shared utilities, base models, permissions
-├── populate_db/       # Game data loading scripts
-├── docs/              # Documentation
-│   ├── design/        # Design specifications
-│   ├── guides/        # Implementation guides
-│   ├── deployment/    # Deployment documentation
-│   └── testing/       # Test documentation
-└── static/            # CSS, JavaScript, images
-```
-
-## Documentation
-
-### For Developers
-
-- **[CLAUDE.md](CLAUDE.md)** - Comprehensive development guide for working with this codebase
-- **[docs/guides/](docs/guides/)** - Implementation guides for specific features
-- **[docs/design/](docs/design/)** - Design documentation and specifications
-- **[TODO.md](TODO.md)** - Known issues and planned improvements
-
-### For Deployment
-
-- **[docs/deployment/](docs/deployment/)** - Complete deployment guides for staging and production
-- Includes permissions system and validation system deployment documentation
-
-### Key Documentation
-
-- **Permissions System** - [docs/design/permissions_system.md](docs/design/permissions_system.md)
-- **Data Validation** - [docs/design/data_validation.md](docs/design/data_validation.md)
-- **Limited Forms** - [docs/guides/limited_owner_forms.md](docs/guides/limited_owner_forms.md)
-- **View Migration** - [docs/guides/view_template_migration.md](docs/guides/view_template_migration.md)
-
-## Technology Stack
-
-- **Backend**: Django 5.1.7
-- **Database**: SQLite (development) / PostgreSQL (production)
-- **ORM**: Django ORM with django-polymorphic for inheritance
-- **Frontend**: Bootstrap 5 with custom TG styling
-- **Testing**: Django's unittest framework
-- **Dependencies**: See [requirements.txt](requirements.txt)
-
-## Game Lines Supported
-
-- **World of Darkness** (WoD) - Core system
-- **Vampire: the Masquerade** (VtM) - Clans, disciplines, blood bonds
-- **Werewolf: the Apocalypse** (WtA) - Tribes, gifts, renown
-- **Mage: the Ascension** (MtA) - Traditions, spheres, arete
-- **Wraith: the Oblivion** (WtO) - Passions, fetters, shadow
-- **Changeling: the Dreaming** (CtD) - Kiths, arts, glamour
-- **Demon: the Fallen** (DtF) - Houses, lores, torment
-
-## Testing
+## Work on the project
 
 ```bash
-# Run all tests
+python manage.py check
 python manage.py test
-
-# Run specific app tests
-python manage.py test characters
-
-# Run with verbose output
-python manage.py test --verbosity=2
-
-# Run specific test class
-python manage.py test characters.tests.core.test_permissions.TestOwnerPermissions
-
-# Run specific test method
-python manage.py test characters.tests.core.test_permissions.TestOwnerPermissions.test_owner_can_view_full
 ```
 
-## Contributing
+The main areas of the codebase are:
 
-1. Create a feature branch from `main`
-2. Make your changes
-3. Write/update tests
-4. Update documentation
-5. Submit a pull request
+| Path | Purpose |
+| --- | --- |
+| `characters/` | Character models, sheets, creation flows, and game-specific rules |
+| `game/` | Chronicles, scenes, stories, journals, XP requests, and scene chat |
+| `accounts/` | Sign-up, profiles, and player/Storyteller relationships |
+| `items/`, `locations/` | Chronicle equipment and places |
+| `core/` | Shared models, permissions, views, and template components |
+| `populate_db/` | Scripts that load game reference data |
+| `tg/settings/` | Development and production Django settings |
 
-### Code Style
-
-- Follow Django best practices
-- Use Black for Python formatting
-- Follow patterns documented in CLAUDE.md
-- Write tests for new features
-- Update documentation
-
-## Common Commands
-
-```bash
-# Database
-python manage.py makemigrations
-python manage.py migrate
-python manage.py dbshell
-
-# Development
-python manage.py runserver
-python manage.py shell
-python manage.py createsuperuser
-
-# Testing
-python manage.py test                     # All tests
-python manage.py test characters          # App-specific tests
-python manage.py test --verbosity=2       # Verbose output
-
-# Data Management
-bash setup_db.sh                          # Load all game data
-python manage.py loaddata <fixture>       # Load specific fixture
-
-# Deployment
-python manage.py collectstatic
-python manage.py check --deploy
-```
-
-## Architecture Highlights
-
-### Polymorphic Models
-
-The application uses django-polymorphic for flexible model inheritance:
-
-```python
-# Base model
-Character (polymorphic)
-├── Human
-│   ├── VtMHuman (Vampire character)
-│   ├── Garou (Werewolf character)
-│   └── Mage (Mage character)
-└── Spirit
-    └── Wraith
-```
-
-### Permissions System
-
-Fine-grained permissions control access to objects:
-
-- **VIEW_FULL** - See all character details
-- **VIEW_PARTIAL** - See limited public information
-- **EDIT_FULL** - Modify all fields (ST/Admin only)
-- **EDIT_LIMITED** - Modify notes and descriptions (Owner)
-- **SPEND_XP** - Use experience points
-- **APPROVE** - Approve character changes (ST only)
-
-See [docs/design/permissions_system.md](docs/design/permissions_system.md) for details.
-
-### Chronicle System
-
-Campaigns are organized through Chronicles:
-
-- **Chronicle** - The campaign container
-- **Story** - Multi-session story arcs
-- **Scene** - Individual game sessions
-- **Week** - Weekly time tracking for XP awards
-
-## License
-
-[Add your license information here]
-
-## Support
-
-For issues and questions:
-- Create an issue in the issue tracker
-- Review existing documentation in `docs/`
-- Check `TODO.md` for known issues
-
-## Credits
-
-Built with Django and love for World of Darkness.
-
----
-
-**Version**: 2.0
-**Django**: 5.1.7
-**Python**: 3.10+
+For implementation conventions, see [`CLAUDE.md`](CLAUDE.md). The [`characters/`](characters/README.md), [`game/`](game/README.md), and [`core/`](core/README.md) guides describe the main apps. Bugs and feature requests go in [GitHub Issues](https://github.com/charlesmsiegel/tg/issues).
