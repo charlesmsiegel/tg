@@ -38,10 +38,22 @@ from django.db import connections, models
 from django.db.migrations import Migration
 from django.template import Library
 from django.template.backends.django import get_installed_libraries
-from django.urls import URLResolver, get_resolver, resolve
+from django.urls import NoReverseMatch, URLResolver, get_resolver, resolve, reverse
 from django.views import View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 from django.views.generic.base import TemplateResponseMixin
 
+from characters.forms.core.character_creation import CharacterCreationForm
+from core.create_redirects import APP_NAMES
+from core.views.generic import DictView
 from scripts.inventory_authorization_routes import descendants
 
 connections["default"].settings_dict["NAME"] = ":memory:"  # never touch a real DB file
@@ -77,6 +89,19 @@ URL_TAG_RE = re.compile(r"\{%\s*url\s+(\S+)")
 DECORATOR_SKIP = re.compile(r"register|receiver|shared_task|\.task\b")
 CALL_CTX = {**dict.fromkeys(URL_FUNCS, "url"), **dict.fromkeys(TEMPLATE_FUNCS, "template")}
 NOT_URL_GETTERS = {"get_success_url", "get_gameline_for_url"}
+SEED_METHODS = {"create", "get_or_create", "update_or_create"}
+# Actions the index views pass to core.create_redirects.resolve_object_type_url:
+# characters/views/core/__init__.py asks only for "create"; items and locations
+# ask for "create" or "list".
+INDEX_ACTIONS = {"char": {"create"}, "obj": {"create", "list"}, "loc": {"create", "list"}}
+# The character index only offers types its forms list: CharacterCreationForm drops
+# EXCLUDED_TYPES, and GroupCreationForm offers these (local list in group_creation.py).
+GROUP_FORM_TYPES = {"cabal", "pack", "motley", "group", "coterie", "circle", "conclave"}
+CHAR_NOT_OFFERED = set(CharacterCreationForm.EXCLUDED_TYPES) - GROUP_FORM_TYPES
+OBJECT_TYPE_STATUS = "dynamic: object-type index (resolve_object_type_url)"
+PAGE_KINDS = [(CreateView, "create"), (UpdateView, "update"), (DeleteView, "delete")]
+PAGE_KINDS += [(ListView, "list"), (DetailView, "detail"), (FormView, "form")]
+PAGE_KINDS += [(TemplateView, "template")]
 TAG_HEADERS = ("Library", "Kind", "Name", "Defined at", "Template files using")
 TAG_HEADERS += ("Python refs (non-test)", "Python refs (tests)", "Status")
 
@@ -110,7 +135,7 @@ class Src:
         self.migration = "/migrations/" in f"/{rel}"
         self.top = rel.split("/")[0]
         self.literals, self.code_idents, self.str_idents = set(), set(), set()
-        self.computed, self.defs = [], []
+        self.computed, self.defs, self.object_types = [], [], []
         self.template_text = text  # for .py: only non-docstring string constants
         if rel.endswith(".py"):
             self.template_text = ""
@@ -136,6 +161,8 @@ class Src:
             elif isinstance(node, ast.Call) and call_name(node) in {"path", "re_path"}:
                 skip.update(id(k.value) for k in node.keywords if k.arg == "name")
         for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and (seed := object_type_seed(node)):
+                self.object_types.append((*seed, node.lineno))
             if isinstance(node, ast.Name):
                 self.code_idents.add(node.id)
             elif isinstance(node, ast.Attribute):
@@ -156,6 +183,28 @@ class Src:
                 decorators = " ".join(ast.unparse(d) for d in node.decorator_list)
                 kind = "class" if isinstance(node, ast.ClassDef) else "function"
                 self.defs.append((node.name, kind, node.lineno, decorators))
+
+
+def object_type_seed(call):
+    """(name, category, gameline) from a literal ObjectType.objects.get_or_create(...) call."""
+    func = call.func
+    if not (isinstance(func, ast.Attribute) and func.attr in SEED_METHODS):
+        return None
+    if ast.unparse(func.value) != "ObjectType.objects":
+        return None
+    fields = {k.arg: k.value for k in call.keywords if k.arg}
+    defaults = fields.get("defaults")
+    if isinstance(defaults, ast.Dict):
+        fields.update(
+            {
+                getattr(k, "value", None): v
+                for k, v in zip(defaults.keys, defaults.values, strict=True)
+            }
+        )
+    try:
+        return tuple(ast.literal_eval(fields[f]) for f in ("name", "type", "gameline"))
+    except (KeyError, ValueError):
+        return None
 
 
 def str_parts(node):
@@ -318,6 +367,19 @@ def routed_views():
     return routed
 
 
+def url_name_of(getter):
+    """Resolve what a URL getter returns back to its URL name (None if it cannot run)."""
+    try:
+        return resolve(urlsplit(getter()).path).view_name
+    except Exception:  # noqa: BLE001 - needs DB/arguments: fall back to literals
+        return None
+
+
+@cache
+def absolute_url_name(model):
+    return url_name_of(getattr(model(pk=1), "get_absolute_url", lambda: None))
+
+
 def model_url_names():
     """Evaluate every model get_*_url() method on unsaved instances (or the class)."""
     names = set()
@@ -327,13 +389,70 @@ def model_url_names():
         for attr in dir(model):
             if not re.fullmatch(r"get_\w*url", attr) or attr in NOT_URL_GETTERS:
                 continue
+            bound = getattr(model, attr)
             try:
-                bound = getattr(model, attr)
                 target = bound if inspect.ismethod(bound) else getattr(model(pk=1), attr)
-                names.add(resolve(urlsplit(target()).path).view_name)
-            except Exception:  # noqa: BLE001 - needs DB/arguments: fall back to literals
+            except Exception:  # noqa: BLE001 - model cannot be instantiated bare
                 continue
-    return names
+            names.add(url_name_of(target))
+    return names - {None}
+
+
+def object_type_routes():
+    """Route names resolve_object_type_url() builds for statically seeded ObjectType rows.
+
+    Rows: (route name, category, gameline, type, action, seeded at, requested, problem).
+    """
+    seeds = {}  # prefer the populate_db seed over app-code get_or_create calls
+    for src in sorted(scanned(), key=lambda s: s.top != "populate_db"):
+        for name, category, gameline, line in src.object_types:
+            seeds.setdefault((name, category, gameline), f"{src.rel}:{line}")
+    url_names = {name for name, _, _ in iter_patterns(get_resolver().url_patterns) if name}
+    per_name = Counter((category, name) for name, category, _ in seeds)
+    rows = []
+    for (name, category, gameline), where in sorted(seeds.items()):
+        config = settings.GAMELINES.get(gameline)
+        namespace = "" if gameline == "wod" else f"{(config or {}).get('app_name')}:"
+        for action in ("create", "list"):
+            route_name = f"{APP_NAMES.get(category)}:{namespace}{action}:{name}"
+            problem = ""
+            if category not in APP_NAMES or config is None:
+                problem = "unsupported category/gameline"
+            else:
+                try:
+                    reverse(route_name)
+                except NoReverseMatch:
+                    exists = route_name in url_names
+                    problem = "route needs URL arguments" if exists else "no such URL name"
+            if per_name[(category, name)] > 1:
+                problem += "; name seeded in several gamelines (404 unless gameline is posted)"
+            requested = action in INDEX_ACTIONS.get(category, ()) and not (
+                category == "char" and name in CHAR_NOT_OFFERED
+            )
+            requested = "yes" if requested else "no"
+            rows.append((route_name, category, gameline, name, action, where, requested, problem))
+    return rows
+
+
+def classify_dead_route(view, name, route):
+    """(a) alias detail, (b) JSON/AJAX, (c) unlinked page view, (d) other."""
+    try:
+        source = inspect.getsource(view)
+    except (OSError, TypeError):
+        source = ""
+    if re.search(r"ajax|json|load_", f"{name} {route}", re.I) or "JsonResponse" in source:
+        return "(b) JSON/AJAX endpoint"
+    if not isinstance(view, type):
+        return "(d) other (function view)"
+    model = getattr(view, "model", None)
+    if issubclass(view, DetailView) and isinstance(model, type):
+        target = absolute_url_name(model)
+        if target and target != name:
+            return f"(a) alias: {model.__name__}.get_absolute_url() -> {target}"
+    for base, kind in PAGE_KINDS:
+        if issubclass(view, base):
+            return f"(c) {kind} page with no link"
+    return "(d) other (DictView router)" if issubclass(view, DictView) else "(d) other"
 
 
 def section_urls():
@@ -346,7 +465,9 @@ def section_urls():
             except Exception:  # noqa: BLE001 - not a routable path
                 pass
     computed = computed_items("url")
-    rows, counts = [], defaultdict(int)
+    type_routes = object_type_routes()
+    via_index = {r[0] for r in type_routes if r[6] == "yes" and not r[7].startswith(("no ", "uns"))}
+    rows, counts, dead_kinds = [], defaultdict(int), Counter()
     seen = set()
     routes = defaultdict(set)  # a dead name may share its path with a live one
     for name, route, _ in iter_patterns(get_resolver().url_patterns):
@@ -360,18 +481,38 @@ def section_urls():
         if name in referenced:
             counts["referenced"] += 1
             continue
-        if any(anchored and rx.match(name) for _, _, rx, anchored in computed):
+        kind = "-"
+        if name in via_index:
+            status = OBJECT_TYPE_STATUS
+        elif any(anchored and rx.match(name) for _, _, rx, anchored in computed):
             status = "dynamic (manual review)" + ("; tests reference it" if name in test else "")
         elif routes[route]:
             status = "path also reversed as " + ", ".join(sorted(routes[route]))
         else:
             status = "tests only" if name in test else "dead"
+            kind = classify_dead_route(view, name, route)
+            dead_kinds[f"{status} {kind[:3]}"] += 1
         counts[status.split(" as ")[0].split(";")[0]] += 1
-        rows.append((name, route, qualname(view), status))
+        rows.append((name, route, qualname(view), status, kind))
     review = review_table("Computed URL names - manual review", computed, "Marks names dynamic")
-    summary = summarize(f"{len(seen)} project URL names", counts, f"; {len(review[2])} computed")
-    return summary, [
-        ("Unreferenced URL names", ("URL name", "Route", "View", "Status"), rows),
+    broken = [r for r in type_routes if r[7] and r[6] == "yes"]
+    unrequested = [r[:6] + r[7:] for r in type_routes if r[7] and r[6] == "no"]
+    extra = f"; {len(review[2])} computed; dead/tests-only by kind: " + ", ".join(
+        f"{k}: {v}" for k, v in sorted(dead_kinds.items())
+    )
+    extra += f"; seeded object-type routes failing: {len(broken)} requested by an index view"
+    extra += f" (live 404s), {len(unrequested)} never requested"
+    headers = ("URL name", "Route", "View", "Status", "Dead-route kind")
+    broken_headers = ("Computed route name", "Category", "Gameline", "Type", "Action")
+    broken_headers += ("Seeded at", "Problem")
+    return summarize(f"{len(seen)} project URL names", counts, extra), [
+        ("Unreferenced URL names", headers, rows),
+        (
+            "Seeded object types: index-requested route fails (live 404)",
+            broken_headers,
+            [r[:6] + r[7:] for r in broken],
+        ),
+        ("Seeded object types: unresolvable but never requested", broken_headers, unrequested),
         review,
     ]
 
