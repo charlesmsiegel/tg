@@ -1,7 +1,7 @@
 """Report dead-code candidates: URL names, views, templates, template tags, symbols.
 
-Run: python scripts/find_dead_code.py [--section NAME] [--format md|tsv] > dead-code.md
-Sections: urls, views, templates, tags, symbols (default: all).
+Run: python scripts/find_dead_code.py [--section NAME]... [--format md|tsv] > dead-code.md
+Sections: urls, views, templates, tags, symbols (default: all); --section repeats.
 The script is read-only; no database connection is required (the default
 database is pointed at in-memory SQLite before anything could open it).
 Every row is a candidate for review, not a verdict: reflection, string-built
