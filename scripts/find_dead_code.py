@@ -386,12 +386,15 @@ def model_url_names():
     for model in apps.get_models():
         if module_top(model) not in LOCAL_APPS:
             continue
+        instance = None
         for attr in dir(model):
             if not re.fullmatch(r"get_\w*url", attr) or attr in NOT_URL_GETTERS:
                 continue
             bound = getattr(model, attr)
             try:
-                target = bound if inspect.ismethod(bound) else getattr(model(pk=1), attr)
+                if not inspect.ismethod(bound) and instance is None:
+                    instance = model(pk=1)
+                target = bound if inspect.ismethod(bound) else getattr(instance, attr)
             except Exception:  # noqa: BLE001 - model cannot be instantiated bare
                 continue
             names.add(url_name_of(target))
@@ -735,7 +738,7 @@ def section_tags():
                     if s.rel.endswith(".py")
                     and module_path in s.text
                     and func.__name__ in s.code_idents
-                    and not s.rel.startswith(module_path.replace(".", "/"))
+                    and s.rel != module_path.replace(".", "/") + ".py"
                 ]
                 py_nontest, py_test = sum(not s.test for s in py), sum(s.test for s in py)
                 tag_status = (
