@@ -1,16 +1,16 @@
 {% load static %}
-{% if is_approved_user %}
+{% if can_retire or can_decease %}
     <form method="post">
         {% csrf_token %}
         <div class="d-flex justify-content-center">
-            <input type="submit"
+            {% if can_retire %}<input type="submit"
                    name="retire"
                    value="Mark Retired"
-                   class="btn btn-warning mr-2" />
-            <input type="submit"
+                   class="btn btn-warning mr-2" />{% endif %}
+            {% if can_decease %}<input type="submit"
                    name="decease"
                    value="Mark Deceased"
-                   class="btn btn-danger" />
+                   class="btn btn-danger" />{% endif %}
         </div>
     </form>
 {% endif %}

@@ -1,4 +1,5 @@
-from django.shortcuts import redirect, render
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
 from django.views.generic import ListView
 
 from characters.forms.core.character_creation import CharacterCreationForm
@@ -129,14 +130,18 @@ from characters.models.wraith.shadow_archetype import ShadowArchetype
 from characters.models.wraith.thorn import Thorn
 from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
+from core.create_redirects import resolve_object_type_url
 from core.views.generic import DictView
-from game.models import Chronicle, ObjectType
+from core.views.public_object import PublicObjectDetailView
+from game.models import Chronicle
 
 from .group import GroupDetailView
 
 
 class GenericCharacterDetailView(DictView):
     model_class = Character
+    protected_object = True
+    public_view_class = PublicObjectDetailView
     key_property = "type"
     default_redirect = "characters:index"
 
@@ -213,6 +218,8 @@ class GenericCharacterDetailView(DictView):
 
 class GenericGroupDetailView(DictView):
     model_class = Group
+    protected_object = True
+    public_view_class = PublicObjectDetailView
     key_property = "type"
     default_redirect = "characters:index"
 
@@ -234,6 +241,21 @@ class GenericGroupDetailView(DictView):
 class CharacterIndexView(ListView):
     model = Character
     template_name = "characters/index.html"
+
+    def get(self, request, *args, **kwargs):
+        if not (request.user.is_authenticated and (
+            request.user.is_staff or request.user.is_superuser
+        )):
+            from core.views.public_object import render_public_object_list
+
+            forms = {}
+            if request.user.is_authenticated:
+                forms = {
+                    "character_form": CharacterCreationForm(user=request.user),
+                    "group_form": GroupCreationForm(user=request.user),
+                }
+            return render_public_object_list(request, Character, extra_context=forms)
+        return super().get(request, *args, **kwargs)
 
     chars = {
         # Core
@@ -367,38 +389,20 @@ class CharacterIndexView(ListView):
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
-
-        # Determine if this is a character or group creation
-        if "char_type" in request.POST:
-            type_name = request.POST["char_type"]
-        elif "group_type" in request.POST:
-            type_name = request.POST["group_type"]
-        else:
-            context = self.get_context_data()
-            return render(request, "characters/index.html", context)
-
-        obj, _ = ObjectType.objects.get_or_create(
-            name=type_name, defaults={"type": "char", "gameline": "wod"}
+        if action not in {"create", "create_group"}:
+            return HttpResponseBadRequest("Invalid character selection")
+        if not request.user.is_authenticated:
+            return HttpResponseBadRequest("Login required")
+        type_name = request.POST.get(
+            "group_type" if action == "create_group" else "char_type"
         )
-        gameline = obj.gameline
-
-        if action == "create" or action == "create_group":
-            if gameline == "wod":
-                redi = f"characters:create:{type_name}"
-            elif gameline == "vtm":
-                redi = f"characters:vampire:create:{type_name}"
-            elif gameline == "wta":
-                redi = f"characters:werewolf:create:{type_name}"
-            elif gameline == "mta":
-                redi = f"characters:mage:create:{type_name}"
-            elif gameline == "wto":
-                redi = f"characters:wraith:create:{type_name}"
-            elif gameline == "ctd":
-                redi = f"characters:changeling:create:{type_name}"
-            return redirect(redi)
-
-        context = self.get_context_data()
-        return render(request, "characters/index.html", context)
+        if not type_name:
+            return HttpResponseBadRequest("Missing character type")
+        return redirect(
+            resolve_object_type_url(
+                "char", type_name, "create", request.POST.get("gameline")
+            )
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -49,12 +49,14 @@ class TestSorcererDetailView(TestCase):
         """Test that characters are hidden from other users (404)."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.sorcerer.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404."""
         response = self.client.get(self.sorcerer.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used for sorcerer detail view."""
@@ -74,7 +76,8 @@ class TestSorcererDetailView(TestCase):
         self.client.login(username="other", password="password")
         response = self.client.get(unapproved.get_absolute_url())
         # Should be 403 or 404 (denied/hidden from other users)
-        self.assertIn(response.status_code, [403, 404])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_unapproved_visible_to_owner(self):
         """Test that unapproved characters are visible to owners."""
@@ -139,6 +142,8 @@ class TestSorcererUpdateView(TestCase):
             status="App",
             sorcerer_type="hedge_mage",
         )
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_full_update_view_denied_to_owner(self):
         """Test that full update is denied to owners (ST-only)."""
@@ -194,7 +199,8 @@ class TestSorcererCharacterCreationView(TestCase):
         self.client.login(username="other", password="password")
         url = self.sorcerer.get_absolute_url()
         response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
 
 class TestSorcererPathView(TestCase):

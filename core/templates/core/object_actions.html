@@ -1,0 +1,17 @@
+{% if can_submit or can_review %}
+<section class="container mb-4" aria-label="Approval actions">
+  {% if can_submit %}
+  <form method="post" action="{% url 'accounts:object_submission' object_type object_pk %}">
+    {% csrf_token %}<button type="submit" class="btn btn-primary">Submit for approval</button>
+  </form>
+  {% endif %}
+  {% if can_review %}
+  <form method="post" action="{% url 'accounts:object_revision' object_type object_pk %}">
+    {% csrf_token %}<button type="submit" class="btn btn-secondary">Return for revisions</button>
+  </form>
+  <form method="post" action="{% url 'accounts:object_approval' object_type object_pk %}">
+    {% csrf_token %}<button type="submit" class="btn btn-success">Approve</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}

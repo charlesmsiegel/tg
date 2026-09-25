@@ -35,8 +35,13 @@ class TestBackgroundSkipping(TestCase):
         self.client.login(username="owner", password="password")
         url = mage.get_absolute_url()
         response = self.client.get(url)
-        # Should redirect past node step
+        self.assertEqual(response.status_code, 200)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 10)
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 11)
 
     def test_skips_library_when_none_purchased(self):
         """Test that library step is skipped when no library background."""
@@ -50,8 +55,13 @@ class TestBackgroundSkipping(TestCase):
         self.client.login(username="owner", password="password")
         url = mage.get_absolute_url()
         response = self.client.get(url)
-        # Should redirect past library step
+        self.assertEqual(response.status_code, 200)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 11)
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 12)
 
 
 class TestEnhancementViewSkipping(TestCase):
@@ -73,9 +83,13 @@ class TestEnhancementViewSkipping(TestCase):
             creation_status=14,  # MageEnhancementView
             arete=1,
         )
-        # No enhancement background rating - should skip to next step
+        # No enhancement background rating: GET is read-only; POST advances.
         self.client.login(username="owner", password="password")
         url = mage.get_absolute_url()
         response = self.client.get(url)
-        # Should redirect to next step
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 14)
+        self.assertEqual(self.client.post(url, {}).status_code, 302)
+        mage.refresh_from_db()
+        self.assertEqual(mage.creation_status, 15)

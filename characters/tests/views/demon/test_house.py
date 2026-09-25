@@ -68,6 +68,8 @@ class TestHouseCreateView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that house create view is accessible when logged in."""
@@ -88,6 +90,8 @@ class TestHouseUpdateView(TestCase):
         self.house = DemonHouse.objects.create(
             name="Devils", celestial_name="Namaru", owner=self.user
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that house update view is accessible when logged in."""
@@ -105,6 +109,8 @@ class TestHouse404Handling(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_house_detail_returns_404_for_invalid_pk(self):
         """Test that house detail returns 404 for non-existent house."""

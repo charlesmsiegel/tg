@@ -68,6 +68,8 @@ class TestLoreCreateView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_create_view_accessible_when_logged_in(self):
         """Test that lore create view is accessible when logged in."""
@@ -88,6 +90,8 @@ class TestLoreUpdateView(TestCase):
         self.lore = Lore.objects.create(
             name="Lore of Flame", property_name="flame", owner=self.user
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_accessible_when_logged_in(self):
         """Test that lore update view is accessible when logged in."""
@@ -105,6 +109,8 @@ class TestLore404Handling(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_lore_detail_returns_404_for_invalid_pk(self):
         """Test that lore detail returns 404 for non-existent lore."""

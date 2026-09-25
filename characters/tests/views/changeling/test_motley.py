@@ -77,6 +77,8 @@ class TestMotleyDetailView(TestCase):
             chronicle=self.chronicle,
             leader=self.leader,
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_detail_view_returns_200(self):
         """Test that detail view returns 200 for authenticated user."""
@@ -137,6 +139,8 @@ class TestMotleyUpdateView(TestCase):
             chronicle=self.chronicle,
             leader=self.leader,
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
     def test_update_view_returns_200(self):
         """Test that update view returns 200 for authenticated user."""

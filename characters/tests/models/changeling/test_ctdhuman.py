@@ -384,6 +384,8 @@ class TestCtDHumanUpdateView(TestCase):
             "treasure": 1,
         }
         self.url = self.ctdhuman.get_update_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_update_view_status_code(self):
         self.client.login(username="ST", password="password")
@@ -426,11 +428,11 @@ class TestCtDHumanBasicsView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_basics_view_shows_storyteller_context_for_st(self):
-        """Test that storyteller context is True for storytellers."""
+        """An unscoped create page grants no chronicle ST controls."""
         self.client.login(username="ST", password="12345")
         response = self.client.get(CtDHuman.get_creation_url())
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["storyteller"])
+        self.assertFalse(response.context["storyteller"])
 
     def test_basics_view_shows_storyteller_context_for_player(self):
         """Test that storyteller context is False for regular players."""

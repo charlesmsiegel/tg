@@ -103,21 +103,27 @@ class TestArcanosCreateView(TestCase):
         self.user = User.objects.create_user(
             username="user", email="user@test.com", password="password"
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
-    def test_create_view_publicly_accessible(self):
-        """Test that arcanos create view is accessible without login (reference model)."""
+    def test_create_view_requires_login(self):
+        """Test that arcanos create view is restricted to authenticated editors (reference model)."""
         url = reverse("characters:wraith:create:arcanos")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         url = reverse("characters:wraith:create:arcanos")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/arcanos/form.html")
 
     def test_create_arcanos_successfully(self):
         """Test creating an arcanos successfully."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         url = reverse("characters:wraith:create:arcanos")
         data = {
             "name": "Keening",
@@ -148,21 +154,27 @@ class TestArcanosUpdateView(TestCase):
             description="Art of connections",
             owner=self.user,
         )
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
 
-    def test_update_view_publicly_accessible(self):
-        """Test that arcanos update view is accessible without login (reference model)."""
+    def test_update_view_requires_login(self):
+        """Test that arcanos update view is restricted to authenticated editors (reference model)."""
         url = self.arcanos.get_update_url()
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         url = self.arcanos.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/arcanos/form.html")
 
     def test_update_arcanos_successfully(self):
         """Test updating an arcanos successfully."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         url = self.arcanos.get_update_url()
         data = {
             "name": "Updated Arcanos",
@@ -193,6 +205,8 @@ class TestArcanos404Handling(TestCase):
 
     def test_arcanos_update_returns_404_for_invalid_pk(self):
         """Test that arcanos update returns 404 for non-existent arcanos."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(
             reverse("characters:wraith:update:arcanos", kwargs={"pk": 99999})
         )

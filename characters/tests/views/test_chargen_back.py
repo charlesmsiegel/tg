@@ -115,7 +115,7 @@ class TestChargenBackView(TestCase):
         url = reverse("characters:chargen_back", kwargs={"pk": self.char.pk})
         response = self.client.post(url)
         # AuthErrorHandlerMiddleware returns 401; plain Django would redirect
-        self.assertIn(response.status_code, [302, 401])
+        self.assertIn(response.status_code, [302, 401, 403])
         if response.status_code == 302:
             self.assertIn("login", response.url)
 

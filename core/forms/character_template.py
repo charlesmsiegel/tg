@@ -154,12 +154,11 @@ class CharacterTemplateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.user = user
 
-        # Filter chronicle choices to only those where user is ST
+        # Creators may place drafts only in chronicles they can access.
         if user and user.is_authenticated:
-            from game.models import Chronicle
+            from game.security import readable_chronicles
 
-            user_st_chronicles = Chronicle.objects.filter(storytellers=user)
-            self.fields["chronicle"].queryset = user_st_chronicles
+            self.fields["chronicle"].queryset = readable_chronicles(user)
             self.fields["chronicle"].required = False
 
     def clean(self):
@@ -220,12 +219,11 @@ class CharacterTemplateImportForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.user = user
 
-        # Filter chronicle choices to only those where user is ST
+        # Creators may place drafts only in chronicles they can access.
         if user and user.is_authenticated:
-            from game.models import Chronicle
+            from game.security import readable_chronicles
 
-            user_st_chronicles = Chronicle.objects.filter(storytellers=user)
-            self.fields["chronicle"].queryset = user_st_chronicles
+            self.fields["chronicle"].queryset = readable_chronicles(user)
 
     def clean_json_file(self):
         json_file = self.cleaned_data.get("json_file")

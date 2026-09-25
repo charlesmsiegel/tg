@@ -88,8 +88,7 @@ class ModelQuerySetMethodsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username="testuser", password="testpass")
-        cls.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        cls.chronicle.storytellers.add(cls.user)
+        cls.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=cls.user)
         cls.human = Human.objects.create(
             name="Test Character",
             owner=cls.user,

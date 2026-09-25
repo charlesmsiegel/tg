@@ -10,6 +10,8 @@ class TestGroupDetailView(TestCase):
         self.player = User.objects.create_user(username="User1", password="12345")
         self.group = Group.objects.create(name="Test Group")
         self.url = self.group.get_absolute_url()
+        self.player.is_staff = True
+        self.player.save(update_fields=["is_staff"])
 
     def test_group_detail_view_status_code(self):
         self.client.login(username="User1", password="12345")
@@ -31,14 +33,20 @@ class TestGroupCreateView(TestCase):
         self.url = Group.get_creation_url()
 
     def test_create_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/group/form.html")
 
     def test_create_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Group.objects.count(), 1)
@@ -53,14 +61,20 @@ class TestGroupUpdateView(TestCase):
         self.url = self.group.get_update_url()
 
     def test_update_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/group/form.html")
 
     def test_update_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.group.refresh_from_db()
@@ -71,6 +85,8 @@ class TestGenericGroupDetailView(TestCase):
     def setUp(self) -> None:
         self.player = User.objects.create_user(username="Test", password="12345")
         self.group = Group.objects.create(name="Group Test")
+        self.player.is_staff = True
+        self.player.save(update_fields=["is_staff"])
 
     def test_generic_group_detail_view_templates(self):
         self.client.login(username="Test", password="12345")

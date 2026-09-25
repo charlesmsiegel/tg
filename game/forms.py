@@ -24,7 +24,7 @@ class SceneCreationForm(forms.Form):
     location = forms.ModelChoiceField(
         queryset=LocationModel.objects.order_by("name"), empty_label="Select Location"
     )
-    date_of_scene = forms.CharField(max_length=100, widget=forms.DateInput(attrs={"type": "date"}))
+    date_of_scene = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     gameline = forms.ChoiceField(
         choices=GameLine.CHOICES,
         initial=GameLine.WOD,
@@ -45,6 +45,7 @@ class SceneCreationForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         chronicle = kwargs.pop("chronicle")
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.fields["location"].queryset = LocationModel.objects.filter(
             chronicle=chronicle
@@ -53,9 +54,11 @@ class SceneCreationForm(forms.Form):
         # Filter gameline choices to only those with STs for this chronicle
         from game.models import STRelationship
 
-        st_gamelines = STRelationship.objects.filter(chronicle=chronicle).values_list(
-            "gameline__name", flat=True
-        )
+        if user is not None and (user.is_staff or user.is_superuser or chronicle.head_st_id == user.pk):
+            return
+        st_gamelines = STRelationship.objects.filter(
+            chronicle=chronicle, user=user
+        ).values_list("gameline__name", flat=True)
         allowed_codes = {
             self.GAMELINE_NAME_TO_CODE.get(name)
             for name in st_gamelines
@@ -147,7 +150,7 @@ class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
         is in format suitable for ChainedChoiceField.
         """
         excluded_types = excluded_types or []
-        is_privileged = user.is_staff or user.profile.is_st()
+        is_privileged = user.is_staff or user.is_superuser or chronicle.head_st_id == user.pk
 
         # Get all object types for this category
         all_types = ObjectType.objects.filter(type=self.object_type_code).exclude(
@@ -159,9 +162,20 @@ class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
             allowed_gamelines = {obj.gameline for obj in all_types}
             allowed_type_names = {obj.name for obj in all_types}
         else:
-            # Regular users: filter by ST gamelines and allowed_objects
-            allowed_gamelines = self._get_st_gameline_codes(chronicle)
-            allowed_type_names = self._get_allowed_type_names(chronicle)
+            assigned = STRelationship.objects.filter(
+                chronicle=chronicle, user=user
+            ).values_list("gameline__name", flat=True)
+            assigned_codes = {
+                self.GAMELINE_NAME_TO_CODE[name]
+                for name in assigned if name in self.GAMELINE_NAME_TO_CODE
+            }
+            if assigned_codes:
+                allowed_gamelines = assigned_codes
+                allowed_type_names = {obj.name for obj in all_types}
+            else:
+                # Players can use only the chronicle's approved type catalogue.
+                allowed_gamelines = self._get_st_gameline_codes(chronicle)
+                allowed_type_names = self._get_allowed_type_names(chronicle)
 
         # Build gameline choices
         gameline_choices = [
@@ -359,9 +373,14 @@ class AddCharForm(forms.Form):
         user = kwargs.pop("user")
         scene = kwargs.pop("scene")
         super().__init__(*args, **kwargs)
-        self.fields["character_to_add"].queryset = CharacterModel.objects.filter(
-            owner=user, chronicle=scene.chronicle
-        ).exclude(pk__in=scene.characters.all())
+        from core.permissions import PermissionManager
+
+        queryset = CharacterModel.objects.filter(chronicle=scene.chronicle)
+        if not PermissionManager.can_manage_scope(user, scene.chronicle, scene.gameline):
+            queryset = queryset.filter(owner=user)
+        self.fields["character_to_add"].queryset = queryset.exclude(
+            pk__in=scene.characters.all()
+        )
 
 
 class PostForm(forms.Form):
@@ -618,7 +637,10 @@ class SceneForm(forms.ModelForm):
 
     class Meta:
         model = Scene
-        fields = ["name", "location", "date_of_scene", "gameline", "finished", "xp_given"]
+        fields = [
+            "name", "location", "date_of_scene", "gameline", "visibility",
+            "finished", "xp_given",
+        ]
         widgets = {
             "date_of_scene": forms.DateInput(attrs={"type": "date"}),
         }
@@ -626,6 +648,8 @@ class SceneForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.chronicle = kwargs.pop("chronicle", None)
         super().__init__(*args, **kwargs)
+        self.fields["visibility"].required = False
+        self.fields["visibility"].initial = Scene.Visibility.CHRONICLE
         # Filter location by chronicle if available
         if self.chronicle:
             self.fields["location"].queryset = LocationModel.objects.filter(
@@ -635,3 +659,6 @@ class SceneForm(forms.ModelForm):
             self.fields["location"].queryset = LocationModel.objects.filter(
                 chronicle=self.instance.chronicle
             ).order_by("name")
+
+    def clean_visibility(self):
+        return self.cleaned_data.get("visibility") or Scene.Visibility.CHRONICLE

@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.forms.changeling.trod import TrodForm
 from locations.models.changeling import Trod
 
@@ -21,7 +21,7 @@ class TrodListView(ListView):
     template_name = "locations/changeling/trod/list.html"
 
 
-class TrodCreateView(LoginRequiredMixin, CreateView):
+class TrodCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create view for a new Trod"""
 
     model = Trod

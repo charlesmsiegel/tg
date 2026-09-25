@@ -7,6 +7,7 @@ characters, items, locations, and other game objects.
 
 from enum import Enum
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
@@ -19,6 +20,8 @@ class Role(Enum):
     OWNER = "owner"
     ADMIN = "admin"
     CHRONICLE_HEAD_ST = "chronicle_head_st"
+    CHRONICLE_ST_VIEW = "chronicle_st_view"
+    CHRONICLE_ST = "chronicle_st"
     GAME_ST = "game_st"
     PLAYER = "player"
     OBSERVER = "observer"
@@ -84,6 +87,21 @@ class PermissionManager:
             Permission.APPROVE,
             Permission.MANAGE_OBSERVERS,
         },
+        Role.CHRONICLE_ST_VIEW: {
+            Permission.VIEW_FULL,
+            Permission.VIEW_PARTIAL,
+        },
+        Role.CHRONICLE_ST: {
+            Permission.VIEW_FULL,
+            Permission.VIEW_PARTIAL,
+            Permission.EDIT_FULL,
+            Permission.EDIT_LIMITED,
+            Permission.SPEND_XP,
+            Permission.SPEND_FREEBIES,
+            Permission.DELETE,
+            Permission.APPROVE,
+            Permission.MANAGE_OBSERVERS,
+        },
         Role.GAME_ST: {
             Permission.VIEW_FULL,  # Full view access
             Permission.VIEW_PARTIAL,
@@ -100,7 +118,78 @@ class PermissionManager:
     }
 
     @staticmethod
-    def get_user_roles(user: User, obj) -> set[Role]:
+    def can_manage_scope(user, chronicle, gameline, request=None):
+        """Whether a user can mutate a chronicle and gameline pair."""
+        if not user.is_authenticated:
+            return False
+        if user.is_staff or user.is_superuser:
+            return True
+        roles = PermissionManager.get_scoped_roles(
+            user, chronicle, gameline, request=request
+        )
+        return bool(roles & {Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
+
+    @staticmethod
+    def can_manage_chronicle(user, chronicle, request=None):
+        """Chronicle-wide actions have no gameline and require its head ST."""
+        if not user.is_authenticated:
+            return False
+        return bool(
+            user.is_staff
+            or user.is_superuser
+            or (chronicle is not None and chronicle.head_st_id == user.pk)
+        )
+
+    @staticmethod
+    def user_has_scoped_editor_role(user, obj, request=None):
+        """Choose ST-only form fields without treating a draft owner as an ST."""
+        return bool(
+            PermissionManager.get_user_roles(user, obj, request=request)
+            & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+        )
+
+    @staticmethod
+    def get_scoped_roles(user: User, chronicle, gameline, request=None) -> set[Role]:
+        """Resolve ST roles once per request for a chronicle and gameline."""
+        if not user.is_authenticated:
+            return {Role.ANONYMOUS}
+        key = (user.pk, getattr(chronicle, "pk", None), gameline)
+        cache = getattr(request, "_tg_scoped_role_cache", None) if request else None
+        if cache is not None and key in cache:
+            return set(cache[key])
+
+        roles = {Role.AUTHENTICATED}
+        if user.is_staff or user.is_superuser:
+            roles.add(Role.ADMIN)
+        if chronicle is not None:
+            if chronicle.head_st_id == user.pk:
+                roles.add(Role.CHRONICLE_HEAD_ST)
+            if chronicle.game_storytellers.filter(pk=user.pk).exists():
+                roles.add(Role.GAME_ST)
+
+            from game.models import STRelationship
+
+            relationships = list(
+                STRelationship.objects.filter(user_id=user.pk, chronicle_id=chronicle.pk)
+                .select_related("gameline")
+            )
+            if relationships:
+                roles.add(Role.CHRONICLE_ST_VIEW)
+                name = settings.GAMELINES.get(gameline, {}).get("name")
+                if name and any(
+                    relation.gameline and relation.gameline.name == name
+                    for relation in relationships
+                ):
+                    roles.add(Role.CHRONICLE_ST)
+
+        if cache is not None:
+            cache[key] = frozenset(roles)
+        elif request is not None:
+            request._tg_scoped_role_cache = {key: frozenset(roles)}
+        return roles
+
+    @staticmethod
+    def get_user_roles(user: User, obj, request=None) -> set[Role]:
         """
         Determine all roles the user has for this object.
 
@@ -111,57 +200,29 @@ class PermissionManager:
         Returns:
             Set of Role enums
         """
-        roles = set()
-
-        # Anonymous check
+        chronicle = getattr(obj, "chronicle", None)
+        gameline = getattr(obj, "gameline", None)
+        if not isinstance(gameline, str) and hasattr(obj, "get_gameline"):
+            gameline = obj.get_gameline()
+        if not isinstance(gameline, str):
+            gameline = None
+        roles = PermissionManager.get_scoped_roles(
+            user, chronicle, gameline, request=request
+        )
         if not user.is_authenticated:
-            roles.add(Role.ANONYMOUS)
             return roles
-
-        # All authenticated users get this role
-        roles.add(Role.AUTHENTICATED)
-
-        # Admin check
-        if user.is_superuser or user.is_staff:
-            roles.add(Role.ADMIN)
 
         # Owner check
         if hasattr(obj, "owner") and obj.owner == user:
             roles.add(Role.OWNER)
         elif hasattr(obj, "user") and obj.user == user:
             roles.add(Role.OWNER)
-        elif (
-            hasattr(obj, "owned_by")
-            and obj.owned_by
-            and hasattr(obj.owned_by, "owner")
-            and obj.owned_by.owner == user
-        ):
-            # For locations/items owned through characters
-            roles.add(Role.OWNER)
 
-        # Chronicle Head ST check
-        if hasattr(obj, "chronicle") and obj.chronicle:
-            # Check if user is head ST of the chronicle
-            if hasattr(obj.chronicle, "head_st") and obj.chronicle.head_st == user:
-                roles.add(Role.CHRONICLE_HEAD_ST)
-            elif hasattr(obj.chronicle, "head_storytellers"):
-                if obj.chronicle.head_storytellers.filter(id=user.id).exists():
-                    roles.add(Role.CHRONICLE_HEAD_ST)
-
-            # Check if user is a storyteller via STRelationship (has edit permissions)
-            if hasattr(obj.chronicle, "storytellers"):
-                if obj.chronicle.storytellers.filter(id=user.id).exists():
-                    roles.add(Role.CHRONICLE_HEAD_ST)
-
-            # Check if user is a game ST in the chronicle (view-only)
-            if hasattr(obj.chronicle, "game_storytellers"):
-                if obj.chronicle.game_storytellers.filter(id=user.id).exists():
-                    roles.add(Role.GAME_ST)
-
+        if chronicle is not None:
             # Player check - user has a character in same chronicle
             from characters.models.core.character import Character
 
-            if Character.objects.filter(owner=user, chronicle=obj.chronicle).exists():
+            if Character.objects.filter(owner=user, chronicle=chronicle).exists():
                 roles.add(Role.PLAYER)
 
         # Observer check (uses generic relation)
@@ -173,7 +234,7 @@ class PermissionManager:
 
     @staticmethod
     def user_has_permission(
-        user: User, obj, permission: Permission, status_aware: bool = True
+        user: User, obj, permission: Permission, status_aware: bool = True, request=None
     ) -> bool:
         """
         Check if user has a specific permission for an object.
@@ -187,7 +248,14 @@ class PermissionManager:
         Returns:
             Boolean permission result
         """
-        roles = PermissionManager.get_user_roles(user, obj)
+        roles = PermissionManager.get_user_roles(user, obj, request=request)
+
+        if (
+            permission == Permission.EDIT_FULL
+            and Role.OWNER in roles
+            and getattr(obj, "status", None) in {"Un", "Rev"}
+        ):
+            return True
 
         # Collect all permissions from all roles (union)
         user_permissions = set()
@@ -210,6 +278,16 @@ class PermissionManager:
     ) -> bool:
         """Apply status-based permission restrictions."""
         status = obj.status
+        scoped_editor = bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
+        if Role.OWNER in roles and not scoped_editor:
+            if permission in {
+                Permission.EDIT_LIMITED,
+                Permission.DELETE,
+                Permission.SPEND_FREEBIES,
+            } and status not in {"Un", "Rev"}:
+                return False
+            if permission == Permission.SPEND_XP and status != "App":
+                return False
 
         # Deceased characters are read-only for everyone except admins and head STs
         if status == "Dec":
@@ -219,7 +297,9 @@ class PermissionManager:
                 Permission.DELETE,
                 Permission.SPEND_XP,
             ]:
-                return Role.ADMIN in roles or Role.CHRONICLE_HEAD_ST in roles
+                return bool(
+                    roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+                )
 
         # Submitted characters: owners have no permissions, only head ST/admin
         if status == "Sub":
@@ -228,13 +308,15 @@ class PermissionManager:
                 Permission.SPEND_XP,
                 Permission.SPEND_FREEBIES,
             ]:
-                if Role.OWNER in roles:
-                    return False
-                return Role.CHRONICLE_HEAD_ST in roles or Role.ADMIN in roles
+                return bool(
+                    roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}
+                )
 
         # Unfinished: Owner can spend freebies only (not XP yet)
         if status == "Un":
-            if permission == Permission.SPEND_XP and Role.OWNER in roles:
+            if permission == Permission.SPEND_XP and Role.OWNER in roles and not roles & {
+                Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
+            }:
                 # Can't spend XP until approved
                 return False
             if permission == Permission.SPEND_FREEBIES:
@@ -242,10 +324,12 @@ class PermissionManager:
 
         # Approved: Owner can spend XP (not freebies) and edit limited fields
         if status == "App":
-            if permission == Permission.SPEND_FREEBIES and Role.OWNER in roles:
+            if permission in {Permission.SPEND_FREEBIES, Permission.EDIT_LIMITED} and Role.OWNER in roles and not roles & {
+                Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
+            }:
                 # Can't spend freebies after approval
                 return False
-            if permission in [Permission.SPEND_XP, Permission.EDIT_LIMITED]:
+            if permission == Permission.SPEND_XP:
                 return True
 
         # Retired: Owner cannot make any changes
@@ -255,7 +339,9 @@ class PermissionManager:
                 Permission.SPEND_XP,
                 Permission.SPEND_FREEBIES,
             ]:
-                if Role.OWNER in roles:
+                if Role.OWNER in roles and not roles & {
+                    Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST
+                }:
                     return False
 
         return True
@@ -408,6 +494,11 @@ class PermissionManager:
         if PermissionManager._model_has_field(chronicle_model, "game_storytellers"):
             filters |= Q(chronicle__game_storytellers=user)
 
+        # Every assigned ST may read full objects in their chronicle, even
+        # when their gameline assignment does not permit mutation.
+        if PermissionManager._model_has_field(chronicle_model, "storytellers"):
+            filters |= Q(chronicle__st_relationships__user=user)
+
         return filters
 
     @staticmethod
@@ -430,10 +521,9 @@ class PermissionManager:
         Returns:
             Filtered QuerySet
         """
-        # Anonymous users see nothing (or only PUBLIC visibility)
+        # Full/partial legacy querysets never render the public projection.
+        # Anonymous public cards are handled by the route policy instead.
         if not user.is_authenticated:
-            if PermissionManager._model_has_field(queryset.model, "visibility"):
-                return queryset.filter(visibility="PUB")
             return queryset.none()
 
         # Admins see everything
@@ -459,15 +549,14 @@ class PermissionManager:
         ) and PermissionManager._model_has_field(model, "status"):
             from characters.models import Character
 
-            # Get list of chronicle IDs where user has an approved character
+            # PLAYER is based on any owned character in the chronicle.
             player_chronicle_ids = list(
-                Character.objects.filter(owner=user, status="App")
+                Character.objects.filter(owner=user)
                 .exclude(chronicle__isnull=True)
                 .values_list("chronicle_id", flat=True)
             )
             if player_chronicle_ids:
-                # User can see approved objects in chronicles where they're a player
-                filters |= Q(chronicle_id__in=player_chronicle_ids, status="App")
+                filters |= Q(chronicle_id__in=player_chronicle_ids)
 
         # 4. Observer access - fetch observed IDs directly instead of subquery
         from core.models import Observer

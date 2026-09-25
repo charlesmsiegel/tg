@@ -33,7 +33,7 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.models import CharacterTemplate, Language
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class CtDHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -111,8 +111,8 @@ class CtDHumanUpdateView(EditPermissionMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -131,9 +131,10 @@ class CtDHumanBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):
@@ -159,7 +160,7 @@ class CharacterTemplateSelectionForm(forms.Form):
         super().__init__(*args, **kwargs)
         if character:
             self.fields["template"].queryset = CharacterTemplate.objects.filter(
-                gameline="ctd", character_type="changeling", is_public=True
+                gameline="ctd", character_type="changeling", is_public=True, status="App"
             ).order_by("name")
 
 
@@ -188,7 +189,7 @@ class CtDHumanTemplateSelectView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["character"] = self.object
         context["available_templates"] = CharacterTemplate.objects.filter(
-            gameline="ctd", character_type="changeling", is_public=True
+            gameline="ctd", character_type="changeling", is_public=True, status="App"
         ).order_by("name")
         return context
 
@@ -295,6 +296,9 @@ class CtDHumanLanguagesView(EditPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Human, pk=kwargs.get("pk"))
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             english, _ = Language.objects.get_or_create(name="English")
             obj.languages.add(english)
             obj.creation_status += 1

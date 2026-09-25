@@ -52,6 +52,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="academy",
             creation_status=1,
             status="Un",
+            owner=self.user,
             owned_by=self.character,
         )
 
@@ -79,6 +80,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="hearth",
             creation_status=2,
             status="Un",
+            owner=self.user,
             owned_by=self.character,
             balefire=4,
             size=3,
@@ -106,6 +108,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             hearth_ability="",  # Will be set in step 4
             creation_status=3,
             status="Un",
+            owner=self.user,
             owned_by=self.character,
         )
 
@@ -137,6 +140,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="market",
             creation_status=2,  # Should go to powers step
             status="Un",
+            owner=self.user,
             owned_by=self.character,
             balefire=3,
             size=2,
@@ -173,6 +177,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="academy",
             creation_status=3,
             status="Un",
+            owner=self.user,
             owned_by=self.character,
         )
 
@@ -210,6 +215,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="hearth",
             creation_status=3,
             status="Un",
+            owner=self.user,
             owned_by=self.character,
         )
 
@@ -259,6 +265,7 @@ class TestFreeholdMultiStepCreation(TestCase):
             archetype="manor",
             creation_status=5,
             status="App",  # Approved
+            owner=self.user,
             owned_by=self.character,
         )
 

@@ -211,13 +211,13 @@ class ChantryPointsView(EditPermissionMixin, FormView):
         form.save()
         return super().form_valid(form)
 
-    def dispatch(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         obj = get_object_or_404(Chantry, pk=kwargs.get("pk"))
         if obj.points < 2:
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class ChantryIntegratedEffectsView(EditPermissionMixin, FormView):
@@ -243,13 +243,13 @@ class ChantryIntegratedEffectsView(EditPermissionMixin, FormView):
         form.save()
         return super().form_valid(form)
 
-    def dispatch(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         obj = get_object_or_404(Chantry, pk=kwargs.get("pk"))
         if obj.current_ie_points() == 0:
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class ChantryNodeView(GenericBackgroundView):
@@ -285,6 +285,7 @@ class ChantrySanctumView(GenericBackgroundView):
 
 
 class ChantryCreationView(DictView):
+    chargen_router = True
     view_mapping = {
         1: ChantryPointsView,  # Backgrounds
         2: ChantryIntegratedEffectsView,  # effects
@@ -298,4 +299,4 @@ class ChantryCreationView(DictView):
     default_redirect = ChantryDetailView
 
     def is_valid_key(self, obj, key):
-        return key in self.view_mapping and obj.status == "Un"
+        return key in self.view_mapping and obj.status in {"Un", "Rev"}

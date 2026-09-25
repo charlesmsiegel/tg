@@ -192,6 +192,7 @@ class NPCProfileCreateViewPOSTTestCase(TestCase):
     def test_post_with_chronicle(self):
         """Test POST with chronicle assigns it to NPC."""
         chronicle = Chronicle.objects.create(name="Test Chronicle")
+        Human.objects.create(name="Member PC", owner=self.user, chronicle=chronicle)
         data = {
             "npc_type": "vtm_human",
             "name": "NPC With Chronicle",

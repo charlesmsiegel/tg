@@ -355,6 +355,8 @@ class TestVtMHumanUpdateView(TestCase):
             "technology": 0,
         }
         self.url = self.vtmhuman.get_update_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_update_view_status_code(self):
         self.client.login(username="ST", password="password")

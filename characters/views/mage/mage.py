@@ -37,7 +37,6 @@ def _mage_practice_xp_cost(character, practice):
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -84,7 +83,7 @@ from core.mixins import (
     SimpleValuesView,
     SpecialUserMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 from core.widgets import AutocompleteTextInput
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
@@ -154,9 +153,11 @@ class LoadXPExamplesView(View):
             ]
             examples = filtered_for_xp_cost
         elif category_choice == "MeritFlaw":
-            mage, _ = ObjectType.objects.get_or_create(
-                name="mage", defaults={"type": "char", "gameline": "mta"}
-            )
+            mage = ObjectType.objects.filter(
+                name="mage", type="char", gameline="mta"
+            ).first()
+            if mage is None:
+                return dropdown_options_response([])
             examples = MeritFlaw.objects.filter(allowed_types=mage, max_rating__gte=0)
             examples = [x for x in examples if self.character.mf_rating(x) != x.max_rating]
             examples = [
@@ -267,6 +268,56 @@ class MageDetailView(HumanDetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if "Approve" in request.POST.values() or "Reject" in request.POST.values():
+            import re
+
+            from django.http import HttpResponseBadRequest
+
+            from game.models import XPSpendingRequest
+            from game.spending_approval import SpendingDecisionError, decide_spending_request
+
+            buttons = [(key, value) for key, value in request.POST.items()
+                       if value in {"Approve", "Reject"}]
+            if len(buttons) != 1:
+                return HttpResponseBadRequest("Invalid approval action")
+            key, value = buttons[0]
+            match = re.fullmatch(r"xp_request_([1-9][0-9]*)_(approve|reject)", key)
+            if match is None or (value == "Approve") != (match.group(2) == "approve"):
+                return HttpResponseBadRequest("Invalid approval action")
+            try:
+                result = decide_spending_request(
+                    XPSpendingRequest,
+                    self.object,
+                    int(match.group(1)),
+                    request.user,
+                    "approve" if value == "Approve" else "deny",
+                )
+            except SpendingDecisionError as exc:
+                messages.error(request, str(exc))
+            else:
+                messages.success(request, result.message)
+            return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
+        from django.core.exceptions import PermissionDenied
+
+        from core.permissions import Permission, PermissionManager
+
+        if "spend_xp" in request.POST and not PermissionManager.user_has_permission(
+            request.user, self.object, Permission.SPEND_XP
+        ):
+            raise PermissionDenied("Cannot spend XP for this character")
+        if "specialties" in request.POST and not PermissionManager.user_has_permission(
+            request.user, self.object, Permission.EDIT_FULL
+        ):
+            raise PermissionDenied("Cannot edit this character")
+        can_edit = PermissionManager.user_has_scoped_editor_role(
+            request.user, self.object, request=request
+        )
+        if "retire" in request.POST and not (
+            can_edit or self.object.owner_id == request.user.pk
+        ):
+            raise PermissionDenied("Cannot retire this character")
+        if "decease" in request.POST and not can_edit:
+            raise PermissionDenied("Cannot mark this character deceased")
         context = self.get_context_data()
         form = MageXPForm(request.POST, request.FILES, character=self.object)
         rote_form = RoteCreationForm(request.POST, instance=self.object)
@@ -364,58 +415,6 @@ class MageDetailView(HumanDetailView):
                             return render(request, self.template_name, context)
             else:
                 pass
-        if "Approve" in form.data.values():
-            # Parse xp_request_<id>_approve format
-            request_key = [x for x in form.data.keys() if form.data[x] == "Approve"][0]
-            request_id = int(request_key.split("_")[2])
-
-            from game.models import XPSpendingRequest
-
-            try:
-                xp_request = self.object.xp_spendings.get(id=request_id, approved="Pending")
-            except XPSpendingRequest.DoesNotExist:
-                messages.error(request, "XP spending request not found or already processed")
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-
-            try:
-                with transaction.atomic():
-                    service = XPSpendingServiceFactory.get_service(self.object)
-                    result = service.apply(xp_request, request.user)
-
-                    if result.success:
-                        messages.success(request, result.message)
-                    else:
-                        messages.error(request, result.error or "Failed to apply XP spend")
-            except Exception as e:
-                logger.error(
-                    f"Error approving XP spend for character {self.object.id}: {e}",
-                    exc_info=True,
-                )
-                messages.error(request, f"Error approving XP spend: {str(e)}")
-
-        if "Reject" in form.data.values():
-            # Parse xp_request_<id>_reject format
-            request_key = [x for x in form.data.keys() if form.data[x] == "Reject"][0]
-            request_id = int(request_key.split("_")[2])
-
-            from game.models import XPSpendingRequest
-
-            try:
-                with transaction.atomic():
-                    xp_request = self.object.xp_spendings.select_for_update().get(
-                        id=request_id, approved="Pending"
-                    )
-
-                    service = XPSpendingServiceFactory.get_service(self.object)
-                    result = service.deny(xp_request, request.user)
-
-                    if result.success:
-                        messages.success(request, result.message)
-                    else:
-                        messages.error(request, result.error or "Failed to deny XP spend")
-            except XPSpendingRequest.DoesNotExist:
-                messages.error(request, "XP spending request not found or already processed")
-                return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
         if "specialties" in form.data.keys():
             specs = {
                 k: v
@@ -598,8 +597,8 @@ class MageUpdateView(EditPermissionMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -618,9 +617,10 @@ class MageBasicsView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = False
-        if self.request.user.profile.is_st():
-            context["storyteller"] = True
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_valid(self, form):

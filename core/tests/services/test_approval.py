@@ -17,7 +17,9 @@ class TestApprovalServiceObjectApproval(TestCase):
     """Tests for ApprovalService.approve_object()."""
 
     def setUp(self):
-        self.user = User.objects.create_user("testuser", "test@test.com", "password")
+        self.user = User.objects.create_user(
+            "testuser", "test@test.com", "password", is_staff=True
+        )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
 
     def test_approve_character(self):
@@ -28,7 +30,7 @@ class TestApprovalServiceObjectApproval(TestCase):
             chronicle=self.chronicle,
             status="Sub",
         )
-        obj, msg = ApprovalService.approve_object("character", char.pk)
+        obj, msg = ApprovalService.approve_object("character", char.pk, self.user)
 
         char.refresh_from_db()
         self.assertEqual(char.status, "App")
@@ -43,7 +45,7 @@ class TestApprovalServiceObjectApproval(TestCase):
             chronicle=self.chronicle,
             status="Sub",
         )
-        obj, msg = ApprovalService.approve_object("location", loc.pk)
+        obj, msg = ApprovalService.approve_object("location", loc.pk, self.user)
 
         loc.refresh_from_db()
         self.assertEqual(loc.status, "App")
@@ -58,7 +60,7 @@ class TestApprovalServiceObjectApproval(TestCase):
             chronicle=self.chronicle,
             status="Sub",
         )
-        obj, msg = ApprovalService.approve_object("item", item.pk)
+        obj, msg = ApprovalService.approve_object("item", item.pk, self.user)
 
         item.refresh_from_db()
         self.assertEqual(item.status, "App")
@@ -79,7 +81,7 @@ class TestApprovalServiceObjectApproval(TestCase):
             attribute=attribute,
             ability=ability,
         )
-        obj, msg = ApprovalService.approve_object("rote", rote.pk)
+        obj, msg = ApprovalService.approve_object("rote", rote.pk, self.user)
 
         rote.refresh_from_db()
         self.assertEqual(rote.status, "App")

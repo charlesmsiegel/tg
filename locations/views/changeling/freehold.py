@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, ViewPermissionMixin, prepare_created_object
 from locations.forms.changeling.freehold import FreeholdForm
 from locations.models.changeling import Freehold
 
@@ -40,6 +40,7 @@ class FreeholdCreateView(LoginRequiredMixin, FormView):
     error_message = "Failed to create freehold. Please correct the errors below."
 
     def form_valid(self, form):
+        prepare_created_object(form, self.request)
         self.object = form.save()
         # Set the owner to the current user's first character if they have one
         if self.request.user.profile.characters.exists():

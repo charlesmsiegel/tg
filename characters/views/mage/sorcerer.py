@@ -54,7 +54,7 @@ from core.mixins import (
     XPApprovalMixin,
 )
 from core.models import Language
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 from core.views.generic import MultipleFormsetsMixin
 from game.models import ObjectType
 from items.forms.mage.sorcerer_artifact import ArtifactCreateOrSelectForm
@@ -73,7 +73,10 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["storyteller"] = self.request.user.profile.is_st()
+        from core.permissions import PermissionManager
+        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, context.get("object"), request=self.request
+        )
         return context
 
     def form_invalid(self, form):
@@ -134,8 +137,8 @@ class SorcererUpdateView(EditPermissionMixin, MessageMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()
@@ -176,9 +179,11 @@ class LoadExamplesView(LoginRequiredMixin, View):
         elif category_choice == "Existing Background":
             examples = [x for x in BackgroundRating.objects.filter(char=m, rating__lt=4)]
         elif category_choice == "MeritFlaw":
-            companion, _ = ObjectType.objects.get_or_create(
-                name="companion", defaults={"type": "char", "gameline": "mta"}
-            )
+            companion = ObjectType.objects.filter(
+                name="companion", type="char", gameline="mta"
+            ).first()
+            if companion is None:
+                return dropdown_options_response([])
             examples = MeritFlaw.objects.filter(allowed_types=companion)
             if m.total_flaws() <= 0:
                 examples = examples.exclude(max_rating__lt=min(0, -7 - m.total_flaws()))
@@ -270,6 +275,9 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type == "hedge_mage":
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -318,6 +326,9 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type != "hedge_mage":
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -370,6 +381,9 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type != "hedge_mage":
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
@@ -807,6 +821,9 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
+            if request.method != "POST":
+                from django.shortcuts import render
+                return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())

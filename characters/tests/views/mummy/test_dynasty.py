@@ -36,11 +36,15 @@ class TestDynastyCreateView(TestCase):
 
     def test_create_view_status_code(self):
         """Create view is accessible."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Create view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mummy/dynasty/form.html")
 
@@ -50,6 +54,8 @@ class TestDynastyCreateView(TestCase):
 
     def test_create_view_success_url(self):
         """Create view redirects to dynasty detail after successful creation."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(
             self.url,
             data={
@@ -77,11 +83,15 @@ class TestDynastyUpdateView(TestCase):
 
     def test_update_view_status_code(self):
         """Update view is accessible."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Update view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mummy/dynasty/form.html")
 

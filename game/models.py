@@ -14,6 +14,7 @@ from django.utils.timezone import (  # ensure timezone-aware now if using TIME_Z
 
 from core.base import ValidatedSaveMixin
 from core.constants import GameLine, HeadingChoices, ObjectTypeChoices, XPApprovalStatus
+from core.permissions import PermissionManager
 from core.utils import dice
 from core.validators import validate_gameline, validate_non_empty_name
 
@@ -445,8 +446,13 @@ class SceneQuerySet(models.QuerySet):
         return self.filter(chronicle=chronicle, finished=False)
 
     def for_user_chronicles(self, user):
-        """Scenes in any of the user's chronicles"""
-        return self.filter(chronicle__in=user.chronicle_set.all())
+        """Scenes in chronicles the user staffs or heads."""
+        from game.security import staffed_chronicles
+
+        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            scope |= models.Q(chronicle__isnull=True)
+        return self.filter(scope)
 
 
 # Create SceneManager from the QuerySet to expose all QuerySet methods on the manager
@@ -454,7 +460,16 @@ SceneManager = models.Manager.from_queryset(SceneQuerySet)
 
 
 class Scene(models.Model):
+    class Visibility(models.TextChoices):
+        CHRONICLE = "CHRONICLE", "Chronicle"
+        PARTICIPANTS = "PARTICIPANTS", "Participants and storytellers"
+        PUBLIC = "PUBLIC", "Public"
+
     name = models.CharField(max_length=100, default="")
+    visibility = models.CharField(
+        max_length=12, choices=Visibility.choices, default=Visibility.CHRONICLE,
+        db_index=True,
+    )
     chronicle = models.ForeignKey("game.Chronicle", on_delete=models.SET_NULL, null=True)
     date_played = models.DateField(auto_now_add=True)
     characters = models.ManyToManyField(
@@ -535,7 +550,9 @@ class Scene(models.Model):
             character is not None
             and self.waiting_for_st
             and character.owner
-            and character.owner.profile.is_st()
+            and PermissionManager.can_manage_scope(
+                character.owner, self.chronicle, self.gameline
+            )
         ):
             self.waiting_for_st = False
             self.save()
@@ -1071,7 +1088,10 @@ class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
         Raises:
             ValueError: If the request is already approved.
         """
-        if self.approved:
+        if self.pk is None:
+            raise ValueError("Save the XP request before approval.")
+        locked = type(self).objects.select_for_update().get(pk=self.pk)
+        if locked.approved:
             raise ValueError("This XP request has already been approved.")
 
         # Update XP categories and scene fields if provided
@@ -1088,18 +1108,19 @@ class WeeklyXPRequest(ValidatedSaveMixin, models.Model):
                 "standingout_scene",
             ]:
                 if field in xp_data:
-                    setattr(self, field, xp_data[field])
+                    setattr(locked, field, xp_data[field])
 
-        self.approved = True
-        xp_increase = self.total_xp()
+        locked.approved = True
+        xp_increase = locked.total_xp()
 
         # Award XP to the character
-        if self.character:
-            character = self.character.get_real_instance()
+        if locked.character:
+            character = locked.character.get_real_instance()
             character.xp += xp_increase
             character.save()
 
-        self.save()
+        locked.save()
+        self.approved = True
         return xp_increase
 
 

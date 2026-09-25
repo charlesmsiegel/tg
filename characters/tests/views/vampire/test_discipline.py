@@ -100,16 +100,22 @@ class TestDisciplineCreateView(TestCase):
 
     def test_create_view_get_status_code(self):
         """Create view GET is accessible."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Create view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/discipline/form.html")
 
     def test_create_view_post_creates_discipline(self):
         """Create view POST creates a new discipline."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, self.valid_data)
         self.assertEqual(Discipline.objects.filter(name="Test Discipline").count(), 1)
 
@@ -131,11 +137,15 @@ class TestDisciplineUpdateView(TestCase):
 
     def test_update_view_get_status_code(self):
         """Update view GET is accessible."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Update view uses correct template."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/vampire/discipline/form.html")
 
@@ -149,6 +159,8 @@ class TestDisciplineCreateViewNegativeCases(TestCase):
 
     def test_create_missing_name_fails(self):
         """Create view POST with missing name fails."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         data = {"property_name": "test_discipline"}
         response = self.client.post(self.url, data)
         # Form should re-render with errors (200) rather than redirect (302)
@@ -159,6 +171,8 @@ class TestDisciplineCreateViewNegativeCases(TestCase):
 
     def test_create_missing_property_name_fails(self):
         """Create view POST with missing property_name fails."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         data = {"name": "Test Discipline"}
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
@@ -168,6 +182,8 @@ class TestDisciplineCreateViewNegativeCases(TestCase):
 
     def test_create_empty_data_fails(self):
         """Create view POST with empty data fails."""
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         initial_count = Discipline.objects.count()
         response = self.client.post(self.url, {})
         self.assertEqual(response.status_code, 200)

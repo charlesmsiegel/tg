@@ -28,7 +28,7 @@ class TestSceneXPAwardView(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -89,7 +89,7 @@ class TestObjectApprovalView(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -140,6 +140,11 @@ class TestObjectApprovalView(TestCase):
         from characters.models.core import Ability, Attribute
         from characters.models.mage.effect import Effect
         from characters.models.mage.rote import Rote
+
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle,
+            gameline=Gameline.objects.create(name="Mage: the Ascension"),
+        )
 
         effect = Effect.objects.create(name="Test Effect")
         attribute = Attribute.objects.create(name="Strength", property_name="strength")
@@ -197,7 +202,7 @@ class TestImageApprovalView(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -265,7 +270,7 @@ class TestFreebieAwardView(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -400,7 +405,7 @@ class TestWeeklyXPApprovalView(TestCase):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -492,6 +497,7 @@ class TestMarkSceneReadView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("player", "p@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        Human.objects.create(name="Player in chronicle", owner=self.user, chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene", chronicle=self.chronicle, finished=True
         )

@@ -1,5 +1,7 @@
 """Tests for generic module."""
 
+from unittest.mock import patch
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import formset_factory
@@ -98,7 +100,8 @@ class DictViewTest(TestCase):
         response = view.get_default_redirect(request, pk=self.character.pk)
         self.assertEqual(response.status_code, 302)
 
-    def test_get_default_redirect_with_callable_view(self):
+    @patch("core.views.generic.authorize_route", return_value=None)
+    def test_get_default_redirect_with_callable_view(self, _authorization):
         """Test get_default_redirect works with a view class."""
 
         class FallbackView(TemplateView):
@@ -134,7 +137,8 @@ class DictViewTest(TestCase):
             view.get_default_redirect(request, pk=self.character.pk)
         self.assertIn("default_redirect must be a URL name or a view callable", str(cm.exception))
 
-    def test_handle_request_dispatches_to_mapped_view(self):
+    @patch("core.views.generic.authorize_route", return_value=None)
+    def test_handle_request_dispatches_to_mapped_view(self, _authorization):
         """Test handle_request dispatches to the correct view for valid keys."""
 
         class MappedView(TemplateView):
@@ -173,7 +177,8 @@ class DictViewTest(TestCase):
         response = view.handle_request(request, pk=self.character.pk)
         self.assertEqual(response.status_code, 302)
 
-    def test_get_method_calls_handle_request(self):
+    @patch("core.views.generic.authorize_route", return_value=None)
+    def test_get_method_calls_handle_request(self, _authorization):
         """Test that GET requests are handled via handle_request."""
 
         class MappedView(TemplateView):
@@ -196,7 +201,8 @@ class DictViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b"GET Response")
 
-    def test_post_method_calls_handle_request(self):
+    @patch("core.views.generic.authorize_route", return_value=None)
+    def test_post_method_calls_handle_request(self, _authorization):
         """Test that POST requests are handled via handle_request."""
 
         class MappedView(TemplateView):

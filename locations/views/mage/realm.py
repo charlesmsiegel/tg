@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.models.mage.realm import HorizonRealm
 
 
@@ -16,7 +16,7 @@ class RealmListView(ListView):
     template_name = "locations/mage/realm/list.html"
 
 
-class RealmCreateView(LoginRequiredMixin, CreateView):
+class RealmCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = HorizonRealm
     fields = ["name", "description", "contained_within"]
     template_name = "locations/mage/realm/form.html"

@@ -93,7 +93,7 @@ class TestProfileApprovalWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -261,7 +261,7 @@ class TestProfileSceneXPWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -335,6 +335,10 @@ class TestProfileRoteApprovalWorkflow(TestCase):
 
     def test_st_can_approve_rote(self):
         """Test that storytellers can approve rotes."""
+        STRelationship.objects.create(
+            user=self.st_user, chronicle=self.chronicle,
+            gameline=Gameline.objects.create(name="Mage: the Ascension"),
+        )
         self.client.login(username="stuser", password="password")
         response = self.client.post(
             reverse(
@@ -367,7 +371,7 @@ class TestProfileImageApprovalWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -449,7 +453,7 @@ class TestProfileFreebieWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -559,7 +563,7 @@ class TestProfileWeeklyXPApprovalWorkflow(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
@@ -610,6 +614,7 @@ class TestProfileSceneReadWorkflow(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        Human.objects.create(name="Player in chronicle", owner=self.user, chronicle=self.chronicle)
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
         self.scene = Scene.objects.create(
             name="Test Scene",
@@ -783,7 +788,7 @@ class TestCrossChroniclePermissionSecurity(TestCase):
         self.chronicle_b = Chronicle.objects.create(name="Chronicle B")
 
         # Create gamelines
-        self.gameline = Gameline.objects.create(name="Test Gameline")
+        self.gameline = Gameline.objects.create(name="World of Darkness")
 
         # ST A is only an ST for Chronicle A
         STRelationship.objects.create(

@@ -180,6 +180,8 @@ class TestCantripCreateView(TestCase):
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
         self.url = Cantrip.get_creation_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_cantrip_create_view_status_code(self):
         """Test that create view returns 200."""
@@ -218,6 +220,8 @@ class TestCantripUpdateView(TestCase):
             level=1,
         )
         self.url = self.cantrip.get_update_url()
+        self.st.is_staff = True
+        self.st.save(update_fields=["is_staff"])
 
     def test_cantrip_update_view_status_code(self):
         """Test that update view returns 200."""

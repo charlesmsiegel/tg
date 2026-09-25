@@ -7,7 +7,7 @@ Follows the pattern from character creation (DictView).
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 
-from core.mixins import SpendFreebiesPermissionMixin
+from core.mixins import MessageMixin, SpendFreebiesPermissionMixin
 from core.views.generic import DictView
 from locations.forms.changeling.creation import (
     FreeholdBasicsForm,
@@ -19,7 +19,7 @@ from locations.models.changeling import Freehold
 from locations.views.changeling.freehold import FreeholdDetailView
 
 
-class FreeholdBasicsView(LoginRequiredMixin, CreateView):
+class FreeholdBasicsView(LoginRequiredMixin, MessageMixin, CreateView):
     """
     Step 1: Basic information (Name, Archetype, Aspect, Acquisition).
     Creates the freehold object with creation_status = 1.
@@ -141,6 +141,7 @@ class FreeholdCreationView(DictView):
     Similar to HumanCharacterCreationView.
     """
 
+    chargen_router = True
     view_mapping = {
         1: FreeholdFeaturesView,
         2: FreeholdPowersView,
@@ -152,4 +153,4 @@ class FreeholdCreationView(DictView):
 
     def is_valid_key(self, obj, key):
         # Only allow creation steps if status is "Un" (unfinished)
-        return key in self.view_mapping and obj.status == "Un"
+        return key in self.view_mapping and obj.status in {"Un", "Rev"}

@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 
 from characters.models.mage.faction import MageFaction
 from characters.models.mage.mage import Mage
+from core.permissions import PermissionManager
+from game.models import Chronicle
 from widgets import ChainedChoiceField, ChainedSelectMixin
 
 
@@ -54,7 +56,15 @@ class MageCreationForm(ChainedSelectMixin, forms.ModelForm):
         self.fields["concept"].widget.attrs.update({"placeholder": "Enter concept here"})
         self.fields["image"].required = False
         if self.user is not None:
-            if not self.user.profile.is_st():
+            chronicle_id = (
+                self.data.get("chronicle") if self.is_bound else self.initial.get("chronicle")
+            )
+            chronicle = None
+            if chronicle_id is not None:
+                value = str(getattr(chronicle_id, "pk", chronicle_id))
+                if value.isascii() and value.isdecimal() and len(value) <= 20:
+                    chronicle = Chronicle.objects.filter(pk=int(value)).first()
+            if not PermissionManager.can_manage_scope(self.user, chronicle, "mta"):
                 self.fields["affiliation"].queryset = self.fields["affiliation"].queryset.exclude(
                     name__in=["Nephandi", "Marauders"]
                 )

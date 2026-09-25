@@ -5,6 +5,9 @@ from characters.models.mage import Resonance
 
 class TestResonanceDetailView(TestCase):
     def setUp(self) -> None:
+        from django.core.cache import cache
+
+        cache.clear()
         self.resonance = Resonance.objects.create(name="Test Resonance")
         self.url = self.resonance.get_absolute_url()
 
@@ -34,14 +37,20 @@ class TestResonanceCreateView(TestCase):
         self.url = Resonance.get_creation_url()
 
     def test_create_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/resonance/form.html")
 
     def test_create_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Resonance.objects.count(), 1)
@@ -66,14 +75,20 @@ class TestResonanceUpdateView(TestCase):
         self.url = self.resonance.get_update_url()
 
     def test_update_view_status_code(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/mage/resonance/form.html")
 
     def test_update_view_successful_post(self):
+        from django.contrib.auth import get_user_model
+        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.resonance.refresh_from_db()

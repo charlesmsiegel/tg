@@ -6,12 +6,14 @@ These tests cover the SceneChatConsumer for real-time scene chat functionality.
 
 import json
 
+from asgiref.sync import async_to_sync
+from channels.testing import WebsocketCommunicator
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, TransactionTestCase
 
 from characters.models.core import Human
 from game.consumers import SceneChatConsumer
-from game.models import Chronicle, Scene
+from game.models import Chronicle, Post, Scene
 from locations.models.core import LocationModel
 
 
@@ -320,3 +322,90 @@ class TestSceneChatConsumerRoomGroupName(TestCase):
         scene_1_group = "scene_1"
         scene_2_group = "scene_2"
         self.assertNotEqual(scene_1_group, scene_2_group)
+
+
+class TestSceneSocketAuthorization(TransactionTestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user("scene-owner")
+        self.other = User.objects.create_user("other-player")
+        self.chronicle = Chronicle.objects.create(name="Socket chronicle")
+        self.scene = Scene.objects.create(name="Private scene", chronicle=self.chronicle)
+        self.character = Human.objects.create(
+            name="Participant", owner=self.owner, chronicle=self.chronicle
+        )
+        self.scene.characters.add(self.character)
+
+    def connect_as(self, user):
+        async def attempt():
+            communicator = WebsocketCommunicator(
+                SceneChatConsumer.as_asgi(), f"/ws/scene/{self.scene.pk}/"
+            )
+            communicator.scope["user"] = user
+            communicator.scope["url_route"] = {"kwargs": {"scene_id": self.scene.pk}}
+            connected, _ = await communicator.connect()
+            if connected:
+                await communicator.disconnect()
+            return connected
+
+        return async_to_sync(attempt)()
+
+    def test_private_scene_rejects_unrelated_and_anonymous_readers(self):
+        self.assertFalse(self.connect_as(AnonymousUser()))
+        self.assertFalse(self.connect_as(self.other))
+        self.assertTrue(self.connect_as(self.owner))
+
+    def test_public_scene_allows_anonymous_reader_but_no_ownerless_post(self):
+        self.scene.visibility = Scene.Visibility.PUBLIC
+        self.scene.save(update_fields=["visibility"])
+        ownerless = Human.objects.create(
+            name="Ownerless", chronicle=self.chronicle
+        )
+        self.scene.characters.add(ownerless)
+
+        async def attempt():
+            communicator = WebsocketCommunicator(
+                SceneChatConsumer.as_asgi(), f"/ws/scene/{self.scene.pk}/"
+            )
+            communicator.scope["user"] = AnonymousUser()
+            communicator.scope["url_route"] = {"kwargs": {"scene_id": self.scene.pk}}
+            connected, _ = await communicator.connect()
+            if not connected:
+                return False, None
+            await communicator.send_json_to({
+                "type": "chat_message", "character_id": ownerless.pk,
+                "message": "Forged post",
+            })
+            response = await communicator.receive_json_from()
+            await communicator.disconnect()
+            return connected, response
+
+        connected, response = async_to_sync(attempt)()
+        self.assertTrue(connected)
+        self.assertEqual(response["type"], "error")
+        self.assertEqual(Post.objects.filter(scene=self.scene).count(), 0)
+
+    def test_character_from_other_chronicle_cannot_join(self):
+        other_chronicle = Chronicle.objects.create(name="Other socket chronicle")
+        other_character = Human.objects.create(
+            name="Other character", owner=self.owner, chronicle=other_chronicle
+        )
+
+        async def attempt():
+            communicator = WebsocketCommunicator(
+                SceneChatConsumer.as_asgi(), f"/ws/scene/{self.scene.pk}/"
+            )
+            communicator.scope["user"] = self.owner
+            communicator.scope["url_route"] = {"kwargs": {"scene_id": self.scene.pk}}
+            connected, _ = await communicator.connect()
+            if not connected:
+                return None
+            await communicator.send_json_to({
+                "type": "add_character", "character_id": other_character.pk,
+            })
+            response = await communicator.receive_json_from()
+            await communicator.disconnect()
+            return response
+
+        response = async_to_sync(attempt)()
+        self.assertEqual(response["type"], "error")
+        self.assertFalse(self.scene.characters.filter(pk=other_character.pk).exists())

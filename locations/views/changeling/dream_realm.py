@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from core.mixins import EditPermissionMixin, ViewPermissionMixin
+from core.mixins import EditPermissionMixin, MessageMixin, ViewPermissionMixin
 from locations.forms.changeling.dream_realm import DreamRealmForm
 from locations.models.changeling import DreamRealm
 
@@ -21,7 +21,7 @@ class DreamRealmListView(ListView):
     template_name = "locations/changeling/dream_realm/list.html"
 
 
-class DreamRealmCreateView(LoginRequiredMixin, CreateView):
+class DreamRealmCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     """Create view for a new Dream Realm"""
 
     model = DreamRealm

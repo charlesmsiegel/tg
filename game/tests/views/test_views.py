@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from characters.models.core import CharacterModel
+from characters.models.core.attribute_block import Attribute
 from characters.models.core.human import Human
 from game.models import (
     Chronicle,
@@ -105,17 +106,21 @@ class TestChronicleDetailView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        Human.objects.create(
+            name="Player character", owner=self.user, chronicle=self.chronicle,
+            concept="Test",
+        )
 
     def test_chronicle_detail_view_requires_login(self):
-        """Test that unauthenticated users get a 401 response."""
+        """Conceal chronicle existence from anonymous users."""
         response = self.client.get(f"/game/chronicle/{self.chronicle.id}/")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
 
     def test_chronicle_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
@@ -138,6 +143,7 @@ class TestChronicleDetailView(TestCase):
                 "name": "New Scene",
                 "location": self.location.id,
                 "date_of_scene": "2024-01-01",
+                "gameline": "wod",
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -153,6 +159,7 @@ class TestChronicleDetailView(TestCase):
                 "name": "New Scene",
                 "location": self.location.id,
                 "date_of_scene": "2024-01-01",
+                "gameline": "wod",
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -170,7 +177,7 @@ class TestSceneDetailView(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.user2 = User.objects.create_user("testuser2", "test2@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -187,9 +194,9 @@ class TestSceneDetailView(TestCase):
         )
 
     def test_scene_detail_view_requires_login(self):
-        """Test that unauthenticated users get a 401 response."""
+        """Conceal a nonpublic scene from anonymous users."""
         response = self.client.get(f"/game/scene/{self.scene.id}/")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
 
     def test_scene_detail_view_status_code(self):
         """Test that authenticated users can access the page."""
@@ -651,7 +658,7 @@ class TestXPSpendingRequestViews(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -661,11 +668,14 @@ class TestXPSpendingRequestViews(TestCase):
             owner=self.user,
             chronicle=self.chronicle,
             concept="Test",
+            status="App",
+            xp=100,
         )
+        Attribute.objects.create(name="Strength", property_name="strength")
         self.xp_request = XPSpendingRequest.objects.create(
             character=self.char,
             trait_name="Strength",
-            trait_type="Attribute",
+            trait_type="attribute",
             trait_value=4,
             cost=16,
         )
@@ -693,8 +703,7 @@ class TestXPSpendingRequestViews(TestCase):
         response = self.client.get(
             reverse("game:xp_spending_request:detail", kwargs={"pk": self.xp_request.pk})
         )
-        # CharacterOwnerOrSTMixin returns 403 for anonymous users
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_detail_view_accessible_to_owner(self):
         """Test that detail view is accessible to character owner."""
@@ -718,8 +727,7 @@ class TestXPSpendingRequestViews(TestCase):
         response = self.client.get(
             reverse("game:xp_spending_request:create", kwargs={"character_pk": self.char.pk})
         )
-        # Anonymous user accessing character-specific page returns 403
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_create_view_accessible_to_owner(self):
         """Test that create view is accessible to character owner."""
@@ -781,7 +789,10 @@ class TestXPSpendingRequestViews(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.xp_request.refresh_from_db()
-        self.assertEqual(self.xp_request.approved, "Approved")
+        self.assertEqual(
+            self.xp_request.approved, "Approved",
+            [str(message) for message in response.wsgi_request._messages],
+        )
 
 
 class TestFreebieSpendingRecordViews(TestCase):
@@ -791,7 +802,7 @@ class TestFreebieSpendingRecordViews(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -871,7 +882,7 @@ class TestStoryXPRequestViews(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -950,7 +961,7 @@ class TestChronicleCreateUpdateViews(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -963,14 +974,18 @@ class TestChronicleCreateUpdateViews(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_view_accessible_to_st(self):
-        """Test that create view is accessible to storytellers."""
+        """Staff can create a chronicle before any scoped ST role exists."""
+        self.st_user.is_staff = True
+        self.st_user.save(update_fields=["is_staff"])
         self.client.login(username="stuser", password="password")
         response = self.client.get(reverse("game:chronicle_manage:create"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "game/chronicle/form.html")
 
     def test_create_view_creates_chronicle(self):
-        """Test that create view creates a new chronicle."""
+        """Staff can create a new chronicle."""
+        self.st_user.is_staff = True
+        self.st_user.save(update_fields=["is_staff"])
         self.client.login(username="stuser", password="password")
         initial_count = Chronicle.objects.count()
         response = self.client.post(
@@ -989,7 +1004,7 @@ class TestChronicleCreateUpdateViews(TestCase):
         response = self.client.get(
             reverse("game:chronicle_manage:update", kwargs={"pk": self.chronicle.pk})
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_update_view_accessible_to_st(self):
         """Test that update view is accessible to storytellers."""
@@ -1007,7 +1022,7 @@ class TestSceneCreateUpdateViews(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1024,11 +1039,10 @@ class TestSceneCreateUpdateViews(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_view_accessible_to_st(self):
-        """Test that create view is accessible to storytellers."""
+        """Scene creation needs a chronicle URL to establish ST scope."""
         self.client.login(username="stuser", password="password")
         response = self.client.get(reverse("game:scene_manage:create"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "game/scene/form.html")
+        self.assertEqual(response.status_code, 403)
 
     def test_create_for_chronicle_accessible_to_st(self):
         """Test that create for chronicle view is accessible to storytellers."""
@@ -1047,7 +1061,7 @@ class TestSceneCreateUpdateViews(TestCase):
         response = self.client.get(
             reverse("game:scene_manage:update", kwargs={"pk": self.scene.pk})
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_update_view_accessible_to_st(self):
         """Test that update view is accessible to storytellers."""
@@ -1103,7 +1117,7 @@ class TestJournalListView(TestCase):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.other_user = User.objects.create_user("otheruser", "other@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1227,7 +1241,7 @@ class TestJournalDetailView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1277,8 +1291,10 @@ class TestSettingElementViews(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.st_user = User.objects.create_user(
+            "stuser", "st@test.com", "password", is_staff=True
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1371,7 +1387,7 @@ class TestWeeklyXPRequestBatchApproveView(TestCase):
 
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1437,12 +1453,16 @@ class TestChronicleDetailViewPost(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
         )
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        Human.objects.create(
+            name="Player character", owner=self.user, chronicle=self.chronicle,
+            concept="Test",
+        )
         # Create object types for character/location/item creation
         ObjectType.objects.create(name="human", type="char", gameline="wod")
 
@@ -1476,8 +1496,10 @@ class TestWeekViews(TestCase):
         from datetime import date
 
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.st_user = User.objects.create_user(
+            "stuser", "st@test.com", "password", is_staff=True
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1533,8 +1555,10 @@ class TestStoryViews(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.st_user = User.objects.create_user(
+            "stuser", "st@test.com", "password", is_staff=True
+        )
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1594,7 +1618,7 @@ class TestSceneDetailViewPost(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
         self.st_user = User.objects.create_user("stuser", "st@test.com", "password")
-        self.chronicle = Chronicle.objects.create(name="Test Chronicle")
+        self.chronicle = Chronicle.objects.create(name="Test Chronicle", head_st=self.st_user)
         self.gameline = Gameline.objects.create(name="Test Gameline")
         STRelationship.objects.create(
             user=self.st_user, chronicle=self.chronicle, gameline=self.gameline
@@ -1649,6 +1673,10 @@ class TestChronicleDetailViewQueryOptimization(TestCase):
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.location = LocationModel.objects.create(name="Test Location", chronicle=self.chronicle)
+        Human.objects.create(
+            name="Viewer character", owner=self.user, chronicle=self.chronicle,
+            concept="Test", status="App",
+        )
 
         # Create multiple characters with different owners to trigger N+1 if not optimized
         for i in range(5):
@@ -1692,8 +1720,12 @@ class TestChronicleListView(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("testuser", "test@test.com", "password")
-        Chronicle.objects.create(name="Chronicle A")
-        Chronicle.objects.create(name="Chronicle B")
+        for name in ("Chronicle A", "Chronicle B"):
+            chronicle = Chronicle.objects.create(name=name)
+            Human.objects.create(
+                name=f"Character in {name}", owner=self.user,
+                chronicle=chronicle, concept="Test",
+            )
 
     def test_list_view_requires_login(self):
         """Test that list view requires authentication."""

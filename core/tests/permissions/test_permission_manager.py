@@ -165,8 +165,8 @@ class GetUserRolesTest(TestCase):
         roles = PermissionManager.get_user_roles(self.owner, mock_obj)
         self.assertIn(Role.OWNER, roles)
 
-    def test_owner_via_owned_by_attribute(self):
-        """Test ownership detection via 'owned_by.owner' for nested ownership."""
+    def test_owned_by_does_not_imply_creator(self):
+        """Possession does not grant the object's creator role."""
 
         class MockCharacter:
             def __init__(self, owner):
@@ -180,7 +180,7 @@ class GetUserRolesTest(TestCase):
         mock_char = MockCharacter(self.owner)
         mock_obj = MockObjWithOwnedBy(mock_char)
         roles = PermissionManager.get_user_roles(self.owner, mock_obj)
-        self.assertIn(Role.OWNER, roles)
+        self.assertNotIn(Role.OWNER, roles)
 
     def test_object_without_chronicle(self):
         """Test roles for object without chronicle attribute."""
@@ -230,9 +230,9 @@ class UserHasPermissionTest(TestCase):
             PermissionManager.user_has_permission(self.owner, self.character, Permission.VIEW_FULL)
         )
 
-    def test_owner_has_edit_limited_permission(self):
-        """Owner should have EDIT_LIMITED permission."""
-        self.assertTrue(
+    def test_approved_owner_cannot_edit_limited_fields(self):
+        """Submitted and approved objects stay locked until returned for revision."""
+        self.assertFalse(
             PermissionManager.user_has_permission(
                 self.owner, self.character, Permission.EDIT_LIMITED
             )
@@ -244,9 +244,9 @@ class UserHasPermissionTest(TestCase):
             PermissionManager.user_has_permission(self.owner, self.character, Permission.EDIT_FULL)
         )
 
-    def test_owner_has_delete_permission(self):
-        """Owner should have DELETE permission."""
-        self.assertTrue(
+    def test_approved_owner_cannot_delete(self):
+        """An approved character cannot be deleted by its owner."""
+        self.assertFalse(
             PermissionManager.user_has_permission(self.owner, self.character, Permission.DELETE)
         )
 

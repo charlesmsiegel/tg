@@ -6,7 +6,7 @@ from characters.forms.core.limited_edit import LimitedHumanEditForm
 from characters.models.vampire.ghoul import Ghoul
 from characters.views.core.human import HumanDetailView
 from core.mixins import MessageMixin, XPApprovalMixin
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class GhoulDetailView(XPApprovalMixin, HumanDetailView):
@@ -71,8 +71,8 @@ class GhoulUpdateView(MessageMixin, UpdateView):
         Owners get limited fields via LimitedHumanEditForm.
         STs and admins get full access via the default form.
         """
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()

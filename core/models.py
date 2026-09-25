@@ -48,14 +48,17 @@ class ModelQuerySet(PolymorphicQuerySet):
 
     def pending_approval_for_user(self, user):
         """
-        Objects awaiting approval in user's chronicles (optimized).
-        Default implementation uses status in ['Un', 'Sub'].
-        Override in subclasses if different status logic is needed.
+        Submitted objects awaiting approval in the user's staffed chronicles.
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
+        from game.security import staffed_chronicles
+
+        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            scope |= models.Q(chronicle__isnull=True)
         return (
-            self.filter(status__in=["Un", "Sub"], chronicle__in=user.chronicle_set.all())
+            self.filter(scope, status="Sub")
             .select_related("polymorphic_ctype", "chronicle", "owner", "owner__profile")
             .order_by("name")
         )
@@ -77,8 +80,13 @@ class ModelQuerySet(PolymorphicQuerySet):
         return self.filter(image_status="sub").exclude(image="")
 
     def for_user_chronicles(self, user):
-        """Objects in any of the user's chronicles"""
-        return self.filter(chronicle__in=user.chronicle_set.all())
+        """Objects in chronicles the user staffs or heads."""
+        from game.security import staffed_chronicles
+
+        scope = models.Q(chronicle__in=staffed_chronicles(user))
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            scope |= models.Q(chronicle__isnull=True)
+        return self.filter(scope)
 
 
 # Create custom manager with ModelQuerySet methods

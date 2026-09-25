@@ -6,12 +6,12 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from characters.forms.core.limited_edit import LimitedCharacterEditForm
 from characters.models.core import Character
 from core.cache import CACHE_TIMEOUT_MEDIUM, cache_function
 from core.mixins import EditPermissionMixin, ViewPermissionMixin, VisibilityFilterMixin
 from core.permissions import Permission, PermissionManager
 from game.models import Scene
+from game.security import filter_scenes
 
 
 class CharacterDetailView(ViewPermissionMixin, DetailView):
@@ -39,13 +39,26 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        # Use cached queryset for scenes
-        context["scenes"] = self.get_character_scenes(context["object"].id)
-        # Backward compatibility: is_approved_user now means "can edit"
-        context["is_approved_user"] = PermissionManager.user_can_edit(
-            self.request.user, self.object
-        ) or PermissionManager.user_has_permission(
-            self.request.user, self.object, Permission.EDIT_LIMITED
+        # Cache the candidate scenes, then apply the current request's audience.
+        # Visibility may change while a cached character sheet is still warm.
+        scenes = self.get_character_scenes(context["object"].id)
+        visible_ids = set(
+            filter_scenes(
+                Scene.objects.filter(pk__in=[scene.pk for scene in scenes]),
+                self.request.user,
+            ).values_list("pk", flat=True)
+        )
+        context["scenes"] = [scene for scene in scenes if scene.pk in visible_ids]
+        # The legacy sheet template uses this flag for full detail visibility.
+        context["is_approved_user"] = PermissionManager.user_has_permission(
+            self.request.user, self.object, Permission.VIEW_FULL, request=self.request
+        )
+        can_edit = PermissionManager.user_has_permission(
+            self.request.user, self.object, Permission.EDIT_FULL, request=self.request
+        )
+        context["can_retire"] = can_edit or self.object.owner_id == self.request.user.pk
+        context["can_decease"] = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.object, request=self.request
         )
         return context
 
@@ -53,8 +66,8 @@ class CharacterDetailView(ViewPermissionMixin, DetailView):
         self.object = self.get_object()
 
         # Check if user has permission to change status
-        can_change_status = PermissionManager.user_has_permission(
-            request.user, self.object, Permission.EDIT_FULL
+        can_change_status = PermissionManager.user_has_scoped_editor_role(
+            request.user, self.object, request=request
         )
 
         # Use atomic transaction for status changes
@@ -114,8 +127,9 @@ class CharacterCreateView(LoginRequiredMixin, CreateView):
     error_message = "Failed to create Character. Please correct the errors below."
 
     def form_valid(self, form):
-        # Set owner to current user - not exposed in form for security
-        form.instance.owner = self.request.user
+        from core.mixins import prepare_created_object
+
+        prepare_created_object(form, self.request)
         return super().form_valid(form)
 
 
@@ -125,27 +139,22 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
     Automatically enforces edit permissions.
 
     - Chronicle Head STs can edit everything (via ST_EDIT_FIELDS)
-    - Owners can only edit limited fields (enforced by LimitedCharacterEditForm)
+    - Owners can edit safe draft fields while an object is unfinished or returned.
 
     Security: Uses explicit field whitelist to prevent mass assignment attacks.
     """
 
     model = Character
     # Fields available to STs with full edit permission
-    # Note: owners get LimitedCharacterEditForm via get_form_class()
+    # Owners receive a draft form without approval or ST-only fields.
     ST_EDIT_FIELDS = [
         "name",
         "concept",
         "description",
         "public_info",
         "notes",
-        "chronicle",
-        "npc",
-        "status",
-        "xp",
         "image",
         "st_notes",
-        "freebies_approved",
         "display",
         "visibility",
     ]
@@ -157,17 +166,13 @@ class CharacterUpdateView(EditPermissionMixin, UpdateView):
     def get_form_class(self):
         """
         Return different form based on user permissions.
-        Owners get limited fields (notes, description, etc.) via LimitedCharacterEditForm.
+        Owners get draft fields without approval or ST-only fields.
         STs and admins get full access via the default form with ST_EDIT_FIELDS.
         """
-        # Check if user has full edit permission
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
-        )
+        from characters.forms.core.limited_edit import OwnerUnapprovedCharacterEditForm
+        from core.permissions import Role
 
-        if has_full_edit:
-            # STs and admins get ST_EDIT_FIELDS
+        roles = PermissionManager.get_user_roles(self.request.user, self.get_object())
+        if roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST}:
             return super().get_form_class()
-        else:
-            # Owners get limited fields (notes, description, public_info, image)
-            return LimitedCharacterEditForm
+        return OwnerUnapprovedCharacterEditForm

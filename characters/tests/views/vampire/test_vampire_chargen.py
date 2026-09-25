@@ -107,6 +107,8 @@ class VampireChargenTestCase(TestCase):
         )
         self.chronicle = Chronicle.objects.create(name="Test Chronicle")
         self.chronicle.storytellers.add(self.st)
+        self.chronicle.head_st = self.st
+        self.chronicle.save(update_fields=["head_st"])
 
 
 class TestVampireBasicsView(VampireChargenTestCase):
@@ -204,11 +206,11 @@ class TestVampireBasicsView(VampireChargenTestCase):
         self.assertIsNone(vampire.path)
 
     def test_basics_view_context_has_storyteller_flag(self):
-        """Test that context includes storyteller flag."""
+        """An unscoped create page grants no chronicle ST controls."""
         self.client.login(username="storyteller", password="testpassword")
         url = reverse("characters:vampire:create:vampire")
         response = self.client.get(url)
-        self.assertTrue(response.context["storyteller"])
+        self.assertFalse(response.context["storyteller"])
 
     def test_basics_view_storyteller_false_for_regular_user(self):
         """Test that storyteller flag is false for non-ST users."""
@@ -242,7 +244,7 @@ class TestVampireAttributeView(VampireChargenTestCase):
         self.client.login(username="otheruser", password="testpassword")
         url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": self.vampire.pk})
         response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 404)
 
     def test_attribute_view_uses_correct_template(self):
         """Test that correct template is used."""
@@ -722,7 +724,7 @@ class TestVampireCharacterCreationView(VampireChargenTestCase):
         self.client.login(username="otheruser", password="testpassword")
         url = reverse("characters:vampire:vampire_chargen", kwargs={"pk": vampire.pk})
         response = self.client.get(url)
-        self.assertIn(response.status_code, [403, 302])
+        self.assertEqual(response.status_code, 404)
 
     def test_accessible_to_storyteller(self):
         """Test that chargen is accessible to storytellers."""

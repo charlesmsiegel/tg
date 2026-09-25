@@ -46,7 +46,7 @@ class DeploymentRoleEnumTest(TestCase):
 
     def test_role_count(self):
         """Verify expected number of roles."""
-        self.assertEqual(len(Role), 8)
+        self.assertEqual(len(Role), 10)
 
 
 class DeploymentPermissionEnumTest(TestCase):

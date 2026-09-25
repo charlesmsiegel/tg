@@ -3,6 +3,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.mixins import (
     EditPermissionMixin,
+    MessageMixin,
     ViewPermissionMixin,
 )
 from locations.models.wraith.necropolis import Necropolis
@@ -13,7 +14,7 @@ class NecropolisDetailView(ViewPermissionMixin, DetailView):
     template_name = "locations/wraith/necropolis/detail.html"
 
 
-class NecropolisCreateView(LoginRequiredMixin, CreateView):
+class NecropolisCreateView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Necropolis
     fields = [
         "name",

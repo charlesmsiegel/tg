@@ -49,12 +49,14 @@ class TestWraithDetailView(TestCase):
         """Test that characters are hidden from other users (404)."""
         self.client.login(username="other", password="password")
         response = self.client.get(self.wraith.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_returns_404_without_login(self):
         """Test that unauthenticated users get 404 (not login redirect)."""
         response = self.client.get(self.wraith.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_template_used(self):
         """Test that correct template is used for wraith detail view."""
@@ -96,6 +98,8 @@ class TestWraithDetailView(TestCase):
         )
         self.client.login(username="owner", password="password")
         response = self.client.get(self.wraith.get_absolute_url())
+        self.assertEqual(self.wraith.fetters.count(), 1)
+        self.assertEqual(response.context["fetters"].count(), 1)
         self.assertContains(response, "My beloved wife")
         self.assertContains(response, "Fetters")
 
@@ -136,7 +140,8 @@ class TestWraithDetailView(TestCase):
         self.client.login(username="other", password="password")
         response = self.client.get(unapproved.get_absolute_url())
         # Should be 403 or 404 (denied/hidden from other users)
-        self.assertIn(response.status_code, [403, 404])
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/public_object_detail.html")
 
     def test_detail_view_unapproved_visible_to_owner(self):
         """Test that unapproved characters are visible to owners."""
@@ -202,7 +207,7 @@ class TestWraithUpdateView(TestCase):
     def test_update_view_denied_to_other_users(self):
         """Test that update view is denied to other users."""
         self.client.login(username="other", password="password")
-        url = reverse("characters:wraith:update:wraith", kwargs={"pk": self.wraith.pk})
+        url = reverse("characters:wraith:update:wraith_full", kwargs={"pk": self.wraith.pk})
         response = self.client.get(url)
         self.assertIn(response.status_code, [403, 302, 404])
 

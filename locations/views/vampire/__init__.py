@@ -238,7 +238,7 @@ class TremereChantryDetailView(DetailView):
     template_name = "locations/vampire/chantry/detail.html"
 
 
-class TremereChantryCreateView(CreateView):
+class TremereChantryCreateView(MessageMixin, CreateView):
     model = TremereChantry
     fields = [
         "name",
@@ -300,7 +300,7 @@ class BarrensDetailView(DetailView):
     template_name = "locations/vampire/barrens/detail.html"
 
 
-class BarrensCreateView(CreateView):
+class BarrensCreateView(MessageMixin, CreateView):
     model = Barrens
     fields = [
         "name",

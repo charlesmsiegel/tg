@@ -9,7 +9,7 @@ from core.mixins import (
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class ThrallDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -177,8 +177,8 @@ class ThrallUpdateView(EditPermissionMixin, UpdateView):
         STs and admins get full access to all fields via the default form.
         """
         # Check if user has full edit permission
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
 
         if has_full_edit:

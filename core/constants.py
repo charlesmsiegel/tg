@@ -95,6 +95,7 @@ class CharacterStatus:
     """Character status choices."""
 
     UNAPPROVED = "Un"
+    REVISION_REQUESTED = "Rev"
     SUBMITTED = "Sub"
     APPROVED = "App"
     DECEASED = "Dec"
@@ -102,6 +103,7 @@ class CharacterStatus:
 
     CHOICES = [
         (UNAPPROVED, "Unapproved"),
+        (REVISION_REQUESTED, "Returned for revisions"),
         (SUBMITTED, "Submitted"),
         (APPROVED, "Approved"),
         (DECEASED, "Deceased"),

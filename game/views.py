@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db import models, transaction
+from django.db import transaction
 from django.db.models import Count, Max, OuterRef, Subquery
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
@@ -16,6 +17,7 @@ from django.views.generic import (
 
 from characters.models.core import CharacterModel
 from characters.models.core.character import Character
+from core.create_redirects import resolve_object_type_url
 from core.mixins import (
     CharacterOwnerOrSTMixin,
     MessageMixin,
@@ -24,6 +26,7 @@ from core.mixins import (
     StorytellerRequiredMixin,
     ViewPermissionMixin,
 )
+from core.permissions import Permission, PermissionManager
 from core.services import ChronicleDataService
 from game.forms import (
     AddCharForm,
@@ -48,18 +51,36 @@ from game.models import (
     FreebieSpendingRecord,
     Journal,
     JournalEntry,
-    ObjectType,
     Post,
     Scene,
     SettingElement,
     Story,
     StoryXPRequest,
+    STRelationship,
     Week,
     WeeklyXPRequest,
     XPSpendingRequest,
 )
+from game.security import (
+    filter_private_records,
+    filter_scenes,
+    readable_chronicles,
+    staffed_chronicles,
+)
+from game.spending_approval import can_approve_spending
 from items.models.core import ItemModel
 from locations.models.core import LocationModel
+
+
+def _has_st_read_rows(user, rows):
+    """Legacy list column flag, limited to chronicles represented on the page."""
+    if user.is_staff or user.is_superuser:
+        return True
+    scopes = set(staffed_chronicles(user).values_list("pk", flat=True))
+    return any(
+        row.character is not None and row.character.chronicle_id in scopes
+        for row in rows
+    )
 
 
 class ChronicleDetailView(LoginRequiredMixin, DetailView):
@@ -85,7 +106,6 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         top_locations = (
             LocationModel.objects.top_level().filter(chronicle=chronicle).order_by("name")
         )
-        locations_by_gameline = ChronicleDataService.group_locations_by_gameline(top_locations)
 
         # --- Characters by status ---
         # Use select_related to prevent N+1 queries when accessing owner.username
@@ -121,10 +141,28 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
         # --- Items ---
         all_items = ItemModel.objects.for_chronicle(chronicle).order_by("name")
+
+        # These tables include owner, type, status and object relationships.
+        # A chronicle player may open every object's public card elsewhere,
+        # but only full readers may receive rows in this richer context.
+        if not staffed_chronicles(self.request.user).filter(pk=chronicle.pk).exists():
+            # Location rows recurse through children in the template, so a
+            # filtered parent alone could still expose another owner's child.
+            top_locations = top_locations.none()
+            active_characters = active_characters.filter(owner=self.request.user)
+            retired_characters = retired_characters.filter(owner=self.request.user)
+            deceased_characters = deceased_characters.filter(owner=self.request.user)
+            npc_characters = npc_characters.filter(owner=self.request.user)
+            all_items = all_items.filter(owner=self.request.user)
+        locations_by_gameline = ChronicleDataService.group_locations_by_gameline(
+            top_locations
+        )
         items_by_gameline = ChronicleDataService.group_items_by_gameline(all_items)
 
         # --- Scenes by status ---
-        all_scenes = Scene.objects.filter(chronicle=chronicle).order_by("-date_of_scene")
+        all_scenes = filter_scenes(
+            Scene.objects.filter(chronicle=chronicle), self.request.user
+        ).order_by("-date_of_scene")
         active_scenes = all_scenes.filter(finished=False)
         completed_scenes = all_scenes.filter(finished=True)
 
@@ -165,7 +203,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
                     completed_scenes
                 ),
                 # Forms and other
-                "form": SceneCreationForm(chronicle=chronicle),
+                "form": SceneCreationForm(chronicle=chronicle, user=self.request.user),
                 "active_scenes": active_scenes,  # Keep for backward compatibility
                 "story_form": StoryForm(),
                 "header": chronicle.headings,
@@ -183,34 +221,7 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
 
     def _get_create_redirect_url(self, obj_type, type_name):
         """Get the redirect URL for creating an object of the given type."""
-        obj, _ = ObjectType.objects.get_or_create(
-            name=type_name, defaults={"type": "char", "gameline": "wod"}
-        )
-        gameline = obj.gameline
-
-        # Map gameline codes to URL namespace paths
-        gameline_url_map = {
-            "wod": "",
-            "vtm": "vampire:",
-            "wta": "werewolf:",
-            "mta": "mage:",
-            "wto": "wraith:",
-            "ctd": "changeling:",
-            "dtf": "demon:",
-            "htr": "hunter:",
-            "mtr": "mummy:",
-        }
-
-        prefix = gameline_url_map.get(gameline, "")
-
-        if obj_type == "char":
-            return f"characters:{prefix}create:{type_name}"
-        elif obj_type == "loc":
-            return f"locations:{prefix}create:{type_name}"
-        elif obj_type == "obj":
-            return f"items:{prefix}create:{type_name}"
-
-        return None
+        return resolve_object_type_url(obj_type, type_name)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -242,30 +253,47 @@ class ChronicleDetailView(LoginRequiredMixin, DetailView):
         create_scene_flag = request.POST.get("create_scene")
 
         if create_story_flag is not None or create_scene_flag is not None:
-            # Check if user is a storyteller for story/scene creation
-            if not request.user.profile.is_st() and not request.user.is_staff:
-                messages.error(request, "Only storytellers can create stories and scenes.")
-                raise PermissionDenied("Only storytellers can create stories and scenes")
-
             if create_story_flag is not None:
-                story = Story.objects.create(name=request.POST["name"])
+                if not PermissionManager.can_manage_chronicle(request.user, chronicle, request):
+                    raise PermissionDenied("Chronicle head ST required")
+                form = StoryForm(request.POST)
+                if not form.is_valid():
+                    return self.render_to_response(self.get_context_data())
+                story = form.save()
                 messages.success(request, f"Story '{story.name}' created successfully!")
 
             if create_scene_flag is not None:
-                location = get_object_or_404(LocationModel, pk=request.POST["location"])
-                scene = chronicle.add_scene(
-                    request.POST["name"],
-                    location,
-                    date_of_scene=request.POST["date_of_scene"],
-                    gameline=request.POST.get("gameline", "wod"),
+                if not (
+                    PermissionManager.can_manage_chronicle(request.user, chronicle, request)
+                    or STRelationship.objects.filter(
+                        user=request.user, chronicle=chronicle
+                    ).exists()
+                ):
+                    raise PermissionDenied("Matching chronicle ST required")
+                form = SceneCreationForm(
+                    request.POST, chronicle=chronicle, user=request.user
                 )
-                messages.success(request, f"Scene '{request.POST['name']}' created successfully!")
+                if not form.is_valid():
+                    return self.render_to_response(self.get_context_data())
+                gameline = form.cleaned_data["gameline"]
+                if not PermissionManager.can_manage_scope(
+                    request.user, chronicle, gameline, request
+                ):
+                    raise PermissionDenied("Matching chronicle ST required")
+                location = form.cleaned_data["location"]
+                scene = chronicle.add_scene(
+                    form.cleaned_data["name"],
+                    location,
+                    date_of_scene=form.cleaned_data["date_of_scene"],
+                    gameline=gameline,
+                )
+                messages.success(request, f"Scene '{scene.name}' created successfully!")
                 return redirect(scene)
 
         return self.render_to_response(self.get_context_data())
 
 
-class SceneDetailView(LoginRequiredMixin, DetailView):
+class SceneDetailView(DetailView):
     """View for displaying scene details. Requires authentication."""
 
     model = Scene
@@ -298,44 +326,55 @@ class SceneDetailView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         scene = self.object
+        if scene.finished:
+            raise PermissionDenied("Finished scenes are read-only")
 
         if "close_scene" in request.POST.keys():
-            # Only storytellers for THIS chronicle can close scenes
-            is_admin = request.user.is_superuser or request.user.is_staff
-            is_chronicle_st = False
-            if scene.chronicle:
-                is_chronicle_st = (
-                    scene.chronicle.head_st == request.user
-                    or scene.chronicle.storytellers.filter(pk=request.user.pk).exists()
-                )
-            if not (is_admin or is_chronicle_st):
-                messages.error(request, "You are not a storyteller for this chronicle.")
-                raise PermissionDenied("You are not a storyteller for this chronicle")
+            if not PermissionManager.can_manage_scope(
+                request.user, scene.chronicle, scene.gameline, request
+            ):
+                raise PermissionDenied("Matching chronicle ST required")
             scene.close()
             messages.success(request, f"Scene '{scene.name}' closed successfully!")
         elif "character_to_add" in request.POST.keys():
-            c = get_object_or_404(CharacterModel, pk=request.POST["character_to_add"])
-            # Check that user owns the character
-            if c.owner != request.user:
-                messages.error(request, "You can only add your own characters.")
-                raise PermissionDenied("You can only add your own characters")
+            from django.http import HttpResponseBadRequest
+
+            character_pk = request.POST["character_to_add"]
+            if (
+                len(character_pk) > 20 or not character_pk.isascii()
+                or not character_pk.isdecimal() or int(character_pk) < 1
+            ):
+                return HttpResponseBadRequest("Invalid character")
+            c = get_object_or_404(CharacterModel, pk=character_pk)
+            if c.owner != request.user and not PermissionManager.can_manage_scope(
+                request.user, scene.chronicle, scene.gameline, request
+            ):
+                raise PermissionDenied("Matching scene ST required to add another character")
+            if c.chronicle_id != scene.chronicle_id:
+                raise PermissionDenied("Character belongs to another chronicle")
             scene.add_character(c)
             messages.success(request, f"Character '{c.name}' added to scene!")
         elif "message" in request.POST.keys():
             post_form = PostForm(request.POST, user=request.user, scene=scene)
             if post_form.is_valid():
                 num_logged_in_chars = scene.characters.owned_by(request.user).count()
+                if num_logged_in_chars == 0:
+                    raise PermissionDenied("No character in this scene")
                 if num_logged_in_chars == 1:
                     character = scene.characters.owned_by(request.user).first()
                 else:
-                    character = get_object_or_404(CharacterModel, pk=request.POST["character"])
+                    character = post_form.cleaned_data["character"]
                 # Check that user owns the character
                 if character.owner != request.user:
                     messages.error(request, "You can only post as your own characters.")
                     raise PermissionDenied("You can only post as your own characters")
+                if character.chronicle_id != scene.chronicle_id or not scene.characters.filter(
+                    pk=character.pk
+                ).exists():
+                    raise PermissionDenied("Character is not in this scene")
                 try:
-                    message = self.straighten_quotes(request.POST["message"])
-                    scene.add_post(character, request.POST["display_name"], message)
+                    message = self.straighten_quotes(post_form.cleaned_data["message"])
+                    scene.add_post(character, post_form.cleaned_data["display_name"], message)
                     messages.success(request, "Post added successfully!")
                 except ValueError:
                     messages.error(request, "Command does not match the expected format.")
@@ -421,15 +460,19 @@ class JournalDetailView(SpecialUserMixin, ViewPermissionMixin, DetailView):
             else:
                 messages.error(request, "Failed to add journal entry. Please check your input.")
         if submit_response is not None:
-            # Check that user is a storyteller
-            if not request.user.profile.is_st():
-                messages.error(request, "Only storytellers can add ST responses.")
-                raise PermissionDenied("Only storytellers can add ST responses")
-            tmp = [x for x in request.POST.keys() if "entry" in x][0]
-            tmp = tmp.split("-")[1]
-            entry = get_object_or_404(JournalEntry, pk=tmp)
+            character = self.object.character
+            if not PermissionManager.user_has_permission(
+                request.user, character, Permission.EDIT_FULL, request=request
+            ):
+                raise PermissionDenied("Matching chronicle ST required")
+            if (
+                len(submit_response) > 20 or not submit_response.isascii()
+                or not submit_response.isdecimal() or int(submit_response) < 1
+            ):
+                raise Http404("Entry not found")
+            entry = get_object_or_404(JournalEntry, pk=submit_response, journal=self.object)
             f = STResponseForm(
-                {"st_message": request.POST[f"entry-{tmp}-st_message"]},
+                {"st_message": request.POST.get(f"entry-{entry.pk}-st_message", "")},
                 entry=entry,
             )
             if f.is_valid():
@@ -445,8 +488,11 @@ class ChronicleListView(LoginRequiredMixin, ListView):
     ordering = ["name"]
     template_name = "game/chronicle/list.html"
 
+    def get_queryset(self):
+        return readable_chronicles(self.request.user).order_by("name")
 
-class SceneListView(LoginRequiredMixin, ListView):
+
+class SceneListView(ListView):
     model = Scene
     ordering = ["-date_of_scene", "-date_played"]
     template_name = "game/scene/list.html"
@@ -454,7 +500,10 @@ class SceneListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         # Pre-fetch related objects to prevent N+1 queries
         # location is accessed in Scene.__str__ when name is empty
-        return super().get_queryset().select_related("chronicle", "location")
+        return filter_scenes(
+            super().get_queryset().select_related("chronicle", "location"),
+            self.request.user,
+        )
 
 
 class JournalListView(LoginRequiredMixin, ListView):
@@ -473,16 +522,16 @@ class JournalListView(LoginRequiredMixin, ListView):
                 latest_entry=Max("entries__date"),
             )
         )
+        queryset = filter_private_records(queryset, self.request.user)
         # Filter by ownership if requested
         filter_by = self.request.GET.get("filter")
         if filter_by == "mine":
             queryset = queryset.filter(character__owner=self.request.user)
         elif filter_by == "st":
             # Show journals for characters in chronicles where user is ST
-            st_chronicles = Chronicle.objects.filter(
-                models.Q(head_st=self.request.user) | models.Q(storytellers=self.request.user)
+            queryset = queryset.filter(
+                character__chronicle__in=staffed_chronicles(self.request.user)
             )
-            queryset = queryset.filter(character__chronicle__in=st_chronicles)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -537,7 +586,7 @@ class WeekListView(LoginRequiredMixin, ListView):
         from django.db.models import Max
 
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
 
         # Pre-compute finished scene counts for all weeks in the page to avoid N+1 queries
         # Get all finished scenes with their latest post dates in one query
@@ -549,7 +598,7 @@ class WeekListView(LoginRequiredMixin, ListView):
         )
 
         finished_scenes = list(
-            Scene.objects.filter(finished=True)
+            filter_scenes(Scene.objects.filter(finished=True), self.request.user)
             .annotate(latest_post_date=Subquery(latest_post_subquery))
             .values("pk", "latest_post_date")
         )
@@ -573,13 +622,21 @@ class WeekDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
-        context["finished_scenes"] = self.object.finished_scenes().with_location()
-        context["weekly_characters"] = self.object.weekly_characters()
+        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
+        context["finished_scenes"] = filter_scenes(
+            self.object.finished_scenes().with_location(), self.request.user
+        )
+        visible_scene_ids = context["finished_scenes"].values("pk")
+        context["weekly_characters"] = (
+            self.object.weekly_characters()
+            .filter(scenes__pk__in=visible_scene_ids)
+            .distinct()
+        )
 
         # Get XP requests for this week
-        context["xp_requests"] = WeeklyXPRequest.objects.filter(week=self.object).select_related(
-            "character"
+        context["xp_requests"] = filter_private_records(
+            WeeklyXPRequest.objects.filter(week=self.object).select_related("character"),
+            self.request.user,
         )
 
         # Separate pending and approved requests
@@ -620,16 +677,13 @@ class WeeklyXPRequestListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related("character", "week")
-        # If not ST, only show own character requests
-        if not self.request.user.profile.is_st():
-            qs = qs.filter(character__owner=self.request.user)
-        return qs
+        return filter_private_records(qs, self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
         if context["is_st"]:
-            context["pending_count"] = WeeklyXPRequest.objects.filter(approved=False).count()
+            context["pending_count"] = self.get_queryset().filter(approved=False).count()
         return context
 
 
@@ -639,7 +693,9 @@ class WeeklyXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = can_approve_spending(
+            self.request.user, self.object.character
+        )
         context["is_owner"] = self.object.character.owner == self.request.user
 
         # Add approval form for STs
@@ -694,11 +750,14 @@ class WeeklyXPRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, MessageM
         return context
 
 
-class WeeklyXPRequestApproveView(StorytellerRequiredMixin, View):
+class WeeklyXPRequestApproveView(LoginRequiredMixin, View):
     """View for STs to approve/deny weekly XP requests."""
 
     def post(self, request, *args, **kwargs):
         xp_request = get_object_or_404(WeeklyXPRequest, pk=kwargs["pk"])
+        from game.spending_approval import require_spending_approver
+
+        require_spending_approver(request.user, xp_request.character)
 
         if xp_request.approved:
             messages.warning(request, "This XP request has already been approved.")
@@ -724,7 +783,7 @@ class WeeklyXPRequestApproveView(StorytellerRequiredMixin, View):
             return redirect("game:weekly_xp_request:detail", pk=xp_request.pk)
 
 
-class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
+class WeeklyXPRequestBatchApproveView(LoginRequiredMixin, View):
     """View for STs to batch approve multiple weekly XP requests at once."""
 
     def post(self, request, *args, **kwargs):
@@ -735,14 +794,30 @@ class WeeklyXPRequestBatchApproveView(StorytellerRequiredMixin, View):
             messages.warning(request, "No requests selected for approval.")
             return redirect(request.META.get("HTTP_REFERER", "game:week:list"))
 
+        from django.http import HttpResponse, HttpResponseBadRequest
+
+        if len(request_ids) > 100 or any(
+            not value.isascii() or not value.isdecimal() for value in request_ids
+        ):
+            return HttpResponseBadRequest("Invalid request IDs")
+        requested = set(map(int, request_ids))
+
         # Fetch all pending requests
         pending_requests = WeeklyXPRequest.objects.filter(
-            pk__in=request_ids, approved=False
+            pk__in=requested, approved=False
         ).select_related("character", "week")
+        from game.spending_approval import require_spending_approver
 
-        if not pending_requests.exists():
-            messages.warning(request, "No pending requests found to approve.")
-            return redirect(request.META.get("HTTP_REFERER", "game:week:list"))
+        pending_requests = list(pending_requests)
+        if len(pending_requests) != len(requested) or any(
+            not PermissionManager.user_has_permission(
+                request.user, xp_request.character, Permission.VIEW_FULL, request=request
+            ) for xp_request in pending_requests
+        ):
+            return HttpResponse("Not found", status=404, content_type="text/plain")
+
+        for xp_request in pending_requests:
+            require_spending_approver(request.user, xp_request.character)
 
         # Track results
         approved_count = 0
@@ -781,14 +856,11 @@ class StoryXPRequestListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related("character", "story")
-        # If not ST, only show own character requests
-        if not self.request.user.profile.is_st():
-            qs = qs.filter(character__owner=self.request.user)
-        return qs
+        return filter_private_records(qs, self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
         return context
 
 
@@ -798,7 +870,10 @@ class StoryXPRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = PermissionManager.user_has_permission(
+            self.request.user, self.object.character, Permission.APPROVE,
+            request=self.request,
+        )
         context["is_owner"] = self.object.character.owner == self.request.user
         return context
 
@@ -817,7 +892,7 @@ class SettingElementDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = self.request.user.is_staff or self.request.user.is_superuser
         # Find chronicles that use this setting element
         context["chronicles"] = Chronicle.objects.filter(common_knowledge_elements=self.object)
         return context
@@ -854,16 +929,13 @@ class XPSpendingRequestListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related("character", "character__owner", "approved_by")
-        # If not ST, only show own character requests
-        if not self.request.user.profile.is_st():
-            qs = qs.filter(character__owner=self.request.user)
-        return qs
+        return filter_private_records(qs, self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
         if context["is_st"]:
-            context["pending_count"] = XPSpendingRequest.objects.filter(approved="Pending").count()
+            context["pending_count"] = self.get_queryset().filter(approved="Pending").count()
         return context
 
 
@@ -876,7 +948,9 @@ class XPSpendingRequestDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = can_approve_spending(
+            self.request.user, self.object.character
+        )
         context["is_owner"] = self.object.character.owner == self.request.user
 
         # Add approval form for STs
@@ -899,6 +973,14 @@ class XPSpendingRequestCreateView(LoginRequiredMixin, OwnerRequiredMixin, Messag
     owner_check_attr = "character"
     owner_check_message = "You can only submit requests for your own characters."
 
+    def dispatch(self, request, *args, **kwargs):
+        character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
+        if not PermissionManager.user_has_permission(
+            request.user, character, Permission.SPEND_XP, request=request
+        ):
+            raise PermissionDenied("XP spending is unavailable for this character")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["character"] = self.character  # Set by OwnerRequiredMixin
@@ -920,6 +1002,14 @@ class XPSpendingRequestUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateV
     success_message = "XP spending request updated successfully!"
     error_message = "Failed to update XP spending request. Please correct the errors below."
 
+    def dispatch(self, request, *args, **kwargs):
+        record = self.get_object()
+        if not PermissionManager.user_has_permission(
+            request.user, record.character, Permission.SPEND_XP, request=request
+        ):
+            raise PermissionDenied("XP spending is unavailable for this character")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         qs = super().get_queryset().select_related("character")
         # Only allow editing pending requests
@@ -929,40 +1019,31 @@ class XPSpendingRequestUpdateView(CharacterOwnerOrSTMixin, MessageMixin, UpdateV
         return reverse("game:xp_spending_request:detail", kwargs={"pk": self.object.pk})
 
 
-class XPSpendingRequestApproveView(StorytellerRequiredMixin, View):
+class XPSpendingRequestApproveView(View):
     """View for STs to approve/deny XP spending requests."""
 
     def post(self, request, *args, **kwargs):
-        from django.utils import timezone
+        from django.http import HttpResponseBadRequest
 
+        from game.spending_approval import SpendingDecisionError, decide_spending_request
+
+        value = request.POST.get("approved")
+        if value not in {"Approved", "Denied"}:
+            return HttpResponseBadRequest("Invalid approval decision")
         xp_request = get_object_or_404(XPSpendingRequest, pk=kwargs["pk"])
-
-        if xp_request.approved != "Pending":
-            messages.warning(request, "This XP request has already been processed.")
-            return redirect("game:xp_spending_request:detail", pk=xp_request.pk)
-
-        form = XPSpendingRequestApprovalForm(request.POST, instance=xp_request)
-
-        if form.is_valid():
-            xp_request = form.save(commit=False)
-            xp_request.approved_at = timezone.now()
-            xp_request.approved_by = request.user
-            xp_request.save()
-
-            if xp_request.approved == "Approved":
-                messages.success(
-                    request,
-                    f"XP spending request for {xp_request.character.name} approved!",
-                )
-            else:
-                messages.info(
-                    request,
-                    f"XP spending request for {xp_request.character.name} denied.",
-                )
-            return redirect("game:xp_spending_request:list")
+        try:
+            result = decide_spending_request(
+                XPSpendingRequest,
+                xp_request.character,
+                xp_request.pk,
+                request.user,
+                "approve" if value == "Approved" else "deny",
+            )
+        except SpendingDecisionError as exc:
+            messages.error(request, str(exc))
         else:
-            messages.error(request, "Failed to process XP request.")
-            return redirect("game:xp_spending_request:detail", pk=xp_request.pk)
+            messages.success(request, result.message)
+        return redirect("game:xp_spending_request:list")
 
 
 # FreebieSpendingRecord Views
@@ -974,14 +1055,11 @@ class FreebieSpendingRecordListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related("character", "character__owner")
-        # If not ST, only show own character records
-        if not self.request.user.profile.is_st():
-            qs = qs.filter(character__owner=self.request.user)
-        return qs
+        return filter_private_records(qs, self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = _has_st_read_rows(self.request.user, context["object_list"])
         return context
 
 
@@ -994,7 +1072,9 @@ class FreebieSpendingRecordDetailView(CharacterOwnerOrSTMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_st"] = self.request.user.profile.is_st()
+        context["is_st"] = can_approve_spending(
+            self.request.user, self.object.character
+        )
         context["is_owner"] = self.object.character.owner == self.request.user
         return context
 
@@ -1007,18 +1087,12 @@ class FreebieSpendingRecordCreateView(LoginRequiredMixin, MessageMixin, CreateVi
     error_message = "Failed to create freebie spending record. Please correct the errors below."
 
     def dispatch(self, request, *args, **kwargs):
-        """Check that user owns the character before allowing access."""
+        """Require a pending-spend authority before showing the form."""
         character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
-
-        # Allow admins and staff
-        if request.user.is_superuser or request.user.is_staff:
-            return super().dispatch(request, *args, **kwargs)
-
-        # Check that user owns the character
-        if character.owner != request.user:
-            messages.error(request, "You can only create records for your own characters.")
-            raise PermissionDenied("You can only create records for your own characters")
-
+        if not PermissionManager.user_has_permission(
+            request.user, character, Permission.SPEND_FREEBIES, request=request
+        ):
+            raise PermissionDenied("Freebie spending is unavailable for this character")
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -1042,8 +1116,16 @@ class FreebieSpendingRecordUpdateView(CharacterOwnerOrSTMixin, MessageMixin, Upd
     success_message = "Freebie spending record updated successfully!"
     error_message = "Failed to update freebie spending record. Please correct the errors below."
 
+    def dispatch(self, request, *args, **kwargs):
+        record = self.get_object()
+        if not PermissionManager.user_has_permission(
+            request.user, record.character, Permission.SPEND_FREEBIES, request=request
+        ):
+            raise PermissionDenied("Freebie spending is unavailable for this character")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
-        return super().get_queryset().select_related("character")
+        return super().get_queryset().select_related("character").filter(approved="Pending")
 
     def get_success_url(self):
         return reverse("game:freebie_spending_record:detail", kwargs={"pk": self.object.pk})
@@ -1126,6 +1208,11 @@ class SceneCreateView(StorytellerRequiredMixin, MessageMixin, CreateView):
         # Set chronicle from URL if provided
         if "chronicle_pk" in self.kwargs:
             form.instance.chronicle = get_object_or_404(Chronicle, pk=self.kwargs["chronicle_pk"])
+        if not PermissionManager.can_manage_scope(
+            self.request.user, form.instance.chronicle, form.cleaned_data["gameline"],
+            self.request,
+        ):
+            raise PermissionDenied("Matching chronicle ST required")
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -1147,6 +1234,14 @@ class SceneUpdateView(StorytellerRequiredMixin, MessageMixin, UpdateView):
 
     def get_queryset(self):
         return super().get_queryset().select_related("chronicle", "location")
+
+    def form_valid(self, form):
+        if not PermissionManager.can_manage_scope(
+            self.request.user, form.instance.chronicle, form.cleaned_data["gameline"],
+            self.request,
+        ):
+            raise PermissionDenied("Matching chronicle ST required")
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("game:scene", kwargs={"pk": self.object.pk})

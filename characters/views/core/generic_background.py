@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 from django.views.generic import FormView
 
 from characters.models.core.human import Human
@@ -47,10 +48,22 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         """Add obj and npc_role to form kwargs for LinkedNPCForm."""
         kwargs = super().get_form_kwargs()
-        obj = get_object_or_404(self.primary_object_class, pk=self.kwargs.get("pk"))
-        kwargs["obj"] = obj
-        kwargs["npc_role"] = self.background_name
+        from characters.forms.core.linked_npc import LinkedNPCForm
+
+        if issubclass(self.get_form_class(), LinkedNPCForm):
+            kwargs["obj"] = self.get_object()
+            kwargs["npc_role"] = self.background_name
         return kwargs
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if not obj.backgrounds.filter(
+            bg__property_name=self.background_name, complete=False
+        ).exists():
+            return render(request, "characters/core/skip_background.html", {
+                "object": obj, "background_name": self.background_name,
+            })
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -74,7 +87,7 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
             form.npc_role = self.background_name
 
         # Set initial rank if the form has a rank field
-        if "rank" in form.fields.keys():
+        if "rank" in form.fields and self.current_background is not None:
             form.fields["rank"].initial = self.current_background.rating
             form.fields["rank"].widget.attrs.update(
                 {
@@ -84,7 +97,7 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
             )
         return form
 
-    def dispatch(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         obj = get_object_or_404(self.primary_object_class, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(
             bg__property_name=self.background_name, complete=False
@@ -92,4 +105,4 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
             obj.creation_status += 1
             obj.save()
             return HttpResponseRedirect(obj.get_absolute_url())
-        return super().dispatch(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)

@@ -1,69 +1,62 @@
-"""
-Views for Widgets AJAX endpoints.
-
-Includes an auto-discovery view that dynamically imports form classes,
-so no manual URL configuration is needed.
-"""
-
-import importlib
+"""Views for registered chained-select AJAX endpoints."""
 
 from django.http import JsonResponse
 from django.views import View
+from django.views.decorators.http import require_GET
 
 from .utils import normalize_choices
 
 
+def _mage_creation_form(request):
+    # This form needs a user; the registry supplies it from the authenticated request.
+    from characters.forms.mage.mage import MageCreationForm
+
+    return MageCreationForm(user=request.user)
+
+
+REGISTERED_FORMS = {
+    "characters.forms.mage.mage.MageCreationForm": (
+        _mage_creation_form,
+        frozenset({"faction", "subfaction"}),
+    ),
+}
+
+
+def _allowed_mage_parent(form, field_name, parent_id):
+    from characters.models.mage.faction import MageFaction
+
+    affiliation_ids = form.fields["affiliation"].queryset.values("pk")
+    if field_name == "faction":
+        return MageFaction.objects.filter(
+            pk=parent_id, parent=None, pk__in=affiliation_ids
+        ).exists()
+    return MageFaction.objects.filter(
+        pk=parent_id, parent_id__in=affiliation_ids
+    ).exists()
+
+
+@require_GET
 def auto_chained_ajax_view(request):
-    """
-    Auto-discovery AJAX view that dynamically imports the form class.
+    """Return choices only for explicitly registered form fields and parents."""
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
 
-    This is automatically registered at /__chained_select__/
-
-    Query parameters:
-        - form: Full path to form class (e.g., 'myapp.forms.MageFactionForm')
-        - field: Name of the field to get choices for
-        - parent_value: Value of the parent field
-    """
-    form_path = request.GET.get("form")
+    registration = REGISTERED_FORMS.get(request.GET.get("form"))
     field_name = request.GET.get("field")
-    parent_value = request.GET.get("parent_value")
+    parent_value = request.GET.get("parent_value", "")
+    if registration is None or field_name not in registration[1]:
+        return JsonResponse({"error": "Unknown form or field"}, status=400)
+    if not parent_value.isascii() or not parent_value.isdecimal() or len(parent_value) > 20:
+        return JsonResponse({"error": "Invalid parent"}, status=400)
+    parent_id = int(parent_value)
+    if parent_id < 1:
+        return JsonResponse({"error": "Invalid parent"}, status=400)
 
-    if not form_path or not field_name:
-        return JsonResponse({"error": "Missing required parameters: form, field"}, status=400)
-
-    try:
-        # Parse form path: 'myapp.forms.MageFactionForm'
-        module_path, class_name = form_path.rsplit(".", 1)
-        module = importlib.import_module(module_path)
-        form_class = getattr(module, class_name)
-
-        # Instantiate form to access field configuration
-        form = form_class()
-        field = form.fields.get(field_name)
-
-        if not field:
-            return JsonResponse({"error": f'Field "{field_name}" not found on form'}, status=400)
-
-        # Get the choices callback
-        choices_callback = getattr(field, "choices_callback", None)
-
-        if not choices_callback:
-            return JsonResponse(
-                {"error": f'Field "{field_name}" has no choices_callback'}, status=400
-            )
-
-        # Call the callback to get choices
-        choices = choices_callback(parent_value)
-
-        # Normalize to list of {value, label} dicts
-        choices_list = normalize_choices(choices)
-
-        return JsonResponse({"choices": choices_list})
-
-    except (ValueError, ImportError, AttributeError) as e:
-        return JsonResponse({"error": f"Could not load form: {e}"}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    form = registration[0](request)
+    if not _allowed_mage_parent(form, field_name, parent_id):
+        return JsonResponse({"error": "Invalid parent"}, status=400)
+    callback = form.fields[field_name].choices_callback
+    return JsonResponse({"choices": normalize_choices(callback(parent_id))})
 
 
 class ChainedSelectAjaxView(View):

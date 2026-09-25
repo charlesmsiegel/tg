@@ -9,8 +9,10 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from characters.models.core import CharacterModel
+from core.permissions import PermissionManager
 from core.templatetags.sanitize_text import render_post_html
 from game.models import Scene
+from game.security import can_view_scene
 
 logger = logging.getLogger(__name__)
 
@@ -32,18 +34,10 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"scene_{self.scene_id}"
         self.user = self.scope["user"]
 
-        # Reject unauthenticated users
-        if not self.user.is_authenticated:
-            logger.warning(
-                f"Unauthenticated WebSocket connection attempt for scene {self.scene_id}"
-            )
-            await self.close()
-            return
-
-        # Verify scene exists and user has access
+        # Public scenes admit anonymous readers; every other audience is
+        # checked before joining the broadcast group.
         scene = await self.get_scene()
-        if scene is None:
-            logger.warning(f"Scene {self.scene_id} not found for WebSocket connection")
+        if scene is None or not await self.user_can_view_scene(scene):
             await self.close()
             return
 
@@ -54,7 +48,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        logger.info(f"User {self.user.username} connected to scene {self.scene_id}")
+        logger.info(f"User {self.user} connected to scene {self.scene_id}")
 
     async def disconnect(self, close_code):
         """Handle WebSocket disconnection."""
@@ -79,7 +73,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
             await self.send_error("Invalid message format")
         except Exception as e:
             logger.error(f"Error processing WebSocket message: {e}", exc_info=True)
-            await self.send_error(str(e))
+            await self.send_error("Could not process message")
 
     async def handle_chat_message(self, data):
         """Handle incoming chat message."""
@@ -93,7 +87,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
         # Check scene is not finished
         scene = await self.get_scene()
-        if scene is None or scene.finished:
+        if scene is None or scene.finished or not await self.user_can_view_scene(scene):
             await self.send_error("Cannot post to a finished scene")
             return
 
@@ -152,7 +146,7 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
         # Get scene
         scene = await self.get_scene()
-        if scene is None or scene.finished:
+        if scene is None or scene.finished or not await self.user_can_view_scene(scene):
             await self.send_error("Cannot add character to finished scene")
             return
 
@@ -165,6 +159,9 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
         # Verify user owns this character
         if not await self.user_owns_character(character):
             await self.send_error("You can only add your own characters")
+            return
+        if character.chronicle_id != scene.chronicle_id:
+            await self.send_error("Character cannot join this scene")
             return
 
         # Add character to scene
@@ -185,6 +182,10 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message_broadcast(self, event):
         """Send chat message to WebSocket."""
+        scene = await self.get_scene()
+        if scene is None or not await self.user_can_view_scene(scene):
+            await self.close()
+            return
         await self.send(
             text_data=json.dumps(
                 {
@@ -196,6 +197,10 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
 
     async def character_added_broadcast(self, event):
         """Send character added notification to WebSocket."""
+        scene = await self.get_scene()
+        if scene is None or not await self.user_can_view_scene(scene):
+            await self.close()
+            return
         await self.send(
             text_data=json.dumps(
                 {
@@ -274,7 +279,11 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def user_owns_character(self, character):
         """Check if current user owns the character."""
-        return character.owner_id == self.user.pk
+        return self.user.is_authenticated and character.owner_id == self.user.pk
+
+    @database_sync_to_async
+    def user_can_view_scene(self, scene):
+        return can_view_scene(self.user, scene)
 
     @database_sync_to_async
     def character_in_scene(self, character, scene):
@@ -298,7 +307,13 @@ class SceneChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def serialize_post(self, post, character):
         """Serialize post data for WebSocket transmission."""
-        is_st = character.owner.profile.is_st() if hasattr(character.owner, "profile") else False
+        scene = post.scene
+        is_st = bool(
+            character.owner_id
+            and PermissionManager.can_manage_scope(
+                character.owner, scene.chronicle, scene.gameline
+            )
+        )
         return {
             "id": post.pk,
             "character_id": character.pk,

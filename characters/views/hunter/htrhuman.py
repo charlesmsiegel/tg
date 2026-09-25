@@ -9,7 +9,7 @@ from core.mixins import (
     VisibilityFilterMixin,
     XPApprovalMixin,
 )
-from core.permissions import Permission, PermissionManager
+from core.permissions import PermissionManager
 
 
 class HtRHumanDetailView(XPApprovalMixin, ViewPermissionMixin, DetailView):
@@ -159,8 +159,8 @@ class HtRHumanUpdateView(EditPermissionMixin, UpdateView):
 
     def get_form_class(self):
         """Return different form based on user permissions."""
-        has_full_edit = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.EDIT_FULL
+        has_full_edit = PermissionManager.user_has_scoped_editor_role(
+            self.request.user, self.get_object(), request=self.request
         )
         if has_full_edit:
             return super().get_form_class()

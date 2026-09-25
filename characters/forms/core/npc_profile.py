@@ -475,6 +475,12 @@ class NPCProfileForm(ConditionalFieldsMixin, forms.Form):
         self.user = kwargs.pop("user", None)
         self.related_character = kwargs.pop("related_character", None)
         super().__init__(*args, **kwargs)
+        from game.security import readable_chronicles
+
+        if self.user and self.user.is_authenticated:
+            self.fields["chronicle"].queryset = readable_chronicles(self.user)
+        else:
+            self.fields["chronicle"].queryset = Chronicle.objects.none()
 
         # Pre-populate chronicle if related character exists
         if self.related_character and self.related_character.chronicle:

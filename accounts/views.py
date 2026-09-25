@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -19,9 +19,12 @@ from accounts.forms import (
 from accounts.models import Profile
 from characters.models.core import Character
 from core.mixins import MessageMixin
+from core.permissions import PermissionManager
 from core.services import ApprovalService
 from game.forms import WeeklyXPRequestForm
 from game.models import Scene, UserSceneReadStatus, Week, WeeklyXPRequest
+from game.security import can_view_scene, filter_scenes, staffed_chronicles
+from game.spending_approval import require_spending_approver
 
 
 class SignUp(MessageMixin, CreateView):
@@ -39,7 +42,7 @@ class CustomPasswordResetView(PasswordResetView):
     html_email_template_name = "accounts/registration/password_reset_email.html"
 
 
-def verify_st_for_chronicle(request, chronicle, action_description="this action"):
+def verify_st_for_chronicle(request, chronicle, action_description="this action", gameline=None):
     """Verify the requesting user is an ST for the given chronicle.
 
     chronicle may be None (object with no chronicle); is_st_for(None)
@@ -51,7 +54,12 @@ def verify_st_for_chronicle(request, chronicle, action_description="this action"
         # Callers use LoginRequiredMixin; this guard makes the
         # precondition explicit if the helper is ever reused without it.
         raise PermissionDenied("Authentication required.")
-    if not request.user.profile.is_st_for(chronicle):
+    allowed = (
+        PermissionManager.can_manage_scope(request.user, chronicle, gameline, request)
+        if gameline is not None
+        else PermissionManager.can_manage_chronicle(request.user, chronicle, request)
+    )
+    if not allowed:
         msg = f"You are not a storyteller for this chronicle. Cannot perform {action_description}."
         messages.error(request, msg)
         raise PermissionDenied(msg)
@@ -64,7 +72,7 @@ class SceneXPAwardView(LoginRequiredMixin, View):
 
     def post(self, request, scene_pk):
         scene = get_object_or_404(Scene, pk=scene_pk)
-        verify_st_for_chronicle(request, scene.chronicle, "scene XP award")
+        verify_st_for_chronicle(request, scene.chronicle, "scene XP award", scene.gameline)
         form = SceneXP(request.POST, scene=scene, prefix=f"scene_{scene.pk}")
         if form.is_valid():
             try:
@@ -90,10 +98,47 @@ class ObjectApprovalView(LoginRequiredMixin, View):
             raise Http404
         obj = get_object_or_404(model_class, pk=pk)
         chronicle = getattr(obj, "chronicle", None)
-        verify_st_for_chronicle(request, chronicle, f"{object_type} approval")
-        _, msg = ApprovalService.approve_object(object_type, pk)
+        verify_st_for_chronicle(
+            request, chronicle, f"{object_type} approval", obj.get_gameline()
+        )
+        try:
+            _, msg = ApprovalService.approve_object(object_type, pk, request.user)
+        except ValidationError as exc:
+            return HttpResponseBadRequest(str(exc))
         messages.success(request, msg)
         return redirect("accounts:profile", pk=request.user.profile.pk)
+
+
+class ObjectSubmissionView(LoginRequiredMixin, View):
+    """A creator submits an unfinished or returned object for ST review."""
+
+    http_method_names = ["post"]
+
+    def post(self, request, object_type, pk):
+        if object_type not in ApprovalService.OBJECT_MODEL_MAP:
+            raise Http404
+        try:
+            obj = ApprovalService.transition_object(object_type, pk, request.user, "Sub")
+        except ValidationError as exc:
+            return HttpResponseBadRequest(str(exc))
+        messages.success(request, f"'{obj.name}' submitted for approval.")
+        return redirect(obj.get_absolute_url())
+
+
+class ObjectRevisionView(LoginRequiredMixin, View):
+    """A scoped ST returns a submitted object to its creator."""
+
+    http_method_names = ["post"]
+
+    def post(self, request, object_type, pk):
+        if object_type not in ApprovalService.OBJECT_MODEL_MAP:
+            raise Http404
+        try:
+            obj = ApprovalService.transition_object(object_type, pk, request.user, "Rev")
+        except ValidationError as exc:
+            return HttpResponseBadRequest(str(exc))
+        messages.success(request, f"'{obj.name}' returned for revisions.")
+        return redirect(obj.get_absolute_url())
 
 
 class ImageApprovalView(LoginRequiredMixin, View):
@@ -107,7 +152,9 @@ class ImageApprovalView(LoginRequiredMixin, View):
             raise Http404
         obj = get_object_or_404(model_class, pk=pk)
         chronicle = getattr(obj, "chronicle", None)
-        verify_st_for_chronicle(request, chronicle, f"{object_type} image approval")
+        verify_st_for_chronicle(
+            request, chronicle, f"{object_type} image approval", obj.get_gameline()
+        )
         _, msg = ApprovalService.approve_image(object_type, pk)
         messages.success(request, msg)
         return redirect("accounts:profile", pk=request.user.profile.pk)
@@ -120,7 +167,9 @@ class FreebieAwardView(LoginRequiredMixin, View):
 
     def post(self, request, character_pk):
         char = get_object_or_404(Character, pk=character_pk)
-        verify_st_for_chronicle(request, char.chronicle, "freebie approval")
+        verify_st_for_chronicle(
+            request, char.chronicle, "freebie approval", char.get_gameline()
+        )
         form = FreebieAwardForm(request.POST, character=char)
         if form.is_valid():
             form.save()
@@ -158,7 +207,7 @@ class WeeklyXPApprovalView(LoginRequiredMixin, View):
     def post(self, request, week_pk, character_pk):
         week = get_object_or_404(Week, pk=week_pk)
         char = get_object_or_404(Character, pk=character_pk)
-        verify_st_for_chronicle(request, char.chronicle, "weekly XP approval")
+        require_spending_approver(request.user, char)
         xp_request = get_object_or_404(WeeklyXPRequest, character=char, week=week)
         form = WeeklyXPRequestForm(request.POST, week=week, character=char, instance=xp_request)
         if form.is_valid():
@@ -189,6 +238,8 @@ class MarkSceneReadView(LoginRequiredMixin, View):
     def post(self, request, scene_pk):
         with transaction.atomic():
             scene = get_object_or_404(Scene, pk=scene_pk)
+            if not can_view_scene(request.user, scene):
+                raise Http404("Scene not found")
             status, _ = UserSceneReadStatus.objects.get_or_create(scene=scene, user=request.user)
             status.read = True
             status.save()
@@ -234,7 +285,12 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["scenes_waiting"] = []
         if self.object.is_st():
-            context["scenes_waiting"] = Scene.objects.waiting_for_st()
+            context["scenes_waiting"] = filter_scenes(
+                Scene.objects.waiting_for_st().filter(
+                    chronicle__in=staffed_chronicles(self.object.user)
+                ),
+                self.object.user,
+            )
 
         # Optimize queries with select_related
         scenes = self.object.xp_requests().select_related("chronicle", "location")

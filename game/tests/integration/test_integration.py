@@ -303,7 +303,7 @@ class TestXPSpendingIndexes(TestCase):
         request3 = self.char.create_xp_spending_request("Third", "ability", 3, 6)
 
         # This query should use the index
-        history = self.char.xp_spendings.order_by("-created_at")
+        history = self.char.xp_spendings.order_by("-created_at", "-pk")
         self.assertEqual(history.first(), request3)
         self.assertEqual(history.last(), request1)
 
@@ -339,7 +339,7 @@ class TestFreebieSpendingIndexes(TestCase):
         record3 = self.human.create_freebie_spending_record("Third", "ability", 3, 6)
 
         # This query should use the index
-        history = self.human.freebie_spendings.order_by("-created_at")
+        history = self.human.freebie_spendings.order_by("-created_at", "-pk")
         self.assertEqual(history.first(), record3)
         self.assertEqual(history.last(), record1)
 

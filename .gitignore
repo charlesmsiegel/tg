@@ -102,6 +102,8 @@ pytest.ini
 .vscode/*
 collected_static/
 */migrations/*
+!tg_schema/migrations/__init__.py
+!tg_schema/migrations/[0-9]*.py
 pyproject.toml
 media/*
 remove_pycache.sh

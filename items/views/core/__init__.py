@@ -1,11 +1,13 @@
 from collections import defaultdict
 
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views import View
 
+from core.create_redirects import resolve_object_type_url
 from core.utils import get_gameline_name
 from core.views.generic import DictView
+from core.views.public_object import PublicObjectDetailView
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
 
@@ -87,6 +89,8 @@ from .weapon import WeaponCreateView, WeaponDetailView, WeaponListView, WeaponUp
 
 class GenericItemDetailView(DictView):
     model_class = ItemModel
+    protected_object = True
+    public_view_class = PublicObjectDetailView
     key_property = "type"
     default_redirect = "items:index"
 
@@ -175,34 +179,29 @@ class ItemIndexView(View):
     }
 
     def get(self, request, *args, **kwargs):
+        if not (request.user.is_authenticated and (
+            request.user.is_staff or request.user.is_superuser
+        )):
+            from core.views.public_object import render_public_object_list
+
+            return render_public_object_list(request, ItemModel)
         context = self.get_context()
         return render(request, "items/index.html", context)
 
     def post(self, request, *args, **kwargs):
-        context = self.get_context()
         action = request.POST.get("action")
-        item_type = request.POST["item_type"]
-        obj, _ = ObjectType.objects.get_or_create(
-            name=item_type, defaults={"type": "obj", "gameline": "wod"}
-        )
-        gameline = obj.gameline
+        item_type = request.POST.get("item_type")
+        if not item_type or action not in {"create", "index"}:
+            return HttpResponseBadRequest("Invalid item selection")
         if action == "create":
-            if gameline == "wod":
-                redi = f"items:create:{item_type}"
-            elif gameline == "wta":
-                redi = f"items:werewolf:create:{item_type}"
-            elif gameline == "mta":
-                redi = f"items:mage:create:{item_type}"
-            return redirect(redi)
-        elif action == "index":
-            if gameline == "wod":
-                redi = f"items:list:{item_type}"
-            elif gameline == "wta":
-                redi = f"items:werewolf:list:{item_type}"
-            elif gameline == "mta":
-                redi = f"items:mage:list:{item_type}"
-            return redirect(redi)
-        return render(request, "items/index.html", context)
+            if not request.user.is_authenticated:
+                return HttpResponseBadRequest("Login required")
+        return redirect(
+            resolve_object_type_url(
+                "obj", item_type, "create" if action == "create" else "list",
+                request.POST.get("gameline"),
+            )
+        )
 
     def get_context(self):
         game_items = ObjectType.objects.filter(type="obj")
