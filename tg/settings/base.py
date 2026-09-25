@@ -139,8 +139,8 @@ STATIC_ROOT = BASE_DIR / "collected_static"
 STATICFILES_DIRS = [BASE_DIR / "source_static"]
 
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "user"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "core:home"
+LOGOUT_REDIRECT_URL = "core:home"
 
 # Email Configuration
 # ====================
