@@ -590,7 +590,8 @@ def unrouted_views():
     for cls in views:
         if cls not in routed:
             for _, target, _ in descendants(cls):
-                orphan_routers.setdefault(target, cls.__name__)
+                if target:
+                    orphan_routers.setdefault(target, cls.__name__)
     rows, counts = [], defaultdict(int)
     for cls, where in views.items():
         if cls in routed:
