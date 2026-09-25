@@ -221,7 +221,7 @@ The audit's "Confirmed" items 1–8 were re-checked and hold, with these additio
 - **`populate_db/` and management commands.** None import deleted code. The seeded `ObjectType` rows are untouched; the index 404s are deferred except the three fixed in D9.
 - **Tooling.** `scripts/build_route_policy_manifest.py` and `scripts/inventory_authorization_routes.py` are updated in the same PR as any class they name.
 - **Per-PR checks** (the plan lists the exact commands):
-  1. the full test suite shows no new failures against the baseline below;
+  1. the full test suite passes (0 failures after B0);
   2. `python manage.py check` passes;
   3. the route-policy test passes;
   4. `scripts/find_dead_code.py` has fewer rows in the affected section, and none reappear;
@@ -233,7 +233,7 @@ The audit's "Confirmed" items 1–8 were re-checked and hold, with these additio
     - `…test_vtmhuman.TestVtMHumanBasicsView.test_basics_view_creates_vtmhuman` (200 ≠ 302);
     - `characters.tests.views.wraith.test_circle.TestCircleCreateView.test_create_circle_successfully` (403 ≠ 302);
     - `characters.tests.views.mage.test_companion_comprehensive.TestCompanionCreationWorkflow.test_other_player_cannot_attach_companion_to_mage` (200 ≠ 403).
-  - **Rule:** every PR must leave exactly these 5 failing and add none; each PR description lists the failing set. Fixing them is outside Step 1. They look like follow-ups to Step 0's create-form scoping and are reported to the owner separately.
+  - **Owner decision:** fix them first (Unit B0). All 5 are stale tests: they post a chronicle the acting user has no part in, which Step 0's chronicle scoping now correctly refuses. After B0 the baseline is **0 failures**, and every later PR keeps it there.
 
 ## Rollout (combined PR order)
 
@@ -241,6 +241,7 @@ The order is lowest risk first. Each PR can be merged on its own and leaves the 
 
 | # | PR | Contents |
 |---|---|---|
+| 0 | **B0: stale baseline tests** | Fix the 5 tests failing on `main`. Each one posts a chronicle the acting user has no part in. Add tests that pin the refusal of an unrelated chronicle. |
 | 1 | **D1: safety net and live 500s** | Move the script's pure helpers (`str_parts`, `find_computed`, `object_type_seed`, `classify_dead_route`, `pattern_regex`) into an importable module with no side effects, so importing them can't re-point the database. Add unit tests for those helpers and for `--format tsv`. The routed-template inventory test with its `KNOWN_MISSING` allowlist. The logout redirect fix. The Demesne `{% load %}` fix. |
 | 2 | **C1: character-wizard Chantry step** | Fixes the live 500 (chantry spec). |
 | 3 | **D2: dependency** | Remove `django-smart-selects`. |
@@ -279,4 +280,4 @@ These are known gaps, not deletions. Each owning step gets these rows.
 2. Every **Recover** row works, and a test covers it.
 3. Every **Deferred** and **Keep** row is untouched and appears in the deferred register or the appendix.
 4. The logout and Demesne pages work, and `test_routed_templates.py` fails on any new missing template.
-5. After every PR, the full suite shows no failures beyond the 5 baseline ones, `manage.py check` and the route-policy test pass, and route counts change only as intended.
+5. After every PR, the full suite shows 0 failures, `manage.py check` and the route-policy test pass, and route counts change only as intended.
