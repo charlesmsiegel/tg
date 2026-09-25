@@ -248,11 +248,12 @@ def find_computed(node, out, ctx):
         name = call_name(node)
         arg_ctx = CALL_CTX.get(name)
         for index, child in enumerate(node.args):
-            # redirect()/render() often take model objects or request first; only
-            # reverse-style first args and render()'s template arg are names.
-            wanted = (index == 0 and arg_ctx == "url" and name != "redirect") or (
-                arg_ctx == "template" and index == (1 if name == "render" else 0)
-            )
+            # redirect() often takes a model object first, so only a string-building
+            # first arg counts there; render()'s name is its second arg.
+            builds_string = isinstance(child, ast.JoinedStr | ast.BinOp | ast.Call)
+            wanted = (
+                index == 0 and arg_ctx == "url" and (name != "redirect" or builds_string)
+            ) or (arg_ctx == "template" and index == (1 if name == "render" else 0))
             find_computed(child, out, arg_ctx if wanted else None)
         for child in [node.func, *node.keywords]:
             find_computed(
