@@ -15,6 +15,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from characters.models.core.archetype import Archetype
+from characters.models.core.human import Human
 from characters.models.vampire.vtmhuman import VtMHuman
 from game.models import Chronicle
 
@@ -121,6 +122,8 @@ class TestVtMHumanBasicsView(VtMHumanViewTestCase):
 
     def test_basics_view_creates_vtmhuman(self):
         """Test that submitting form creates a VtMHuman."""
+        # A player may only pick a chronicle they already take part in.
+        Human.objects.create(name="Existing PC", owner=self.user, chronicle=self.chronicle)
         self.client.login(username="testuser", password="testpassword")
         url = reverse("characters:vampire:create:vtm_human")
         data = {
@@ -136,6 +139,7 @@ class TestVtMHumanBasicsView(VtMHumanViewTestCase):
         # VtMHuman should be created
         vtmhuman = VtMHuman.objects.get(name="Test VtMHuman")
         self.assertEqual(vtmhuman.owner, self.user)
+        self.assertEqual(vtmhuman.chronicle, self.chronicle)
 
     def test_basics_view_sets_creation_status(self):
         """Test that creation_status is set to 1 after basics."""
