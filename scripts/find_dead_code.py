@@ -2,8 +2,11 @@
 
 Run: python scripts/find_dead_code.py [--section NAME]... [--format md|tsv] > dead-code.md
 Sections: urls, views, templates, tags, symbols (default: all); --section repeats.
-The script is read-only; no database connection is required (the default
-database is pointed at in-memory SQLite before anything could open it).
+The script writes no files and needs no database: the default database is
+pointed at in-memory SQLite before django.setup(). It does import every
+project module and call get_*url() / get_template_names() on unsaved model
+instances and bare views, so any side effects in those methods would run.
+Importing this module has the same database side effect; run it as a script.
 Every row is a candidate for review, not a verdict: reflection, string-built
 names and third-party conventions can hide real uses. The symbols section is
 an explicit name-occurrence heuristic.
@@ -434,9 +437,9 @@ def object_type_routes():
     rows = []
     for (name, category, gameline), where in sorted(seeds.items()):
         config = settings.GAMELINES.get(gameline)
-        namespace = "" if gameline == "wod" else f"{(config or {}).get('app_name')}:"
+        namespace = "" if gameline == "wod" else f"{(config or {}).get('app_name', '?')}:"
         for action in ("create", "list"):
-            route_name = f"{APP_NAMES.get(category)}:{namespace}{action}:{name}"
+            route_name = f"{APP_NAMES.get(category, '?')}:{namespace}{action}:{name}"
             problem = ""
             if category not in APP_NAMES or config is None:
                 problem = "unsupported category/gameline"
