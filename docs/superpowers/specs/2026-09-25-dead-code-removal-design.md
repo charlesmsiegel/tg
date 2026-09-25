@@ -241,7 +241,7 @@ The order is lowest risk first. Each PR can be merged on its own and leaves the 
 
 | # | PR | Contents |
 |---|---|---|
-| 1 | **D1: safety net and live 500s** | Heuristic unit tests for `find_dead_code.py`. The routed-template inventory test with its `KNOWN_MISSING` allowlist. The logout redirect fix. The Demesne `{% load %}` fix. |
+| 1 | **D1: safety net and live 500s** | Move the script's pure helpers (`str_parts`, `find_computed`, `object_type_seed`, `classify_dead_route`, `pattern_regex`) into an importable module with no side effects, so importing them can't re-point the database. Add unit tests for those helpers and for `--format tsv`. The routed-template inventory test with its `KNOWN_MISSING` allowlist. The logout redirect fix. The Demesne `{% load %}` fix. |
 | 2 | **C1: character-wizard Chantry step** | Fixes the live 500 (chantry spec). |
 | 3 | **D2: dependency** | Remove `django-smart-selects`. |
 | 4 | **D3: `chained_select`** | Remove the app, its settings entry, its compatibility tests and the widgets-side copies. |
