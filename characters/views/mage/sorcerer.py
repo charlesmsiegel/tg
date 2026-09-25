@@ -1,3 +1,4 @@
+from core.mixins import ScopedCreationFormMixin
 from typing import Any
 
 from django import forms
@@ -64,7 +65,7 @@ from locations.forms.mage.node import NodeForm
 from locations.forms.mage.sanctum import SanctumForm
 
 
-class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
+class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMixin, CreateView):
     model = Sorcerer
     form_class = SorcererBasicsForm
     success_message = "Sorcerer created successfully."
@@ -74,8 +75,9 @@ class SorcererBasicsView(MessageMixin, LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
@@ -277,6 +279,7 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         if obj.sorcerer_type == "hedge_mage":
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -328,6 +331,7 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         if obj.sorcerer_type != "hedge_mage":
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -383,6 +387,7 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
         if obj.sorcerer_type != "hedge_mage":
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -823,6 +828,7 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
         if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()

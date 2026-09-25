@@ -28,4 +28,24 @@
   <button type="submit">Continue</button>
 </form>
 {% endif %}
+{% if item_form %}
+<h2>Create an item</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="create">
+  {{ item_form.as_p }}
+  <button type="submit">Continue</button>
+</form>
+{{ item_form.media }}
+{% endif %}
+{% if location_form %}
+<h2>Create a location</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="create">
+  {{ location_form.as_p }}
+  <button type="submit">Continue</button>
+</form>
+{{ location_form.media }}
+{% endif %}
 {% endblock %}

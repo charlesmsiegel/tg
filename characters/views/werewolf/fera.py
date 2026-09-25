@@ -1,4 +1,4 @@
-
+from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
@@ -135,7 +135,7 @@ class FeraUpdateView(EditPermissionMixin, UpdateView):
             return LimitedHumanEditForm
 
 
-class FeraBasicsView(LoginRequiredMixin, FormView):
+class FeraBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = FeraCreationForm
     template_name = "characters/werewolf/fera/basics.html"
 
@@ -147,8 +147,9 @@ class FeraBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 

@@ -164,12 +164,11 @@ class CharacterTemplateForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        # Ensure owner is set to current user
-        if self.user:
+        # Creation assigns provenance. Updates must not let a scoped ST silently
+        # take ownership or turn an official template into a community one.
+        if self.user and self.instance.pk is None:
             self.instance.owner = self.user
-
-        # Mark as user-created (not official)
-        self.instance.is_official = False
+            self.instance.is_official = False
 
         return cleaned_data
 
@@ -177,11 +176,9 @@ class CharacterTemplateForm(forms.ModelForm):
         instance = super().save(commit=False)
 
         # Ensure owner is set
-        if self.user:
+        if self.user and instance.pk is None:
             instance.owner = self.user
-
-        # Mark as user-created
-        instance.is_official = False
+            instance.is_official = False
 
         if commit:
             instance.save()

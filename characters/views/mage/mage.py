@@ -1,3 +1,4 @@
+from core.mixins import ScopedCreationFormMixin
 import logging
 from typing import Any
 
@@ -153,9 +154,7 @@ class LoadXPExamplesView(View):
             ]
             examples = filtered_for_xp_cost
         elif category_choice == "MeritFlaw":
-            mage = ObjectType.objects.filter(
-                name="mage", type="char", gameline="mta"
-            ).first()
+            mage = ObjectType.objects.filter(name="mage", type="char", gameline="mta").first()
             if mage is None:
                 return dropdown_options_response([])
             examples = MeritFlaw.objects.filter(allowed_types=mage, max_rating__gte=0)
@@ -276,8 +275,11 @@ class MageDetailView(HumanDetailView):
             from game.models import XPSpendingRequest
             from game.spending_approval import SpendingDecisionError, decide_spending_request
 
-            buttons = [(key, value) for key, value in request.POST.items()
-                       if value in {"Approve", "Reject"}]
+            buttons = [
+                (key, value)
+                for key, value in request.POST.items()
+                if value in {"Approve", "Reject"}
+            ]
             if len(buttons) != 1:
                 return HttpResponseBadRequest("Invalid approval action")
             key, value = buttons[0]
@@ -312,9 +314,7 @@ class MageDetailView(HumanDetailView):
         can_edit = PermissionManager.user_has_scoped_editor_role(
             request.user, self.object, request=request
         )
-        if "retire" in request.POST and not (
-            can_edit or self.object.owner_id == request.user.pk
-        ):
+        if "retire" in request.POST and not (can_edit or self.object.owner_id == request.user.pk):
             raise PermissionDenied("Cannot retire this character")
         if "decease" in request.POST and not can_edit:
             raise PermissionDenied("Cannot mark this character deceased")
@@ -606,7 +606,7 @@ class MageUpdateView(EditPermissionMixin, UpdateView):
             return LimitedHumanEditForm
 
 
-class MageBasicsView(LoginRequiredMixin, FormView):
+class MageBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = MageCreationForm
     template_name = "characters/mage/mage/magebasics.html"
 
@@ -618,8 +618,9 @@ class MageBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
