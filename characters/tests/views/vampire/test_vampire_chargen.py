@@ -17,6 +17,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from characters.models.core.archetype import Archetype
+from characters.models.core.human import Human
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.path import Path
@@ -137,6 +138,8 @@ class TestVampireBasicsView(VampireChargenTestCase):
 
     def test_basics_view_creates_vampire(self):
         """Test that submitting form creates a vampire."""
+        # A player may only pick a chronicle they already take part in.
+        Human.objects.create(name="Existing PC", owner=self.user, chronicle=self.chronicle)
         self.client.login(username="testuser", password="testpassword")
         url = reverse("characters:vampire:create:vampire")
         data = {
@@ -156,6 +159,24 @@ class TestVampireBasicsView(VampireChargenTestCase):
         vampire = Vampire.objects.get(name="Test Vampire")
         self.assertEqual(vampire.owner, self.user)
         self.assertEqual(vampire.clan, self.brujah)
+        self.assertEqual(vampire.chronicle, self.chronicle)
+
+    def test_basics_view_rejects_chronicle_user_is_not_in(self):
+        """A chronicle the user neither plays in nor runs is not a valid choice."""
+        self.client.login(username="testuser", password="testpassword")
+        url = reverse("characters:vampire:create:vampire")
+        data = {
+            "name": "Gatecrasher",
+            "chronicle": self.chronicle.pk,
+            "nature": self.nature.pk,
+            "demeanor": self.demeanor.pk,
+            "clan": self.brujah.pk,
+            "concept": "Warrior",
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("chronicle", response.context["form"].errors)
+        self.assertFalse(Vampire.objects.filter(name="Gatecrasher").exists())
 
     def test_basics_view_sets_initial_willpower(self):
         """Test that willpower is set to courage after creation."""

@@ -16,6 +16,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from characters.models.core.archetype import Archetype
+from characters.models.core.human import Human
 from characters.models.vampire.clan import VampireClan
 from characters.models.vampire.discipline import Discipline
 from characters.models.vampire.ghoul import Ghoul
@@ -114,6 +115,8 @@ class TestGhoulBasicsView(GhoulChargenTestCase):
 
     def test_basics_view_creates_ghoul(self):
         """Test that submitting form creates a ghoul."""
+        # A player may only pick a chronicle they already take part in.
+        Human.objects.create(name="Existing PC", owner=self.user, chronicle=self.chronicle)
         self.client.login(username="testuser", password="testpassword")
         url = reverse("characters:vampire:create:ghoul")
         data = {
@@ -129,6 +132,7 @@ class TestGhoulBasicsView(GhoulChargenTestCase):
         # Ghoul should be created
         ghoul = Ghoul.objects.get(name="Test Ghoul")
         self.assertEqual(ghoul.owner, self.user)
+        self.assertEqual(ghoul.chronicle, self.chronicle)
 
     def test_basics_view_sets_potence_one(self):
         """Test that ghoul starts with Potence 1."""
