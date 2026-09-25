@@ -7,7 +7,7 @@ Candidates only; see each section's summary and statuses.
 
 ## urls
 
-**Summary:** 747 project URL names; dead: 104, dynamic (manual review): 9, dynamic: object-type index (resolve_object_type_url): 45, path also reversed: 2, referenced: 523, tests only: 64; 16 computed; dead/tests-only by kind: dead (a): 30, dead (b): 1, dead (c): 69, dead (d): 4, tests only (a): 2, tests only (b): 11, tests only (c): 48, tests only (d): 3; seeded object-type routes failing: 43 requested by an index view (live 404s), 93 never requested
+**Summary:** 747 project URL names; dead: 104, dynamic (manual review): 9, dynamic: object-type index (resolve_object_type_url): 45, path also reversed: 2, referenced: 523, tests only: 64; 20 computed; dead/tests-only by kind: dead (a): 30, dead (b): 1, dead (c): 69, dead (d): 4, tests only (a): 2, tests only (b): 11, tests only (c): 48, tests only (d): 3; seeded object-type routes failing: 43 requested by an index view (live 404s), 93 never requested
 
 ### Unreferenced URL names (224)
 
@@ -384,7 +384,7 @@ Candidates only; see each section's summary and statuses.
 | characters:wraith:list:wraith_faction | char | wto | wraith_faction | list | populate_db/objects.py:166 | no such URL name |
 | characters:wraith:list:wto_human | char | wto | wto_human | list | populate_db/objects.py:164 | no such URL name |
 
-### Computed URL names - manual review (16)
+### Computed URL names - manual review (20)
 
 | Location | Expression | Marks names dynamic |
 |---|---|---|
@@ -396,14 +396,18 @@ Candidates only; see each section's summary and statuses.
 | characters/models/core/human_url_block.py:22 | f'characters:{self.get_gameline_for_url(self.gameline)}update:{self.type}' | yes |
 | characters/models/core/human_url_block.py:28 | f'characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}_full' | yes |
 | characters/models/core/human_url_block.py:32 | f'characters:{cls.get_gameline_for_url(cls.gameline)}create:{cls.type}' | yes |
+| characters/views/core/__init__.py:398 | resolve_object_type_url('char', type_name, 'create', request.POST.get('gameline')) | no (too broad) |
 | core/create_redirects.py:31 | route_name | no (too broad) |
 | core/middleware/auth_error_handler.py:38 | login_url | no (too broad) |
 | core/models.py:161 | f'{self.url_namespace}:{name}' | no (too broad) |
 | core/models.py:170 | f'{self.url_namespace}:update:{name}' | no (too broad) |
 | core/models.py:180 | f'{cls.url_namespace}:create:{name}' | no (too broad) |
 | core/views/public_object.py:81 | route | no (too broad) |
+| game/views.py:791 | request.META.get('HTTP_REFERER', 'game:week:list') | no (too broad) |
 | items/models/core/weapon.py:33 | f'items:update:{self.type}' | yes |
 | items/models/core/weapon.py:37 | f'items:create:{cls.type}' | yes |
+| items/views/core/__init__.py:206 | resolve_object_type_url('obj', item_type, 'create' if action == 'create' else 'list', request.POST.get('gameline')) | no (too broad) |
+| locations/views/core/__init__.py:202 | resolve_object_type_url('loc', loc_type, 'create' if action == 'create' else 'list', request.POST.get('gameline')) | no (too broad) |
 
 ## views
 

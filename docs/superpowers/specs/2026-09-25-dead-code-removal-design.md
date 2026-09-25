@@ -221,12 +221,19 @@ The audit's "Confirmed" items 1–8 were re-checked and hold, with these additio
 - **`populate_db/` and management commands.** None import deleted code. The seeded `ObjectType` rows are untouched; the index 404s are deferred except the three fixed in D9.
 - **Tooling.** `scripts/build_route_policy_manifest.py` and `scripts/inventory_authorization_routes.py` are updated in the same PR as any class they name.
 - **Per-PR checks** (the plan lists the exact commands):
-  1. the full test suite passes;
+  1. the full test suite shows no new failures against the baseline below;
   2. `python manage.py check` passes;
   3. the route-policy test passes;
   4. `scripts/find_dead_code.py` has fewer rows in the affected section, and none reappear;
   5. the resolver route count changes exactly by the routes the PR deliberately adds or removes, which catches rule 3's silent URL loss.
-- **Test baseline.** The full suite is recorded on `main` before D1. Parallel runs currently crash in Django's runner with an unpicklable traceback, so the baseline and the per-PR checks run serially until that is fixed.
+- **Test baseline.** No GitHub workflow runs the test suite (only the Claude review jobs), so every PR runs it locally. Parallel runs crash in Django's runner with an unpicklable traceback, so runs are serial: `python manage.py test`, about 40 minutes.
+  - **Baseline on `main` at `093e3cc`:** 7,104 tests, 49 skipped, **5 failing**. None of them involves code this design touches:
+    - `characters.tests.views.vampire.test_vampire_chargen.TestVampireBasicsView.test_basics_view_creates_vampire` (200 ≠ 302);
+    - `…test_ghoul_chargen.TestGhoulBasicsView.test_basics_view_creates_ghoul` (200 ≠ 302);
+    - `…test_vtmhuman.TestVtMHumanBasicsView.test_basics_view_creates_vtmhuman` (200 ≠ 302);
+    - `characters.tests.views.wraith.test_circle.TestCircleCreateView.test_create_circle_successfully` (403 ≠ 302);
+    - `characters.tests.views.mage.test_companion_comprehensive.TestCompanionCreationWorkflow.test_other_player_cannot_attach_companion_to_mage` (200 ≠ 403).
+  - **Rule:** every PR must leave exactly these 5 failing and add none; each PR description lists the failing set. Fixing them is outside Step 1. They look like follow-ups to Step 0's create-form scoping and are reported to the owner separately.
 
 ## Rollout (combined PR order)
 
@@ -272,4 +279,4 @@ These are known gaps, not deletions. Each owning step gets these rows.
 2. Every **Recover** row works, and a test covers it.
 3. Every **Deferred** and **Keep** row is untouched and appears in the deferred register or the appendix.
 4. The logout and Demesne pages work, and `test_routed_templates.py` fails on any new missing template.
-5. The full suite, `manage.py check` and the route-policy test pass after every PR, and route counts change only as intended.
+5. After every PR, the full suite shows no failures beyond the 5 baseline ones, `manage.py check` and the route-policy test pass, and route counts change only as intended.

@@ -247,7 +247,15 @@ def find_computed(node, out, ctx):
         if kind:
             out.append((kind, node.lineno, parts, ast.unparse(node)))
         return
-    if ctx == "url" and isinstance(node, ast.Name | ast.Attribute | ast.Subscript):
+    if ctx == "url" and (
+        isinstance(node, ast.Name | ast.Attribute | ast.Subscript)
+        # A nested reverse() or a model get_*url() is resolved elsewhere.
+        or (
+            isinstance(node, ast.Call)
+            and call_name(node) not in CALL_CTX
+            and not re.fullmatch(r"get_\w*url", call_name(node) or "")
+        )
+    ):
         out.append(("url", node.lineno, [None], ast.unparse(node)))
     if isinstance(node, ast.Call):
         name = call_name(node)
@@ -260,10 +268,15 @@ def find_computed(node, out, ctx):
                 index == 0 and arg_ctx == "url" and (name != "redirect" or builds_string)
             ) or (arg_ctx == "template" and index == (1 if name == "render" else 0))
             find_computed(child, out, arg_ctx if wanted else None)
-        for child in [node.func, *node.keywords]:
-            find_computed(
-                child, out, "template" if getattr(child, "arg", "") == "template_name" else None
-            )
+        find_computed(node.func, out, None)
+        for keyword in node.keywords:
+            if keyword.arg == "template_name":
+                kw_ctx = "template"
+            elif keyword.arg == "viewname" and arg_ctx == "url":
+                kw_ctx = "url"
+            else:
+                kw_ctx = None
+            find_computed(keyword.value, out, kw_ctx)
         return
     if isinstance(node, ast.Assign) and any(
         getattr(t, "id", "") == "template_name" for t in node.targets
