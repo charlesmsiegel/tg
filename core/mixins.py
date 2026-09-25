@@ -79,7 +79,9 @@ class PermissionRequiredMixin(ObjectCachingMixin):
         """Expose full-read capability to legacy detail templates."""
         context = super().get_context_data(**kwargs)
         context["is_approved_user"] = PermissionManager.user_has_permission(
-            self.request.user, self.get_object(), Permission.VIEW_FULL,
+            self.request.user,
+            self.get_object(),
+            Permission.VIEW_FULL,
             request=self.request,
         )
         return context
@@ -198,9 +200,7 @@ class OwnerRequiredMixin(ObjectCachingMixin):
         """Check if user is owner before dispatching."""
         # URL-based ownership check
         if self.owner_check_model is not None:
-            obj = get_object_or_404(
-                self.owner_check_model, pk=kwargs.get(self.owner_check_kwarg)
-            )
+            obj = get_object_or_404(self.owner_check_model, pk=kwargs.get(self.owner_check_kwarg))
             setattr(self, self.owner_check_attr, obj)
 
             # Check ownership
@@ -376,6 +376,18 @@ class ErrorMessageMixin:
         return response
 
 
+class ScopedCreationFormMixin:
+    """Limit creation forms to chronicles the current user can access."""
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if "chronicle" in form.fields:
+            from game.security import readable_chronicles
+
+            form.fields["chronicle"].queryset = readable_chronicles(self.request.user)
+        return form
+
+
 def prepare_created_object(form, request):
     """Bind new core.Model rows to their creator before any form saves them."""
     from core.models import Model
@@ -387,10 +399,16 @@ def prepare_created_object(form, request):
     user = request.user
     if not user.is_authenticated:
         raise PermissionDenied("Login required to create objects")
+    chronicle = getattr(obj, "chronicle", None)
+    if chronicle is not None:
+        from game.security import readable_chronicles
+
+        if not readable_chronicles(user).filter(pk=chronicle.pk).exists():
+            raise PermissionDenied("Cannot create an object in this chronicle")
     gameline = getattr(obj, "gameline", None)
     if not isinstance(gameline, str):
         gameline = obj.get_gameline() if hasattr(obj, "get_gameline") else None
-    roles = PermissionManager.get_scoped_roles(user, obj.chronicle, gameline, request)
+    roles = PermissionManager.get_scoped_roles(user, chronicle, gameline, request)
     shared_allowed = bool(roles & {Role.ADMIN, Role.CHRONICLE_HEAD_ST, Role.CHRONICLE_ST})
     obj.owner = None if shared_allowed and request.POST.get("shared") == "1" else user
     if Role.ADMIN not in roles:
@@ -410,6 +428,7 @@ class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
 
     def form_valid(self, form):
         from django.views.generic import CreateView
+
         if isinstance(self, CreateView):
             prepare_created_object(form, self.request)
         return super().form_valid(form)
@@ -494,13 +513,16 @@ class StorytellerRequiredMixin:
             if model is Chronicle or gameline is None
             else PermissionManager.can_manage_scope(request.user, chronicle, gameline, request)
         )
-        if getattr(model, "__name__", None) == "Scene" and obj is None and request.method in {"GET", "HEAD"}:
+        if (
+            getattr(model, "__name__", None) == "Scene"
+            and obj is None
+            and request.method in {"GET", "HEAD"}
+        ):
             from game.models import STRelationship
 
             allowed = allowed or bool(
-                chronicle and STRelationship.objects.filter(
-                    chronicle=chronicle, user=request.user
-                ).exists()
+                chronicle
+                and STRelationship.objects.filter(chronicle=chronicle, user=request.user).exists()
             )
         if not allowed:
             raise PermissionDenied("Matching chronicle storyteller required")

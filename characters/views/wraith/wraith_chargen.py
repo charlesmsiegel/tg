@@ -1,3 +1,4 @@
+from core.mixins import ScopedCreationFormMixin
 from typing import Any
 
 from django import forms
@@ -35,7 +36,7 @@ from core.mixins import (
 from core.models import Language
 
 
-class WraithBasicsView(LoginRequiredMixin, FormView):
+class WraithBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
     form_class = WraithCreationForm
     template_name = "characters/wraith/wraith/basics.html"
 
@@ -47,8 +48,9 @@ class WraithBasicsView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
@@ -194,6 +196,7 @@ class WraithPassionsView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVie
         if obj.has_passions():
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -276,6 +279,7 @@ class WraithFettersView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormView
         if obj.has_fetters():
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -435,6 +439,7 @@ class WraithLanguagesView(SpendFreebiesPermissionMixin, SpecialUserMixin, FormVi
         if "Language" not in obj.merits_and_flaws.values_list("name", flat=True):
             if request.method != "POST":
                 from django.shortcuts import render
+
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             english, _ = Language.objects.get_or_create(name="English")
             obj.languages.add(english)

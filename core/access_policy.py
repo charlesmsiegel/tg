@@ -7,8 +7,13 @@ from core.permissions import Permission, PermissionManager
 from core.route_policy_manifest import VIEW_POLICIES
 
 PROJECT_PREFIXES = (
-    "accounts.", "characters.", "core.", "game.", "items.",
-    "locations.", "widgets.",
+    "accounts.",
+    "characters.",
+    "core.",
+    "game.",
+    "items.",
+    "locations.",
+    "widgets.",
 )
 
 
@@ -50,9 +55,9 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
             return JsonResponse({"error": "Authentication required"}, status=401)
         return None
     if policy == "OBJECT_LIST":
-        if not (request.user.is_authenticated and (
-            request.user.is_staff or request.user.is_superuser
-        )) and request.method in {"GET", "HEAD"}:
+        if not (
+            request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+        ) and request.method in {"GET", "HEAD"}:
             from core.views.public_object import render_public_object_list
 
             return render_public_object_list(request, view.model)
@@ -65,8 +70,10 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
         object_id = request.GET.get("object")
         if object_id:
             if (
-                len(object_id) > 20 or not object_id.isascii()
-                or not object_id.isdecimal() or int(object_id) < 1
+                len(object_id) > 20
+                or not object_id.isascii()
+                or not object_id.isdecimal()
+                or int(object_id) < 1
             ):
                 raise Http404("Object not found")
             from characters.models.core import CharacterModel
@@ -78,9 +85,11 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
                 raise Http404("Object not found")
         return None
     if policy in {"LOGIN", "ACCOUNT", "GAME", "OBJECT_CREATE"}:
-        if policy == "GAME" and route_name(view) in {
-            "game.views.SceneDetailView", "game.views.SceneListView"
-        } and request.method in {"GET", "HEAD"}:
+        if (
+            policy == "GAME"
+            and route_name(view) in {"game.views.SceneDetailView", "game.views.SceneListView"}
+            and request.method in {"GET", "HEAD"}
+        ):
             return None
         if not request.user.is_authenticated:
             return HttpResponse("Login required", status=401, content_type="text/plain")
@@ -88,9 +97,9 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
     if policy == "STAFF_WRITE":
         if not request.user.is_authenticated:
             return HttpResponse("Login required", status=401, content_type="text/plain")
-        if not (request.user.is_authenticated and (
-            request.user.is_staff or request.user.is_superuser
-        )):
+        if not (
+            request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+        ):
             raise PermissionDenied("Staff permission required")
         return None
 
@@ -124,9 +133,11 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
     if policy in {"OBJECT_WRITE", "OBJECT_ACTION"}:
         from core.models import CharacterTemplate
 
-        if isinstance(obj, CharacterTemplate) and obj.is_official and not (
-            PermissionManager.user_has_scoped_editor_role(
-                request.user, obj, request=request
+        if (
+            isinstance(obj, CharacterTemplate)
+            and obj.is_official
+            and not (
+                PermissionManager.user_has_scoped_editor_role(request.user, obj, request=request)
             )
         ):
             raise PermissionDenied("Official templates require a scoped editor")
@@ -138,10 +149,29 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
             request.user.is_staff or request.user.is_superuser
         ):
             forbidden = {
-                "owner", "chronicle", "gameline", "status", "npc", "xp",
-                "freebies_approved", "approved", "approved_by",
+                "owner",
+                "chronicle",
+                "gameline",
+                "status",
+                "npc",
+                "xp",
+                "freebies_approved",
+                "approved",
+                "approved_by",
             }
-            for field in forbidden.intersection(request.POST):
+            submitted = forbidden.intersection(request.POST)
+            if policy == "OBJECT_WRITE":
+                form_class = getattr(view, "form_class", None)
+                form_fields = set(getattr(form_class, "base_fields", {}))
+                form_fields.update(getattr(view, "fields", ()) or ())
+                submitted |= {
+                    field
+                    for field in {"npc", "freebies_approved"}
+                    if field in form_fields
+                    and field not in request.POST
+                    and bool(getattr(obj, field, False))
+                }
+            for field in submitted:
                 posted = request.POST.get(field, "")
                 if field in {"owner", "chronicle", "approved_by"}:
                     current_id = getattr(obj, f"{field}_id", None)

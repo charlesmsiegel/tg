@@ -175,12 +175,20 @@ class LocationIndexView(View):
     }
 
     def get(self, request, *args, **kwargs):
-        if not (request.user.is_authenticated and (
-            request.user.is_staff or request.user.is_superuser
-        )):
+        if not (
+            request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+        ):
             from core.views.public_object import render_public_object_list
 
-            return render_public_object_list(request, LocationModel)
+            return render_public_object_list(
+                request,
+                LocationModel,
+                (
+                    {"location_form": LocationCreationForm(user=request.user)}
+                    if request.user.is_authenticated
+                    else None
+                ),
+            )
         context = self.get_context()
         return render(request, "locations/index.html", context)
 
@@ -194,7 +202,9 @@ class LocationIndexView(View):
                 return HttpResponseBadRequest("Login required")
         return redirect(
             resolve_object_type_url(
-                "loc", loc_type, "create" if action == "create" else "list",
+                "loc",
+                loc_type,
+                "create" if action == "create" else "list",
                 request.POST.get("gameline"),
             )
         )
@@ -221,6 +231,7 @@ class LocationIndexView(View):
             context["header"] = "wod_heading"
 
         return context
+
 
 __all__ = [
     "Http404",

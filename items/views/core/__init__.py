@@ -179,12 +179,20 @@ class ItemIndexView(View):
     }
 
     def get(self, request, *args, **kwargs):
-        if not (request.user.is_authenticated and (
-            request.user.is_staff or request.user.is_superuser
-        )):
+        if not (
+            request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+        ):
             from core.views.public_object import render_public_object_list
 
-            return render_public_object_list(request, ItemModel)
+            return render_public_object_list(
+                request,
+                ItemModel,
+                (
+                    {"item_form": ItemCreationForm(user=request.user)}
+                    if request.user.is_authenticated
+                    else None
+                ),
+            )
         context = self.get_context()
         return render(request, "items/index.html", context)
 
@@ -198,7 +206,9 @@ class ItemIndexView(View):
                 return HttpResponseBadRequest("Login required")
         return redirect(
             resolve_object_type_url(
-                "obj", item_type, "create" if action == "create" else "list",
+                "obj",
+                item_type,
+                "create" if action == "create" else "list",
                 request.POST.get("gameline"),
             )
         )
@@ -234,6 +244,7 @@ class ItemIndexView(View):
             context["header"] = "wod_heading"
 
         return context
+
 
 __all__ = [
     "defaultdict",

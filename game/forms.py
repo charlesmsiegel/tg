@@ -54,11 +54,13 @@ class SceneCreationForm(forms.Form):
         # Filter gameline choices to only those with STs for this chronicle
         from game.models import STRelationship
 
-        if user is not None and (user.is_staff or user.is_superuser or chronicle.head_st_id == user.pk):
+        if user is not None and (
+            user.is_staff or user.is_superuser or chronicle.head_st_id == user.pk
+        ):
             return
-        st_gamelines = STRelationship.objects.filter(
-            chronicle=chronicle, user=user
-        ).values_list("gameline__name", flat=True)
+        st_gamelines = STRelationship.objects.filter(chronicle=chronicle, user=user).values_list(
+            "gameline__name", flat=True
+        )
         allowed_codes = {
             self.GAMELINE_NAME_TO_CODE.get(name)
             for name in st_gamelines
@@ -162,12 +164,13 @@ class ChronicleObjectCreationFormBase(ChainedSelectMixin, forms.Form):
             allowed_gamelines = {obj.gameline for obj in all_types}
             allowed_type_names = {obj.name for obj in all_types}
         else:
-            assigned = STRelationship.objects.filter(
-                chronicle=chronicle, user=user
-            ).values_list("gameline__name", flat=True)
+            assigned = STRelationship.objects.filter(chronicle=chronicle, user=user).values_list(
+                "gameline__name", flat=True
+            )
             assigned_codes = {
                 self.GAMELINE_NAME_TO_CODE[name]
-                for name in assigned if name in self.GAMELINE_NAME_TO_CODE
+                for name in assigned
+                if name in self.GAMELINE_NAME_TO_CODE
             }
             if assigned_codes:
                 allowed_gamelines = assigned_codes
@@ -378,9 +381,7 @@ class AddCharForm(forms.Form):
         queryset = CharacterModel.objects.filter(chronicle=scene.chronicle)
         if not PermissionManager.can_manage_scope(user, scene.chronicle, scene.gameline):
             queryset = queryset.filter(owner=user)
-        self.fields["character_to_add"].queryset = queryset.exclude(
-            pk__in=scene.characters.all()
-        )
+        self.fields["character_to_add"].queryset = queryset.exclude(pk__in=scene.characters.all())
 
 
 class PostForm(forms.Form):
@@ -513,9 +514,13 @@ class WeeklyXPRequestForm(forms.ModelForm):
         xp_data = {
             "finishing": self.cleaned_data["finishing"],
             "learning": self.cleaned_data["learning"],
+            "learning_scene": self.cleaned_data["learning_scene"],
             "rp": self.cleaned_data["rp"],
+            "rp_scene": self.cleaned_data["rp_scene"],
             "focus": self.cleaned_data["focus"],
+            "focus_scene": self.cleaned_data["focus_scene"],
             "standingout": self.cleaned_data["standingout"],
+            "standingout_scene": self.cleaned_data["standingout_scene"],
         }
         self.instance.approve(xp_data=xp_data)
         return self.instance
@@ -638,8 +643,13 @@ class SceneForm(forms.ModelForm):
     class Meta:
         model = Scene
         fields = [
-            "name", "location", "date_of_scene", "gameline", "visibility",
-            "finished", "xp_given",
+            "name",
+            "location",
+            "date_of_scene",
+            "gameline",
+            "visibility",
+            "finished",
+            "xp_given",
         ]
         widgets = {
             "date_of_scene": forms.DateInput(attrs={"type": "date"}),

@@ -1,3 +1,4 @@
+from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -213,7 +214,7 @@ class LoadCompanionValuesView(SimpleValuesView):
         return ratings
 
 
-class CompanionBasicsView(LoginRequiredMixin, CreateView):
+class CompanionBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, CreateView):
     model = Companion
     fields = [
         "name",
@@ -231,8 +232,9 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from core.permissions import PermissionManager
-        context["storyteller"] = PermissionManager.user_has_scoped_editor_role(
-            self.request.user, context.get("object"), request=self.request
+
+        context["storyteller"] = PermissionManager.user_can_manage_creation(
+            self.request.user, context["form"], request=self.request
         )
         return context
 
@@ -256,7 +258,9 @@ class CompanionBasicsView(LoginRequiredMixin, CreateView):
             or not (
                 linked_character.owner_id == self.request.user.pk
                 or PermissionManager.user_has_permission(
-                    self.request.user, linked_character, Permission.EDIT_FULL,
+                    self.request.user,
+                    linked_character,
+                    Permission.EDIT_FULL,
                     request=self.request,
                 )
             )
