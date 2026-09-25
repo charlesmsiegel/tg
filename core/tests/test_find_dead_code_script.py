@@ -26,8 +26,12 @@ class FindDeadCodeScriptTest(SimpleTestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        # Import or parse failures would silently shrink the scan.
-        self.assertEqual(result.stderr, "")
+        # The script reports import or parse failures as "warning:" lines; those
+        # would silently shrink the scan. Library warnings on stderr are fine.
+        script_warnings = [
+            line for line in result.stderr.splitlines() if line.startswith("warning:")
+        ]
+        self.assertEqual(script_warnings, [])
         for section in SECTIONS:
             self.assertIn(f"## {section}", result.stdout)
         self.assertIn("**Summary:**", result.stdout)
