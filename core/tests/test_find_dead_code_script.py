@@ -26,6 +26,8 @@ class FindDeadCodeScriptTest(SimpleTestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
+        # Import or parse failures would silently shrink the scan.
+        self.assertEqual(result.stderr, "")
         for section in SECTIONS:
             self.assertIn(f"## {section}", result.stdout)
         self.assertIn("**Summary:**", result.stdout)
