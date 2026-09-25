@@ -447,7 +447,7 @@ class SceneQuerySet(models.QuerySet):
 
     def for_user_chronicles(self, user):
         """Scenes in chronicles the user staffs or heads."""
-        from game.security import staffed_chronicles
+        from game.security import staffed_chronicles  # deferred: circular import
 
         scope = models.Q(chronicle__in=staffed_chronicles(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
@@ -467,7 +467,9 @@ class Scene(models.Model):
 
     name = models.CharField(max_length=100, default="")
     visibility = models.CharField(
-        max_length=12, choices=Visibility.choices, default=Visibility.CHRONICLE,
+        max_length=12,
+        choices=Visibility.choices,
+        default=Visibility.CHRONICLE,
         db_index=True,
     )
     chronicle = models.ForeignKey("game.Chronicle", on_delete=models.SET_NULL, null=True)
@@ -550,9 +552,7 @@ class Scene(models.Model):
             character is not None
             and self.waiting_for_st
             and character.owner
-            and PermissionManager.can_manage_scope(
-                character.owner, self.chronicle, self.gameline
-            )
+            and PermissionManager.can_manage_scope(character.owner, self.chronicle, self.gameline)
         ):
             self.waiting_for_st = False
             self.save()
@@ -594,8 +594,7 @@ class Scene(models.Model):
 
         # Convert bool dict to XP amounts (1 XP per character if True)
         character_xp_map = {
-            char: 1 if should_award else 0
-            for char, should_award in character_awards.items()
+            char: 1 if should_award else 0 for char, should_award in character_awards.items()
         }
 
         return award_xp_atomically(Scene, self.pk, character_xp_map)

@@ -1,5 +1,6 @@
 """Tests for ParadoxRealm views."""
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -23,15 +24,17 @@ class TestParadoxRealmListView(TestCase):
 
     def test_list_view_template(self):
         """Test list view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get("/locations/mage/paradox_realm/")
         self.assertTemplateUsed(response, "locations/mage/paradox_realm/list.html")
 
     def test_list_view_content(self):
         """Test list view shows realms."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         for i in range(5):
             ParadoxRealm.objects.create(name=f"Test Realm {i}")
         response = self.client.get("/locations/mage/paradox_realm/")
@@ -40,8 +43,9 @@ class TestParadoxRealmListView(TestCase):
 
     def test_list_view_ordering(self):
         """Test list view orders by name."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         ParadoxRealm.objects.create(name="Zeta Realm")
         ParadoxRealm.objects.create(name="Alpha Realm")
         ParadoxRealm.objects.create(name="Beta Realm")

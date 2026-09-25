@@ -1,6 +1,6 @@
-from core.mixins import ScopedCreationFormMixin
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -34,13 +34,15 @@ from core.forms.language import HumanLanguageForm
 from core.mixins import (
     EditPermissionMixin,
     MessageMixin,
+    ScopedCreationFormMixin,
     SimpleValuesView,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     XPApprovalMixin,
+    prepare_created_object,
 )
 from core.models import Language
-from core.permissions import PermissionManager
+from core.permissions import Permission, PermissionManager
 from game.models import ObjectType
 from items.forms.mage.wonder import WonderForm
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm
@@ -231,7 +233,6 @@ class CompanionBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, CreateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from core.permissions import PermissionManager
 
         context["storyteller"] = PermissionManager.user_can_manage_creation(
             self.request.user, context["form"], request=self.request
@@ -248,10 +249,6 @@ class CompanionBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, CreateVie
         return form
 
     def form_valid(self, form):
-        from core.mixins import prepare_created_object
-        from core.permissions import Permission, PermissionManager
-        from django.core.exceptions import PermissionDenied
-
         linked_character = form.instance.companion_of
         if linked_character is not None and (
             linked_character.chronicle_id != form.instance.chronicle_id

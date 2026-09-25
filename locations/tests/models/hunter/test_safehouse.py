@@ -1,5 +1,6 @@
 """Tests for Safehouse model."""
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -211,8 +212,9 @@ class TestSafehouseViews(TestCase):
 
     def test_safehouse_list_view(self):
         """Test safehouse list view."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         Safehouse.objects.create(name="Safehouse 1")
         Safehouse.objects.create(name="Safehouse 2")
         response = self.client.get("/locations/hunter/safehouse/")

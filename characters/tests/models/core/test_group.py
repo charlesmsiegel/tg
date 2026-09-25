@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -33,20 +34,23 @@ class TestGroupCreateView(TestCase):
         self.url = Group.get_creation_url()
 
     def test_create_view_status_code(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/group/form.html")
 
     def test_create_view_successful_post(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Group.objects.count(), 1)
@@ -61,20 +65,23 @@ class TestGroupUpdateView(TestCase):
         self.url = self.group.get_update_url()
 
     def test_update_view_status_code(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "characters/core/group/form.html")
 
     def test_update_view_successful_post(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.post(self.url, data=self.valid_data)
         self.assertEqual(response.status_code, 302)
         self.group.refresh_from_db()

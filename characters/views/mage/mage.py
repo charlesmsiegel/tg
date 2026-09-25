@@ -1,6 +1,7 @@
-from core.mixins import ScopedCreationFormMixin
 import logging
 from typing import Any
+
+from core.mixins import ScopedCreationFormMixin
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +36,13 @@ def _mage_practice_xp_cost(character, practice):
     return get_xp_cost("practice") * current
 
 
+import re
+
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
@@ -84,9 +88,10 @@ from core.mixins import (
     SimpleValuesView,
     SpecialUserMixin,
 )
-from core.permissions import PermissionManager
+from core.permissions import Permission, PermissionManager
 from core.widgets import AutocompleteTextInput
-from game.models import ObjectType
+from game.models import ObjectType, XPSpendingRequest
+from game.spending_approval import SpendingDecisionError, decide_spending_request
 from items.forms.mage.wonder import WonderForm
 from items.models.core.item import ItemModel
 from locations.forms.mage.chantry import ChantrySelectOrCreateForm
@@ -268,13 +273,6 @@ class MageDetailView(HumanDetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         if "Approve" in request.POST.values() or "Reject" in request.POST.values():
-            import re
-
-            from django.http import HttpResponseBadRequest
-
-            from game.models import XPSpendingRequest
-            from game.spending_approval import SpendingDecisionError, decide_spending_request
-
             buttons = [
                 (key, value)
                 for key, value in request.POST.items()
@@ -299,9 +297,6 @@ class MageDetailView(HumanDetailView):
             else:
                 messages.success(request, result.message)
             return redirect(reverse("characters:character", kwargs={"pk": self.object.pk}))
-        from django.core.exceptions import PermissionDenied
-
-        from core.permissions import Permission, PermissionManager
 
         if "spend_xp" in request.POST and not PermissionManager.user_has_permission(
             request.user, self.object, Permission.SPEND_XP
@@ -617,7 +612,6 @@ class MageBasicsView(ScopedCreationFormMixin, LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from core.permissions import PermissionManager
 
         context["storyteller"] = PermissionManager.user_can_manage_creation(
             self.request.user, context["form"], request=self.request

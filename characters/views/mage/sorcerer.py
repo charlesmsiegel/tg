@@ -1,11 +1,10 @@
-from core.mixins import ScopedCreationFormMixin
 from typing import Any
 
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views import View
 from django.views.generic import CreateView, FormView, UpdateView
 
@@ -50,6 +49,7 @@ from core.mixins import (
     EditPermissionMixin,
     JsonListView,
     MessageMixin,
+    ScopedCreationFormMixin,
     SpecialUserMixin,
     SpendFreebiesPermissionMixin,
     XPApprovalMixin,
@@ -74,7 +74,6 @@ class SorcererBasicsView(ScopedCreationFormMixin, MessageMixin, LoginRequiredMix
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from core.permissions import PermissionManager
 
         context["storyteller"] = PermissionManager.user_can_manage_creation(
             self.request.user, context["form"], request=self.request
@@ -278,8 +277,6 @@ class SorcererPsychicView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type == "hedge_mage":
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -330,8 +327,6 @@ class SorcererPathView(SpecialUserMixin, MultipleFormsetsMixin, UpdateView):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type != "hedge_mage":
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -386,8 +381,6 @@ class SorcererRitualView(SpendFreebiesPermissionMixin, FormView):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if obj.sorcerer_type != "hedge_mage":
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()
@@ -827,8 +820,6 @@ class SorcererArtifactView(EditPermissionMixin, FormView):
         obj = get_object_or_404(Sorcerer, pk=kwargs.get("pk"))
         if not obj.backgrounds.filter(bg__property_name="artifact", complete=False).exists():
             if request.method != "POST":
-                from django.shortcuts import render
-
                 return render(request, "characters/core/skip_background.html", {"object": obj})
             obj.creation_status += 1
             obj.save()

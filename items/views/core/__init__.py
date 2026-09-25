@@ -7,7 +7,7 @@ from django.views import View
 from core.create_redirects import resolve_object_type_url
 from core.utils import get_gameline_name
 from core.views.generic import DictView
-from core.views.public_object import PublicObjectDetailView
+from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle, ObjectType
 from items.forms.core.item_creation import ItemCreationForm
 
@@ -182,8 +182,6 @@ class ItemIndexView(View):
         if not (
             request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
         ):
-            from core.views.public_object import render_public_object_list
-
             return render_public_object_list(
                 request,
                 ItemModel,

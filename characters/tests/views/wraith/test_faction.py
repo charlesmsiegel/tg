@@ -3,6 +3,7 @@
 WraithFaction is a reference model (public game data) and should be accessible without login.
 """
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -95,16 +96,18 @@ class TestWraithFactionCreateView(TestCase):
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:faction")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/faction/form.html")
 
     def test_create_faction_successfully(self):
         """Test creating a faction successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:faction")
         data = {
             "name": "New Legion",
@@ -139,16 +142,18 @@ class TestWraithFactionUpdateView(TestCase):
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.faction.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/faction/form.html")
 
     def test_update_faction_successfully(self):
         """Test updating a faction successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.faction.get_update_url()
         data = {
             "name": "Updated Legion",
@@ -175,8 +180,9 @@ class TestWraithFaction404Handling(TestCase):
 
     def test_faction_update_returns_404_for_invalid_pk(self):
         """Test that faction update returns 404 for non-existent faction."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(
             reverse("characters:wraith:update:faction", kwargs={"pk": 99999})
         )

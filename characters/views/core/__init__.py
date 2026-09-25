@@ -132,7 +132,7 @@ from characters.models.wraith.wraith import Wraith
 from characters.models.wraith.wtohuman import WtOHuman
 from core.create_redirects import resolve_object_type_url
 from core.views.generic import DictView
-from core.views.public_object import PublicObjectDetailView
+from core.views.public_object import PublicObjectDetailView, render_public_object_list
 from game.models import Chronicle
 
 from .group import GroupDetailView
@@ -243,11 +243,9 @@ class CharacterIndexView(ListView):
     template_name = "characters/index.html"
 
     def get(self, request, *args, **kwargs):
-        if not (request.user.is_authenticated and (
-            request.user.is_staff or request.user.is_superuser
-        )):
-            from core.views.public_object import render_public_object_list
-
+        if not (
+            request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+        ):
             forms = {}
             if request.user.is_authenticated:
                 forms = {
@@ -393,15 +391,11 @@ class CharacterIndexView(ListView):
             return HttpResponseBadRequest("Invalid character selection")
         if not request.user.is_authenticated:
             return HttpResponseBadRequest("Login required")
-        type_name = request.POST.get(
-            "group_type" if action == "create_group" else "char_type"
-        )
+        type_name = request.POST.get("group_type" if action == "create_group" else "char_type")
         if not type_name:
             return HttpResponseBadRequest("Missing character type")
         return redirect(
-            resolve_object_type_url(
-                "char", type_name, "create", request.POST.get("gameline")
-            )
+            resolve_object_type_url("char", type_name, "create", request.POST.get("gameline"))
         )
 
     def get_context_data(self, **kwargs):
@@ -505,6 +499,7 @@ class NPCCharacterIndex(ListView):
         context["title"] = "NPCs"
         context["header"] = "wod_heading"
         return context
+
 
 __all__ = [
     "GroupDetailView",

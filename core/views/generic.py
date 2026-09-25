@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -57,9 +58,13 @@ class DictView(View):
     def handle_request(self, request, *args, **kwargs):
         obj = self.get_object(kwargs["pk"])
         is_read = request.method in {"GET", "HEAD"}
-        can_view_full = PermissionManager.user_has_permission(
-            request.user, obj, Permission.VIEW_FULL, request=request
-        ) if (self.protected_object or self.chargen_router) else False
+        can_view_full = (
+            PermissionManager.user_has_permission(
+                request.user, obj, Permission.VIEW_FULL, request=request
+            )
+            if (self.protected_object or self.chargen_router)
+            else False
+        )
 
         if self.protected_object and not can_view_full:
             if is_read and self.public_view_class is not None:
@@ -67,7 +72,6 @@ class DictView(View):
                 return self.public_view_class.as_view(model_class=self.model_class)(
                     request, *args, **kwargs
                 )
-            from django.http import Http404
 
             raise Http404("Object not found")
 
@@ -78,7 +82,6 @@ class DictView(View):
             if not can_edit:
                 if is_read and can_view_full:
                     return self.get_default_redirect(request, *args, subject=obj, **kwargs)
-                from django.http import Http404
 
                 raise Http404("Object not found")
 
@@ -106,9 +109,7 @@ class DictView(View):
         if isinstance(self.default_redirect, str):
             return redirect(self.default_redirect)
         elif callable(self.default_redirect):
-            denial = authorize_route(
-                request, self.default_redirect, args, kwargs, subject=subject
-            )
+            denial = authorize_route(request, self.default_redirect, args, kwargs, subject=subject)
             if denial is not None:
                 return denial
             return self.default_redirect.as_view()(request, *args, **kwargs)

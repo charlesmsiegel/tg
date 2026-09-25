@@ -15,6 +15,7 @@ from characters.models.core.character import Character
 from characters.models.mage.mage import Mage
 from characters.models.mage.rote import Rote
 from game.models import Journal, Scene, Story, STRelationship, Week, WeeklyXPRequest
+from game.security import filter_private_records, filter_scenes, staffed_chronicles
 from items.models.core.item import ItemModel
 from locations.models.core.location import LocationModel
 
@@ -86,7 +87,8 @@ class ProfileDashboard:
 
     def rotes_to_approve(self):
         rotes = (
-            Rote.objects.for_user_chronicles(self.profile.user).filter(
+            Rote.objects.for_user_chronicles(self.profile.user)
+            .filter(
                 status="Sub",
             )
             .select_related("chronicle")
@@ -103,9 +105,13 @@ class ProfileDashboard:
         return to_approve
 
     def freebies_to_approve(self):
-        return Character.objects.for_user_chronicles(self.profile.user).filter(
-            freebies_approved=False,
-        ).at_freebie_step()
+        return (
+            Character.objects.for_user_chronicles(self.profile.user)
+            .filter(
+                freebies_approved=False,
+            )
+            .at_freebie_step()
+        )
 
     def character_images_to_approve(self):
         return _pending_image(Character, self.profile.user)
@@ -117,8 +123,6 @@ class ProfileDashboard:
         return _pending_image(ItemModel, self.profile.user)
 
     def get_updated_journals(self):
-        from game.security import filter_private_records
-
         return filter_private_records(
             Journal.objects.filter(entries__st_message="").select_related("character"),
             self.profile.user,
@@ -169,20 +173,19 @@ class ProfileDashboard:
         return [(char_map[character], week_map[week]) for character, week in result_pairs]
 
     def xp_spend_requests(self):
-        from game.security import staffed_chronicles
-
         return Character.objects.filter(
             xp_spendings__approved="Pending",
             chronicle__in=staffed_chronicles(self.profile.user),
         ).distinct()
 
     def unread_scenes(self):
-        from game.security import filter_scenes
-
-        return filter_scenes(Scene.objects.filter(
-            user_read_statuses__user=self.profile.user,
-            user_read_statuses__read=False,
-        ), self.profile.user).distinct()
+        return filter_scenes(
+            Scene.objects.filter(
+                user_read_statuses__user=self.profile.user,
+                user_read_statuses__read=False,
+            ),
+            self.profile.user,
+        ).distinct()
 
     def notification_context(self) -> dict[str, object]:
         """Return the profile's positive notification counts and their total."""
@@ -238,12 +241,12 @@ class ProfileDashboard:
             "Item Images to Approve",
             self.item_images_to_approve().count(),
         )
-        from game.security import filter_scenes, staffed_chronicles
 
         waiting = filter_scenes(
             Scene.objects.waiting_for_st().filter(
                 chronicle__in=staffed_chronicles(self.profile.user)
-            ), self.profile.user
+            ),
+            self.profile.user,
         )
         count += _add_count(breakdown, "Scenes Needing Attention", waiting.count())
         count += _add_count(breakdown, "Updated Journals", self.get_updated_journals().count())

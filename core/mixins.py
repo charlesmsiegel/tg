@@ -7,13 +7,21 @@ This module consolidates all view mixins used throughout the application:
 - User verification mixins: For checking special user status
 """
 
+import re
+
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.views.generic import CreateView
 
-from core.permissions import Permission, PermissionManager, VisibilityTier
+from characters.models.core import CharacterModel
+from core.models import Model
+from core.permissions import Permission, PermissionManager, Role, VisibilityTier
+from game.models import Chronicle, STRelationship
+from game.security import readable_chronicles
+from game.spending_approval import SpendingDecisionError, decide_spending_request
 
 
 class ObjectCachingMixin:
@@ -382,17 +390,12 @@ class ScopedCreationFormMixin:
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         if "chronicle" in form.fields:
-            from game.security import readable_chronicles
-
             form.fields["chronicle"].queryset = readable_chronicles(self.request.user)
         return form
 
 
 def prepare_created_object(form, request):
     """Bind new core.Model rows to their creator before any form saves them."""
-    from core.models import Model
-    from core.permissions import Role
-
     obj = getattr(form, "instance", None)
     if not isinstance(obj, Model) or obj.pk is not None:
         return
@@ -401,8 +404,6 @@ def prepare_created_object(form, request):
         raise PermissionDenied("Login required to create objects")
     chronicle = getattr(obj, "chronicle", None)
     if chronicle is not None:
-        from game.security import readable_chronicles
-
         if not readable_chronicles(user).filter(pk=chronicle.pk).exists():
             raise PermissionDenied("Cannot create an object in this chronicle")
     gameline = getattr(obj, "gameline", None)
@@ -427,8 +428,6 @@ class MessageMixin(SuccessMessageMixin, ErrorMessageMixin):
     """
 
     def form_valid(self, form):
-        from django.views.generic import CreateView
-
         if isinstance(self, CreateView):
             prepare_created_object(form, self.request)
         return super().form_valid(form)
@@ -475,8 +474,6 @@ class StorytellerRequiredMixin:
 
     def dispatch(self, request, *args, **kwargs):
         """Authorize the target scope before any subclass handler runs."""
-        from game.models import Chronicle
-
         if not request.user.is_authenticated:
             raise PermissionDenied("Login required")
         if request.user.is_staff or request.user.is_superuser:
@@ -493,8 +490,6 @@ class StorytellerRequiredMixin:
         if chronicle is None and kwargs.get("chronicle_pk") is not None:
             chronicle = get_object_or_404(Chronicle, pk=kwargs["chronicle_pk"])
         if chronicle is None and kwargs.get("character_pk") is not None:
-            from characters.models.core import CharacterModel
-
             character = get_object_or_404(CharacterModel, pk=kwargs["character_pk"])
             chronicle = character.chronicle
         else:
@@ -518,8 +513,6 @@ class StorytellerRequiredMixin:
             and obj is None
             and request.method in {"GET", "HEAD"}
         ):
-            from game.models import STRelationship
-
             allowed = allowed or bool(
                 chronicle
                 and STRelationship.objects.filter(chronicle=chronicle, user=request.user).exists()
@@ -708,8 +701,6 @@ class ApprovalMixin:
 
     def _parse_request_id(self, request, button_value):
         """Accept exactly one correctly named approval or rejection button."""
-        import re
-
         from django.core.exceptions import ValidationError
 
         matching_keys = [k for k, v in request.POST.items() if v == button_value]
@@ -728,8 +719,6 @@ class ApprovalMixin:
         from django.core.exceptions import ValidationError
         from django.shortcuts import redirect
         from django.urls import reverse
-
-        from game.spending_approval import SpendingDecisionError, decide_spending_request
 
         self.object = self.get_object()
         decision = None

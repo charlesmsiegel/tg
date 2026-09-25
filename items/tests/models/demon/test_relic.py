@@ -1,5 +1,6 @@
 """Tests for Demon Relic model."""
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from items.models.demon.relic import Relic
@@ -151,8 +152,9 @@ class TestRelicDetailView(TestCase):
 
     def test_detail_view_template(self):
         """Test detail view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/demon/relic/detail.html")
 
@@ -165,15 +167,17 @@ class TestRelicCreateView(TestCase):
 
     def test_create_view_status_code(self):
         """Test create view returns 200."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_create_view_template(self):
         """Test create view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/demon/relic/form.html")
 
@@ -187,14 +191,16 @@ class TestRelicUpdateView(TestCase):
 
     def test_update_view_status_code(self):
         """Test update view returns 200."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_update_view_template(self):
         """Test update view uses correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "items/demon/relic/form.html")

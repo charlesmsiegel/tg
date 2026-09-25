@@ -52,7 +52,7 @@ class ModelQuerySet(PolymorphicQuerySet):
 
         Includes polymorphic_ctype for subclass-specific method calls in templates.
         """
-        from game.security import staffed_chronicles
+        from game.security import staffed_chronicles  # deferred: circular import
 
         scope = models.Q(chronicle__in=staffed_chronicles(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):
@@ -81,7 +81,7 @@ class ModelQuerySet(PolymorphicQuerySet):
 
     def for_user_chronicles(self, user):
         """Objects in chronicles the user staffs or heads."""
-        from game.security import staffed_chronicles
+        from game.security import staffed_chronicles  # deferred: circular import
 
         scope = models.Q(chronicle__in=staffed_chronicles(user))
         if user.is_authenticated and (user.is_staff or user.is_superuser):

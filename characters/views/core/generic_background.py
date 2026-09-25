@@ -1,8 +1,8 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import FormView
 
+from characters.forms.core.linked_npc import LinkedNPCForm
 from characters.models.core.human import Human
 from core.mixins import (
     SpendFreebiesPermissionMixin,
@@ -48,7 +48,6 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
     def get_form_kwargs(self):
         """Add obj and npc_role to form kwargs for LinkedNPCForm."""
         kwargs = super().get_form_kwargs()
-        from characters.forms.core.linked_npc import LinkedNPCForm
 
         if issubclass(self.get_form_class(), LinkedNPCForm):
             kwargs["obj"] = self.get_object()
@@ -60,9 +59,14 @@ class GenericBackgroundView(SpendFreebiesPermissionMixin, FormView):
         if not obj.backgrounds.filter(
             bg__property_name=self.background_name, complete=False
         ).exists():
-            return render(request, "characters/core/skip_background.html", {
-                "object": obj, "background_name": self.background_name,
-            })
+            return render(
+                request,
+                "characters/core/skip_background.html",
+                {
+                    "object": obj,
+                    "background_name": self.background_name,
+                },
+            )
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

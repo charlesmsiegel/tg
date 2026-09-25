@@ -3,6 +3,7 @@
 Arcanos is a reference model (public game data) and should be accessible without login.
 """
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -114,16 +115,18 @@ class TestArcanosCreateView(TestCase):
 
     def test_create_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:arcanos")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/arcanos/form.html")
 
     def test_create_arcanos_successfully(self):
         """Test creating an arcanos successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = reverse("characters:wraith:create:arcanos")
         data = {
             "name": "Keening",
@@ -165,16 +168,18 @@ class TestArcanosUpdateView(TestCase):
 
     def test_update_view_uses_correct_template(self):
         """Test that correct template is used."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.arcanos.get_update_url()
         response = self.client.get(url)
         self.assertTemplateUsed(response, "characters/wraith/arcanos/form.html")
 
     def test_update_arcanos_successfully(self):
         """Test updating an arcanos successfully."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         url = self.arcanos.get_update_url()
         data = {
             "name": "Updated Arcanos",
@@ -205,8 +210,9 @@ class TestArcanos404Handling(TestCase):
 
     def test_arcanos_update_returns_404_for_invalid_pk(self):
         """Test that arcanos update returns 404 for non-existent arcanos."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(
             reverse("characters:wraith:update:arcanos", kwargs={"pk": 99999})
         )

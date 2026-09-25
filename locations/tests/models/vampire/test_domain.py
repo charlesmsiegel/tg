@@ -1,5 +1,6 @@
 """Tests for Domain model."""
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -167,8 +168,9 @@ class TestDomainViews(TestCase):
 
     def test_domain_list_view(self):
         """Test domain list view."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         Domain.objects.create(name="Domain 1")
         Domain.objects.create(name="Domain 2")
         response = self.client.get("/locations/vampire/list/domains/")

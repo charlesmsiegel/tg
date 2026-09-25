@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -16,14 +17,16 @@ class TestLocationIndexView(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_index_template(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "locations/index.html")
 
     def test_index_content(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         for i in range(10):
             LocationModel.objects.create(
                 name=f"Location {i}",
@@ -93,15 +96,17 @@ class TestLocationIndexViewContext(TestCase):
 
     def test_context_contains_form(self):
         """Test context contains location creation form."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertIn("form", response.context)
 
     def test_context_contains_chrondict(self):
         """Test context contains chronicle dictionary."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertIn("chrondict", response.context)
 

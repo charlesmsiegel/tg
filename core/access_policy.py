@@ -1,10 +1,14 @@
 """One fail-closed evaluator for declared URL and DictView targets."""
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 
+from characters.models.core import CharacterModel
+from core.models import CharacterTemplate
 from core.permissions import Permission, PermissionManager
 from core.route_policy_manifest import VIEW_POLICIES
+from core.views.public_object import PublicObjectDetailView, render_public_object_list
+from locations.models.core import LocationModel
 
 PROJECT_PREFIXES = (
     "accounts.",
@@ -50,22 +54,16 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
         return None
     if policy == "WIDGET":
         if not request.user.is_authenticated:
-            from django.http import JsonResponse
-
             return JsonResponse({"error": "Authentication required"}, status=401)
         return None
     if policy == "OBJECT_LIST":
         if not (
             request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
         ) and request.method in {"GET", "HEAD"}:
-            from core.views.public_object import render_public_object_list
-
             return render_public_object_list(request, view.model)
         return None
     if policy == "OBJECT_AJAX":
         if not request.user.is_authenticated:
-            from django.http import JsonResponse
-
             return JsonResponse({"error": "Authentication required"}, status=401)
         object_id = request.GET.get("object")
         if object_id:
@@ -76,7 +74,6 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
                 or int(object_id) < 1
             ):
                 raise Http404("Object not found")
-            from characters.models.core import CharacterModel
 
             subject = _object(CharacterModel, {"pk": object_id})
             if not PermissionManager.user_has_permission(
@@ -105,9 +102,6 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
 
     if policy == "CHARGEN_STEP":
         if subject is None:
-            from characters.models.core import CharacterModel
-            from locations.models.core import LocationModel
-
             model = LocationModel if view.__module__.startswith("locations.") else CharacterModel
             subject = _object(model, kwargs)
         if not PermissionManager.user_has_permission(
@@ -127,12 +121,9 @@ def authorize_route(request, view, args=(), kwargs=None, subject=None):
             return None
         if request.method not in {"GET", "HEAD"}:
             raise Http404("Object not found")
-        from core.views.public_object import PublicObjectDetailView
 
         return PublicObjectDetailView.as_view(model_class=model)(request, *args, **kwargs)
     if policy in {"OBJECT_WRITE", "OBJECT_ACTION"}:
-        from core.models import CharacterTemplate
-
         if (
             isinstance(obj, CharacterTemplate)
             and obj.is_official

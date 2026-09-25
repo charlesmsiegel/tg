@@ -1,5 +1,6 @@
 """Tests for DreamRealm views."""
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -21,15 +22,17 @@ class DreamRealmListViewTest(TestCase):
 
     def test_list_view_uses_correct_template(self):
         """Test that list view uses the correct template."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "locations/changeling/dream_realm/list.html")
 
     def test_list_view_shows_dream_realms(self):
         """Test that the list view shows existing dream realms."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         realm = DreamRealm.objects.create(
             name="Crystal Gardens",
             depth="far",
@@ -40,15 +43,17 @@ class DreamRealmListViewTest(TestCase):
 
     def test_list_view_shows_empty_message(self):
         """Test that the list view shows empty message when no dream realms exist."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertContains(response, "No dream realms have been created yet")
 
     def test_list_view_has_create_link(self):
         """Test that the list view has a link to create new dream realms."""
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True))
+        self.client.force_login(
+            get_user_model().objects.create_user("__legacy_auth_staff", is_staff=True)
+        )
         response = self.client.get(self.url)
         self.assertContains(response, "Create New Dream Realm")
         self.assertContains(response, reverse("locations:changeling:create:dream_realm"))
