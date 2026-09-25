@@ -271,7 +271,7 @@ TDD: write the failing test first for each behaviour.
 - **`tg_schema`:** applying the migration adds the column to a table without it, and does nothing when the column exists.
 - **`core/tests/security/test_route_policies.py`** stays green.
 
-Every PR runs the full suite serially (`python manage.py test`) before merge. It must show no failures beyond the 5 on `main` recorded in the dead-code spec's *Removal safety* section.
+Every PR runs the full suite serially (`python manage.py test`) before merge. It must show 0 failures; the 5 stale failures on `main` are fixed first, in the dead-code plan's Unit B0.
 
 ## Rollout
 
@@ -301,4 +301,4 @@ Five PRs, merged in order. Each one can be merged on its own and leaves the suit
 3. Players cannot reach the direct create or update forms. Scoped STs and staff can, and the update form preserves every field.
 4. All four Mage-family character wizards complete the Chantry background step without error. Creating makes a `Un` player-owned chantry; joining adds points and membership and nothing else.
 5. The chantry detail page shows the faction term, points spent and unspent, and a Resources card built on the recovered model methods.
-6. On every PR, the route-policy test and the new tests pass, and the full suite shows no failures beyond the baseline.
+6. On every PR, the route-policy test and the new tests pass, and the full suite shows 0 failures.
