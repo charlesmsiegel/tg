@@ -716,7 +716,11 @@ def section_tags():
         if module_path.split(".")[0] not in LOCAL_APPS:
             continue
         module = importlib.import_module(module_path)
-        register = next(v for v in vars(module).values() if isinstance(v, Library))
+        # Django itself loads a library through its module-level ``register``.
+        register = getattr(module, "register", None)
+        if not isinstance(register, Library):
+            lib_rows.append((lib, module_path, 0, 0, "no `register` Library (review)"))
+            continue
         users = (
             sorted(f for f, libs in loads.items() if lib in libs)
             if module_path not in builtins
