@@ -29,12 +29,19 @@ sys.path.insert(0, str(ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tg.settings")
 
 import django
+from django.conf import settings
+
+# Never touch a real database: the scan needs none. Point the default database
+# at in-memory SQLite before django.setup() runs any app code, and fail loudly
+# rather than misconfigure a non-SQLite connection if the settings change.
+if not settings.DATABASES["default"]["ENGINE"].endswith("sqlite3"):
+    sys.exit("find_dead_code.py expects the default database to use SQLite")
+settings.DATABASES["default"]["NAME"] = ":memory:"
 
 django.setup()
 
 from django.apps import AppConfig, apps
-from django.conf import settings
-from django.db import connections, models
+from django.db import models
 from django.db.migrations import Migration
 from django.template import Library
 from django.template.backends.django import get_installed_libraries
@@ -55,12 +62,6 @@ from characters.forms.core.character_creation import CharacterCreationForm
 from core.create_redirects import APP_NAMES
 from core.views.generic import DictView
 from scripts.inventory_authorization_routes import descendants
-
-# Never touch a real database: the scan needs none. Fail loudly rather than
-# misconfigure a non-SQLite connection if the settings ever change.
-if not connections["default"].settings_dict["ENGINE"].endswith("sqlite3"):
-    sys.exit("find_dead_code.py expects the default database to use SQLite")
-connections["default"].settings_dict["NAME"] = ":memory:"
 
 LOCAL_CONFIGS = [c for c in apps.get_app_configs() if Path(c.path).resolve().is_relative_to(ROOT)]
 LOCAL_APPS = tuple(sorted({c.name.split(".")[0] for c in LOCAL_CONFIGS}))
